@@ -43,9 +43,11 @@ EnemyBase* Mgr::birth(EnemyBirthArg& birthArg)
 				const s32 purpPikis = GameStat::getAllPikmins(Purple);
 
 				// Don't generate if above 20 purple Pikmin
+				/*
 				if (purpPikis + cavePikis >= 20) {
 					return nullptr;
 				}
+				*/
 			}
 		} else if (birthArg.mTypeID == EnemyTypeID::EnemyID_WhitePom) { // WHITE CANDYPOP
 			BaseGameSection* section = gs->mSection;
@@ -58,9 +60,11 @@ EnemyBase* Mgr::birth(EnemyBirthArg& birthArg)
 						const s32 whitePikis = GameStat::getAllPikmins(White);
 
 						// Don't generate if above 20 white Pikmin
+						/*
 						if (whitePikis + cavePikis >= 20) {
 							return nullptr;
 						}
+						*/
 					}
 				} else if (section->getCaveID() != 'f_02') {
 					return nullptr;

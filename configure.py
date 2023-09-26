@@ -1521,6 +1521,16 @@ LIBS = [
         ],
     },
     {
+        "lib": "epochMod",
+        "cflags": "$cflags_pikmin",
+        "mw_version": "2.6",
+        "host": True,
+        "objects": [
+            ["epochMod/blowPiki", True],
+            ["epochMod/smokyFrog", True],
+        ],
+    },
+    {
         "lib": "sysBootupU",
         "cflags": "$cflags_pikmin",
         "mw_version": "2.6",
@@ -1643,6 +1653,7 @@ LIBS = [
             "utilityU/PSMainSide_Factory",
             "utilityU/PSMainSide_ObjSound",
             "utilityU/PSMainSide_Demo",
+            ["utilityU/PSMainSide_Demoa", True],
             "utilityU/PSMainSide_Scene",
             "utilityU/PSMainSide_BossMgr",
             "utilityU/PSMainSide_Se",

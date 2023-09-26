@@ -74,6 +74,7 @@ bool newScreen::ObjFloor::isFLOOR()
 	case 't_01':
 	case 't_02':
 	case 't_03':
+	case 't_04':
 	case 'f_01':
 	case 'f_02':
 	case 'f_03':
@@ -85,6 +86,7 @@ bool newScreen::ObjFloor::isFLOOR()
 	case 'l_01':
 	case 'l_02':
 	case 'l_03':
+	case 'l_04':
 		ret = true;
 	}
 	return ret;
@@ -179,6 +181,9 @@ void ObjFloor::setCaveMsgID(u32 caveid, char* buffer)
 	case 't_03':
 		cave_msg = "8400_00"; // "Frontier Cavern"
 		break;
+	case 't_04':
+		cave_msg = "9003_00"; // "Tutorial 4"
+		break;
 	case 'f_01':              // forest
 		cave_msg = "8396_00"; // "Hole of Beasts"
 		break;
@@ -211,6 +216,9 @@ void ObjFloor::setCaveMsgID(u32 caveid, char* buffer)
 		break;
 	case 'l_03':
 		cave_msg = "8414_00"; // "Dream Den"
+		break;
+	case 'l_04':
+		cave_msg = "9004_00"; // "Last 4"
 		break;
 	case 'c_00':              // challenge mode stages
 		cave_msg = "4900_00"; // "Explorer's Cave"

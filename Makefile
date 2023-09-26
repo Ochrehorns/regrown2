@@ -67,7 +67,7 @@ endif
 
 include obj_files.mk
 
-O_FILES :=	$(JSYSTEM) $(DOLPHIN) $(PLUGPROJECT) $(SYS) $(UTILITY)
+O_FILES :=	$(JSYSTEM) $(DOLPHIN) $(PLUGPROJECT) $(MODDING) $(SYS) $(UTILITY)
 DEPENDS := $($(filter *.o,O_FILES):.o=.d)
 DEPENDS += $($(filter *.o,E_FILES):.o=.d)
 # If a specific .o file is passed as a target, also process its deps

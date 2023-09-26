@@ -16,6 +16,9 @@ PLUGPROJECT:=\
 	$(BUILD_DIR)/src/plugProjectEbisawaU/plugProjectEbisawaU.a\
 	$(BUILD_DIR)/src/plugProjectKonoU/plugProjectKonoU.a\
 
+MODDING:=\
+	$(BUILD_DIR)/src/epochMod/epochMod.a\
+
 SYS:=\
 	$(BUILD_DIR)/src/sysBootupU/sysBootupU.a\
 	$(BUILD_DIR)/src/sysCommonU/sysCommonU.a\
