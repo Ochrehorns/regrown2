@@ -829,7 +829,8 @@ LIBS = [
             ["plugProjectYamashitaU/pelplant", True],
             ["plugProjectYamashitaU/pelplantState", True],
             ["plugProjectYamashitaU/enemyInteractBattle", True],
-            "plugProjectYamashitaU/generalEnemyMgr",
+            ["plugProjectYamashitaU/generalEnemyMgr", True],
+            "plugProjectYamashitaU/generalEnemyMgrASM",
             ["plugProjectYamashitaU/kochappyAnimator", True],
             ["plugProjectYamashitaU/kochappy", True],
             "plugProjectYamashitaU/kochappyState",
@@ -1528,6 +1529,7 @@ LIBS = [
         "objects": [
             ["epochMod/blowPiki", True],
             ["epochMod/smokyFrog", True],
+            ["epochMod/SmokyFrogMgr", True],
         ],
     },
     {

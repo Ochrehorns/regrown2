@@ -34,19 +34,19 @@ void PikiBlowState::init(Piki* piki, StateArg* stateArg)
 	if (!blowArg) {
 		JUT_PANICLINE(3223, "flick needs PikiBlowInitArg !\n");
 	} else {
-		_18       = blowArg->_00;
-		_24       = blowArg->_0C;
+		mBlowDirection       = blowArg->mBlowDirection;
+		mChanceToLeaf       = blowArg->mChanceToLeaf;
 		mIsLethal = blowArg->mIsLethal;
 		_2A       = blowArg->_12;
-		_14       = blowArg->_14;
+		mHeldNavi       = blowArg->mHeldNavi;
 	}
 
 	mIsWhistled = false;
 	piki->startMotion(IPikiAnims::JHIT, IPikiAnims::JHIT, piki, nullptr);
 	mState = 0;
 
-	piki->mSimVelocity.y = _18.y * (0.1f * randFloat() + 1.0f);
-	piki->mFaceDir       = roundAng(JMath::atanTable_.atan2_(_18.x, _18.z) + PI);
+	piki->mSimVelocity.y = mBlowDirection.y * (0.1f * randFloat() + 1.0f);
+	piki->mFaceDir       = roundAng(JMath::atanTable_.atan2_(mBlowDirection.x, mBlowDirection.z) + PI);
 
 	if (_2A & 0x4) {
 		if ((int)piki->mHappaKind != Leaf) {

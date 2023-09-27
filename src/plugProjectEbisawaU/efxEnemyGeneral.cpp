@@ -196,6 +196,10 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 	case Game::EnemyTypeID::EnemyID_UmiMushi:
 		scale = 2.45f;
 		break;
+	
+	case Game::EnemyTypeID::EnemyID_SmokyFrog:
+		scale = 2.45f;
+		break;
 
 	case Game::EnemyTypeID::EnemyID_Kogane:
 	case Game::EnemyTypeID::EnemyID_Wealthy:
@@ -617,6 +621,10 @@ bool TEnemyDead::create(efx::Arg* arg)
 		scale = 1.7f;
 		break;
 
+	case Game::EnemyTypeID::EnemyID_SmokyFrog:
+		scale = 1.7f;
+		break;
+
 	case Game::EnemyTypeID::EnemyID_UmiMushi:
 		docreate = false;
 		return docreate;
@@ -728,6 +736,9 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 		return false;
 
 	case Game::EnemyTypeID::EnemyID_MaroFrog:
+		return false;
+
+	case Game::EnemyTypeID::EnemyID_SmokyFrog:
 		return false;
 
 	case Game::EnemyTypeID::EnemyID_Tadpole:
@@ -1221,6 +1232,11 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mType  = 1;
 		mScale = 0.85f;
 		break;
+	
+	case Game::EnemyTypeID::EnemyID_SmokyFrog:
+		mType  = 1;
+		mScale = 0.85f;
+		break;
 
 	case Game::EnemyTypeID::EnemyID_UmiMushi:
 		mType  = 1;
@@ -1706,6 +1722,10 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 		scale = 1.35f;
 		break;
 
+	case Game::EnemyTypeID::EnemyID_SmokyFrog:
+		scale = 1.35f;
+		break;
+
 	case Game::EnemyTypeID::EnemyID_UmiMushi:
 		docreate = false;
 		return docreate;
@@ -1953,6 +1973,10 @@ f32 TEnemyHamon::getLimitDepth_()
 		break;
 
 	case Game::EnemyTypeID::EnemyID_OoPanModoki:
+		depth = 80.0f;
+		break;
+	
+	case Game::EnemyTypeID::EnemyID_SmokyFrog:
 		depth = 80.0f;
 		break;
 
