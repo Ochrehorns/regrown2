@@ -1,7 +1,7 @@
 #ifndef _GAME_ENTITIES_SMOKYFROG_H
 #define _GAME_ENTITIES_SMOKYFROG_H
 
-#include "Game/Entities/Frog.h"
+#include "Game/Entities/MaroFrog.h"
 
 /**
  * --Header for Smokywog (SmokyFrog)--
@@ -9,7 +9,7 @@
 
 namespace Game {
 namespace SmokyFrog {
-struct Obj : public Frog::Obj {
+struct Obj : public MaroFrog::Obj {
 	Obj();
 
 	virtual ~Obj() { }                                 // _1BC (weak)

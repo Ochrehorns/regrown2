@@ -626,6 +626,7 @@ IEnemyMgrBase* GeneralEnemyMgr::getIEnemyMgrBase(int enemyID)
  * Address:	8010D5F8
  * Size:	00021C
  */
+/*
 void GeneralEnemyMgr::allocateEnemys(u8 type, int heapSize)
 {
 	if (heapSize < 0) {
@@ -676,7 +677,7 @@ void GeneralEnemyMgr::allocateEnemys(u8 type, int heapSize)
 	gParmArc = nullptr;
 	sys->heapStatusEnd("enemyHeap");
 }
-
+*/
 /*
  * --INFO--
  * Address:	8010D814
