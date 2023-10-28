@@ -3420,12 +3420,13 @@ lbl_constructor:
 /* 80448CAC 00445BEC  98 01 00 0F */	stb r0, 0xf(r1)
 /* 80448CB0 00445BF0  48 00 00 20 */	b .L_80448CD0
 .L_80448CB4:
-/* 80448CB4 00445BF4  38 60 00 00 */	li r3, 0
-/* 80448CB8 00445BF8  38 80 00 DC */	li r4, 0xdc
-/* 80448CBC 00445BFC  38 00 00 FF */	li r0, 0xff
+li r4, 0xbb
+li r3, 0xfd
+li r5, 0x1a
+li r0, 0xff
 /* 80448CC0 00445C00  98 81 00 0C */	stb r4, 0xc(r1)
 /* 80448CC4 00445C04  98 61 00 0D */	stb r3, 0xd(r1)
-/* 80448CC8 00445C08  98 61 00 0E */	stb r3, 0xe(r1)
+/* 80448CC8 00445C08  98 61 00 0E */	stb r5, 0xe(r1)
 /* 80448CCC 00445C0C  98 01 00 0F */	stb r0, 0xf(r1)
 .L_80448CD0:
 /* 80448CD0 00445C10  80 01 00 0C */	lwz r0, 0xc(r1)
