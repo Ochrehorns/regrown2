@@ -108,7 +108,7 @@ EnemyInfo gEnemyInfo[] = {
    {"Tyre",               EnemyTypeID::EnemyID_Tyre,           -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Empty},
    {"DangoMushi",         EnemyTypeID::EnemyID_DangoMushi,     -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Boss},
    {"SmokyFrog",          EnemyTypeID::EnemyID_SmokyFrog,      -1,                                1,      0x0097,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Boss},
-   {"SleepyBulbear",       EnemyTypeID::EnemyID_SleepyBulbear,   -1,                                1,      0x0097,    "KumaChappy",   "KumaChappy",   "KumaChappy",   "",         "",         "KumaChappy",   "KumaChappy",   -1,                               0,    BDT_Strong},
+   {"SleepyBulbear",      EnemyTypeID::EnemyID_SleepyBulbear,   -1,                               1,      0x0097,    "KumaChappy",   "Chappy",       "Chappy",       "",         "",         "KumaChappy",   "KumaChappy",   -1,                               0,    BDT_Strong},
 };
 // clang-format on
 

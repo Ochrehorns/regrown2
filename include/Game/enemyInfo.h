@@ -142,7 +142,7 @@ enum EEnemyTypeID {//ID      Common Name
     EnemyID_UmiMushiBase   = 100, // Bloyster base (crashes)
     EnemyID_UmiMushiBlind  = 101, // Toady Bloyster
     EnemyID_SmokyFrog      = 102, // Smoky Frog
-    EnemyID_SleepyBulbear   = 103, // Awake Bulbear
+    EnemyID_SleepyBulbear  = 103, // Awake Bulbear
     EnemyID_COUNT,
 };
 EEnemyTypeID mEnemyID; // _00
