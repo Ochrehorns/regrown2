@@ -70,7 +70,7 @@ inline void DemoInitiator::setDefault(const char* comp, u32 id, bool extraCondit
 {
 	if (extraCondition && !mSongChosen && strcmp(mName, comp) == 0) {
 		mSongChosen = true;
-		mASTid     = id;
+		mASTid      = id;
 		*mByte      = -1;
 		// OSReport("demo_arg is value: %lu\n", demo_arg);
 	}
@@ -119,7 +119,7 @@ PSSystem::BgmSeq* Demo::initiate(DemoArg demoArg, u8* unk)
 	init.setDefault("s11_dopebin_first_r", 0xc0011008);
 
 	if (!streq("s01_dayend", init.mName)) {
-		bool is_key = demoArg.mCameraName  && streq(demoArg.mCameraName , "key");
+		bool is_key = demoArg.mCameraName && streq(demoArg.mCameraName, "key");
 
 		init.setDefault("s17_suck_equipment", demoArg.mBgmID, !is_key);
 		init.setDefault("s17_suck_equipment", 0xc0011007, is_key);

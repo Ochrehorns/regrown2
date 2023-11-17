@@ -33,6 +33,7 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 	case Game::EnemyTypeID::EnemyID_BlueChappy:
 	case Game::EnemyTypeID::EnemyID_YellowChappy:
 	case Game::EnemyTypeID::EnemyID_KumaChappy:
+	case Game::EnemyTypeID::EnemyID_SleepyBulbear:
 		scale = 1.75f;
 		break;
 
@@ -196,7 +197,7 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 	case Game::EnemyTypeID::EnemyID_UmiMushi:
 		scale = 2.45f;
 		break;
-	
+
 	case Game::EnemyTypeID::EnemyID_SmokyFrog:
 		scale = 2.45f;
 		break;
@@ -470,6 +471,7 @@ bool TEnemyDead::create(efx::Arg* arg)
 	case Game::EnemyTypeID::EnemyID_BlueChappy:
 	case Game::EnemyTypeID::EnemyID_YellowChappy:
 	case Game::EnemyTypeID::EnemyID_KumaChappy:
+	case Game::EnemyTypeID::EnemyID_SleepyBulbear:
 		scale = 1.8f;
 		break;
 
@@ -701,6 +703,7 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 	case Game::EnemyTypeID::EnemyID_BlueChappy:
 	case Game::EnemyTypeID::EnemyID_YellowChappy:
 	case Game::EnemyTypeID::EnemyID_KumaChappy:
+	case Game::EnemyTypeID::EnemyID_SleepyBulbear:
 		scale   = 1.4f;
 		isSmall = false;
 		break;
@@ -1041,6 +1044,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 	case Game::EnemyTypeID::EnemyID_BlueChappy:
 	case Game::EnemyTypeID::EnemyID_YellowChappy:
 	case Game::EnemyTypeID::EnemyID_KumaChappy:
+	case Game::EnemyTypeID::EnemyID_SleepyBulbear:
 		mType  = 1;
 		mScale = 0.92f;
 		break;
@@ -1232,7 +1236,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mType  = 1;
 		mScale = 0.85f;
 		break;
-	
+
 	case Game::EnemyTypeID::EnemyID_SmokyFrog:
 		mType  = 1;
 		mScale = 0.85f;
@@ -1562,6 +1566,7 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 	case Game::EnemyTypeID::EnemyID_BlueChappy:
 	case Game::EnemyTypeID::EnemyID_YellowChappy:
 	case Game::EnemyTypeID::EnemyID_KumaChappy:
+	case Game::EnemyTypeID::EnemyID_SleepyBulbear:
 		scale = 1.3f;
 		break;
 
@@ -1841,6 +1846,7 @@ f32 TEnemyHamon::getLimitDepth_()
 	case Game::EnemyTypeID::EnemyID_KumaChappy:
 	case Game::EnemyTypeID::EnemyID_BlueChappy:
 	case Game::EnemyTypeID::EnemyID_YellowChappy:
+	case Game::EnemyTypeID::EnemyID_SleepyBulbear:
 		depth = 80.0f;
 		break;
 
@@ -1975,7 +1981,7 @@ f32 TEnemyHamon::getLimitDepth_()
 	case Game::EnemyTypeID::EnemyID_OoPanModoki:
 		depth = 80.0f;
 		break;
-	
+
 	case Game::EnemyTypeID::EnemyID_SmokyFrog:
 		depth = 80.0f;
 		break;

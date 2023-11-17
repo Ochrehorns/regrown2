@@ -45,7 +45,7 @@ EnemyBase* Mgr::birth(EnemyBirthArg& birthArg)
 				// Don't generate if above 20 purple Pikmin
 				/*
 				if (purpPikis + cavePikis >= 20) {
-					return nullptr;
+				    return nullptr;
 				}
 				*/
 			}
@@ -62,7 +62,7 @@ EnemyBase* Mgr::birth(EnemyBirthArg& birthArg)
 						// Don't generate if above 20 white Pikmin
 						/*
 						if (whitePikis + cavePikis >= 20) {
-							return nullptr;
+						    return nullptr;
 						}
 						*/
 					}

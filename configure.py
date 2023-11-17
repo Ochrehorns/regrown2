@@ -1530,6 +1530,8 @@ LIBS = [
             ["epochMod/blowPiki", True],
             ["epochMod/smokyFrog", True],
             ["epochMod/SmokyFrogMgr", True],
+            ["epochMod/SleepyBulbear", True],
+            ["epochMod/SleepyBulbearMgr", True],
         ],
     },
     {

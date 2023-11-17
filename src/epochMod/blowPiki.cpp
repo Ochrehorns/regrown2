@@ -34,11 +34,11 @@ void PikiBlowState::init(Piki* piki, StateArg* stateArg)
 	if (!blowArg) {
 		JUT_PANICLINE(3223, "flick needs PikiBlowInitArg !\n");
 	} else {
-		mBlowDirection       = blowArg->mBlowDirection;
-		mChanceToLeaf       = blowArg->mChanceToLeaf;
-		mIsLethal = blowArg->mIsLethal;
-		_2A       = blowArg->_12;
-		mHeldNavi       = blowArg->mHeldNavi;
+		mBlowDirection = blowArg->mBlowDirection;
+		mChanceToLeaf  = blowArg->mChanceToLeaf;
+		mIsLethal      = blowArg->mIsLethal;
+		_2A            = blowArg->_12;
+		mHeldNavi      = blowArg->mHeldNavi;
 	}
 
 	mIsWhistled = false;

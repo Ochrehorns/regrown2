@@ -1,45 +1,20 @@
-#include "Game/Entities/Hana.h"
+#include "Game/Entities/SleepyBulbear.h"
 
 namespace Game {
-namespace Hana {
+namespace SleepyBulbear {
 
-/*
- * --INFO--
- * Address:	802F2DEC
- * Size:	000050
- */
 Mgr::Mgr(int objLimit, u8 modelType)
     : EnemyMgrBase(objLimit, modelType)
 {
-	mName = "ハナドックリマネージャ"; // hanadokkuri manager
+	mName = "SleepyBulbearMgr";
 }
 
-/*
- * --INFO--
- * Address:	802F2E3C
- * Size:	000048
- */
 void Mgr::doAlloc() { init(new ChappyBase::Parms); }
 
-/*
- * --INFO--
- * Address:	802F2E84
- * Size:	000060
- */
 void Mgr::createObj(int count) { mObj = new Obj[count]; }
 
-/*
- * --INFO--
- * Address:	802F2FD4
- * Size:	000010
- */
 EnemyBase* Mgr::getEnemy(int index) { return &mObj[index]; }
 
-/*
- * --INFO--
- * Address:	802F2FE4
- * Size:	000068
- */
 void Mgr::loadModelData()
 {
 	EnemyMgrBase::loadModelData();
@@ -50,5 +25,5 @@ void Mgr::loadModelData()
 	}
 }
 
-} // namespace Hana
+} // namespace SleepyBulbear
 } // namespace Game

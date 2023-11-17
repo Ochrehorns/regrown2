@@ -2,6 +2,8 @@ EPOCH_FILES:=\
 	$(BUILD_DIR)/src/epochMod/blowPiki.o\
 	$(BUILD_DIR)/src/epochMod/smokyFrog.o\
 	$(BUILD_DIR)/src/epochMod/SmokyFrogMgr.o\
+	$(BUILD_DIR)/src/epochMod/SleepyBulbear.o\
+	$(BUILD_DIR)/src/epochMod/SleepyBulbearMgr.o\
 
 DEPENDS += $(EPOCH_FILES:.o=.d)
 
