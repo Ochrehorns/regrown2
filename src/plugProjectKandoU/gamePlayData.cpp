@@ -632,7 +632,7 @@ PlayData::PlayData()
 		gen->mLoops.create(info->mLoopGenInfo.mCount, nullptr);
 	}
 
-	mTekiStatMgr.allocate(102);
+	mTekiStatMgr.allocate(104);
 
 	mCaveOtakara    = new CaveOtakara[stageCount];
 	mCaveOtakaraOld = new CaveOtakara[stageCount];
