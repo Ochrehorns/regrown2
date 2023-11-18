@@ -5,18 +5,12 @@
 namespace Game {
 namespace SmokyFrog {
 
-/*
- * --INFO--
- * Address:	802617E0
- * Size:	000098
- */
-Obj::Obj() { createEffect(); }
+Obj::Obj()
+{
+	createEffect(); 
+	// setScale(C_PROPERPARMS.mScaleMult.mValue); // don't assign parm shit in the ctor
+}
 
-/*
- * --INFO--
- * Address:	80261878
- * Size:	00045C
- */
 void Obj::attackNaviPosition()
 {
 	Iterator<Navi> iter(naviMgr);
@@ -37,11 +31,6 @@ void Obj::attackNaviPosition()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80261CD4
- * Size:	0000B0
- */
 void Obj::createEffect() { mEfxPota = new efx::TFrogPota; }
 
 } // namespace SmokyFrog
