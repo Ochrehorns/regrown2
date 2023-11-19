@@ -7,8 +7,57 @@ namespace SmokyFrog {
 
 Obj::Obj()
 {
-	createEffect(); 
-	// setScale(C_PROPERPARMS.mScaleMult.mValue); // don't assign parm shit in the ctor
+	createEffect();
+}
+
+void Obj::onInit(CreatureInitArg* initArg)
+{
+	EnemyBase::onInit(initArg);
+	_2C4        = 128.0f;
+	mAirTimer   = 0.0f;
+	mNextState  = Frog::FROG_NULL;
+	mIsInAir    = false;
+	mIsFalling  = false;
+	setupEffect();
+	mFsm->start(this, Frog::FROG_Wait, nullptr);
+	setScale(static_cast<Frog::Parms*>(mParms)->mProperParms.mScaleMult.mValue); // don't assign parm shit in the ctor
+	mCurLodSphere.mRadius = mScaleModifier * static_cast<Frog::Parms*>(mParms)->mGeneral.mOffCameraRadius.mValue;
+	// update collision
+	Sys::Sphere collSphere;
+	mCollTree->mPart->getSphere(collSphere);
+	collSphere.mRadius *= mScaleModifier;
+	mBoundingSphere = collSphere;
+	mCollTree->update();
+}
+
+void Obj::getShadowParam(ShadowParam& param)
+{
+	Sys::Sphere boundingSphere;
+	getBoundingSphere(boundingSphere);
+	param.mPosition.x = boundingSphere.mPosition.x;
+	param.mPosition.y = 5.0f + mPosition.y;
+	param.mPosition.z = boundingSphere.mPosition.z;
+
+	if (isAlive()) {
+		if (mBounceTriangle) {
+			if (isEvent(1, EB2_Earthquake)) {
+				param.mBoundingSphere.mRadius = 75.0f;
+			} else {
+				param.mBoundingSphere.mRadius = 50.0f;
+			}
+		} else {
+			if (getStateID() == Frog::FROG_JumpWait) {
+				param.mPosition.y -= 17.5f;
+			}
+
+			param.mBoundingSphere.mRadius = 0.75f * static_cast<Frog::Parms*>(mParms)->mProperParms.mJumpSpeed.mValue;
+		}
+	} else {
+		param.mBoundingSphere.mRadius = 22.5f;
+	}
+
+	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	param.mSize                     = 17.5f * static_cast<Frog::Parms*>(mParms)->mProperParms.mScaleMult.mValue;
 }
 
 void Obj::attackNaviPosition()
