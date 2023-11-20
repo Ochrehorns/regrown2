@@ -491,7 +491,7 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 	{
 		return constraint / static_cast<EnemyParmsBase*>(mParms)->mCreatureProps.mProps.mAccel.mValue;
 	}
-	
+
 	inline void setScale(f32 scale)
 	{
 		mScaleModifier = scale;

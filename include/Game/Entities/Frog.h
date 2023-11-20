@@ -121,7 +121,7 @@ struct Parms : public EnemyParmsBase {
 		    , mJumpSpeed(this, 'fp02', "ジャンプ速度", 400.0f, 0.0f, 1000.0f) // 'jump speed'
 		    , mJumpFailChance(this, 'fp03', "失敗確率", 0.2f, 0.0f, 1.0f)     // 'probability of failure'
 		    , mFallSpeed(this, 'fp04', "落下初速度", 300.0f, 0.0f, 500.0f)    // 'initial fall velocity'
-		    , mScaleMult(this, 'fp05', "frog scale", 2.0f, 0.01f, 50.0f)     // 'frog scale'
+		    , mScaleMult(this, 'fp05', "frog scale", 2.0f, 0.01f, 50.0f)      // 'frog scale'
 		{
 		}
 

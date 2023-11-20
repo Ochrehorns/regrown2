@@ -12,10 +12,11 @@ namespace SmokyFrog {
 struct Obj : public MaroFrog::Obj {
 	Obj();
 
-	virtual void onInit(CreatureInitArg* settings);    // _30
-	virtual void getShadowParam(ShadowParam& settings);// _134
-	virtual ~Obj() { }                                 // _1BC (weak)
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _258 (weak)
+	virtual void onInit(CreatureInitArg* settings);     // _30
+	virtual void getShadowParam(ShadowParam& settings); // _134
+	virtual void setParameters();                       // _228
+	virtual ~Obj() { }                                  // _1BC (weak)
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID()  // _258 (weak)
 	{
 		return EnemyTypeID::EnemyID_SmokyFrog;
 	}

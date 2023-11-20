@@ -5,21 +5,24 @@
 namespace Game {
 namespace SmokyFrog {
 
-Obj::Obj()
-{
-	createEffect();
-}
+Obj::Obj() { createEffect(); }
 
 void Obj::onInit(CreatureInitArg* initArg)
 {
 	EnemyBase::onInit(initArg);
-	_2C4        = 128.0f;
-	mAirTimer   = 0.0f;
-	mNextState  = Frog::FROG_NULL;
-	mIsInAir    = false;
-	mIsFalling  = false;
+	_2C4       = 128.0f;
+	mAirTimer  = 0.0f;
+	mNextState = Frog::FROG_NULL;
+	mIsInAir   = false;
+	mIsFalling = false;
 	setupEffect();
 	mFsm->start(this, Frog::FROG_Wait, nullptr);
+}
+
+void Obj::setParameters()
+{
+	EnemyBase::setParameters();
+
 	setScale(static_cast<Frog::Parms*>(mParms)->mProperParms.mScaleMult.mValue); // don't assign parm shit in the ctor
 	mCurLodSphere.mRadius = mScaleModifier * static_cast<Frog::Parms*>(mParms)->mGeneral.mOffCameraRadius.mValue;
 	// update collision
@@ -27,6 +30,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mCollTree->mPart->getSphere(collSphere);
 	collSphere.mRadius *= mScaleModifier;
 	mBoundingSphere = collSphere;
+	mCollTree->mPart->setScale(mScaleModifier);
 	mCollTree->update();
 }
 
