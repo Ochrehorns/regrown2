@@ -61,3 +61,4 @@
 -include src/sysGCU/Makefile
 -include src/utilityU/Makefile
 -include src/epochMod/Makefile
+-include src/DroughtMod/Makefile

@@ -1535,6 +1535,15 @@ LIBS = [
         ],
     },
     {
+        "lib": "DroughtMod",
+        "cflags": "$cflags_pikmin",
+        "mw_version": "2.6",
+        "host": True,
+        "objects": [
+            ["DroughtMod/caveHole", True]
+        ],
+    },
+    {
         "lib": "sysBootupU",
         "cflags": "$cflags_pikmin",
         "mw_version": "2.6",
