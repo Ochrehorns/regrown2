@@ -928,7 +928,7 @@ LIBS = [
             ["plugProjectKandoU/genItem", True],
             ["plugProjectKandoU/gameStages", True],
             "plugProjectKandoU/gameSeaMgr",
-            "plugProjectKandoU/pikiAI",
+            ["plugProjectKandoU/pikiAI", True],
             ["plugProjectKandoU/pelletConfig", True],
             ["plugProjectKandoU/gameFootmark", True],
             "plugProjectKandoU/gameSystem",
@@ -1541,6 +1541,18 @@ LIBS = [
         "host": True,
         "objects": [
             ["DroughtMod/caveHole", True]
+        ],
+    },
+    {
+        "lib": "HeartPieceMod",
+        "cflags": "$cflags_pikmin",
+        "mw_version": "2.6",
+        "host": True,
+        "objects": [
+            ["heartpieceMod/Usuba", True],
+            ["heartpieceMod/UsubaMgr", True],
+            ["heartpieceMod/UsubaState", True],
+            ["heartpieceMod/UsubaAnimator", True],
         ],
     },
     {

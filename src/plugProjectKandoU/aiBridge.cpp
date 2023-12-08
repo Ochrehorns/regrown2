@@ -21,7 +21,7 @@ static const char aiBridgeName[] = "actBridge";
 ActBridge::ActBridge(Game::Piki* parent)
     : Action(parent)
 {
-	_30 = 0;
+	mCollPartType = 0;
 
 	mStickAttack = new ActStickAttack(parent);
 	mGotoPos     = new ActGotoPos(parent);
@@ -49,15 +49,11 @@ void ActBridge::init(ActionArg* actionArg)
 
 	Game::GameStat::workPikis.inc(mParent);
 
-	mBridge = static_cast<ActBridgeArg*>(actionArg)->mBridge;
-	_30     = 0;
+	mBridge       = static_cast<ActBridgeArg*>(actionArg)->mBridge;
+	mCollPartType = 0;
 
 	initFollow();
 }
-
-static const char stickAttackArgName[] = "StickAttackActionArg";
-static const char gotoPosArgName[]     = "GotoPosActionArg";
-static const char followFieldArgName[] = "FollowVectorFieldActionArg";
 
 /*
  * --INFO--
@@ -73,6 +69,18 @@ void ActBridge::initFollow()
 
 /*
  * --INFO--
+ * Address:	........
+ * Size:	00009C
+ */
+void ActBridge::initGoto()
+{
+	GotoPosActionArg gotoArg;
+	mGotoPos->init(&gotoArg);
+	mState = 1;
+}
+
+/*
+ * --INFO--
  * Address: --------
  * Size:    0000BC
  * --INLINE--
@@ -80,15 +88,15 @@ void ActBridge::initFollow()
 void ActBridge::initStickAttack()
 {
 	f32 attackDamage = mParent->getAttackDamage();
-	StickAttackActionArg stickAttackArg(attackDamage, mBridge, -1, 4);
+	StickAttackActionArg stickAttackArg(attackDamage, mBridge, Game::IPikiAnims::NULLANIM, STICKATK_Bridge);
 
 	bool check = false;
-	if ((_30 & 1) && mParent->mCollisionPosition.y > 0.5f) {
+	if ((mCollPartType & 1) && mParent->mCollisionPosition.y > 0.5f) {
 		check = true;
 	}
 
 	if (check) {
-		stickAttackArg.mNextState = 25;
+		stickAttackArg.mAnimIdx = Game::IPikiAnims::JOB2;
 	}
 
 	mStickAttack->init(&stickAttackArg);
@@ -104,7 +112,7 @@ void ActBridge::initStickAttack()
 int ActBridge::exec()
 {
 	if (!mBridge->isAlive()) {
-		_30 = 0;
+		mCollPartType = 0;
 		return 0;
 	}
 
@@ -123,7 +131,7 @@ int ActBridge::exec()
 		if (stickResult == 0 || stickResult == 2) {
 			initStickAttack();
 		} else {
-			_30 = 0;
+			mCollPartType = 0;
 			return stickResult;
 		}
 		break;
@@ -133,7 +141,7 @@ int ActBridge::exec()
 		if (followResult == 0) {
 			initStickAttack();
 		} else {
-			_30 = 0;
+			mCollPartType = 0;
 			return followResult;
 		}
 		break;
@@ -143,13 +151,13 @@ int ActBridge::exec()
 		if (gotoResult == 0) {
 			initStickAttack();
 		} else {
-			_30 = 0;
+			mCollPartType = 0;
 			return gotoResult;
 		}
 		break;
 	}
 
-	_30 = 0;
+	mCollPartType = 0;
 	return 1;
 }
 
@@ -177,11 +185,11 @@ void ActBridge::cleanup()
 void ActBridge::platCallback(Game::Piki* p, Game::PlatEvent& platEvent)
 {
 	Game::PlatInstance* instance = platEvent.mInstance;
-	if (platEvent.mItem == mBridge) {
+	if (platEvent.mObj == mBridge) {
 		if (instance->mId.getID() == 'brbk') {
-			_30 |= 0x1;
+			mCollPartType |= 0x1;
 		} else if (instance->mId.getID() == 'br__') {
-			_30 |= 0x2;
+			mCollPartType |= 0x2;
 		}
 	}
 

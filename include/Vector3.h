@@ -90,10 +90,31 @@ struct Vector3 {
 	// 	return vec;
 	// }
 
+	inline void set(const Vector3& vec)
+	{
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+	}
+
+	inline void set(f32 _x, f32 _y, f32 _z)
+	{
+		x = _x;
+		y = _y;
+		z = _z;
+	}
+
 	/**
 	 * @fabricated
 	 */
 	inline void setTVec(JGeometry::TVec3<T>& vec)
+	{
+		vec.x = x;
+		vec.y = y;
+		vec.z = z;
+	}
+
+	inline void setVec(Vec& vec)
 	{
 		vec.x = x;
 		vec.y = y;
@@ -140,6 +161,12 @@ struct Vector3 {
 		this->y -= other.y;
 		this->z -= other.z;
 	}
+	inline void operator/=(const Vector3& other)
+	{
+		this->x /= other.x;
+		this->y /= other.y;
+		this->z /= other.z;
+	}
 
 	inline void addXZ(const Vector3& other)
 	{
@@ -151,13 +178,32 @@ struct Vector3 {
 
 	// Squared magnitude
 	inline f32 sqrMagnitude() const { return x * x + y * y + z * z; }
+	// 2D magnitude
+	inline f32 sqrMagnitude2D() const { return x * x + z * z; }
 	// Quick length
-	inline f32 qLength() { return pikmin2_sqrtf(sqrMagnitude()); }
+	inline f32 qLength() const { return pikmin2_sqrtf(sqrMagnitude()); }
+	inline f32 qLength2D() const { return pikmin2_sqrtf(sqrMagnitude2D()); }
+
+	inline f32 qNormalise()
+	{
+		f32 length = qLength();
+		if (length > 0.0f) {
+			f32 len = 1.0f / length;
+			x *= len;
+			y *= len;
+			z *= len;
+			return len;
+		}
+		return 0.0f;
+	}
 
 	f32 length() const;
 	f32 distance(Vector3&);
+	f32 sqrDistance(Vector3&);
 	f32 distance(JGeometry::TVec3f&);
 	f32 normalise();
+	f32 length2D() const;
+	f32 normalise2D();
 
 	void read(Stream&);
 	void write(Stream&);
@@ -193,6 +239,8 @@ inline Vector3f operator*=(const Vector3f& a, const f32 b) { return Vector3f(a.x
 
 inline f32 dot(const Vector3f& a, const Vector3f& b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
 
+inline bool operator==(const Vector3f& a, const Vector3f& b) { return (a.x == b.x && a.y == b.y && a.z == b.z); }
+
 inline void weightVecXZ(Vector3f& vec, f32 weight)
 {
 	Vector3f temp = vec;
@@ -220,6 +268,18 @@ inline f32 Vector3f::length() const
 }
 
 template <>
+inline f32 Vector3f::length2D() const
+{
+	if (sqrMagnitude2D() > 0.0f) {
+		Vector3f vec = Vector3f(x, y, z);
+		f32 sqrLen   = SQUARE(vec.x) + SQUARE(z);
+		return sqrtf(sqrLen);
+	} else {
+		return 0.0f;
+	}
+}
+
+template <>
 inline f32 Vector3f::normalise()
 {
 	f32 len = length();
@@ -232,6 +292,21 @@ inline f32 Vector3f::normalise()
 		return len;
 	}
 	return 0.0f;
+}
+
+template <>
+inline f32 Vector3f::normalise2D()
+{
+	f32 len = length2D();
+
+	if (len > 0.0f) {
+		x /= len;
+		z /= len;
+	} else {
+		x = z = 0.0f;
+	}
+
+	return len;
 }
 
 inline f32 _lenVec(Vector3f& vec)
@@ -390,13 +465,37 @@ inline f32 Vector3f::distance(Vector3f& them)
 }
 
 template <>
-inline f32 Vector3f::distance(JGeometry::TVec3f& them)
+inline f32 Vector3f::sqrDistance(Vector3f& them)
 {
 	f32 diffX = this->x - them.x;
 	f32 diffY = this->y - them.y;
 	f32 diffZ = this->z - them.z;
 
-	return Vector3f(diffX, diffY, diffZ).length();
+	return diffX * diffX + diffY * diffY + diffZ * diffZ;
+}
+
+// this is wacky and shows up in efxEnemy.cpp
+template <>
+inline f32 Vector3f::distance(JGeometry::TVec3f& them)
+{
+	f32 diffX = them.x - this->x;
+	f32 diffY = them.y - this->y;
+	f32 diffZ = them.z - this->z;
+
+	f32 X = diffX * diffX;
+	f32 Y = diffY * diffY;
+	f32 Z = diffZ * diffZ;
+
+	f32 mag = X + Y + Z;
+	if (mag <= 0.0f) {
+		return mag;
+	}
+
+	f32 root = __frsqrte(mag);
+	f32 v1   = root * root;
+	f32 v2   = 0.5f * root;
+	f32 v3   = v2 * (3.0f - mag * v1);
+	return mag * v3;
 }
 
 inline f32 _normaliseDistance(Vector3f& vec1, Vector3f& vec2)

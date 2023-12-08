@@ -1,11 +1,9 @@
 #include "Game/Entities/ItemCave.h"
 #include "Game/gamePlayData.h"
 
-namespace Game
-{
+namespace Game {
 
-namespace ItemCave
-{
+namespace ItemCave {
 
 #define POST_GAME_CAVE_ID 'l_04'
 
@@ -15,10 +13,10 @@ BaseItem* Mgr::generatorBirth(Vector3f& pos, Vector3f& angle, GenItemParm* parm)
 	GenCaveParm* gparm = static_cast<GenCaveParm*>(parm);
 	P2ASSERT(parm);
 
-    // prevents the last cave from spawning before louie has been rescued
-    if (gparm->mId == POST_GAME_CAVE_ID && !playData->isStoryFlag(STORY_LouieRescued)) {
-        return nullptr;
-    }
+	// prevents the last cave from spawning before louie has been rescued
+	if (gparm->mId == POST_GAME_CAVE_ID && !playData->isStoryFlag(STORY_LouieRescued)) {
+		return nullptr;
+	}
 
 	Item* item          = static_cast<Item*>(birth());
 	item->mCaveFilename = new char[strlen(gparm->mCaveFilename) + 1];
@@ -34,6 +32,5 @@ BaseItem* Mgr::generatorBirth(Vector3f& pos, Vector3f& angle, GenItemParm* parm)
 }
 
 } // namespace ItemCave
-
 
 } // namespace Game

@@ -77,7 +77,7 @@ void Obj::attackNaviPosition()
 
 			f32 angledist = getCreatureViewAngle(navi);
 
-			if (checkDistAndAngle(navi, angledist, maxAttackRange, minAttackRange)) {
+			if (isTargetAttackable(navi, angledist, maxAttackRange, minAttackRange)) {
 				mTargetPosition = Vector3f(navi->getPosition());
 			}
 		}

@@ -78,6 +78,10 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 		scale = 0.78f;
 		break;
 
+	case Game::EnemyTypeID::EnemyID_Usuba:
+		scale = 0.78f;
+		break;
+
 	case Game::EnemyTypeID::EnemyID_BombSarai:
 		scale = 0.75f;
 		break;
@@ -516,6 +520,10 @@ bool TEnemyDead::create(efx::Arg* arg)
 		scale = 0.9f;
 		break;
 
+	case Game::EnemyTypeID::EnemyID_Usuba:
+		scale = 0.9f;
+		break;
+
 	case Game::EnemyTypeID::EnemyID_BombSarai:
 		scale = 1.35f;
 		break;
@@ -749,6 +757,9 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 
 	case Game::EnemyTypeID::EnemyID_Sarai:
 	case Game::EnemyTypeID::EnemyID_Demon:
+		return false;
+
+	case Game::EnemyTypeID::EnemyID_Usuba:
 		return false;
 
 	case Game::EnemyTypeID::EnemyID_BombSarai:
@@ -1094,6 +1105,11 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 
 	case Game::EnemyTypeID::EnemyID_Sarai:
 	case Game::EnemyTypeID::EnemyID_Demon:
+		mType  = 1;
+		mScale = 0.65f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Usuba:
 		mType  = 1;
 		mScale = 0.65f;
 		break;
@@ -1611,6 +1627,10 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 		scale = 0.9f;
 		break;
 
+	case Game::EnemyTypeID::EnemyID_Usuba:
+		scale = 0.9f;
+		break;
+
 	case Game::EnemyTypeID::EnemyID_BombSarai:
 		scale = 1.4f;
 		break;
@@ -1888,6 +1908,10 @@ f32 TEnemyHamon::getLimitDepth_()
 
 	case Game::EnemyTypeID::EnemyID_Sarai:
 	case Game::EnemyTypeID::EnemyID_Demon:
+		depth = 40.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Usuba:
 		depth = 40.0f;
 		break;
 

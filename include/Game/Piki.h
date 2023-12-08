@@ -39,17 +39,20 @@ struct PikiState;
 struct PikiParms;
 
 typedef enum EPikiKind {
-	Blue                = 0,
-	Red                 = 1,
-	Yellow              = 2,
-	OnyonCount          = 2,
+	FirstPikmin = 0,
+	Blue        = 0,
+	Red         = 1,
+	Yellow      = 2,
+	LastOnyon   = 2,
+	OnyonCount,
 	Purple              = 3,
 	White               = 4,
 	LastStoredPikiColor = White,
-	AllPikmin           = 5,
-	Bulbmin             = 5,
-	Carrot              = 6,
-	PikiColorCount,
+	StoredPikiCount,
+	AllPikmin = StoredPikiCount,
+	Bulbmin   = 5,
+	Carrot    = 6,
+	PikiColorCount, // 7
 } EPikiKind;
 
 typedef enum EPikiHappa {
@@ -60,7 +63,8 @@ typedef enum EPikiHappa {
 
 	Bud_Red    = 3,
 	Flower_Red = 4,
-} EPikiHappa; // Aka headtype
+	PikiHappaCount, // 5
+} EPikiHappa;       // Aka headtype
 
 typedef enum EMovieUserCommands {
 	ForceOnionPikis = 100, // Calls enterAllPikis and forceEnterPikis based on moviePlayer flags
@@ -118,14 +122,14 @@ struct PikiFSM : public StateMachine<Piki> {
 struct Piki : public FakePiki {
 	typedef PikiState StateType;
 	struct InvokeAIFreeArg {
-		InvokeAIFreeArg(u8 a, u8 b)
-		    : _00(a)
-		    , _01(b)
+		InvokeAIFreeArg()
+		    : mDoForceInvoke(false)
+		    , mDoSimpleCheck(false)
 		{
 		}
 
-		u8 _00;
-		u8 _01;
+		bool mDoForceInvoke; // _00, check whether piki is updateable or not
+		bool mDoSimpleCheck; // _01, just check if an action is available without actually starting it
 	};
 
 	Piki();
@@ -178,7 +182,7 @@ struct Piki : public FakePiki {
 	bool canVsBattle();
 	void changeHappa(int);
 	void changeShape(int);
-	void checkInvokeAI(bool);
+	bool checkInvokeAI(bool);
 	void clearCurrAction();
 	void clearDope();
 	bool doped();
@@ -196,7 +200,7 @@ struct Piki : public FakePiki {
 	f32 getThrowHeight();
 	Piki* getVsBattlePiki();
 	int graspSituation_Fast(Creature**);
-	void graspSituation(Creature**);
+	int graspSituation(Creature**);
 	void initColor();
 	bool invokeAI();
 	bool invokeAI(CollEvent*, bool);
@@ -206,7 +210,7 @@ struct Piki : public FakePiki {
 	bool isTekiFollowAI();
 	bool isThrowable();
 	bool might_bury();
-	void setActTransportArg(PikiAI::ActTransportArg&);
+	bool setActTransportArg(PikiAI::ActTransportArg&);
 	void setDopeEffect(bool);
 	void setFreeLightEffect(bool);
 	void setGasInvincible(u8);
@@ -225,8 +229,8 @@ struct Piki : public FakePiki {
 	void updateColor();
 
 	inline PikiParms* getParms() { return static_cast<PikiParms*>(mParms); }
-	inline u16 getKind() { return (u16)mPikiKind; }
-	inline u16 getHappa() { return (u16)mHappaKind; }
+	inline int getKind() const { return mPikiKind; }
+	inline int getHappa() const { return mHappaKind; }
 
 	inline bool isSearchable()
 	{
@@ -240,8 +244,11 @@ struct Piki : public FakePiki {
 
 	inline efx::TPkEffect* getEffectObj() { return mEffectsObj; }
 
+	inline f32 getAnimSpeed() const { return mAnimSpeed; }
+
 	static Color4 pikiColors[PikiColorCount + 1];
 	static Color4 pikiColorsCursor[PikiColorCount + 1];
+	static u8 sGraspSituationOptimise;
 
 	// _000			 = VTBL
 	// _000-_24C = FakePiki
@@ -266,7 +273,7 @@ struct Piki : public FakePiki {
 	Color4 mOldDefaultColor;          // _2AB
 	Color4 mPikiColor;                // _2AF
 	f32 mColorFloat;                  // _2B4
-	u8 mPikiKind;                     // _2B8,  aka Piki kind (Blue, Yellow, Red, etc.)
+	u8 mPikiKind;                     // _2B8, aka Piki kind (Blue, Yellow, Red, etc.)
 	u8 mHappaKind;                    // _2B9, aka Happa kind (leaf, bud, flower)
 	SysShape::Model* mLeafModel;      // _2BC
 	int mMgrIndex;                    // _2C0

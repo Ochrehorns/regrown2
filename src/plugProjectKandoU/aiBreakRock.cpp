@@ -59,9 +59,17 @@ void ActBreakRock::initFollow()
 	mState = 1;
 }
 
-static const char stickAttackArgName[] = "StickAttackActionArg";
-static const char gotoPosArgName[]     = "GotoPosActionArg";
-static const char followFieldArgName[] = "FollowVectorFieldActionArg";
+/*
+ * --INFO--
+ * Address:	........
+ * Size:	00009C
+ */
+void ActBreakRock::initGoto()
+{
+	GotoPosActionArg gotoArg;
+	mGotoPos->init(&gotoArg);
+	mState = 1;
+}
 
 /*
  * --INFO--
@@ -71,19 +79,21 @@ static const char followFieldArgName[] = "FollowVectorFieldActionArg";
  */
 void ActBreakRock::initStickAttack()
 {
-	int state = -1;
+	int animIdx = Game::IPikiAnims::NULLANIM;
 	if (mRock->mObjectTypeID == OBJTYPE_Treasure) {
-		state = 58;
+		animIdx = Game::IPikiAnims::HORU;
 	}
 	f32 attackDamage = mParent->getAttackDamage();
-	StickAttackActionArg stickAttackArg(attackDamage, mRock, state, 0);
+	StickAttackActionArg stickAttackArg(attackDamage, mRock, animIdx, STICKATK_Default);
 
 	if (mRock->mObjectTypeID == OBJTYPE_Barrel || mRock->mObjectTypeID == OBJTYPE_BigFountain) {
-		stickAttackArg._10 = 5;
+		stickAttackArg.mObjType = STICKATK_BreakStone;
+
 	} else if (mRock->mObjectTypeID == OBJTYPE_Treasure) {
-		stickAttackArg._10 = 6;
+		stickAttackArg.mObjType = STICKATK_Treasure;
+
 	} else if (mRock->mObjectTypeID == OBJTYPE_Rock) {
-		stickAttackArg._10 = 7;
+		stickAttackArg.mObjType = STICKATK_Rock;
 	}
 
 	mStickAttack->init(&stickAttackArg);

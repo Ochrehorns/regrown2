@@ -66,6 +66,7 @@
 #include "Game/Entities/Ujia.h"
 #include "Game/Entities/Ujib.h"
 #include "Game/Entities/UmiMushi.h"
+#include "Game/Entities/Usuba.h"
 #include "Game/Entities/WaterOtakara.h"
 #include "Game/Entities/Wealthy.h"
 #include "Game/Entities/YellowChappy.h"
@@ -387,6 +388,9 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 		break;
 	case EnemyTypeID::EnemyID_SleepyBulbear:
 		mgr = new SleepyBulbear::Mgr(limit, type);
+		break;
+	case EnemyTypeID::EnemyID_Usuba:
+		mgr = new Usuba::Mgr(limit, type);
 		break;
 	}
 

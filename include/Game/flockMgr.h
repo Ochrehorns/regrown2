@@ -36,8 +36,8 @@ struct BaseFlockMgr {
 	{
 		mIsAgentVisible[1] = true;
 		mIsAgentVisible[0] = true;
-		_04                = -1;
-		_08                = 0;
+		mMaxAttackers      = -1;
+		mNumAttackers      = 0;
 	}
 
 	virtual int getMaxObjects()     = 0;                       // _08
@@ -59,14 +59,43 @@ struct BaseFlockMgr {
 		return getFlock(idx)->fear();
 	}
 
+	/**
+	 * @fabricated but likely existed based on asserts
+	 * Worth noting that this function is supposed to only be one line long.
+	 * @todo make this function one line long... somehow
+	 */
+	inline Vector3f getPosition(int idx)
+	{
+		P2ASSERTBOUNDSLINE(171, 0, idx, getMaxObjects());
+		return *getFlock(idx);
+	}
+	/**
+	 * @fabricated but likely existed based on asserts
+	 */
+	inline f32 getRadius(int idx)
+	{
+		P2ASSERTBOUNDSLINE(172, 0, idx, getMaxObjects());
+		return getFlock(idx)->getRadius();
+	}
+
+	inline bool isAttackable()
+	{
+		bool check = false;
+		if (mMaxAttackers == -1 || mNumAttackers < mMaxAttackers) {
+			check = true;
+		}
+
+		return check;
+	}
+
 	void update();
-	void getNearestFlock(Vector3f&);
+	int getNearestFlock(Vector3f& pos);
 	int attackFlock(int, f32);
 	void resolveCollision(f32);
 
 	// _00 VTBL
-	int _04;                 // _04
-	u32 _08;                 // _08
+	int mMaxAttackers;       // _04, -1 = no limit (uja), otherwise 5 (stone/weed)
+	int mNumAttackers;       // _08
 	Sys::Sphere _0C;         // _0C
 	bool mIsAgentVisible[2]; // _1C, might be 4, IDK
 };

@@ -99,14 +99,14 @@
 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/aiBore.cpp">aiBore.cpp</a> | 26633 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/aiCrop.cpp">aiCrop.cpp</a> | 26982 |
 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/aiTransport.cpp">aiTransport.cpp</a> | 27275 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/gameSystem.cpp">gameSystem.cpp</a> | 27889 |
 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/pathfinder.cpp">pathfinder.cpp</a> | 28318 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/aiAttack.cpp">aiAttack.cpp</a> | 28457 |
-| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/creatureStick.cpp">creatureStick.cpp</a> | 29831 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/vsCardMgr.cpp">vsCardMgr.cpp</a> | 31094 |
-| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/aiEnter.cpp">aiEnter.cpp</a> | 31721 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/singleGS_DayEnd.cpp">singleGS_DayEnd.cpp</a> | 31850 |
-| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/itemBridge.cpp">itemBridge.cpp</a> | 32146 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/gameDynamics.cpp">gameDynamics.cpp</a> | 34058 |
-| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/baseGameSectionKantei.cpp">baseGameSectionKantei.cpp</a> | 35202 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/gamePlayDataMemCard.cpp">gamePlayDataMemCard.cpp</a> | 36035 |
-| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/piki.cpp">piki.cpp</a> | 36373 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/gameGeneratorCache.cpp">gameGeneratorCache.cpp</a> | 37575 |
-| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/aiWeed.cpp">aiWeed.cpp</a> | 38056 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/vsGameSection.cpp">vsGameSection.cpp</a> | 39925 |
-| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/collinfo.cpp">collinfo.cpp</a> | 42246 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/aiFormation.cpp">aiFormation.cpp</a> | 43348 |
-| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/gameCPlate.cpp">gameCPlate.cpp</a> | 43760 |
+| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/pikiAI.cpp">pikiAI.cpp</a> | 29229 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/creatureStick.cpp">creatureStick.cpp</a> | 29831 |
+| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/vsCardMgr.cpp">vsCardMgr.cpp</a> | 31094 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/aiEnter.cpp">aiEnter.cpp</a> | 31721 |
+| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/singleGS_DayEnd.cpp">singleGS_DayEnd.cpp</a> | 31850 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/itemBridge.cpp">itemBridge.cpp</a> | 32146 |
+| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/gameDynamics.cpp">gameDynamics.cpp</a> | 34058 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/baseGameSectionKantei.cpp">baseGameSectionKantei.cpp</a> | 35202 |
+| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/gamePlayDataMemCard.cpp">gamePlayDataMemCard.cpp</a> | 36035 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/piki.cpp">piki.cpp</a> | 36373 |
+| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/gameGeneratorCache.cpp">gameGeneratorCache.cpp</a> | 37575 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/aiWeed.cpp">aiWeed.cpp</a> | 38056 |
+| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/vsGameSection.cpp">vsGameSection.cpp</a> | 39925 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/collinfo.cpp">collinfo.cpp</a> | 42246 |
+| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectKandoU/aiFormation.cpp">aiFormation.cpp</a> | 43348 |
 
 ### <section id="plugProjectKonoU">plugProjectKonoU</section>
 | File | Size (bytes) | File | Size (bytes) |
@@ -136,8 +136,8 @@
 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/ElecBugState.cpp">ElecBugState.cpp</a> | 15715 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/RandMapMgr.cpp">RandMapMgr.cpp</a> | 17083 |
 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/TadpoleState.cpp">TadpoleState.cpp</a> | 17490 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/SnakeWholeShadow.cpp">SnakeWholeShadow.cpp</a> | 19376 |
 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/SnakeCrowShadow.cpp">SnakeCrowShadow.cpp</a> | 19385 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/ImomushiState.cpp">ImomushiState.cpp</a> | 19876 |
-| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/UjiaState.cpp">UjiaState.cpp</a> | 20924 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/Rock.cpp">Rock.cpp</a> | 21671 |
-| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/ElecHiba.cpp">ElecHiba.cpp</a> | 21834 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/Frog.cpp">Frog.cpp</a> | 22143 |
+| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/UjiaState.cpp">UjiaState.cpp</a> | 20924 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/Frog.cpp">Frog.cpp</a> | 21026 |
+| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/Rock.cpp">Rock.cpp</a> | 21671 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/ElecHiba.cpp">ElecHiba.cpp</a> | 21834 |
 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/QueenState.cpp">QueenState.cpp</a> | 22713 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/Ujia.cpp">Ujia.cpp</a> | 22960 |
 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/Ujib.cpp">Ujib.cpp</a> | 23596 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/Queen.cpp">Queen.cpp</a> | 23624 |
 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/ElecBug.cpp">ElecBug.cpp</a> | 24345 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectNishimuraU/ArmorState.cpp">ArmorState.cpp</a> | 24714 |
@@ -159,8 +159,6 @@
 | ---- | ---- | ---- | ---- |
 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectYamashitaU/lifeGaugeMgr.cpp">lifeGaugeMgr.cpp</a> | 18880 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectYamashitaU/singleGS_ZukanParms.cpp">singleGS_ZukanParms.cpp</a> | 21445 |
 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectYamashitaU/enemyStoneDrawInfo.cpp">enemyStoneDrawInfo.cpp</a> | 21939 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectYamashitaU/vtxAnm.cpp">vtxAnm.cpp</a> | 25420 |
-| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectYamashitaU/carryInfoMgr.cpp">carryInfoMgr.cpp</a> | 47655 | <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectYamashitaU/enemyAction.cpp">enemyAction.cpp</a> | 51318 |
-| <a href="https://github.com/projectPiki/pikmin2/tree/main/src/plugProjectYamashitaU/generalEnemyMgr.cpp">generalEnemyMgr.cpp</a> | 55111 |
 
 ### <section id="sysBootupU">sysBootupU</section>
 | File | Size (bytes) | File | Size (bytes) |
