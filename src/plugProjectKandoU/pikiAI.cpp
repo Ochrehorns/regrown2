@@ -600,8 +600,7 @@ bool Piki::invokeAI(Game::CollEvent* event, bool check)
 {
 	Creature* creature = event->mCollidingCreature;
 	bool formCheck     = true;
-	if (getCurrActionID() == PikiAI::ACT_Formation
-	    && static_cast<PikiAI::ActFormation*>(getCurrAction())->mSortState != FORMATION_SORT_FORMED) {
+	if (getCurrActionID() == PikiAI::ACT_Formation) {
 		formCheck = false;
 	}
 
