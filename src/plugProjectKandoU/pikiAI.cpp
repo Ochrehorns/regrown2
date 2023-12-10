@@ -600,11 +600,12 @@ bool Piki::invokeAI(Game::CollEvent* event, bool check)
 {
 	Creature* creature = event->mCollidingCreature;
 	bool formCheck     = true;
-	if (getCurrActionID() == PikiAI::ACT_Formation) {
+	if (getCurrActionID() == PikiAI::ACT_Formation
+	    && static_cast<PikiAI::ActFormation*>(getCurrAction())->mSortState != FORMATION_SORT_FORMED) {
 		formCheck = false;
 	}
 
-	if (formCheck && creature->isAlive() && creature->getFlockMgr() && creature->getFlockMgr()->isAttackable()) {
+	if (check && creature->isAlive() && creature->getFlockMgr() && creature->getFlockMgr()->isAttackable()) {
 		PikiAI::ActWeedArg weedArg;
 		weedArg.mWeed = static_cast<ItemWeed::Item*>(creature);
 		return mBrain->start(PikiAI::ACT_Weed, &weedArg);
