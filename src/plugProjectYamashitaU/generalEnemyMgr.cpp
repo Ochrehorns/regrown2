@@ -19,6 +19,7 @@
 #include "Game/Entities/Egg.h"
 #include "Game/Entities/ElecBug.h"
 #include "Game/Entities/ElecHiba.h"
+#include "Game/Entities/ElecMushi.h"
 #include "Game/Entities/ElecOtakara.h"
 #include "Game/Entities/Fart.h"
 #include "Game/Entities/FireChappy.h"
@@ -391,6 +392,9 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 		break;
 	case EnemyTypeID::EnemyID_Usuba:
 		mgr = new Usuba::Mgr(limit, type);
+		break;
+	case EnemyTypeID::EnemyID_ElecMushi:
+		mgr = new ElecMushi::Mgr(limit, type);
 		break;
 	}
 

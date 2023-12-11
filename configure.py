@@ -1549,10 +1549,12 @@ LIBS = [
         "mw_version": "2.6",
         "host": True,
         "objects": [
-            ["heartpieceMod/Usuba", True],
-            ["heartpieceMod/UsubaMgr", True],
-            ["heartpieceMod/UsubaState", True],
-            ["heartpieceMod/UsubaAnimator", True],
+            ["HeartPieceMod/Usuba", True],
+            ["HeartPieceMod/UsubaMgr", True],
+            ["HeartPieceMod/UsubaState", True],
+            ["HeartPieceMod/UsubaAnimator", True],
+            ["HeartPieceMod/ElecMushi", True],
+            ["HeartPieceMod/ElecMushiMgr", True],
         ],
     },
     {
