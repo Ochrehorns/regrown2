@@ -62,3 +62,4 @@
 -include src/utilityU/Makefile
 -include src/epochMod/Makefile
 -include src/DroughtMod/Makefile
+-include src/HeartPieceMod/Makefile
