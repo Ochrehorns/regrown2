@@ -3445,8 +3445,12 @@ lbl_constructor:
 /* 8015EDF0 0015BD30  38 80 00 07 */	li r4, 7
 /* 8015EDF4 0015BD34  38 C0 00 64 */	li r6, 0x64
 /* 8015EDF8 0015BD38  3C E0 00 02 */	lis r7, 2
+li r10, 1
+stb r10, gPikiActive@sda21(r13)
 /* 8015EDFC 0015BD3C  48 2C BD 05 */	bl "__ct__Q28SysShape8ModelMgrFiPP12J3DModelDataiUlUlP30IDelegate1<PQ28SysShape5Model>"
 /* 8015EE00 0015BD40  7C 7C 1B 78 */	mr r28, r3
+li r10, 0
+stb r10, gPikiActive@sda21(r13)
 .L_8015EE04:
 /* 8015EE04 0015BD44  93 9D 00 70 */	stw r28, 0x70(r29)
 /* 8015EE08 0015BD48  38 9F 09 68 */	addi r4, r31, 0x968
