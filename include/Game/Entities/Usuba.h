@@ -6,11 +6,14 @@
 #include "Game/EnemyParmsBase.h"
 #include "Game/EnemyMgrBase.h"
 #include "Game/EnemyBase.h"
+#include "efx/TUsuba.h"
 #include "Collinfo.h"
 
 /**
  * --Header for Usuba (Usuba)--
  */
+
+#define USUBA_MAX_STICK_PIKI (5)
 
 namespace Game {
 namespace Usuba {
@@ -29,7 +32,6 @@ struct Obj : public EnemyBase {
 	virtual void setInitialSetting(EnemyInitialParamBase* params); // _1C4
 	virtual void doUpdate();                                       // _1CC
 	virtual void doDebugDraw(Graphics& gfx);                       // _1EC
-	virtual void initMouthSlots();                                 // _22C
 	virtual void doStartStoneState();                              // _2A4
 	virtual void doFinishStoneState();                             // _2A8
 	virtual void startCarcassMotion();                             // _2C4
@@ -39,7 +41,6 @@ struct Obj : public EnemyBase {
 	virtual FakePiki* getAttackableTarget();                       // _300
 	virtual int catchTarget();                                     // _304
 	virtual void resetAttackableTimer(f32) { }                     // _308 (weak)
-	virtual MouthSlots* getMouthSlots() { return &mMouthSlots; }   // _25C (weak)
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID()             // _258 (weak)
 	{
 		return EnemyTypeID::EnemyID_Usuba;
@@ -48,18 +49,23 @@ struct Obj : public EnemyBase {
 
 	f32 setHeightVelocity();
 	void setRandTarget();
-	void fallMeckGround();
-	int getCatchTargetNum();
 	int getNextStateOnHeight();
-	void flickStickTarget();
 	void createDownEffect();
+	void createAppearEffect();
+	void createEffect();
+	void setupEffect();
+	void createChargeSE();
+	void createDischargeSE();
+	void createFireEffect();
+	bool attackTargets(bool doAttack);
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
 	FSM* mFsm;              // _2BC
-	f32 _2C0;               // _2C0
-	MouthSlots mMouthSlots; // _2C4
-	Vector3f mTargetPos;    // _2CC
+	f32 mStateTimer;        // _2C0
+	Vector3f mTargetPos;    // _2C4
+	bool mIsBreathingFire;  // _2D0
+	efx::TUsubaEffect* mFireEfx; // _2D4
 	                        // _2D8 = PelletView
 };
 
@@ -84,37 +90,37 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mFp01(this, 'fp01', "通常飛行高さ", 100.0f, 0.0f, 300.0f)    // 'normal flight height'
-		    , mFp02(this, 'fp02', "掴み飛行高さ", 80.0f, 0.0f, 300.0f)     // 'grab flight height'
-		    , mFp03(this, 'fp03', "状態遷移高さ", 50.0f, 0.0f, 300.0f)     // 'state transition height'
-		    , mFp04(this, 'fp04', "通常移動速度", 100.0f, 0.0f, 300.0f)    // 'normal movement speed'
+		    , mFlightHeight(this, 'fp01', "flight height", 100.0f, 0.0f, 300.0f)
+		    , mCarryHeight(this, 'fp02', "carry height", 80.0f, 0.0f, 300.0f)     // 'grab flight height'
+		    , mTransitHeight(this, 'fp03', "transit height", 50.0f, 0.0f, 300.0f)     // 'state transition height'
+		    , mFlySpeed(this, 'fp04', "fly speed", 100.0f, 0.0f, 300.0f)    // 'normal movement speed'
 		    , mFp05(this, 'fp05', "掴み移動速度", 75.0f, 0.0f, 300.0f)     // 'grab movement speed'
-		    , mFp06(this, 'fp06', "ウェイト時間", 3.0f, 0.0f, 10.0f)       // 'wait time'
-		    , mFp11(this, 'fp11', "上昇係数(0)", 1.5f, 0.0f, 5.0f)         // 'climbing factor (0)'
-		    , mFp12(this, 'fp12', "上昇係数(5)", 1.0f, 0.0f, 5.0f)         // 'climbing factor (5)'
-		    , mFp21(this, 'fp21', "振払確率(1)", 0.1f, 0.0f, 1.0f)         // 'payoff probability (1)'
-		    , mFp22(this, 'fp22', "振払確率(5)", 0.7f, 0.0f, 1.0f)         // 'payoff probability (5)'
-		    , mFp23(this, 'fp23', "もがき時間", 3.0f, 0.0f, 10.0f)         // 'struggling time'
+		    , mWaitTime(this, 'fp06', "wait time", 3.0f, 0.0f, 10.0f)       // 'wait time'
+		    , mUnladenClimbFactor(this, 'fp11', "unladen climb factor", 1.5f, 0.0f, 5.0f)         // 'climbing factor (0)'
+		    , mMaxLadenClimbFactor(this, 'fp12', "max laden climb factor", 1.0f, 0.0f, 5.0f)         // 'climbing factor (5)'
+		    , mFallChanceMinPiki(this, 'fp21', "fall chance (1 piki)", 0.1f, 0.0f, 1.0f)         // 'payoff probability (1)'
+		    , mFallChanceMaxPiki(this, 'fp22', "fall chance (max piki)", 0.7f, 0.0f, 1.0f)         // 'payoff probability (5)'
+		    , mGroundTime(this, 'fp23', "ground time", 3.0f, 0.0f, 10.0f)         // 'struggling time'
 		    , mFp31(this, 'fp31', "ハント下降係数", 0.3f, 0.0f, 1.0f)      // 'hunt descent factor'
 		    , mFp32(this, 'fp32', "ハント後減衰率", 0.95f, 0.0f, 1.0f)     // 'post-hunt decay rate'
 		    , mFp41(this, 'fp41', "Fall Meck 速度", 200.0f, 0.0f, 1000.0f) // 'Fall Meck speed'
 		{
 		}
 
-		Parm<f32> mFp01; // _804
-		Parm<f32> mFp02; // _82C
-		Parm<f32> mFp03; // _854
-		Parm<f32> mFp04; // _87C
-		Parm<f32> mFp05; // _8A4
-		Parm<f32> mFp06; // _8CC
-		Parm<f32> mFp11; // _8F4
-		Parm<f32> mFp12; // _91C
-		Parm<f32> mFp21; // _944
-		Parm<f32> mFp22; // _96C
-		Parm<f32> mFp23; // _994
-		Parm<f32> mFp31; // _9BC
-		Parm<f32> mFp32; // _9E4
-		Parm<f32> mFp41; // _A0C
+		Parm<f32> mFlightHeight; // _804, fp01
+		Parm<f32> mCarryHeight; // _82C, fp02
+		Parm<f32> mTransitHeight; // _854, fp03
+		Parm<f32> mFlySpeed; // _87C, fp04
+		Parm<f32> mFp05; // _8A4, fp05
+		Parm<f32> mWaitTime; // _8CC, fp06
+		Parm<f32> mUnladenClimbFactor; // _8F4, fp11
+		Parm<f32> mMaxLadenClimbFactor; // _91C, fp12
+		Parm<f32> mFallChanceMinPiki; // _944, fp21
+		Parm<f32> mFallChanceMaxPiki; // _96C, fp22
+		Parm<f32> mGroundTime; // _994, fp23
+		Parm<f32> mFp31; // _9BC, fp31
+		Parm<f32> mFp32; // _9E4, fp32
+		Parm<f32> mFp41; // _A0C, fp41
 	};
 
 	Parms() { }
@@ -142,19 +148,19 @@ struct ProperAnimator : public EnemyAnimatorBase {
 };
 
 enum AnimID {
-	USUBAANIM_Fly          = 0,  // 'fly' - seems similar to recover?
-	USUBAANIM_AttackBreath = 1,  // 'attackBreath'
-	USUBAANIM_AttackDive   = 2,  // 'attackDive'
-	USUBAANIM_Flick        = 3,  // 'attackShake'
-	USUBAANIM_Appear       = 4,  // 'entrance'
-	USUBAANIM_Dead         = 5,  // 'death'
-	USUBAANIM_Carry        = 6,  // 'deathCarry'
-	USUBAANIM_Move         = 7,  // 'flyFwd'
-	USUBAANIM_Wait         = 8,  // 'idle'
-	USUBAANIM_Fall         = 9,  // 'stunFall'
-	USUBAANIM_Damage       = 10, // 'stunHurt'
-	USUBAANIM_Ground       = 11, // 'stunIdle'
-	USUBAANIM_Recover      = 12, // 'stunRecover'
+	USUBAANIM_Damage       = 0,  // 'stunHurt'
+	USUBAANIM_Ground       = 1,  // 'stunIdle'
+	USUBAANIM_Recover      = 2,  // 'stunRecover'
+	USUBAANIM_AttackBreath = 3,  // 'attackBreath'
+	USUBAANIM_AttackDive   = 4,  // 'attackDive'
+	USUBAANIM_Flick        = 5,  // 'attackShake'
+	USUBAANIM_Dead         = 6,  // 'death'
+	USUBAANIM_Carry        = 7,  // 'deathCarry'
+	USUBAANIM_Appear       = 8,  // 'entrance'
+	USUBAANIM_Fly          = 9,  // 'fly'
+	USUBAANIM_Move         = 10, // 'flyFwd'
+	USUBAANIM_Wait         = 11, // 'idle'
+	USUBAANIM_Fall         = 12, // 'stunFall'
 	USUBAANIM_AnimCount,         // 13
 };
 
@@ -195,7 +201,8 @@ enum StateID {
 	USUBA_Wait,
 	USUBA_Move,
 	USUBA_AttackBreath,
-	USUBA_StateCount, // 11
+	USUBA_AttackDive,
+	USUBA_StateCount, // 12
 };
 
 struct FSM : public EnemyStateMachine {
@@ -233,6 +240,20 @@ struct StateAppear : public State {
 struct StateAttackBreath : public State {
 	inline StateAttackBreath()
 	    : State(USUBA_AttackBreath, "attackbreath")
+	{
+	}
+
+	virtual void init(EnemyBase*, StateArg*); // _08
+	virtual void exec(EnemyBase*);            // _0C
+	virtual void cleanup(EnemyBase*);         // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateAttackDive : public State {
+	inline StateAttackDive()
+	    : State(USUBA_AttackDive, "attackdive")
 	{
 	}
 

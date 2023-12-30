@@ -4,6 +4,7 @@
 #include "Game/EnemyFunc.h"
 #include "Game/Stickers.h"
 #include "Game/PikiMgr.h"
+#include "efx/THebi.h"
 #include "JSystem/JMath.h"
 #include "Dolphin/rand.h"
 
@@ -30,6 +31,8 @@ Obj::Obj()
 {
 	mAnimator = new ProperAnimator;
 	setFSM(new FSM);
+	createEffect();
+
 }
 
 /*
@@ -50,10 +53,13 @@ void Obj::onInit(CreatureInitArg* initArg)
 
 	enableEvent(0, EB_Untargetable);
 
-	_2C0 = 0.0f;
+	mStateTimer = 0.0f;
+	mIsBreathingFire = false;
 	resetAttackableTimer(12800.0f);
 
-	mFsm->start(this, USUBA_Move, nullptr);
+	setupEffect();
+
+	mFsm->start(this, USUBA_Wait, nullptr);
 }
 
 /*
@@ -64,7 +70,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 void Obj::doUpdate()
 {
 	mFsm->exec(this);
-	mMouthSlots.update();
+	OSReport("Current state: %i\n", getStateID());
 }
 
 /*
@@ -100,7 +106,7 @@ void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
  */
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
-	Matrixf* bodyMtx      = mModel->getJoint("bodyjnt")->getWorldMatrix();
+	Matrixf* bodyMtx      = mModel->getJoint("body")->getWorldMatrix();
 	shadowParam.mPosition = bodyMtx->getBasis(3);
 
 	if (isAlive()) {
@@ -110,13 +116,13 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 		if (stateId == USUBA_Appear || stateId == USUBA_Fall || stateId == USUBA_Ground || stateId == USUBA_Damage
 		    || stateId == USUBA_Recover) {
 			shadowParam.mPosition.y -= 5.0f;
-			shadowParam.mBoundingSphere.mRadius = 100.0f + static_cast<Parms*>(mParms)->mProperParms.mFp01.mValue;
+			shadowParam.mBoundingSphere.mRadius = 100.0f + static_cast<Parms*>(mParms)->mProperParms.mFlightHeight.mValue;
 		} else if (mBounceTriangle) {
 			shadowParam.mPosition.y -= 5.0f;
 			shadowParam.mBoundingSphere.mRadius = 50.0f;
 		} else {
 			shadowParam.mPosition.y -= 20.0f;
-			shadowParam.mBoundingSphere.mRadius = 100.0f + static_cast<Parms*>(mParms)->mProperParms.mFp01.mValue;
+			shadowParam.mBoundingSphere.mRadius = 100.0f + static_cast<Parms*>(mParms)->mProperParms.mFlightHeight.mValue;
 		}
 	} else {
 		shadowParam.mPosition.y             = 2.5f + mPosition.y;
@@ -135,7 +141,6 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 void Obj::doStartStoneState()
 {
 	EnemyBase::doStartStoneState();
-	flickStickTarget();
 }
 
 /*
@@ -147,8 +152,8 @@ void Obj::doFinishStoneState()
 {
 	EnemyBase::doFinishStoneState();
 
-	s32 stateId = getStateID();
-	if (stateId >= USUBA_Recover) {
+	int stateId = getStateID();
+	if (stateId >= USUBA_Recover) { // if previously airborne
 		mFsm->transit(this, USUBA_Recover, nullptr);
 	}
 }
@@ -162,49 +167,29 @@ void Obj::startCarcassMotion() { EnemyBase::startMotion(USUBAANIM_Carry, nullptr
 
 /*
  * --INFO--
- * Address:	80273028
- * Size:	0000A8
- */
-void Obj::initMouthSlots()
-{
-	mMouthSlots.alloc(2);
-	mMouthSlots.setup(0, mModel, "rkamujnt");
-	mMouthSlots.setup(1, mModel, "lkamujnt");
-
-	for (int i = 0; i < mMouthSlots.mMax; i++) {
-		mMouthSlots.getSlot(i)->mRadius = 15.0f;
-	}
-}
-
-/*
- * --INFO--
  * Address:	802730D0
  * Size:	000108
  */
 f32 Obj::setHeightVelocity()
 {
-	// The maximum amount of Pikmin that can have an effect on the upward velocity of the Sarai
-#define MAX_PIKMIN_STUCK_FACTOR 5
-
+	// The maximum amount of Pikmin that can have an effect on the upward velocity of the Usuba
 	// Calculate the weight factor based on Pikmin stuck
 	int pikminWeightFactor
-	    = (mStuckPikminCount < 0) ? (0) : (mStuckPikminCount <= MAX_PIKMIN_STUCK_FACTOR ? (mStuckPikminCount) : (MAX_PIKMIN_STUCK_FACTOR));
+	    = (mStuckPikminCount < 0) ? (0) : (mStuckPikminCount <= USUBA_MAX_STICK_PIKI ? (mStuckPikminCount) : (USUBA_MAX_STICK_PIKI));
 
-	f32 riseFactor     = static_cast<Parms*>(mParms)->mProperParms.mFp11.mValue;
-	f32 climbingFactor = static_cast<Parms*>(mParms)->mProperParms.mFp12.mValue;
+	f32 riseFactor     = static_cast<Parms*>(mParms)->mProperParms.mUnladenClimbFactor.mValue;
+	f32 climbingFactor = static_cast<Parms*>(mParms)->mProperParms.mMaxLadenClimbFactor.mValue;
 	f32 weight         = pikminWeightFactor;
 
-	// Custom linear interpolation (https://en.wikipedia.org/wiki/Linear_interpolation)
 	// lerp v0, v1, t -> (1 - t) * v0 + t * v1
-	f32 velFactor = (((MAX_PIKMIN_STUCK_FACTOR - weight) / MAX_PIKMIN_STUCK_FACTOR) * riseFactor)
-	              + (weight / MAX_PIKMIN_STUCK_FACTOR) * climbingFactor;
+	f32 velFactor = (((USUBA_MAX_STICK_PIKI - weight) / USUBA_MAX_STICK_PIKI) * riseFactor)
+	              + (weight / USUBA_MAX_STICK_PIKI) * climbingFactor;
 
 	// Get the Y position of the map model (equivalent to a downwards raycast)
 	f32 mapPosY = mapMgr->getMinY(mPosition);
 
 	// Get intended flight height
-	f32 flightHeight = getCatchTargetNum() ? static_cast<Parms*>(mParms)->mProperParms.mFp02.mValue  // Grab flight height
-	                                       : static_cast<Parms*>(mParms)->mProperParms.mFp01.mValue; // Normal flight height
+	f32 flightHeight = static_cast<Parms*>(mParms)->mProperParms.mFlightHeight.mValue; // Normal flight height
 
 	// Upward velocity is offset by map height
 	mCurrentVelocity.y = velFactor * ((mapPosY + flightHeight) - mPosition.y);
@@ -219,11 +204,9 @@ f32 Obj::setHeightVelocity()
  */
 void Obj::setRandTarget()
 {
-	// Set's a random target near the home radius, if in a cave then completely random
+	// Sets a random target near the home radius, if in a cave then completely random
 	f32 radius;
-	if (getCatchTargetNum()) {
-		radius = randWeightFloat(static_cast<Parms*>(mParms)->mGeneral.mHomeRadius.mValue);
-	} else if (gameSystem && gameSystem->mIsInCave) {
+	if (gameSystem && gameSystem->mIsInCave) {
 		radius = 50.0f + randWeightFloat(50.0f);
 	} else {
 		radius = static_cast<Parms*>(mParms)->mGeneral.mHomeRadius.mValue
@@ -232,60 +215,11 @@ void Obj::setRandTarget()
 	}
 
 	// Get the direction from the home position towards our position
-	f32 dirToSarai = JMath::atanTable_.atan2_(mPosition.x - mHomePosition.x, mPosition.z - mHomePosition.z);
+	f32 dirToSarai = JMAAtan2Radian(mPosition.x - mHomePosition.x, mPosition.z - mHomePosition.z);
 
 	// Randomise the angle a bit and set the target position
 	f32 rngAngle = HALF_PI + (dirToSarai + randWeightFloat(PI));
 	mTargetPos   = Vector3f((radius * sinf(rngAngle)) + mHomePosition.x, mHomePosition.y, (radius * cosf(rngAngle)) + mHomePosition.z);
-}
-
-/*
- * --INFO--
- * Address:	80273408
- * Size:	000294
- */
-void Obj::fallMeckGround()
-{
-	Stickers sticker(this);
-	Iterator<Creature> iterator(&sticker);
-
-	CI_LOOP(iterator)
-	{
-		Creature* c = iterator.mContainer->get(iterator.mIndex);
-
-		if (!c->isStickToMouth()) {
-			continue;
-		}
-
-		InteractFallMeck fallMeck(this, static_cast<Parms*>(mParms)->mGeneral.mAttackDamage.mValue);
-		if (!c->stimulate(fallMeck)) {
-			continue;
-		}
-
-		Vector3f fallVelocity = Vector3f(0.0f);
-
-		const f32 fallMeckSpeed = static_cast<Parms*>(mParms)->mProperParms.mFp41.mValue;
-		fallVelocity.y -= fallMeckSpeed;
-		c->setVelocity(fallVelocity);
-	}
-}
-
-/*
- * --INFO--
- * Address:	8027369C
- * Size:	00007C
- */
-int Obj::getCatchTargetNum()
-{
-	int max   = mMouthSlots.mMax;
-	int count = 0;
-	for (int i = 0; i < max; i++) {
-		if (mMouthSlots.getSlot(i)->mStuckCreature != nullptr) {
-			count++;
-		}
-	}
-
-	return count;
 }
 
 /*
@@ -302,28 +236,23 @@ int Obj::getNextStateOnHeight()
 
 	int stuckPiki = getStickPikminNum();
 	if (stuckPiki) {
-		if (EnemyFunc::getStickPikminColorNum(this, Purple) > 0) {
-			return USUBA_Fall;
-		}
-
-		int v1;
-		if (stuckPiki - 1 < 0) {
-			v1 = 0;
+		int cappedPikiCount;
+		if (stuckPiki < 1) {
+			cappedPikiCount = 0;
 		} else {
-			v1 = 4;
-			if (stuckPiki - 1 <= 4) {
-				v1 = stuckPiki - 1;
+			cappedPikiCount = (USUBA_MAX_STICK_PIKI - 1);
+			if (stuckPiki - 1 <= (USUBA_MAX_STICK_PIKI - 1)) {
+				cappedPikiCount = stuckPiki - 1;
 			}
 		}
 
-		f32 va1 = static_cast<Parms*>(mParms)->mProperParms.mFp21.mValue;
-		f32 va2 = static_cast<Parms*>(mParms)->mProperParms.mFp22.mValue;
+		f32 minFallChance = static_cast<Parms*>(mParms)->mProperParms.mFallChanceMinPiki.mValue;
+		f32 maxFallChance = static_cast<Parms*>(mParms)->mProperParms.mFallChanceMaxPiki.mValue;
 
-		f32 fv1 = v1;
-		f32 f4  = (4.0f - fv1) / 4;
-		f32 f5  = (fv1 / 4);
+		f32 invPikiWeight  = ((f32)(USUBA_MAX_STICK_PIKI - 1) - cappedPikiCount) / (USUBA_MAX_STICK_PIKI - 1);
+		f32 pikiWeight  = (cappedPikiCount / (USUBA_MAX_STICK_PIKI - 1));
 
-		f32 fallChance = (f4 * va1) + (f5 * va2);
+		f32 fallChance = (invPikiWeight * minFallChance) + (pikiWeight * maxFallChance);
 
 		if (randWeightFloat(1.0f) < fallChance) {
 			return USUBA_Flick;
@@ -337,28 +266,10 @@ int Obj::getNextStateOnHeight()
 
 /*
  * --INFO--
- * Address:	8027385C
- * Size:	0000B0
- */
-void Obj::flickStickTarget()
-{
-	int max = mMouthSlots.mMax;
-	for (int i = 0; i < max; i++) {
-		Creature* creature = mMouthSlots.getSlot(i)->mStuckCreature;
-
-		if (creature) {
-			InteractFlick flick(this, 10.0f, 0.0f, FLICK_BACKWARD_ANGLE);
-			creature->stimulate(flick);
-		}
-	}
-}
-
-/*
- * --INFO--
  * Address:	8027390C
  * Size:	000080
  */
-int Obj::getStickPikminNum() { return mStuckPikminCount - getCatchTargetNum(); }
+int Obj::getStickPikminNum() { return mStuckPikminCount; }
 
 /*
  * --INFO--
@@ -367,26 +278,24 @@ int Obj::getStickPikminNum() { return mStuckPikminCount - getCatchTargetNum(); }
  */
 FakePiki* Obj::getAttackableTarget()
 {
-
 	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(*C_PARMS->mGeneral.mTerritoryRadius())) {
 		f32 maxAngle = PI * (DEG2RAD * *C_PARMS->mGeneral.mViewAngle());
 		f32 maxDist  = SQUARE(*C_PARMS->mGeneral.mSightRadius());
 
 		Iterator<Piki> iterator(pikiMgr);
-		iterator.first();
-		while (!iterator.isDone()) {
-			Piki* c = iterator.mContainer->get(iterator.mIndex);
+		CI_LOOP(iterator)
+		{
+			Piki* piki = *iterator;
 
-			if (c->isAlive() && c->isPikmin() && !c->isStickToMouth() && c->mSticker != this && c->mBounceTriangle) {
-				f32 ang = getAngDist(c);
+			if (piki->isAlive() && piki->isPikmin() && !piki->isStickToMouth() && piki->mSticker != this && piki->mBounceTriangle) {
+				f32 ang = getAngDist(piki);
 				if (FABS(ang) <= maxAngle) {
-					Vector3f pos = c->getPosition();
+					Vector3f pos = piki->getPosition();
 					if (sqrDistanceXZ(mPosition, pos) < maxDist) {
-						return c;
+						return piki;
 					}
 				}
 			}
-			iterator.next();
 		}
 	}
 
@@ -406,5 +315,46 @@ int Obj::catchTarget() { EnemyFunc::eatPikmin(this, nullptr); }
  * Size:	000044
  */
 void Obj::createDownEffect() { EnemyBase::createBounceEffect(mPosition, getDownSmokeScale()); }
+
+bool Obj::attackTargets(bool doAttack)
+{
+	// TODO: this
+	return false;
+}
+
+void Obj::createChargeSE()
+{
+	getJAIObject()->startSound(PSSE_EN_TANK_BREATH, 0);
+}
+
+void Obj::createDischargeSE()
+{
+	getJAIObject()->startSound(PSSE_EN_TANK_FIRE, 0);
+}
+
+void Obj::createAppearEffect()
+{
+	efx::Arg fxArg(mPosition);
+	efx::THebiAphd_appear1 appear1;
+	appear1.create(&fxArg);
+}
+
+void Obj::setupEffect()
+{
+	efx::TUsubaEffect* effect;
+	Matrixf* mtx = mModel->getJoint("body")->getWorldMatrix();
+	effect       = mFireEfx;
+
+	effect->mEfxFire.mEfxABC.setMtxptr(mtx->mMatrix.mtxView);
+	effect->mEfxFire.mEfxIND.mMtx = mtx;
+	effect->mEfxFireYodare.mMtx   = mtx;
+}
+
+void Obj::createEffect() { mFireEfx = new efx::TUsubaEffect(nullptr); }
+
+void Obj::createFireEffect()
+{
+	mFireEfx->mEfxFire.create(nullptr);
+}
 } // namespace Usuba
 } // namespace Game

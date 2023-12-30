@@ -1,4 +1,6 @@
 #include "Game/Entities/SmokyFrog.h"
+#include "Game/CameraMgr.h"
+#include "Game/rumble.h"
 #include "Game/Navi.h"
 #include "efx/TFrog.h"
 
@@ -85,6 +87,28 @@ void Obj::attackNaviPosition()
 }
 
 void Obj::createEffect() { mEfxPota = new efx::TFrogPota; }
+
+void Obj::createDownEffect(f32 scale)
+{
+	Sys::Sphere sphere;
+	getBoundingSphere(sphere);
+	Vector3f fxPos(sphere.mPosition.x, mPosition.y, sphere.mPosition.z);
+	if (mWaterBox) {
+		createSplashDownEffect(fxPos, scale);
+	} else {
+		createDropEffect(fxPos, scale);
+	}
+
+	createGas(sphere, scale);
+
+	cameraMgr->startVibration(0, mPosition, 2);
+	rumbleMgr->startRumble(11, mPosition, 2);
+}
+
+void Obj::createGas(Sys::Sphere& sphere, f32 scale)
+{
+
+}
 
 } // namespace SmokyFrog
 } // namespace Game

@@ -23,6 +23,8 @@ struct Obj : public MaroFrog::Obj {
 	virtual void attackNaviPosition(); // _300
 
 	void createEffect();
+	void createDownEffect(f32 scale);
+	void createGas(Sys::Sphere& sphere, f32 scale);
 
 	// _00 		= VTBL
 	// _00-_2E0	= Frog::Obj

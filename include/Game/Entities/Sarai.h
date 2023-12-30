@@ -143,6 +143,22 @@ struct ProperAnimator : public EnemyAnimatorBase {
 	SysShape::Animator mAnimator; // _10
 };
 
+enum AnimID {
+	SARAIANIM_Wait     = 0, // 'wait1'
+	SARAIANIM_Move     = 1, // 'move1'
+	SARAIANIM_Attack   = 2, // 'attack1'
+	SARAIANIM_CatchFly = 3, // 'waitact2'
+	SARAIANIM_FallMeck = 4, // 'waitact1'
+	SARAIANIM_Flick    = 5,
+	SARAIANIM_Fall     = 6, // 'type1'
+	SARAIANIM_Damage   = 7, // 'type2'
+	SARAIANIM_TakeOff  = 8, // 'type3'
+	SARAIANIM_Fail     = 9, // 'type4'
+	SARAIANIM_Dead     = 10,
+	SARAIANIM_Carry    = 11, // 'type5'
+	SARAIANIM_AnimCount,     // 12
+};
+
 /////////////////////////////////////////////////////////////////
 // STATE MACHINE DEFINITIONS
 enum StateID {

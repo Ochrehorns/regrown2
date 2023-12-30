@@ -1553,6 +1553,7 @@ LIBS = [
             ["HeartPieceMod/UsubaMgr", True],
             ["HeartPieceMod/UsubaState", True],
             ["HeartPieceMod/UsubaAnimator", True],
+            ["HeartPieceMod/efxUsuba", True],
             ["HeartPieceMod/ElecMushi", True],
             ["HeartPieceMod/ElecMushiMgr", True],
         ],

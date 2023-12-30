@@ -12,6 +12,7 @@
  * implement Stay, Appear, Ground states
  * fix up Damage, Recover, AttackBreath states
  * fix up other states
+ * add AttackDive state
  * connect up animation key frames properly
  * connect up functions for turning on/off zapping and fire
  *
@@ -53,7 +54,9 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->disableEvent(0, EB_Cullable);
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->disableEvent(0, EB_Untargetable);
-	usuba->flickStickTarget();
+
+	EnemyFunc::flickStickPikmin(usuba, CG_PARMS(usuba)->mGeneral.mShakeRateMaybe.mValue, CG_PARMS(usuba)->mGeneral.mShakeKnockback.mValue, CG_PARMS(usuba)->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
+	usuba->mToFlick = 0.0f;
 	usuba->startMotion(USUBAANIM_Dead, nullptr);
 }
 
@@ -93,7 +96,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->startMotion(USUBAANIM_Appear, nullptr);
-	usuba->stopMotion();
+	// usuba->stopMotion();
 }
 
 /*
@@ -135,12 +138,17 @@ void StateStay::cleanup(EnemyBase* enemy) { }
 void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* usuba = OBJ(enemy);
+
+	OSReport("in appear state\n");
+
 	usuba->enableEvent(0, EB_NoInterrupt);
 	usuba->disableEvent(0, EB_Cullable);
+	usuba->disableEvent(0, EB_ModelHidden);
+	usuba->disableEvent(0, EB_BitterImmune);
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->setEmotionExcitement();
 	usuba->startMotion(USUBAANIM_Appear, nullptr);
-	// usuba->createAppearEffect(0);
+	usuba->createAppearEffect();
 
 	Vector3f position = usuba->getPosition();
 	cameraMgr->startVibration(6, position, 2);
@@ -158,25 +166,14 @@ void StateAppear::exec(EnemyBase* enemy)
 	if (usuba->mCurAnim->mIsPlaying) {
 		if (usuba->mCurAnim->mType == KEYEVENT_2) {
 			usuba->disableEvent(0, EB_NoInterrupt);
-			// usuba->startBossAttackBGM();
-			// usuba->startJointShadow();
 
 		} else if (usuba->mCurAnim->mType == KEYEVENT_END) {
-			// usuba->setAttackPosition();
 			if (usuba->mHealth <= 0.0f) {
 				transit(usuba, USUBA_Dead, nullptr);
 				return;
 			}
 
-			// if (usuba->getAttackPiki(5) != nullptr || usuba->getAttackNavi(5)) {
-			// 	if (snagret->getStickHeadPikmin() != 0) {
-			// 		transit(usuba, SNAKECROW_Struggle, nullptr);
-			// 	} else {
-			// 		transit(usuba, SNAKECROW_Attack, nullptr);
-			// 	}
-			// } else {
 			transit(usuba, USUBA_Wait, nullptr);
-			// }
 		}
 	}
 }
@@ -191,7 +188,6 @@ void StateAppear::cleanup(EnemyBase* enemy)
 	Obj* usuba = OBJ(enemy);
 	usuba->disableEvent(0, EB_NoInterrupt);
 	usuba->enableEvent(0, EB_Cullable);
-	// usuba->startWaitEffect();
 
 	if (usuba->mWaterBox) {
 		usuba->createEfxHamon();
@@ -206,12 +202,10 @@ void StateAppear::cleanup(EnemyBase* enemy)
 void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* usuba             = OBJ(enemy);
-	usuba->_2C0            = 0.0f;
+	usuba->mStateTimer            = 0.0f;
 	usuba->mTargetVelocity = Vector3f(0.0f);
-	usuba->disableEvent(0, EB_Untargetable);
 	usuba->setEmotionExcitement();
 	usuba->startMotion(USUBAANIM_Fall, nullptr);
-	usuba->flickStickTarget();
 }
 
 /*
@@ -226,7 +220,7 @@ void StateFall::exec(EnemyBase* enemy)
 
 	f32 minY = mapMgr->getMinY(pos);
 
-	if (pos.y - minY < 10.0f || usuba->_2C0 > 1.0f) {
+	if (pos.y - minY < 10.0f || usuba->mStateTimer > 1.0f) {
 		usuba->finishMotion();
 	}
 
@@ -239,17 +233,20 @@ void StateFall::exec(EnemyBase* enemy)
 		usuba->mRotation.y = usuba->mFaceDir;
 	}
 
-	usuba->_2C0 += sys->mDeltaTime;
+	usuba->mStateTimer += sys->mDeltaTime;
 
 	if (usuba->mCurAnim->mIsPlaying) {
-		if (usuba->mCurAnim->mType == KEYEVENT_2) {
+		if (usuba->mCurAnim->mType == KEYEVENT_2) { // start falling
+
+		} else if (usuba->mCurAnim->mType == KEYEVENT_3) { // hit ground
 			usuba->createDownEffect();
 			rumbleMgr->startRumble(11, pos, 2);
-		} else if (usuba->mCurAnim->mType == KEYEVENT_END) {
+
+		} else if (usuba->mCurAnim->mType == KEYEVENT_END) { // end fall anim
 			if (usuba->mHealth <= 0.0f) {
 				transit(usuba, USUBA_Dead, nullptr);
 			} else {
-				transit(usuba, USUBA_Damage, nullptr);
+				transit(usuba, USUBA_Ground, nullptr);
 			}
 		}
 	}
@@ -271,12 +268,11 @@ void StateFall::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 void StateGround::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* usuba = OBJ(enemy);
-	usuba->deathProcedure();
-	usuba->disableEvent(0, EB_Cullable);
+	usuba->mStateTimer = 0.0f;
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->disableEvent(0, EB_Untargetable);
-	usuba->flickStickTarget();
-	usuba->startMotion(USUBAANIM_Dead, nullptr);
+	usuba->setEmotionExcitement();
+	usuba->startMotion(USUBAANIM_Ground, nullptr);
 }
 
 /*
@@ -286,8 +282,19 @@ void StateGround::init(EnemyBase* enemy, StateArg* stateArg)
  */
 void StateGround::exec(EnemyBase* enemy)
 {
-	if (enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
-		enemy->kill(nullptr);
+	Obj* usuba = OBJ(enemy);
+	if (usuba->mHealth <= 0.0f || usuba->mStateTimer > CG_PROPERPARMS(usuba).mGroundTime.mValue) {
+		usuba->finishMotion();
+	}
+
+	usuba->mStateTimer += sys->mDeltaTime;
+
+	if (usuba->mCurAnim->mIsPlaying && usuba->mCurAnim->mType == KEYEVENT_END) {
+		if (usuba->mHealth <= 0.0f) {
+			transit(usuba, USUBA_Dead, nullptr);
+		} else {
+			transit(usuba, USUBA_Recover, nullptr);
+		}
 	}
 }
 
@@ -306,12 +313,12 @@ void StateGround::cleanup(EnemyBase* enemy) { }
 void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* usuba             = OBJ(enemy);
-	usuba->_2C0            = 0.0f;
+	usuba->mStateTimer            = 0.0f;
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->disableEvent(0, EB_Untargetable);
 	usuba->setEmotionExcitement();
 	usuba->startMotion(USUBAANIM_Damage, nullptr);
-	usuba->flickStickTarget();
+	// usuba->flickStickTarget();
 }
 
 /*
@@ -322,11 +329,11 @@ void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 void StateDamage::exec(EnemyBase* enemy)
 {
 	Obj* usuba = OBJ(enemy);
-	if (usuba->mHealth <= 0.0f || usuba->_2C0 > CG_PROPERPARMS(usuba).mFp23.mValue || usuba->getStickPikminNum() == 0) {
+	if (usuba->mHealth <= 0.0f || usuba->mStateTimer > CG_PROPERPARMS(usuba).mGroundTime.mValue || usuba->getStickPikminNum() == 0) {
 		usuba->finishMotion();
 	}
 
-	usuba->_2C0 += sys->mDeltaTime;
+	usuba->mStateTimer += sys->mDeltaTime;
 
 	if (usuba->mCurAnim->mIsPlaying && usuba->mCurAnim->mType == KEYEVENT_END) {
 		if (usuba->mHealth <= 0.0f) {
@@ -366,23 +373,26 @@ void StateRecover::exec(EnemyBase* enemy)
 	Obj* usuba = OBJ(enemy);
 	f32 val    = usuba->setHeightVelocity();
 
-	if (usuba->mHealth <= 0.0f || val > CG_PROPERPARMS(usuba).mFp03.mValue) {
+	if (usuba->mHealth <= 0.0f || val > CG_PROPERPARMS(usuba).mTransitHeight.mValue) {
 		usuba->finishMotion();
 	}
 
-	if (usuba->mCurAnim->mIsPlaying && usuba->mCurAnim->mType == KEYEVENT_END) {
-		int nextState = usuba->getNextStateOnHeight();
-		if (nextState >= 0) {
-			transit(usuba, nextState, nullptr);
-			return;
+	if (usuba->mCurAnim->mIsPlaying) {
+		if (usuba->mCurAnim->mType == KEYEVENT_2) { // pop up from ground
+			EnemyFunc::flickNearbyPikmin(enemy, CG_PARMS(enemy)->mGeneral.mShakeRange.mValue, CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
+			EnemyFunc::flickNearbyNavi(enemy, CG_PARMS(enemy)->mGeneral.mShakeRange.mValue, CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
+			EnemyFunc::flickStickPikmin(enemy, CG_PARMS(enemy)->mGeneral.mShakeRateMaybe.mValue, CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
+			enemy->mToFlick = 0.0f;
+
+		} else if (usuba->mCurAnim->mType == KEYEVENT_END) { // anim end
+			int nextState = usuba->getNextStateOnHeight();
+			if (nextState >= 0) {
+				transit(usuba, nextState, nullptr);
+				return;
+			}
+
+			transit(usuba, USUBA_Move, nullptr);
 		}
-
-		// if (usuba->getCatchTargetNum()) {
-		// 	transit(usuba, USUBA_CatchFly, nullptr);
-		// 	return;
-		// }
-
-		transit(usuba, USUBA_Move, nullptr);
 	}
 }
 
@@ -429,11 +439,6 @@ void StateFlick::exec(EnemyBase* enemy)
 				return;
 			}
 
-			// if (usuba->getCatchTargetNum()) {
-			// 	transit(usuba, USUBA_CatchFly, nullptr);
-			// 	return;
-			// }
-
 			transit(usuba, USUBA_Move, nullptr);
 		}
 	}
@@ -458,7 +463,7 @@ void StateFlick::cleanup(EnemyBase* enemy)
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* usuba             = OBJ(enemy);
-	usuba->_2C0            = 0.0f;
+	usuba->mStateTimer            = 0.0f;
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->mTargetCreature = nullptr;
 	usuba->enableEvent(0, EB_Untargetable);
@@ -481,11 +486,11 @@ void StateWait::exec(EnemyBase* enemy)
 	f32 val    = usuba->setHeightVelocity();
 
 	FakePiki* target = usuba->getAttackableTarget();
-	if (target || usuba->_2C0 > CG_PROPERPARMS(usuba).mFp06.mValue) {
+	if (target || usuba->mStateTimer > CG_PROPERPARMS(usuba).mWaitTime.mValue) {
 		usuba->finishMotion();
 	}
 
-	if (val > CG_PROPERPARMS(usuba).mFp03.mValue || usuba->_2C0 > 3.0f) {
+	if (val > CG_PROPERPARMS(usuba).mTransitHeight.mValue || usuba->mStateTimer > 3.0f) {
 		int nextState = usuba->getNextStateOnHeight();
 		if (nextState >= 0) {
 			transit(usuba, nextState, nullptr);
@@ -493,7 +498,7 @@ void StateWait::exec(EnemyBase* enemy)
 		}
 	}
 
-	usuba->_2C0 += sys->mDeltaTime;
+	usuba->mStateTimer += sys->mDeltaTime;
 
 	if (usuba->mCurAnim->mIsPlaying && usuba->mCurAnim->mType == KEYEVENT_END) {
 		if (target) {
@@ -521,7 +526,7 @@ void StateWait::cleanup(EnemyBase* enemy) { }
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* usuba  = OBJ(enemy);
-	usuba->_2C0 = 0.0f;
+	usuba->mStateTimer = 0.0f;
 	usuba->setRandTarget();
 	usuba->mTargetCreature = nullptr;
 	usuba->enableEvent(0, EB_Untargetable);
@@ -543,15 +548,15 @@ void StateMove::exec(EnemyBase* enemy)
 
 	FakePiki* target = usuba->getAttackableTarget();
 
-	if (target || usuba->_2C0 > 10.0f || sqrDistanceXZ(pos, targetPos) < 625.0f) {
+	if (target || usuba->mStateTimer > 10.0f || sqrDistanceXZ(pos, targetPos) < 625.0f) {
 		usuba->mTargetVelocity = Vector3f(0.0f);
 		usuba->finishMotion();
 	} else {
-		EnemyFunc::walkToTarget(usuba, targetPos, CG_PROPERPARMS(usuba).mFp04.mValue, CG_PARMS(usuba)->mGeneral.mRotationalAccel.mValue,
+		EnemyFunc::walkToTarget(usuba, targetPos, CG_PROPERPARMS(usuba).mFlySpeed.mValue, CG_PARMS(usuba)->mGeneral.mRotationalAccel.mValue,
 		                        CG_PARMS(usuba)->mGeneral.mRotationalSpeed.mValue);
 	}
 
-	if (height > CG_PROPERPARMS(usuba).mFp03.mValue || usuba->_2C0 > 3.0f) {
+	if (height > CG_PROPERPARMS(usuba).mTransitHeight.mValue || usuba->mStateTimer > 3.0f) {
 		int nextState = usuba->getNextStateOnHeight();
 		if (nextState >= 0) {
 			transit(usuba, nextState, nullptr);
@@ -559,7 +564,7 @@ void StateMove::exec(EnemyBase* enemy)
 		}
 	}
 
-	usuba->_2C0 += sys->mDeltaTime;
+	usuba->mStateTimer += sys->mDeltaTime;
 
 	if (usuba->mCurAnim->mIsPlaying && usuba->mCurAnim->mType == KEYEVENT_END) {
 		if (target) {
@@ -587,13 +592,13 @@ void StateMove::cleanup(EnemyBase* enemy) { }
 void StateAttackBreath::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* usuba  = OBJ(enemy);
-	usuba->_2C0 = 0.0f;
+	usuba->mStateTimer = 0.0f;
+	usuba->mIsBreathingFire = false;
 	usuba->disableEvent(0, EB_Cullable);
 	usuba->mTargetVelocity = Vector3f(0.0f);
-	usuba->enableEvent(0, EB_NoInterrupt);
-	usuba->enableEvent(0, EB_Untargetable);
 	usuba->setEmotionExcitement();
 	usuba->startMotion(USUBAANIM_AttackBreath, nullptr);
+	usuba->createChargeSE();
 }
 
 /*
@@ -604,6 +609,76 @@ void StateAttackBreath::init(EnemyBase* enemy, StateArg* stateArg)
 void StateAttackBreath::exec(EnemyBase* enemy)
 {
 	Obj* usuba       = OBJ(enemy);
+	if (usuba->mHealth <= 0.0f) {
+		transit(enemy, USUBA_Fall, nullptr);
+		return;
+	}
+	if (usuba->mIsBreathingFire) {
+		usuba->attackTargets(true);
+		usuba->createDischargeSE();
+	}
+	if (!enemy->mCurAnim->mIsPlaying)
+		return;
+
+	if (enemy->mCurAnim->mType == KEYEVENT_2) {
+		usuba->mIsBreathingFire = true;
+		usuba->createFireEffect();
+		return;
+	}
+	if (enemy->mCurAnim->mType == KEYEVENT_END) {
+		if (usuba->mHealth <= 0.0f) {
+			transit(enemy, USUBA_Dead, nullptr);
+			return;
+		}
+		if (EnemyFunc::isStartFlick(usuba, false)) {
+			transit(enemy, USUBA_Flick, nullptr);
+			return;
+		}
+
+		transit(enemy, USUBA_Wait, nullptr);
+	}
+}
+
+/*
+ * --INFO--
+ * Address:	80271F20
+ * Size:	000044
+ */
+void StateAttackBreath::cleanup(EnemyBase* enemy)
+{
+	Obj* usuba = OBJ(enemy);
+	usuba->enableEvent(0, EB_Cullable);
+	usuba->disableEvent(0, EB_NoInterrupt);
+	usuba->mIsBreathingFire = false;
+	usuba->setEmotionCaution();
+}
+
+
+/*
+ * --INFO--
+ * Address:	80271894
+ * Size:	000078
+ */
+void StateAttackDive::init(EnemyBase* enemy, StateArg* stateArg)
+{
+	Obj* usuba  = OBJ(enemy);
+	usuba->mStateTimer = 0.0f;
+	usuba->disableEvent(0, EB_Cullable);
+	usuba->mTargetVelocity = Vector3f(0.0f);
+	usuba->enableEvent(0, EB_NoInterrupt);
+	usuba->enableEvent(0, EB_Untargetable);
+	usuba->setEmotionExcitement();
+	usuba->startMotion(USUBAANIM_AttackDive, nullptr);
+}
+
+/*
+ * --INFO--
+ * Address:	8027190C
+ * Size:	000614
+ */
+void StateAttackDive::exec(EnemyBase* enemy)
+{
+	Obj* usuba       = OBJ(enemy);
 	Creature* target = usuba->mTargetCreature;
 	if (target) {
 		f32 frame = usuba->getMotionFrame();
@@ -612,10 +687,10 @@ void StateAttackBreath::exec(EnemyBase* enemy)
 			usuba->changeFaceDir2(target);
 		} else if (frame <= 30.0f) {
 			if (usuba->mBounceTriangle) {
-				usuba->_2C0 = 30.0f;
+				usuba->mStateTimer = 30.0f;
 			}
 
-			if (usuba->_2C0 < 30.0f) {
+			if (usuba->mStateTimer < 30.0f) {
 				f32 targetHeight = target->getPosition().y + 17.5f;
 				f32 usubaHeight  = usuba->getPosition().y;
 
@@ -676,7 +751,7 @@ void StateAttackBreath::exec(EnemyBase* enemy)
  * Address:	80271F20
  * Size:	000044
  */
-void StateAttackBreath::cleanup(EnemyBase* enemy)
+void StateAttackDive::cleanup(EnemyBase* enemy)
 {
 	enemy->enableEvent(0, EB_Cullable);
 	enemy->disableEvent(0, EB_NoInterrupt);
