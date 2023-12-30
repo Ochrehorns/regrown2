@@ -61,12 +61,12 @@ struct Obj : public EnemyBase {
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
-	FSM* mFsm;              // _2BC
-	f32 mStateTimer;        // _2C0
-	Vector3f mTargetPos;    // _2C4
-	bool mIsBreathingFire;  // _2D0
+	FSM* mFsm;                   // _2BC
+	f32 mStateTimer;             // _2C0
+	Vector3f mTargetPos;         // _2C4
+	bool mIsBreathingFire;       // _2D0
 	efx::TUsubaEffect* mFireEfx; // _2D4
-	                        // _2D8 = PelletView
+	                             // _2D8 = PelletView
 };
 
 struct Mgr : public EnemyMgrBase {
@@ -91,36 +91,36 @@ struct Parms : public EnemyParmsBase {
 		ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
 		    , mFlightHeight(this, 'fp01', "flight height", 100.0f, 0.0f, 300.0f)
-		    , mCarryHeight(this, 'fp02', "carry height", 80.0f, 0.0f, 300.0f)     // 'grab flight height'
-		    , mTransitHeight(this, 'fp03', "transit height", 50.0f, 0.0f, 300.0f)     // 'state transition height'
-		    , mFlySpeed(this, 'fp04', "fly speed", 100.0f, 0.0f, 300.0f)    // 'normal movement speed'
-		    , mFp05(this, 'fp05', "掴み移動速度", 75.0f, 0.0f, 300.0f)     // 'grab movement speed'
-		    , mWaitTime(this, 'fp06', "wait time", 3.0f, 0.0f, 10.0f)       // 'wait time'
-		    , mUnladenClimbFactor(this, 'fp11', "unladen climb factor", 1.5f, 0.0f, 5.0f)         // 'climbing factor (0)'
-		    , mMaxLadenClimbFactor(this, 'fp12', "max laden climb factor", 1.0f, 0.0f, 5.0f)         // 'climbing factor (5)'
-		    , mFallChanceMinPiki(this, 'fp21', "fall chance (1 piki)", 0.1f, 0.0f, 1.0f)         // 'payoff probability (1)'
-		    , mFallChanceMaxPiki(this, 'fp22', "fall chance (max piki)", 0.7f, 0.0f, 1.0f)         // 'payoff probability (5)'
-		    , mGroundTime(this, 'fp23', "ground time", 3.0f, 0.0f, 10.0f)         // 'struggling time'
-		    , mFp31(this, 'fp31', "ハント下降係数", 0.3f, 0.0f, 1.0f)      // 'hunt descent factor'
-		    , mFp32(this, 'fp32', "ハント後減衰率", 0.95f, 0.0f, 1.0f)     // 'post-hunt decay rate'
-		    , mFp41(this, 'fp41', "Fall Meck 速度", 200.0f, 0.0f, 1000.0f) // 'Fall Meck speed'
+		    , mCarryHeight(this, 'fp02', "carry height", 80.0f, 0.0f, 300.0f)                // 'grab flight height'
+		    , mTransitHeight(this, 'fp03', "transit height", 50.0f, 0.0f, 300.0f)            // 'state transition height'
+		    , mFlySpeed(this, 'fp04', "fly speed", 100.0f, 0.0f, 300.0f)                     // 'normal movement speed'
+		    , mFp05(this, 'fp05', "掴み移動速度", 75.0f, 0.0f, 300.0f)                       // 'grab movement speed'
+		    , mWaitTime(this, 'fp06', "wait time", 3.0f, 0.0f, 10.0f)                        // 'wait time'
+		    , mUnladenClimbFactor(this, 'fp11', "unladen climb factor", 1.5f, 0.0f, 5.0f)    // 'climbing factor (0)'
+		    , mMaxLadenClimbFactor(this, 'fp12', "max laden climb factor", 1.0f, 0.0f, 5.0f) // 'climbing factor (5)'
+		    , mFallChanceMinPiki(this, 'fp21', "fall chance (1 piki)", 0.1f, 0.0f, 1.0f)     // 'payoff probability (1)'
+		    , mFallChanceMaxPiki(this, 'fp22', "fall chance (max piki)", 0.7f, 0.0f, 1.0f)   // 'payoff probability (5)'
+		    , mGroundTime(this, 'fp23', "ground time", 3.0f, 0.0f, 10.0f)                    // 'struggling time'
+		    , mFp31(this, 'fp31', "ハント下降係数", 0.3f, 0.0f, 1.0f)                        // 'hunt descent factor'
+		    , mFp32(this, 'fp32', "ハント後減衰率", 0.95f, 0.0f, 1.0f)                       // 'post-hunt decay rate'
+		    , mFp41(this, 'fp41', "Fall Meck 速度", 200.0f, 0.0f, 1000.0f)                   // 'Fall Meck speed'
 		{
 		}
 
-		Parm<f32> mFlightHeight; // _804, fp01
-		Parm<f32> mCarryHeight; // _82C, fp02
-		Parm<f32> mTransitHeight; // _854, fp03
-		Parm<f32> mFlySpeed; // _87C, fp04
-		Parm<f32> mFp05; // _8A4, fp05
-		Parm<f32> mWaitTime; // _8CC, fp06
-		Parm<f32> mUnladenClimbFactor; // _8F4, fp11
+		Parm<f32> mFlightHeight;        // _804, fp01
+		Parm<f32> mCarryHeight;         // _82C, fp02
+		Parm<f32> mTransitHeight;       // _854, fp03
+		Parm<f32> mFlySpeed;            // _87C, fp04
+		Parm<f32> mFp05;                // _8A4, fp05
+		Parm<f32> mWaitTime;            // _8CC, fp06
+		Parm<f32> mUnladenClimbFactor;  // _8F4, fp11
 		Parm<f32> mMaxLadenClimbFactor; // _91C, fp12
-		Parm<f32> mFallChanceMinPiki; // _944, fp21
-		Parm<f32> mFallChanceMaxPiki; // _96C, fp22
-		Parm<f32> mGroundTime; // _994, fp23
-		Parm<f32> mFp31; // _9BC, fp31
-		Parm<f32> mFp32; // _9E4, fp32
-		Parm<f32> mFp41; // _A0C, fp41
+		Parm<f32> mFallChanceMinPiki;   // _944, fp21
+		Parm<f32> mFallChanceMaxPiki;   // _96C, fp22
+		Parm<f32> mGroundTime;          // _994, fp23
+		Parm<f32> mFp31;                // _9BC, fp31
+		Parm<f32> mFp32;                // _9E4, fp32
+		Parm<f32> mFp41;                // _A0C, fp41
 	};
 
 	Parms() { }

@@ -14,12 +14,12 @@ struct TParticleCallBack_UsubaFire : public JPAParticleCallBack {
 	{
 	}
 
-	virtual ~TParticleCallBack_UsubaFire() { }                // _08 (weak)
+	virtual ~TParticleCallBack_UsubaFire() { }               // _08 (weak)
 	virtual void execute(JPABaseEmitter*, JPABaseParticle*); // _0C
 	virtual void init(JPABaseEmitter*, JPABaseParticle*);    // _14
 
 	// _00      = VTBL
-	f32 _04;               // _04
+	f32 _04;                // _04
 	TUsubaFireHit* mEfxHit; // _08
 };
 
@@ -79,7 +79,7 @@ struct TUsubaFireIND : public TChaseMtx {
 	{
 	}
 
-	virtual bool create(Arg*);  // _08
+	virtual bool create(Arg*);   // _08
 	virtual ~TUsubaFireIND() { } // _48 (weak)
 
 	// _00      = VTBL
@@ -133,7 +133,6 @@ struct TUsubaEffect {
 	TUsubaFire mEfxFire;             // _00
 	TUsubaFireYodare mEfxFireYodare; // _8C
 };
-
 
 } // namespace efx
 

@@ -1,8 +1,13 @@
 #include "Game/Entities/SmokyFrog.h"
+#include "Game/EnemyFunc.h"
 #include "Game/CameraMgr.h"
 #include "Game/rumble.h"
 #include "Game/Navi.h"
 #include "efx/TFrog.h"
+#include "efx/TSmokyFrog.h"
+#include "PS.h"
+
+#define GAS_CLOUD_MODIFIER (1.0f)
 
 namespace Game {
 namespace SmokyFrog {
@@ -12,11 +17,12 @@ Obj::Obj() { createEffect(); }
 void Obj::onInit(CreatureInitArg* initArg)
 {
 	EnemyBase::onInit(initArg);
-	_2C4       = 128.0f;
-	mAirTimer  = 0.0f;
-	mNextState = Frog::FROG_NULL;
-	mIsInAir   = false;
-	mIsFalling = false;
+	mAlertTimer  = 128.0f;
+	mAirTimer    = 0.0f;
+	mAttackTimer = 128.0f;
+	mNextState   = Frog::FROG_NULL;
+	mIsInAir     = false;
+	mIsFalling   = false;
 	setupEffect();
 	mFsm->start(this, Frog::FROG_Wait, nullptr);
 }
@@ -66,6 +72,15 @@ void Obj::getShadowParam(ShadowParam& param)
 	param.mSize                     = 17.5f * static_cast<Frog::Parms*>(mParms)->mProperParms.mScaleMult.mValue;
 }
 
+void Obj::doUpdateCommon()
+{
+	EnemyBase::doUpdateCommon();
+	if (mAttackTimer < 1.0f) {
+		mAttackTimer += sys->mDeltaTime;
+		interactGasAttack();
+	}
+}
+
 void Obj::attackNaviPosition()
 {
 	Iterator<Navi> iter(naviMgr);
@@ -88,26 +103,43 @@ void Obj::attackNaviPosition()
 
 void Obj::createEffect() { mEfxPota = new efx::TFrogPota; }
 
-void Obj::createDownEffect(f32 scale)
+void Obj::createGas()
 {
-	Sys::Sphere sphere;
-	getBoundingSphere(sphere);
-	Vector3f fxPos(sphere.mPosition.x, mPosition.y, sphere.mPosition.z);
-	if (mWaterBox) {
-		createSplashDownEffect(fxPos, scale);
-	} else {
-		createDropEffect(fxPos, scale);
-	}
-
-	createGas(sphere, scale);
-
-	cameraMgr->startVibration(0, mPosition, 2);
-	rumbleMgr->startRumble(11, mPosition, 2);
+	mAttackTimer = 0.0f;
+	efx::ArgScale fxArg(mPosition, GAS_CLOUD_MODIFIER * static_cast<Frog::Parms*>(mParms)->mProperParms.mScaleMult.mValue);
+	efx::TSmokyFrog gasFX;
+	gasFX.create(&fxArg);
+	getJAIObject()->startSound(PSSE_EN_OTAKARA_ATK_GAS, 0);
 }
 
-void Obj::createGas(Sys::Sphere& sphere, f32 scale)
+void Obj::interactGasAttack()
 {
+	f32 maxRange = mPosition.y + static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackRange.mValue;
+	f32 minRange = mPosition.y - static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMinAttackRange.mValue;
+	f32 radius   = static_cast<Frog::Parms*>(mParms)->mProperParms.mScaleMult.mValue
+	           * static_cast<EnemyParmsBase*>(mParms)->mGeneral.mAttackRadius.mValue;
 
+	f32 dist = SQUARE(radius);
+
+	Sys::Sphere sphere;
+	sphere.mPosition = mPosition;
+	sphere.mRadius   = radius;
+
+	CellIteratorArg iterArg(sphere);
+	iterArg.mIsSphereCollisionDisabled = true;
+	CellIterator iter(iterArg);
+
+	CI_LOOP(iter)
+	{
+		Creature* target = static_cast<Creature*>(*iter);
+		if (target->isAlive() && (target->isNavi() || target->isPiki())) {
+			Vector3f targetPos = target->getPosition();
+			if (maxRange > targetPos.y && minRange < targetPos.y && sqrDistanceXZ(mPosition, targetPos) < dist) {
+				InteractGas gas(this, static_cast<EnemyParmsBase*>(mParms)->mGeneral.mAttackDamage.mValue);
+				target->stimulate(gas);
+			}
+		}
+	}
 }
 
 } // namespace SmokyFrog

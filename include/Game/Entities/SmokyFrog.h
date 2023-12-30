@@ -14,6 +14,7 @@ struct Obj : public MaroFrog::Obj {
 
 	virtual void onInit(CreatureInitArg* settings);     // _30
 	virtual void getShadowParam(ShadowParam& settings); // _134
+	virtual void doUpdateCommon();                      // _1D0
 	virtual void setParameters();                       // _228
 	virtual ~Obj() { }                                  // _1BC (weak)
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID()  // _258 (weak)
@@ -23,11 +24,12 @@ struct Obj : public MaroFrog::Obj {
 	virtual void attackNaviPosition(); // _300
 
 	void createEffect();
-	void createDownEffect(f32 scale);
-	void createGas(Sys::Sphere& sphere, f32 scale);
+	void createGas();
+	void interactGasAttack();
 
 	// _00 		= VTBL
 	// _00-_2E0	= Frog::Obj
+	f32 mAttackTimer; // _2E0
 };
 
 struct Mgr : public EnemyMgrBase {

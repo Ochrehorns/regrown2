@@ -32,7 +32,6 @@ Obj::Obj()
 	mAnimator = new ProperAnimator;
 	setFSM(new FSM);
 	createEffect();
-
 }
 
 /*
@@ -53,7 +52,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 
 	enableEvent(0, EB_Untargetable);
 
-	mStateTimer = 0.0f;
+	mStateTimer      = 0.0f;
 	mIsBreathingFire = false;
 	resetAttackableTimer(12800.0f);
 
@@ -138,10 +137,7 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
  * Address:	80272F70
  * Size:	000034
  */
-void Obj::doStartStoneState()
-{
-	EnemyBase::doStartStoneState();
-}
+void Obj::doStartStoneState() { EnemyBase::doStartStoneState(); }
 
 /*
  * --INFO--
@@ -182,8 +178,8 @@ f32 Obj::setHeightVelocity()
 	f32 weight         = pikminWeightFactor;
 
 	// lerp v0, v1, t -> (1 - t) * v0 + t * v1
-	f32 velFactor = (((USUBA_MAX_STICK_PIKI - weight) / USUBA_MAX_STICK_PIKI) * riseFactor)
-	              + (weight / USUBA_MAX_STICK_PIKI) * climbingFactor;
+	f32 velFactor
+	    = (((USUBA_MAX_STICK_PIKI - weight) / USUBA_MAX_STICK_PIKI) * riseFactor) + (weight / USUBA_MAX_STICK_PIKI) * climbingFactor;
 
 	// Get the Y position of the map model (equivalent to a downwards raycast)
 	f32 mapPosY = mapMgr->getMinY(mPosition);
@@ -249,8 +245,8 @@ int Obj::getNextStateOnHeight()
 		f32 minFallChance = static_cast<Parms*>(mParms)->mProperParms.mFallChanceMinPiki.mValue;
 		f32 maxFallChance = static_cast<Parms*>(mParms)->mProperParms.mFallChanceMaxPiki.mValue;
 
-		f32 invPikiWeight  = ((f32)(USUBA_MAX_STICK_PIKI - 1) - cappedPikiCount) / (USUBA_MAX_STICK_PIKI - 1);
-		f32 pikiWeight  = (cappedPikiCount / (USUBA_MAX_STICK_PIKI - 1));
+		f32 invPikiWeight = ((f32)(USUBA_MAX_STICK_PIKI - 1) - cappedPikiCount) / (USUBA_MAX_STICK_PIKI - 1);
+		f32 pikiWeight    = (cappedPikiCount / (USUBA_MAX_STICK_PIKI - 1));
 
 		f32 fallChance = (invPikiWeight * minFallChance) + (pikiWeight * maxFallChance);
 
@@ -322,15 +318,9 @@ bool Obj::attackTargets(bool doAttack)
 	return false;
 }
 
-void Obj::createChargeSE()
-{
-	getJAIObject()->startSound(PSSE_EN_TANK_BREATH, 0);
-}
+void Obj::createChargeSE() { getJAIObject()->startSound(PSSE_EN_TANK_BREATH, 0); }
 
-void Obj::createDischargeSE()
-{
-	getJAIObject()->startSound(PSSE_EN_TANK_FIRE, 0);
-}
+void Obj::createDischargeSE() { getJAIObject()->startSound(PSSE_EN_TANK_FIRE, 0); }
 
 void Obj::createAppearEffect()
 {
@@ -352,9 +342,6 @@ void Obj::setupEffect()
 
 void Obj::createEffect() { mFireEfx = new efx::TUsubaEffect(nullptr); }
 
-void Obj::createFireEffect()
-{
-	mFireEfx->mEfxFire.create(nullptr);
-}
+void Obj::createFireEffect() { mFireEfx->mEfxFire.create(nullptr); }
 } // namespace Usuba
 } // namespace Game
