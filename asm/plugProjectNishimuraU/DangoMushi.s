@@ -622,7 +622,7 @@
 /* 802FC550 002F9490  48 00 15 15 */	bl setupCollision__Q34Game10DangoMushi3ObjFv
 /* 802FC554 002F9494  7F E3 FB 78 */	mr r3, r31
 /* 802FC558 002F9498  38 80 00 00 */	li r4, 0
-/* 802FC55C 002F949C  48 00 15 41 */	bl setBodyCollision__Q34Game10DangoMushi3ObjFb
+/* 802FC55C 002F949C  48 00 15 41 */	bl setBodyCollisionBase__Q34Game10DangoMushi3ObjFb
 /* 802FC560 002F94A0  38 00 00 00 */	li r0, 0
 /* 802FC564 002F94A4  7F E3 FB 78 */	mr r3, r31
 /* 802FC568 002F94A8  98 1F 02 C1 */	stb r0, 0x2c1(r31)
@@ -1081,7 +1081,7 @@
 /* 802FCBA4 002F9AE4  41 82 00 10 */	beq .L_802FCBB4
 /* 802FCBA8 002F9AE8  80 9F 00 00 */	lwz r4, 0(r31)
 /* 802FCBAC 002F9AEC  7F C3 F3 78 */	mr r3, r30
-/* 802FCBB0 002F9AF0  48 00 13 31 */	bl flickHandCollision__Q34Game10DangoMushi3ObjFPQ24Game8Creature
+/* 802FCBB0 002F9AF0  48 00 13 31 */	bl flickHandCollisionBase__Q34Game10DangoMushi3ObjFPQ24Game8Creature
 .L_802FCBB4:
 /* 802FCBB4 002F9AF4  7F C3 F3 78 */	mr r3, r30
 /* 802FCBB8 002F9AF8  7F E4 FB 78 */	mr r4, r31

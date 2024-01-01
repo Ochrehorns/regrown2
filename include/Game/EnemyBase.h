@@ -102,6 +102,7 @@ enum DropGroup {
 	EDG_Navi       = 3, // drop on navi approach only
 	EDG_Carry      = 4, // drop on pikmin carrying an object only
 	EDG_Earthquake = 5, // drop on purple earthquake/ground pound only
+	EDG_AUTO       = 6
 };
 
 // Interface for specific overrides (e.g. PelplantInitialParams)
@@ -862,6 +863,7 @@ enum StateID {
 	EBS_Stone          = 7,
 	EBS_Earthquake     = 8,
 	EBS_Fit            = 9,
+	EBS_DropAuto       = 10,
 	EBS_Count, // 10
 };
 
@@ -942,6 +944,18 @@ struct BirthTypeDropEarthquakeState : public BirthTypeDropState {
 		mName = "BirthTypeDropEarthquake";
 	}
 
+	virtual bool isFinishableWaitingBirthTypeDrop(EnemyBase*); // _38
+};
+
+struct BirthTypeDropAutoState : public BirthTypeDropState {
+	inline BirthTypeDropAutoState()
+	    : BirthTypeDropState(EBS_DropAuto)
+	{
+		mName = "BirthTypeDropAuto";
+	}
+
+	f32 mTimer;
+	virtual void init(EnemyBase*, StateArg*);
 	virtual bool isFinishableWaitingBirthTypeDrop(EnemyBase*); // _38
 };
 

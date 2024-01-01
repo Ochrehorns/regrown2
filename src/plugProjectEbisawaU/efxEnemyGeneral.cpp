@@ -227,7 +227,7 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 	case Game::EnemyTypeID::EnemyID_ElecHiba:
 	case Game::EnemyTypeID::EnemyID_Bomb:
 	case Game::EnemyTypeID::EnemyID_DangoMushi:
-	case Game::EnemyTypeID::EnemyID_ElecMushi:
+	case Game::EnemyTypeID::EnemyID_HallowMushi:
 	case Game::EnemyTypeID::EnemyID_Tyre:
 	case Game::EnemyTypeID::EnemyID_BlackMan:
 		docreate = false;
@@ -659,7 +659,7 @@ bool TEnemyDead::create(efx::Arg* arg)
 		scale = 2.5f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_ElecMushi:
+	case Game::EnemyTypeID::EnemyID_HallowMushi:
 		scale = 2.5f;
 		break;
 
@@ -886,7 +886,7 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 		isSmall = false;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_ElecMushi:
+	case Game::EnemyTypeID::EnemyID_HallowMushi:
 		scale   = 1.35f;
 		isSmall = false;
 		break;
@@ -1300,7 +1300,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mScale = 1.45f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_ElecMushi:
+	case Game::EnemyTypeID::EnemyID_HallowMushi:
 		mType  = 1;
 		mScale = 1.45f;
 		break;
@@ -1798,7 +1798,7 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 		scale = 2.8f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_ElecMushi:
+	case Game::EnemyTypeID::EnemyID_HallowMushi:
 		scale = 2.8f;
 		break;
 
@@ -2062,7 +2062,7 @@ f32 TEnemyHamon::getLimitDepth_()
 	case Game::EnemyTypeID::EnemyID_Tyre:
 	case Game::EnemyTypeID::EnemyID_BlackMan:
 	case Game::EnemyTypeID::EnemyID_DangoMushi:
-	case Game::EnemyTypeID::EnemyID_ElecMushi:
+	case Game::EnemyTypeID::EnemyID_HallowMushi:
 		break;
 	}
 

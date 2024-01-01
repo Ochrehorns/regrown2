@@ -2092,7 +2092,7 @@ lbl_constructor:
 /* 802FB5D8 002F8518  D0 1F 01 DC */	stfs f0, 0x1dc(r31)
 /* 802FB5DC 002F851C  48 00 30 6D */	bl startBlendAnimation__Q34Game10DangoMushi3ObjFib
 /* 802FB5E0 002F8520  7F E3 FB 78 */	mr r3, r31
-/* 802FB5E4 002F8524  48 00 1D A9 */	bl createCrashEnemy__Q34Game10DangoMushi3ObjFv
+/* 802FB5E4 002F8524  48 00 1D A9 */	bl createCrashEnemyBase__Q34Game10DangoMushi3ObjFv
 /* 802FB5E8 002F8528  7F E4 FB 78 */	mr r4, r31
 /* 802FB5EC 002F852C  38 61 00 08 */	addi r3, r1, 8
 /* 802FB5F0 002F8530  81 9F 00 00 */	lwz r12, 0(r31)
@@ -2207,7 +2207,7 @@ lbl_constructor:
 /* 802FB788 002F86C8  80 1F 01 E0 */	lwz r0, 0x1e0(r31)
 /* 802FB78C 002F86CC  54 00 00 3C */	rlwinm r0, r0, 0, 0, 0x1e
 /* 802FB790 002F86D0  90 1F 01 E0 */	stw r0, 0x1e0(r31)
-/* 802FB794 002F86D4  48 00 23 09 */	bl setBodyCollision__Q34Game10DangoMushi3ObjFb
+/* 802FB794 002F86D4  48 00 23 09 */	bl setBodyCollisionBase__Q34Game10DangoMushi3ObjFb
 /* 802FB798 002F86D8  48 00 01 14 */	b .L_802FB8AC
 .L_802FB79C:
 /* 802FB79C 002F86DC  28 00 00 03 */	cmplwi r0, 3
@@ -2217,7 +2217,7 @@ lbl_constructor:
 /* 802FB7AC 002F86EC  38 80 00 01 */	li r4, 1
 /* 802FB7B0 002F86F0  60 00 00 01 */	ori r0, r0, 1
 /* 802FB7B4 002F86F4  90 1F 01 E0 */	stw r0, 0x1e0(r31)
-/* 802FB7B8 002F86F8  48 00 22 E5 */	bl setBodyCollision__Q34Game10DangoMushi3ObjFb
+/* 802FB7B8 002F86F8  48 00 22 E5 */	bl setBodyCollisionBase__Q34Game10DangoMushi3ObjFb
 /* 802FB7BC 002F86FC  7F E4 FB 78 */	mr r4, r31
 /* 802FB7C0 002F8700  38 61 00 14 */	addi r3, r1, 0x14
 /* 802FB7C4 002F8704  81 9F 00 00 */	lwz r12, 0(r31)
@@ -2310,7 +2310,7 @@ lbl_constructor:
 /* 802FB908 002F8848  80 1F 01 E0 */	lwz r0, 0x1e0(r31)
 /* 802FB90C 002F884C  54 00 02 D2 */	rlwinm r0, r0, 0, 0xb, 9
 /* 802FB910 002F8850  90 1F 01 E0 */	stw r0, 0x1e0(r31)
-/* 802FB914 002F8854  48 00 21 89 */	bl setBodyCollision__Q34Game10DangoMushi3ObjFb
+/* 802FB914 002F8854  48 00 21 89 */	bl setBodyCollisionBase__Q34Game10DangoMushi3ObjFb
 /* 802FB918 002F8858  80 01 00 14 */	lwz r0, 0x14(r1)
 /* 802FB91C 002F885C  83 E1 00 0C */	lwz r31, 0xc(r1)
 /* 802FB920 002F8860  7C 08 03 A6 */	mtlr r0

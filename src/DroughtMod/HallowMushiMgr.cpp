@@ -1,14 +1,16 @@
-#include "Game/Entities/ElecMushi.h"
+#include "Game/Entities/HallowMushi.h"
 #include "JSystem/JUtility/JUTNameTab.h"
 #include "Sys/MatBaseAnimation.h"
 #include "Dolphin/rand.h"
 #include "LoadResource.h"
 
 namespace Game {
-namespace ElecMushi {
+namespace HallowMushi {
+
+static const char dangoMushiMgrName[] = "246-DangoMushiMgr";
 
 namespace {
-static const char* cMatAnimBrkTexName = "/enemy/data/ElecMushi/elecmushi.brk";
+static const char* cMatAnimBrkTexName = "/enemy/data/HallowMushi/dangomushi.brk";
 } // namespace
 
 /*
@@ -19,7 +21,7 @@ static const char* cMatAnimBrkTexName = "/enemy/data/ElecMushi/elecmushi.brk";
 Mgr::Mgr(int objLimit, u8 modelType)
     : EnemyMgrBase(objLimit, modelType)
 {
-	mName = "ElecMushiMgr";
+	mName = "ダンゴムシマネージャ"; // pill bug manager
 }
 
 /*
@@ -27,7 +29,7 @@ Mgr::Mgr(int objLimit, u8 modelType)
  * Address:	802FBD6C
  * Size:	000048
  */
-void Mgr::doAlloc() { init(new DangoMushi::Parms); }
+void Mgr::doAlloc() { init(new Parms); }
 
 /*
  * --INFO--
@@ -107,5 +109,5 @@ SysShape::Model* Mgr::createModel()
 	return model;
 }
 
-} // namespace ElecMushi
+} // namespace DangoMushi
 } // namespace Game

@@ -248,6 +248,19 @@ bool BirthTypeDropOlimarState::isFinishableWaitingBirthTypeDrop(EnemyBase* enemy
 	return result;
 }
 
+void BirthTypeDropAutoState::init(EnemyBase* enemy, StateArg* arg) {
+	BirthTypeDropState::init(enemy, arg);
+	mTimer = randFloat();
+}
+
+bool BirthTypeDropAutoState::isFinishableWaitingBirthTypeDrop(EnemyBase*) {
+	mTimer += sys->mDeltaTime;
+	if (mTimer > 1.0f) {
+		return true;
+	}
+	return false;
+}
+
 /*
  * --INFO--
  * Address:	800FFB00
@@ -720,6 +733,7 @@ void StateMachine::init(EnemyBase* enemy)
 	registerState(new StoneState);
 	registerState(new EarthquakeState);
 	registerState(new FitState);
+	registerState(new BirthTypeDropAutoState);
 }
 
 /*
@@ -985,6 +999,7 @@ void EnemyBase::onInitPost(CreatureInitArg* arg)
 	case EDG_Navi:
 	case EDG_Carry:
 	case EDG_Earthquake:
+	case EDG_AUTO:
 		if (isEvent(0, EB_HardConstrained)) {
 			mLifecycleFSM->start(this, EnemyBaseFSM::EBS_Living, nullptr);
 		} else {
@@ -1003,6 +1018,9 @@ void EnemyBase::onInitPost(CreatureInitArg* arg)
 				break;
 			case EDG_Earthquake:
 				mLifecycleFSM->start(this, EnemyBaseFSM::EBS_DropEarthquake, nullptr);
+				break;
+			case EDG_AUTO:
+				mLifecycleFSM->start(this, EnemyBaseFSM::EBS_DropAuto, nullptr);
 				break;
 			default:
 				JUT_PANICLINE(1483, "Unknown birth type:%d", mDropGroup);

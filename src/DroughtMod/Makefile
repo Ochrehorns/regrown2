@@ -1,5 +1,8 @@
 DROUGHT_FILES:=\
 	$(BUILD_DIR)/src/DroughtMod/caveHole.o\
+	$(BUILD_DIR)/src/DroughtMod/HallowMushi.o\
+	$(BUILD_DIR)/src/DroughtMod/HallowMushiMgr.o\
+	$(BUILD_DIR)/src/DroughtMod/efxDrought.o\
 
 
 DEPENDS += $(DROUGHT_FILES:.o=.d)

@@ -19,7 +19,6 @@
 #include "Game/Entities/Egg.h"
 #include "Game/Entities/ElecBug.h"
 #include "Game/Entities/ElecHiba.h"
-#include "Game/Entities/ElecMushi.h"
 #include "Game/Entities/ElecOtakara.h"
 #include "Game/Entities/Fart.h"
 #include "Game/Entities/FireChappy.h"
@@ -77,6 +76,8 @@
 #include "Game/MapMgr.h"
 #include "Game/Interaction.h"
 #include "LoadResource.h"
+
+#include "Game/Entities/HallowMushi.h"
 
 static const char matchText[] = "enemyBase";
 
@@ -393,8 +394,8 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 	case EnemyTypeID::EnemyID_Usuba:
 		mgr = new Usuba::Mgr(limit, type);
 		break;
-	case EnemyTypeID::EnemyID_ElecMushi:
-		mgr = new ElecMushi::Mgr(limit, type);
+	case EnemyTypeID::EnemyID_HallowMushi:
+		mgr = new HallowMushi::Mgr(limit, type);
 		break;
 	}
 
@@ -702,7 +703,7 @@ void GeneralEnemyMgr::resetEnemyNum() { mEnemyNumInfo.resetEnemyNum(); }
  * Address:	8010D854
  * Size:	00022C
  */
-/*
+
 #pragma dont_inline on
 void GeneralEnemyMgr::addEnemyNum(int enemyID, u8 max, GenObjectEnemy* genObj)
 {
@@ -741,14 +742,21 @@ void GeneralEnemyMgr::addEnemyNum(int enemyID, u8 max, GenObjectEnemy* genObj)
                     // check if we're dealing with empress, since we need to handle falling rock spawns
                 } else if ((enemyID == EnemyTypeID::EnemyID_Queen) && (getEnemyNum(EnemyTypeID::EnemyID_Rock, true) < 10)) {
                     addEnemyNum(EnemyTypeID::EnemyID_Rock, 10, nullptr);
-                }
+                } else if (enemyID == EnemyTypeID::EnemyID_HallowMushi) {
+					if (getEnemyNum(EnemyTypeID::EnemyID_Bomb, true) < 30) {
+						addEnemyNum(EnemyTypeID::EnemyID_Bomb, 30, nullptr);
+					}
+					if (getEnemyNum(EnemyTypeID::EnemyID_BombOtakara, true) < 5) {
+						addEnemyNum(EnemyTypeID::EnemyID_BombOtakara, 5, nullptr);
+					}
+				}
                 break;
             }
         }
     }
 }
 #pragma dont_inline reset
-*/
+
 /*
  * --INFO--
  * Address:	8010DA80

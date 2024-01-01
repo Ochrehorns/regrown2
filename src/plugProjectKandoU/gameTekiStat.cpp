@@ -93,8 +93,8 @@ void TekiStat::Mgr::clear()
  */
 void TekiStat::Mgr::allocate(int amount)
 {
-	mData  = new Info[amount];
-	mCount = amount;
+	mData  = new Info[EnemyTypeID::EnemyID_COUNT];
+	mCount = EnemyTypeID::EnemyID_COUNT;
 }
 
 /*

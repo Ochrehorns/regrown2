@@ -34,6 +34,11 @@ enum StateID {
 	DANGOMUSHI_StateCount, // 9
 };
 
+enum FallEnemyTypes {
+	DANGOFALL_Rock = 0,
+	DANGOFALL_Egg  = 1,
+};
+
 struct Obj : public EnemyBase {
 	Obj();
 
@@ -73,6 +78,7 @@ struct Obj : public EnemyBase {
 	bool isReachedTarget();
 	Creature* getSearchedTarget();
 	void rollingMove();
+	void createCrashEnemyBase();
 	void createCrashEnemy();
 	int getFallEggNum();
 	Vector3f getFallPosition(int);
@@ -107,6 +113,9 @@ struct Obj : public EnemyBase {
 	void createAppearSmokeEffect();
 	void effectDrawOn();
 	void effectDrawOff();
+
+	void flickHandCollisionBase(Creature*);
+	void setBodyCollisionBase(bool check);
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase

@@ -86,6 +86,28 @@ struct ArgScale : public Arg {
 	f32 mScale; // _10
 };
 
+struct ArgScaleTime : public Arg
+{
+	ArgScaleTime(Vector3f position, f32 scale, f32 time)
+	    : Arg(position)
+	{
+		mScale = scale;
+		mTime = time;
+	}
+	/**
+	 * @reifiedAddress{80107C44}
+	 * @reifiedFile{plugProjectYamashitaU/enemyBase.cpp}
+	 */
+	virtual const char* getName() // _08 (weak)
+	{
+		return "ArgScaleTime";
+	}
+
+	f32 mScale; // _10
+	f32 mTime;
+};
+
+
 struct ArgChou : public Arg {
 	ArgChou(Vector3f position)
 	    : Arg(position)

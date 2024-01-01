@@ -594,7 +594,7 @@ EnemyGeneratorBase* GenObjectEnemy::createEnemyGenerator()
 		GENERATOR_CASE(EnemyTypeID::EnemyID_BlackMan, "黒い人")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_Tyre, "黒い人タイヤ")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_DangoMushi, "ダンゴムシ")
-		GENERATOR_CASE(EnemyTypeID::EnemyID_ElecMushi, "ElecMushiMgr")
+		GENERATOR_CASE(EnemyTypeID::EnemyID_HallowMushi, "ElecMushiMgr")
 
 	case EnemyTypeID::EnemyID_Pom:
 	case EnemyTypeID::EnemyID_PanHouse:
