@@ -2,35 +2,32 @@
 #include "Game/GameSystem.h"
 
 namespace Game {
-/*
- * --INFO--
- * Address:	8023381C
- * Size:	000034
+/**
+ * @note Address: 0x8023381C
+ * @note Size: 0x34
  */
 void TekiStat::Info::incKilled()
 {
-	if (gameSystem && gameSystem->mMode == GSM_STORY_MODE) {
+	if (gameSystem && gameSystem->isStoryMode()) {
 		mKilledTekiCount++;
-		mState |= TEKISTAT_STATE_UPDATED;
+		mState.set(TEKISTAT_STATE_UPDATED);
 	}
 }
 
-/*
- * --INFO--
- * Address:	80233850
- * Size:	000028
+/**
+ * @note Address: 0x80233850
+ * @note Size: 0x28
  */
 void TekiStat::Info::incKillPikmin()
 {
-	if (gameSystem && gameSystem->mMode == GSM_STORY_MODE) {
+	if (gameSystem && gameSystem->isStoryMode()) {
 		mKilledPikminCount++;
 	}
 }
 
-/*
- * --INFO--
- * Address:	80233878
- * Size:	000010
+/**
+ * @note Address: 0x80233878
+ * @note Size: 0x10
  */
 TekiStat::Mgr::Mgr()
 {
@@ -38,16 +35,15 @@ TekiStat::Mgr::Mgr()
 	mCount = 0;
 }
 
-/*
- * --INFO--
- * Address:	80233888
- * Size:	000084
+/**
+ * @note Address: 0x80233888
+ * @note Size: 0x84
  */
 bool TekiStat::Mgr::whatsNew()
 {
 	for (int i = 0; i < mCount; i++) {
 		// If the stat is updated and isn't out of date, there is new data to review
-		if (getTekiInfo(i)->mState & TEKISTAT_STATE_UPDATED && !(getTekiInfo(i)->mState & TEKISTAT_STATE_OUT_OF_DATE)) {
+		if (getTekiInfo(i)->mState.isSet(TEKISTAT_STATE_UPDATED) && !(getTekiInfo(i)->mState.isSet(TEKISTAT_STATE_OUT_OF_DATE))) {
 			return true;
 		}
 	}
@@ -55,25 +51,23 @@ bool TekiStat::Mgr::whatsNew()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8023390C
- * Size:	000078
+/**
+ * @note Address: 0x8023390C
+ * @note Size: 0x78
  */
 void TekiStat::Mgr::setOutOfDateAll()
 {
 	for (int i = 0; i < mCount; i++) {
-		if (getTekiInfo(i)->mState & TEKISTAT_STATE_UPDATED) {
+		if (getTekiInfo(i)->mState.isSet(TEKISTAT_STATE_UPDATED)) {
 			// Invalidate all new updated data
-			getTekiInfo(i)->mState |= TEKISTAT_STATE_OUT_OF_DATE;
+			getTekiInfo(i)->mState.set(TEKISTAT_STATE_OUT_OF_DATE);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	80233984
- * Size:	0000C8
+/**
+ * @note Address: 0x80233984
+ * @note Size: 0xC8
  */
 void TekiStat::Mgr::clear()
 {
@@ -82,39 +76,34 @@ void TekiStat::Mgr::clear()
 	for (int i = 0; i < mCount; i++) {
 		getTekiInfo(i)->mKilledTekiCount   = 0;
 		getTekiInfo(i)->mKilledPikminCount = 0;
-		getTekiInfo(i)->mState             = 0;
+		getTekiInfo(i)->mState.clear();
 	}
 }
 
-/*
- * --INFO--
- * Address:	80233A4C
- * Size:	000060
+/**
+ * @note Address: 0x80233A4C
+ * @note Size: 0x60
  */
 void TekiStat::Mgr::allocate(int amount)
 {
-	mData  = new Info[EnemyTypeID::EnemyID_COUNT];
-	mCount = EnemyTypeID::EnemyID_COUNT;
+	mData  = new Info[amount];
+	mCount = amount;
 }
 
-/*
- * --INFO--
- * Address:	80233AAC
- * Size:	000018
+/**
+ * @note Address: 0x80233AAC
+ * @note Size: 0x18
  */
 TekiStat::Info::Info()
 {
-	mState             = 0;
 	mKilledPikminCount = 0;
 	mKilledTekiCount   = 0;
-
-	mState = 0;
+	mState.clear();
 }
 
-/*
- * --INFO--
- * Address:	80233AC4
- * Size:	00007C
+/**
+ * @note Address: 0x80233AC4
+ * @note Size: 0x7C
  */
 TekiStat::Info* TekiStat::Mgr::getTekiInfo(int idx)
 {
@@ -122,35 +111,32 @@ TekiStat::Info* TekiStat::Mgr::getTekiInfo(int idx)
 	return &mData[idx];
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000058
+/**
+ * @note Address: N/A
+ * @note Size: 0x58
  * write__Q34Game8TekiStat4InfoFR6Stream
  */
 void TekiStat::Info::write(Stream& stream)
 {
 	stream.writeInt(mKilledTekiCount);
 	stream.writeInt(mKilledPikminCount);
-	stream.writeBytes(&mState, 1);
+	stream.writeBytes(&mState.typeView, 1);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000058
+/**
+ * @note Address: N/A
+ * @note Size: 0x58
  */
 void TekiStat::Info::read(Stream& stream)
 {
 	mKilledTekiCount   = stream.readInt();
 	mKilledPikminCount = stream.readInt();
-	mState             = stream.readByte();
+	mState.typeView    = stream.readByte();
 }
 
-/*
- * --INFO--
- * Address:	80233B40
- * Size:	0000C0
+/**
+ * @note Address: 0x80233B40
+ * @note Size: 0xC0
  * write__Q34Game8TekiStat3MgrFR6Stream
  */
 void TekiStat::Mgr::write(Stream& stream)
@@ -161,10 +147,9 @@ void TekiStat::Mgr::write(Stream& stream)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80233C00
- * Size:	0000EC
+/**
+ * @note Address: 0x80233C00
+ * @note Size: 0xEC
  * read__Q34Game8TekiStat3MgrFR6Stream
  */
 void TekiStat::Mgr::read(Stream& stream)

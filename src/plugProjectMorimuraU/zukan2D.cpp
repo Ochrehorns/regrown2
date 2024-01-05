@@ -15,7 +15,67 @@
 #include "P2JME/P2JME.h"
 #include "efx2d/T2DChangesmoke.h"
 
+static const int unusedArray[] = { 0, 0, 0 };
+
 namespace Morimura {
+s16 TZukanBase::mRequestTimerMax    = 10;
+bool TZukanBase::mIconMove          = true;
+f32 TZukanBase::mLineSpace          = 48.0f; // [vertical spacing between lines of text in message box]
+f32 TZukanBase::mWarpRadius         = 15.0f;
+f32 TZukanBase::mScrollValueCoe     = 3.5f;  // 3.5f  [max scroll speed]
+f32 TZukanBase::mScrollSpeedCoe     = 0.08f; // 0.08f [acceleration]
+f32 TZukanBase::mNewScale           = 0.7f;
+f32 TZukanBase::mPodIconOffsetX     = 480.0f; // 480.0f
+f32 TZukanBase::mLargeCategoryScale = 2.0f;
+f32 TZukanBase::mCategoryAlphaRate  = 0.6f;
+u8 TZukanBase::mDrawLineType        = 2;
+bool TZukanBase::mShowAllObjects;
+bool TZukanBase::mAllNewSupply;
+bool TZukanBase::mZukanShortenTest;
+bool TZukanBase::mZukanCategoryTest;
+f32 TZukanBase::mRandShowRate;
+JGeometry::TVec2f TZukanBase::mNewOffset;
+JGeometry::TVec2f TZukanBase::mLargeNewOffset;
+JUtility::TColor TZukanBase::mNewColor0;
+JUtility::TColor TZukanBase::mNewColor1;
+JGeometry::TVec2f TZukanBase::mCategoryScale;
+JUtility::TColor TZukanBase::mCategoryColor0w;
+JUtility::TColor TZukanBase::mCategoryColor0b;
+JUtility::TColor TZukanBase::mCategoryColor1w;
+JUtility::TColor TZukanBase::mCategoryColor1b;
+JKRHeap* TZukanBase::mDebugHeapParent;
+JKRExpHeap* TZukanBase::mDebugHeap;
+
+// these represent the highest index (index that the hoard shows you in-game) of each set's treasures
+// for example the first set is ids 1 through 7
+int TItemZukan::mCategoryArray[TREASUREHOARD_CATEGORY_NUM] = {
+	// treasure id of final category member
+	7,   // Succulent Series
+	16,  // Nature's Candy Series
+	22,  // Xenoflora Series
+	27,  // Gourmet Series
+	42,  // Sweet Tooth Series
+	51,  // Paleontology Series
+	57,  // Ancient Secrets Series
+	63,  // Cook's Arsenal Series
+	71,  // Tortured Artist Series
+	79,  // Modern Amenities Series
+	86,  // Frigid Series
+	94,  // Hyper-technology Series
+	103, // Industrial Set
+	109, // Husband's Tears Series
+	120, // Space Love Series
+	126, // Crystallized Emotion Series
+	146, // Dream Series
+	156, // Blast from the Past Series
+	160, // Mystical Energy Series
+	166, // Massive Receptacle Series
+	168, // Survival Series
+	176, // Ancient Ad Series
+	183, // Odd Logo Series
+	196, // Explorer's Friend Series
+	201, // Titan Dweevil Series
+};
 
 // this table connects piklopedia order to the actual game enemy id order
 int eIDInfo[ENEMY_ZUKAN_COUNT][2] = {
@@ -41,8 +101,8 @@ int eIDInfo[ENEMY_ZUKAN_COUNT][2] = {
 	{ TEnemyZukan::Zukan_Kogane, Game::EnemyTypeID::EnemyID_Kogane },
 	{ TEnemyZukan::Zukan_Wealthy, Game::EnemyTypeID::EnemyID_Wealthy },
 	{ TEnemyZukan::Zukan_Fart, Game::EnemyTypeID::EnemyID_Fart },
-	{ TEnemyZukan::Zukan_UjiA, Game::EnemyTypeID::EnemyID_UjiA },
 	{ TEnemyZukan::Zukan_UjiB, Game::EnemyTypeID::EnemyID_UjiB },
+	{ TEnemyZukan::Zukan_UjiA, Game::EnemyTypeID::EnemyID_UjiA },
 	{ TEnemyZukan::Zukan_Tobi, Game::EnemyTypeID::EnemyID_Tobi },
 	{ TEnemyZukan::Zukan_Armor, Game::EnemyTypeID::EnemyID_Armor },
 	{ TEnemyZukan::Zukan_Imomushi, Game::EnemyTypeID::EnemyID_Imomushi },
@@ -53,8 +113,6 @@ int eIDInfo[ENEMY_ZUKAN_COUNT][2] = {
 	{ TEnemyZukan::Zukan_Demon, Game::EnemyTypeID::EnemyID_Demon },
 	{ TEnemyZukan::Zukan_BombSarai, Game::EnemyTypeID::EnemyID_BombSarai },
 	{ TEnemyZukan::Zukan_Fuefuki, Game::EnemyTypeID::EnemyID_Fuefuki },
-	{ TEnemyZukan::Zukan_Kurage, Game::EnemyTypeID::EnemyID_Kurage },
-	{ TEnemyZukan::Zukan_OniKurage, Game::EnemyTypeID::EnemyID_OniKurage },
 	{ TEnemyZukan::Zukan_FireOtakara, Game::EnemyTypeID::EnemyID_FireOtakara },
 	{ TEnemyZukan::Zukan_ElecOtakara, Game::EnemyTypeID::EnemyID_ElecOtakara },
 	{ TEnemyZukan::Zukan_WaterOtakara, Game::EnemyTypeID::EnemyID_WaterOtakara },
@@ -64,6 +122,9 @@ int eIDInfo[ENEMY_ZUKAN_COUNT][2] = {
 	{ TEnemyZukan::Zukan_Frog, Game::EnemyTypeID::EnemyID_Frog },
 	{ TEnemyZukan::Zukan_MaroFrog, Game::EnemyTypeID::EnemyID_MaroFrog },
 	{ TEnemyZukan::Zukan_Tadpole, Game::EnemyTypeID::EnemyID_Tadpole },
+	{ TEnemyZukan::Zukan_OniKurage, Game::EnemyTypeID::EnemyID_OniKurage },
+	{ TEnemyZukan::Zukan_Kurage, Game::EnemyTypeID::EnemyID_Kurage },
+	{ TEnemyZukan::Zukan_PelPlant, Game::EnemyTypeID::EnemyID_Pelplant },
 	{ TEnemyZukan::Zukan_BluePom, Game::EnemyTypeID::EnemyID_BluePom },
 	{ TEnemyZukan::Zukan_RedPom, Game::EnemyTypeID::EnemyID_RedPom },
 	{ TEnemyZukan::Zukan_YellowPom, Game::EnemyTypeID::EnemyID_YellowPom },
@@ -74,9 +135,8 @@ int eIDInfo[ENEMY_ZUKAN_COUNT][2] = {
 	{ TEnemyZukan::Zukan_Sokkuri, Game::EnemyTypeID::EnemyID_Sokkuri },
 	{ TEnemyZukan::Zukan_ShijimiChou, Game::EnemyTypeID::EnemyID_ShijimiChou },
 	{ TEnemyZukan::Zukan_Qurione, Game::EnemyTypeID::EnemyID_Qurione },
-	{ TEnemyZukan::Zukan_Miulin, Game::EnemyTypeID::EnemyID_Miulin },
 	{ TEnemyZukan::Zukan_PanModoki, Game::EnemyTypeID::EnemyID_PanModoki },
-	{ TEnemyZukan::Zukan_PelPlant, Game::EnemyTypeID::EnemyID_Pelplant },
+	{ TEnemyZukan::Zukan_Miulin, Game::EnemyTypeID::EnemyID_Miulin },
 	{ TEnemyZukan::Zukan_HikariKinoko, Game::EnemyTypeID::EnemyID_HikariKinoko },
 	{ TEnemyZukan::Zukan_Clover, Game::EnemyTypeID::EnemyID_Clover },
 	{ TEnemyZukan::Zukan_Ooinu_l, Game::EnemyTypeID::EnemyID_Ooinu_l },
@@ -88,29 +148,23 @@ int eIDInfo[ENEMY_ZUKAN_COUNT][2] = {
 	{ TEnemyZukan::Zukan_Magaret, Game::EnemyTypeID::EnemyID_Magaret },
 	{ TEnemyZukan::Zukan_Zenmai, Game::EnemyTypeID::EnemyID_Zenmai },
 	{ TEnemyZukan::Zukan_Wakame_l, Game::EnemyTypeID::EnemyID_Wakame_l },
-	{ TEnemyZukan::Zukan_Queen, Game::EnemyTypeID::EnemyID_Queen },
-	{ TEnemyZukan::Zukan_SnakeCrow, Game::EnemyTypeID::EnemyID_SnakeCrow },
-	{ TEnemyZukan::Zukan_Damagumo, Game::EnemyTypeID::EnemyID_Damagumo },
 	{ TEnemyZukan::Zukan_KingChappy, Game::EnemyTypeID::EnemyID_KingChappy },
-	{ TEnemyZukan::Zukan_OoPanModoki, Game::EnemyTypeID::EnemyID_OoPanModoki },
-	{ TEnemyZukan::Zukan_SnakeWhole, Game::EnemyTypeID::EnemyID_SnakeWhole },
-	{ TEnemyZukan::Zukan_Houdai, Game::EnemyTypeID::EnemyID_Houdai },
-	{ TEnemyZukan::Zukan_UmiMushi, Game::EnemyTypeID::EnemyID_UmiMushi },
-	{ TEnemyZukan::Zukan_BlackMan, Game::EnemyTypeID::EnemyID_BlackMan },
-	{ TEnemyZukan::Zukan_DangoMushi, Game::EnemyTypeID::EnemyID_DangoMushi },
+	{ TEnemyZukan::Zukan_Queen, Game::EnemyTypeID::EnemyID_Queen },
+	{ TEnemyZukan::Zukan_Damagumo, Game::EnemyTypeID::EnemyID_Damagumo },
 	{ TEnemyZukan::Zukan_BigFoot, Game::EnemyTypeID::EnemyID_BigFoot },
+	{ TEnemyZukan::Zukan_Houdai, Game::EnemyTypeID::EnemyID_Houdai },
 	{ TEnemyZukan::Zukan_BigTreasure, Game::EnemyTypeID::EnemyID_BigTreasure },
+	{ TEnemyZukan::Zukan_UmiMushi, Game::EnemyTypeID::EnemyID_UmiMushi },
+	{ TEnemyZukan::Zukan_OoPanModoki, Game::EnemyTypeID::EnemyID_OoPanModoki },
+	{ TEnemyZukan::Zukan_SnakeCrow, Game::EnemyTypeID::EnemyID_SnakeCrow },
+	{ TEnemyZukan::Zukan_SnakeWhole, Game::EnemyTypeID::EnemyID_SnakeWhole },
+	{ TEnemyZukan::Zukan_DangoMushi, Game::EnemyTypeID::EnemyID_DangoMushi },
+	{ TEnemyZukan::Zukan_BlackMan, Game::EnemyTypeID::EnemyID_BlackMan },
 };
 
-// these represent the highest index (index that the hoard shows you in-game) of each sets treasures
-// for example the first set is ids 1 through 7
-static int mCategoryArray[TREASUREHOARD_CATEGORY_NUM]
-    = { 7, 16, 22, 27, 42, 51, 57, 63, 71, 79, 86, 94, 103, 109, 120, 126, 146, 156, 160, 166, 168, 176, 183, 196, 201 };
-
-/*
- * --INFO--
- * Address:	80370C08
- * Size:	000204
+/**
+ * @note Address: 0x80370C08
+ * @note Size: 0x204
  */
 TZukanBase::TZukanBase(char* name)
     : TScrollList(name)
@@ -189,7 +243,7 @@ TZukanBase::TZukanBase(char* name)
 	mCanScroll             = true;
 	_243                   = false;
 	mIsInDemo              = false;
-	mMaxSelect             = 10;
+	mNumActiveRows         = 10;
 	mRowSize               = 3;
 	mTimerLength           = 0.25f;
 	mPaneCursorCorners[0]  = nullptr;
@@ -198,26 +252,45 @@ TZukanBase::TZukanBase(char* name)
 	mPaneCursorCorners[3]  = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000044
+/**
+ * @note Address: 80370ED0
+ * @note Size: 0xFC
+ */
+TZukanBase::~TZukanBase()
+{
+	if (mDebugHeap) {
+		mDebugHeap->destroy();
+	}
+	mDebugHeap = nullptr;
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x44
  */
 void TZukanBase::setDebugHeapParent(JKRHeap* heap)
 {
-	P2ASSERTLINE(69, 1); // this is here for strings to line up
+	mDebugHeapParent = heap;
+	P2ASSERTLINE(69, mDebugHeapParent);
 }
 
-/*
- * --INFO--
- * Address:	80370FCC
- * Size:	00090C
+/**
+ * @brief Initializes the TZukanBase object.
+ *
+ * This function is responsible for initializing various member variables and creating necessary UI elements for the TZukanBase object.
+ * It sets up the icon screen, text boxes, color animation, message callback, scale manager, arrow alpha blink, controller, select icon,
+ * cursor corners, panel list bounds, big window, window back, model pane, and index group.
+ *
+ * @param archive A pointer to the JKRArchive object.
+ *
+ * @note Address: 0x80370FCC
+ * @note Size: 0x90C
  */
-void TZukanBase::doCreate(JKRArchive*)
+void TZukanBase::doCreate(JKRArchive* archive)
 {
 	mIconScreen = new P2DScreen::Mgr_tuning;
 	mIconScreen->set("newicon.blo", 0x20000, mArchive);
-	mPaneNew1 = static_cast<J2DTextBoxEx*>(mPaneNew1->search('Pnew'));
+	mPaneNew1 = static_cast<J2DTextBoxEx*>(mIconScreen->search('Pnew'));
 	P2ASSERTLINE(258, mPaneNew1);
 	mPaneNew1->setOffset(-300.0f, 0.0f);
 
@@ -292,7 +365,7 @@ void TZukanBase::doCreate(JKRArchive*)
 	}
 	model->show();
 
-	mPaneModelPos.set(*model->getBounds());
+	mPaneModelPos = *model->getBounds();
 
 	J2DPane* model2 = mMainScreen->mScreenObj->search('Pmodel_l');
 	if (mEffectScreen->mScreenObj->search('Pmodel_l')) {
@@ -300,12 +373,12 @@ void TZukanBase::doCreate(JKRArchive*)
 	}
 	P2ASSERTLINE(363, model2);
 
-	mPaneModelLPos.set(*model2->getBounds());
+	mPaneModelLPos = *model2->getBounds();
 
-	mPaneModelOffs  = mPaneModel->mOffset;
-	mPaneModelLOffs = model2->mOffset;
+	mPaneModelOffs  = mPaneModel->getTranslate();
+	mPaneModelLOffs = model2->getTranslate();
 
-	P2DScreen::Mgr_tuning* screen = mMainScreen->mScreenObj;
+	P2DScreen::Mgr_tuning* screen = mListScreen->mScreenObj;
 	P2ASSERTLINE(375, screen);
 	mRequestTimer = 0xffffffce;
 	indexPaneInit(screen);
@@ -313,23 +386,22 @@ void TZukanBase::doCreate(JKRArchive*)
 	float diff      = mIndexPaneList[1]->mPane->mOffset.y - idpane->mOffset.y;
 	idpane->show();
 
-	mIndexGroup          = new TIndexGroup;
-	mIndexGroup->mHeight = diff;
-	TIndexGroup* group   = mIndexGroup;
-	group->_00           = mScrollParm._00;
-	group->_04           = mScrollParm._04;
-	group->_08           = mScrollParm._08;
-	group->_0C           = mScrollParm._0C;
-	group->_10           = mScrollParm._10;
+	mIndexGroup                 = new TIndexGroup;
+	mIndexGroup->mHeight        = diff;
+	TIndexGroup* group          = mIndexGroup;
+	group->mMaxRollSpeed        = mScrollParm.mMaxRollSpeed;
+	group->mSpeedSlowdownFactor = mScrollParm.mSpeedSlowdownFactor;
+	group->mRollSpeedMod        = mScrollParm.mRollSpeedMod;
+	group->mSpeedSpeedupFactor  = mScrollParm.mSpeedSpeedupFactor;
+	group->mInitialRollSpeed    = mScrollParm.mInitialRollSpeed;
 
 	paneInit();
 	changePaneInfo();
 }
 
-/*
- * --INFO--
- * Address:	803718D8
- * Size:	000FC8
+/**
+ * @note Address: 0x803718D8
+ * @note Size: 0xFC8
  */
 bool TZukanBase::doUpdate()
 {
@@ -348,27 +420,26 @@ bool TZukanBase::doUpdate()
 			}
 			mIsBigWindowOpened = false;
 			mRequestTimer      = 0;
-		} else {
-			if (isListShow(mIndexPaneList[mCurrentSelect]->getIndex()) && mIndexPaneList[mCurrentSelect]->getIndex() == mCurrIndex) {
-				if (!mIsEffectRequired) {
-					if (mRequestTimer > mRequestTimerMax) {
-						mState = 1;
-						if (mIsSection) {
-							mIsEffectRequired = true;
-						}
-					} else {
-						mRequestTimer++;
+		} else if (isListShow(mIndexPaneList[mCurrActiveRowSel]->getIndex())
+		           && mIndexPaneList[mCurrActiveRowSel]->getIndex() == mCurrIndex) {
+			if (!mIsEffectRequired) {
+				if (mRequestTimer > mRequestTimerMax) {
+					mState = 1;
+					if (mIsSection) {
+						mIsEffectRequired = true;
 					}
+				} else {
+					mRequestTimer++;
 				}
-			} else {
-				mCurrIndex        = mIndexPaneList[mCurrentSelect]->getIndex();
-				mIsEffectRequired = false;
-				if (mIsBigWindowOpened) {
-					PSSystem::spSysIF->playSystemSe(PSSE_SY_CAMERAVIEW_CHANGE, 0);
-				}
-				mIsBigWindowOpened = false;
-				mRequestTimer      = 0;
 			}
+		} else {
+			mCurrIndex        = mIndexPaneList[mCurrActiveRowSel]->getIndex();
+			mIsEffectRequired = false;
+			if (mIsBigWindowOpened) {
+				PSSystem::spSysIF->playSystemSe(PSSE_SY_CAMERAVIEW_CHANGE, 0);
+			}
+			mIsBigWindowOpened = false;
+			mRequestTimer      = 0;
 		}
 	}
 
@@ -403,12 +474,11 @@ bool TZukanBase::doUpdate()
 
 	if (!mIsInDemo && mCanInput && mState < 2 && !isOpenConfirmWindow()) {
 		mIsInFadeInOut = false;
-		if (!mIsBigWindowOpened && !mWindow->mStatus) {
+		if (!mIsBigWindowOpened && !mWindow->mState) {
 			Controller* pad = mController;
-			u32 input       = pad->mButton.mButton;
-			if (input & Controller::ANALOG_UP) {
-				if (!mIsPreDebt || !mCanScroll) {
-					if (mCurrentSelect > 0) {
+			if (pad->getButton() & Controller::ANALOG_UP) {
+				if (mIsPreDebt && !mCanScroll) {
+					if (mCurrActiveRowSel > 0) {
 						mIndexGroup->upIndex();
 					} else {
 						if (!mIsErrorSoundState) {
@@ -419,15 +489,15 @@ bool TZukanBase::doUpdate()
 				} else {
 					mIndexGroup->upIndex();
 				}
-			} else if (input & Controller::ANALOG_DOWN) {
-				if (!mIsPreDebt || !mCanScroll) {
+			} else if (pad->getButton() & Controller::ANALOG_DOWN) {
+				if (mIsPreDebt && !mCanScroll) {
 					bool cantScroll = true;
 					if (_234 < 0) {
-						if ((float)mCurrentSelect < (float)mMaxSelectZukan / 3.0f - 1.0f) {
+						if ((float)mCurrActiveRowSel < (float)mMaxSelectZukan / 3.0f - 1.0f) {
 							cantScroll = false;
 						}
 					} else {
-						if (mIndexPaneList[mCurrentSelect]->getListIndex() < mMaxPane - 1) {
+						if (mIndexPaneList[mCurrActiveRowSel]->getListIndex() < mMaxPane - 1) {
 							cantScroll = false;
 						}
 					}
@@ -442,8 +512,8 @@ bool TZukanBase::doUpdate()
 				} else {
 					mIndexGroup->downIndex();
 				}
-			} else if (pad->mButton.mButtonDown & Controller::ANALOG_RIGHT) {
-				if (mIndexPaneList[mCurrentSelect]->mSizeType == 0 && isPanelExist()) {
+			} else if (pad->getButtonDown() & Controller::ANALOG_RIGHT) {
+				if (mIndexPaneList[mCurrActiveRowSel]->mSizeType == 0 && isPanelExist()) {
 					mRightOffset++;
 					if (mRightOffset > 2) {
 						mRightOffset = 2;
@@ -451,8 +521,8 @@ bool TZukanBase::doUpdate()
 						isHorizontalScroll = true;
 					}
 				}
-			} else if (pad->mButton.mButtonDown & Controller::ANALOG_LEFT) {
-				if (mIndexPaneList[mCurrentSelect]->mSizeType == 0) {
+			} else if (pad->getButtonDown() & Controller::ANALOG_LEFT) {
+				if (mIndexPaneList[mCurrActiveRowSel]->mSizeType == 0) {
 					mRightOffset--;
 					if (mRightOffset < 0) {
 						mRightOffset = 0;
@@ -463,27 +533,26 @@ bool TZukanBase::doUpdate()
 			}
 		}
 
-		if (!mIndexGroup->_20 && !isHorizontalScroll) {
+		if (!mIndexGroup->mStateID && !isHorizontalScroll) {
 			Controller* pad = mController;
-			u32 input       = pad->mButton.mButton;
-			if (input & Controller::PRESS_X) {
+			if (pad->getButtonDown() & Controller::PRESS_X) {
 				mState = 1;
 				doPushXButton();
-			} else if (input & Controller::PRESS_Y) {
+			} else if (pad->getButtonDown() & Controller::PRESS_Y) {
 				mState = 1;
 				doPushYButton();
-			} else if (input & (Controller::PRESS_L | Controller::PRESS_R)) {
+			} else if (pad->getButtonDown() & (Controller::PRESS_L | Controller::PRESS_R)) {
 				if (mIsBigWindowOpened) {
 					PSSystem::spSysIF->playSystemSe(PSSE_SY_CAMERAVIEW_CHANGE, 0);
 					mIsBigWindowOpened = false;
 				}
-				if (mWindow->mStatus) {
+				if (mWindow->mState) {
 					PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
 					mWindow->windowClose();
 				}
-			} else if (input & Controller::PRESS_B) {
+			} else if (pad->getButtonDown() & Controller::PRESS_B) {
 				doPushBButton();
-			} else if (input & Controller::PRESS_A) {
+			} else if (pad->getButtonDown() & Controller::PRESS_A) {
 				mState = 1;
 				if (mCameraFadeInLevel < 0.5f) {
 					if (!mIsBigWindowOpened) {
@@ -491,15 +560,16 @@ bool TZukanBase::doUpdate()
 					}
 					mIsBigWindowOpened = true;
 				}
-				if (mWindow->mStatus) {
-					windowOpenClose(getXMsgID(mIndexPaneList[mCurrentSelect]->getIndex()));
+				if (mWindow->mState) {
+					windowOpenClose(getXMsgID(mIndexPaneList[mCurrActiveRowSel]->getIndex()));
 				}
 			} else {
-				if (mWindow->mStatus) {
+				bool check = mWindow->checkState(TZukanWindow::STATE_Inactive);
+				if (!check) {
 					// scroll through message box with analog stick
 					f32 z = pad->mMStick.mYPos;
-					if (z >= 0.5f || z <= -0.5f) {
-						if (z <= -0.5f) {
+					if (pad->mMStick.mYPos >= 0.5f || pad->mMStick.mYPos <= -0.5f) {
+						if (pad->mMStick.mYPos <= -0.5f) {
 							z = -1.0f;
 						}
 						if (z >= 0.5f) {
@@ -531,7 +601,7 @@ bool TZukanBase::doUpdate()
 		getOwner()->endScene(nullptr);
 	}
 
-	if (!mIsBigWindowOpened && mWindow->mStatus == 0) {
+	if (!mIsBigWindowOpened && mWindow->mState == 0) {
 		mControlStickPic->mAnimGroup->setSpeed(2.0f);
 	} else {
 		mControlStickPic->mAnimGroup->setSpeed(0.0f);
@@ -557,10 +627,13 @@ bool TZukanBase::doUpdate()
 	if (updateList() || isHorizontalScroll) {
 		changePaneInfo();
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
-		TIndexPane* pane = mIndexPaneList[mCurrentSelect];
-		if (pane->mSizeType) {
-			for (int i = 0; i < mMaxSelect; i++) {
-				if (mIndexPaneList[mCurrentSelect]->getListIndex() == mIndexPaneList[i]->getListIndex()) {
+		TIndexPane* pane = mIndexPaneList[mCurrActiveRowSel];
+
+		// for large panes (bosses), always do the scale animation on the middle pane (if its whats selected),
+		// otherwise do it based on the horizontal selection
+		if (pane->mSizeType != 0) {
+			for (int i = 0; i < mNumActiveRows; i++) {
+				if (mIndexPaneList[mCurrActiveRowSel]->getListIndex() == mIndexPaneList[i]->getListIndex()) {
 					mIndexPaneList[i]->mIconInfos[1]->startScaleUp(0.5f);
 				}
 			}
@@ -570,8 +643,8 @@ bool TZukanBase::doUpdate()
 	}
 
 	JGeometry::TBox2f box;
-	box.set(mPaneModelLPos);
 	f32 scale = mBigWindowScale - 1.0f;
+	box       = mPaneModelPos;
 	mScaleMgr->calc();
 	f32 scale2 = 1.0f;
 	box.i.x += scale * (mPaneModelLPos.i.x - mPaneModelPos.i.x) * scale2;
@@ -583,8 +656,9 @@ bool TZukanBase::doUpdate()
 	mPaneWindowBack_Child->place(box);
 	J2DPane* win = mPaneBigWindow;
 	if (win) {
-		f32 factor = 0.5f;
-		win->updateScale((scale + 1.0f) * factor);
+		f32 winScale = scale + 1.0f;
+		winScale *= 0.5f;
+		win->updateScale(winScale);
 	}
 
 	f32 calc = 0.35f;
@@ -602,9 +676,13 @@ bool TZukanBase::doUpdate()
 	}
 
 	mYajiScreen->mScreenObj->setAlpha(calc * 255.0f);
-	mPaneNew1->setAlpha(mColorAnm->mColor.a);
-	mPaneNew1->setBlack(mColorAnm->mColor);
-	static_cast<J2DPicture*>(mWindow->mPaneIconLight)->setAlpha(mWindow->getAnimColor().a);
+	JUtility::TColor color = mColorAnm->mColor;
+	mPaneNew1->setAlpha(color.a);
+	color.a = 0;
+	mPaneNew1->setBlack(color);
+	GXColor animColor;
+	mWindow->getAnimColor(animColor);
+	static_cast<J2DPicture*>(mWindow->mPaneIconLight)->setAlpha(animColor.a);
 
 	if (!mIsEffectRequired) {
 		mCameraFadeInLevel += 0.3f;
@@ -619,17 +697,19 @@ bool TZukanBase::doUpdate()
 	}
 
 	// manage fade out of cstick/arrow when near bottom of scroll list
-	if (mWindow->mStatus != 1) {
-		f32 calc = mWindow->getPosRate();
-		if (calc < 0.2f) {
-			calc *= 5.0f;
+	bool check = mWindow->checkState(TZukanWindow::STATE_Inactive);
+	if (!check) {
+		f32 alpha = mWindow->getPosRate();
+		if (alpha < 0.2f) {
+			alpha *= 5.0f;
 		} else {
-			calc = 1.0f;
+			alpha = 1.0f;
 		}
-		mWindow->mScreenObj->search('mg_yaji')->setAlpha(calc * 255.0f);
-		mWindow->mScreenObj->search('Pbtn_cu1')->setAlpha(calc * 255.0f);
-		mPaneMesgWindowStickCap->setAlpha(calc);
-		mPaneMesgWindowStick->setAlpha(calc);
+		// alpha = 255.0f * alpha;
+		mWindow->mScreenObj->search('mg_yaji')->setAlpha(alpha * 255.0f);
+		mWindow->mScreenObj->search('Pbtn_cu1')->setAlpha(alpha * 255.0f);
+		mPaneMesgWindowStickCap->setAlpha(alpha * 255.0f);
+		mPaneMesgWindowStick->setAlpha(alpha * 255.0f);
 	}
 
 	if (mIsInFadeInOut) {
@@ -646,7 +726,7 @@ bool TZukanBase::doUpdate()
 	mPaneWindowBack->setOffset(xpos, ypos);
 	mPaneWindowBack_Child->setOffset(xpos, ypos);
 	if (mState == 1) {
-		mCurrObjectID = getModelIndex(mIndexPaneList[mCurrentSelect]->getIndex());
+		mCurrObjectID = getModelIndex(mIndexPaneList[mCurrActiveRowSel]->getIndex());
 		if (!mIsCurrentSelUnlocked) {
 			mCurrObjectID = -1;
 		}
@@ -654,26 +734,25 @@ bool TZukanBase::doUpdate()
 	doUpdateOut();
 
 	if (mForceResetParm) {
-		mForceResetParm    = false;
-		TIndexGroup* group = mIndexGroup;
-		group->_00         = mScrollParm._00;
-		group->_04         = mScrollParm._04;
-		group->_08         = mScrollParm._08;
-		group->_0C         = mScrollParm._0C;
-		group->_10         = mScrollParm._10;
+		mForceResetParm             = false;
+		TIndexGroup* group          = mIndexGroup;
+		group->mMaxRollSpeed        = mScrollParm.mMaxRollSpeed;
+		group->mSpeedSlowdownFactor = mScrollParm.mSpeedSlowdownFactor;
+		group->mRollSpeedMod        = mScrollParm.mRollSpeedMod;
+		group->mSpeedSpeedupFactor  = mScrollParm.mSpeedSpeedupFactor;
+		group->mInitialRollSpeed    = mScrollParm.mInitialRollSpeed;
 	}
 
 	if (getDispDataZukan()->mPrevSelection && mCanInput) {
-		*getDispDataZukan()->mPrevSelection = mIndexPaneList[mCurrentSelect]->getIndex();
+		*getDispDataZukan()->mPrevSelection = mIndexPaneList[mCurrActiveRowSel]->getIndex();
 	}
 
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803728A8
- * Size:	0002B8
+/**
+ * @note Address: 0x803728A8
+ * @note Size: 0x2B8
  */
 void TZukanBase::updateButtonAlpha(u8 target)
 {
@@ -739,14 +818,13 @@ void TZukanBase::updateButtonAlpha(u8 target)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80372B68
- * Size:	000714
+/**
+ * @note Address: 0x80372B68
+ * @note Size: 0x714
  */
 void TZukanBase::doDraw(Graphics& gfx)
 {
-	J2DPerspGraph* graf = &gfx.mPerspGraph;
+	J2DPerspGraph* graf = gfx.getPerspGraph();
 	mBGScreen->draw(gfx, graf);
 
 	GXSetScissor(mPanelListBounds.i.x, mPanelListBounds.i.y, mPanelListBounds.f.x - mPanelListBounds.i.x,
@@ -754,13 +832,14 @@ void TZukanBase::doDraw(Graphics& gfx)
 	mListScreen->draw(gfx, graf);
 	mIconScreen->draw(gfx, *graf);
 
-	for (int i = 0; i < mMaxSelect; i++) {
+	for (int i = 0; i < mNumActiveRows; i++) {
 		TIndexPane* idpane = mIndexPaneList[i];
 		if (idpane->mPane->isVisible()) {
 			if (idpane->mSizeType == 0) {
 				for (int j = 0; j < 3; j++) {
-					int id = mIndexPaneList[i]->getListIndex() + j;
-					if (mIndexPaneList[i]->mIconInfos[j]->_18 && isNewSupply(id, false)) {
+					int index = mIndexPaneList[i]->getListIndex();
+					int id    = index + j;
+					if (mIndexPaneList[i]->mIconInfos[j]->mParentIndex && isNewSupply(id, false)) {
 						mPaneNew1->mGlobalMtx[0][3] = mNewOffset.x + mIndexPaneList[i]->mIconInfos[j]->mPane->mGlobalMtx[0][3];
 						mPaneNew1->mGlobalMtx[1][3] = mNewOffset.y + mIndexPaneList[i]->mIconInfos[j]->mPane->mGlobalMtx[1][3];
 						mMessageNew->draw(gfx, *graf);
@@ -785,9 +864,9 @@ void TZukanBase::doDraw(Graphics& gfx)
 		mEffectScreen->draw(gfx, graf);
 	}
 
-	if (!(mWindow->mStatus & 4)) {
-		if (mWindow->mStatus == 3) {
-			if (mMessageBoxBGAlpha > 21) {
+	if ((mWindow->checkState(TZukanWindow::STATE_Inactive) == false)) { // needs to be == false to match
+		if (mWindow->checkState(TZukanWindow::STATE_Exit)) {
+			if (mMessageBoxBGAlpha > 20) {
 				mMessageBoxBGAlpha -= 20;
 			} else {
 				mMessageBoxBGAlpha = 0;
@@ -798,17 +877,19 @@ void TZukanBase::doDraw(Graphics& gfx)
 				mMessageBoxBGAlpha = 200;
 			}
 		}
-		JUtility::TColor c(0, 0, 0, mMessageBoxBGAlpha);
+		JUtility::TColor c;
+		c.set(0, 0, 0, 0);
+		c.a = mMessageBoxBGAlpha;
 		graf->setColor(c);
 		GXSetAlphaUpdate(GX_FALSE);
-		u32 y    = System::getRenderModeObj()->efbHeight;
-		u32 x    = System::getRenderModeObj()->fbWidth;
+		u16 y    = System::getRenderModeObj()->efbHeight;
+		u16 x    = System::getRenderModeObj()->fbWidth;
 		f32 zero = 0.0f;
-		JGeometry::TBox2f box(0.0f, zero + x, 0.0f, zero + y);
+		JGeometry::TBox2f box(0.0f, 0.0f, zero + x, zero + y);
 		graf->fillBox(box);
 		GXSetAlphaUpdate(GX_TRUE);
 		mPaneEnemyName->setAlpha(mMessageBoxBGAlpha);
-		mMessageItemName->draw(gfx, *graf); // this makes the enemy name appear over the background fade
+		mMessageCallback3->draw(gfx, *graf); // this makes the enemy name appear over the background fade
 	}
 
 	if (mIsInDemo) {
@@ -821,45 +902,46 @@ void TZukanBase::doDraw(Graphics& gfx)
 	mYajiScreen->draw(gfx, graf);
 	mPaneSelectIcon->show();
 	graf->setPort();
+	JUtility::TColor color;
+	color.set(0, 0, 0, 0);
 	if (static_cast<TDEnemyScene*>(getOwner())->mConfirmEndWindow->mHasDrawn) {
 		if (static_cast<TDEnemyScene*>(getOwner())->mConfirmEndWindow->mIsActive) {
-			if (mMessageBoxBGAlpha > 21) {
-				mMessageBoxBGAlpha -= 20;
-			} else {
-				mMessageBoxBGAlpha = 0;
-			}
-		} else {
 			mMessageBoxBGAlpha += 20;
 			if (mMessageBoxBGAlpha > 200) {
 				mMessageBoxBGAlpha = 200;
 			}
+		} else {
+			if (mMessageBoxBGAlpha > 20) {
+				mMessageBoxBGAlpha -= 20;
+			} else {
+				mMessageBoxBGAlpha = 0;
+			}
 		}
-		JUtility::TColor c(0, 0, 0, mMessageBoxBGAlpha);
-		graf->setColor(c);
+		color.a = mMessageBoxBGAlpha;
+		graf->setColor(color);
 		GXSetAlphaUpdate(GX_FALSE);
 		u32 y    = System::getRenderModeObj()->efbHeight;
 		u32 x    = System::getRenderModeObj()->fbWidth;
 		f32 zero = 0.0f;
-		JGeometry::TBox2f box(0.0f, zero + x, 0.0f, zero + y);
+		JGeometry::TBox2f box(0.0f, 0.0f, zero + x, zero + y);
 		graf->fillBox(box);
 		GXSetAlphaUpdate(GX_TRUE);
 	}
 
-	JUtility::TColor c(0, 0, 0, 255 - mFadeAlpha);
-	graf->setColor(c);
+	color.a = 255 - mFadeAlpha;
+	graf->setColor(color);
 	GXSetAlphaUpdate(GX_FALSE);
 	u32 y    = System::getRenderModeObj()->efbHeight;
 	u32 x    = System::getRenderModeObj()->fbWidth;
 	f32 zero = 0.0f;
-	JGeometry::TBox2f box(0.0f, zero + x, 0.0f, zero + y);
+	JGeometry::TBox2f box(0.0f, 0.0f, zero + x, zero + y);
 	graf->fillBox(box);
 	GXSetAlphaUpdate(GX_TRUE);
 }
 
-/*
- * --INFO--
- * Address:	80373280
- * Size:	000018
+/**
+ * @note Address: 0x80373280
+ * @note Size: 0x18
  */
 void TZukanBase::doUpdateFadeoutFinish()
 {
@@ -868,89 +950,77 @@ void TZukanBase::doUpdateFadeoutFinish()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80373298
- * Size:	000578
+/**
+ * @note Address: 0x80373298
+ * @note Size: 0x578
  */
 void TZukanBase::indexPaneInit(J2DScreen* screen)
 {
-	_90            = 0;
-	mCurrentSelect = 4;
-	_98            = mMaxSelect - 1;
+	mCurrMinActiveRow = 0;
+	mCurrActiveRowSel = 4; // the current selected row will be the minimum active row + 4
+	mCurrMaxActiveRow = mNumActiveRows - 1;
 
-	u64 tags[12] = { 'Tmenu12', 'Tmenu13', 'Tmenu00', 'Tmenu01', 'Tmenu02', 'Tmenu03',
-		             'Tmenu04', 'Tmenu05', 'Tmenu06', 'Tmenu07', 'Tmenu08', 'Tmenu09' };
+	u64 tags[10] = { 'Tmenu00', 'Tmenu01', 'Tmenu02', 'Tmenu03', 'Tmenu04', 'Tmenu05', 'Tmenu07', 'Tmenu06', 'Tmenu08', 'Tmenu09' };
 
-	J2DPane* pane = screen->search(tags[_90]);
+	J2DPane* pane = screen->search(tags[mCurrMinActiveRow]);
 	P2ASSERTLINE(1083, pane);
-	_A0 = pane->mOffset.y;
+	mMinSelYOffset = pane->mOffset.y;
 
-	J2DPane* pane2 = screen->search(tags[_98]);
+	J2DPane* pane2 = screen->search(tags[mCurrMaxActiveRow]);
 	P2ASSERTLINE(1086, pane2);
-	_A4 = pane2->mOffset.y;
+	mMaxSelYOffset = pane2->mOffset.y;
 
 	// clang-format off
-	u64 panetags[144] = {	'Pn00_0_1', 'Pn00_1_1', 'Pn00_2_1',
+	u64 panetags[10][4][3] = {
+							'Pn00_0_1', 'Pn00_1_1', 'Pn00_2_1',
 							'Pn00_0_2', 'Pn00_1_2', 'Pn00_2_2',
 							'Pim00_00', 'Pim00_01', 'Pim00_02',
 							'Pme00_00', 'Pme00_01', 'Pme00_02',
-							
+
 							'Pn01_0_1', 'Pn01_1_1', 'Pn01_2_1',
 							'Pn01_0_2', 'Pn01_1_2', 'Pn01_2_2',
 							'Pim01_00', 'Pim01_01', 'Pim01_02',
 							'Pme01_00', 'Pme01_01', 'Pme01_02',
-							
+
 							'Pn02_0_1', 'Pn02_1_1', 'Pn02_2_1',
 							'Pn02_0_2', 'Pn02_1_2', 'Pn02_2_2',
 							'Pim02_00', 'Pim02_01', 'Pim02_02',
 							'Pme02_00', 'Pme02_01', 'Pme02_02',
-							
+
 							'Pn03_0_1', 'Pn03_1_1', 'Pn03_2_1',
 							'Pn03_0_2', 'Pn03_1_2', 'Pn03_2_2',
 							'Pim03_00', 'Pim03_01', 'Pim03_02',
 							'Pme03_00', 'Pme03_01', 'Pme03_02',
-							
+
 							'Pn04_0_1', 'Pn04_1_1', 'Pn04_2_1',
 							'Pn04_0_2', 'Pn04_1_2', 'Pn04_2_2',
 							'Pim04_00', 'Pim04_01', 'Pim04_02',
 							'Pme04_00', 'Pme04_01', 'Pme04_02',
-							
+
 							'Pn05_0_1', 'Pn05_1_1', 'Pn05_2_1',
 							'Pn05_0_2', 'Pn05_1_2', 'Pn05_2_2',
 							'Pim05_00', 'Pim05_01', 'Pim05_02',
 							'Pme05_00', 'Pme05_01', 'Pme05_02',
-							
-							'Pn06_0_1', 'Pn06_1_1', 'Pn06_2_1',
-							'Pn06_0_2', 'Pn06_1_2', 'Pn06_2_2',
-							'Pim06_00', 'Pim06_01', 'Pim06_02',
-							'Pme06_00', 'Pme06_01', 'Pme06_02',
-							
+
 							'Pn07_0_1', 'Pn07_1_1', 'Pn07_2_1',
 							'Pn07_0_2', 'Pn07_1_2', 'Pn07_2_2',
 							'Pim07_00', 'Pim07_01', 'Pim07_02',
 							'Pme07_00', 'Pme07_01', 'Pme07_02',
-							
+
+							'Pn06_0_1', 'Pn06_1_1', 'Pn06_2_1',
+							'Pn06_0_2', 'Pn06_1_2', 'Pn06_2_2',
+							'Pim06_00', 'Pim06_01', 'Pim06_02',
+							'Pme06_00', 'Pme06_01', 'Pme06_02',
+
 							'Pn08_0_1', 'Pn08_1_1', 'Pn08_2_1',
 							'Pn08_0_2', 'Pn08_1_2', 'Pn08_2_2',
 							'Pim08_00', 'Pim08_01', 'Pim08_02',
-							'Pme08_00', 'Pme08_01', 'Pme08_02',
-							
+							'Pme08_00', 'Pme08_01', 'Pme07_05',
+
 							'Pn09_0_1', 'Pn09_1_1', 'Pn09_2_1',
 							'Pn09_0_2', 'Pn09_1_2', 'Pn09_2_2',
 							'Pim09_00', 'Pim09_01', 'Pim09_02',
-							'Pme09_00', 'Pme09_01', 'Pme09_02',
-
-							'Pn10_0_1', 'Pn10_1_1', 'Pn10_2_1',
-							'Pn10_0_2', 'Pn10_1_2', 'Pn10_2_2',
-							'Pim10_00', 'Pim10_01', 'Pim10_02',
-							'Pme10_00', 'Pme10_01', 'Pme10_02',
-							
-
-							'Pn11_0_1', 'Pn11_1_1', 'Pn11_2_1',
-							'Pn11_0_2', 'Pn11_1_2', 'Pn11_2_2',
-							'Pim11_00', 'Pim11_01', 'Pim11_02',
-							'Pme11_00', 'Pme11_01', 'Pme11_02' };
+							'Pme09_00', 'Pme09_01', 'Pme09_02' };
 	// clang-format on
 
 	bool flag = false;
@@ -958,456 +1028,67 @@ void TZukanBase::indexPaneInit(J2DScreen* screen)
 		flag = true;
 	}
 
-	mIndexPaneList = new TIndexPane*[mMaxSelect];
-	for (int i = 0; i < mMaxSelect; i++) {
+	mIndexPaneList = new TIndexPane*[mNumActiveRows];
+	for (int i = 0; i < mNumActiveRows; i++) {
 		mIndexPaneList[i] = nullptr;
 	}
 
-	int idk = 0;
-	for (int i = 0; i < mMaxSelect; i++) {
+	int prevIndex = 0;
+	for (int i = 0; i < mNumActiveRows; i++) {
 		mIndexPaneList[i] = new TIndexPane(this, static_cast<P2DScreen::Mgr_tuning*>(screen), tags[i]);
 		mIndexPaneList[i]->createIconInfo(3, getIdMax());
+		TIconInfo* icon;
 		for (int j = 0; j < 3; j++) {
-			TIconInfo* icon = mIndexPaneList[i]->mIconInfos[j];
-			J2DPane* pane1  = screen->search(panetags[i * 12] + 9 + j);
-			J2DPane* pane2  = screen->search(panetags[i * 12] + 6 + j);
-			TScaleUpCounter* counter
-			    = setScaleUpCounter2(mListScreen->mScreenObj, panetags[i * 12] + j, panetags[i * 12] + 3 + j, &icon->_18, 3, mArchive);
-			icon->init(counter, pane1, pane2);
+			icon = mIndexPaneList[i]->mIconInfos[j];
+			icon->init(
+			    setScaleUpCounter2(mListScreen->getScreenObj(), panetags[i][0][j], panetags[i][1][j], &icon->mParentIndex, 3, mArchive),
+			    screen->search(panetags[i][2][j]), screen->search(panetags[i][3][j]));
 			if (mCanComplete) {
-				J2DPictureEx* pic
-				    = new J2DPictureEx('test', *screen->search(panetags[i * 12] + j)->getBounds(), "w08_48_gra.bti", 0x1100000);
+				J2DPictureEx* pic = new J2DPictureEx('test', *screen->search(panetags[i][3][j])->getBounds(), "w08_48_gra.bti", 0x1100000);
 				P2ASSERTLINE(1129, pic);
 				mIndexPaneList[i]->mIconInfos[j]->mPic = pic;
 				screen->search(tags[i])->appendChild(pic);
-				screen->search(tags[i])->appendChild(screen->search(panetags[i * 12] + j + 9));
+				screen->search(tags[i])->appendChild(screen->search(panetags[i][3][j]));
 				pic->setBasePosition(J2DPOS_Center);
 			}
-			J2DPane* pane = mIndexPaneList[i]->mPane;
-			int test      = i * mRowSize;
-			if (mIsPreDebt) {
-				test = idk;
-			}
+		}
+		J2DPane* pane = mIndexPaneList[i]->mPane;
+		int index     = i * mRowSize;
+		if (mIsPreDebt) {
+			index = prevIndex;
+		}
 
-			if (mIsPreDebt) {
-				if (flag) {
-					setShortenIndex(i, -1, true);
-				} else {
-					getUpdateIndex(test, true);
-					setShortenIndex(i, idk, true);
-					if (!test && idk) {
-						flag = true;
-					}
-					idk = test;
-					if (mMaxPane < 3) {
-						flag = true;
-					}
-				}
+		if (mIsPreDebt) {
+			if (flag) {
+				setShortenIndex(i, -1, true);
 			} else {
-				setShortenIndex(i, test, true);
+				getUpdateIndex(index, true);
+				setShortenIndex(i, prevIndex, true);
+				if (index == 0 && prevIndex != 0) {
+					flag = true;
+				}
+
+				if (mMaxPane < 3) {
+					flag = true;
+				}
+				prevIndex = index;
 			}
-			if (idk > -1 && _B0) {
-				pane->setMsgID(getNameID(idk));
-			}
+		} else {
+			setShortenIndex(i, index, true);
+		}
+		if (index >= 0 && _B0) {
+			pane->setMsgID(getNameID(index));
 		}
 	}
 
-	/*
-	stwu     r1, -0x470(r1)
-	mflr     r0
-	lis      r5, lbl_80492520@ha
-	stw      r0, 0x474(r1)
-	li       r0, 0
-	stmw     r16, 0x430(r1)
-	addi     r22, r5, lbl_80492520@l
-	mr       r24, r4
-	mr       r23, r3
-	addi     r5, r1, 0x14
-	addi     r4, r22, 0x44
-	stw      r0, 0x90(r3)
-	li       r3, 4
-	li       r0, 0xa
-	stw      r3, 0x94(r23)
-	lha      r3, 0x8e(r23)
-	addi     r3, r3, -1
-	stw      r3, 0x98(r23)
-	mtctr    r0
-
-lbl_803732E4:
-	lwz      r3, 4(r4)
-	lwzu     r0, 8(r4)
-	stw      r3, 4(r5)
-	stwu     r0, 8(r5)
-	bdnz     lbl_803732E4
-	mr       r3, r24
-	lwz      r4, 0x90(r23)
-	lwz      r12, 0(r24)
-	addi     r0, r1, 0x18
-	slwi     r4, r4, 3
-	lwz      r12, 0x3c(r12)
-	add      r6, r0, r4
-	lwz      r5, 0(r6)
-	lwz      r6, 4(r6)
-	mtctr    r12
-	bctrl
-	or.      r17, r3, r3
-	bne      lbl_80373340
-	addi     r3, r22, 0xc
-	addi     r5, r22, 0x18
-	li       r4, 0x43b
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_80373340:
-	lfs      f0, 0xd8(r17)
-	mr       r3, r24
-	addi     r0, r1, 0x18
-	stfs     f0, 0xa0(r23)
-	lwz      r4, 0x98(r23)
-	lwz      r12, 0(r24)
-	slwi     r4, r4, 3
-	add      r6, r0, r4
-	lwz      r12, 0x3c(r12)
-	lwz      r5, 0(r6)
-	lwz      r6, 4(r6)
-	mtctr    r12
-	bctrl
-	or.      r17, r3, r3
-	bne      lbl_80373390
-	addi     r3, r22, 0xc
-	addi     r5, r22, 0x18
-	li       r4, 0x43e
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_80373390:
-	lfs      f0, 0xd8(r17)
-	li       r0, 0x78
-	addi     r5, r1, 0x64
-	addi     r4, r22, 0x94
-	stfs     f0, 0xa4(r23)
-	mtctr    r0
-
-lbl_803733A8:
-	lwz      r3, 4(r4)
-	lwzu     r0, 8(r4)
-	stw      r3, 4(r5)
-	stwu     r0, 8(r5)
-	bdnz     lbl_803733A8
-	lbz      r0, 0x240(r23)
-	li       r28, 0
-	cmplwi   r0, 0
-	beq      lbl_803733DC
-	lwz      r0, 0x230(r23)
-	cmpwi    r0, 0
-	bne      lbl_803733DC
-	li       r28, 1
-
-lbl_803733DC:
-	lha      r0, 0x8e(r23)
-	slwi     r3, r0, 2
-	bl       __nwa__FUl
-	li       r5, 0
-	stw      r3, 0x88(r23)
-	mr       r4, r5
-	li       r6, 0
-	b        lbl_8037340C
-
-lbl_803733FC:
-	lwz      r3, 0x88(r23)
-	addi     r6, r6, 1
-	stwx     r4, r3, r5
-	addi     r5, r5, 4
-
-lbl_8037340C:
-	lha      r0, 0x8e(r23)
-	cmpw     r6, r0
-	blt      lbl_803733FC
-	addi     r31, r1, 0x18
-	addi     r29, r1, 0x68
-	li       r27, 0
-	li       r26, 0
-	li       r30, 0
-	b        lbl_803737A8
-
-lbl_80373430:
-	li       r3, 0x28
-	bl       __nw__FUl
-	or.      r17, r3, r3
-	beq      lbl_80373490
-	mr       r3, r24
-	lwz      r5, 0(r31)
-	lwz      r12, 0(r24)
-	lwz      r6, 4(r31)
-	lwz      r12, 0x3c(r12)
-	mtctr    r12
-	bctrl
-	li       r0, 0
-	lfs      f0, lbl_8051EB20@sda21(r2)
-	stw      r0, 0(r17)
-	stw      r3, 4(r17)
-	stw      r0, 8(r17)
-	stw      r0, 0xc(r17)
-	stw      r0, 0x10(r17)
-	stfs     f0, 0x18(r17)
-	stw      r0, 0x20(r17)
-	stw      r23, 0x24(r17)
-	lwz      r3, 4(r17)
-	lfs      f0, 0xd8(r3)
-	stfs     f0, 0x1c(r17)
-
-lbl_80373490:
-	lwz      r4, 0x88(r23)
-	mr       r3, r23
-	stwx     r17, r4, r30
-	lwz      r12, 0(r23)
-	lwz      r12, 0x88(r12)
-	mtctr    r12
-	bctrl
-	lwz      r6, 0x88(r23)
-	mr       r5, r3
-	li       r4, 3
-	lwzx     r3, r6, r30
-	bl       createIconInfo__Q28Morimura10TIndexPaneFii
-	mr       r19, r29
-	li       r25, 0
-	li       r20, 0
-
-lbl_803734CC:
-	lwz      r0, 0x88(r23)
-	mr       r3, r24
-	lwz      r12, 0(r24)
-	lwzx     r5, r30, r0
-	lwz      r4, 0xb4(r23)
-	lwz      r5, 0x20(r5)
-	lwz      r12, 0x3c(r12)
-	lwzx     r21, r5, r20
-	lwz      r16, 8(r4)
-	lwz      r5, 0x48(r19)
-	lwz      r6, 0x4c(r19)
-	mtctr    r12
-	bctrl
-	mr       r17, r3
-	mr       r3, r24
-	lwz      r12, 0(r24)
-	lwz      r5, 0x30(r19)
-	lwz      r12, 0x3c(r12)
-	lwz      r6, 0x34(r19)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x78(r23)
-	mr       r18, r3
-	mr       r3, r16
-	addi     r9, r21, 0x18
-	stw      r0, 8(r1)
-	li       r10, 3
-	lwz      r5, 0(r19)
-	lwz      r6, 4(r19)
-	lwz      r7, 0x18(r19)
-	lwz      r8, 0x1c(r19)
-	bl setScaleUpCounter2__8MorimuraFPQ29P2DScreen3MgrUxUxPUlUsP10JKRArchive mr
-r4, r3 mr       r3, r21 mr       r5, r18 mr       r6, r17 bl
-init__Q28Morimura9TIconInfoFPQ28Morimura15TScaleUpCounterP7J2DPaneP7J2DPane lbz
-r0, 0x241(r23) cmplwi   r0, 0 beq      lbl_80373664 li       r3, 0x1a8 bl
-__nw__FUl or.      r21, r3, r3 beq      lbl_803735C0 mr       r3, r24 lwz r5,
-0x48(r19) lwz      r12, 0(r24) lwz      r6, 0x4c(r19) lwz      r12, 0x3c(r12)
-	mtctr    r12
-	bctrl
-	bl       getBounds__7J2DPaneFv
-	lis      r4, 0x74657374@ha
-	mr       r7, r3
-	mr       r3, r21
-	addi     r8, r22, 0x458
-	addi     r6, r4, 0x74657374@l
-	li       r5, 0
-	lis      r9, 0x110
-	bl       "__ct__12J2DPictureExFUxRCQ29JGeometry8TBox2<f>PCcUl"
-	mr       r21, r3
-
-lbl_803735C0:
-	cmplwi   r21, 0
-	bne      lbl_803735DC
-	addi     r3, r22, 0xc
-	addi     r5, r22, 0x18
-	li       r4, 0x469
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803735DC:
-	lwz      r0, 0x88(r23)
-	mr       r3, r24
-	lwzx     r4, r30, r0
-	lwz      r4, 0x20(r4)
-	lwzx     r4, r4, r20
-	stw      r21, 4(r4)
-	lwz      r12, 0(r24)
-	lwz      r5, 0(r31)
-	lwz      r12, 0x3c(r12)
-	lwz      r6, 4(r31)
-	mtctr    r12
-	bctrl
-	mr       r4, r21
-	bl       appendChild__7J2DPaneFP7J2DPane
-	mr       r3, r24
-	lwz      r5, 0x48(r19)
-	lwz      r12, 0(r24)
-	lwz      r6, 0x4c(r19)
-	lwz      r12, 0x3c(r12)
-	mtctr    r12
-	bctrl
-	mr       r18, r3
-	mr       r3, r24
-	lwz      r12, 0(r24)
-	lwz      r5, 0(r31)
-	lwz      r12, 0x3c(r12)
-	lwz      r6, 4(r31)
-	mtctr    r12
-	bctrl
-	mr       r4, r18
-	bl       appendChild__7J2DPaneFP7J2DPane
-	mr       r3, r21
-	li       r4, 4
-	bl       setBasePosition__7J2DPaneF15J2DBasePosition
-
-lbl_80373664:
-	addi     r25, r25, 1
-	addi     r19, r19, 8
-	cmpwi    r25, 3
-	addi     r20, r20, 4
-	blt      lbl_803734CC
-	lwz      r0, 0x9c(r23)
-	lwz      r3, 0x88(r23)
-	mullw    r0, r26, r0
-	lwzx     r3, r3, r30
-	lwz      r19, 4(r3)
-	stw      r0, 0x10(r1)
-	lbz      r0, 0x240(r23)
-	cmplwi   r0, 0
-	beq      lbl_803736A0
-	stw      r27, 0x10(r1)
-
-lbl_803736A0:
-	lbz      r0, 0x240(r23)
-	cmplwi   r0, 0
-	beq      lbl_80373744
-	clrlwi.  r0, r28, 0x18
-	beq      lbl_803736D8
-	mr       r3, r23
-	mr       r4, r26
-	lwz      r12, 0(r23)
-	li       r5, -1
-	li       r6, 1
-	lwz      r12, 0x94(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80373764
-
-lbl_803736D8:
-	mr       r3, r23
-	addi     r4, r1, 0x10
-	lwz      r12, 0(r23)
-	li       r5, 1
-	lwz      r12, 0x90(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r23
-	mr       r4, r26
-	lwz      r12, 0(r23)
-	mr       r5, r27
-	li       r6, 1
-	lwz      r12, 0x94(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x10(r1)
-	cmpwi    r3, 0
-	bne      lbl_8037372C
-	cmpwi    r27, 0
-	beq      lbl_8037372C
-	li       r28, 1
-
-lbl_8037372C:
-	lwz      r0, 0x230(r23)
-	cmpwi    r0, 3
-	bge      lbl_8037373C
-	li       r28, 1
-
-lbl_8037373C:
-	mr       r27, r3
-	b        lbl_80373764
-
-lbl_80373744:
-	mr       r3, r23
-	mr       r4, r26
-	lwz      r12, 0(r23)
-	li       r6, 1
-	lwz      r5, 0x10(r1)
-	lwz      r12, 0x94(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80373764:
-	lwz      r4, 0x10(r1)
-	cmpwi    r4, 0
-	blt      lbl_80373798
-	lbz      r0, 0xb0(r23)
-	cmplwi   r0, 0
-	beq      lbl_80373798
-	lwz      r12, 0(r23)
-	mr       r3, r23
-	lwz      r12, 0x8c(r12)
-	mtctr    r12
-	bctrl
-	stw      r4, 0x1c(r19)
-	stw      r3, 0x18(r19)
-
-lbl_80373798:
-	addi     r31, r31, 8
-	addi     r30, r30, 4
-	addi     r29, r29, 0x60
-	addi     r26, r26, 1
-
-lbl_803737A8:
-	lha      r4, 0x8e(r23)
-	cmpw     r26, r4
-	blt      lbl_80373430
-	cmpwi    r4, 0
-	li       r5, 0
-	ble      lbl_803737FC
-	cmpwi    r4, 8
-	addi     r3, r4, -8
-	ble      lbl_803737E8
-	addi     r0, r3, 7
-	srwi     r0, r0, 3
-	mtctr    r0
-	cmpwi    r3, 0
-	ble      lbl_803737E8
-
-lbl_803737E0:
-	addi     r5, r5, 8
-	bdnz     lbl_803737E0
-
-lbl_803737E8:
-	subf     r0, r5, r4
-	mtctr    r0
-	cmpw     r5, r4
-	bge      lbl_803737FC
-
-lbl_803737F8:
-	bdnz     lbl_803737F8
-
-lbl_803737FC:
-	lmw      r16, 0x430(r1)
-	lwz      r0, 0x474(r1)
-	mtlr     r0
-	addi     r1, r1, 0x470
-	blr
-	*/
+	for (int i = 0; i < mNumActiveRows; i++) {
+		// some commented out/debug code probably
+	}
 }
 
-/*
- * --INFO--
- * Address:	80373810
- * Size:	000258
+/**
+ * @note Address: 0x80373810
+ * @note Size: 0x258
  */
 void TZukanBase::paneInit()
 {
@@ -1430,26 +1111,25 @@ void TZukanBase::paneInit()
 	mPaneMessageDemo = mWindow->mScreenObj->search('mg_demo');
 	P2ASSERTLINE(1215, mPaneMessageDemo);
 
-	f32 offs = 20.0f;
-	mYOffset = mIndexPaneList[mCurrentSelect]->_1C - 10.0f;
-	_AC      = mYOffset + offs;
+	f32 offs                = 20.0f;
+	mSelectionYOffset       = mIndexPaneList[mCurrActiveRowSel]->mYOffset - 10.0f;
+	mCursorSelectionYOffset = mSelectionYOffset + offs;
 }
 
-/*
- * --INFO--
- * Address:	80373A68
- * Size:	0000C8
+/**
+ * @note Address: 0x80373A68
+ * @note Size: 0xC8
  */
 void TZukanBase::changePaneInfo()
 {
 	mIsErrorSoundState = true;
 	mDoFadeNameAlpha   = true;
-	mDisplayIndex      = mIndexPaneList[mCurrentSelect]->getIndex() + 1;
+	mDisplayIndex      = mIndexPaneList[mCurrActiveRowSel]->getIndex() + 1;
 	setDetail();
 
 	// Before paying debt, change stick anim if youre at the bottom or top of the list
 	if (mIsPreDebt && !mCanScroll) {
-		int sel = mCurrentSelect;
+		int sel = mCurrActiveRowSel;
 		if (sel == 0) {
 			mStickAnim->stickDown();
 		} else if (sel == mMaxSelectZukan / 3) {
@@ -1460,14 +1140,13 @@ void TZukanBase::changePaneInfo()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80373B30
- * Size:	0000A8
+/**
+ * @note Address: 0x80373B30
+ * @note Size: 0xA8
  */
 void TZukanBase::changeName()
 {
-	int id = mIndexPaneList[mCurrentSelect]->getIndex();
+	int id = mIndexPaneList[mCurrActiveRowSel]->getIndex();
 	if (id >= 0) {
 		J2DTextBoxEx* pane = mPaneEnemyName;
 		pane->setMsgID(getNameID(id));
@@ -1478,14 +1157,14 @@ void TZukanBase::changeName()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80373BD8
- * Size:	00005C
+/**
+ * @note Address: 0x80373BD8
+ * @note Size: 0x5C
  */
 void TZukanBase::doUpdateIn()
 {
-	if ((u8)mWindow->mStatus != TZukanWindow::STATE_Inactive && mWindow->_18) {
+	bool check = mWindow->checkState(TZukanWindow::STATE_Inactive);
+	if (check && mWindow->_18) {
 		mWindow->_18 = false;
 		if (mCurrCharacterOpened) {
 			doPushXButton();
@@ -1495,10 +1174,9 @@ void TZukanBase::doUpdateIn()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80373C34
- * Size:	000630
+/**
+ * @note Address: 0x80373C34
+ * @note Size: 0x630
  */
 void TZukanBase::doUpdateOut()
 {
@@ -1506,14 +1184,14 @@ void TZukanBase::doUpdateOut()
 	if (mCursorAnimTimer > TAU) {
 		mCursorAnimTimer -= TAU;
 	}
-	mCursorScale = pikmin2_sinf(mCursorAnimTimer) * mCursorAnimMagnitude + 0.85f;
+	mCursorScale = sinf(mCursorAnimTimer) * mCursorAnimMagnitude + 0.85f;
 
-	for (int i = 0; i < mMaxSelect; i++) {
+	for (int i = 0; i < mNumActiveRows; i++) {
 		mIndexPaneList[i]->update();
 	}
 	int offs2 = mRightOffset;
 
-	TIndexPane* pane = mIndexPaneList[mCurrentSelect];
+	TIndexPane* pane = mIndexPaneList[mCurrActiveRowSel];
 	if (pane->mSizeType != 0) {
 		mPaneSelectIcon->setOffset(mSelectIconPos.x + 62.0f, mSelectIconPos.y);
 		offs2 = 1;
@@ -1523,21 +1201,22 @@ void TZukanBase::doUpdateOut()
 			if (_234 >= 0) {
 				offs = _234;
 			}
-			offs2 = offs % 3 - 1;
+			offs2 = offs % 3;
+			offs2--;
 			if (offs2 < 0) {
 				offs2 = 0;
 			}
 			mRightOffset = offs2;
 			changePaneInfo();
-			mIndexPaneList[mCurrentSelect]->mIconInfos[mRightOffset]->startScaleUp(1.0f);
+			mIndexPaneList[mCurrActiveRowSel]->mIconInfos[mRightOffset]->startScaleUp(1.0f);
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
 		}
 		mPaneSelectIcon->setOffset(mSelectIconPos.x + (mRightOffset * 62.0f), mSelectIconPos.y);
 	}
 
-	J2DPane* panel = mIndexPaneList[mCurrentSelect]->mIconInfos[offs2]->mPane;
+	J2DPane* panel = mIndexPaneList[mCurrActiveRowSel]->mIconInfos[offs2]->mPane;
 	for (u8 i = 0; i < 4; i++) {
-		if (!mIsPreDebt || !mMaxPane) {
+		if (mIsPreDebt && !mMaxPane) {
 			mPaneCursorCorners[i]->hide();
 		} else {
 			f32 x = panel->getGlbVtx(i).x - panel->mGlobalMtx[0][3];
@@ -1546,20 +1225,20 @@ void TZukanBase::doUpdateOut()
 		}
 	}
 
-	for (int i = 0; i < mMaxSelect; i++) {
+	for (int i = 0; i < mNumActiveRows; i++) {
 		if (mIsPreDebt) {
 			bool test = true;
-			if (!mCanScroll && (i != mCurrentSelect || mMaxPane == 0)) {
+			if (!mCanScroll && (i != mCurrActiveRowSel || mMaxPane == 0)) {
 				int id1 = mIndexPaneList[i]->getListIndex();
-				int id2 = mIndexPaneList[mCurrentSelect]->getListIndex();
+				int id2 = mIndexPaneList[mCurrActiveRowSel]->getListIndex();
 				if (id1 < 0 || mMaxSelectZukan <= 3) {
 					test = false;
 				} else if (id1 > id2) {
-					if (mIndexPaneList[i]->_1C > mIndexPaneList[mCurrentSelect]->_1C) {
+					if (mIndexPaneList[mCurrActiveRowSel]->getPaneYOffset() > mIndexPaneList[i]->getPaneYOffset()) {
 						test = false;
 					}
 				} else {
-					if (mIndexPaneList[mCurrentSelect]->_1C < mIndexPaneList[i]->_1C) {
+					if (mIndexPaneList[mCurrActiveRowSel]->getPaneYOffset() < mIndexPaneList[i]->getPaneYOffset()) {
 						test = false;
 					}
 				}
@@ -1598,7 +1277,7 @@ void TZukanBase::doUpdateOut()
 			for (int j = 0; j < 3; j++) {
 				TIconInfo* icon = mIndexPaneList[i]->mIconInfos[j];
 				J2DPane* pane   = icon->mPic;
-				if (icon->_18 && icon->mPane->isVisible()) {
+				if (icon->mParentIndex && icon->mPane->isVisible()) {
 					pane->show();
 					if (mIndexPaneList[i]->mSizeType == 0) {
 						pane->updateScale(mCategoryScale.x, mCategoryScale.y);
@@ -1613,10 +1292,9 @@ void TZukanBase::doUpdateOut()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80374264
- * Size:	000114
+/**
+ * @note Address: 0x80374264
+ * @note Size: 0x114
  */
 void TZukanBase::doPushXButton()
 {
@@ -1625,12 +1303,12 @@ void TZukanBase::doPushXButton()
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_CAMERAVIEW_CHANGE, 0);
 		}
 		mIsBigWindowOpened = false;
-		if (mWindow->mStatus == 0) {
+		if (mWindow->mState == 0) {
 			mCurrCharacterOpened = false;
-			windowOpenClose(getXMsgID(mIndexPaneList[mCurrentSelect]->getIndex()));
+			windowOpenClose(getXMsgID(mIndexPaneList[mCurrActiveRowSel]->getIndex()));
 			setXWindow();
 		} else {
-			windowOpenClose(getXMsgID(mIndexPaneList[mCurrentSelect]->getIndex()));
+			windowOpenClose(getXMsgID(mIndexPaneList[mCurrActiveRowSel]->getIndex()));
 			if (mCurrCharacterOpened) {
 				mWindow->_18 = 1;
 			}
@@ -1638,10 +1316,9 @@ void TZukanBase::doPushXButton()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80374378
- * Size:	000130
+/**
+ * @note Address: 0x80374378
+ * @note Size: 0x130
  */
 void TZukanBase::doPushYButton()
 {
@@ -1650,12 +1327,12 @@ void TZukanBase::doPushYButton()
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_CAMERAVIEW_CHANGE, 0);
 		}
 		mIsBigWindowOpened = false;
-		if (mWindow->mStatus == 0) {
+		if (mWindow->mState == 0) {
 			mCurrCharacterOpened = true;
-			windowOpenClose(getYMsgID(mIndexPaneList[mCurrentSelect]->getIndex()));
+			windowOpenClose(getYMsgID(mIndexPaneList[mCurrActiveRowSel]->getIndex()));
 			setYWindow();
 		} else {
-			windowOpenClose(getYMsgID(mIndexPaneList[mCurrentSelect]->getIndex()));
+			windowOpenClose(getYMsgID(mIndexPaneList[mCurrActiveRowSel]->getIndex()));
 			if (!mCurrCharacterOpened) {
 				mWindow->_18 = 1;
 			}
@@ -1663,10 +1340,9 @@ void TZukanBase::doPushYButton()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803744A8
- * Size:	0000B0
+/**
+ * @note Address: 0x803744A8
+ * @note Size: 0xB0
  */
 void TZukanBase::doPushBButton()
 {
@@ -1674,18 +1350,17 @@ void TZukanBase::doPushBButton()
 		mIsBigWindowOpened = false;
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_CAMERAVIEW_CHANGE, 0);
 	} else {
-		if (mWindow->mStatus != 0) {
-			windowOpenClose(getXMsgID(mIndexPaneList[mCurrentSelect]->getIndex()));
+		if (mWindow->mState != 0) {
+			windowOpenClose(getXMsgID(mIndexPaneList[mCurrActiveRowSel]->getIndex()));
 		} else {
 			openConfirmWindow();
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	80374558
- * Size:	000244
+/**
+ * @note Address: 0x80374558
+ * @note Size: 0x244
  */
 void TZukanBase::setShortenIndex(int paneID, int index, bool)
 {
@@ -1700,242 +1375,68 @@ void TZukanBase::setShortenIndex(int paneID, int index, bool)
 			TIndexPane* pane = mIndexPaneList[paneID];
 			if (pane->mSizeType != 1) {
 				if (mIsSection)
-					pane->mIconInfos[1]->setInfo(mViewablePanelIDList[index], nullptr);
+					pane->getIconInfo(1)->setInfo(mViewablePanelIDList[index], nullptr);
 				else {
-					TIconInfo* info     = pane->mIconInfos[1];
+					TIconInfo* info     = pane->getIconInfo(1);
 					const ResTIMG* timg = getTexInfo(mViewablePanelIDList[index]);
 					info->setInfo(mViewablePanelIDList[index], timg);
 				}
 			} else {
-				pane->mIconInfos[1]->_18 = mViewablePanelIDList[index] + 1;
+				pane->getIconInfo(1)->mParentIndex = mViewablePanelIDList[index] + 1;
 			}
 		} else {
-			int test = 0;
-			for (int i = 0; test <= 2 && i < 3; i++) {
-				if (index >= 0) {
-					test = test++ + index;
-					if (mMaxPane < test && _234 >= 0 && _234 >= test) {
-						mIndexPaneList[paneID]->mIconInfos[i]->setInfo(-1, nullptr);
+			int i      = 0;
+			int offset = 0;
+			do { // not a fan of this
+				if (index >= 0 && offset + index < mMaxPane) {
+					if (_234 >= 0 && offset + index >= _234) {
+						mIndexPaneList[paneID]->getIconInfo(i)->setInfo(-1, nullptr);
 					} else if (mIsSection) {
-						mIndexPaneList[paneID]->mIconInfos[i]->setInfo(mViewablePanelIDList[test], nullptr);
+						mIndexPaneList[paneID]->getIconInfo(i)->setInfo(mViewablePanelIDList[offset + index], nullptr);
 					} else {
-						TIconInfo* info     = mIndexPaneList[paneID]->mIconInfos[i];
-						const ResTIMG* timg = getTexInfo(mViewablePanelIDList[test]);
-						info->setInfo(mViewablePanelIDList[test], timg);
+						TIconInfo* info     = mIndexPaneList[paneID]->getIconInfo(i);
+						const ResTIMG* timg = getTexInfo(mViewablePanelIDList[offset + index]);
+						info->setInfo(mViewablePanelIDList[offset + index], timg);
 					}
 				} else {
-					mIndexPaneList[paneID]->mIconInfos[i]->setInfo(-1, nullptr);
+					mIndexPaneList[paneID]->getIconInfo(i)->setInfo(-1, nullptr);
 				}
-			}
+			} while (++i <= 2 && ++offset < 3);
 		}
 	} else {
 		mIndexPaneList[paneID]->setIndex(index);
 	}
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stmw     r24, 0x10(r1)
-	mr       r26, r3
-	mr       r27, r5
-	lbz      r0, 0x240(r3)
-	cmplwi   r0, 0
-	beq      lbl_80374774
-	lwz      r3, 0x88(r26)
-	slwi     r30, r4, 2
-	lwzx     r3, r3, r30
-	lwz      r0, 0(r3)
-	cmpwi    r0, 0
-	bge      lbl_80374598
-	li       r27, -1
-
-lbl_80374598:
-	stw      r27, 0(r3)
-	lbz      r0, 0x8c(r26)
-	cmplwi   r0, 0
-	beq      lbl_80374670
-	cmpwi    r27, 0
-	blt      lbl_80374670
-	lwz      r0, 0x230(r26)
-	cmpw     r27, r0
-	bge      lbl_80374670
-	lwz      r3, 0x22c(r26)
-	slwi     r31, r27, 2
-	lwz      r4, 0x184(r26)
-	lwzx     r0, r3, r31
-	lbzx     r0, r4, r0
-	cmplwi   r0, 0
-	beq      lbl_80374670
-	lwz      r3, 0x88(r26)
-	mr       r4, r27
-	lwzx     r3, r3, r30
-	bl       setIndex__Q28Morimura10TIndexPaneFi
-	lwz      r3, 0x88(r26)
-	lwzx     r3, r3, r30
-	lwz      r0, 0xc(r3)
-	cmpwi    r0, 1
-	beq      lbl_80374654
-	lbz      r0, mIsSection__Q28Morimura9TTestBase@sda21(r13)
-	cmplwi   r0, 0
-	beq      lbl_80374624
-	lwz      r3, 0x20(r3)
-	li       r5, 0
-	lwz      r4, 0x22c(r26)
-	lwz      r3, 4(r3)
-	lwzx     r4, r4, r31
-	bl       setInfo__Q28Morimura9TIconInfoFiPC7ResTIMG
-	b        lbl_80374788
-
-lbl_80374624:
-	lwz      r5, 0x20(r3)
-	mr       r3, r26
-	lwz      r4, 0x22c(r26)
-	lwz      r27, 4(r5)
-	lwzx     r4, r4, r31
-	bl       getTexInfo__Q28Morimura10TZukanBaseFi
-	lwz      r4, 0x22c(r26)
-	mr       r5, r3
-	mr       r3, r27
-	lwzx     r4, r4, r31
-	bl       setInfo__Q28Morimura9TIconInfoFiPC7ResTIMG
-	b        lbl_80374788
-
-lbl_80374654:
-	lwz      r4, 0x22c(r26)
-	lwz      r3, 0x20(r3)
-	lwzx     r4, r4, r31
-	lwz      r3, 4(r3)
-	addi     r0, r4, 1
-	stw      r0, 0x18(r3)
-	b        lbl_80374788
-
-lbl_80374670:
-	li       r29, 0
-	li       r28, 0
-	li       r31, 0
-
-lbl_8037467C:
-	cmpwi    r27, 0
-	blt      lbl_80374738
-	lwz      r0, 0x230(r26)
-	add      r3, r28, r27
-	cmpw     r3, r0
-	bge      lbl_80374738
-	lwz      r0, 0x234(r26)
-	cmpwi    r0, 0
-	blt      lbl_803746C8
-	cmpw     r3, r0
-	blt      lbl_803746C8
-	lwz      r0, 0x88(r26)
-	li       r4, -1
-	li       r5, 0
-	lwzx     r3, r30, r0
-	lwz      r3, 0x20(r3)
-	lwzx     r3, r3, r31
-	bl       setInfo__Q28Morimura9TIconInfoFiPC7ResTIMG
-	b        lbl_80374754
-
-lbl_803746C8:
-	lbz      r0, mIsSection__Q28Morimura9TTestBase@sda21(r13)
-	cmplwi   r0, 0
-	beq      lbl_803746FC
-	lwz      r4, 0x88(r26)
-	slwi     r0, r3, 2
-	lwz      r3, 0x22c(r26)
-	li       r5, 0
-	lwzx     r6, r30, r4
-	lwzx     r4, r3, r0
-	lwz      r3, 0x20(r6)
-	lwzx     r3, r3, r31
-	bl       setInfo__Q28Morimura9TIconInfoFiPC7ResTIMG
-	b        lbl_80374754
-
-lbl_803746FC:
-	lwz      r0, 0x88(r26)
-	slwi     r24, r3, 2
-	lwz      r4, 0x22c(r26)
-	mr       r3, r26
-	lwzx     r5, r30, r0
-	lwzx     r4, r4, r24
-	lwz      r5, 0x20(r5)
-	lwzx     r25, r5, r31
-	bl       getTexInfo__Q28Morimura10TZukanBaseFi
-	lwz      r4, 0x22c(r26)
-	mr       r5, r3
-	mr       r3, r25
-	lwzx     r4, r4, r24
-	bl       setInfo__Q28Morimura9TIconInfoFiPC7ResTIMG
-	b        lbl_80374754
-
-lbl_80374738:
-	lwz      r0, 0x88(r26)
-	li       r4, -1
-	li       r5, 0
-	lwzx     r3, r30, r0
-	lwz      r3, 0x20(r3)
-	lwzx     r3, r3, r31
-	bl       setInfo__Q28Morimura9TIconInfoFiPC7ResTIMG
-
-lbl_80374754:
-	addi     r29, r29, 1
-	addi     r31, r31, 4
-	cmpwi    r29, 2
-	bgt      lbl_80374788
-	addi     r28, r28, 1
-	cmpwi    r28, 3
-	blt      lbl_8037467C
-	b        lbl_80374788
-
-lbl_80374774:
-	lwz      r3, 0x88(r26)
-	slwi     r0, r4, 2
-	mr       r4, r27
-	lwzx     r3, r3, r0
-	bl       setIndex__Q28Morimura10TIndexPaneFi
-
-lbl_80374788:
-	lmw      r24, 0x10(r1)
-	lwz      r0, 0x34(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	8037479C
- * Size:	000088
+/**
+ * @note Address: 0x8037479C
+ * @note Size: 0x88
  */
 void TZukanBase::windowOpenClose(u64 mesg)
 {
 	if (mIsCurrentSelUnlocked) {
-		int flag = mWindow->mStatus;
-		if (flag & 5) {
+		bool check = mWindow->checkState(TZukanWindow::STATE_Inactive);
+		if (check) {
 
 			mPaneMessageDemo->setMsgID(mesg);
 			mMessageBoxBGAlpha = 0;
 			mWindow->windowOpen();
-		} else {
-			if (flag != 3) {
-				PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
-				mWindow->windowClose();
-			}
+		} else if (mWindow->mState != TZukanWindow::STATE_Exit) {
+			PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
+			mWindow->windowClose();
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	80374824
- * Size:	000074
+/**
+ * @note Address: 0x80374824
+ * @note Size: 0x74
  */
-bool TZukanBase::isPanelExist() { return (mIndexPaneList[mCurrentSelect]->getIndex() + mRightOffset) < getIdMax(); }
+bool TZukanBase::isPanelExist() { return (u8)((mIndexPaneList[mCurrActiveRowSel]->getIndex() + mRightOffset) < getIdMax()); }
 
-/*
- * --INFO--
- * Address:	80374898
- * Size:	000018
+/**
+ * @note Address: 0x80374898
+ * @note Size: 0x18
  */
 void TZukanBase::requireRequest()
 {
@@ -1944,17 +1445,15 @@ void TZukanBase::requireRequest()
 	mIsEffectRequired = false;
 }
 
-/*
- * --INFO--
- * Address:	803748B0
- * Size:	00000C
+/**
+ * @note Address: 0x803748B0
+ * @note Size: 0xC
  */
 void TZukanBase::requireEffectOff() { mIsEffectRequired = true; }
 
-/*
- * --INFO--
- * Address:	803748BC
- * Size:	00001C
+/**
+ * @note Address: 0x803748BC
+ * @note Size: 0x1C
  */
 bool TZukanBase::isEnlargedWindow()
 {
@@ -1964,33 +1463,30 @@ bool TZukanBase::isEnlargedWindow()
 	return mIsBigWindowOpened;
 }
 
-/*
- * --INFO--
- * Address:	803748D8
- * Size:	000020
+/**
+ * @note Address: 0x803748D8
+ * @note Size: 0x20
  */
 bool TZukanBase::isMemoWindow()
 {
-	if (mWindow->mStatus != TZukanWindow::STATE_Inactive) {
+	if (checkMemoWindow()) {
 		return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000048
+/**
+ * @note Address: N/A
+ * @note Size: 0x48
  */
 void TZukanBase::requireSceneEnd()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	803748F8
- * Size:	000010
+/**
+ * @note Address: 0x803748F8
+ * @note Size: 0x10
  */
 int TZukanBase::checkRequest(int& data)
 {
@@ -1998,71 +1494,88 @@ int TZukanBase::checkRequest(int& data)
 	return mState;
 }
 
-/*
- * --INFO--
- * Address:	80374908
- * Size:	000068
+/**
+ * @note Address: 0x80374908
+ * @note Size: 0x68
  */
 int TZukanBase::getCurrSelectId()
 {
 	if (mIsCurrentSelUnlocked) {
-		return getModelIndex(mIndexPaneList[mCurrentSelect]->getIndex());
-	} else {
-		return -1;
+		return getModelIndex(mIndexPaneList[mCurrActiveRowSel]->getIndex());
 	}
+
+	return -1;
 }
 
-/*
- * --INFO--
- * Address:	80374970
- * Size:	000124
+/**
+ * @note Address: 0x80374970
+ * @note Size: 0x124
  */
 const ResTIMG* TZukanBase::getTexInfo(int id)
 {
 	if (mIsSection) {
 		return static_cast<const ResTIMG*>(mArchive->getResource("timg/flower_icon.bti"));
+	} else if (getDispDataZukan()->getMemberID() == MEMBER_ZUKAN_ENEMY) {
+		return getDispDataZukan()->mEnemyTexMgr->getTexture(getModelIndex(id))->mTexInfo;
 	} else {
-		if (getDispDataZukan()->getMemberID() == MEMBER_ZUKAN_ENEMY) {
-			return getDispDataZukan()->mEnemyTexMgr->getTexture(getModelIndex(id))->mTexInfo;
-		} else {
-			int sel = getModelIndex(id);
-			return getDispDataZukan()->mResultTexMgr->getOtakaraItemTexture(sel)->mTexInfo;
+		int sel = getModelIndex(id);
+		return getDispDataZukan()->mResultTexMgr->getOtakaraItemTexture(sel)->mTexInfo;
+	}
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0xBC
+ */
+void TZukanBase::resetDebugShow()
+{
+	// mDebugUnlockedList        = new bool[getIdMax()];
+	for (int i = 0; i < getIdMax(); i++) {
+		mDebugUnlockedList[i] = false;
+		if (randFloat() < mRandShowRate) {
+			mDebugUnlockedList[i] = true;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000BC
- */
-void TZukanBase::resetDebugShow()
-{
-	// UNUSED FUNCTION
-}
-
-/*
- * --INFO--
- * Address:	........
- * Size:	00004C
+/**
+ * @note Address: N/A
+ * @note Size: 0x4C
  */
 void TEnemyZukanIndex::getIndexInfo(int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80374BB8
- * Size:	001734
+/**
+ * @note Address: N/A
+ * @note Size: 0x5C
+ */
+TEnemyZukan::TEnemyZukan()
+    : TZukanBase("enemyZukan")
+{
+	mValueCounter    = nullptr;
+	mDefeatedCounter = nullptr;
+	mPikiLostCounter = nullptr;
+}
+
+/**
+ * @note Address: 0x80374A94
+ * @note Size: 0x124
+ */
+TEnemyZukan::~TEnemyZukan() { mDispEnemy->mDebugExpHeap->freeAll(); }
+
+/**
+ * @note Address: 0x80374BB8
+ * @note Size: 0x1734
  */
 void TEnemyZukan::doCreate(JKRArchive* arc)
 {
-	mScrollParm._00 = 10.0f;
-	mScrollParm._04 = 1.1f;
-	mScrollParm._08 = 0.99f;
-	mScrollParm._0C = 1.5f;
-	mScrollParm._10 = 2.5f;
+	mScrollParm.mMaxRollSpeed        = 10.0f;
+	mScrollParm.mRollSpeedMod        = 1.1f;
+	mScrollParm.mSpeedSlowdownFactor = 0.99f;
+	mScrollParm.mSpeedSpeedupFactor  = 1.5f;
+	mScrollParm.mInitialRollSpeed    = 2.5f;
 
 	mCategoryColor0w.setRGB(0, 0, 255);
 	mCategoryColor0b.setRGB(0, 220, 220);
@@ -2079,19 +1592,22 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 	}
 
 	if (mIsSection) {
+		// Create debug heap and setup debug data
 		if (mDebugHeapParent) {
 			mDebugHeap = JKRExpHeap::create(0x100000, mDebugHeapParent, true);
 			P2ASSERTLINE(1986, mDebugHeap);
 			mDispEnemy                = new (mDebugHeap, 0) DispMemberZukanEnemy;
 			mDispEnemy->mDebugExpHeap = mDebugHeap;
 			mIsSection                = true;
-			mDebugUnlockedList        = new bool[ENEMY_ZUKAN_COUNT];
+
+			mDebugUnlockedList = new bool[ENEMY_ZUKAN_COUNT];
 			for (int i = 0; i < ENEMY_ZUKAN_COUNT; i++) {
 				mDebugUnlockedList[i] = false;
 				if (randFloat() < mRandShowRate) {
 					mDebugUnlockedList[i] = true;
 				}
 			}
+			// resetDebugShow();
 			mDispEnemy->mPrevSelection = new (mDebugHeap, 0) u32;
 			rand();
 			*mDispEnemy->mPrevSelection       = 0;
@@ -2104,12 +1620,14 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 		mDispEnemy->mDispWorldMapInfoWin0 = new og::Screen::DispMemberWorldMapInfoWin0;
 	}
 
+	// Setup icon data for all bosses
 	mDoEnableBigIcon = true;
 	if (mDoEnableBigIcon) {
 		mIsBigIconList = new u8[ENEMY_ZUKAN_COUNT];
 		for (int i = 0; i < ENEMY_ZUKAN_COUNT; i++) {
 			mIsBigIconList[i] = false;
 		}
+
 		mIsBigIconList[Zukan_DangoMushi]  = true;
 		mIsBigIconList[Zukan_BlackMan]    = true;
 		mIsBigIconList[Zukan_OoPanModoki] = true;
@@ -2137,13 +1655,12 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 	if (mIsPreDebt) {
 		if (mIsSection) {
 			rand();
-			int max  = getIdMax();
-			int test = randWeightFloat(50.0f);
-			test++;
-			int test2 = randFloat() * 10.0f;
-			test2     = 85 - test2;
+			int max   = getIdMax();
+			int test  = randInt(50) + 1;
+			int test2 = 85 - randInt(10);
+			// test2     = 85 - test2;
 			for (int i = 0; i < max; i++) {
-				if (i < test || test2 > i) {
+				if (i < test || i > test2) {
 					mMaxPane++;
 				}
 			}
@@ -2155,8 +1672,8 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 			}
 			int k = 0;
 			for (int i = 0; i < max; i++) {
-				if (i < test || test2 < i) {
-					mViewablePanelIDList[i] = i;
+				if (i < test || i > test2) {
+					mViewablePanelIDList[k] = i;
 					if (_234 < 0 && mIsBigIconList[i]) {
 						_234 = k;
 					}
@@ -2169,18 +1686,22 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 					mMaxPane++;
 				}
 			}
+
 			int max2 = mMaxPane;
 			if (max2 == 0) {
 				mCanScroll = false;
 			} else {
 				mViewablePanelIDList = new int[max2];
 			}
+
+			int k = 0;
 			for (int i = 0; i < getIdMax(); i++) {
 				if (isListShow(i)) {
-					mViewablePanelIDList[i] = i;
+					mViewablePanelIDList[k] = i;
 					if (_234 < 0 && mIsBigIconList[i]) {
-						_234 = i;
+						_234 = k;
 					}
+					k++;
 				}
 			}
 		}
@@ -2328,10 +1849,7 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 	if (mIsPreDebt) {
 		int max = 0;
 		for (int i = 0; i < mMaxPane; i++) {
-			max++;
-			if (mIsBigIconList[mViewablePanelIDList[i]]) {
-				max += 6;
-			}
+			max = (mIsBigIconList[mViewablePanelIDList[i]]) ? max + 6 : max + 1;
 		}
 		mMaxSelectZukan = max;
 	} else {
@@ -2340,25 +1858,23 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 
 	TZukanBase::doCreate(arc);
 
-	f32 yoffs = mIndexPaneList[1]->mPane->mOffset.y - mIndexPaneList[0]->mPane->mOffset.y;
+	f32 yoffs = mIndexPaneList[1]->getPaneOffsetY() - mIndexPaneList[0]->getPaneOffsetY();
 
-	if (mIsPreDebt && mMaxSelectZukan <= (mMaxSelect - 1) * 3) {
+	if (mIsPreDebt && mMaxSelectZukan <= (mNumActiveRows - 1) * 3) {
 		mCanScroll = false;
 	}
 
 	f32 xoffs = 0.0f;
 	for (int i = 0; i < 6; i++) {
-		for (int j = 0; j < mMaxSelect; j++) {
-			TIndexPane* idpane = mIndexPaneList[j];
-			J2DPane* pane      = idpane->mPane;
-			pane->mOffset.y    = idpane->_1C + yoffs;
-			pane->calcMtx();
-			mIndexPaneList[j]->_1C = mIndexPaneList[j]->mPane->mOffset.y;
+		for (int j = 0; j < mNumActiveRows; j++) {
+			f32 y = mIndexPaneList[j]->mYOffset;
+			mIndexPaneList[j]->mPane->setOffsetY(y + yoffs);
+			mIndexPaneList[j]->mYOffset = mIndexPaneList[j]->mPane->mOffset.y;
 		}
 		updateIndex(false);
-		TIndexGroup* grp = mIndexGroup;
-		grp->_14         = xoffs;
-		grp->_20         = 0.0f;
+		TIndexGroup* grp   = mIndexGroup;
+		grp->mScrollOffset = xoffs;
+		grp->mStateID      = 0;
 		changePaneInfo();
 	}
 
@@ -2366,6 +1882,7 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 	if (mDispEnemy->mPrevSelection && mDispEnemy->getMemberID() == MEMBER_ZUKAN_ENEMY) {
 		index = *mDispEnemy->mPrevSelection;
 	}
+
 	if (index < 0) {
 		for (int i = 0; i < getIdMax(); i++) {
 			if (isNewSupply(i, false)) {
@@ -2382,78 +1899,59 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 		int backupindex = index;
 		int max2        = mMaxSelectZukan;
 		if (mIsPreDebt) {
-			for (int i = 0; i < mMaxSelectZukan; i++) {
-				backupindex = i;
-				if (index == mViewablePanelIDList[i])
+			for (int i = 0; i < mMaxPane; i++) {
+				// backupindex = i;
+				if (index == mViewablePanelIDList[i]) {
+					index = i;
 					break;
-				max2--;
-				backupindex = index;
+				}
+				// 	break;
+				// max2--;
+				// backupindex = index;
 			}
 		}
-		if (backupindex < 3) {
+		if (index > 2) {
 			while (true) {
-				int index  = mIndexPaneList[mCurrentSelect]->getListIndex();
-				int index2 = index + 3;
+				int listIndex = mIndexPaneList[mCurrActiveRowSel]->getListIndex(); // r3
+				int index2    = listIndex + 3;                                     // r4
 				if (mIsPreDebt) {
-					int max = _234;
-					if (max >= 0 && index < max && index2 > max) {
-						index2 = max;
+					// int max = _234;
+					if (_234 >= 0 && listIndex < _234 && index2 > _234) {
+						index2 = _234;
 					}
 				}
-				if (backupindex > index2 && (index == backupindex || mIndexPaneList[mCurrentSelect]->mSizeType != 0))
+				if (index2 > index && (listIndex == index || mIndexPaneList[mCurrActiveRowSel]->mSizeType == 0)) {
+					if (mIndexPaneList[mCurrActiveRowSel]->mSizeType != 0) {
+						yoffs = -yoffs * 0.5f;
+						for (int j = 0; j < mNumActiveRows; j++) {
+							paneStuff(j, yoffs);
+						}
+						mRightOffset = 1;
+					} else {
+						mRightOffset = index - listIndex;
+						P2ASSERTBOUNDSLINE(2431, 0, mRightOffset, 3);
+					}
+					changePaneInfo();
 					break;
-
-				for (int j = 0; j < mMaxSelect; j++) {
-					TIndexPane* idpane = mIndexPaneList[j];
-					J2DPane* pane      = idpane->mPane;
-					pane->mOffset.y    = idpane->_1C - yoffs;
-					pane->calcMtx();
-					mIndexPaneList[j]->_1C = mIndexPaneList[j]->mPane->mOffset.y;
 				}
-				mRightOffset = 1; // backupindex - max2;
 
-				// updateIndex(true);
-				// TIndexGroup* grp = mIndexGroup;
-				// grp->_14         = xoffs;
-				// grp->_20         = 0.0f;
-				// changePaneInfo();
-			}
-
-			mRightOffset = backupindex - max2;
-			bool assert  = false;
-			if (mRightOffset < 0 || mRightOffset < 3) {
-				assert = true;
-			}
-			P2ASSERTLINE(2431, assert);
-
-			if (mIndexPaneList[mCurrentSelect]->mSizeType == 0) {
-				yoffs = -yoffs * 0.5f;
-				for (int j = 0; j < mMaxSelect; j++) {
-					TIndexPane* idpane = mIndexPaneList[j];
-					J2DPane* pane      = idpane->mPane;
-					pane->mOffset.y    = idpane->_1C - yoffs;
-					pane->calcMtx();
-					mIndexPaneList[j]->_1C = mIndexPaneList[j]->mPane->mOffset.y;
+				for (int j = 0; j < mNumActiveRows; j++) {
+					paneStuff(j, -yoffs);
 				}
-				// mRightOffset = 1;
-			} else {
 				updateIndex(true);
-				TIndexGroup* grp = mIndexGroup;
-				grp->_14         = xoffs;
-				grp->_20         = 0;
-				// mRightOffset = backupindex - max2;
-				// if (mRightOffset < 0 || mRightOffset > 2) {
-				//	JUT_PANICLINE(2431, "P2ASSERT");
-				//}
+				TIndexGroup* grp   = mIndexGroup;
+				grp->mScrollOffset = xoffs;
+				grp->mStateID      = 0.0f;
+				changePaneInfo();
 			}
-			changePaneInfo();
+
 		} else {
-			mRightOffset = backupindex % 3;
+			mRightOffset = index % 3;
 			changePaneInfo();
 		}
 	}
 
-	mCurrIndex = mIndexPaneList[mCurrentSelect]->getIndex();
+	mCurrIndex = mIndexPaneList[mCurrActiveRowSel]->getIndex();
 	if (mCurrIndex >= 0) {
 		J2DPane* pane = mPaneMessageDemo;
 		u64 tag       = getXMsgID(mCurrIndex);
@@ -2463,14 +1961,13 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 	backup->becomeCurrentHeap();
 }
 
-/*
- * --INFO--
- * Address:	80376338
- * Size:	0001D8
+/**
+ * @note Address: 0x80376338
+ * @note Size: 0x1D8
  */
 void TEnemyZukan::setDetail()
 {
-	int cindex = mIndexPaneList[mCurrentSelect]->getIndex();
+	int cindex = mIndexPaneList[mCurrActiveRowSel]->getIndex();
 	mInfoVal1  = getPrice(cindex);
 	JUT_ASSERTLINE(2491, mInfoVal1 < 10000, "price (%d) = %d\n", cindex, mInfoVal1);
 
@@ -2553,10 +2050,9 @@ void TEnemyZukan::setDetail()
 	mPikiLostCounter->forceScaleUp(false);
 }
 
-/*
- * --INFO--
- * Address:	80376510
- * Size:	000048
+/**
+ * @note Address: 0x80376510
+ * @note Size: 0x48
  */
 void TEnemyZukan::setShortenIndex(int paneID, int index, bool flag)
 {
@@ -2566,10 +2062,9 @@ void TEnemyZukan::setShortenIndex(int paneID, int index, bool flag)
 	TZukanBase::setShortenIndex(paneID, index, flag);
 }
 
-/*
- * --INFO--
- * Address:	80376558
- * Size:	0000D8
+/**
+ * @note Address: 0x80376558
+ * @note Size: 0xD8
  */
 bool TEnemyZukan::isListShow(int index)
 {
@@ -2583,15 +2078,9 @@ bool TEnemyZukan::isListShow(int index)
 		return mDebugUnlockedList[index];
 
 	if (Game::playData) {
-		int* data = eIDInfo[0];
-		for (int i = 0; i < ENEMY_ZUKAN_COUNT; i++) {
-			if (eIDInfo[i][0] == index) {
-				data = eIDInfo[i];
-				break;
-			}
-		}
+		int* data                  = getEnemyInfo(index);
 		Game::TekiStat::Info* info = Game::playData->mTekiStatMgr.getTekiInfo(data[1]);
-		if (info->mState & TEKISTAT_STATE_UPDATED) {
+		if (info->mState.isSet(TEKISTAT_STATE_UPDATED)) {
 			return true;
 		} else {
 			return false;
@@ -2600,146 +2089,174 @@ bool TEnemyZukan::isListShow(int index)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80376630
- * Size:	000718
+/**
+ * @note Address: 0x80376630
+ * @note Size: 0x718
  */
 void TEnemyZukan::indexPaneInit(J2DScreen* screen)
 {
-	_90            = 0;
-	mCurrentSelect = 4;
-	_98            = mMaxSelect - 1;
-	mMaxSelect     = 14;
-	mCurrentSelect = 6;
-	_98            = mMaxSelect - 1;
+	mCurrMinActiveRow = 0;
+	mCurrActiveRowSel = 4;
+	mCurrMaxActiveRow = mNumActiveRows - 1;
+	mNumActiveRows    = 14; // 14 rows of enemies are active at once
+	mCurrActiveRowSel = 6;
+	mCurrMaxActiveRow = mNumActiveRows - 1;
 
-	u64 tags[10] = { 'Tmenu00', 'Tmenu01', 'Tmenu02', 'Tmenu03', 'Tmenu04', 'Tmenu05', 'Tmenu06', 'Tmenu07', 'Tmenu08', 'Tmenu09' };
+	u64 tags[14] = { 'Tmenu12', 'Tmenu13', 'Tmenu00', 'Tmenu01', 'Tmenu02', 'Tmenu03', 'Tmenu04',
+		             'Tmenu05', 'Tmenu07', 'Tmenu06', 'Tmenu08', 'Tmenu09', 'Tmenu10', 'Tmenu11' };
 
-	J2DPane* pane = screen->search(tags[_90]);
-	P2ASSERTLINE(1083, pane);
-	_A0 = pane->mOffset.y;
+	J2DPane* pane = screen->search(tags[mCurrMinActiveRow]);
+	P2ASSERTLINE(2650, pane);
+	mMinSelYOffset = pane->mOffset.y;
 
-	J2DPane* pane2 = screen->search(tags[_98]);
-	P2ASSERTLINE(1086, pane2);
-	_A4 = pane2->mOffset.y;
+	J2DPane* pane2 = screen->search(tags[mCurrMaxActiveRow]);
+	P2ASSERTLINE(2653, pane2);
+	mMaxSelYOffset = pane2->mOffset.y;
 
 	// clang-format off
-	u64 panetags[120] = {	'Pn00_0_1', 'Pn00_1_1', 'Pn00_2_1',
+	u64 panetags[14][4][3] = {
+							'Pn12_0_1', 'Pn12_1_1', 'Pn12_2_1',
+							'Pn12_0_2', 'Pn12_1_2', 'Pn12_2_2',
+							'Pim12_00', 'Pim12_01', 'Pim12_02',
+							'Pme12_00', 'Pme12_01', 'Pme12_02',
+
+							'Pn13_0_1', 'Pn13_1_1', 'Pn13_2_1',
+							'Pn13_0_2', 'Pn13_1_2', 'Pn13_2_2',
+							'Pim13_00', 'Pim13_01', 'Pim13_02',
+							'Pme13_00', 'Pme13_01', 'Pme13_02',
+
+							'Pn00_0_1', 'Pn00_1_1', 'Pn00_2_1',
 							'Pn00_0_2', 'Pn00_1_2', 'Pn00_2_2',
 							'Pim00_00', 'Pim00_01', 'Pim00_02',
 							'Pme00_00', 'Pme00_01', 'Pme00_02',
-							
+
 							'Pn01_0_1', 'Pn01_1_1', 'Pn01_2_1',
 							'Pn01_0_2', 'Pn01_1_2', 'Pn01_2_2',
 							'Pim01_00', 'Pim01_01', 'Pim01_02',
 							'Pme01_00', 'Pme01_01', 'Pme01_02',
-							
+
 							'Pn02_0_1', 'Pn02_1_1', 'Pn02_2_1',
 							'Pn02_0_2', 'Pn02_1_2', 'Pn02_2_2',
 							'Pim02_00', 'Pim02_01', 'Pim02_02',
 							'Pme02_00', 'Pme02_01', 'Pme02_02',
-							
+
 							'Pn03_0_1', 'Pn03_1_1', 'Pn03_2_1',
 							'Pn03_0_2', 'Pn03_1_2', 'Pn03_2_2',
 							'Pim03_00', 'Pim03_01', 'Pim03_02',
 							'Pme03_00', 'Pme03_01', 'Pme03_02',
-							
+
 							'Pn04_0_1', 'Pn04_1_1', 'Pn04_2_1',
 							'Pn04_0_2', 'Pn04_1_2', 'Pn04_2_2',
 							'Pim04_00', 'Pim04_01', 'Pim04_02',
 							'Pme04_00', 'Pme04_01', 'Pme04_02',
-							
+
 							'Pn05_0_1', 'Pn05_1_1', 'Pn05_2_1',
 							'Pn05_0_2', 'Pn05_1_2', 'Pn05_2_2',
 							'Pim05_00', 'Pim05_01', 'Pim05_02',
 							'Pme05_00', 'Pme05_01', 'Pme05_02',
-							
-							'Pn06_0_1', 'Pn06_1_1', 'Pn06_2_1',
-							'Pn06_0_2', 'Pn06_1_2', 'Pn06_2_2',
-							'Pim06_00', 'Pim06_01', 'Pim06_02',
-							'Pme06_00', 'Pme06_01', 'Pme06_02',
-							
+
 							'Pn07_0_1', 'Pn07_1_1', 'Pn07_2_1',
 							'Pn07_0_2', 'Pn07_1_2', 'Pn07_2_2',
 							'Pim07_00', 'Pim07_01', 'Pim07_02',
 							'Pme07_00', 'Pme07_01', 'Pme07_02',
-							
+
+							'Pn06_0_1', 'Pn06_1_1', 'Pn06_2_1',
+							'Pn06_0_2', 'Pn06_1_2', 'Pn06_2_2',
+							'Pim06_00', 'Pim06_01', 'Pim06_02',
+							'Pme06_00', 'Pme06_01', 'Pme06_02',
+
 							'Pn08_0_1', 'Pn08_1_1', 'Pn08_2_1',
 							'Pn08_0_2', 'Pn08_1_2', 'Pn08_2_2',
 							'Pim08_00', 'Pim08_01', 'Pim08_02',
-							'Pme08_00', 'Pme08_01', 'Pme08_02',
-							
+							'Pme08_00', 'Pme08_01', 'Pme07_05',
+
 							'Pn09_0_1', 'Pn09_1_1', 'Pn09_2_1',
 							'Pn09_0_2', 'Pn09_1_2', 'Pn09_2_2',
 							'Pim09_00', 'Pim09_01', 'Pim09_02',
-							'Pme09_00', 'Pme09_01', 'Pme09_02'	 };
+							'Pme09_00', 'Pme09_01', 'Pme09_02',
+
+							'Pn10_0_1', 'Pn10_1_1', 'Pn10_2_1',
+							'Pn10_0_2', 'Pn10_1_2', 'Pn10_2_2',
+							'Pim10_00', 'Pim10_01', 'Pim09_03',
+							'Pme10_00', 'Pme10_01', 'Pme10_02',
+
+							'Pn11_0_1', 'Pn11_1_1', 'Pn11_2_1',
+							'Pn11_0_2', 'Pn11_1_2', 'Pn11_2_2',
+							'Pim09_08', 'Pim11_01', 'Pim11_02',
+							'Pme11_00', 'Pme11_01', 'Pme11_02' };
 	// clang-format on
+
+	if (mIsPreDebt) {
+		_243 = true;
+	}
 
 	bool flag = false;
 	if (mIsPreDebt && mMaxPane == 0) {
 		flag = true;
 	}
 
-	mIndexPaneList = new TIndexPane*[mMaxSelect];
-	for (int i = 0; i < mMaxSelect; i++) {
+	mIndexPaneList = new TIndexPane*[mNumActiveRows];
+	for (int i = 0; i < mNumActiveRows; i++) {
 		mIndexPaneList[i] = nullptr;
 	}
 
-	int idk = 0;
-	for (int i = 0; i < mMaxSelect; i++) {
+	int prevIndex = 0;
+	for (int i = 0; i < mNumActiveRows; i++) {
 		mIndexPaneList[i] = new TIndexPane(this, static_cast<P2DScreen::Mgr_tuning*>(screen), tags[i]);
 		mIndexPaneList[i]->createIconInfo(3, getIdMax());
+		TIconInfo* icon;
 		for (int j = 0; j < 3; j++) {
-			TIconInfo* icon = mIndexPaneList[i]->mIconInfos[j];
-			J2DPane* pane1  = screen->search(panetags[i * 12] + 9 + j);
-			J2DPane* pane2  = screen->search(panetags[i * 12] + 6 + j);
-			TScaleUpCounter* counter
-			    = setScaleUpCounter2(mListScreen->mScreenObj, panetags[i * 12] + j, panetags[i * 12] + 3 + j, &icon->_18, 3, mArchive);
-			icon->init(counter, pane1, pane2);
+			icon                             = mIndexPaneList[i]->mIconInfos[j];
+			P2DScreen::Mgr_tuning* screenobj = mListScreen->mScreenObj;
+			icon->init(setScaleUpCounter2(screenobj, panetags[i][0][j], panetags[i][1][j], &icon->mParentIndex, 2, mArchive),
+			           screen->search(panetags[i][2][j]), screen->search(panetags[i][3][j]));
+
 			if (mCanComplete) {
-				J2DPictureEx* pic
-				    = new J2DPictureEx('test', *screen->search(panetags[i * 12] + j)->getBounds(), "w08_48_gra.bti", 0x1100000);
-				P2ASSERTLINE(1129, pic);
+				J2DPictureEx* pic = new J2DPictureEx('test', *screen->search(panetags[i][3][j])->getBounds(), "w08_48_gra.bti", 0x1100000);
+				P2ASSERTLINE(2705, pic);
 				mIndexPaneList[i]->mIconInfos[j]->mPic = pic;
 				screen->search(tags[i])->appendChild(pic);
-				screen->search(tags[i])->appendChild(screen->search(panetags[i * 12] + j + 9));
+				screen->search(tags[i])->appendChild(screen->search(panetags[i][3][j]));
 				pic->setBasePosition(J2DPOS_Center);
 			}
 		}
-		J2DPane* pane = mIndexPaneList[i]->mPane;
-		int test      = i * mRowSize;
+
+		J2DPane* pane                = mIndexPaneList[i]->mPane;
+		int index                    = i * mRowSize;
+		mIndexPaneList[i]->mSizeType = 0;
 		if (mIsPreDebt) {
-			test = idk;
+			index = prevIndex;
 		}
 
 		if (mDoEnableBigIcon && i > 0) {
-			int id    = mIndexPaneList[i]->getListIndex();
-			bool test = true;
+			int listIndex = mIndexPaneList[i - 1]->getListIndex();
+			index         = listIndex;
+			bool test     = true;
 			switch (mIndexPaneList[i - 1]->mSizeType) {
-			case 1:
-				test = id + 1;
-				break;
-			case 2:
-				test = id;
-				break;
 			case 0:
-				test = idk;
-				if (idk != _234) {
-					test = idk + mRowSize;
+				// index = prevIndex;
+				if (prevIndex == _234) {
+					index = prevIndex;
+				} else {
+					index = listIndex + mRowSize;
 				}
 				break;
+			case 1:
+				index = listIndex + 1;
+				break;
+			case 2:
 			case 3:
-				test                             = false;
-				mIndexPaneList[i - 1]->mSizeType = 1;
+				test                         = false;
+				mIndexPaneList[i]->mSizeType = 1;
 			}
+
 			if (test) {
 				if (mIsPreDebt) {
-					if (test < mMaxSelectZukan && mIsBigIconList[mViewablePanelIDList[test]]) {
+					if (index < mMaxPane && mIsBigIconList[mViewablePanelIDList[index]]) {
 						mIndexPaneList[i]->mSizeType = 2;
 					}
 				} else {
-					if (mIsBigIconList[test]) {
+					if (mIsBigIconList[index]) {
 						mIndexPaneList[i]->mSizeType = 2;
 					}
 				}
@@ -2750,1444 +2267,344 @@ void TEnemyZukan::indexPaneInit(J2DScreen* screen)
 			if (flag) {
 				setShortenIndex(i, -1, true);
 			} else {
-				getUpdateIndex(test, true);
-				setShortenIndex(i, idk, true);
-				if (!test && idk) {
+				getUpdateIndex(index, true);
+				setShortenIndex(i, prevIndex, true);
+
+				if (prevIndex < _234 && prevIndex + 3 > _234) {
+					prevIndex = index = _234;
+				}
+				if (index == 0 && prevIndex != 0) {
 					flag = true;
 				}
-				idk = test;
-				if (mMaxPane < 3) {
+
+				if (mMaxSelectZukan < 3) {
 					flag = true;
 				}
+				prevIndex = index;
+			}
+
+			mCurrMinActiveRow++;
+			if (mCurrMinActiveRow >= mNumActiveRows) {
+				mCurrMinActiveRow = 0;
 			}
 		} else {
-			setShortenIndex(i, test, true);
+			setShortenIndex(i, index, true);
 		}
-		if (idk > -1 && _B0) {
-			pane->setMsgID(getNameID(idk));
+		if (index >= 0 && _B0) {
+			pane->setMsgID(getNameID(index));
 		}
 	}
+
+	for (int i = 0; i < mNumActiveRows; i++) {
+		// some commented out/debug code here
+	}
 	_243 = false;
-	/*
-	stwu     r1, -0x610(r1)
-	mflr     r0
-	li       r6, 0xe
-	stw      r0, 0x614(r1)
-	li       r0, 0
-	addi     r5, r1, 0x14
-	stmw     r16, 0x5d0(r1)
-	mr       r23, r3
-	mr       r24, r4
-	stw      r0, 0x90(r3)
-	li       r0, 4
-	lis      r3, lbl_80492520@ha
-	stw      r0, 0x94(r23)
-	addi     r22, r3, lbl_80492520@l
-	li       r0, 6
-	lha      r3, 0x8e(r23)
-	addi     r4, r22, 0x63c
-	addi     r3, r3, -1
-	stw      r3, 0x98(r23)
-	sth      r6, 0x8e(r23)
-	stw      r0, 0x94(r23)
-	lha      r3, 0x8e(r23)
-	addi     r0, r3, -1
-	stw      r0, 0x98(r23)
-	mtctr    r6
-
-lbl_80376694:
-	lwz      r3, 4(r4)
-	lwzu     r0, 8(r4)
-	stw      r3, 4(r5)
-	stwu     r0, 8(r5)
-	bdnz     lbl_80376694
-	mr       r3, r24
-	lwz      r4, 0x90(r23)
-	lwz      r12, 0(r24)
-	addi     r0, r1, 0x18
-	slwi     r4, r4, 3
-	lwz      r12, 0x3c(r12)
-	add      r6, r0, r4
-	lwz      r5, 0(r6)
-	lwz      r6, 4(r6)
-	mtctr    r12
-	bctrl
-	or.      r17, r3, r3
-	bne      lbl_803766F0
-	addi     r3, r22, 0xc
-	addi     r5, r22, 0x18
-	li       r4, 0xa5a
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803766F0:
-	lfs      f0, 0xd8(r17)
-	mr       r3, r24
-	addi     r0, r1, 0x18
-	stfs     f0, 0xa0(r23)
-	lwz      r4, 0x98(r23)
-	lwz      r12, 0(r24)
-	slwi     r4, r4, 3
-	add      r6, r0, r4
-	lwz      r12, 0x3c(r12)
-	lwz      r5, 0(r6)
-	lwz      r6, 4(r6)
-	mtctr    r12
-	bctrl
-	or.      r17, r3, r3
-	bne      lbl_80376740
-	addi     r3, r22, 0xc
-	addi     r5, r22, 0x18
-	li       r4, 0xa5d
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_80376740:
-	lfs      f0, 0xd8(r17)
-	li       r0, 0xa8
-	addi     r5, r1, 0x84
-	addi     r4, r22, 0x6ac
-	stfs     f0, 0xa4(r23)
-	mtctr    r0
-
-lbl_80376758:
-	lwz      r3, 4(r4)
-	lwzu     r0, 8(r4)
-	stw      r3, 4(r5)
-	stwu     r0, 8(r5)
-	bdnz     lbl_80376758
-	lbz      r0, 0x240(r23)
-	cmplwi   r0, 0
-	beq      lbl_80376780
-	li       r0, 1
-	stb      r0, 0x243(r23)
-
-lbl_80376780:
-	lbz      r0, 0x240(r23)
-	li       r28, 0
-	cmplwi   r0, 0
-	beq      lbl_803767A0
-	lwz      r0, 0x230(r23)
-	cmpwi    r0, 0
-	bne      lbl_803767A0
-	li       r28, 1
-
-lbl_803767A0:
-	lha      r0, 0x8e(r23)
-	slwi     r3, r0, 2
-	bl       __nwa__FUl
-	li       r5, 0
-	stw      r3, 0x88(r23)
-	mr       r4, r5
-	li       r6, 0
-	b        lbl_803767D0
-
-lbl_803767C0:
-	lwz      r3, 0x88(r23)
-	addi     r6, r6, 1
-	stwx     r4, r3, r5
-	addi     r5, r5, 4
-
-lbl_803767D0:
-	lha      r0, 0x8e(r23)
-	cmpw     r6, r0
-	blt      lbl_803767C0
-	addi     r31, r1, 0x18
-	addi     r29, r1, 0x88
-	li       r27, 0
-	li       r26, 0
-	li       r30, 0
-	b        lbl_80376CD8
-
-lbl_803767F4:
-	li       r3, 0x28
-	bl       __nw__FUl
-	or.      r17, r3, r3
-	beq      lbl_80376854
-	mr       r3, r24
-	lwz      r5, 0(r31)
-	lwz      r12, 0(r24)
-	lwz      r6, 4(r31)
-	lwz      r12, 0x3c(r12)
-	mtctr    r12
-	bctrl
-	li       r0, 0
-	lfs      f0, lbl_8051EB20@sda21(r2)
-	stw      r0, 0(r17)
-	stw      r3, 4(r17)
-	stw      r0, 8(r17)
-	stw      r0, 0xc(r17)
-	stw      r0, 0x10(r17)
-	stfs     f0, 0x18(r17)
-	stw      r0, 0x20(r17)
-	stw      r23, 0x24(r17)
-	lwz      r3, 4(r17)
-	lfs      f0, 0xd8(r3)
-	stfs     f0, 0x1c(r17)
-
-lbl_80376854:
-	lwz      r4, 0x88(r23)
-	mr       r3, r23
-	stwx     r17, r4, r30
-	lwz      r12, 0(r23)
-	lwz      r12, 0x88(r12)
-	mtctr    r12
-	bctrl
-	lwz      r6, 0x88(r23)
-	mr       r5, r3
-	li       r4, 3
-	lwzx     r3, r6, r30
-	bl       createIconInfo__Q28Morimura10TIndexPaneFii
-	mr       r19, r29
-	li       r25, 0
-	li       r20, 0
-
-lbl_80376890:
-	lwz      r0, 0x88(r23)
-	mr       r3, r24
-	lwz      r12, 0(r24)
-	lwzx     r5, r30, r0
-	lwz      r4, 0xb4(r23)
-	lwz      r5, 0x20(r5)
-	lwz      r12, 0x3c(r12)
-	lwzx     r21, r5, r20
-	lwz      r16, 8(r4)
-	lwz      r5, 0x48(r19)
-	lwz      r6, 0x4c(r19)
-	mtctr    r12
-	bctrl
-	mr       r17, r3
-	mr       r3, r24
-	lwz      r12, 0(r24)
-	lwz      r5, 0x30(r19)
-	lwz      r12, 0x3c(r12)
-	lwz      r6, 0x34(r19)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x78(r23)
-	mr       r18, r3
-	mr       r3, r16
-	addi     r9, r21, 0x18
-	stw      r0, 8(r1)
-	li       r10, 2
-	lwz      r5, 0(r19)
-	lwz      r6, 4(r19)
-	lwz      r7, 0x18(r19)
-	lwz      r8, 0x1c(r19)
-	bl setScaleUpCounter2__8MorimuraFPQ29P2DScreen3MgrUxUxPUlUsP10JKRArchive mr
-r4, r3 mr       r3, r21 mr       r5, r18 mr       r6, r17 bl
-init__Q28Morimura9TIconInfoFPQ28Morimura15TScaleUpCounterP7J2DPaneP7J2DPane lbz
-r0, 0x241(r23) cmplwi   r0, 0 beq      lbl_80376A28 li       r3, 0x1a8 bl
-__nw__FUl or.      r21, r3, r3 beq      lbl_80376984 mr       r3, r24 lwz r5,
-0x48(r19) lwz      r12, 0(r24) lwz      r6, 0x4c(r19) lwz      r12, 0x3c(r12)
-	mtctr    r12
-	bctrl
-	bl       getBounds__7J2DPaneFv
-	lis      r4, 0x74657374@ha
-	mr       r7, r3
-	mr       r3, r21
-	addi     r8, r22, 0x458
-	addi     r6, r4, 0x74657374@l
-	li       r5, 0
-	lis      r9, 0x110
-	bl       "__ct__12J2DPictureExFUxRCQ29JGeometry8TBox2<f>PCcUl"
-	mr       r21, r3
-
-lbl_80376984:
-	cmplwi   r21, 0
-	bne      lbl_803769A0
-	addi     r3, r22, 0xc
-	addi     r5, r22, 0x18
-	li       r4, 0xa91
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803769A0:
-	lwz      r0, 0x88(r23)
-	mr       r3, r24
-	lwzx     r4, r30, r0
-	lwz      r4, 0x20(r4)
-	lwzx     r4, r4, r20
-	stw      r21, 4(r4)
-	lwz      r12, 0(r24)
-	lwz      r5, 0(r31)
-	lwz      r12, 0x3c(r12)
-	lwz      r6, 4(r31)
-	mtctr    r12
-	bctrl
-	mr       r4, r21
-	bl       appendChild__7J2DPaneFP7J2DPane
-	mr       r3, r24
-	lwz      r5, 0x48(r19)
-	lwz      r12, 0(r24)
-	lwz      r6, 0x4c(r19)
-	lwz      r12, 0x3c(r12)
-	mtctr    r12
-	bctrl
-	mr       r18, r3
-	mr       r3, r24
-	lwz      r12, 0(r24)
-	lwz      r5, 0(r31)
-	lwz      r12, 0x3c(r12)
-	lwz      r6, 4(r31)
-	mtctr    r12
-	bctrl
-	mr       r4, r18
-	bl       appendChild__7J2DPaneFP7J2DPane
-	mr       r3, r21
-	li       r4, 4
-	bl       setBasePosition__7J2DPaneF15J2DBasePosition
-
-lbl_80376A28:
-	addi     r25, r25, 1
-	addi     r19, r19, 8
-	cmpwi    r25, 3
-	addi     r20, r20, 4
-	blt      lbl_80376890
-	lwz      r3, 0x9c(r23)
-	li       r0, 0
-	lwz      r4, 0x88(r23)
-	mullw    r3, r26, r3
-	lwzx     r4, r4, r30
-	lwz      r19, 4(r4)
-	stw      r3, 0x10(r1)
-	lwz      r3, 0x88(r23)
-	lwzx     r3, r3, r30
-	stw      r0, 0xc(r3)
-	lbz      r0, 0x240(r23)
-	cmplwi   r0, 0
-	beq      lbl_80376A74
-	stw      r27, 0x10(r1)
-
-lbl_80376A74:
-	lbz      r0, 0x8c(r23)
-	cmplwi   r0, 0
-	beq      lbl_80376B8C
-	cmpwi    r26, 0
-	ble      lbl_80376B8C
-	lwz      r3, 0x88(r23)
-	addi     r0, r30, -4
-	lwzx     r3, r3, r0
-	bl       getListIndex__Q28Morimura10TIndexPaneFv
-	stw      r3, 0x10(r1)
-	li       r6, 1
-	lwz      r0, 0x88(r23)
-	add      r5, r0, r30
-	lwz      r4, -4(r5)
-	lwz      r0, 0xc(r4)
-	cmpwi    r0, 1
-	beq      lbl_80376AF8
-	bge      lbl_80376AC8
-	cmpwi    r0, 0
-	bge      lbl_80376AD4
-	b        lbl_80376B14
-
-lbl_80376AC8:
-	cmpwi    r0, 4
-	bge      lbl_80376B14
-	b        lbl_80376B04
-
-lbl_80376AD4:
-	lwz      r0, 0x234(r23)
-	cmpw     r27, r0
-	bne      lbl_80376AE8
-	stw      r27, 0x10(r1)
-	b        lbl_80376B14
-
-lbl_80376AE8:
-	lwz      r0, 0x9c(r23)
-	add      r0, r3, r0
-	stw      r0, 0x10(r1)
-	b        lbl_80376B14
-
-lbl_80376AF8:
-	addi     r0, r3, 1
-	stw      r0, 0x10(r1)
-	b        lbl_80376B14
-
-lbl_80376B04:
-	lwz      r3, 0(r5)
-	li       r0, 1
-	li       r6, 0
-	stw      r0, 0xc(r3)
-
-lbl_80376B14:
-	clrlwi.  r0, r6, 0x18
-	beq      lbl_80376B8C
-	lbz      r0, 0x240(r23)
-	cmplwi   r0, 0
-	beq      lbl_80376B68
-	lwz      r4, 0x10(r1)
-	lwz      r0, 0x230(r23)
-	cmpw     r4, r0
-	bge      lbl_80376B8C
-	lwz      r3, 0x22c(r23)
-	slwi     r0, r4, 2
-	lwz      r4, 0x184(r23)
-	lwzx     r0, r3, r0
-	lbzx     r0, r4, r0
-	cmplwi   r0, 0
-	beq      lbl_80376B8C
-	lwz      r3, 0x88(r23)
-	li       r0, 2
-	lwzx     r3, r3, r30
-	stw      r0, 0xc(r3)
-	b        lbl_80376B8C
-
-lbl_80376B68:
-	lwz      r3, 0x184(r23)
-	lwz      r0, 0x10(r1)
-	lbzx     r0, r3, r0
-	cmplwi   r0, 0
-	beq      lbl_80376B8C
-	lwz      r3, 0x88(r23)
-	li       r0, 2
-	lwzx     r3, r3, r30
-	stw      r0, 0xc(r3)
-
-lbl_80376B8C:
-	lbz      r0, 0x240(r23)
-	cmplwi   r0, 0
-	beq      lbl_80376C74
-	clrlwi.  r0, r28, 0x18
-	beq      lbl_80376BC4
-	mr       r3, r23
-	mr       r4, r26
-	lwz      r12, 0(r23)
-	li       r5, -1
-	li       r6, 1
-	lwz      r12, 0x94(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80376C4C
-
-lbl_80376BC4:
-	mr       r3, r23
-	addi     r4, r1, 0x10
-	lwz      r12, 0(r23)
-	li       r5, 1
-	lwz      r12, 0x90(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r23
-	mr       r4, r26
-	lwz      r12, 0(r23)
-	mr       r5, r27
-	li       r6, 1
-	lwz      r12, 0x94(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x234(r23)
-	cmpw     r27, r3
-	bge      lbl_80376C20
-	addi     r0, r27, 3
-	cmpw     r0, r3
-	ble      lbl_80376C20
-	stw      r3, 0x10(r1)
-	mr       r27, r3
-
-lbl_80376C20:
-	lwz      r3, 0x10(r1)
-	cmpwi    r3, 0
-	bne      lbl_80376C38
-	cmpwi    r27, 0
-	beq      lbl_80376C38
-	li       r28, 1
-
-lbl_80376C38:
-	lwz      r0, 0x238(r23)
-	cmpwi    r0, 3
-	bge      lbl_80376C48
-	li       r28, 1
-
-lbl_80376C48:
-	mr       r27, r3
-
-lbl_80376C4C:
-	lwz      r3, 0x90(r23)
-	addi     r0, r3, 1
-	stw      r0, 0x90(r23)
-	lwz      r3, 0x90(r23)
-	lha      r0, 0x8e(r23)
-	cmpw     r3, r0
-	blt      lbl_80376C94
-	li       r0, 0
-	stw      r0, 0x90(r23)
-	b        lbl_80376C94
-
-lbl_80376C74:
-	mr       r3, r23
-	mr       r4, r26
-	lwz      r12, 0(r23)
-	li       r6, 1
-	lwz      r5, 0x10(r1)
-	lwz      r12, 0x94(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80376C94:
-	lwz      r4, 0x10(r1)
-	cmpwi    r4, 0
-	blt      lbl_80376CC8
-	lbz      r0, 0xb0(r23)
-	cmplwi   r0, 0
-	beq      lbl_80376CC8
-	lwz      r12, 0(r23)
-	mr       r3, r23
-	lwz      r12, 0x8c(r12)
-	mtctr    r12
-	bctrl
-	stw      r4, 0x1c(r19)
-	stw      r3, 0x18(r19)
-
-lbl_80376CC8:
-	addi     r31, r31, 8
-	addi     r30, r30, 4
-	addi     r29, r29, 0x60
-	addi     r26, r26, 1
-
-lbl_80376CD8:
-	lha      r4, 0x8e(r23)
-	cmpw     r26, r4
-	blt      lbl_803767F4
-	cmpwi    r4, 0
-	li       r5, 0
-	ble      lbl_80376D2C
-	cmpwi    r4, 8
-	addi     r3, r4, -8
-	ble      lbl_80376D18
-	addi     r0, r3, 7
-	srwi     r0, r0, 3
-	mtctr    r0
-	cmpwi    r3, 0
-	ble      lbl_80376D18
-
-lbl_80376D10:
-	addi     r5, r5, 8
-	bdnz     lbl_80376D10
-
-lbl_80376D18:
-	subf     r0, r5, r4
-	mtctr    r0
-	cmpw     r5, r4
-	bge      lbl_80376D2C
-
-lbl_80376D28:
-	bdnz     lbl_80376D28
-
-lbl_80376D2C:
-	li       r0, 0
-	stb      r0, 0x243(r23)
-	lmw      r16, 0x5d0(r1)
-	lwz      r0, 0x614(r1)
-	mtlr     r0
-	addi     r1, r1, 0x610
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	80376D48
- * Size:	000970
+/**
+ * @note Address: 0x80376D48
+ * @note Size: 0x970
  */
 void TEnemyZukan::getUpdateIndex(int& id, bool flag)
 {
 	if (flag) {
 		if (mIsPreDebt && _243) {
 			P2ASSERTLINE(2853, id >= 0);
+
+			if (mIsBigIconList[mViewablePanelIDList[id]]) {
+				// int test = mIndexPaneList[mCurrMinActiveRow]->mSizeType;
+				switch (mIndexPaneList[mCurrMinActiveRow]->mSizeType) {
+				case 1:
+					id++;
+					break;
+				case 2:
+					break;
+				}
+			} else {
+				id += mRowSize;
+			}
+			int id2 = getIdMax();
+			if (mIsPreDebt) {
+				id2 = mMaxPane;
+			}
+			if (id >= id2)
+				id = 0;
+			return;
 		}
-		int id2 = id;
-		if (mIsBigIconList[mViewablePanelIDList[id2]]) {
-			int test = mIndexPaneList[_90]->mSizeType;
-			switch (test) {
+
+		if (mMaxSelectZukan <= mNumActiveRows * 3) {
+			id = mIndexPaneList[mCurrMinActiveRow]->getListIndex();
+			return;
+		}
+		bool flag2 = false; // r31
+		bool flag3 = false; // r30
+
+		mIndexPaneList[mCurrMinActiveRow]->mSizeType = 0;
+		if (id == mIndexPaneList[mCurrMaxActiveRow]->getListIndex()) {
+			flag3 = true;
+		}
+
+		int count = 0;
+		for (int i = 0; i < mNumActiveRows; i++) {
+			if (mIndexPaneList[i]->getListIndex() == id) {
+				count++;
+			}
+		}
+
+		if (count == 2) {
+			flag2 = true;
+			id++;
+
+		} else {
+			switch (mIndexPaneList[mCurrMaxActiveRow]->mSizeType) {
+			case 2:
+				if (flag3) {
+					mIndexPaneList[mCurrMinActiveRow]->mSizeType = 1;
+				} else {
+					JUT_PANICLINE(2921, nullptr);
+				}
+				break;
 			case 1:
 			case 3:
-				id = id2 + 1;
+				if (flag3) {
+					mIndexPaneList[mCurrMaxActiveRow]->mSizeType = 2;
+					if (mIsPreDebt) {
+						setShortenIndex(mCurrMaxActiveRow, id, flag);
+					} else {
+						mIndexPaneList[mCurrMaxActiveRow]->setIndex(id);
+					}
+					mIndexPaneList[mCurrMinActiveRow]->mSizeType = 1;
+				} else {
+					flag2 = true;
+					id++;
+				}
+				break;
+			case 0:
+				if (_234 >= 0) {
+					if (count < 2) {
+						int nextRowId = id + mRowSize;
+						if (id < _234 && nextRowId > _234) {
+							id = _234;
+						} else {
+							id = nextRowId;
+						}
+					} else if (flag3 && mIsBigIconList[mViewablePanelIDList[id]]) {
+						id++;
+					} else {
+						id += mRowSize;
+					}
+				} else {
+					id += mRowSize;
+				}
+				flag2 = true;
+				break;
 			}
-		} else {
-			id = id2 + mRowSize;
 		}
-		id2 = getIdMax();
+
+		int idmax = getIdMax();
 		if (mIsPreDebt) {
-			id2 = mMaxSelectZukan;
+			idmax = mMaxPane;
 		}
-		if (id2 > id)
+		if (flag2) {
+			int test = id;
+			if (test < idmax && test >= 0) {
+				if (mIsPreDebt) {
+					test = mViewablePanelIDList[test];
+				}
+				if (mIsBigIconList[test]) {
+					mIndexPaneList[mCurrMinActiveRow]->mSizeType = 2;
+				}
+			}
+		}
+		if (id >= idmax) {
 			id = 0;
+		}
+		mIndexPaneList[mCurrMinActiveRow]->setIndex(id);
 		return;
 	}
 
-	if (mMaxSelectZukan <= mMaxSelect * 3) {
-		id = mIndexPaneList[_90]->getListIndex();
-		return;
+	if (mIsPreDebt && !_243) {
+		if (mMaxSelectZukan <= mNumActiveRows * 3) {
+			id = mIndexPaneList[mCurrMaxActiveRow]->getListIndex();
+			return;
+		}
 	}
 
-	bool flag2                     = false;
-	mIndexPaneList[_90]->mSizeType = 0;
-	bool flag3                     = id != mIndexPaneList[_90]->getListIndex();
-	int count                      = 0;
-	for (int i = 0; i < mMaxSelect; i++) {
-		if (mIndexPaneList[_90]->getListIndex() == id) {
+	int newIndex = mCurrMaxActiveRow - 1;
+	if (newIndex < 0) {
+		newIndex = mNumActiveRows - 1;
+	}
+
+	if (mIndexPaneList[newIndex]->mSizeType == 1) {
+		if (mIndexPaneList[newIndex]->getListIndex() == mIndexPaneList[mCurrMaxActiveRow]->getListIndex()) {
+			mIndexPaneList[newIndex]->mSizeType = 2;
+			if (mIsPreDebt) {
+				setShortenIndex(newIndex, mIndexPaneList[newIndex]->getListIndex(), flag);
+			} else {
+				mIndexPaneList[newIndex]->setIndex(mIndexPaneList[newIndex]->getListIndex());
+			}
+		}
+	}
+
+	bool flag2 = false;
+	bool flag3 = false;
+
+	mIndexPaneList[mCurrMaxActiveRow]->mSizeType = 0;
+	if (id == mIndexPaneList[mCurrMinActiveRow]->getListIndex()) {
+		flag3 = true;
+	}
+
+	int count = 0;
+	for (int i = 0; i < mNumActiveRows; i++) {
+		if (mIndexPaneList[i]->getListIndex() == id) {
 			count++;
 		}
 	}
 
 	if (count == 2) {
-		flag2 = true;
-		id++;
-	} else {
-		TIndexPane* pane = mIndexPaneList[_90];
-		switch (pane->mSizeType) {
-		case 2:
-			if (flag3) {
-				mIndexPaneList[_90]->mSizeType = 1;
+		int prevIdx = id - 1;
+		if (mIsPreDebt && id > 0) {
+			prevIdx = mViewablePanelIDList[prevIdx];
+		}
+
+		if (id > 0 && mIsBigIconList[prevIdx]) {
+			id--;
+		} else if (_234 >= 0 && id == _234) {
+			int newIdx;
+			if (_234 < 3) {
+				newIdx = _234;
 			} else {
-				JUT_PANICLINE(2921, nullptr);
-			}
-			break;
-		case 0:
-			int id2 = _234;
-			if (id2 < 0) {
-				id += mRowSize;
-			} else if (count < 2) {
-				count = id + mRowSize;
-				if (id < pane->mSizeType && pane->mSizeType < count) {
-					id = pane->mSizeType;
-				} else {
-					id = count;
+				newIdx = _234 % 3;
+				if (newIdx == 0) {
+					newIdx = 3;
 				}
-			} else if (flag3 || mIsBigIconList[mViewablePanelIDList[id]]) {
-				id += mRowSize;
+			}
+			id = _234 - newIdx;
+		} else {
+			id -= mRowSize;
+		}
+
+		flag2 = true;
+	} else {
+		switch (mIndexPaneList[mCurrMinActiveRow]->mSizeType) {
+		case 3:
+			if (flag3) {
+				mIndexPaneList[mCurrMaxActiveRow]->mSizeType = 1;
 			} else {
-				id++;
+				JUT_PANICLINE(3068, nullptr);
 			}
 			break;
 		case 1:
+		case 2:
 			if (flag3) {
-				pane->mSizeType = 2;
+				mIndexPaneList[mCurrMinActiveRow]->mSizeType = 3;
 				if (mIsPreDebt) {
-					mIndexPaneList[_90]->setIndex(id);
+					setShortenIndex(mCurrMinActiveRow, id, flag);
 				} else {
-					setShortenIndex(_90, id, flag);
+					mIndexPaneList[mCurrMinActiveRow]->setIndex(id);
 				}
+				mIndexPaneList[mCurrMaxActiveRow]->mSizeType = 1;
 			} else {
 				flag2 = true;
-				id++;
+				id--;
 			}
-			mIndexPaneList[_90]->mSizeType = 1;
+			break;
+		case 0:
+			int prevIdx = id - 1;
+			if (mIsPreDebt && id > 0) {
+				prevIdx = mViewablePanelIDList[prevIdx];
+			}
+
+			if (id > 0 && mIsBigIconList[prevIdx]) {
+				id--;
+			} else if (_234 >= 0 && id == _234) {
+				int newIdx;
+				if (_234 < 3) {
+					newIdx = _234;
+				} else {
+					newIdx = _234 % 3;
+					if (newIdx == 0) {
+						newIdx = 3;
+					}
+				}
+				id = _234 - newIdx;
+			} else {
+				id -= mRowSize;
+			}
+
+			int maxId = getIdMax() - 1;
+			if (mIsPreDebt) {
+				if (_234 >= 0) {
+					maxId = mMaxPane - 1;
+				} else {
+					int newIdx;
+					if (mMaxPane < 3) {
+						newIdx = mMaxPane;
+					} else {
+						newIdx = mMaxPane % 3;
+						if (newIdx == 0) {
+							newIdx = 3;
+						}
+					}
+					maxId = mMaxPane - newIdx;
+				}
+			}
+			if (id < 0) {
+				id = maxId;
+			}
+			flag2 = true;
+			break;
 		}
 	}
 
-	int idmax = getIdMax();
-	if (mIsPreDebt) {
-		idmax = mMaxSelectZukan;
-	}
 	if (flag2) {
-		int test = id;
-		if (test < idmax && test >= 0) {
-			if (mIsPreDebt) {
+		if (id >= 0) {
+			int test = id;
+			if (mIsPreDebt && mViewablePanelIDList) {
 				test = mViewablePanelIDList[test];
 			}
 			if (mIsBigIconList[test]) {
-				mIndexPaneList[_90]->mSizeType = 2;
+				mIndexPaneList[mCurrMaxActiveRow]->mSizeType = 3;
 			}
 		}
 	}
-	if (id > idmax) {
-		id = idmax;
+	if (id < 0) {
+		if (mIsPreDebt) {
+			id = mMaxPane - mRowSize;
+		} else {
+			id = getIdMax() - mRowSize;
+		}
 	}
-	mIndexPaneList[_90]->setIndex(id);
-
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	clrlwi.  r0, r5, 0x18
-	stmw     r24, 0x10(r1)
-	mr       r29, r5
-	mr       r27, r3
-	mr       r28, r4
-	beq      lbl_80377164
-	lbz      r0, 0x240(r27)
-	cmplwi   r0, 0
-	beq      lbl_80376E4C
-	lbz      r0, 0x243(r27)
-	cmplwi   r0, 0
-	beq      lbl_80376E4C
-	lwz      r0, 0(r28)
-	cmpwi    r0, 0
-	bge      lbl_80376DAC
-	lis      r3, lbl_8049252C@ha
-	lis      r5, lbl_80492538@ha
-	addi     r3, r3, lbl_8049252C@l
-	li       r4, 0xb25
-	addi     r5, r5, lbl_80492538@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_80376DAC:
-	lwz      r4, 0(r28)
-	lwz      r3, 0x22c(r27)
-	slwi     r0, r4, 2
-	lwz      r5, 0x184(r27)
-	lwzx     r0, r3, r0
-	lbzx     r0, r5, r0
-	cmplwi   r0, 0
-	beq      lbl_80376E04
-	lwz      r0, 0x90(r27)
-	lwz      r3, 0x88(r27)
-	slwi     r0, r0, 2
-	lwzx     r3, r3, r0
-	lwz      r0, 0xc(r3)
-	cmpwi    r0, 2
-	beq      lbl_80376E10
-	bge      lbl_80376E10
-	cmpwi    r0, 1
-	bge      lbl_80376DF8
-	b        lbl_80376E10
-
-lbl_80376DF8:
-	addi     r0, r4, 1
-	stw      r0, 0(r28)
-	b        lbl_80376E10
-
-lbl_80376E04:
-	lwz      r0, 0x9c(r27)
-	add      r0, r4, r0
-	stw      r0, 0(r28)
-
-lbl_80376E10:
-	mr       r3, r27
-	lwz      r12, 0(r27)
-	lwz      r12, 0x88(r12)
-	mtctr    r12
-	bctrl
-	lbz      r0, 0x240(r27)
-	cmplwi   r0, 0
-	beq      lbl_80376E34
-	lwz      r3, 0x230(r27)
-
-lbl_80376E34:
-	lwz      r0, 0(r28)
-	cmpw     r0, r3
-	blt      lbl_803776A4
-	li       r0, 0
-	stw      r0, 0(r28)
-	b        lbl_803776A4
-
-lbl_80376E4C:
-	lha      r0, 0x8e(r27)
-	lwz      r3, 0x238(r27)
-	mulli    r0, r0, 3
-	cmpw     r3, r0
-	bgt      lbl_80376E7C
-	lwz      r0, 0x90(r27)
-	lwz      r3, 0x88(r27)
-	slwi     r0, r0, 2
-	lwzx     r3, r3, r0
-	bl       getListIndex__Q28Morimura10TIndexPaneFv
-	stw      r3, 0(r28)
-	b        lbl_803776A4
-
-lbl_80376E7C:
-	lwz      r0, 0x90(r27)
-	li       r4, 0
-	lwz      r3, 0x88(r27)
-	li       r31, 0
-	slwi     r0, r0, 2
-	li       r30, 0
-	lwzx     r3, r3, r0
-	stw      r4, 0xc(r3)
-	lwz      r0, 0x98(r27)
-	lwz      r3, 0x88(r27)
-	slwi     r0, r0, 2
-	lwzx     r3, r3, r0
-	bl       getListIndex__Q28Morimura10TIndexPaneFv
-	lwz      r0, 0(r28)
-	cmpw     r0, r3
-	bne      lbl_80376EC0
-	li       r30, 1
-
-lbl_80376EC0:
-	li       r25, 0
-	li       r24, 0
-	li       r26, 0
-	b        lbl_80376EF4
-
-lbl_80376ED0:
-	lwz      r3, 0x88(r27)
-	lwzx     r3, r3, r26
-	bl       getListIndex__Q28Morimura10TIndexPaneFv
-	lwz      r0, 0(r28)
-	cmpw     r0, r3
-	bne      lbl_80376EEC
-	addi     r25, r25, 1
-
-lbl_80376EEC:
-	addi     r26, r26, 4
-	addi     r24, r24, 1
-
-lbl_80376EF4:
-	lha      r0, 0x8e(r27)
-	cmpw     r24, r0
-	blt      lbl_80376ED0
-	cmpwi    r25, 2
-	bne      lbl_80376F1C
-	lwz      r3, 0(r28)
-	li       r31, 1
-	addi     r0, r3, 1
-	stw      r0, 0(r28)
-	b        lbl_803770B8
-
-lbl_80376F1C:
-	lwz      r0, 0x98(r27)
-	lwz      r5, 0x88(r27)
-	slwi     r0, r0, 2
-	lwzx     r3, r5, r0
-	lwz      r0, 0xc(r3)
-	cmpwi    r0, 2
-	beq      lbl_80376F58
-	bge      lbl_80376F4C
-	cmpwi    r0, 0
-	beq      lbl_8037701C
-	bge      lbl_80376F94
-	b        lbl_803770B8
-
-lbl_80376F4C:
-	cmpwi    r0, 4
-	bge      lbl_803770B8
-	b        lbl_80376F94
-
-lbl_80376F58:
-	clrlwi.  r0, r30, 0x18
-	beq      lbl_80376F78
-	lwz      r0, 0x90(r27)
-	li       r4, 1
-	slwi     r0, r0, 2
-	lwzx     r3, r5, r0
-	stw      r4, 0xc(r3)
-	b        lbl_803770B8
-
-lbl_80376F78:
-	lis      r3, lbl_8049252C@ha
-	li       r4, 0xb69
-	addi     r3, r3, lbl_8049252C@l
-	li       r5, 0
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-	b        lbl_803770B8
-
-lbl_80376F94:
-	clrlwi.  r0, r30, 0x18
-	beq      lbl_80377008
-	li       r0, 2
-	stw      r0, 0xc(r3)
-	lbz      r0, 0x240(r27)
-	cmplwi   r0, 0
-	beq      lbl_80376FD4
-	mr       r3, r27
-	mr       r6, r29
-	lwz      r12, 0(r27)
-	lwz      r4, 0x98(r27)
-	lwz      r12, 0x94(r12)
-	lwz      r5, 0(r28)
-	mtctr    r12
-	bctrl
-	b        lbl_80376FEC
-
-lbl_80376FD4:
-	lwz      r0, 0x98(r27)
-	lwz      r3, 0x88(r27)
-	slwi     r0, r0, 2
-	lwz      r4, 0(r28)
-	lwzx     r3, r3, r0
-	bl       setIndex__Q28Morimura10TIndexPaneFi
-
-lbl_80376FEC:
-	lwz      r0, 0x90(r27)
-	li       r4, 1
-	lwz      r3, 0x88(r27)
-	slwi     r0, r0, 2
-	lwzx     r3, r3, r0
-	stw      r4, 0xc(r3)
-	b        lbl_803770B8
-
-lbl_80377008:
-	lwz      r3, 0(r28)
-	li       r31, 1
-	addi     r0, r3, 1
-	stw      r0, 0(r28)
-	b        lbl_803770B8
-
-lbl_8037701C:
-	lwz      r3, 0x234(r27)
-	cmpwi    r3, 0
-	blt      lbl_803770A4
-	cmpwi    r25, 2
-	bge      lbl_8037705C
-	lwz      r4, 0(r28)
-	lwz      r0, 0x9c(r27)
-	cmpw     r4, r3
-	add      r0, r4, r0
-	bge      lbl_80377054
-	cmpw     r0, r3
-	ble      lbl_80377054
-	stw      r3, 0(r28)
-	b        lbl_803770B4
-
-lbl_80377054:
-	stw      r0, 0(r28)
-	b        lbl_803770B4
-
-lbl_8037705C:
-	clrlwi.  r0, r30, 0x18
-	beq      lbl_80377090
-	lwz      r3, 0(r28)
-	lwz      r4, 0x22c(r27)
-	slwi     r0, r3, 2
-	lwz      r5, 0x184(r27)
-	lwzx     r0, r4, r0
-	lbzx     r0, r5, r0
-	cmplwi   r0, 0
-	beq      lbl_80377090
-	addi     r0, r3, 1
-	stw      r0, 0(r28)
-	b        lbl_803770B4
-
-lbl_80377090:
-	lwz      r3, 0(r28)
-	lwz      r0, 0x9c(r27)
-	add      r0, r3, r0
-	stw      r0, 0(r28)
-	b        lbl_803770B4
-
-lbl_803770A4:
-	lwz      r3, 0(r28)
-	lwz      r0, 0x9c(r27)
-	add      r0, r3, r0
-	stw      r0, 0(r28)
-
-lbl_803770B4:
-	li       r31, 1
-
-lbl_803770B8:
-	mr       r3, r27
-	lwz      r12, 0(r27)
-	lwz      r12, 0x88(r12)
-	mtctr    r12
-	bctrl
-	lbz      r4, 0x240(r27)
-	cmplwi   r4, 0
-	beq      lbl_803770DC
-	lwz      r3, 0x230(r27)
-
-lbl_803770DC:
-	clrlwi.  r0, r31, 0x18
-	beq      lbl_80377134
-	lwz      r0, 0(r28)
-	cmpw     r0, r3
-	bge      lbl_80377134
-	cmpwi    r0, 0
-	blt      lbl_80377134
-	cmplwi   r4, 0
-	beq      lbl_8037710C
-	lwz      r4, 0x22c(r27)
-	slwi     r0, r0, 2
-	lwzx     r0, r4, r0
-
-lbl_8037710C:
-	lwz      r4, 0x184(r27)
-	lbzx     r0, r4, r0
-	cmplwi   r0, 0
-	beq      lbl_80377134
-	lwz      r0, 0x90(r27)
-	li       r5, 2
-	lwz      r4, 0x88(r27)
-	slwi     r0, r0, 2
-	lwzx     r4, r4, r0
-	stw      r5, 0xc(r4)
-
-lbl_80377134:
-	lwz      r0, 0(r28)
-	cmpw     r0, r3
-	blt      lbl_80377148
-	li       r0, 0
-	stw      r0, 0(r28)
-
-lbl_80377148:
-	lwz      r0, 0x90(r27)
-	lwz      r3, 0x88(r27)
-	slwi     r0, r0, 2
-	lwz      r4, 0(r28)
-	lwzx     r3, r3, r0
-	bl       setIndex__Q28Morimura10TIndexPaneFi
-	b        lbl_803776A4
-
-lbl_80377164:
-	lbz      r0, 0x240(r27)
-	cmplwi   r0, 0
-	beq      lbl_803771AC
-	lbz      r0, 0x243(r27)
-	cmplwi   r0, 0
-	bne      lbl_803771AC
-	lha      r0, 0x8e(r27)
-	lwz      r3, 0x238(r27)
-	mulli    r0, r0, 3
-	cmpw     r3, r0
-	bgt      lbl_803771AC
-	lwz      r0, 0x98(r27)
-	lwz      r3, 0x88(r27)
-	slwi     r0, r0, 2
-	lwzx     r3, r3, r0
-	bl       getListIndex__Q28Morimura10TIndexPaneFv
-	stw      r3, 0(r28)
-	b        lbl_803776A4
-
-lbl_803771AC:
-	lwz      r4, 0x98(r27)
-	addic.   r24, r4, -1
-	bge      lbl_803771C0
-	lha      r3, 0x8e(r27)
-	addi     r24, r3, -1
-
-lbl_803771C0:
-	lwz      r5, 0x88(r27)
-	slwi     r31, r24, 2
-	lwzx     r3, r5, r31
-	lwz      r0, 0xc(r3)
-	cmpwi    r0, 1
-	bne      lbl_80377264
-	slwi     r0, r4, 2
-	lwzx     r3, r5, r0
-	bl       getListIndex__Q28Morimura10TIndexPaneFv
-	lwz      r4, 0x88(r27)
-	mr       r30, r3
-	lwzx     r3, r4, r31
-	bl       getListIndex__Q28Morimura10TIndexPaneFv
-	cmpw     r3, r30
-	bne      lbl_80377264
-	lwz      r3, 0x88(r27)
-	li       r0, 2
-	lwzx     r3, r3, r31
-	stw      r0, 0xc(r3)
-	lbz      r0, 0x240(r27)
-	cmplwi   r0, 0
-	beq      lbl_80377248
-	lwz      r3, 0x88(r27)
-	lwzx     r3, r3, r31
-	bl       getListIndex__Q28Morimura10TIndexPaneFv
-	lwz      r12, 0(r27)
-	mr       r5, r3
-	mr       r3, r27
-	mr       r4, r24
-	lwz      r12, 0x94(r12)
-	mr       r6, r29
-	mtctr    r12
-	bctrl
-	b        lbl_80377264
-
-lbl_80377248:
-	lwz      r3, 0x88(r27)
-	lwzx     r3, r3, r31
-	bl       getListIndex__Q28Morimura10TIndexPaneFv
-	lwz      r5, 0x88(r27)
-	mr       r4, r3
-	lwzx     r3, r5, r31
-	bl       setIndex__Q28Morimura10TIndexPaneFi
-
-lbl_80377264:
-	lwz      r0, 0x98(r27)
-	li       r4, 0
-	lwz      r3, 0x88(r27)
-	li       r30, 0
-	slwi     r0, r0, 2
-	li       r31, 0
-	lwzx     r3, r3, r0
-	stw      r4, 0xc(r3)
-	lwz      r0, 0x90(r27)
-	lwz      r3, 0x88(r27)
-	slwi     r0, r0, 2
-	lwzx     r3, r3, r0
-	bl       getListIndex__Q28Morimura10TIndexPaneFv
-	lwz      r0, 0(r28)
-	cmpw     r0, r3
-	bne      lbl_803772A8
-	li       r31, 1
-
-lbl_803772A8:
-	li       r24, 0
-	li       r25, 0
-	li       r26, 0
-	b        lbl_803772DC
-
-lbl_803772B8:
-	lwz      r3, 0x88(r27)
-	lwzx     r3, r3, r26
-	bl       getListIndex__Q28Morimura10TIndexPaneFv
-	lwz      r0, 0(r28)
-	cmpw     r0, r3
-	bne      lbl_803772D4
-	addi     r24, r24, 1
-
-lbl_803772D4:
-	addi     r26, r26, 4
-	addi     r25, r25, 1
-
-lbl_803772DC:
-	lha      r0, 0x8e(r27)
-	cmpw     r25, r0
-	blt      lbl_803772B8
-	cmpwi    r24, 2
-	bne      lbl_803773AC
-	lbz      r0, 0x240(r27)
-	lwz      r4, 0(r28)
-	cmplwi   r0, 0
-	addi     r0, r4, -1
-	beq      lbl_80377318
-	cmpwi    r4, 0
-	ble      lbl_80377318
-	lwz      r3, 0x22c(r27)
-	slwi     r0, r0, 2
-	lwzx     r0, r3, r0
-
-lbl_80377318:
-	cmpwi    r4, 0
-	ble      lbl_80377340
-	lwz      r3, 0x184(r27)
-	lbzx     r0, r3, r0
-	cmplwi   r0, 0
-	beq      lbl_80377340
-	lwz      r3, 0(r28)
-	addi     r0, r3, -1
-	stw      r0, 0(r28)
-	b        lbl_803773A4
-
-lbl_80377340:
-	lwz      r5, 0x234(r27)
-	cmpwi    r5, 0
-	blt      lbl_80377394
-	cmpw     r4, r5
-	bne      lbl_80377394
-	cmpwi    r5, 3
-	bge      lbl_80377364
-	mr       r0, r5
-	b        lbl_80377388
-
-lbl_80377364:
-	lis      r3, 0x55555556@ha
-	addi     r0, r3, 0x55555556@l
-	mulhw    r3, r0, r5
-	srwi     r0, r3, 0x1f
-	add      r0, r3, r0
-	mulli    r0, r0, 3
-	subf.    r0, r0, r5
-	bne      lbl_80377388
-	li       r0, 3
-
-lbl_80377388:
-	subf     r0, r0, r5
-	stw      r0, 0(r28)
-	b        lbl_803773A4
-
-lbl_80377394:
-	lwz      r3, 0x9c(r27)
-	lwz      r0, 0(r28)
-	subf     r0, r3, r0
-	stw      r0, 0(r28)
-
-lbl_803773A4:
-	li       r30, 1
-	b        lbl_803775E0
-
-lbl_803773AC:
-	lwz      r0, 0x90(r27)
-	lwz      r5, 0x88(r27)
-	slwi     r0, r0, 2
-	lwzx     r3, r5, r0
-	lwz      r0, 0xc(r3)
-	cmpwi    r0, 3
-	beq      lbl_803773DC
-	bge      lbl_803775E0
-	cmpwi    r0, 0
-	beq      lbl_803774A0
-	bge      lbl_80377418
-	b        lbl_803775E0
-
-lbl_803773DC:
-	clrlwi.  r0, r31, 0x18
-	beq      lbl_803773FC
-	lwz      r0, 0x98(r27)
-	li       r4, 1
-	slwi     r0, r0, 2
-	lwzx     r3, r5, r0
-	stw      r4, 0xc(r3)
-	b        lbl_803775E0
-
-lbl_803773FC:
-	lis      r3, lbl_8049252C@ha
-	li       r4, 0xbfc
-	addi     r3, r3, lbl_8049252C@l
-	li       r5, 0
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-	b        lbl_803775E0
-
-lbl_80377418:
-	clrlwi.  r0, r31, 0x18
-	beq      lbl_8037748C
-	li       r0, 3
-	stw      r0, 0xc(r3)
-	lbz      r0, 0x240(r27)
-	cmplwi   r0, 0
-	beq      lbl_80377458
-	mr       r3, r27
-	mr       r6, r29
-	lwz      r12, 0(r27)
-	lwz      r4, 0x90(r27)
-	lwz      r12, 0x94(r12)
-	lwz      r5, 0(r28)
-	mtctr    r12
-	bctrl
-	b        lbl_80377470
-
-lbl_80377458:
-	lwz      r0, 0x90(r27)
-	lwz      r3, 0x88(r27)
-	slwi     r0, r0, 2
-	lwz      r4, 0(r28)
-	lwzx     r3, r3, r0
-	bl       setIndex__Q28Morimura10TIndexPaneFi
-
-lbl_80377470:
-	lwz      r0, 0x98(r27)
-	li       r4, 1
-	lwz      r3, 0x88(r27)
-	slwi     r0, r0, 2
-	lwzx     r3, r3, r0
-	stw      r4, 0xc(r3)
-	b        lbl_803775E0
-
-lbl_8037748C:
-	lwz      r3, 0(r28)
-	li       r30, 1
-	addi     r0, r3, -1
-	stw      r0, 0(r28)
-	b        lbl_803775E0
-
-lbl_803774A0:
-	lbz      r0, 0x240(r27)
-	lwz      r4, 0(r28)
-	cmplwi   r0, 0
-	addi     r0, r4, -1
-	beq      lbl_803774C8
-	cmpwi    r4, 0
-	ble      lbl_803774C8
-	lwz      r3, 0x22c(r27)
-	slwi     r0, r0, 2
-	lwzx     r0, r3, r0
-
-lbl_803774C8:
-	cmpwi    r4, 0
-	ble      lbl_803774F0
-	lwz      r3, 0x184(r27)
-	lbzx     r0, r3, r0
-	cmplwi   r0, 0
-	beq      lbl_803774F0
-	lwz      r3, 0(r28)
-	addi     r0, r3, -1
-	stw      r0, 0(r28)
-	b        lbl_80377554
-
-lbl_803774F0:
-	lwz      r5, 0x234(r27)
-	cmpwi    r5, 0
-	blt      lbl_80377544
-	cmpw     r4, r5
-	bne      lbl_80377544
-	cmpwi    r5, 3
-	bge      lbl_80377514
-	mr       r0, r5
-	b        lbl_80377538
-
-lbl_80377514:
-	lis      r3, 0x55555556@ha
-	addi     r0, r3, 0x55555556@l
-	mulhw    r3, r0, r5
-	srwi     r0, r3, 0x1f
-	add      r0, r3, r0
-	mulli    r0, r0, 3
-	subf.    r0, r0, r5
-	bne      lbl_80377538
-	li       r0, 3
-
-lbl_80377538:
-	subf     r0, r0, r5
-	stw      r0, 0(r28)
-	b        lbl_80377554
-
-lbl_80377544:
-	lwz      r3, 0x9c(r27)
-	lwz      r0, 0(r28)
-	subf     r0, r3, r0
-	stw      r0, 0(r28)
-
-lbl_80377554:
-	mr       r3, r27
-	lwz      r12, 0(r27)
-	lwz      r12, 0x88(r12)
-	mtctr    r12
-	bctrl
-	lbz      r0, 0x240(r27)
-	addi     r3, r3, -1
-	cmplwi   r0, 0
-	beq      lbl_803775CC
-	lwz      r0, 0x234(r27)
-	cmpwi    r0, 0
-	blt      lbl_80377590
-	lwz      r3, 0x230(r27)
-	addi     r3, r3, -1
-	b        lbl_803775CC
-
-lbl_80377590:
-	lwz      r4, 0x230(r27)
-	cmpwi    r4, 3
-	bge      lbl_803775A4
-	mr       r0, r4
-	b        lbl_803775C8
-
-lbl_803775A4:
-	lis      r3, 0x55555556@ha
-	addi     r0, r3, 0x55555556@l
-	mulhw    r3, r0, r4
-	srwi     r0, r3, 0x1f
-	add      r0, r3, r0
-	mulli    r0, r0, 3
-	subf.    r0, r0, r4
-	bne      lbl_803775C8
-	li       r0, 3
-
-lbl_803775C8:
-	subf     r3, r0, r4
-
-lbl_803775CC:
-	lwz      r0, 0(r28)
-	cmpwi    r0, 0
-	bge      lbl_803775DC
-	stw      r3, 0(r28)
-
-lbl_803775DC:
-	li       r30, 1
-
-lbl_803775E0:
-	clrlwi.  r0, r30, 0x18
-	beq      lbl_80377640
-	lwz      r3, 0(r28)
-	cmpwi    r3, 0
-	blt      lbl_80377640
-	lbz      r0, 0x240(r27)
-	mr       r5, r3
-	cmplwi   r0, 0
-	beq      lbl_80377618
-	lwz      r4, 0x22c(r27)
-	cmplwi   r4, 0
-	beq      lbl_80377618
-	slwi     r0, r3, 2
-	lwzx     r5, r4, r0
-
-lbl_80377618:
-	lwz      r3, 0x184(r27)
-	lbzx     r0, r3, r5
-	cmplwi   r0, 0
-	beq      lbl_80377640
-	lwz      r0, 0x98(r27)
-	li       r4, 3
-	lwz      r3, 0x88(r27)
-	slwi     r0, r0, 2
-	lwzx     r3, r3, r0
-	stw      r4, 0xc(r3)
-
-lbl_80377640:
-	lwz      r0, 0(r28)
-	cmpwi    r0, 0
-	bge      lbl_8037768C
-	lbz      r0, 0x240(r27)
-	cmplwi   r0, 0
-	beq      lbl_8037766C
-	lwz      r3, 0x9c(r27)
-	lwz      r0, 0x230(r27)
-	subf     r0, r3, r0
-	stw      r0, 0(r28)
-	b        lbl_8037768C
-
-lbl_8037766C:
-	mr       r3, r27
-	lwz      r12, 0(r27)
-	lwz      r12, 0x88(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x9c(r27)
-	subf     r0, r0, r3
-	stw      r0, 0(r28)
-
-lbl_8037768C:
-	lwz      r0, 0x98(r27)
-	lwz      r3, 0x88(r27)
-	slwi     r0, r0, 2
-	lwz      r4, 0(r28)
-	lwzx     r3, r3, r0
-	bl       setIndex__Q28Morimura10TIndexPaneFi
-
-lbl_803776A4:
-	lmw      r24, 0x10(r1)
-	lwz      r0, 0x34(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
+	mIndexPaneList[mCurrMaxActiveRow]->setIndex(id);
 }
 
-/*
- * --INFO--
- * Address:	803776B8
- * Size:	000024
+/**
+ * @note Address: 0x803776B8
+ * @note Size: 0x24
  */
 u64 TEnemyZukan::getNameID(int id) { return mOffsetMsgNames->getMsgID(id); }
 
-/*
- * --INFO--
- * Address:	803776DC
- * Size:	000024
+/**
+ * @note Address: 0x803776DC
+ * @note Size: 0x24
  */
 u64 TEnemyZukan::getXMsgID(int id) { return mOffsetMsg_XDesc->getMsgID(id); }
 
-/*
- * --INFO--
- * Address:	80377700
- * Size:	000024
+/**
+ * @note Address: 0x80377700
+ * @note Size: 0x24
  */
 u64 TEnemyZukan::getYMsgID(int id) { return mOffsetMsg_YDesc->getMsgID(id); }
 
-/*
- * --INFO--
- * Address:	80377724
- * Size:	000050
+/**
+ * @note Address: 0x80377724
+ * @note Size: 0x50
  */
-int TEnemyZukan::getModelIndex(int index)
-{
-	int* data = eIDInfo[0];
-	for (int i = 0; i < ENEMY_ZUKAN_COUNT; i++) {
-		if (eIDInfo[i][0] == index) {
-			data = eIDInfo[i];
-			return data[1];
-		}
-	}
-	return eIDInfo[0][1];
-}
+int TEnemyZukan::getModelIndex(int index) { return getEnemyInfo(index)[1]; }
 
-/*
- * --INFO--
- * Address:	80377774
- * Size:	000060
+/**
+ * @note Address: 0x80377774
+ * @note Size: 0x60
  */
 void TEnemyZukan::setXWindow()
 {
@@ -4197,10 +2614,9 @@ void TEnemyZukan::setXWindow()
 	mWindow->setIconColor(mIconColor1[0], mIconColor2[0]);
 }
 
-/*
- * --INFO--
- * Address:	803777D4
- * Size:	000060
+/**
+ * @note Address: 0x803777D4
+ * @note Size: 0x60
  */
 void TEnemyZukan::setYWindow()
 {
@@ -4210,17 +2626,15 @@ void TEnemyZukan::setYWindow()
 	mWindow->setIconColor(mIconColor1[1], mIconColor2[1]);
 }
 
-/*
- * --INFO--
- * Address:	80377834
- * Size:	000034
+/**
+ * @note Address: 0x80377834
+ * @note Size: 0x34
  */
 bool TEnemyZukan::isOpenConfirmWindow() { return static_cast<TDEnemyScene*>(getOwner())->mConfirmEndWindow->mHasDrawn; }
 
-/*
- * --INFO--
- * Address:	80377868
- * Size:	0000FC
+/**
+ * @note Address: 0x80377868
+ * @note Size: 0xFC
  */
 bool TEnemyZukan::isNewSupply(int index, bool flag)
 {
@@ -4235,15 +2649,9 @@ bool TEnemyZukan::isNewSupply(int index, bool flag)
 			index = mViewablePanelIDList[index];
 		}
 
-		int* data = eIDInfo[0];
-		for (int i = 0; i < ENEMY_ZUKAN_COUNT; i++) {
-			if (eIDInfo[i][0] == index) {
-				data = eIDInfo[i];
-				break;
-			}
-		}
+		int* data                  = getEnemyInfo(index);
 		Game::TekiStat::Info* info = Game::playData->mTekiStatMgr.getTekiInfo(data[1]);
-		if (info && info->mState & TEKISTAT_STATE_UPDATED && !(info->mState & TEKISTAT_STATE_OUT_OF_DATE)) {
+		if (info && info->mState.isSet(TEKISTAT_STATE_UPDATED) && !(info->mState.isSet(TEKISTAT_STATE_OUT_OF_DATE))) {
 			return true;
 		} else {
 			return false;
@@ -4252,14 +2660,13 @@ bool TEnemyZukan::isNewSupply(int index, bool flag)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80377964
- * Size:	0000E4
+/**
+ * @note Address: 0x80377964
+ * @note Size: 0xE4
  */
 bool TEnemyZukan::isPanelExist()
 {
-	int id = mIndexPaneList[mCurrentSelect]->getIndex();
+	int id = mIndexPaneList[mCurrActiveRowSel]->getIndex();
 	if (id < 0)
 		return false;
 
@@ -4270,24 +2677,21 @@ bool TEnemyZukan::isPanelExist()
 			return false;
 		}
 
-		int id2 = _234;
-		max     = mViewablePanelIDList[max2 - 1];
-		if (id2 >= 0 && id < mViewablePanelIDList[id2]) {
-			max = mViewablePanelIDList[id2 - 1];
+		max = mViewablePanelIDList[max2 - 1];
+		if (_234 >= 0 && id < mViewablePanelIDList[_234]) {
+			max = mViewablePanelIDList[_234 - 1];
 		}
 	}
 
 	if (id == max) {
 		return false;
-	} else {
-		return mRightOffset < max;
 	}
+	return (u8)(id + mRightOffset <= max);
 }
 
-/*
- * --INFO--
- * Address:	80377A48
- * Size:	00004C
+/**
+ * @note Address: 0x80377A48
+ * @note Size: 0x4C
  */
 void TEnemyZukan::openConfirmWindow()
 {
@@ -4295,32 +2699,26 @@ void TEnemyZukan::openConfirmWindow()
 	static_cast<TDEnemyScene*>(getOwner())->mConfirmEndWindow->start(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80377A94
- * Size:	000134
+/**
+ * @note Address: 0x80377A94
+ * @note Size: 0x134
  */
 u32 TEnemyZukan::getPrice(int index)
 {
 	if (mShowAllObjects || mIsSection) {
-		return randFloat() * 1000.0f + 1;
+		return randFloat() * 1000.0f + 1.0f;
 	}
 
 	if (Game::playData) {
-		int* data = eIDInfo[0];
-		for (int i = 0; i < ENEMY_ZUKAN_COUNT; i++) {
-			if (eIDInfo[i][0] == index) {
-				data = eIDInfo[i];
-				break;
-			}
-		}
-		Game::TekiStat::Info* info = Game::playData->mTekiStatMgr.getTekiInfo(data[1]);
-		if (!(info->mState & TEKISTAT_STATE_UPDATED)) {
+		int* data                  = getEnemyInfo(index);
+		int id                     = data[1];
+		Game::TekiStat::Info* info = Game::playData->mTekiStatMgr.getTekiInfo(id);
+		if (!(info->mState.isSet(TEKISTAT_STATE_UPDATED))) {
 			return 0;
 		}
 
 		Game::PelletConfigList* list = Game::PelletList::Mgr::getConfigList(Game::PelletList::CARCASS);
-		Game::PelletConfig* config   = list->getPelletConfig(Game::EnemyInfoFunc::getEnemyName(data[1], 0xffff));
+		Game::PelletConfig* config   = list->getPelletConfig(Game::EnemyInfoFunc::getEnemyName(id, 0xffff));
 		if (config) {
 			return config->mParams.mMoney.mData;
 		}
@@ -4328,10 +2726,9 @@ u32 TEnemyZukan::getPrice(int index)
 	return 0;
 }
 
-/*
- * --INFO--
- * Address:	80377BC8
- * Size:	0000F8
+/**
+ * @note Address: 0x80377BC8
+ * @note Size: 0xF8
  */
 u32 TEnemyZukan::getDefeatNum(int index)
 {
@@ -4340,61 +2737,50 @@ u32 TEnemyZukan::getDefeatNum(int index)
 	}
 
 	if (Game::playData) {
-		int* data = eIDInfo[0];
-		for (int i = 0; i < ENEMY_ZUKAN_COUNT; i++) {
-			if (eIDInfo[i][0] == index) {
-				data = eIDInfo[i];
-				break;
-			}
-		}
+		int* data                  = getEnemyInfo(index);
 		Game::TekiStat::Info* info = Game::playData->mTekiStatMgr.getTekiInfo(data[1]);
-		if (info && info->mState & TEKISTAT_STATE_UPDATED) {
-			return info->mKilledTekiCount;
+		if (info) {
+			if (info->mState.isSet(TEKISTAT_STATE_UPDATED)) {
+				return info->mKilledTekiCount;
+			}
+			return 0;
 		}
-		return 0;
 	}
 	return 0;
 }
 
-/*
- * --INFO--
- * Address:	80377CC0
- * Size:	00012C
+/**
+ * @note Address: 0x80377CC0
+ * @note Size: 0x12C
  */
 u32 TEnemyZukan::getKilledNum(int index)
 {
 	if (mShowAllObjects || mIsSection) {
-		return randWeightFloat(100000.0f) + 1.0f;
+		return randFloat() * 100000.0f + 1.0f;
 	}
 
 	if (Game::playData) {
-		int* data = eIDInfo[0];
-		for (int i = 0; i < ENEMY_ZUKAN_COUNT; i++) {
-			if (eIDInfo[i][0] == index) {
-				data = eIDInfo[i];
-				break;
-			}
-		}
+		int* data                  = getEnemyInfo(index);
 		Game::TekiStat::Info* info = Game::playData->mTekiStatMgr.getTekiInfo(data[1]);
-		if (info && info->mState & TEKISTAT_STATE_UPDATED) {
-			return info->mKilledPikminCount;
+		if (info) {
+			if (info->mState.isSet(TEKISTAT_STATE_UPDATED)) {
+				return info->mKilledPikminCount;
+			}
+			return 0;
 		}
-		return 0;
 	}
-	return randWeightFloat(100000.0f) + 1.0f;
+	return randFloat() * 100000.0f + 1.0f;
 }
 
-/*
- * --INFO--
- * Address:	80377DEC
- * Size:	000054
+/**
+ * @note Address: 0x80377DEC
+ * @note Size: 0x54
  */
 TDEnemyScene::TDEnemyScene() { mConfirmEndWindow = nullptr; }
 
-/*
- * --INFO--
- * Address:	80377E40
- * Size:	0000DC
+/**
+ * @note Address: 0x80377E40
+ * @note Size: 0xDC
  */
 void TDEnemyScene::doCreateObj(JKRArchive* arc)
 {
@@ -4406,10 +2792,9 @@ void TDEnemyScene::doCreateObj(JKRArchive* arc)
 	mConfirmEndWindow->setRetireMsg('6018_00'); // "Go to Area Selection"
 }
 
-/*
- * --INFO--
- * Address:	80377F1C
- * Size:	000034
+/**
+ * @note Address: 0x80377F1C
+ * @note Size: 0x34
  */
 bool TDEnemyScene::doStart(Screen::StartSceneArg* arg)
 {
@@ -4417,10 +2802,9 @@ bool TDEnemyScene::doStart(Screen::StartSceneArg* arg)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80377F50
- * Size:	000028
+/**
+ * @note Address: 0x80377F50
+ * @note Size: 0x28
  */
 bool TDEnemyScene::isAppearConfirmWindow()
 {
@@ -4430,20 +2814,47 @@ bool TDEnemyScene::isAppearConfirmWindow()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E8
+/**
+ * @note Address: N/A
+ * @note Size: 0xE8
  */
 bool TItemZukan::isCategoryComplete()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8037809C
- * Size:	000424
+/**
+ * @note Address: N/A
+ * @note Size: 0x148
+ */
+TItemZukan::TItemZukan()
+    : TZukanBase("itemZukan")
+{
+	mColorAnmItem           = nullptr;
+	mValueCounter           = nullptr;
+	mWeightCounter          = nullptr;
+	mOrimaIconTexture       = nullptr;
+	mCurrCharacterIconID    = 1;
+	mOffsetMsgCategoryNames = nullptr;
+	mEfxTimer               = 0;
+	mDemoState              = ZUKANDEMO_Init;
+	mDemoScrollTargetRow    = 0;
+	mDemoStateButtonAlpha   = 0.0f;
+	for (int i = 0; i < TREASUREHOARD_CATEGORY_NUM; i++) {
+		mCategoryShowUnlock[i] = false;
+		mCategoryIsComplete[i] = false;
+	}
+}
+
+/**
+ * @note Address: 80377F78
+ * @note Size: 0x124
+ */
+TItemZukan::~TItemZukan() { mDispItem->mDebugExpHeap->freeAll(); }
+
+/**
+ * @note Address: 0x8037809C
+ * @note Size: 0x424
  */
 bool TItemZukan::doUpdate()
 {
@@ -4494,8 +2905,8 @@ bool TItemZukan::doUpdate()
 
 			// scroll through message box with analog stick
 			f32 z = mController->mMStick.mYPos;
-			if (z >= 0.5f || z <= -0.5f) {
-				if (z <= -0.5f) {
+			if (mController->mMStick.mYPos >= 0.5f || mController->mMStick.mYPos <= -0.5f) {
+				if (mController->mMStick.mYPos <= -0.5f) {
 					z = -1.0f;
 				}
 				if (z >= 0.5f) {
@@ -4512,13 +2923,17 @@ bool TItemZukan::doUpdate()
 			}
 			break;
 		case ZUKANDEMO_AppearEffect:
-			if (mWindow->mStatus == TZukanWindow::STATE_Inactive) {
+			if (mWindow->mState == TZukanWindow::STATE_Inactive) {
 				if (mEfxTimer == 0) {
 					J2DPane* pane = mYButtonPane;
+					Vector2f pos(pane->mGlobalMtx[0][3], pane->mGlobalMtx[1][3]);
+					pos.y -= 2.0f * pane->getHeight();
 					PSSystem::spSysIF->playSystemSe(PSSE_SY_WMAP_ZUKAN_NEW, 0);
 					for (int i = 0; i < 5; i++) {
-						efx2d::Arg arg(30.0f * i + pane->mPositionMtx[0][3], -((pane->getHeight()) * 2.0f - pane->mPositionMtx[1][3]));
+						efx2d::Arg arg(pos);
+						arg.x += i * 30.0f;
 						efx2d::T2DChangesmoke efx;
+
 						efx.create(&arg);
 					}
 				}
@@ -4539,17 +2954,16 @@ bool TItemZukan::doUpdate()
 	TZukanBase::doUpdate();
 }
 
-/*
- * --INFO--
- * Address:	803784C0
- * Size:	0000A8
+/**
+ * @note Address: 0x803784C0
+ * @note Size: 0xA8
  */
 void TItemZukan::demoSet()
 {
-	if (mDemoScrollTargetRow != mIndexPaneList[mCurrentSelect]->getIndex()) {
+	if (mDemoScrollTargetRow != mIndexPaneList[mCurrActiveRowSel]->getIndex()) {
 		mIndexGroup->downIndex();
 	} else {
-		if (mWindow->mStatus == TZukanWindow::STATE_Inactive) {
+		if (mWindow->mState == TZukanWindow::STATE_Inactive) {
 			mPaneMessageDemo->setMsgID(mOffsetMsgCategoryNames->getMsgID(mSelection));
 			mMessageBoxBGAlpha = 0;
 			mWindow->windowOpen();
@@ -4559,10 +2973,9 @@ void TItemZukan::demoSet()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80378568
- * Size:	00045C
+/**
+ * @note Address: 0x80378568
+ * @note Size: 0x45C
  */
 void TItemZukan::setShortenIndex(int paneID, int index, bool flag)
 {
@@ -4570,80 +2983,72 @@ void TItemZukan::setShortenIndex(int paneID, int index, bool flag)
 
 	TIndexPane* pane = nullptr;
 	int id           = 1;
-	if (mCanScroll && (bool)_3B4 == 1) {
-		if (flag) {
-			int id2 = paneID - 1;
-			if (id2 > mMaxSelect) {
-				id2 = 0;
+	int id2          = paneID;
+	if (mCanScroll) {
+		if ((_3B4 % 2) == 1) {
+			if (flag) {
+				id = 3;
+				id2--; // WHY DON'T YOU WANNA GO IN r5
+				if (id2 < 0) {
+					id2 = mNumActiveRows - 1;
+				}
+				pane = mIndexPaneList[id2];
+			} else {
+				id2++;
+				if (id2 >= mNumActiveRows) {
+					id2 = 0;
+				}
+				pane = mIndexPaneList[id2];
 			}
-			pane = mIndexPaneList[id2];
-		} else {
-			int id2 = paneID + 1;
-			id      = 3;
-			if (id2 > 0) {
-				id2 = mMaxSelect - 1;
-			}
-			pane = mIndexPaneList[id2];
 		}
 	}
 
 	bool active = false;
 	if (pane) {
 		int id2 = -1;
-		for (; id != 0; id--) {
-			TIconInfo* icon = pane->mIconInfos[id];
-			if (icon->_18) {
-				id2 = icon->mCategoryID;
+		for (int i = 0; i < id; i++) {
+			// TIconInfo* icon = pane->mIconInfos[i];
+			if (pane->mIconInfos[i]->mParentIndex) {
+				id2 = pane->mIconInfos[i]->mCategoryID;
 			}
 		}
 		if (id2 >= 0) {
 			if (flag) {
-				TIconInfo* icon = mIndexPaneList[paneID]->mIconInfos[0];
-				if (id2 == icon->mCategoryID && icon->_18) {
-					active                              = true;
-					mCategoryColorID[icon->mCategoryID] = 1 - mCategoryColorID[id2];
-				}
-				icon = mIndexPaneList[paneID]->mIconInfos[1];
-				if (id2 == icon->mCategoryID && icon->_18) {
-					active                              = true;
-					mCategoryColorID[icon->mCategoryID] = 1 - mCategoryColorID[id2];
-				}
-				icon = mIndexPaneList[paneID]->mIconInfos[2];
-				if (id2 == icon->mCategoryID && icon->_18) {
-					active                              = true;
-					mCategoryColorID[icon->mCategoryID] = 1 - mCategoryColorID[id2];
+				for (int i = 0; i < 3; i++) {
+					TIconInfo* icon = mIndexPaneList[paneID]->mIconInfos[i];
+					int catId       = icon->mCategoryID;
+					if (id2 != catId && icon->mParentIndex) {
+						active                  = true;
+						mCategoryColorID[catId] = 1 - mCategoryColorID[id2];
+						id2                     = catId;
+					}
 				}
 			} else {
-				TIconInfo* icon = mIndexPaneList[paneID]->mIconInfos[2];
-				if (id2 == icon->mCategoryID && icon->_18) {
-					active                              = true;
-					mCategoryColorID[icon->mCategoryID] = 1 - mCategoryColorID[id2];
-				}
-				icon = mIndexPaneList[paneID]->mIconInfos[1];
-				if (id2 == icon->mCategoryID && icon->_18) {
-					active                              = true;
-					mCategoryColorID[icon->mCategoryID] = 1 - mCategoryColorID[id2];
-				}
-				icon = mIndexPaneList[paneID]->mIconInfos[0];
-				if (id2 == icon->mCategoryID && icon->_18) {
-					active                              = true;
-					mCategoryColorID[icon->mCategoryID] = 1 - mCategoryColorID[id2];
+				for (int i = 2; i >= 0; i--) {
+					TIconInfo* icon = mIndexPaneList[paneID]->mIconInfos[i];
+					int catId       = icon->mCategoryID;
+					if (id2 != catId && icon->mParentIndex) {
+						active                  = true;
+						mCategoryColorID[catId] = 1 - mCategoryColorID[id2];
+						id2                     = catId;
+					}
 				}
 			}
 		}
 	}
 
 	if (active) {
-		for (int i = 0; i < mMaxSelect; i++) {
-			if (mIndexPaneList[i]) {
-				for (int j = 0; j < 3; j++) {
-					TIconInfo* icon    = mIndexPaneList[i]->mIconInfos[j];
-					J2DPictureEx* pane = icon->mPic;
-					if (getCategoryColorId(icon->mCategoryID) == 0) {
-						pane->setBlackWhite(mCategoryColor0b, mCategoryColor0w);
-					} else {
-						pane->setBlackWhite(mCategoryColor1b, mCategoryColor1w);
-					}
+		for (int i = 0; i < mNumActiveRows; i++) {
+			if (!mIndexPaneList[i]) {
+				return;
+			}
+			for (int j = 0; j < 3; j++) {
+				TIconInfo* icon    = mIndexPaneList[i]->mIconInfos[j];
+				J2DPictureEx* pane = icon->mPic;
+				if (getCategoryColorId(icon->mCategoryID) == COLOR_Color0) {
+					pane->setBlackWhite(mCategoryColor0b, mCategoryColor0w); // green highlight
+				} else {
+					pane->setBlackWhite(mCategoryColor1b, mCategoryColor1w); // blue highlight
 				}
 			}
 		}
@@ -4651,379 +3056,58 @@ void TItemZukan::setShortenIndex(int paneID, int index, bool flag)
 		for (int j = 0; j < 3; j++) {
 			TIconInfo* icon    = mIndexPaneList[paneID]->mIconInfos[j];
 			J2DPictureEx* pane = icon->mPic;
-			if (getCategoryColorId(icon->mCategoryID) == 0) {
-				pane->setBlackWhite(mCategoryColor0b, mCategoryColor0w);
+			if (getCategoryColorId(icon->mCategoryID) == COLOR_Color0) {
+				pane->setBlackWhite(mCategoryColor0b, mCategoryColor0w); // green highlight
 			} else {
-				pane->setBlackWhite(mCategoryColor1b, mCategoryColor1w);
+				pane->setBlackWhite(mCategoryColor1b, mCategoryColor1w); // blue highlight
 			}
 		}
 	}
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stmw     r26, 0x28(r1)
-	mr       r29, r3
-	mr       r30, r4
-	mr       r31, r6
-	bl       setShortenIndex__Q28Morimura10TZukanBaseFiib
-	lbz      r0, 0x242(r29)
-	li       r7, 0
-	li       r4, 1
-	cmplwi   r0, 0
-	beq      lbl_80378604
-	lwz      r0, 0x3b4(r29)
-	srwi     r3, r0, 0x1f
-	clrlwi   r0, r0, 0x1f
-	xor      r0, r0, r3
-	subf     r0, r3, r0
-	cmpwi    r0, 1
-	bne      lbl_80378604
-	clrlwi.  r0, r31, 0x18
-	beq      lbl_803785E4
-	addic.   r5, r30, -1
-	li       r4, 3
-	bge      lbl_803785D4
-	lha      r3, 0x8e(r29)
-	addi     r5, r3, -1
-
-lbl_803785D4:
-	lwz      r3, 0x88(r29)
-	slwi     r0, r5, 2
-	lwzx     r7, r3, r0
-	b        lbl_80378604
-
-lbl_803785E4:
-	lha      r0, 0x8e(r29)
-	addi     r5, r30, 1
-	cmpw     r5, r0
-	blt      lbl_803785F8
-	li       r5, 0
-
-lbl_803785F8:
-	lwz      r3, 0x88(r29)
-	slwi     r0, r5, 2
-	lwzx     r7, r3, r0
-
-lbl_80378604:
-	cmplwi   r7, 0
-	li       r0, 0
-	beq      lbl_80378820
-	li       r3, -1
-	li       r5, 0
-	mtctr    r4
-	cmpwi    r4, 0
-	ble      lbl_80378644
-
-lbl_80378624:
-	lwz      r4, 0x20(r7)
-	lwzx     r6, r4, r5
-	lwz      r4, 0x18(r6)
-	cmplwi   r4, 0
-	beq      lbl_8037863C
-	lwz      r3, 0(r6)
-
-lbl_8037863C:
-	addi     r5, r5, 4
-	bdnz     lbl_80378624
-
-lbl_80378644:
-	cmpwi    r3, 0
-	blt      lbl_80378820
-	clrlwi.  r4, r31, 0x18
-	beq      lbl_8037873C
-	lwz      r4, 0x88(r29)
-	slwi     r6, r30, 2
-	lwzx     r4, r6, r4
-	lwz      r4, 0x20(r4)
-	lwz      r4, 0(r4)
-	lwz      r7, 0(r4)
-	cmpw     r3, r7
-	beq      lbl_803786A4
-	lwz      r4, 0x18(r4)
-	cmplwi   r4, 0
-	beq      lbl_803786A4
-	slwi     r3, r3, 2
-	slwi     r4, r7, 2
-	addi     r5, r3, 0x340
-	mr       r3, r7
-	lwzx     r5, r29, r5
-	addi     r4, r4, 0x340
-	li       r0, 1
-	subfic   r5, r5, 1
-	stwx     r5, r29, r4
-
-lbl_803786A4:
-	lwz      r4, 0x88(r29)
-	lwzx     r4, r6, r4
-	lwz      r4, 0x20(r4)
-	lwz      r4, 4(r4)
-	lwz      r7, 0(r4)
-	cmpw     r3, r7
-	beq      lbl_803786F0
-	lwz      r4, 0x18(r4)
-	cmplwi   r4, 0
-	beq      lbl_803786F0
-	slwi     r3, r3, 2
-	slwi     r4, r7, 2
-	addi     r5, r3, 0x340
-	mr       r3, r7
-	lwzx     r5, r29, r5
-	addi     r4, r4, 0x340
-	li       r0, 1
-	subfic   r5, r5, 1
-	stwx     r5, r29, r4
-
-lbl_803786F0:
-	lwz      r4, 0x88(r29)
-	lwzx     r4, r6, r4
-	lwz      r4, 0x20(r4)
-	lwz      r4, 8(r4)
-	lwz      r7, 0(r4)
-	cmpw     r3, r7
-	beq      lbl_80378820
-	lwz      r4, 0x18(r4)
-	cmplwi   r4, 0
-	beq      lbl_80378820
-	slwi     r3, r3, 2
-	slwi     r4, r7, 2
-	addi     r5, r3, 0x340
-	li       r0, 1
-	lwzx     r5, r29, r5
-	addi     r4, r4, 0x340
-	subfic   r5, r5, 1
-	stwx     r5, r29, r4
-	b        lbl_80378820
-
-lbl_8037873C:
-	lwz      r4, 0x88(r29)
-	slwi     r6, r30, 2
-	lwzx     r4, r6, r4
-	lwz      r4, 0x20(r4)
-	lwz      r4, 8(r4)
-	lwz      r7, 0(r4)
-	cmpw     r3, r7
-	beq      lbl_8037878C
-	lwz      r4, 0x18(r4)
-	cmplwi   r4, 0
-	beq      lbl_8037878C
-	slwi     r3, r3, 2
-	slwi     r4, r7, 2
-	addi     r5, r3, 0x340
-	mr       r3, r7
-	lwzx     r5, r29, r5
-	addi     r4, r4, 0x340
-	li       r0, 1
-	subfic   r5, r5, 1
-	stwx     r5, r29, r4
-
-lbl_8037878C:
-	lwz      r4, 0x88(r29)
-	lwzx     r4, r6, r4
-	lwz      r4, 0x20(r4)
-	lwz      r4, 4(r4)
-	lwz      r7, 0(r4)
-	cmpw     r3, r7
-	beq      lbl_803787D8
-	lwz      r4, 0x18(r4)
-	cmplwi   r4, 0
-	beq      lbl_803787D8
-	slwi     r3, r3, 2
-	slwi     r4, r7, 2
-	addi     r5, r3, 0x340
-	mr       r3, r7
-	lwzx     r5, r29, r5
-	addi     r4, r4, 0x340
-	li       r0, 1
-	subfic   r5, r5, 1
-	stwx     r5, r29, r4
-
-lbl_803787D8:
-	lwz      r4, 0x88(r29)
-	lwzx     r4, r6, r4
-	lwz      r4, 0x20(r4)
-	lwz      r4, 0(r4)
-	lwz      r7, 0(r4)
-	cmpw     r3, r7
-	beq      lbl_80378820
-	lwz      r4, 0x18(r4)
-	cmplwi   r4, 0
-	beq      lbl_80378820
-	slwi     r3, r3, 2
-	slwi     r4, r7, 2
-	addi     r5, r3, 0x340
-	li       r0, 1
-	lwzx     r5, r29, r5
-	addi     r4, r4, 0x340
-	subfic   r5, r5, 1
-	stwx     r5, r29, r4
-
-lbl_80378820:
-	clrlwi.  r0, r0, 0x18
-	beq      lbl_80378904
-	li       r28, 0
-	li       r31, 0
-	b        lbl_803788F4
-
-lbl_80378834:
-	lwz      r3, 0x88(r29)
-	lwzx     r0, r3, r31
-	cmplwi   r0, 0
-	beq      lbl_803789B0
-	li       r27, 0
-	li       r30, 0
-
-lbl_8037884C:
-	lwz      r0, 0x88(r29)
-	mr       r3, r29
-	lwz      r12, 0(r29)
-	lwzx     r4, r31, r0
-	lwz      r12, 0xb0(r12)
-	lwz      r4, 0x20(r4)
-	lwzx     r4, r4, r30
-	lwz      r26, 4(r4)
-	lwz      r4, 0(r4)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 0
-	bne      lbl_803788B0
-	lwz      r5, mCategoryColor0w__Q28Morimura10TZukanBase@sda21(r13)
-	mr       r3, r26
-	lwz      r0, mCategoryColor0b__Q28Morimura10TZukanBase@sda21(r13)
-	addi     r4, r1, 0x24
-	stw      r5, 0x20(r1)
-	addi     r5, r1, 0x20
-	stw      r0, 0x24(r1)
-	lwz      r12, 0(r26)
-	lwz      r12, 0x130(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_803788DC
-
-lbl_803788B0:
-	lwz      r5, mCategoryColor1w__Q28Morimura10TZukanBase@sda21(r13)
-	mr       r3, r26
-	lwz      r0, mCategoryColor1b__Q28Morimura10TZukanBase@sda21(r13)
-	addi     r4, r1, 0x1c
-	stw      r5, 0x18(r1)
-	addi     r5, r1, 0x18
-	stw      r0, 0x1c(r1)
-	lwz      r12, 0(r26)
-	lwz      r12, 0x130(r12)
-	mtctr    r12
-	bctrl
-
-lbl_803788DC:
-	addi     r27, r27, 1
-	addi     r30, r30, 4
-	cmpwi    r27, 3
-	blt      lbl_8037884C
-	addi     r31, r31, 4
-	addi     r28, r28, 1
-
-lbl_803788F4:
-	lha      r0, 0x8e(r29)
-	cmpw     r28, r0
-	blt      lbl_80378834
-	b        lbl_803789B0
-
-lbl_80378904:
-	slwi     r31, r30, 2
-	li       r26, 0
-	li       r30, 0
-
-lbl_80378910:
-	lwz      r0, 0x88(r29)
-	mr       r3, r29
-	lwz      r12, 0(r29)
-	lwzx     r4, r31, r0
-	lwz      r12, 0xb0(r12)
-	lwz      r4, 0x20(r4)
-	lwzx     r4, r4, r30
-	lwz      r27, 4(r4)
-	lwz      r4, 0(r4)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 0
-	bne      lbl_80378974
-	lwz      r5, mCategoryColor0w__Q28Morimura10TZukanBase@sda21(r13)
-	mr       r3, r27
-	lwz      r0, mCategoryColor0b__Q28Morimura10TZukanBase@sda21(r13)
-	addi     r4, r1, 0x14
-	stw      r5, 0x10(r1)
-	addi     r5, r1, 0x10
-	stw      r0, 0x14(r1)
-	lwz      r12, 0(r27)
-	lwz      r12, 0x130(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_803789A0
-
-lbl_80378974:
-	lwz      r5, mCategoryColor1w__Q28Morimura10TZukanBase@sda21(r13)
-	mr       r3, r27
-	lwz      r0, mCategoryColor1b__Q28Morimura10TZukanBase@sda21(r13)
-	addi     r4, r1, 0xc
-	stw      r5, 8(r1)
-	addi     r5, r1, 8
-	stw      r0, 0xc(r1)
-	lwz      r12, 0(r27)
-	lwz      r12, 0x130(r12)
-	mtctr    r12
-	bctrl
-
-lbl_803789A0:
-	addi     r26, r26, 1
-	addi     r30, r30, 4
-	cmpwi    r26, 3
-	blt      lbl_80378910
-
-lbl_803789B0:
-	lmw      r26, 0x28(r1)
-	lwz      r0, 0x44(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	803789D4
- * Size:	0002D4
+/**
+ * @note Address: 0x803789D4
+ * @note Size: 0x2D4
  */
 void TItemZukan::doUpdateOut()
 {
 	TZukanBase::doUpdateOut();
 	if (mCanComplete) {
-		for (int i = 0; i < mMaxSelect; i++) {
-			f32 alpha = (f32)mColorAnmItem->mColor.a / 255.0f;
-			if (alpha < 0.0f) {
-				alpha = 0.0f;
+		for (int i = 0; i < mNumActiveRows; i++) {
+			// get anim alpha as proportion between 0 and 1
+			JUtility::TColor color = mColorAnm->mColor;
+			f32 baseAlpha          = (f32)color.a / 255.0f;
+			if (baseAlpha < 0.0f) {
+				baseAlpha = 0.0f;
 			}
-			if (alpha > 1.0f) {
-				alpha = 1.0f;
+			if (baseAlpha > 1.0f) {
+				baseAlpha = 1.0f;
 			}
-			f32 alpha2 = alpha;
-			if (alpha < 0.1f) {
-				alpha2 = 0.1f;
+
+			// get complementary alphas for each kind of category (green vs blue)
+			// but set a min alpha to show (always show some color)
+			f32 compAlpha = 1.0f - baseAlpha;
+			if (baseAlpha < 0.1f) {
+				baseAlpha = 0.1f;
 			}
-			f32 alpha3 = 1.0f - alpha;
-			if (alpha3 < 0.1f) {
-				alpha3 = 0.1f;
+			if (compAlpha < 0.1f) {
+				compAlpha = 0.1f;
 			}
-			alpha2 *= 255.0f;
-			alpha3 *= 255.0f;
+
+			// put alphas back to 0-255
+			f32 greenAlpha = 255.0f * baseAlpha;
+			f32 blueAlpha  = 255.0f * compAlpha;
+			// set alphas for all (3) items in row
 			for (int j = 0; j < 3; j++) {
-				TIconInfo* idpane = mIndexPaneList[i]->mIconInfos[j];
-				J2DPane* pane     = idpane->mPic;
-				if (mCategoryIsComplete[idpane->mCategoryID]) {
-					pane->setAlpha(255.0f * mCategoryAlphaRate);
+				TIconInfo* elemInfo = mIndexPaneList[i]->mIconInfos[j];
+				J2DPane* elemPane   = elemInfo->mPic;
+				if (mCategoryIsComplete[elemInfo->mCategoryID]) {
+					elemPane->setAlpha(255.0f * mCategoryAlphaRate);
 				} else {
-					if (!getCategoryColorId(idpane->mCategoryID)) {
-						pane->setAlpha(alpha2 * mCategoryAlphaRate);
+					if (getCategoryColorId(elemInfo->mCategoryID) == COLOR_Color0) {
+						elemPane->setAlpha(greenAlpha * mCategoryAlphaRate); // green highlight
 					} else {
-						pane->setAlpha(alpha3 * mCategoryAlphaRate);
+						elemPane->setAlpha(blueAlpha * mCategoryAlphaRate); // blue highlight
 					}
 				}
 			}
@@ -5036,235 +3120,19 @@ void TItemZukan::doUpdateOut()
 			if (mDemoStateButtonAlpha < 0.0f) {
 				mDemoStateButtonAlpha = 0.0f;
 			}
+		} else if ((f32)mEfxTimer == 0.0f) {
+			mDemoStateButtonAlpha = 0.0f;
 		} else {
-			if ((f32)mEfxTimer == 0.0f) {
-				mDemoStateButtonAlpha = 0.0f;
-			} else {
-				mDemoStateButtonAlpha = 1.0f;
-			}
+			mDemoStateButtonAlpha = 1.0f;
 		}
 		mYButtonAlpha = mDemoStateButtonAlpha;
 		mYButtonPane->setAlpha(mDemoStateButtonAlpha * 255.0f);
 	}
-	/*
-	stwu     r1, -0xb0(r1)
-	mflr     r0
-	stw      r0, 0xb4(r1)
-	stfd     f31, 0xa0(r1)
-	psq_st   f31, 168(r1), 0, qr0
-	stfd     f30, 0x90(r1)
-	psq_st   f30, 152(r1), 0, qr0
-	stfd     f29, 0x80(r1)
-	psq_st   f29, 136(r1), 0, qr0
-	stfd     f28, 0x70(r1)
-	psq_st   f28, 120(r1), 0, qr0
-	stfd     f27, 0x60(r1)
-	psq_st   f27, 104(r1), 0, qr0
-	stfd     f26, 0x50(r1)
-	psq_st   f26, 88(r1), 0, qr0
-	stfd     f25, 0x40(r1)
-	psq_st   f25, 72(r1), 0, qr0
-	stmw     r25, 0x24(r1)
-	mr       r31, r3
-	bl       doUpdateOut__Q28Morimura10TZukanBaseFv
-	lbz      r0, 0x241(r31)
-	cmplwi   r0, 0
-	beq      lbl_80378BAC
-	lfs      f31, lbl_8051EB38@sda21(r2)
-	li       r27, 0
-	lfd      f27, lbl_8051EB90@sda21(r2)
-	li       r28, 0
-	lfs      f28, lbl_8051EB70@sda21(r2)
-	lis      r30, 0x4330
-	lfs      f29, lbl_8051EB20@sda21(r2)
-	lfs      f30, lbl_8051EB24@sda21(r2)
-	b        lbl_80378BA0
-
-lbl_80378A54:
-	lwz      r3, 0xd8(r31)
-	stw      r30, 0x10(r1)
-	lwz      r0, 0x20(r3)
-	stw      r0, 8(r1)
-	lbz      r0, 0xb(r1)
-	stw      r0, 0x14(r1)
-	lfd      f0, 0x10(r1)
-	fsubs    f0, f0, f27
-	fdivs    f0, f0, f28
-	fcmpo    cr0, f0, f29
-	bge      lbl_80378A84
-	fmr      f0, f29
-
-lbl_80378A84:
-	fcmpo    cr0, f0, f30
-	ble      lbl_80378A90
-	fmr      f0, f30
-
-lbl_80378A90:
-	fcmpo    cr0, f0, f31
-	fsubs    f1, f30, f0
-	bge      lbl_80378AA0
-	fmr      f0, f31
-
-lbl_80378AA0:
-	fcmpo    cr0, f1, f31
-	bge      lbl_80378AAC
-	fmr      f1, f31
-
-lbl_80378AAC:
-	fmuls    f26, f28, f0
-	li       r26, 0
-	fmuls    f25, f28, f1
-	li       r29, 0
-
-lbl_80378ABC:
-	lwz      r0, 0x88(r31)
-	lwzx     r3, r28, r0
-	lwz      r3, 0x20(r3)
-	lwzx     r3, r3, r29
-	lwz      r4, 0(r3)
-	lwz      r25, 4(r3)
-	slwi     r3, r4, 2
-	addi     r0, r3, 0x278
-	lwzx     r0, r31, r0
-	cmpwi    r0, 0
-	beq      lbl_80378B18
-	lfs      f1, lbl_8051EB70@sda21(r2)
-	mr       r3, r25
-	lfs      f0, mCategoryAlphaRate__Q28Morimura10TZukanBase@sda21(r13)
-	lwz      r12, 0(r25)
-	fmuls    f0, f1, f0
-	lwz      r12, 0x24(r12)
-	fctiwz   f0, f0
-	stfd     f0, 0x10(r1)
-	lwz      r4, 0x14(r1)
-	mtctr    r12
-	bctrl
-	b        lbl_80378B88
-
-lbl_80378B18:
-	lwz      r12, 0(r31)
-	mr       r3, r31
-	lwz      r12, 0xb0(r12)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 0
-	bne      lbl_80378B60
-	lfs      f0, mCategoryAlphaRate__Q28Morimura10TZukanBase@sda21(r13)
-	mr       r3, r25
-	lwz      r12, 0(r25)
-	fmuls    f0, f26, f0
-	lwz      r12, 0x24(r12)
-	fctiwz   f0, f0
-	stfd     f0, 0x10(r1)
-	lwz      r4, 0x14(r1)
-	mtctr    r12
-	bctrl
-	b        lbl_80378B88
-
-lbl_80378B60:
-	lfs      f0, mCategoryAlphaRate__Q28Morimura10TZukanBase@sda21(r13)
-	mr       r3, r25
-	lwz      r12, 0(r25)
-	fmuls    f0, f25, f0
-	lwz      r12, 0x24(r12)
-	fctiwz   f0, f0
-	stfd     f0, 0x10(r1)
-	lwz      r4, 0x14(r1)
-	mtctr    r12
-	bctrl
-
-lbl_80378B88:
-	addi     r26, r26, 1
-	addi     r29, r29, 4
-	cmpwi    r26, 3
-	blt      lbl_80378ABC
-	addi     r28, r28, 4
-	addi     r27, r27, 1
-
-lbl_80378BA0:
-	lha      r0, 0x8e(r31)
-	cmpw     r27, r0
-	blt      lbl_80378A54
-
-lbl_80378BAC:
-	lbz      r0, 0x244(r31)
-	cmplwi   r0, 0
-	beq      lbl_80378C5C
-	lwz      r0, 0x3ac(r31)
-	cmpwi    r0, 1
-	bne      lbl_80378BEC
-	lfs      f2, 0x3b8(r31)
-	lfs      f1, lbl_8051EB38@sda21(r2)
-	lfs      f0, lbl_8051EB20@sda21(r2)
-	fsubs    f1, f2, f1
-	stfs     f1, 0x3b8(r31)
-	lfs      f1, 0x3b8(r31)
-	fcmpo    cr0, f1, f0
-	bge      lbl_80378C28
-	stfs     f0, 0x3b8(r31)
-	b        lbl_80378C28
-
-lbl_80378BEC:
-	lwz      r3, 0x3a8(r31)
-	lis      r0, 0x4330
-	stw      r0, 0x10(r1)
-	xoris    r0, r3, 0x8000
-	lfd      f1, lbl_8051EB80@sda21(r2)
-	stw      r0, 0x14(r1)
-	lfs      f2, lbl_8051EB20@sda21(r2)
-	lfd      f0, 0x10(r1)
-	fsubs    f0, f0, f1
-	fcmpu    cr0, f2, f0
-	bne      lbl_80378C20
-	stfs     f2, 0x3b8(r31)
-	b        lbl_80378C28
-
-lbl_80378C20:
-	lfs      f0, lbl_8051EB24@sda21(r2)
-	stfs     f0, 0x3b8(r31)
-
-lbl_80378C28:
-	lfs      f0, 0x3b8(r31)
-	lfs      f1, lbl_8051EB70@sda21(r2)
-	stfs     f0, 0x1f8(r31)
-	lfs      f0, 0x3b8(r31)
-	lwz      r3, 0x11c(r31)
-	fmuls    f0, f1, f0
-	lwz      r12, 0(r3)
-	fctiwz   f0, f0
-	lwz      r12, 0x24(r12)
-	stfd     f0, 0x10(r1)
-	lwz      r4, 0x14(r1)
-	mtctr    r12
-	bctrl
-
-lbl_80378C5C:
-	psq_l    f31, 168(r1), 0, qr0
-	lfd      f31, 0xa0(r1)
-	psq_l    f30, 152(r1), 0, qr0
-	lfd      f30, 0x90(r1)
-	psq_l    f29, 136(r1), 0, qr0
-	lfd      f29, 0x80(r1)
-	psq_l    f28, 120(r1), 0, qr0
-	lfd      f28, 0x70(r1)
-	psq_l    f27, 104(r1), 0, qr0
-	lfd      f27, 0x60(r1)
-	psq_l    f26, 88(r1), 0, qr0
-	lfd      f26, 0x50(r1)
-	psq_l    f25, 72(r1), 0, qr0
-	lfd      f25, 0x40(r1)
-	lmw      r25, 0x24(r1)
-	lwz      r0, 0xb4(r1)
-	mtlr     r0
-	addi     r1, r1, 0xb0
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	80378CA8
- * Size:	0000C0
+/**
+ * @note Address: 0x80378CA8
+ * @note Size: 0xC0
  */
 void TItemZukan::getUpdateIndex(int& id, bool flag)
 {
@@ -5277,14 +3145,16 @@ void TItemZukan::getUpdateIndex(int& id, bool flag)
 		} else {
 			id -= mRowSize;
 			if (id < 0) {
-				int test2 = mMaxPane;
-				if (mMaxPane >= 3) {
-					test2 = mMaxPane % 3;
-					if (!test2) {
-						test2 = 3;
+				int newIdx;
+				if (mMaxPane < 3) {
+					newIdx = mMaxPane;
+				} else {
+					newIdx = mMaxPane % 3;
+					if (newIdx == 0) {
+						newIdx = 3;
 					}
 				}
-				id = mMaxPane - test2;
+				id = mMaxPane - newIdx;
 			}
 		}
 	} else {
@@ -5292,31 +3162,27 @@ void TItemZukan::getUpdateIndex(int& id, bool flag)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80378D68
- * Size:	00003C
+/**
+ * @note Address: 0x80378D68
+ * @note Size: 0x3C
  */
 u64 TItemZukan::getNameID(int id) { return mOffsetMsgNames->getMsgID(Game::PelletList::Mgr::getOffsetFromDictionaryNo(id)); }
 
-/*
- * --INFO--
- * Address:	80378DA4
- * Size:	00003C
+/**
+ * @note Address: 0x80378DA4
+ * @note Size: 0x3C
  */
 u64 TItemZukan::getXMsgID(int id) { return mOffsetMsg_XDesc->getMsgID(Game::PelletList::Mgr::getOffsetFromDictionaryNo(id)); }
 
-/*
- * --INFO--
- * Address:	80378DE0
- * Size:	00003C
+/**
+ * @note Address: 0x80378DE0
+ * @note Size: 0x3C
  */
 u64 TItemZukan::getYMsgID(int id) { return mOffsetMsg_YDesc->getMsgID(Game::PelletList::Mgr::getOffsetFromDictionaryNo(id)); }
 
-/*
- * --INFO--
- * Address:	80378E1C
- * Size:	000034
+/**
+ * @note Address: 0x80378E1C
+ * @note Size: 0x34
  */
 int TItemZukan::getModelIndex(int id)
 {
@@ -5326,29 +3192,26 @@ int TItemZukan::getModelIndex(int id)
 	return Game::PelletList::Mgr::getOffsetFromDictionaryNo(id);
 }
 
-/*
- * --INFO--
- * Address:	80378E50
- * Size:	000020
+/**
+ * @note Address: 0x80378E50
+ * @note Size: 0x20
  */
 int TItemZukan::getIdMax() { return Game::PelletList::Mgr::getDictionaryNum(); }
 
-/*
- * --INFO--
- * Address:	80378E70
- * Size:	001690
+/**
+ * @note Address: 0x80378E70
+ * @note Size: 0x1690
  */
 void TItemZukan::doCreate(JKRArchive* arc)
 {
-	mScrollParm._00 = 10.0f;
-	mScrollParm._04 = 1.1f;
-	mScrollParm._08 = 0.99f;
-	mScrollParm._0C = 1.5f;
-	mScrollParm._10 = 2.0f;
+	mScrollParm.mMaxRollSpeed        = 10.0f;
+	mScrollParm.mRollSpeedMod        = 1.1f;
+	mScrollParm.mSpeedSlowdownFactor = 0.99f;
+	mScrollParm.mSpeedSpeedupFactor  = 1.25f;
+	mScrollParm.mInitialRollSpeed    = 2.0f;
 
-	mCategoryColor0b.g = 95;
-	mCategoryColor0b.b = 0;               // ???
-	mCategoryColor0b.setRGB(230, 230, 0); //???
+	mCategoryColor0w.setRGB(0, 95, 0);
+	mCategoryColor0b.setRGB(230, 230, 0);
 
 	mCategoryColor1w.setRGB(0, 0, 255);
 	mCategoryColor1b.setRGB(0, 128, 255);
@@ -5389,7 +3252,7 @@ void TItemZukan::doCreate(JKRArchive* arc)
 			mDispItem->mDispWorldMapInfoWin0 = new og::Screen::DispMemberWorldMapInfoWin0;
 			getOwner()->setDispMember(mDispItem);
 		} else {
-			JUT_PANICLINE(4181, "set DebugHeapParent. mail to morimun.\n");
+			JUT_PANICLINE(4174, "set DebugHeapParent. mail to morimun.\n");
 		}
 	} else {
 		mDispItem->mDispWorldMapInfoWin0 = new og::Screen::DispMemberWorldMapInfoWin0;
@@ -5406,9 +3269,9 @@ void TItemZukan::doCreate(JKRArchive* arc)
 
 	if (mIsPreDebt) {
 		if (mIsSection) {
-			int test = randFloat() * 150.0f;
+			int test = randInt(150);
 			for (int i = 0; i < test; i++) {
-				if (i != test) {
+				if (i % 2 == 0) {
 					mMaxPane++;
 				}
 			}
@@ -5420,8 +3283,9 @@ void TItemZukan::doCreate(JKRArchive* arc)
 			}
 			int k = 0;
 			for (int i = 0; i < test; i++) {
-				if (i != test) {
-					mViewablePanelIDList[i] = i;
+				if (i % 2 == 0) {
+					mViewablePanelIDList[k] = i;
+					k++;
 				}
 			}
 		} else {
@@ -5436,15 +3300,17 @@ void TItemZukan::doCreate(JKRArchive* arc)
 			} else {
 				mViewablePanelIDList = new int[max2];
 			}
+			int k = 0;
 			for (int i = 0; i < getIdMax(); i++) {
 				if (isListShow(i)) {
-					mViewablePanelIDList[i] = i;
+					mViewablePanelIDList[k] = i;
+					k++;
 				}
 			}
 		}
 	}
 
-	if (mIsPreDebt && mMaxSelectZukan <= (mMaxSelect - 1) * 3) {
+	if (mIsPreDebt && mMaxPane <= (mNumActiveRows - 1) * 3) {
 		mCanScroll = false;
 	}
 
@@ -5494,18 +3360,19 @@ void TItemZukan::doCreate(JKRArchive* arc)
 			}
 		}
 
-		if (mCanComplete && !mIsSection || mIsPreDebt) {
-			for (; startID < mCategoryArray[i]; startID++) {
-				if ((mMaxPane && mViewablePanelIDList[mMaxPane - 1] > startID)) {
-					break;
-				}
+		if (mCanComplete) {
 
-				if (isListShow(startID)) {
-					_3B4++;
-					mCategoryColorID[i] = cColorID;
-					cColorID            = 1 - cColorID;
-					break;
+			for (int j = startID; j < mCategoryArray[i]; j++) {
+				if (!mIsSection || !mIsPreDebt || !mMaxPane || j <= mViewablePanelIDList[mMaxPane - 1]) {
+					if (isListShow(j)) {
+						_3B4++;
+						mCategoryColorID[i] = cColorID;
+						cColorID            = 1 - cColorID;
+					} else {
+						continue;
+					}
 				}
+				break;
 			}
 		}
 	}
@@ -5561,7 +3428,7 @@ void TItemZukan::doCreate(JKRArchive* arc)
 	mOrimaMesgIconColor2.b = 200;
 	mOrimaMesgIconColor2.a = 255;
 
-	mOrimaIconTexture = static_cast<ResTIMG*>(mArchive->getResource("timg/orima_icon.bti"));
+	mOrimaIconTexture = static_cast<ResTIMG*>(mArchive->getResource("timg/olimar_icon.bti"));
 	P2ASSERTLINE(4363, mOrimaIconTexture);
 
 	mListScreen = new TListScreen(arc, 0);
@@ -5613,7 +3480,7 @@ void TItemZukan::doCreate(JKRArchive* arc)
 	P2ASSERTLINE(4442, mPaneMesgWindowStickCap);
 
 	mYajiScreen = new TScreenBase(arc, 0);
-	mYajiScreen->create("new_otakarazukan_yajirushi.blo", 0x20000);
+	mYajiScreen->create("new_otakarazukan_yajirusi.blo", 0x20000);
 
 	if (mShowAllObjects || (Game::playData && Game::playData->mStoryFlags & Game::STORY_DebtPaid)) {
 		mCurrCharacterIconID = 0;
@@ -5655,7 +3522,7 @@ void TItemZukan::doCreate(JKRArchive* arc)
 
 	TZukanBase::doCreate(arc);
 
-	f32 yoffs       = mIndexPaneList[0]->mPane->mOffset.y - mIndexPaneList[1]->mPane->mOffset.y;
+	f32 yoffs       = mIndexPaneList[1]->mPane->getOffsetY() - mIndexPaneList[0]->mPane->getOffsetY();
 	mMaxSelectZukan = mMaxPane;
 
 	if (!mIsPreDebt) {
@@ -5664,17 +3531,13 @@ void TItemZukan::doCreate(JKRArchive* arc)
 
 	f32 xoffs = 0.0f;
 	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < mMaxSelect; j++) {
-			TIndexPane* idpane = mIndexPaneList[j];
-			J2DPane* pane      = idpane->mPane;
-			pane->mOffset.y    = idpane->_1C + yoffs;
-			pane->calcMtx();
-			mIndexPaneList[j]->_1C = mIndexPaneList[j]->mPane->mOffset.y;
+		for (int j = 0; j < mNumActiveRows; j++) {
+			paneStuff(j, yoffs);
 		}
 		updateIndex(false);
-		TIndexGroup* grp = mIndexGroup;
-		grp->_14         = xoffs;
-		grp->_20         = 0.0f;
+		TIndexGroup* grp   = mIndexGroup;
+		grp->mScrollOffset = xoffs;
+		grp->mStateID      = 0;
 		changePaneInfo();
 	}
 
@@ -5697,32 +3560,30 @@ void TItemZukan::doCreate(JKRArchive* arc)
 	}
 
 	if (index >= 0) {
-		int backupindex = index;
-		int max2        = mMaxSelectZukan;
+		int max2 = mMaxSelectZukan;
 		if (mIsPreDebt) {
-			for (int i = 0; i < mMaxSelectZukan; i++) {
-				backupindex = i;
-				if (index != mViewablePanelIDList[i])
+			for (int i = 0; i < mMaxPane; i++) {
+				// index = i;
+				if (index == mViewablePanelIDList[i]) {
+					index = i;
 					break;
+				}
+
 				max2--;
-				backupindex = index;
+				// backupindex = index;
 			}
 		}
-		mRightOffset = backupindex % 3;
+		mRightOffset = index % 3;
 
-		if (backupindex > 3) {
-			for (int i = 0; i < backupindex / 3; i++) {
-				for (int j = 0; j < mMaxSelect; j++) {
-					TIndexPane* idpane = mIndexPaneList[j];
-					J2DPane* pane      = idpane->mPane;
-					pane->mOffset.y    = idpane->_1C - yoffs;
-					pane->calcMtx();
-					mIndexPaneList[j]->_1C = mIndexPaneList[j]->mPane->mOffset.y;
+		if (index > 2) {
+			for (int i = 0; i < index / 3; i++) {
+				for (int j = 0; j < mNumActiveRows; j++) {
+					paneStuff(j, -yoffs);
 				}
 				updateIndex(true);
-				TIndexGroup* grp = mIndexGroup;
-				grp->_14         = xoffs;
-				grp->_20         = 0.0f;
+				TIndexGroup* grp   = mIndexGroup;
+				grp->mScrollOffset = xoffs;
+				grp->mStateID      = 0;
 				changePaneInfo();
 			}
 		} else {
@@ -5730,7 +3591,7 @@ void TItemZukan::doCreate(JKRArchive* arc)
 		}
 	}
 
-	mCurrIndex = mIndexPaneList[mCurrentSelect]->getIndex();
+	mCurrIndex = mIndexPaneList[mCurrActiveRowSel]->getIndex();
 	if (mCurrIndex >= 0) {
 		J2DPane* pane = mPaneMessageDemo;
 		u64 tag       = getXMsgID(mCurrIndex);
@@ -5740,66 +3601,69 @@ void TItemZukan::doCreate(JKRArchive* arc)
 	backup->becomeCurrentHeap();
 }
 
-/*
- * --INFO--
- * Address:	8037A500
- * Size:	0007B4
+/**
+ * @note Address: 0x8037A500
+ * @note Size: 0x7B4
  */
 void TItemZukan::doDemoDraw(Graphics& gfx)
 {
-	J2DPerspGraph* graf = &gfx.mPerspGraph;
+	J2DPerspGraph* graf = gfx.getPerspGraph();
 
 	u8 alpha = mDemoStateButtonAlpha * 255.0f;
 	gfx.mOrthoGraph.setPort();
 
-	J2DPicture* pane = static_cast<J2DPicture*>(mMainScreen->mScreenObj->search('Pzbtn3'));
-	pane->setAlpha(alpha);
-	pane->draw(pane->getGlbVtx(0).x, pane->getGlbVtx(1).y, pane->getWidth(), pane->getHeight(), false, false, false);
-	pane->calcMtx();
-	pane->setAlpha(255);
+	J2DPane* pane1 = mMainScreen->mScreenObj->search('Pzbtn3');
+	pane1->setAlpha(alpha);
+	static_cast<J2DPicture*>(pane1)->draw(pane1->getGlbVtx(0).x, pane1->getGlbVtx(1).y, pane1->getWidth(), pane1->getHeight(), false, false,
+	                                      false);
+	pane1->calcMtx();
+	pane1->setAlpha(255);
 
-	pane = static_cast<J2DPicture*>(mMainScreen->mScreenObj->search('Pzbtn2'));
-	pane->setAlpha(alpha);
-	pane->draw(pane->getGlbVtx(0).x, pane->getGlbVtx(1).y, pane->getWidth(), pane->getHeight(), false, false, false);
-	pane->calcMtx();
-	pane->setAlpha(255);
+	J2DPane* pane2;
+	pane2 = mMainScreen->mScreenObj->search('Pzbtn2');
+	pane2->setAlpha(alpha);
+	static_cast<J2DPicture*>(pane2)->draw(pane2->getGlbVtx(0).x, pane2->getGlbVtx(1).y, pane2->getWidth(), pane2->getHeight(), false, false,
+	                                      false);
+	pane2->calcMtx();
+	pane2->setAlpha(255);
 
-	graf->setPort();
+	gfx.getPerspGraph()->setPort();
 
 	mPaneMenu->setAlpha(alpha);
 	mMessageItemName->draw(gfx, *graf);
 	mPaneMenu->setAlpha(255);
 	gfx.mOrthoGraph.setPort();
 
-	GXSetScissor(mPanelListBounds.i.x, mPanelListBounds.i.y, mPanelListBounds.f.x - mPanelListBounds.i.x,
-	             mPanelListBounds.f.y - mPanelListBounds.i.y);
+	GXSetScissor(mPanelListBounds.i.x, mPanelListBounds.i.y, mPanelListBounds.getWidth(), mPanelListBounds.getHeight());
 
-	for (int i = 0; i < mMaxSelect; i++) {
+	for (int i = 0; i < mNumActiveRows; i++) {
 		for (int j = 0; j < 3; j++) {
 			TIconInfo* icon = mIndexPaneList[i]->mIconInfos[j];
 			if (mSelection == icon->mCategoryID && icon->mPane->isVisible()) {
-				int alpha          = mMessageBoxBGAlpha * mCategoryAlphaRate;
-				J2DPictureEx* pane = icon->mPic;
-				u8 oldalpha        = pane->mAlpha;
-				pane->setAlpha(alpha);
-				pane->draw(pane->getGlbVtx(0).x + 8.0f, pane->getGlbVtx(1).y + 2.5f, pane->getWidth(), pane->getHeight(), false, false,
-				           false);
-				pane->calcMtx();
-				pane->setAlpha(oldalpha);
+				u8 alpha = mMessageBoxBGAlpha * mCategoryAlphaRate;
+				J2DPictureEx* pane2;
+				J2DPictureEx* pane3;
+				J2DPictureEx* pane1 = icon->mPic;
+				u8 oldalpha         = pane1->mAlpha;
+				pane1->setAlpha(alpha);
+				pane1->draw(pane1->getGlbVtx(0).x + 8.0f, pane1->getGlbVtx(0).y + 2.5f, pane1->getWidth(), pane1->getHeight(), false, false,
+				            false);
+				pane1->calcMtx();
+				pane1->setAlpha(oldalpha);
 
-				pane     = static_cast<J2DPictureEx*>(mIndexPaneList[i]->mIconInfos[j]->mPane);
-				oldalpha = pane->mAlpha;
-				pane->setAlpha(mMessageBoxBGAlpha);
-				pane->draw(pane->getGlbVtx(0).x, pane->getGlbVtx(1).y, pane->getWidth(), pane->getHeight(), false, false, false);
-				pane->calcMtx();
-				pane->setAlpha(oldalpha);
+				pane2    = static_cast<J2DPictureEx*>(mIndexPaneList[i]->mIconInfos[j]->mPane);
+				oldalpha = pane2->mAlpha;
+				pane2->setAlpha(mMessageBoxBGAlpha);
+				pane2->draw(pane2->getGlbVtx(0).x, pane2->getGlbVtx(0).y, pane2->getWidth(), pane2->getHeight(), false, false, false);
+				pane2->calcMtx();
+				pane2->setAlpha(oldalpha);
 
-				pane     = static_cast<J2DPictureEx*>(mIndexPaneList[i]->mIconInfos[j]->mPane2);
-				oldalpha = pane->mAlpha;
-				pane->setAlpha(mMessageBoxBGAlpha);
-				pane->draw(pane->getGlbVtx(0).x, pane->getGlbVtx(1).y, pane->getWidth(), pane->getHeight(), false, false, false);
-				pane->calcMtx();
-				pane->setAlpha(oldalpha);
+				pane3    = static_cast<J2DPictureEx*>(mIndexPaneList[i]->mIconInfos[j]->mPane2);
+				oldalpha = pane3->mAlpha;
+				pane3->setAlpha(mMessageBoxBGAlpha);
+				pane3->draw(pane3->getGlbVtx(0).x, pane3->getGlbVtx(0).y, pane3->getWidth(), pane3->getHeight(), false, false, false);
+				pane3->calcMtx();
+				pane3->setAlpha(oldalpha);
 			}
 		}
 	}
@@ -5813,17 +3677,20 @@ void TItemZukan::doDemoDraw(Graphics& gfx)
 		mPaneNew1->setMsgID('9001_00'); // "Clear"
 		JUtility::TColor color = mColorAnmItem->mColor;
 		mPaneNew1->setAlpha(color.a);
+		color.a = 0;
 		mPaneNew1->setBlack(color);
 		mIconScreen->draw(gfx, *graf);
 
-		for (int i = 0; i < mMaxSelect; i++) {
+		for (int i = 0; i < mNumActiveRows; i++) {
 			if (mIndexPaneList[i]->mPane->isVisible()) {
 				for (int j = 0; j < 3; j++) {
 					TIconInfo* icon = mIndexPaneList[i]->mIconInfos[j];
-					if (mSelection == icon->mCategoryID && icon->_18) {
-						mPaneNew1->mGlobalMtx[0][3] = mNewOffset.x + mIndexPaneList[i]->mIconInfos[j]->mPane->mOffset.x;
-						mPaneNew1->mGlobalMtx[1][3] = mNewOffset.y + mIndexPaneList[i]->mIconInfos[j]->mPane->mOffset.y;
-						mMessageNew->draw(gfx, *graf);
+					if (mSelection == icon->mCategoryID) {
+						if (mSelection == icon->mCategoryID && icon->mParentIndex) {
+							mPaneNew1->mGlobalMtx[0][3] = mNewOffset.x + mIndexPaneList[i]->mIconInfos[j]->mPane->mGlobalMtx[0][3];
+							mPaneNew1->mGlobalMtx[1][3] = mNewOffset.y + mIndexPaneList[i]->mIconInfos[j]->mPane->mGlobalMtx[1][3];
+							mMessageNew->draw(gfx, *graf);
+						}
 					}
 				}
 			}
@@ -6351,14 +4218,13 @@ lbl_8037AC74:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8037ACB4
- * Size:	000170
+/**
+ * @note Address: 0x8037ACB4
+ * @note Size: 0x170
  */
 void TItemZukan::setDetail()
 {
-	int id = mIndexPaneList[mCurrentSelect]->getIndex();
+	int id = mIndexPaneList[mCurrActiveRowSel]->getIndex();
 	if (id < 0) {
 		mIsCurrentSelUnlocked = false;
 		mValueCounter->setBlind(true);
@@ -6387,21 +4253,20 @@ void TItemZukan::setDetail()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8037AE24
- * Size:	000090
+/**
+ * @note Address: 0x8037AE24
+ * @note Size: 0x90
  */
 bool TItemZukan::isComplete()
 {
 	if (mCanComplete) {
-		int id = mIndexPaneList[mCurrentSelect]->mIconInfos[mRightOffset]->mCategoryID;
+		int id = mIndexPaneList[mCurrActiveRowSel]->mIconInfos[mRightOffset]->mCategoryID;
 		if (id < 0)
 			return false;
 
 		if (mCategoryIsComplete[id]) {
 			if (mIsInDemo) {
-				if (mWindow->mStatus == TZukanWindow::STATE_Active)
+				if (mWindow->mState == TZukanWindow::STATE_Active)
 					return true;
 			} else
 				return true;
@@ -6411,10 +4276,9 @@ bool TItemZukan::isComplete()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	8037AEB4
- * Size:	000080
+/**
+ * @note Address: 0x8037AEB4
+ * @note Size: 0x80
  */
 bool TItemZukan::isListShow(int id)
 {
@@ -6435,10 +4299,9 @@ bool TItemZukan::isListShow(int id)
 	return Game::playData->isPelletZukanVisible(id) != 0;
 }
 
-/*
- * --INFO--
- * Address:	8037AF34
- * Size:	00006C
+/**
+ * @note Address: 0x8037AF34
+ * @note Size: 0x6C
  */
 void TItemZukan::setXWindow()
 {
@@ -6449,10 +4312,9 @@ void TItemZukan::setXWindow()
 	mWindow->setIconColor(mOrimaMesgIconColor1, mOrimaMesgIconColor2);
 }
 
-/*
- * --INFO--
- * Address:	8037AFA0
- * Size:	0000A8
+/**
+ * @note Address: 0x8037AFA0
+ * @note Size: 0xA8
  */
 void TItemZukan::setYWindow()
 {
@@ -6470,10 +4332,9 @@ void TItemZukan::setYWindow()
 	mWindow->setIconColor(mIconColor1[id], mIconColor2[id]);
 }
 
-/*
- * --INFO--
- * Address:	8037B048
- * Size:	0000C0
+/**
+ * @note Address: 0x8037B048
+ * @note Size: 0xC0
  */
 u32 TItemZukan::getPrice(int id)
 {
@@ -6488,10 +4349,9 @@ u32 TItemZukan::getPrice(int id)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8037B108
- * Size:	0000C8
+/**
+ * @note Address: 0x8037B108
+ * @note Size: 0xC8
  */
 u32 TItemZukan::getWeight(int id)
 {
@@ -6511,10 +4371,9 @@ u32 TItemZukan::getWeight(int id)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8037B1D0
- * Size:	000098
+/**
+ * @note Address: 0x8037B1D0
+ * @note Size: 0x98
  */
 bool TItemZukan::isNewSupply(int id, bool flag)
 {
@@ -6534,43 +4393,40 @@ bool TItemZukan::isNewSupply(int id, bool flag)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8037B268
- * Size:	0000C4
+/**
+ * @note Address: 0x8037B268
+ * @note Size: 0xC4
  */
 bool TItemZukan::isPanelExist()
 {
-	int id = mIndexPaneList[mCurrentSelect]->getIndex();
+	int id = mIndexPaneList[mCurrActiveRowSel]->getIndex();
 	if (id < 0) {
 		return false;
 	}
 
 	int max = getIdMax();
 	if (mIsPreDebt) {
-		if (mMaxPane < 1)
+		if (mMaxPane < 1) {
 			return false;
-		max = mViewablePanelIDList[max - 1];
+		}
+		max = mViewablePanelIDList[mMaxPane - 1];
 	}
 
 	if (id == max) {
 		return false;
-	} else {
-		return max == id + mRightOffset;
 	}
+	return (u8)(max >= id + mRightOffset);
 }
 
-/*
- * --INFO--
- * Address:	8037B32C
- * Size:	000034
+/**
+ * @note Address: 0x8037B32C
+ * @note Size: 0x34
  */
 bool TItemZukan::isOpenConfirmWindow() { return static_cast<TDItemScene*>(getOwner())->mConfirmEndWindow->mHasDrawn; }
 
-/*
- * --INFO--
- * Address:	8037B360
- * Size:	00004C
+/**
+ * @note Address: 0x8037B360
+ * @note Size: 0x4C
  */
 void TItemZukan::openConfirmWindow()
 {
@@ -6578,17 +4434,15 @@ void TItemZukan::openConfirmWindow()
 	static_cast<TDItemScene*>(getOwner())->mConfirmEndWindow->start(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8037B3AC
- * Size:	000054
+/**
+ * @note Address: 0x8037B3AC
+ * @note Size: 0x54
  */
 TDItemScene::TDItemScene() { mConfirmEndWindow = nullptr; }
 
-/*
- * --INFO--
- * Address:	8037B400
- * Size:	0001C8
+/**
+ * @note Address: 0x8037B400
+ * @note Size: 0x1C8
  */
 void TDItemScene::doCreateObj(JKRArchive* arc)
 {
@@ -6600,10 +4454,9 @@ void TDItemScene::doCreateObj(JKRArchive* arc)
 	mConfirmEndWindow->setRetireMsg('6018_00'); // "Go to Area Selection"
 }
 
-/*
- * --INFO--
- * Address:	8037B5C8
- * Size:	000034
+/**
+ * @note Address: 0x8037B5C8
+ * @note Size: 0x34
  */
 bool TDItemScene::doStart(Screen::StartSceneArg* arg)
 {
@@ -6611,10 +4464,9 @@ bool TDItemScene::doStart(Screen::StartSceneArg* arg)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	8037B5FC
- * Size:	000028
+/**
+ * @note Address: 0x8037B5FC
+ * @note Size: 0x28
  */
 bool TDItemScene::isAppearConfirmWindow()
 {
@@ -6624,10 +4476,9 @@ bool TDItemScene::isAppearConfirmWindow()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8037B624
- * Size:	000080
+/**
+ * @note Address: 0x8037B624
+ * @note Size: 0x80
  */
 TCallbackScrollMsg::TCallbackScrollMsg()
 {
@@ -6640,10 +4491,9 @@ TCallbackScrollMsg::TCallbackScrollMsg()
 	reset();
 }
 
-/*
- * --INFO--
- * Address:	8037B6A4
- * Size:	000070
+/**
+ * @note Address: 0x8037B6A4
+ * @note Size: 0x70
  */
 void TCallbackScrollMsg::doInit()
 {
@@ -6651,17 +4501,15 @@ void TCallbackScrollMsg::doInit()
 	mControl->setTextBoxInfo(static_cast<J2DTextBox*>(mPane));
 }
 
-/*
- * --INFO--
- * Address:	8037B714
- * Size:	000038
+/**
+ * @note Address: 0x8037B714
+ * @note Size: 0x38
  */
 void TCallbackScrollMsg::update() { mControl->update(nullptr, nullptr); }
 
-/*
- * --INFO--
- * Address:	8037B74C
- * Size:	0000C8
+/**
+ * @note Address: 0x8037B74C
+ * @note Size: 0xC8
  */
 void TCallbackScrollMsg::reset()
 {
@@ -6671,21 +4519,20 @@ void TCallbackScrollMsg::reset()
 		P2JME::convertU64ToMessageID(mPane->mMessageID, &mMessageIDAs2UL[0], &mMessageIDAs2UL[1]);
 		mControl->setMessageID(mMessageIDAs2UL[0], mMessageIDAs2UL[1]);
 
-		P2JME::TRenderingProcessor* proc = static_cast<P2JME::Window::TRenderingProcessor*>(mControl->mTextRenderProc);
+		P2JME::Window::TRenderingProcessor* proc = static_cast<P2JME::Window::TRenderingProcessor*>(mControl->mTextRenderProc);
 		proc->setTextBoxInfo(mPane);
 		f32 space              = TZukanBase::mLineSpace;
-		proc->_8C[13]          = space;
-		proc->_8C[15]          = space;
-		proc->_8C[45]          = TZukanBase::mWarpRadius;
+		proc->_C0              = space;
+		proc->_C8              = space;
+		proc->mSpeed           = TZukanBase::mWarpRadius;
 		mControl->_6C          = TZukanBase::mScrollValueCoe;
 		mControl->mScrollSpeed = TZukanBase::mScrollSpeedCoe;
 	}
 }
 
-/*
- * --INFO--
- * Address:	8037B814
- * Size:	000034
+/**
+ * @note Address: 0x8037B814
+ * @note Size: 0x34
  */
 void TCallbackScrollMsg::scroll(f32 speed)
 {
@@ -6693,10 +4540,9 @@ void TCallbackScrollMsg::scroll(f32 speed)
 	mControl->scroll(speed);
 }
 
-/*
- * --INFO--
- * Address:	8037B848
- * Size:	000048
+/**
+ * @note Address: 0x8037B848
+ * @note Size: 0x48
  */
 void TCallbackScrollMsg::draw(Graphics& gfx, J2DGrafContext& graf)
 {
@@ -6705,24 +4551,22 @@ void TCallbackScrollMsg::draw(Graphics& gfx, J2DGrafContext& graf)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8037B890
- * Size:	000024
+/**
+ * @note Address: 0x8037B890
+ * @note Size: 0x24
  */
 f32 TCallbackScrollMsg::getPosRate() { return mControl->getScrollPosition(); }
 
-/*
- * --INFO--
- * Address:	8037B8B4
- * Size:	000080
+/**
+ * @note Address: 0x8037B8B4
+ * @note Size: 0x80
  */
 TZukanWindow::TZukanWindow(JKRArchive* arc, int anims)
     : TScreenBase(arc, anims)
 {
 	_18                   = 0;
 	mCharacterIconXOffset = 0.0f;
-	mStatus               = STATE_Inactive;
+	mState                = STATE_Inactive;
 	mAnimPaneLR           = nullptr;
 	mAnimPaneLight        = nullptr;
 	mMsgCallback          = nullptr;
@@ -6737,18 +4581,17 @@ TZukanWindow::TZukanWindow(JKRArchive* arc, int anims)
 	mCharacterIcon[1]     = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8037B934
- * Size:	000538
+/**
+ * @note Address: 0x8037B934
+ * @note Size: 0x538
  */
 void TZukanWindow::create(char const* filename, u32 flag)
 {
 	mScreenObj = new P2DScreen::Mgr_tuning;
 	mScreenObj->set(filename, flag, mArchive);
 
-	mScissor = new TCallbackScissor;
-	mScissor->setDefaultBounds();
+	mScissor          = new TCallbackScissor;
+	mScissor->mBounds = JGeometry::TBox2f(0.0f, 0.0f, 640.0f, 480.0f);
 	mScreenObj->addCallBack('mg_demo', mScissor);
 
 	mPaneWinCap = mScreenObj->search('Wwincap');
@@ -6758,7 +4601,7 @@ void TZukanWindow::create(char const* filename, u32 flag)
 	mScreenObj->addCallBack('mg_demo', mMsgCallback);
 
 	TCallbackScissor* scissor = new TCallbackScissor;
-	scissor->setDefaultBounds();
+	scissor->mBounds          = JGeometry::TBox2f(0.0f, 0.0f, 640.0f, 480.0f);
 	mScreenObj->addCallBack('mg_demo', scissor);
 
 	mAnimScreens = new og::Screen::AnimScreen*[mAnimScreenCountMax];
@@ -6788,14 +4631,13 @@ void TZukanWindow::create(char const* filename, u32 flag)
 	mScaleMgr = new og::Screen::ScaleMgr;
 }
 
-/*
- * --INFO--
- * Address:	8037BE6C
- * Size:	000390
+/**
+ * @note Address: 0x8037BE6C
+ * @note Size: 0x390
  */
 void TZukanWindow::update()
 {
-	switch (mStatus) {
+	switch (mState) {
 	case STATE_Inactive:
 		return;
 	case STATE_Appear:
@@ -6803,7 +4645,7 @@ void TZukanWindow::update()
 			mScaleMgr->up(0.5f, 30.0f, 0.6f, 0.0f);
 		}
 		if (mAnimScreens[0]->mCurrentFrame > 12.0f) {
-			mStatus = 2;
+			mState = STATE_Active;
 		}
 		break;
 	case STATE_Active:
@@ -6812,8 +4654,9 @@ void TZukanWindow::update()
 		}
 		break;
 	case STATE_Exit:
-		if (mAnimScreens[0]->mCurrentFrame < 1.0f) {
-			mStatus = STATE_Inactive;
+		if (mAnimScreens[0]->mCurrentFrame <= 1.0f) {
+			mAnimScreens[0]->mCurrentFrame = 0.0f;
+			mState                         = STATE_Inactive;
 		}
 		break;
 	}
@@ -6826,17 +4669,20 @@ void TZukanWindow::update()
 				mAnimScreens[i]->mCurrentFrame = 0.0f;
 			}
 		}
+
 		mAnimPaneLight->mCurrentFrame = mAnimScreens[1]->mCurrentFrame;
 		mAnimPaneLight->update();
 		mAnimPaneLR->update();
+
 		// we have loop keyframes at home! (loop keyframes at home)
 		if (mAnimPaneLR->mCurrentFrame > 86.0f) {
 			mAnimPaneLR->mCurrentFrame = 13.0f;
 		}
+
 		mScreenObj->animation();
 
 		f32 scale  = mScaleMgr->calc();
-		f32 scale2 = mAnimScreens[1]->mCurrentFrame * 2.0f / 12.0f;
+		f32 scale2 = mAnimScreens[0]->mCurrentFrame * 2.0f / 12.0f;
 		if (scale2 > 1.0f) {
 			scale2 = 1.0f;
 		}
@@ -6845,85 +4691,83 @@ void TZukanWindow::update()
 		if (mIconYHeightSin > TAU) {
 			mIconYHeightSin -= TAU;
 		}
-		f32 y = mScrollPosition;
+		f32 y = FABS(mScrollPosition);
+		y     = ((15.0f - y) / 15.0f);
 		if (TZukanBase::mIconMove) {
 			mPaneIcon->setOffset(mCharacterIconXOffset + mPaneIcon->mOffset.x,
-			                     ((15.0f - FABS(y)) / 15.0f) * pikmin2_sinf(mIconYHeightSin) + mScrollPosition + mPaneIcon->mOffset.y);
+			                     y * sinf(mIconYHeightSin) + (mScrollPosition + mPaneIcon->getOffsetY()));
 		}
 	}
-	Vector3f pos1             = mPaneWinCap->getGlbVtx(0);
-	Vector3f pos2             = mPaneWinCap->getGlbVtx(3);
-	TCallbackScissor* scissor = mScissor;
-	scissor->mBounds.set(pos1.x + 10.0f, pos1.y + 5.0f, pos2.x - 10.0f, pos2.y - 10.0f);
+	JGeometry::TVec3f pos1 = mPaneWinCap->getGlbVtx(0);
+	JGeometry::TVec3f pos2 = mPaneWinCap->getGlbVtx(3);
+	pos1.x += 10.0f;
+	pos1.y += 5.0f;
+	pos2.x -= 10.0f;
+	pos2.y -= 10.0f;
+	JGeometry::TBox2f box(pos1.x, pos1.y, pos2.x, pos2.y);
+	mScissor->mBounds = box;
 }
 
-/*
- * --INFO--
- * Address:	8037C1FC
- * Size:	00002C
+/**
+ * @note Address: 0x8037C1FC
+ * @note Size: 0x2C
  */
 void TZukanWindow::draw(Graphics& gfx, J2DPerspGraph* graf)
 {
-	if (mStatus != STATE_Inactive) {
+	if (mState != STATE_Inactive) {
 		TScreenBase::draw(gfx, graf);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8037C228
- * Size:	0000F0
+/**
+ * @note Address: 0x8037C228
+ * @note Size: 0xF0
  */
 void TZukanWindow::windowOpen()
 {
 	mAnimScreens[0]->mCurrentFrame = 0.0f;
 	mAnimScreens[0]->mSpeed        = 0.5f;
-	mStatus                        = STATE_Appear;
+	mState                         = STATE_Appear;
 	mMsgCallback->reset();
 }
 
-/*
- * --INFO--
- * Address:	8037C318
- * Size:	000030
+/**
+ * @note Address: 0x8037C318
+ * @note Size: 0x30
  */
 void TZukanWindow::windowClose()
 {
-	if (mStatus == STATE_Active || mStatus == STATE_Appear) {
+	if (mState == STATE_Active || mState == STATE_Appear) {
 		mAnimScreens[0]->mSpeed = -0.5f; // set animation speed to negative to close box
 	}
-	mStatus = STATE_Exit;
+	mState = STATE_Exit;
 }
 
-/*
- * --INFO--
- * Address:	8037C348
- * Size:	000038
+/**
+ * @note Address: 0x8037C348
+ * @note Size: 0x38
  */
 void TZukanWindow::msgScroll(f32 scroll) { mMsgCallback->scroll(scroll); }
 
-/*
- * --INFO--
- * Address:	8037C380
- * Size:	000030
- * Retuns a ratio of how far through the message box you are
+/**
+ * @note Address: 0x8037C380
+ * @note Size: 0x30
+ * Returns a ratio of how far through the message box you are
  */
 f32 TZukanWindow::getPosRate() { return 1.0f - mMsgCallback->mControl->getScrollPosition(); }
 
-/*
- * --INFO--
- * Address:	8037C3B0
- * Size:	00006C
+/**
+ * @note Address: 0x8037C3B0
+ * @note Size: 0x6C
  */
 void TZukanWindow::setWindowColor(J2DGXColorS10& color)
 {
 	static_cast<J2DPictureEx*>(mPaneWinMap)->getMaterial()->mTevBlock->setTevColor(1, color);
 }
 
-/*
- * --INFO--
- * Address:	8037C41C
- * Size:	0000F0
+/**
+ * @note Address: 0x8037C41C
+ * @note Size: 0xF0
  */
 void TZukanWindow::setIconColor(J2DGXColorS10& color1, J2DGXColorS10& color2)
 {
@@ -6934,10 +4778,9 @@ void TZukanWindow::setIconColor(J2DGXColorS10& color1, J2DGXColorS10& color2)
 	mat->mMaterialAlphaCalc = 1;
 }
 
-/*
- * --INFO--
- * Address:	8037C50C
- * Size:	00008C
+/**
+ * @note Address: 0x8037C50C
+ * @note Size: 0x8C
  */
 void TZukanWindow::onIcon(int id)
 {
@@ -6948,10 +4791,9 @@ void TZukanWindow::onIcon(int id)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8037C598
- * Size:	0000D4
+/**
+ * @note Address: 0x8037C598
+ * @note Size: 0xD4
  */
 void TZukanWindow::moveIcon(f32 x)
 {
@@ -6974,10 +4816,9 @@ void TZukanWindow::moveIcon(f32 x)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8037C66C
- * Size:	000040
+/**
+ * @note Address: 0x8037C66C
+ * @note Size: 0x40
  */
 void TZukanWindow::changeIconTexture(int id, ResTIMG* file) { mCharacterIcon[id]->changeTexture(file, 0); }
 

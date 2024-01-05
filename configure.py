@@ -1418,7 +1418,7 @@ LIBS = [
             ["plugProjectMorimuraU/tamagoMushiAnimator", True],
             "plugProjectMorimuraU/tamagoMushiMgr",
             "plugProjectMorimuraU/tamagoMushi",
-            "plugProjectMorimuraU/zukan2D",
+            ["plugProjectMorimuraU/zukan2D", True],
             "plugProjectMorimuraU/hiScore2D",
             ["plugProjectMorimuraU/umiMushiState", True],
             ["plugProjectMorimuraU/umiMushiAnimator", True],

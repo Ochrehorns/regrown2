@@ -130,6 +130,8 @@ struct Graphics : public _GraphicsParent {
 	void initPerspPrintf(Viewport*);
 	void perspPrintf(PerspPrintfInfo&, Vector3f&, char*, ...);
 
+	inline J2DPerspGraph* getPerspGraph() { return &mPerspGraph; }
+
 	void initGX();
 	static void dirtyInitGX();
 	static void clearInitGX();

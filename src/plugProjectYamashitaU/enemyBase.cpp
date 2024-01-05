@@ -1316,7 +1316,7 @@ void EnemyBase::setZukanVisible(bool updateStats)
 			if (updateStats) {
 				tekiInfo->incKilled();
 			} else {
-				SET_FLAG(tekiInfo->mState, TEKISTAT_STATE_UPDATED);
+				tekiInfo->mState.set(TEKISTAT_STATE_UPDATED);
 			}
 		}
 	}

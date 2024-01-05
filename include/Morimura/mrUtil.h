@@ -345,7 +345,7 @@ struct TChallengePanel {
 
 struct TZukanWindow : public TScreenBase {
 	enum StateID {
-		STATE_Inactive,
+		STATE_Inactive = 0,
 		STATE_Appear,
 		STATE_Active,
 		STATE_Exit,
@@ -357,12 +357,10 @@ struct TZukanWindow : public TScreenBase {
 	virtual void update();                        // _0C
 	virtual void draw(Graphics&, J2DPerspGraph*); // _10
 
-	inline GXColor getAnimColor()
+	inline void getAnimColor(GXColor& color)
 	{
 		JUT_ASSERTLINE(88, mAnimScreenCountMax >= 1, nullptr);
-		GXColor color;
 		static_cast<J2DAnmColor*>(mAnimScreens[1]->mAnm)->getColor(0, &color);
-		return color;
 	}
 
 	void windowOpen();
@@ -375,11 +373,13 @@ struct TZukanWindow : public TScreenBase {
 	void moveIcon(f32);
 	void changeIconTexture(int, ResTIMG*);
 
+	inline bool checkState(u8 state) const { return mState == state; }
+
 	// _00     = VTBL
 	// _00-_18 = TScreenBase
 	u8 _18;                               // _18
 	f32 mCharacterIconXOffset;            // _1C
-	int mStatus;                          // _20
+	int mState;                           // _20
 	og::Screen::AnimPane* mAnimPaneLR;    // _24
 	og::Screen::AnimPane* mAnimPaneLight; // _28
 	TCallbackScrollMsg* mMsgCallback;     // _2C
