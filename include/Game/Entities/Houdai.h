@@ -138,6 +138,7 @@ struct Obj : public EnemyBase {
 	void createDeadBombEffect();
 	void effectDrawOn();
 	void effectDrawOff();
+	bool isHydrant();
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase

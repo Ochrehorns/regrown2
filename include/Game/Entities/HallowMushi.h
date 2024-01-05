@@ -4,19 +4,16 @@
 #include "Game/Entities/DangoMushi.h"
 #include "efx/THallow.h"
 
-namespace Game
-{
+namespace Game {
 
-namespace HallowMushi
-{
-// 15 (time elpased rolling) / 0.3 (trail in-between time) 
-#define HALLOW_MAX_TRAIL_COUNT (50)
+namespace HallowMushi {
+// 15 (time elpased rolling) / 0.3 (trail in-between time)
+#define HALLOW_MAX_TRAIL_COUNT   (50)
 #define HALLOW_TRAIL_LINGER_TIME (10.0f)
-#define TRAIL_RADIUS_SIZE (15.0f)
-#define TRAIL_HEIGHT (5.0f)
+#define TRAIL_RADIUS_SIZE        (15.0f)
+#define TRAIL_HEIGHT             (5.0f)
 
-struct Trail
-{
+struct Trail {
 	void create(Vector3f& position, f32 scale, f32 time);
 	void fade();
 	void update(EnemyBase*);
@@ -25,8 +22,6 @@ struct Trail
 	f32 mTimer;
 	Vector3f mPosition;
 	efx::THallow* mEffect;
-
-
 };
 
 struct Obj : public DangoMushi::Obj {
@@ -36,7 +31,7 @@ struct Obj : public DangoMushi::Obj {
 	virtual ~Obj() { }                                    // _1BC (weak)
 	virtual f32 getDownSmokeScale() { return 1.3f; }      // _2EC (weak)
 	virtual f32 getDamageCoeStoneState() { return 0.2f; } // _2AC (weak)
-    virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() { return EnemyTypeID::EnemyID_HallowMushi; }
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() { return EnemyTypeID::EnemyID_HallowMushi; }
 	virtual bool bombCallBack(Creature* source, Vector3f& direction, f32 damage);
 
 	void flickHandCollision(Creature*);
@@ -88,8 +83,8 @@ struct Parms : public DangoMushi::Parms {
 		    , mTrailLingerTime(this, 'fp11', "lingering trail decay time", 10.0f, 0.3f, 30.0f)
 		    , mTrailRadiusSize(this, 'fp12', "lingering trail size", 15.0f, 1.0f, 100.0f)
 		    , mTrailHeight(this, 'fp13', "lingering trail interaction height", 10.0f, 0.0f, 360.0f)
-			, mTrailPeriod(this, 'fp14', "lingering trail spawn time peroid", 0.3f, 0.001f, 15.0f)
-			, mFirstTrailDelay(this, 'fp15', "delay before spawning the first trail in a roll", 0.5f, 0.001f, 15.0f)
+		    , mTrailPeriod(this, 'fp14', "lingering trail spawn time peroid", 0.3f, 0.001f, 15.0f)
+		    , mFirstTrailDelay(this, 'fp15', "delay before spawning the first trail in a roll", 0.5f, 0.001f, 15.0f)
 		{
 		}
 
@@ -112,11 +107,8 @@ struct Parms : public DangoMushi::Parms {
 	ProperParms mProperHallowParms; // _7F8
 };
 
-
 } // namespace HallowMushi
 
 } // namespace Game
-
-
 
 #endif

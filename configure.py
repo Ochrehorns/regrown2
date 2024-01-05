@@ -1540,7 +1540,10 @@ LIBS = [
         "mw_version": "2.6",
         "host": True,
         "objects": [
-            ["DroughtMod/caveHole", True]
+            ["DroughtMod/caveHole", True],
+            ["DroughtMod/HallowMushi", True],
+            ["DroughtMod/HallowMushiMgr", True],
+            ["DroughtMod/efxDrought", True],
         ],
     },
     {
@@ -1553,10 +1556,10 @@ LIBS = [
             ["HeartPieceMod/UsubaMgr", True],
             ["HeartPieceMod/UsubaState", True],
             ["HeartPieceMod/UsubaAnimator", True],
+            ["HeartPieceMod/Hydrant", True],
+            ["HeartPieceMod/HydrantMgr", True],
             ["HeartPieceMod/efxUsuba", True],
             ["HeartPieceMod/efxSmokyFrog", True],
-            ["HeartPieceMod/ElecMushi", True],
-            ["HeartPieceMod/ElecMushiMgr", True],
         ],
     },
     {

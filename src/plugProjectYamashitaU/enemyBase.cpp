@@ -248,12 +248,14 @@ bool BirthTypeDropOlimarState::isFinishableWaitingBirthTypeDrop(EnemyBase* enemy
 	return result;
 }
 
-void BirthTypeDropAutoState::init(EnemyBase* enemy, StateArg* arg) {
+void BirthTypeDropAutoState::init(EnemyBase* enemy, StateArg* arg)
+{
 	BirthTypeDropState::init(enemy, arg);
 	mTimer = randFloat();
 }
 
-bool BirthTypeDropAutoState::isFinishableWaitingBirthTypeDrop(EnemyBase*) {
+bool BirthTypeDropAutoState::isFinishableWaitingBirthTypeDrop(EnemyBase*)
+{
 	mTimer += sys->mDeltaTime;
 	if (mTimer > 1.0f) {
 		return true;

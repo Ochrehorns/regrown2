@@ -11,57 +11,59 @@
  * Rolling has poison trail
  */
 
-namespace Game
+namespace Game {
+
+namespace HallowMushi {
+
+Obj::Obj() { }
+
+void Obj::createEffect()
 {
-
-namespace HallowMushi
-{
-
-Obj::Obj() {
-	
-}
-
-void Obj::createEffect() {
 	for (int i = 0; i < mTrailCount; i++) {
 		mTrailArray[i].mEffect = new efx::THallow;
 		mTrailArray[i].mActive = false;
 	}
 }
 
-void Obj::onInit(CreatureInitArg* arg) {
+void Obj::onInit(CreatureInitArg* arg)
+{
 	DangoMushi::Obj::onInit(arg);
 
 	mTrailCount = *C_PARMS->mProperHallowParms.mTrailLingerTime() / *C_PARMS->mProperHallowParms.mTrailPeriod();
 	mTrailArray = new Trail[mTrailCount];
-    createEffect();
+	createEffect();
 }
 
-void Trail::create(Vector3f& position, f32 scale, f32 time) {
+void Trail::create(Vector3f& position, f32 scale, f32 time)
+{
 	mPosition = position;
 	mTimer    = time;
 	mActive   = true;
-	efx::ArgScaleTime arg (mPosition, scale, time);
+	efx::ArgScaleTime arg(mPosition, scale, time);
 	mEffect->create(&arg);
 }
 
-void Trail::fade() {
+void Trail::fade()
+{
 	mActive = false;
 	mEffect->fade();
 }
 
-void Trail::update(EnemyBase* parent) {
+void Trail::update(EnemyBase* parent)
+{
 	mTimer -= sys->mDeltaTime;
 	if (mTimer < 0.0f) {
 		fade();
 		return;
 	}
 
-	Sys::Sphere sphere (mPosition, *CG_PARMS(parent)->mProperHallowParms.mTrailRadiusSize());
+	Sys::Sphere sphere(mPosition, *CG_PARMS(parent)->mProperHallowParms.mTrailRadiusSize());
 
-	CellIteratorArg arg (sphere);
+	CellIteratorArg arg(sphere);
 	CellIterator iCell = arg;
 
-	CI_LOOP(iCell) {
+	CI_LOOP(iCell)
+	{
 		CellObject* obj = *iCell;
 		if (FABS(obj->getPosition().y - mPosition.y) > *CG_PARMS(parent)->mProperHallowParms.mTrailHeight()) {
 			continue;
@@ -77,11 +79,11 @@ void Trail::update(EnemyBase* parent) {
 		// 	InteractBubble gas(parent, 5.0f);
 		// 	navi->stimulate(gas);
 		// }
-		
 	}
 }
 
-void Obj::addTrail(Vector3f& pos) {
+void Obj::addTrail(Vector3f& pos)
+{
 	// if there is an open trail, take it
 	for (int i = 0; i < mTrailCount; i++) {
 		if (!mTrailArray[i].mActive) {
@@ -91,13 +93,13 @@ void Obj::addTrail(Vector3f& pos) {
 	}
 
 	// else, find the closest trail to done and steal that
-	f32 minTime = mTrailArray[0].mTimer;
+	f32 minTime                     = mTrailArray[0].mTimer;
 	HallowMushi::Trail* targetTrail = &mTrailArray[0];
 
 	for (int i = 1; i < mTrailCount; i++) {
 		if (minTime < mTrailArray[i].mTimer) {
 			targetTrail = &mTrailArray[i];
-			minTime = mTrailArray[i].mTimer;
+			minTime     = mTrailArray[i].mTimer;
 		}
 	}
 
@@ -105,7 +107,8 @@ void Obj::addTrail(Vector3f& pos) {
 	targetTrail->create(pos, *C_PARMS->mProperHallowParms.mTrailRadiusSize(), *C_PARMS->mProperHallowParms.mTrailLingerTime());
 }
 
-bool Obj::bombCallBack(Creature* source, Vector3f& direction, f32 damage) {
+bool Obj::bombCallBack(Creature* source, Vector3f& direction, f32 damage)
+{
 	if (source->isTeki() && static_cast<EnemyBase*>(source)->getEnemyTypeID() == EnemyTypeID::EnemyID_Bomb) {
 		return false;
 	}
@@ -115,10 +118,11 @@ bool Obj::bombCallBack(Creature* source, Vector3f& direction, f32 damage) {
 #define HALLOW_FALLING_BOMB_COUNT    (5)
 #define HALLOW_FALLING_DWEEVIL_COUNT (1)
 
-void Obj::createCrashEnemy() {
+void Obj::createCrashEnemy()
+{
 	OSReport("Obj::createCrashEnemy()\n");
 
-    int fallEnemyTypes[]  = { EnemyTypeID::EnemyID_Bomb, EnemyTypeID::EnemyID_BombOtakara };
+	int fallEnemyTypes[]  = { EnemyTypeID::EnemyID_Bomb, EnemyTypeID::EnemyID_BombOtakara };
 	int fallEnemyCounts[] = { HALLOW_FALLING_BOMB_COUNT, HALLOW_FALLING_DWEEVIL_COUNT };
 
 	// set number of falling eggs to either 1 or 0
@@ -170,13 +174,12 @@ void Obj::createCrashEnemy() {
 			}
 
 			EnemyBirthArg birthArg;
-			birthArg.mTypeID     = (EnemyTypeID::EEnemyTypeID)fallEnemyTypes[i];
-			birthArg.mFaceDir    = mFaceDir;
-			birthArg.mPosition.x = dist * sinf(birthAngle) + fallPos.x;
-			birthArg.mPosition.y = fallPos.y;
-			birthArg.mPosition.z = dist * cosf(birthAngle) + fallPos.z;
+			birthArg.mTypeID        = (EnemyTypeID::EEnemyTypeID)fallEnemyTypes[i];
+			birthArg.mFaceDir       = mFaceDir;
+			birthArg.mPosition.x    = dist * sinf(birthAngle) + fallPos.x;
+			birthArg.mPosition.y    = fallPos.y;
+			birthArg.mPosition.z    = dist * cosf(birthAngle) + fallPos.z;
 			birthArg.mTekiBirthType = EDG_AUTO;
-
 
 			EnemyBase* enemy = mgr->birth(birthArg);
 			if (enemy) {
@@ -208,7 +211,6 @@ void Obj::flickHandCollision(Creature* target)
 
 	if (target->isPiki()) {
 
-
 		targetPos -= mPosition;
 		targetPos.y = 0.0f;
 		targetPos.normalise();
@@ -218,8 +220,7 @@ void Obj::flickHandCollision(Creature* target)
 		if (static_cast<Piki*>(target)->getKind() == Yellow) {
 			InteractHanaChirashi wither(this, *C_PARMS->mGeneral.mAttackDamage(), &targetPos);
 			target->stimulate(wither);
-		}
-		else {
+		} else {
 			InteractDenki denki(this, *C_PARMS->mGeneral.mAttackDamage(), &targetPos);
 			target->stimulate(denki);
 		}
@@ -265,7 +266,8 @@ void Obj::setBodyCollision(bool check)
 	}
 }
 
-void Obj::updateTrails() {
+void Obj::updateTrails()
+{
 	for (int i = 0; i < mTrailCount; i++) {
 		if (mTrailArray[i].mActive) {
 			mTrailArray[i].update(this);
@@ -273,7 +275,8 @@ void Obj::updateTrails() {
 	}
 }
 
-void Obj::doUpdate() {
+void Obj::doUpdate()
+{
 	DangoMushi::Obj::doUpdate();
 	updateTrails();
 
@@ -281,48 +284,44 @@ void Obj::doUpdate() {
 		mLastTrailTimer -= sys->mDeltaTime;
 		if (mLastTrailTimer < 0.0f) {
 			mLastTrailTimer = *C_PARMS->mProperHallowParms.mTrailPeriod();
-			Vector3f pos = getPosition();
+			Vector3f pos    = getPosition();
 			addTrail(pos);
 		}
-	}
-	else {
+	} else {
 		mLastTrailTimer = *C_PARMS->mProperHallowParms.mFirstTrailDelay();
 	}
 }
 
 } // namespace HallowMushi
 
-
-namespace DangoMushi
+namespace DangoMushi {
+// createCrashEnemyBase__Q34Game10DangoMushi3ObjFv
+void Obj::createCrashEnemyBase()
 {
-    // createCrashEnemyBase__Q34Game10DangoMushi3ObjFv
-    void Obj::createCrashEnemyBase() {
-        if (getEnemyTypeID() == EnemyTypeID::EnemyID_DangoMushi) {
-            DangoMushi::Obj::createCrashEnemy();
-        }
-        else if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
-            static_cast<HallowMushi::Obj*>(this)->HallowMushi::Obj::createCrashEnemy();
-        }
-    }
+	if (getEnemyTypeID() == EnemyTypeID::EnemyID_DangoMushi) {
+		DangoMushi::Obj::createCrashEnemy();
+	} else if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
+		static_cast<HallowMushi::Obj*>(this)->HallowMushi::Obj::createCrashEnemy();
+	}
+}
 
-	void Obj::flickHandCollisionBase(Creature* arg) {
-		if (getEnemyTypeID() == EnemyTypeID::EnemyID_DangoMushi) {
-            DangoMushi::Obj::flickHandCollision(arg);
-        }
-        else if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
-            static_cast<HallowMushi::Obj*>(this)->HallowMushi::Obj::flickHandCollision(arg);
-        }
+void Obj::flickHandCollisionBase(Creature* arg)
+{
+	if (getEnemyTypeID() == EnemyTypeID::EnemyID_DangoMushi) {
+		DangoMushi::Obj::flickHandCollision(arg);
+	} else if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
+		static_cast<HallowMushi::Obj*>(this)->HallowMushi::Obj::flickHandCollision(arg);
 	}
-	
-	void Obj::setBodyCollisionBase(bool arg) {
-		if (getEnemyTypeID() == EnemyTypeID::EnemyID_DangoMushi) {
-            DangoMushi::Obj::setBodyCollision(arg);
-        }
-        else if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
-            static_cast<HallowMushi::Obj*>(this)->HallowMushi::Obj::setBodyCollision(arg);
-        }
+}
+
+void Obj::setBodyCollisionBase(bool arg)
+{
+	if (getEnemyTypeID() == EnemyTypeID::EnemyID_DangoMushi) {
+		DangoMushi::Obj::setBodyCollision(arg);
+	} else if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
+		static_cast<HallowMushi::Obj*>(this)->HallowMushi::Obj::setBodyCollision(arg);
 	}
+}
 } // namespace DangoMushi
-
 
 } // namespace Game

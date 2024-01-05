@@ -144,7 +144,8 @@ enum EEnemyTypeID {//ID      Common Name
     EnemyID_SmokyFrog      = 102, // Smoky Frog
     EnemyID_SleepyBulbear  = 103, // Awake Bulbear
     EnemyID_Usuba          = 104, // Usuba
-    EnemyID_HallowMushi      = 105, // Hallowed Crawbster
+    EnemyID_HallowMushi    = 105, // Hallowed Crawbster
+    EnemyID_Hydrant        = 106, // Man-Of-War
     EnemyID_COUNT,
 };
 EEnemyTypeID mEnemyID; // _00
@@ -182,7 +183,7 @@ inline int getEnemyMgrID(int enemyID)
 	 || id == EnemyTypeID::EnemyID_UmiMushiBlind || id == EnemyTypeID::EnemyID_BlackMan || id == EnemyTypeID::EnemyID_DangoMushi \
 	 || id == EnemyTypeID::EnemyID_BigFoot || id == EnemyTypeID::EnemyID_SnakeWhole || id == EnemyTypeID::EnemyID_UmiMushi       \
 	 || id == EnemyTypeID::EnemyID_BigTreasure || id == EnemyTypeID::EnemyID_SmokyFrog || id == EnemyTypeID::EnemyID_Usuba       \
-	 || id == EnemyTypeID::EnemyID_HallowMushi)
+	 || id == EnemyTypeID::EnemyID_HallowMushi || id == EnemyTypeID::EnemyID_Hydrant)
 
 } // namespace Game
 #endif

@@ -765,6 +765,17 @@
 /* 802C4238 002C1178  40 81 01 D0 */	ble .L_802C4408
 /* 802C423C 002C117C  FC 00 70 40 */	fcmpo cr0, f0, f14
 /* 802C4240 002C1180  40 80 01 C8 */	bge .L_802C4408
+
+lwz r3, 0x18(r28)
+bl isHydrant__Q34Game6Houdai3ObjFv
+clrlwi. r0, r3, 0x18
+beq .L_BombShots
+lwz r3, 0x18(r28)
+mr r4, r29
+bl doInteractBubble__Q34Game7Hydrant3ObjFPQ24Game8Creature
+b .L_802C4408
+
+.L_BombShots:
 /* 802C4244 002C1184  7F A3 EB 78 */	mr r3, r29
 /* 802C4248 002C1188  81 9D 00 00 */	lwz r12, 0(r29)
 /* 802C424C 002C118C  81 8C 00 1C */	lwz r12, 0x1c(r12)

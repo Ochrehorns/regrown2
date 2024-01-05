@@ -1286,5 +1286,7 @@ void Obj::effectDrawOff()
 	mShotGunMgr->effectDrawOff();
 }
 
+bool Obj::isHydrant() { return (getEnemyTypeID() == EnemyTypeID::EnemyID_Hydrant); }
+
 } // namespace Houdai
 } // namespace Game

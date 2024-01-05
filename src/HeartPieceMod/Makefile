@@ -3,6 +3,10 @@ HEART_FILES:=\
 	$(BUILD_DIR)/src/HeartPieceMod/UsubaMgr.o\
 	$(BUILD_DIR)/src/HeartPieceMod/UsubaState.o\
 	$(BUILD_DIR)/src/HeartPieceMod/UsubaAnimator.o\
+	$(BUILD_DIR)/src/HeartPieceMod/Hydrant.o\
+	$(BUILD_DIR)/src/HeartPieceMod/HydrantMgr.o\
+	$(BUILD_DIR)/src/HeartPieceMod/efxUsuba.o\
+	$(BUILD_DIR)/src/HeartPieceMod/efxSmokyFrog.o\
 
 DEPENDS += $(HEART_FILES:.o=.d)
 

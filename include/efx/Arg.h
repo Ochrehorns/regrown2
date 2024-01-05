@@ -86,13 +86,12 @@ struct ArgScale : public Arg {
 	f32 mScale; // _10
 };
 
-struct ArgScaleTime : public Arg
-{
+struct ArgScaleTime : public Arg {
 	ArgScaleTime(Vector3f position, f32 scale, f32 time)
 	    : Arg(position)
 	{
 		mScale = scale;
-		mTime = time;
+		mTime  = time;
 	}
 	/**
 	 * @reifiedAddress{80107C44}
@@ -106,7 +105,6 @@ struct ArgScaleTime : public Arg
 	f32 mScale; // _10
 	f32 mTime;
 };
-
 
 struct ArgChou : public Arg {
 	ArgChou(Vector3f position)

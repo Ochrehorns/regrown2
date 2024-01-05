@@ -109,5 +109,5 @@ SysShape::Model* Mgr::createModel()
 	return model;
 }
 
-} // namespace DangoMushi
+} // namespace HallowMushi
 } // namespace Game

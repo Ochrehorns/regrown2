@@ -31,6 +31,7 @@
 #include "Game/Entities/Hanachirashi.h"
 #include "Game/Entities/Hiba.h"
 #include "Game/Entities/Houdai.h"
+#include "Game/Entities/Hydrant.h"
 #include "Game/Entities/Imomushi.h"
 #include "Game/Entities/Jigumo.h"
 #include "Game/Entities/Kabuto.h"
@@ -317,6 +318,9 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 		break;
 	case EnemyTypeID::EnemyID_Houdai:
 		mgr = new Houdai::Mgr(limit, type);
+		break;
+	case EnemyTypeID::EnemyID_Hydrant:
+		mgr = new Hydrant::Mgr(limit, type);
 		break;
 	case EnemyTypeID::EnemyID_LeafChappy:
 		mgr = new LeafChappy::Mgr(limit, type);
@@ -707,42 +711,42 @@ void GeneralEnemyMgr::resetEnemyNum() { mEnemyNumInfo.resetEnemyNum(); }
 #pragma dont_inline on
 void GeneralEnemyMgr::addEnemyNum(int enemyID, u8 max, GenObjectEnemy* genObj)
 {
-    if (enemyID != -1) {
-        mEnemyNumInfo.addEnemyNum(enemyID, max * getEnemyMember(enemyID, 0xFFFF));
+	if (enemyID != -1) {
+		mEnemyNumInfo.addEnemyNum(enemyID, max * getEnemyMember(enemyID, 0xFFFF));
 
-        for (int i = 0; i < max; i++) {
-            switch (enemyID) {
-                // check if we're dealing with a plant that can spawn spectralids
-            case EnemyTypeID::EnemyID_Ooinu_l:
-            case EnemyTypeID::EnemyID_Tanpopo:
-            case EnemyTypeID::EnemyID_Magaret:
-                if (genObj) {
-                    EnemyPelletInfo pelletInfo;
-                    pelletInfo = genObj->mPelletInfo;
+		for (int i = 0; i < max; i++) {
+			switch (enemyID) {
+				// check if we're dealing with a plant that can spawn spectralids
+			case EnemyTypeID::EnemyID_Ooinu_l:
+			case EnemyTypeID::EnemyID_Tanpopo:
+			case EnemyTypeID::EnemyID_Magaret:
+				if (genObj) {
+					EnemyPelletInfo pelletInfo;
+					pelletInfo = genObj->mPelletInfo;
 
-                    if (pelletInfo.mColor == 0 && pelletInfo.mSize == 1) {
-                        EnemyInfo* info = EnemyInfoFunc::getEnemyInfo(enemyID, 0xFFFF);
-                        addEnemyNum(info->mChildID, info->mChildNum, nullptr);
-                    }
-                }
-                break;
+					if (pelletInfo.mColor == 0 && pelletInfo.mSize == 1) {
+						EnemyInfo* info = EnemyInfoFunc::getEnemyInfo(enemyID, 0xFFFF);
+						addEnemyNum(info->mChildID, info->mChildNum, nullptr);
+					}
+				}
+				break;
 
-            default:
-                EnemyInfo* info = EnemyInfoFunc::getEnemyInfo(enemyID, 0xFFFF);
-                addEnemyNum(info->mChildID, info->mChildNum, nullptr);
-                // check if we're dealing with crawbster, since we need to handle falling rock and egg spawns
-                if (enemyID == EnemyTypeID::EnemyID_DangoMushi) {
-                    if (getEnemyNum(EnemyTypeID::EnemyID_Egg, true) < 10) {
-                        addEnemyNum(EnemyTypeID::EnemyID_Egg, 10, nullptr);
-                    }
-                    if (getEnemyNum(EnemyTypeID::EnemyID_Rock, true) < 30) {
-                        addEnemyNum(EnemyTypeID::EnemyID_Rock, 30, nullptr);
-                    }
+			default:
+				EnemyInfo* info = EnemyInfoFunc::getEnemyInfo(enemyID, 0xFFFF);
+				addEnemyNum(info->mChildID, info->mChildNum, nullptr);
+				// check if we're dealing with crawbster, since we need to handle falling rock and egg spawns
+				if (enemyID == EnemyTypeID::EnemyID_DangoMushi) {
+					if (getEnemyNum(EnemyTypeID::EnemyID_Egg, true) < 10) {
+						addEnemyNum(EnemyTypeID::EnemyID_Egg, 10, nullptr);
+					}
+					if (getEnemyNum(EnemyTypeID::EnemyID_Rock, true) < 30) {
+						addEnemyNum(EnemyTypeID::EnemyID_Rock, 30, nullptr);
+					}
 
-                    // check if we're dealing with empress, since we need to handle falling rock spawns
-                } else if ((enemyID == EnemyTypeID::EnemyID_Queen) && (getEnemyNum(EnemyTypeID::EnemyID_Rock, true) < 10)) {
-                    addEnemyNum(EnemyTypeID::EnemyID_Rock, 10, nullptr);
-                } else if (enemyID == EnemyTypeID::EnemyID_HallowMushi) {
+					// check if we're dealing with empress, since we need to handle falling rock spawns
+				} else if ((enemyID == EnemyTypeID::EnemyID_Queen) && (getEnemyNum(EnemyTypeID::EnemyID_Rock, true) < 10)) {
+					addEnemyNum(EnemyTypeID::EnemyID_Rock, 10, nullptr);
+				} else if (enemyID == EnemyTypeID::EnemyID_HallowMushi) {
 					if (getEnemyNum(EnemyTypeID::EnemyID_Bomb, true) < 30) {
 						addEnemyNum(EnemyTypeID::EnemyID_Bomb, 30, nullptr);
 					}
@@ -750,10 +754,10 @@ void GeneralEnemyMgr::addEnemyNum(int enemyID, u8 max, GenObjectEnemy* genObj)
 						addEnemyNum(EnemyTypeID::EnemyID_BombOtakara, 5, nullptr);
 					}
 				}
-                break;
-            }
-        }
-    }
+				break;
+			}
+		}
+	}
 }
 #pragma dont_inline reset
 
