@@ -319,6 +319,10 @@ void Obj::setTargetPattern()
 			// if between 0.5f and 2.0f, target nearest anything
 			mTargetNearest = (int)(2.0f * ((f32)rand() / RAND_MAX)) != 0; // this needs to be not-inlined for float order reasons
 		}
+
+		if (getEnemyTypeID() == EnemyTypeID::EnemyID_Hydrant) {
+			mTargetNearest = false;
+		}
 	}
 }
 
@@ -1286,7 +1290,10 @@ void Obj::effectDrawOff()
 	mShotGunMgr->effectDrawOff();
 }
 
-bool Obj::isHydrant() { return (getEnemyTypeID() == EnemyTypeID::EnemyID_Hydrant); }
+bool Obj::isHydrant()
+{
+	return (getEnemyTypeID() == EnemyTypeID::EnemyID_Hydrant);
+}
 
 } // namespace Houdai
 } // namespace Game
