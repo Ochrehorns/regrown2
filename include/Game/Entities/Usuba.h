@@ -57,7 +57,11 @@ struct Obj : public EnemyBase {
 	void createChargeSE();
 	void createDischargeSE();
 	void createFireEffect();
+	void fadeFireEffect();
 	bool attackTargets(bool doAttack);
+
+	void startFirefly();
+	void fadeFirefly();
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
@@ -65,7 +69,10 @@ struct Obj : public EnemyBase {
 	f32 mStateTimer;             // _2C0
 	Vector3f mTargetPos;         // _2C4
 	bool mIsBreathingFire;       // _2D0
-	efx::TUsubaEffect* mFireEfx; // _2D4
+	efx::TUsubaFireNew* mFireEfx; // _2D4
+	efx::TUsubaFirefly* mFireflyEfx;
+	efx::TUsubaFireGround* mFireGroundEfx;
+	Vector3f mFireGroundHitPos;
 	                             // _2D8 = PelletView
 };
 

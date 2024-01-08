@@ -69,7 +69,9 @@ void Obj::onInit(CreatureInitArg* initArg)
 void Obj::doUpdate()
 {
 	mFsm->exec(this);
-	OSReport("Current state: %i\n", getStateID());
+	// Drought Here: Don't do this lmao
+	
+	// OSReport("Current state: %i\n", getStateID());
 }
 
 /*
@@ -331,17 +333,51 @@ void Obj::createAppearEffect()
 
 void Obj::setupEffect()
 {
-	efx::TUsubaEffect* effect;
-	Matrixf* mtx = mModel->getJoint("body")->getWorldMatrix();
-	effect       = mFireEfx;
+	// efx::TUsubaEffect* effect;
+	// Matrixf* mtx = mModel->getJoint("body")->getWorldMatrix();
+	// effect       = mFireEfx;
 
-	effect->mEfxFire.mEfxABC.setMtxptr(mtx->mMatrix.mtxView);
-	effect->mEfxFire.mEfxIND.mMtx = mtx;
-	effect->mEfxFireYodare.mMtx   = mtx;
+	// effect->mEfxFire.mEfxABC.setMtxptr(mtx->mMatrix.mtxView);
+	// effect->mEfxFire.mEfxIND.mMtx = mtx;
+	// effect->mEfxFireYodare.mMtx   = mtx;
+
+	for (int i = 0; i < mModel->mJointCount; i++) {
+		OSReport("Joint %i %s\n", i, mModel->mJoints[i].mName);
+	}
+
+	mFireEfx->mMtx = mModel->getJoint("root")->getWorldMatrix();
+
+	mFireflyEfx->mMtx = &mObjMatrix;
+
+	
 }
 
-void Obj::createEffect() { } // mFireEfx = new efx::TUsubaEffect(nullptr); }
+void Obj::startFirefly() {
+	mFireflyEfx->create(nullptr);
+}
 
-void Obj::createFireEffect() { mFireEfx->mEfxFire.create(nullptr); }
+void Obj::fadeFirefly() {
+	mFireflyEfx->fade();
+}
+
+void Obj::createEffect() { 
+	mFireEfx = new efx::TUsubaFireNew;
+	mFireflyEfx = new efx::TUsubaFirefly;
+	mFireGroundEfx = new efx::TUsubaFireGround;
+} // mFireEfx = new efx::TUsubaEffect(nullptr); }
+
+void Obj::createFireEffect() { 
+	mFireEfx->create(nullptr);
+	mFireGroundHitPos = getPosition();
+	mFireGroundHitPos.y = mapMgr->getMinY(mFireGroundHitPos);
+	efx::Arg arg(mFireGroundHitPos);
+	mFireGroundEfx->create(&arg);
+}
+
+void Obj::fadeFireEffect() { 
+	mFireEfx->fade();
+	mFireGroundEfx->fade();
+}
+
 } // namespace Usuba
 } // namespace Game

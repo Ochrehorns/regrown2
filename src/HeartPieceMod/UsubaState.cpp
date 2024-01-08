@@ -167,6 +167,7 @@ void StateAppear::exec(EnemyBase* enemy)
 	if (usuba->mCurAnim->mIsPlaying) {
 		if (usuba->mCurAnim->mType == KEYEVENT_2) {
 			usuba->disableEvent(0, EB_NoInterrupt);
+			usuba->startFirefly();
 
 		} else if (usuba->mCurAnim->mType == KEYEVENT_END) {
 			if (usuba->mHealth <= 0.0f) {
@@ -207,6 +208,7 @@ void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->setEmotionExcitement();
 	usuba->startMotion(USUBAANIM_Fall, nullptr);
+	usuba->fadeFirefly();
 }
 
 /*
@@ -380,6 +382,7 @@ void StateRecover::exec(EnemyBase* enemy)
 
 	if (usuba->mCurAnim->mIsPlaying) {
 		if (usuba->mCurAnim->mType == KEYEVENT_2) { // pop up from ground
+			usuba->startFirefly();
 			EnemyFunc::flickNearbyPikmin(enemy, CG_PARMS(enemy)->mGeneral.mShakeRange.mValue,
 			                             CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue,
 			                             FLICK_BACKWARD_ANGLE, nullptr);
@@ -606,6 +609,8 @@ void StateAttackBreath::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->setEmotionExcitement();
 	usuba->startMotion(USUBAANIM_AttackBreath, nullptr);
 	usuba->createChargeSE();
+
+	usuba->createFireEffect();
 }
 
 /*
@@ -627,12 +632,15 @@ void StateAttackBreath::exec(EnemyBase* enemy)
 	if (!enemy->mCurAnim->mIsPlaying)
 		return;
 
+	// Drought: never true currently, please fix anims.txt
 	if (enemy->mCurAnim->mType == KEYEVENT_2) {
 		usuba->mIsBreathingFire = true;
 		usuba->createFireEffect();
+		OSReport("Create Fire Effect!\n");
 		return;
 	}
 	if (enemy->mCurAnim->mType == KEYEVENT_END) {
+		usuba->fadeFireEffect();
 		if (usuba->mHealth <= 0.0f) {
 			transit(enemy, USUBA_Dead, nullptr);
 			return;
