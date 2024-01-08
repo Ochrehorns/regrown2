@@ -348,8 +348,6 @@ void Obj::setupEffect()
 	mFireEfx->mMtx = mModel->getJoint("root")->getWorldMatrix();
 
 	mFireflyEfx->mMtx = &mObjMatrix;
-
-	
 }
 
 void Obj::startFirefly() {
@@ -369,6 +367,9 @@ void Obj::createEffect() {
 void Obj::createFireEffect() { 
 	mFireEfx->create(nullptr);
 	mFireGroundHitPos = getPosition();
+	mFireGroundHitPos.x += sinf(getFaceDir()) * 100.0f;
+	mFireGroundHitPos.z += cosf(getFaceDir()) * 100.0f;
+
 	mFireGroundHitPos.y = mapMgr->getMinY(mFireGroundHitPos);
 	efx::Arg arg(mFireGroundHitPos);
 	mFireGroundEfx->create(&arg);
