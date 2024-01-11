@@ -117,7 +117,7 @@ void Obj::interactGasAttack()
 	f32 maxRange = mPosition.y + static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackRange.mValue;
 	f32 minRange = mPosition.y - static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMinAttackRange.mValue;
 	f32 radius   = static_cast<Frog::Parms*>(mParms)->mProperParms.mScaleMult.mValue
-	           * static_cast<EnemyParmsBase*>(mParms)->mGeneral.mAttackRadius.mValue;
+	           * 50.0f;
 
 	f32 dist = SQUARE(radius);
 

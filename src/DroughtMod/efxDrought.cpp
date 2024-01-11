@@ -20,6 +20,7 @@ bool THallow::create(Arg* arg)
 			mEmitters[i]->_B4       = paritcleScale;
 			mEmitters[i]->mLifeTime = (int)(scaleArg->mTime * 30);
 		}
+		return true;
 	}
 	return false;
 }
