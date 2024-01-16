@@ -22,6 +22,7 @@
 *.filters
 *.vcxproj
 *.user
+*.csv
 include/*.s
 
 build/
@@ -50,5 +51,4 @@ __pycache__
 .ninja_log
 newlines.py
 objdiff.json
-docs/recommended_todo.md
-tools/progress.csv
+docs/

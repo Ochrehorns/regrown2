@@ -49,7 +49,8 @@ YAMASHITA_FILES:=\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/enemyEffectNode.o\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/enemyMgrBase.o\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/enemyFSM.o\
-	$(BUILD_DIR)/asm/plugProjectYamashitaU/singleGS_ZukanParms.o\
+	$(BUILD_DIR)/src/plugProjectYamashitaU/singleGS_ZukanParms.o\
+	$(BUILD_DIR)/asm/plugProjectYamashitaU/singleGS_ZukanParms_a.o\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/treasureLightMgr.o\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/effectAnimator.o\
 
