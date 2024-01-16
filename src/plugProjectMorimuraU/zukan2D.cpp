@@ -29,7 +29,7 @@ f32 TZukanBase::mPodIconOffsetX     = 480.0f; // 480.0f
 f32 TZukanBase::mLargeCategoryScale = 2.0f;
 f32 TZukanBase::mCategoryAlphaRate  = 0.6f;
 u8 TZukanBase::mDrawLineType        = 2;
-bool TZukanBase::mShowAllObjects;
+bool TZukanBase::mShowAllObjects    = true; // DEBUG. REMOVE FOR RELEASE
 bool TZukanBase::mAllNewSupply;
 bool TZukanBase::mZukanShortenTest;
 bool TZukanBase::mZukanCategoryTest;
@@ -160,6 +160,9 @@ int eIDInfo[ENEMY_ZUKAN_COUNT][2] = {
 	{ TEnemyZukan::Zukan_SnakeWhole, Game::EnemyTypeID::EnemyID_SnakeWhole },
 	{ TEnemyZukan::Zukan_DangoMushi, Game::EnemyTypeID::EnemyID_DangoMushi },
 	{ TEnemyZukan::Zukan_BlackMan, Game::EnemyTypeID::EnemyID_BlackMan },
+	{ TEnemyZukan::Zukan_SmokyFrog, Game::EnemyTypeID::EnemyID_SmokyFrog },
+	{ TEnemyZukan::Zukan_HallowMushi, Game::EnemyTypeID::EnemyID_HallowMushi },
+	{ TEnemyZukan::Zukan_Usuba, Game::EnemyTypeID::EnemyID_Usuba },
 };
 
 /**
@@ -1640,6 +1643,9 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 		mIsBigIconList[Zukan_Damagumo]    = true;
 		mIsBigIconList[Zukan_Queen]       = true;
 		mIsBigIconList[Zukan_KingChappy]  = true;
+		mIsBigIconList[Zukan_SmokyFrog]   = true;
+		mIsBigIconList[Zukan_HallowMushi] = true;
+		mIsBigIconList[Zukan_Usuba]       = true;
 	}
 
 	if (mIsSection && !mZukanShortenTest) {

@@ -70,7 +70,7 @@ void Obj::doUpdate()
 {
 	mFsm->exec(this);
 	// Drought Here: Don't do this lmao
-	
+
 	// OSReport("Current state: %i\n", getStateID());
 }
 
@@ -350,21 +350,19 @@ void Obj::setupEffect()
 	mFireflyEfx->mMtx = &mObjMatrix;
 }
 
-void Obj::startFirefly() {
-	mFireflyEfx->create(nullptr);
-}
+void Obj::startFirefly() { mFireflyEfx->create(nullptr); }
 
-void Obj::fadeFirefly() {
-	mFireflyEfx->fade();
-}
+void Obj::fadeFirefly() { mFireflyEfx->fade(); }
 
-void Obj::createEffect() { 
-	mFireEfx = new efx::TUsubaFireNew;
-	mFireflyEfx = new efx::TUsubaFirefly;
+void Obj::createEffect()
+{
+	mFireEfx       = new efx::TUsubaFireNew;
+	mFireflyEfx    = new efx::TUsubaFirefly;
 	mFireGroundEfx = new efx::TUsubaFireGround;
 } // mFireEfx = new efx::TUsubaEffect(nullptr); }
 
-void Obj::createFireEffect() { 
+void Obj::createFireEffect()
+{
 	mFireEfx->create(nullptr);
 	mFireGroundHitPos = getPosition();
 	mFireGroundHitPos.x += sinf(getFaceDir()) * 100.0f;
@@ -375,7 +373,8 @@ void Obj::createFireEffect() {
 	mFireGroundEfx->create(&arg);
 }
 
-void Obj::fadeFireEffect() { 
+void Obj::fadeFireEffect()
+{
 	mFireEfx->fade();
 	mFireGroundEfx->fade();
 }

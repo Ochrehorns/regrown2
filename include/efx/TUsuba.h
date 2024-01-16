@@ -135,27 +135,26 @@ struct TUsubaEffect {
 	TUsubaFireYodare mEfxFireYodare; // _8C
 };
 
-struct TUsubaFireNew : public TChaseMtx
-{
-	TUsubaFireNew() : TChaseMtx(PID_UsubaFlamethrower, nullptr) 
+struct TUsubaFireNew : public TChaseMtx {
+	TUsubaFireNew()
+	    : TChaseMtx(PID_UsubaFlamethrower, nullptr)
 	{
 	}
 };
 
-struct TUsubaFirefly : public TChaseMtx
-{
-	TUsubaFirefly() : TChaseMtx(PID_UsubaFirefly, nullptr) 
+struct TUsubaFirefly : public TChaseMtx {
+	TUsubaFirefly()
+	    : TChaseMtx(PID_UsubaFirefly, nullptr)
 	{
 	}
 };
 
 struct TUsubaFireGround : public TForever2 {
-	TUsubaFireGround() : TForever2(PID_UsubaFlameGroundFire, PID_UsubaFlameGroundSmoke)
+	TUsubaFireGround()
+	    : TForever2(PID_UsubaFlameGroundFire, PID_UsubaFlameGroundSmoke)
 	{
 	}
 };
-
-
 
 } // namespace efx
 

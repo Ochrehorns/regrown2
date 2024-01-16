@@ -910,11 +910,10 @@
 #define PID_WMap_ShootingStar1 (7)
 #define PID_WMap_ShootingStar  (8)
 
-
-#define PID_UsubaFirefly (0x2bc)
-#define PID_PlasmWraithShimmer (0x2bd)
-#define PID_UsubaFlamethrower (0x2be)
-#define PID_UsubaFlameGroundFire (0x2bf)
+#define PID_UsubaFirefly          (0x2bc)
+#define PID_PlasmWraithShimmer    (0x2bd)
+#define PID_UsubaFlamethrower     (0x2be)
+#define PID_UsubaFlameGroundFire  (0x2bf)
 #define PID_UsubaFlameGroundSmoke (0x2c0)
 
 #endif

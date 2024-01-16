@@ -50,3 +50,5 @@ __pycache__
 .ninja_log
 newlines.py
 objdiff.json
+docs/recommended_todo.md
+tools/progress.csv

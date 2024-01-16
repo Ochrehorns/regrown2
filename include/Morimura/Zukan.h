@@ -12,7 +12,7 @@
 #include "Morimura/ScrollList.h"
 #include "kh/khUtil.h"
 
-#define ENEMY_ZUKAN_COUNT 81
+#define ENEMY_ZUKAN_COUNT 84
 
 struct JKRExpHeap;
 
@@ -428,7 +428,10 @@ struct TEnemyZukan : public TZukanBase {
 		Zukan_BlackMan,
 		Zukan_DangoMushi,
 		Zukan_BigFoot,
-		Zukan_BigTreasure
+		Zukan_BigTreasure,
+		Zukan_SmokyFrog,
+		Zukan_HallowMushi,
+		Zukan_Usuba,
 	};
 
 	TEnemyZukan();

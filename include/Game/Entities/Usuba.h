@@ -65,15 +65,15 @@ struct Obj : public EnemyBase {
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
-	FSM* mFsm;                   // _2BC
-	f32 mStateTimer;             // _2C0
-	Vector3f mTargetPos;         // _2C4
-	bool mIsBreathingFire;       // _2D0
+	FSM* mFsm;                    // _2BC
+	f32 mStateTimer;              // _2C0
+	Vector3f mTargetPos;          // _2C4
+	bool mIsBreathingFire;        // _2D0
 	efx::TUsubaFireNew* mFireEfx; // _2D4
 	efx::TUsubaFirefly* mFireflyEfx;
 	efx::TUsubaFireGround* mFireGroundEfx;
 	Vector3f mFireGroundHitPos;
-	                             // _2D8 = PelletView
+	// _2D8 = PelletView
 };
 
 struct Mgr : public EnemyMgrBase {
