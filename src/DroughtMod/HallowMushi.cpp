@@ -4,12 +4,6 @@
 #include "Game/Navi.h"
 #include "Game/Stickers.h"
 
-/*
- * TODO:
- * Elec Claw Swipe
- * 6-Bomb + volitile
- * Rolling has poison trail
- */
 
 namespace Game {
 

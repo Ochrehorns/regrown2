@@ -6,6 +6,7 @@
 #include "Game/PikiMgr.h"
 #include "efx/THebi.h"
 #include "JSystem/JMath.h"
+#include "DroughtMath.h"
 #include "Dolphin/rand.h"
 
 /*
@@ -51,14 +52,16 @@ void Obj::onInit(CreatureInitArg* initArg)
 	EnemyBase::onInit(initArg);
 
 	enableEvent(0, EB_Untargetable);
+	enableEvent(0, EB_ModelHidden);
 
 	mStateTimer      = 0.0f;
 	mIsBreathingFire = false;
+	mIsElecBody      = false;
 	resetAttackableTimer(12800.0f);
 
 	setupEffect();
 
-	mFsm->start(this, USUBA_Wait, nullptr);
+	mFsm->start(this, USUBA_Stay, nullptr);
 }
 
 /*
@@ -69,8 +72,8 @@ void Obj::onInit(CreatureInitArg* initArg)
 void Obj::doUpdate()
 {
 	mFsm->exec(this);
-	// Drought Here: Don't do this lmao
 
+	// Drought Here: Don't do this lmao
 	// OSReport("Current state: %i\n", getStateID());
 }
 
@@ -99,6 +102,16 @@ void Obj::doDirectDraw(Graphics&) { }
  * Size:	000020
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
+
+
+void Obj::collisionCallback(CollEvent& event) {
+	EnemyBase::collisionCallback(event);
+	Creature* collCreature = event.mCollidingCreature;
+	if (isElecBody() && collCreature) {
+		InteractDenki denki(this, *C_PARMS->mGeneral.mAttackDamage(), &Vector3f::zero);
+		collCreature->stimulate(denki);
+	}
+}
 
 /*
  * --INFO--
@@ -316,8 +329,40 @@ void Obj::createDownEffect() { EnemyBase::createBounceEffect(mPosition, getDownS
 
 bool Obj::attackTargets(bool doAttack)
 {
-	// TODO: this
-	return false;
+	if (!doAttack) return false; // why is this param even here??
+
+	Vector3f lineEnd = mFireGroundHitPos;
+	Vector3f lineStart = mModel->getJoint("root")->getWorldMatrix()->getPosition();
+
+	Sys::Sphere sphereStart(lineStart, 0.0f);
+	Sys::Sphere sphereEnd(lineEnd, 10.0f);
+
+	Sys::Sphere sphere = DroughtMath::makeBoundingSphere(sphereStart, sphereEnd);
+
+	CellIteratorArg ciArg = sphere;
+	CellIterator iCell = ciArg;
+
+	CI_LOOP(iCell) {
+		Creature* creature = static_cast<Creature*>(*iCell);
+
+		Vector3f creaturePos = creature->getPosition();
+
+		if (DroughtMath::getSqrDistanceToLine(creaturePos, lineStart, lineEnd) < SQUARE(50.0f)) {
+			InteractFire fire (this, *C_PARMS->mGeneral.mAttackDamage());
+			creature->stimulate(fire);
+		}
+	}
+
+	// Sys::Sphere fireball (mFireGroundHitPos, 30.0f);
+	// CellIteratorArg ciArg2 = fireball;
+	// CellIterator iCell2 = ciArg2;
+	// CI_LOOP(iCell2) {
+	// 	Creature* creature = static_cast<Creature*>(*iCell2);
+	// 	InteractFire fire (this, *C_PARMS->mGeneral.mAttackDamage());
+	// 	creature->stimulate(fire);
+	// }
+
+	return true;
 }
 
 void Obj::createChargeSE() { getJAIObject()->startSound(PSSE_EN_TANK_BREATH, 0); }
@@ -347,7 +392,7 @@ void Obj::setupEffect()
 
 	mFireEfx->mMtx = mModel->getJoint("root")->getWorldMatrix();
 
-	mFireflyEfx->mMtx = &mObjMatrix;
+	mFireflyEfx->mMtx = mModel->getJoint("root")->getWorldMatrix();
 }
 
 void Obj::startFirefly() { mFireflyEfx->create(nullptr); }
@@ -359,18 +404,30 @@ void Obj::createEffect()
 	mFireEfx       = new efx::TUsubaFireNew;
 	mFireflyEfx    = new efx::TUsubaFirefly;
 	mFireGroundEfx = new efx::TUsubaFireGround;
+	mFireTest = new efx::TOtaFire;
 } // mFireEfx = new efx::TUsubaEffect(nullptr); }
 
 void Obj::createFireEffect()
 {
 	mFireEfx->create(nullptr);
-	mFireGroundHitPos = getPosition();
-	mFireGroundHitPos.x += sinf(getFaceDir()) * 100.0f;
-	mFireGroundHitPos.z += cosf(getFaceDir()) * 100.0f;
+
+}
+
+void Obj::createFireHitGroundEffect() {
+	
+	f32 faceDir = getFaceDir();
+
+	mFireGroundHitPos = mPosition;
+
+
+	mFireGroundHitPos.x += pikmin2_sinf(faceDir) * 300.0f;
+	mFireGroundHitPos.z += pikmin2_cosf(faceDir) * 300.0f;
 
 	mFireGroundHitPos.y = mapMgr->getMinY(mFireGroundHitPos);
 	efx::Arg arg(mFireGroundHitPos);
 	mFireGroundEfx->create(&arg);
+	efx::Arg arg2(mFireGroundHitPos);
+	mFireTest->create(&arg2);
 }
 
 void Obj::fadeFireEffect()

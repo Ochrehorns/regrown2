@@ -7,6 +7,7 @@
 #include "Game/EnemyMgrBase.h"
 #include "Game/EnemyBase.h"
 #include "efx/TUsuba.h"
+#include "efx/TOta.h"
 #include "Collinfo.h"
 
 /**
@@ -45,6 +46,9 @@ struct Obj : public EnemyBase {
 	{
 		return EnemyTypeID::EnemyID_Usuba;
 	}
+
+
+	virtual void collisionCallback(CollEvent& coll);
 	//////////////// VTABLE END
 
 	f32 setHeightVelocity();
@@ -57,11 +61,21 @@ struct Obj : public EnemyBase {
 	void createChargeSE();
 	void createDischargeSE();
 	void createFireEffect();
+	void createFireHitGroundEffect();
+	
 	void fadeFireEffect();
+
+
+
 	bool attackTargets(bool doAttack);
 
 	void startFirefly();
 	void fadeFirefly();
+
+
+	void enableElecBody() { mIsElecBody = true; }
+	void disableElecBody() { mIsElecBody = false; }
+	bool isElecBody() { return mIsElecBody; }
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
@@ -69,9 +83,11 @@ struct Obj : public EnemyBase {
 	f32 mStateTimer;              // _2C0
 	Vector3f mTargetPos;          // _2C4
 	bool mIsBreathingFire;        // _2D0
+	bool mIsElecBody;
 	efx::TUsubaFireNew* mFireEfx; // _2D4
 	efx::TUsubaFirefly* mFireflyEfx;
 	efx::TUsubaFireGround* mFireGroundEfx;
+	efx::TOtaFire* mFireTest;
 	Vector3f mFireGroundHitPos;
 	// _2D8 = PelletView
 };
@@ -239,6 +255,8 @@ struct StateAppear : public State {
 	virtual void init(EnemyBase*, StateArg*); // _08
 	virtual void exec(EnemyBase*);            // _0C
 	virtual void cleanup(EnemyBase*);         // _10
+
+	bool mIsRising;
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
