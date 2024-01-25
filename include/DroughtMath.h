@@ -49,13 +49,43 @@ inline Vector3f getClostestPointOnLine(const Vector3f& point, const Vector3f& li
     return lineStart + lineDirection * projection;
 }
 
+inline Vector3f getClostestPointOnLine(const Vector3f& point, const Vector3f& lineStart, const Vector3f& lineEnd, f32& outDotProd) {
+    Vector3f lineDirection = lineEnd - lineStart;
+
+    Vector3f linestartPointVector = point - lineStart;
+
+    // calculates how far along the line we need to go to get to the clostest point
+    outDotProd = dot(lineDirection, linestartPointVector) / lineDirection.sqrMagnitude();
+
+    if (outDotProd > 1.0f) {
+        outDotProd = 1.0f;
+    }
+    else if (outDotProd < 0.0f) {
+        outDotProd = 0.0f;
+    }
+
+    return lineStart + lineDirection * outDotProd;
+}
+
+
 inline f32 getDistanceToLine(Vector3f& point, const Vector3f& lineStart, const Vector3f& lineEnd) {
     Vector3f clostestPoint = getClostestPointOnLine(point, lineStart, lineEnd);
     return _distanceBetween(clostestPoint, point);
 }
 
+inline f32 getDistanceToLine(Vector3f& point, const Vector3f& lineStart, const Vector3f& lineEnd, f32& outDotProd) {
+    Vector3f clostestPoint = getClostestPointOnLine(point, lineStart, lineEnd, outDotProd);
+    return _distanceBetween(clostestPoint, point);
+}
+
 inline f32 getSqrDistanceToLine(Vector3f& point, const Vector3f& lineStart, const Vector3f& lineEnd) {
     Vector3f clostestPoint = getClostestPointOnLine(point, lineStart, lineEnd);
+    return sqrDistance(clostestPoint, point);
+}
+
+
+inline f32 getSqrDistanceToLine(Vector3f& point, const Vector3f& lineStart, const Vector3f& lineEnd, f32& outDotProd) {
+    Vector3f clostestPoint = getClostestPointOnLine(point, lineStart, lineEnd, outDotProd);
     return sqrDistance(clostestPoint, point);
 }
 

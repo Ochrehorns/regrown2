@@ -73,6 +73,16 @@ void Obj::doUpdate()
 {
 	mFsm->exec(this);
 
+	attackTargets();
+
+	if (mIsFirePoolActive) {
+		mGroundedFireTimer -= sys->mDeltaTime;
+		if (mGroundedFireTimer < 0.0f) {
+			mIsFirePoolActive = false;
+			fadeFireHitGroundEffect();
+		}
+	}
+
 	// Drought Here: Don't do this lmao
 	// OSReport("Current state: %i\n", getStateID());
 }
@@ -327,40 +337,44 @@ int Obj::catchTarget() { EnemyFunc::eatPikmin(this, nullptr); }
  */
 void Obj::createDownEffect() { EnemyBase::createBounceEffect(mPosition, getDownSmokeScale()); }
 
-bool Obj::attackTargets(bool doAttack)
+bool Obj::attackTargets()
 {
-	if (!doAttack) return false; // why is this param even here??
+	if (mIsBreathingFire) {
 
-	Vector3f lineEnd = mFireGroundHitPos;
-	Vector3f lineStart = mModel->getJoint("root")->getWorldMatrix()->getPosition();
+		Vector3f lineEnd = mFireGroundHitPos;
+		Vector3f lineStart = mModel->getJoint("root")->getWorldMatrix()->getPosition();
 
-	Sys::Sphere sphereStart(lineStart, 0.0f);
-	Sys::Sphere sphereEnd(lineEnd, 10.0f);
+		Sys::Sphere sphereStart(lineStart, 0.0f);
+		Sys::Sphere sphereEnd(lineEnd, 50.0f);
 
-	Sys::Sphere sphere = DroughtMath::makeBoundingSphere(sphereStart, sphereEnd);
+		Sys::Sphere sphere = DroughtMath::makeBoundingSphere(sphereStart, sphereEnd);
 
-	CellIteratorArg ciArg = sphere;
-	CellIterator iCell = ciArg;
+		CellIteratorArg ciArg = sphere;
+		CellIterator iCell = ciArg;
 
-	CI_LOOP(iCell) {
-		Creature* creature = static_cast<Creature*>(*iCell);
+		CI_LOOP(iCell) {
+			Creature* creature = static_cast<Creature*>(*iCell);
 
-		Vector3f creaturePos = creature->getPosition();
+			Vector3f creaturePos = creature->getPosition();
 
-		if (DroughtMath::getSqrDistanceToLine(creaturePos, lineStart, lineEnd) < SQUARE(50.0f)) {
+			f32 lineprogress;
+
+			if (DroughtMath::getSqrDistanceToLine(creaturePos, lineStart, lineEnd, lineprogress) < SQUARE(50.0f) && lineprogress > 0.2f) {
+				InteractFire fire (this, *C_PARMS->mGeneral.mAttackDamage());
+				creature->stimulate(fire);
+			}
+		}
+	} // this sphere is within the fire-breath line, hence the else
+	else if (mIsFirePoolActive) {
+		Sys::Sphere fireball (mFireGroundHitPos, 50.0f);
+		CellIteratorArg ciArg2 = fireball;
+		CellIterator iCell2 = ciArg2;
+		CI_LOOP(iCell2) {
+			Creature* creature = static_cast<Creature*>(*iCell2);
 			InteractFire fire (this, *C_PARMS->mGeneral.mAttackDamage());
 			creature->stimulate(fire);
 		}
 	}
-
-	// Sys::Sphere fireball (mFireGroundHitPos, 30.0f);
-	// CellIteratorArg ciArg2 = fireball;
-	// CellIterator iCell2 = ciArg2;
-	// CI_LOOP(iCell2) {
-	// 	Creature* creature = static_cast<Creature*>(*iCell2);
-	// 	InteractFire fire (this, *C_PARMS->mGeneral.mAttackDamage());
-	// 	creature->stimulate(fire);
-	// }
 
 	return true;
 }
@@ -404,36 +418,66 @@ void Obj::createEffect()
 	mFireEfx       = new efx::TUsubaFireNew;
 	mFireflyEfx    = new efx::TUsubaFirefly;
 	mFireGroundEfx = new efx::TUsubaFireGround;
-	mFireTest = new efx::TOtaFire;
 } // mFireEfx = new efx::TUsubaEffect(nullptr); }
 
-void Obj::createFireEffect()
-{
-	mFireEfx->create(nullptr);
 
-}
+void Obj::createGroundFire() {
+	mGroundedFireTimer = *C_PROPERPARMS.mFirePoolLingerTime();
+	mIsFirePoolActive = true;
 
-void Obj::createFireHitGroundEffect() {
-	
 	f32 faceDir = getFaceDir();
 
 	mFireGroundHitPos = mPosition;
 
+	f32 spawnDistance = *C_PROPERPARMS.mFirePoolSpawnDistance();
 
-	mFireGroundHitPos.x += pikmin2_sinf(faceDir) * 300.0f;
-	mFireGroundHitPos.z += pikmin2_cosf(faceDir) * 300.0f;
+
+	mFireGroundHitPos.x += pikmin2_sinf(faceDir) * spawnDistance;
+	mFireGroundHitPos.z += pikmin2_cosf(faceDir) * spawnDistance;
 
 	mFireGroundHitPos.y = mapMgr->getMinY(mFireGroundHitPos);
+
+	createFireHitGroundEffect();
+}
+
+void Obj::startFireBreath() {
+	mIsBreathingFire = true;
+	createFireEffect();
+	createDischargeSE();
+}
+
+void Obj::endFireBreath() {
+	mIsBreathingFire = false;
+	fadeFireEffect();
+}
+
+void Obj::createFireEffect()
+{
+	mFireEfx->create(nullptr);
+}
+
+void Obj::createFireHitGroundEffect() {
 	efx::Arg arg(mFireGroundHitPos);
 	mFireGroundEfx->create(&arg);
-	efx::Arg arg2(mFireGroundHitPos);
-	mFireTest->create(&arg2);
 }
 
 void Obj::fadeFireEffect()
 {
-	mFireEfx->fade();
+	mFireEfx->fade();	
+}
+
+void Obj::fadeFireHitGroundEffect() {
 	mFireGroundEfx->fade();
+}
+
+void Obj::startElec() {
+	mIsElecBody = true;
+	startFirefly();
+}
+
+void Obj::endElec() {
+	mIsElecBody = false;
+	fadeFirefly();
 }
 
 } // namespace Usuba

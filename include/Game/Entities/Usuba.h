@@ -60,36 +60,49 @@ struct Obj : public EnemyBase {
 	void setupEffect();
 	void createChargeSE();
 	void createDischargeSE();
-	void createFireEffect();
-	void createFireHitGroundEffect();
 	
-	void fadeFireEffect();
+	void startFireBreath();
+	void endFireBreath();
 
+	
+	void createGroundFire();
 
+	bool attackTargets();
 
-	bool attackTargets(bool doAttack);
+	void startElec();
+	void endElec();
 
-	void startFirefly();
-	void fadeFirefly();
-
-
-	void enableElecBody() { mIsElecBody = true; }
-	void disableElecBody() { mIsElecBody = false; }
 	bool isElecBody() { return mIsElecBody; }
+	
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
 	FSM* mFsm;                    // _2BC
 	f32 mStateTimer;              // _2C0
 	Vector3f mTargetPos;          // _2C4
-	bool mIsBreathingFire;        // _2D0
-	bool mIsElecBody;
+	
+	private:
+	void createFireEffect();
+	void createFireHitGroundEffect();
+	
+	void fadeFireEffect();
+	void fadeFireHitGroundEffect();
+
+	void startFirefly();
+	void fadeFirefly();
+
+	Vector3f mFireGroundHitPos;
+	f32 mGroundedFireTimer;
+
 	efx::TUsubaFireNew* mFireEfx; // _2D4
 	efx::TUsubaFirefly* mFireflyEfx;
-	efx::TUsubaFireGround* mFireGroundEfx;
-	efx::TOtaFire* mFireTest;
-	Vector3f mFireGroundHitPos;
-	// _2D8 = PelletView
+	efx::TUsubaFireGround* mFireGroundEfx;	
+
+	bool mIsBreathingFire;        // _2D0
+	bool mIsFirePoolActive;
+	bool mIsElecBody;
+
+	
 };
 
 struct Mgr : public EnemyMgrBase {
@@ -127,6 +140,8 @@ struct Parms : public EnemyParmsBase {
 		    , mFp31(this, 'fp31', "ハント下降係数", 0.3f, 0.0f, 1.0f)                        // 'hunt descent factor'
 		    , mFp32(this, 'fp32', "ハント後減衰率", 0.95f, 0.0f, 1.0f)                       // 'post-hunt decay rate'
 		    , mFp41(this, 'fp41', "Fall Meck 速度", 200.0f, 0.0f, 1000.0f)                   // 'Fall Meck speed'
+			, mFirePoolLingerTime(this, 'fp0A', "Fire Pool Lingering TIme", 5.0f, 0.0f, 30.0f)
+			, mFirePoolSpawnDistance(this, 'fp0B', "Fire Pool Spawn Distance", 200.0f, 0.0f, 1000.0f)
 		{
 		}
 
@@ -144,6 +159,8 @@ struct Parms : public EnemyParmsBase {
 		Parm<f32> mFp31;                // _9BC, fp31
 		Parm<f32> mFp32;                // _9E4, fp32
 		Parm<f32> mFp41;                // _A0C, fp41
+		Parm<f32> mFirePoolLingerTime;
+		Parm<f32> mFirePoolSpawnDistance; 
 	};
 
 	Parms() { }

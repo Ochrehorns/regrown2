@@ -60,7 +60,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->mToFlick = 0.0f;
 	usuba->startMotion(USUBAANIM_Dead, nullptr);
 
-	usuba->disableElecBody();
+	usuba->endElec();
 }
 
 /*
@@ -202,8 +202,7 @@ void StateAppear::exec(EnemyBase* enemy)
 			mIsRising = true;
 			break;
 		case KEYEVENT_3:
-			usuba->startFirefly();
-			usuba->enableElecBody();
+			usuba->startElec();
 			break;
 		case KEYEVENT_END: 
 			if (usuba->mHealth <= 0.0f) {
@@ -247,8 +246,7 @@ void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->setEmotionExcitement();
 	usuba->startMotion(USUBAANIM_Fall, nullptr);
-	usuba->disableElecBody();
-	usuba->fadeFirefly();
+	usuba->endElec();
 	usuba->disableEvent(0, EB_Untargetable);
 }
 
@@ -422,7 +420,6 @@ void StateRecover::exec(EnemyBase* enemy)
 
 	if (usuba->mCurAnim->mIsPlaying) {
 		if (usuba->mCurAnim->mType == KEYEVENT_2) { // pop up from ground
-			usuba->startFirefly();
 			EnemyFunc::flickNearbyPikmin(enemy, CG_PARMS(enemy)->mGeneral.mShakeRange.mValue,
 			                             CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue,
 			                             FLICK_BACKWARD_ANGLE, nullptr);
@@ -435,7 +432,7 @@ void StateRecover::exec(EnemyBase* enemy)
 			enemy->mToFlick = 0.0f;
 
 		} else if (usuba->mCurAnim->mType == KEYEVENT_END) { // anim end
-			usuba->enableElecBody();
+			usuba->startElec();
 			int nextState = usuba->getNextStateOnHeight();
 			if (nextState >= 0) {
 				transit(usuba, nextState, nullptr);
@@ -644,7 +641,6 @@ void StateAttackBreath::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* usuba              = OBJ(enemy);
 	usuba->mStateTimer      = 0.0f;
-	usuba->mIsBreathingFire = false;
 	usuba->disableEvent(0, EB_Cullable);
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->setEmotionExcitement();
@@ -664,10 +660,6 @@ void StateAttackBreath::exec(EnemyBase* enemy)
 		transit(enemy, USUBA_Fall, nullptr);
 		return;
 	}
-	if (usuba->mIsBreathingFire) {
-		usuba->attackTargets(true);
-		
-	}
 	if (!enemy->mCurAnim->mIsPlaying) {
 		return;
 	}
@@ -675,16 +667,13 @@ void StateAttackBreath::exec(EnemyBase* enemy)
 	switch (enemy->mCurAnim->mType)
 	{
 	case KEYEVENT_2:
-		usuba->createFireEffect();
-		usuba->createDischargeSE();
+		usuba->startFireBreath();
 		break;
 	case KEYEVENT_3:
-		usuba->createFireHitGroundEffect();
-		usuba->mIsBreathingFire = true;
+		usuba->createGroundFire();
 		break;
 	case KEYEVENT_4:
-		usuba->mIsBreathingFire = false;
-		usuba->fadeFireEffect();
+		usuba->endFireBreath();
 		break;
 	case KEYEVENT_END:
 		if (usuba->mHealth <= 0.0f) {
@@ -699,9 +688,6 @@ void StateAttackBreath::exec(EnemyBase* enemy)
 		transit(enemy, USUBA_Wait, nullptr);
 		break;
 	}
-	
-		
-	
 }
 
 /*
