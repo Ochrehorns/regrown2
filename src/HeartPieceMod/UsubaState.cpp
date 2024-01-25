@@ -174,6 +174,10 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->startMotion(USUBAANIM_Appear, nullptr);
 	usuba->createAppearEffect();
 
+	usuba->mSoundObj->startSound(PSSE_EN_SNAKE_APPEAR, 0);
+
+	usuba->setBossAppearBGM();
+
 	mIsRising = false;
 
 	// Vector3f position = usuba->getPosition();
@@ -430,6 +434,7 @@ void StateRecover::exec(EnemyBase* enemy)
 			                            CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue,
 			                            FLICK_BACKWARD_ANGLE, nullptr);
 			enemy->mToFlick = 0.0f;
+			usuba->startBossFlickBGM();
 
 		} else if (usuba->mCurAnim->mType == KEYEVENT_END) { // anim end
 			usuba->startElec();
@@ -551,7 +556,9 @@ void StateWait::exec(EnemyBase* enemy)
 	if (usuba->mCurAnim->mIsPlaying && usuba->mCurAnim->mType == KEYEVENT_END) {
 		if (target) {
 			usuba->mTargetCreature = target;
-			transit(usuba, USUBA_AttackBreath, nullptr);
+			if (target) { // unfinished if
+				transit(usuba, USUBA_AttackBreath, nullptr);
+			}
 			return;
 		}
 
@@ -646,6 +653,7 @@ void StateAttackBreath::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->setEmotionExcitement();
 	usuba->startMotion(USUBAANIM_AttackBreath, nullptr);
 	usuba->createChargeSE();
+	usuba->startBossAttackBGM();
 }
 
 /*
@@ -660,6 +668,11 @@ void StateAttackBreath::exec(EnemyBase* enemy)
 		transit(enemy, USUBA_Fall, nullptr);
 		return;
 	}
+
+	if (!usuba->isFireActive()) {
+		usuba->turnToTarget(usuba->mTargetCreature);
+	}
+
 	if (!enemy->mCurAnim->mIsPlaying) {
 		return;
 	}

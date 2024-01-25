@@ -14,7 +14,7 @@
  * --Header for Usuba (Usuba)--
  */
 
-#define USUBA_MAX_STICK_PIKI (5)
+#define USUBA_MAX_STICK_PIKI (15)
 
 namespace Game {
 namespace Usuba {
@@ -25,6 +25,7 @@ struct Obj : public EnemyBase {
 
 	//////////////// VTABLE
 	virtual void onInit(CreatureInitArg* settings);                // _30
+	virtual void constructor();
 	virtual void doDirectDraw(Graphics& gfx);                      // _50
 	virtual void inWaterCallback(WaterBox* wb) { }                 // _84 (weak)
 	virtual void outWaterCallback() { }                            // _88 (weak)
@@ -32,6 +33,7 @@ struct Obj : public EnemyBase {
 	virtual ~Obj() { }                                             // _1BC (weak)
 	virtual void setInitialSetting(EnemyInitialParamBase* params); // _1C4
 	virtual void doUpdate();                                       // _1CC
+	virtual void doUpdateCommon();
 	virtual void doDebugDraw(Graphics& gfx);                       // _1EC
 	virtual void doStartStoneState();                              // _2A4
 	virtual void doFinishStoneState();                             // _2A8
@@ -73,6 +75,14 @@ struct Obj : public EnemyBase {
 	void endElec();
 
 	bool isElecBody() { return mIsElecBody; }
+
+	bool isFireActive() { return mIsBreathingFire; }
+
+	void resetBossAppearBGM();
+	void setBossAppearBGM();
+	void startBossAttackBGM();
+	void startBossFlickBGM();
+	void updateBossBGM();
 	
 
 	// _00 		= VTBL

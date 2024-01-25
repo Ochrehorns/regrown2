@@ -8,6 +8,8 @@
 #include "JSystem/JMath.h"
 #include "DroughtMath.h"
 #include "Dolphin/rand.h"
+#include "PSM/EnemyBoss.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 
 /*
  * TODOS:
@@ -22,6 +24,73 @@
 
 namespace Game {
 namespace Usuba {
+
+
+void Obj::constructor() {
+	EnemyBase::constructor();
+	resetBossAppearBGM();
+}
+
+
+void Obj::startBossAttackBGM()
+{
+	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
+	PSM::checkBoss(soundObj);
+	soundObj->jumpRequest(3);
+	
+}
+
+/*
+ * --INFO--
+ * Address:	802951A0
+ * Size:	0000C8
+ */
+void Obj::startBossFlickBGM()
+{
+	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
+	PSM::checkBoss(soundObj);
+	soundObj->jumpRequest(4);
+}
+
+/*
+ * --INFO--
+ * Address:	80295268
+ * Size:	0000FC
+ */
+void Obj::updateBossBGM()
+{
+	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
+	PSM::checkBoss(soundObj);
+	if (mStuckPikminCount != 0) {
+		soundObj->postPikiAttack(true);
+	} else {
+		soundObj->postPikiAttack(false);
+	}
+}
+
+/*
+ * --INFO--
+ * Address:	80295364
+ * Size:	0000D0
+ */
+void Obj::resetBossAppearBGM()
+{
+	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
+	PSM::checkBoss(soundObj);
+	soundObj->setAppearFlag(false);
+}
+
+/*
+ * --INFO--
+ * Address:	80295434
+ * Size:	0000CC
+ */
+void Obj::setBossAppearBGM()
+{
+	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
+	PSM::checkBoss(soundObj);
+	soundObj->setAppearFlag(true);
+}
 
 /*
  * --INFO--
@@ -62,6 +131,8 @@ void Obj::onInit(CreatureInitArg* initArg)
 	setupEffect();
 
 	mFsm->start(this, USUBA_Stay, nullptr);
+	resetBossAppearBGM();
+	
 }
 
 /*
@@ -85,6 +156,11 @@ void Obj::doUpdate()
 
 	// Drought Here: Don't do this lmao
 	// OSReport("Current state: %i\n", getStateID());
+}
+
+void Obj::doUpdateCommon() {
+	EnemyBase::doUpdateCommon();
+	updateBossBGM();
 }
 
 /*
@@ -240,7 +316,7 @@ void Obj::setRandTarget()
 
 	// Randomise the angle a bit and set the target position
 	f32 rngAngle = HALF_PI + (dirToSarai + randWeightFloat(PI));
-	mTargetPos   = Vector3f((radius * sinf(rngAngle)) + mHomePosition.x, mHomePosition.y, (radius * cosf(rngAngle)) + mHomePosition.z);
+	mTargetPos   = Vector3f((radius * pikmin2_sinf(rngAngle)) + mHomePosition.x, mHomePosition.y, (radius * pikmin2_cosf(rngAngle)) + mHomePosition.z);
 }
 
 /*
