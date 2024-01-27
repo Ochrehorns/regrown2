@@ -119,9 +119,7 @@ void TForever::setGlobalScale(f32 scale)
 		return;
 	}
 
-	emitter->_98 = scale;
-	emitter->_B0 = scale;
-	emitter->_B4 = scale;
+	emitter->setScale(scale);
 }
 
 /*

@@ -3,7 +3,7 @@
 
 #include "PSSystem/SeqTrack.h"
 #include "types.h"
-#include "PSSystem/PSBgm.h"
+#include "PSSystem/PSSeq.h"
 #include "PSSystem/Seq.h"
 #include "PSSystem/PSBgmTask.h"
 #include "JSystem/JAudio/JAI/JAInter.h"

@@ -4,7 +4,7 @@
 #include "Dolphin/os.h"
 #include "JSystem/JAudio/JAD/JADHioNode.h"
 #include "JSystem/JAudio/JAS/JASTrack.h"
-#include "PSSystem/PSBgm.h"
+#include "PSSystem/PSSeq.h"
 
 namespace PSSystem {
 struct SeqTrackBase;

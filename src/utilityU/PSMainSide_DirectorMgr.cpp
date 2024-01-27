@@ -1,5 +1,5 @@
 #include "PSM/DirectorMgr.h"
-#include "PSSystem/PSBgm.h"
+#include "PSSystem/PSSeq.h"
 #include "types.h"
 
 /*

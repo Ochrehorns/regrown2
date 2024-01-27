@@ -13,23 +13,32 @@ struct Object;
 namespace PelletItem {
 struct Object;
 }
+struct Onyon;
 } // namespace Game
 
 namespace PSM {
 struct Otakara : public EventBase {
 	inline Otakara(Game::Creature* gameObj)
 	    : EventBase(gameObj, 2)
-	    , _70(0)
-	    , _74(0)
+	    , mBedamaType(PSMBedama_None)
+	    , mOnyon(nullptr)
 	    , mEventLink(gameObj)
-	    , _8C(nullptr)
+	    , mOtaEvent(nullptr)
 	{
 	}
 
+	enum BedamaType {
+		PSMBedama_None   = 0,
+		PSMBedama_Cherry = 1,
+		PSMBedama_Red    = 2,
+		PSMBedama_Blue   = 3,
+		PSMBedama_Yellow = 4,
+	};
+
 	// vtable 1 (JSUPtrLink, _10)
 	// vtable 2 (JKRDisposer -> ObjBase -> Creature, _28)
-	virtual ~Otakara();                     // _14 (thunks at _10 and _48)
-	virtual CreatureCastType getCastType(); // _1C (weak)
+	virtual ~Otakara();                                            // _14 (thunks at _10 and _48)
+	virtual CreatureCastType getCastType() { return CCT_Otakara; } // _1C (weak)
 
 	// vtable 3 (JAInter::ObjectBase -> JAInter::Object + self, _28)
 	virtual void otakaraEventStart();   // _88
@@ -39,12 +48,20 @@ struct Otakara : public EventBase {
 
 	void setGoalOnyon(Game::Creature*);
 
+	inline bool is2PBattle()
+	{
+		if (mOtaEvent->is2PBattle() && (int)mBedamaType != PSMBedama_None) {
+			return true;
+		}
+		return false;
+	}
+
 	// _00      = VTABLE
 	// _04-_70  = CreatureObj
-	u32 _70;               // _70, unknown
-	u32 _74;               // _74, unknown
-	EventLink mEventLink;  // _78
-	OtakaraEventLink* _8C; // _8C, probably this? possibly some related pointer
+	u32 mBedamaType;             // _70
+	Game::Onyon* mOnyon;         // _74, unknown
+	EventLink mEventLink;        // _78
+	OtakaraEventLink* mOtaEvent; // _8C, probably this? possibly some related pointer
 };
 
 struct PelletOtakara : public Otakara {
@@ -52,8 +69,8 @@ struct PelletOtakara : public Otakara {
 
 	// vtable 1 (JSUPtrLink, _10)
 	// vtable 2 (JKRDisposer -> ObjBase -> Creature, _28)
-	virtual ~PelletOtakara();               // _14 (thunks at _10 and _48)
-	virtual CreatureCastType getCastType(); // _1C (weak)
+	virtual ~PelletOtakara() { }                                         // _14 (thunks at _10 and _48)
+	virtual CreatureCastType getCastType() { return CCT_PelletOtakara; } // _1C (weak)
 
 	// vtable 3 (JAInter::ObjectBase -> JAInter::Object + self, _28)
 
@@ -67,8 +84,8 @@ struct PelletItem : public Otakara {
 
 	// vtable 1 (JSUPtrLink, _10)
 	// vtable 2 (JKRDisposer -> ObjBase -> Creature, _28)
-	virtual ~PelletItem();                  // _14 (thunks at _10 and _48)
-	virtual CreatureCastType getCastType(); // _1C (weak)
+	virtual ~PelletItem() { }                                         // _14 (thunks at _10 and _48)
+	virtual CreatureCastType getCastType() { return CCT_PelletItem; } // _1C (weak)
 
 	// vtable 3 (JAInter::ObjectBase -> JAInter::Object + self, _28)
 

@@ -1,7 +1,6 @@
-#include "PSSystem/PSBgm.h"
+#include "PSSystem/PSSeq.h"
 #include "PSSystem/PSCommon.h"
 #include "types.h"
-#include "PSSystem/PSStream.h"
 #include "PSSystem/SeqTrack.h"
 
 /*

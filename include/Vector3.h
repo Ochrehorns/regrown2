@@ -3,14 +3,12 @@
 
 #include "JSystem/JGeometry.h"
 #include "stream.h"
-#include "Dolphin/math.h"
+#include "math.h"
 #include "sysMath.h"
 #include "Vector2.h"
 #include "sqrt.h"
 
 // TODO: Implement the global namespace Vector3 functions into the class itself
-// TODO: Create a getDirection function (dest - src) -> y=0 -> normalise, either externally or internally
-
 template <typename T>
 struct Vector3 {
 	T x, y, z;
@@ -39,6 +37,32 @@ struct Vector3 {
 		z = vec.z;
 	}
 
+	/**
+	 * Calculates the direction vector from 'from' to 'to' and stores the result in 'to'.
+	 *
+	 * @param from The starting point of the direction vector.
+	 * @param to The ending point of the direction vector.
+	 */
+	static inline void getDirectionFromTo(Vector3& from, Vector3& to)
+	{
+		to -= from;
+		to.normalise();
+	}
+
+	/**
+	 * Calculates the direction vector from 'from' to 'to' and stores the result in 'to'.
+	 * The y-component of the resulting vector is set to 0.
+	 *
+	 * @param from The starting point of the direction vector.
+	 * @param to The ending point of the direction vector.
+	 */
+	static inline void getFlatDirectionFromTo(Vector3& from, Vector3& to)
+	{
+		to -= from;
+		to.y = 0.0f;
+		to.normalise();
+	}
+
 	inline Vector3& operator=(const Vector3& other)
 	{
 		x = other.x;
@@ -60,6 +84,8 @@ struct Vector3 {
 		y = other.y;
 		z = other.z;
 	}
+
+	inline operator Vector2f() const { return Vector2f(x, y); }
 
 	// /**
 	//  * @fabricated
@@ -103,6 +129,8 @@ struct Vector3 {
 		y = _y;
 		z = _z;
 	}
+
+	inline void set(f32 xyz) { x = y = z = xyz; }
 
 	/**
 	 * @fabricated
@@ -174,24 +202,76 @@ struct Vector3 {
 		this->z += other.z;
 	}
 
+	inline void addXY(const Vector3& other)
+	{
+		this->x += other.x;
+		this->y += other.y;
+	}
+
+	inline void scaleXY(const Vector3& other)
+	{
+		f32 newVal = this->x * other.x;
+		this->x    = newVal;
+
+		newVal  = this->y * other.y;
+		this->y = newVal;
+	}
+
 	inline T dot(const Vector3& other) { return this->x * other.x + this->y * other.y + this->z * other.z; }
 
+	inline void setZero() { this->x = this->y = this->z = 0; }
+
+	/**
+	 * Sets the direction of the vector from one point to another.
+	 *
+	 * @param from The starting point of the direction.
+	 * @param to The ending point of the direction.
+	 */
+	inline void setDirectionFromTo(Vector3& from, Vector3& to)
+	{
+		*this = to - from;
+		this->normalise();
+	}
+
+	/**
+	 * Sets the flat direction from one vector to another.
+	 * The resulting vector will have a zero y-component.
+	 *
+	 * @param from The starting vector.
+	 * @param to The target vector.
+	 */
+	inline void setFlatDirectionFromTo(Vector3& from, Vector3& to)
+	{
+		*this   = to - from;
+		this->y = 0.0f;
+		this->normalise();
+	}
+
+	/**
+	 * Sets the y component of the vector to 0 and normalizes the vector.
+	 */
+	inline void toFlatDirection()
+	{
+		this->y = 0.0f;
+		this->normalise();
+	}
+
 	// Squared magnitude
-	inline f32 sqrMagnitude() const { return x * x + y * y + z * z; }
+	inline f32 sqrMagnitude() const { return this->x * this->x + this->y * this->y + this->z * this->z; }
 	// 2D magnitude
-	inline f32 sqrMagnitude2D() const { return x * x + z * z; }
+	inline f32 sqrMagnitude2D() const { return this->x * this->x + this->z * this->z; }
 	// Quick length
-	inline f32 qLength() const { return pikmin2_sqrtf(sqrMagnitude()); }
-	inline f32 qLength2D() const { return pikmin2_sqrtf(sqrMagnitude2D()); }
+	inline f32 qLength() const { return pikmin2_sqrtf(this->sqrMagnitude()); }
+	inline f32 qLength2D() const { return pikmin2_sqrtf(this->sqrMagnitude2D()); }
 
 	inline f32 qNormalise()
 	{
-		f32 length = qLength();
+		f32 length = this->qLength();
 		if (length > 0.0f) {
 			f32 len = 1.0f / length;
-			x *= len;
-			y *= len;
-			z *= len;
+			this->x *= len;
+			this->y *= len;
+			this->z *= len;
 			return len;
 		}
 		return 0.0f;
@@ -199,6 +279,7 @@ struct Vector3 {
 
 	f32 length() const;
 	f32 distance(Vector3&);
+	f32 distance2D(Vector3&);
 	f32 sqrDistance(Vector3&);
 	f32 distance(JGeometry::TVec3f&);
 	f32 normalise();
@@ -211,12 +292,12 @@ struct Vector3 {
 	static Vector3<T> zero;
 };
 
-// template <> struct Vector3<float> {
-// 	static Vector3<float> zero;
+// template <> struct Vector3<f32> {
+// 	static Vector3<f32> zero;
 // };
 
-// Use instead of Vector3<float> or Vector3<f32>
-typedef Vector3<float> Vector3f;
+// Use instead of Vector3<f32>
+typedef Vector3<f32> Vector3f;
 typedef Vector3<int> Vector3i;
 
 /**
@@ -253,6 +334,12 @@ inline void getScaledXZVec(Vector3f& vec, f32 x, f32 z, f32 scale)
 {
 	vec.x = x * scale;
 	vec.z = z * scale;
+}
+
+inline void getScaledXYVec(Vector3f& vec, const f32& x, const f32& z, f32 scale)
+{
+	vec.x = x * scale;
+	vec.y = z * scale;
 }
 
 template <>
@@ -462,6 +549,16 @@ inline f32 Vector3f::distance(Vector3f& them)
 	f32 diffZ = this->z - them.z;
 
 	return Vector3f(diffX, diffY, diffZ).length();
+}
+
+template <>
+inline f32 Vector3f::distance2D(Vector3f& them)
+{
+	f32 diffX = this->x - them.x;
+	f32 diffY = this->y - them.y;
+	f32 diffZ = this->z - them.z;
+
+	return Vector3f(diffX, diffY, diffZ).length2D();
 }
 
 template <>

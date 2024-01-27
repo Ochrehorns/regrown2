@@ -2,10 +2,8 @@
 #include "JSystem/JAudio/JAI/JAInter.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
 #include "PSGame/SeMgr.h"
-#include "PSSystem/PSStream.h"
 #include "PSSystem/PSSystemIF.h"
 #include "PSSystem/SeqData.h"
-#include "PSSystem/SeqSound.h"
 #include "stream.h"
 #include "types.h"
 

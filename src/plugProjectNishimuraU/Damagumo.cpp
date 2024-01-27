@@ -647,7 +647,7 @@ void Obj::resetBossAppearBGM()
 	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 	PSM::checkBoss(soundObj);
 	soundObj->setAppearFlag(false);
-	soundObj->_FF = 1;
+	soundObj->mHasReset = 1;
 }
 
 /*

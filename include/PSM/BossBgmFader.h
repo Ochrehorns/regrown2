@@ -13,61 +13,87 @@ namespace BossBgmFader {
 /**
  * @size{0x30}
  */
-struct TypedProc {
-	// inline TypedProc(f32, f32);
+struct TypedProc : public JSUList<EnemyBoss> {
+	TypedProc(f32, f32);
 
 	virtual void update(); // _08
 
+	// inlined:
+	~TypedProc() { }
+
 	// inlined/unused:
-	// ~TypedProc();
 	void endUpdate();
 	void getBossFadeVolume();
 
-	// _00 VTBL
-	f32 _04;                                // _04
-	f32 _08;                                // _08
-	f32 _0C;                                // _0C
-	f32 _10;                                // _10
-	u32 _14;                                // _14, unknown
-	u32 _18;                                // _18, unknown
-	u32 _1C;                                // _1C, unknown
-	u32 _20;                                // _20
-	PSM::DirectorUpdator* mDirectorUpdator; // _24
-	u8 _28;                                 // _28
-	u8 _29[0x3];                            // _29, unknown/padding
-	f32 _2C;                                // _2C
+	// _00-_0C = JSUList<EnemyBoss>
+	// _0C     = VTBL
+	f32 mFarDist;                      // _10
+	f32 mMiddleDist;                   // _14
+	f32 mNearDist;                     // _18
+	f32 mStopDist;                     // _1C
+	int mCurrState;                    // _20
+	int mPrevState;                    // _24
+	EnemyBoss* mCurrObj;               // _28
+	f32 mMaxDistance;                  // _2C
+	DirectorUpdator* mDirectorUpdator; // _30
+	u8 mNeedJump;                      // _34
+	f32 _38;                           // _38
 };
 
 /**
  * @size{0x34}
  */
 struct TypedProc_MidBoss : public TypedProc {
-	// inline TypedProc_MidBoss(f32, f32);
+	inline TypedProc_MidBoss(f32 a1, f32 a2)
+	    : TypedProc(a1, a2)
+	{
+		mDirectorUpdator = nullptr;
+	}
 
 	virtual void update(); // _08
 
-	// inlined/unused:
-	// ~TypedProc_MidBoss();
+	// inlined:
+	~TypedProc_MidBoss() { }
 
-	// _00      = VTBL
+	// _0C      = VTBL
 	// _00-_30  = TypedProc
-	PSM::DirectorUpdator* _30; // _30
+	DirectorUpdator* mBossUpdator; // _3C
 };
 
 /**
  * @size{0x44}
  */
-struct Mgr : PSSystem::SingletonBase<Mgr> {
+struct Mgr : ::PSSystem::SingletonBase<Mgr> {
 	Mgr();
 
-	virtual ~Mgr(); // _08 (weak)
+	// virtual ~Mgr() { } // _08 (weak)
 
-	void appendTarget(JSULink<PSM::EnemyBoss>*);
+	void appendTarget(JSULink<EnemyBoss>*);
 	void exec();
 
+	inline void setUpdator(::PSSystem::DirectorBase* director)
+	{
+		u8 count = mTypedProc.mLinkCount;
+		if (count) {
+			mTypedProc.mDirectorUpdator = new DirectorUpdator(director, count, DirectorUpdator::TYPE_0);
+		}
+	}
+
+	inline bool checkBossActive()
+	{
+		bool ret = false;
+		FOREACH_NODE(JSULink<EnemyBoss>, mTypedProc.getFirst(), link)
+		{
+			EnemyBoss* obj = link->getObject();
+			if (obj->_FE) {
+				ret = true;
+			}
+		}
+		return ret;
+	}
+
 	// _00 VTBL
-	JSUList<PSM::EnemyBoss> mEnemyBossList; // _04
-	TypedProc_MidBoss mTypedProc;           // _10
+	TypedProc_MidBoss mTypedProc; // _04
 };
 } // namespace BossBgmFader
 } // namespace PSM

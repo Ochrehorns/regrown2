@@ -6,6 +6,7 @@
 #include "PSSystem/PSScene.h"
 #include "PSSystem/Seq.h"
 #include "PSGame/SeMgr.h"
+#include "PSGame/SoundTable.h"
 
 // idk what else goes in this file (if anything? maybe this is in the PSGame folder??)
 // but these use the file name in the exception check so :shrug:
@@ -29,6 +30,16 @@ inline SeqBase* getSeqData(SceneMgr* mgr, int id)
 	return seq;
 }
 
+inline SeqBase* getSeqDataCheck(SceneMgr* mgr, int id)
+{
+	mgr->checkScene();
+	Scene* scene = mgr->mScenes->mChild;
+	P2ASSERTLINE(485, scene);
+	SeqBase* seq = scene->mSeqMgr.getSeq(id);
+	P2ASSERTLINE(487, seq);
+	return seq;
+}
+
 inline PSGame::SeMgr* getSeMgrInstance()
 {
 	P2ASSERTLINE(567, SingletonBase<PSGame::SeMgr>::sInstance);
@@ -41,6 +52,17 @@ inline SeqBase* getSeqFromScene(Scene* scene, u32 id)
 	P2ASSERTLINE(487, seq);
 	return seq;
 }
+
+inline PSGame::SoundTable::SePerspInfo* getSoundCategoryInfo(PSGame::SoundTable::CategoryMgr* mgr, u8 id)
+{
+	P2ASSERTLINE(93, mgr->mPerspInfo[id]);
+	return mgr->mPerspInfo[id];
+}
+
 }; // namespace PSSystem
+
+namespace PSGame {
+u16 seqCpuSync(JASTrack* track, u16 command);
+};
 
 #endif

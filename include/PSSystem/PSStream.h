@@ -2,9 +2,9 @@
 #define _PSSYSTEM_PSSTREAM_H
 
 #include "types.h"
-#include "PSSystem/PSBgm.h"
+#include "PSSystem/PSSeq.h"
 #include "PSSystem/SeqData.h"
-#include "PSSystem/SeqSound.h"
+#include "PSSystem/PSSystemIF.h"
 #include "PSSystem/PSBgmTask.h"
 #include "JSystem/JAudio/JAI/JAISound.h"
 
@@ -21,9 +21,9 @@ struct StreamBgm : public BgmSeq {
 	virtual void scene1st(TaskChecker*); // _10 (weak)
 	virtual void startSeq();             // _14
 	virtual u8 getCastType();            // _24 (weak)
-	virtual u8 getSeqType();             // _28 (weak)
+	virtual u32 getSeqType();            // _28 (weak)
 	virtual bool isPlaying();            // _34
-	virtual JAISound* getHandleP();      // _3C (weak)
+	virtual JAISound** getHandleP();     // _3C (weak)
 	virtual void setConfigVolume();      // _40
 
 	void setId(u32);

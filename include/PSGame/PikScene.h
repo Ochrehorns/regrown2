@@ -4,7 +4,7 @@
 #include "types.h"
 #include "PSSystem/PSScene.h"
 #include "PSSystem/Director.h"
-#include "PSSystem/PSBgm.h"
+#include "PSSystem/PSSeq.h"
 #include "PSGame/SceneInfo.h"
 #include "JSystem/JAudio/JAI/JAInter.h"
 #include "JSystem/JAudio/JAD/JADUtility.h"
@@ -36,15 +36,15 @@ struct PikScene : public PSSystem::Scene {
  * @size{0xD}
  */
 struct PikSceneMgr : public PSSystem::SceneMgr {
-	virtual void newAndSetCurrentScene(SceneInfo&);                    // _0C
-	virtual void newAndSetGlobalScene();                               // _10
-	virtual void newMainBgm(const char*, JAInter::SoundInfo&)     = 0; // _14
-	virtual void newDirectedBgm(const char*, JAInter::SoundInfo&) = 0; // _18
-	virtual void newAutoBgm(const char*, const char*, JAInter::SoundInfo&, JADUtility::AccessMode, SceneInfo&,
-	                        PSSystem::DirectorMgrBase*)
-	    = 0;                                       // _1C
-	virtual void curSceneIsBigBossFloor();         // _20 (weak)
-	virtual void newGameScene(u8, SceneInfo*) = 0; // _24
+	virtual void newAndSetCurrentScene(SceneInfo&);                                 // _0C
+	virtual void newAndSetGlobalScene();                                            // _10
+	virtual PSSystem::BgmSeq* newMainBgm(const char*, JAInter::SoundInfo&)     = 0; // _14
+	virtual PSSystem::BgmSeq* newDirectedBgm(const char*, JAInter::SoundInfo&) = 0; // _18
+	virtual PSSystem::BgmSeq* newAutoBgm(const char*, const char*, JAInter::SoundInfo&, JADUtility::AccessMode, SceneInfo&,
+	                                     PSSystem::DirectorMgrBase*)
+	    = 0;                                                   // _1C
+	virtual bool curSceneIsBigBossFloor();                     // _20 (weak)
+	virtual PSSystem::Scene* newGameScene(u8, SceneInfo*) = 0; // _24
 
 	PSSystem::BgmSeq* newBgmSeq(const char*, JAInter::SoundInfo&);
 	PSSystem::BgmSeq* newStreamBgm(u32, JAInter::SoundInfo&);

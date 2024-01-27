@@ -24,25 +24,24 @@ struct TextDataBase : public JKRDisposer {
 
 	// _00      = VTABLE
 	// _04-_1C  = JKRDisposer
-	void* _18; // _18
+	void* mFile; // _18
 };
 
 /**
  * @size = 0x20
  */
-struct SeqDataList : public TextDataBase {
+struct SeqDataList : public TextDataBase, public SingletonBase<SeqDataList> {
 	SeqDataList();
 
-	virtual ~SeqDataList();           // _08 (weak)
-	virtual bool read(Stream& input); // _0C
+	virtual ~SeqDataList();                            // _08 (weak)
+	virtual bool read(Stream& input) { return false; } // _0C
 	// virtual void _10() = 0;      // _10 - possibly
 	// virtual void _14() = 0;      // _14 - possibly
 
-	void getSeqVolume(char const*);
+	int getSeqVolume(char const*);
 
 	// _00      = VTABLE
 	// _04-_1C  = TextDataBase
-	SingletonBase<SeqDataList> _1C; // _1C
 };
 
 } // namespace PSSystem

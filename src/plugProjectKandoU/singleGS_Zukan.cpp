@@ -4,8 +4,10 @@
 #include "Game/Entities/PelletItem.h"
 #include "Game/Entities/PelletNumber.h"
 #include "Game/Entities/ShijimiChou.h"
+#include "Game/AIConstants.h"
 #include "Game/MapMgr.h"
 #include "Game/PikiMgr.h"
+#include "Game/PikiState.h"
 #include "Game/DynParticle.h"
 #include "Game/Farm.h"
 #include "Game/rumble.h"
@@ -30,659 +32,18 @@ int sParentHeapFreeSize;
 static const int unusedArray[] = { 0, 0, 0 };
 static const char name[]       = "SingleGS_Zukan";
 
+static int unusedArray2[] = { 1, 2, 3, 0 };
+
 namespace {
 const char* sDirName[4] = { "tutorial", "forest", "yakushima", "last" };
 };
 
-/*
-    Generated from dpostproc
-
-    .section .ctors, "wa"  # 0x80472F00 - 0x804732C0
-    .4byte __sinit_singleGS_Zukan_cpp
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_80482E60
-    lbl_80482E60:
-        .skip 0xC
-        .asciz "SingleGS_Zukan"
-        .skip 1
-    .global lbl_80482E7C
-    lbl_80482E7C:
-        .asciz "tutorial"
-        .skip 3
-    .global lbl_80482E88
-    lbl_80482E88:
-        .asciz "yakushima"
-        .skip 2
-        .4byte 0x907D8AD3
-        .4byte 0x8366836F
-        .4byte 0x8362834F
-        .4byte 0x00000000
-        .asciz "/user/Yamashita/enemyTex/arc.szs"
-        .skip 3
-        .asciz "ZZDummy/texture.bti"
-    .global lbl_80482EDC
-    lbl_80482EDC:
-        .asciz "singleGS_Zukan.cpp"
-        .skip 1
-        .asciz "P2Assert"
-        .skip 3
-        .asciz "%s/texture.bti"
-        .skip 1
-    .global lbl_80482F0C
-    lbl_80482F0C:
-        .4byte 0x907D8AD3
-        .4byte 0x834A8381
-        .4byte 0x83890000
-    .global lbl_80482F18
-    lbl_80482F18:
-        .asciz "radius:%6.3f"
-        .skip 3
-    .global lbl_80482F28
-    lbl_80482F28:
-        .asciz "angle :%6.3f"
-        .skip 3
-    .global lbl_80482F38
-    lbl_80482F38:
-        .asciz "height:%6.3f"
-        .skip 3
-    .global lbl_80482F48
-    lbl_80482F48:
-        .asciz "fovy  :%6.3f"
-        .skip 3
-    .global lbl_80482F58
-    lbl_80482F58:
-        .asciz "ExtraHeapFor2D null\n"
-        .skip 3
-    .global lbl_80482F70
-    lbl_80482F70:
-        .asciz "StartTeki"
-        .skip 2
-    .global lbl_80482F7C
-    lbl_80482F7C:
-        .asciz "StartPellet"
-    .global lbl_80482F88
-    lbl_80482F88:
-        .asciz "ModeChangeToTeki"
-        .skip 3
-    .global lbl_80482F9C
-    lbl_80482F9C:
-        .asciz "ChangeTeki"
-        .skip 1
-    .global lbl_80482FA8
-    lbl_80482FA8:
-        .asciz "ModeChangeToPellet"
-        .skip 1
-    .global lbl_80482FBC
-    lbl_80482FBC:
-        .asciz "ChangePellet"
-        .skip 3
-        .4byte lbl_80482F70
-        .4byte lbl_80482F7C
-        .4byte lbl_80482F88
-        .4byte lbl_8051A1C4
-        .4byte lbl_80482F9C
-        .4byte lbl_80482FA8
-        .4byte lbl_8051A1CC
-        .4byte lbl_80482FBC
-        .4byte lbl_8051A1D4
-        .asciz "PSGame.h"
-        .skip 3
-        .asciz "PSScene.h"
-        .skip 2
-        .asciz "get sound scene at\ninvalid timming\n"
-        .asciz "Unknown mode : %d \n"
-    .global lbl_80483040
-    lbl_80483040:
-        .asciz "Illegal next mode. %d \n"
-        .asciz "READY:%d Enemy:%d Item:%d"
-        .skip 2
-        .asciz "enemy:%d item:%d"
-        .skip 3
-        .asciz "heapA %d"
-        .skip 3
-        .asciz "heapB %d"
-        .skip 3
-        .asciz "user/Yamashita/zukan/%s/%s/arc.szs"
-        .skip 1
-        .asciz "PSCommon.h"
-        .skip 1
-        .asciz "course.txt"
-        .skip 1
-    .global lbl_804830DC
-    lbl_804830DC:
-        .asciz "FreeSizeA :%d \n"
-        .4byte 0x8379838C
-        .4byte 0x83628367
-        .4byte 0x919082C8
-        .4byte 0x82CC82C5
-        .4byte 0x8379838C
-        .4byte 0x83628367
-        .4byte 0x82F0838D
-        .4byte 0x815B8368
-        .4byte 0x82B582DC
-        .4byte 0x82B72066
-        .4byte 0x7265653A
-        .4byte 0x2564200A
-        .4byte 0x00000000
-        .4byte 0x82BE82B5
-        .4byte 0x82BD2066
-        .4byte 0x7265653A
-        .4byte 0x2564200A
-        .4byte 0x00000000
-        .4byte 0x934782F0
-        .4byte 0x8341838D
-        .4byte 0x8362834E
-        .4byte 0x20256495
-        .4byte 0x43814066
-        .4byte 0x7265653A
-        .4byte 0x2564200A
-        .4byte 0x00000000
-        .4byte 0x2A2A2042
-        .4byte 0x49525448
-        .4byte 0x20464149
-        .4byte 0x4C454420
-        .4byte 0x21212049
-        .4byte 0x443A2564
-        .4byte 0x200A0000
-    .global lbl_80483170
-    lbl_80483170:
-        .4byte 0x746F6F20
-        .4byte 0x6D616E79
-        .4byte 0x2070656C
-        .4byte 0x6C65740A
-        .4byte 0x00000000
-        .4byte 0x50696B69
-        .4byte 0x4B696C6C
-        .4byte 0x41726700
-        .4byte 0x43726561
-        .4byte 0x74757265
-        .4byte 0x4B696C6C
-        .4byte 0x41726700
-        .4byte 0x50656C6C
-        .4byte 0x6574496E
-        .4byte 0x69744172
-        .4byte 0x67000000
-        .4byte 0x50696B69
-        .4byte 0x496E6974
-        .4byte 0x41726700
-        .4byte 0x23202564
-        .4byte 0x2F25640D
-        .4byte 0x0A000000
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804C0A40
-    lbl_804C0A40:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000001
-        .4byte 0x00000002
-        .4byte 0x00000003
-        .4byte 0x00000000
-    .global "sDirName__28@unnamed@singleGS_Zukan_cpp@"
-    "sDirName__28@unnamed@singleGS_Zukan_cpp@":
-        .4byte lbl_80482E7C
-        .4byte lbl_8051A100
-        .4byte lbl_80482E88
-        .4byte lbl_8051A108
-        .4byte 0x00000000
-        .4byte 0xFFFFFFFF
-        .4byte dvdloadA__Q34Game10SingleGame10ZukanStateFv
-        .4byte 0x00000000
-        .4byte 0xFFFFFFFF
-        .4byte dvdloadB_teki__Q34Game10SingleGame10ZukanStateFv
-        .4byte 0x00000000
-        .4byte 0xFFFFFFFF
-        .4byte dvdloadB_pellet__Q34Game10SingleGame10ZukanStateFv
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-    .global __vt__Q28Morimura19DispMemberZukanItem
-    __vt__Q28Morimura19DispMemberZukanItem:
-        .4byte 0
-        .4byte 0
-        .4byte getSize__Q28Morimura19DispMemberZukanItemFv
-        .4byte getOwnerID__Q28Morimura19DispMemberZukanItemFv
-        .4byte getMemberID__Q28Morimura19DispMemberZukanItemFv
-        .4byte doSetSubMemberAll__Q32og6Screen14DispMemberBaseFv
-    .global __vt__Q28Morimura20DispMemberZukanEnemy
-    __vt__Q28Morimura20DispMemberZukanEnemy:
-        .4byte 0
-        .4byte 0
-        .4byte getSize__Q28Morimura20DispMemberZukanEnemyFv
-        .4byte getOwnerID__Q28Morimura20DispMemberZukanEnemyFv
-        .4byte getMemberID__Q28Morimura20DispMemberZukanEnemyFv
-        .4byte doSetSubMemberAll__Q32og6Screen14DispMemberBaseFv
-    .global __vt__Q28Morimura19DispMemberZukanBase
-    __vt__Q28Morimura19DispMemberZukanBase:
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte doSetSubMemberAll__Q32og6Screen14DispMemberBaseFv
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-    .global "__vt__41Delegate<Q34Game10SingleGame10ZukanState>"
-    "__vt__41Delegate<Q34Game10SingleGame10ZukanState>":
-        .4byte 0
-        .4byte 0
-        .4byte "invoke__41Delegate<Q34Game10SingleGame10ZukanState>Fv"
-        .4byte 0
-        .4byte 0
-        .4byte 0
-    .global __vt__Q34Game10SingleGame10ZukanState
-    __vt__Q34Game10SingleGame10ZukanState:
-        .4byte 0
-        .4byte 0
-        .4byte
-   init__Q34Game10SingleGame10ZukanStateFPQ24Game17SingleGameSectionPQ24Game8StateArg
-        .4byte exec__Q34Game10SingleGame10ZukanStateFPQ24Game17SingleGameSection
-        .4byte
-   cleanup__Q34Game10SingleGame10ZukanStateFPQ24Game17SingleGameSection .4byte
-   "resume__Q24Game36FSMState<Q24Game17SingleGameSection>FPQ24Game17SingleGameSection"
-        .4byte
-   "restart__Q24Game36FSMState<Q24Game17SingleGameSection>FPQ24Game17SingleGameSection"
-        .4byte
-   "transit__Q24Game36FSMState<Q24Game17SingleGameSection>FPQ24Game17SingleGameSectioniPQ24Game8StateArg"
-        .4byte
-   draw__Q34Game10SingleGame10ZukanStateFPQ24Game17SingleGameSectionR8Graphics
-        .4byte
-   onOrimaDown__Q34Game10SingleGame5StateFPQ24Game17SingleGameSectioni .4byte
-   onMovieStart__Q34Game10SingleGame5StateFPQ24Game17SingleGameSectionPQ24Game11MovieConfigUlUl
-        .4byte
-   onMovieDone__Q34Game10SingleGame5StateFPQ24Game17SingleGameSectionPQ24Game11MovieConfigUlUl
-        .4byte
-   onMovieCommand__Q34Game10SingleGame5StateFPQ24Game17SingleGameSectioni .4byte
-   onHoleIn__Q34Game10SingleGame5StateFPQ24Game17SingleGameSectionPQ34Game8ItemCave4Item
-        .4byte
-   onNextFloor__Q34Game10SingleGame5StateFPQ24Game17SingleGameSectionPQ34Game8ItemHole4Item
-        .4byte
-   onFountainReturn__Q34Game10SingleGame5StateFPQ24Game17SingleGameSectionPQ34Game15ItemBigFountain4Item
-        .4byte
-   on_section_fadeout__Q34Game10SingleGame5StateFPQ24Game17SingleGameSection
-        .4byte
-   on_demo_timer__Q34Game10SingleGame5StateFPQ24Game17SingleGameSectionUl .4byte
-   0 .4byte 0 .4byte 0 .4byte 0 .4byte 0 .4byte 0 .4byte 0 .4byte 0 .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-    .global __vt__Q34Game15IllustratedBook6Camera
-    __vt__Q34Game15IllustratedBook6Camera:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q34Game15IllustratedBook6CameraFv
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__17Container<5Plane>FPv"
-        .4byte "getNext__22ArrayContainer<5Plane>FPv"
-        .4byte "getStart__22ArrayContainer<5Plane>Fv"
-        .4byte "getEnd__22ArrayContainer<5Plane>Fv"
-        .4byte "get__22ArrayContainer<5Plane>FPv"
-        .4byte "getAt__22ArrayContainer<5Plane>Fi"
-        .4byte "getTo__22ArrayContainer<5Plane>Fv"
-        .4byte writeObject__9CullPlaneFR6StreamR5Plane
-        .4byte readObject__9CullPlaneFR6StreamR5Plane
-        .4byte "write__22ArrayContainer<5Plane>FR6Stream"
-        .4byte "read__22ArrayContainer<5Plane>FR6Stream"
-        .4byte "alloc__22ArrayContainer<5Plane>Fi"
-        .4byte "addOne__22ArrayContainer<5Plane>FR5Plane"
-        .4byte "setArray__22ArrayContainer<5Plane>FP5Planei"
-        .4byte getViewMatrix__6CameraFb
-        .4byte getPosition__6CameraFv
-        .4byte updatePlanes__6CameraFv
-        .4byte updateScreenConstants__6CameraFv
-        .4byte getLookAtPosition___12LookAtCameraFv
-        .4byte getTargetDistance__6CameraFv
-        .4byte getPositionPtr__6CameraFv
-        .4byte on_getPositionPtr__12LookAtCameraFv
-        .4byte getSoundPositionPtr__6CameraFv
-        .4byte getSoundMatrixPtr__6CameraFv
-        .4byte isSpecialCamera__6CameraFv
-        .4byte updateMatrix__12LookAtCameraFv
-        .4byte doUpdate__Q34Game15IllustratedBook6CameraFv
-        .4byte startVibration__Q34Game15IllustratedBook6CameraFi
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-    .global __vt__Q34Game15IllustratedBook11EnemyTexMgr
-    __vt__Q34Game15IllustratedBook11EnemyTexMgr:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q34Game15IllustratedBook11EnemyTexMgrFv
-    .global __vt__Q34Game15IllustratedBook10DebugParms
-    __vt__Q34Game15IllustratedBook10DebugParms:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q34Game15IllustratedBook10DebugParmsFv
-        .4byte getChildCount__5CNodeFv
-        .4byte 0
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global lbl_80515C48
-    lbl_80515C48:
-        .skip 0x4
-    .global lbl_80515C4C
-    lbl_80515C4C:
-        .skip 0x4
-    .global sParentHeapFreeSize_1
-    sParentHeapFreeSize_1:
-        .skip 0x8
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_8051A100
-    lbl_8051A100:
-        .asciz "forest"
-        .skip 1
-    .global lbl_8051A108
-    lbl_8051A108:
-        .asciz "last"
-        .skip 3
-    .global lbl_8051A110
-    lbl_8051A110:
-        .float 0.05
-    .global lbl_8051A114
-    lbl_8051A114:
-        .4byte 0x42200000
-    .global lbl_8051A118
-    lbl_8051A118:
-        .4byte 0xC2C80000
-    .global lbl_8051A11C
-    lbl_8051A11C:
-        .float 1.0
-    .global lbl_8051A120
-    lbl_8051A120:
-        .4byte 0x43960000
-    .global lbl_8051A124
-    lbl_8051A124:
-        .4byte 0x42C80000
-    .global lbl_8051A128
-    lbl_8051A128:
-        .4byte 0x00000000
-    .global lbl_8051A12C
-    lbl_8051A12C:
-        .4byte 0x43AF0000
-    .global lbl_8051A130
-    lbl_8051A130:
-        .4byte 0x43FA0000
-    .global lbl_8051A134
-    lbl_8051A134:
-        .4byte 0x442F0000
-    .global lbl_8051A138
-    lbl_8051A138:
-        .4byte 0x42340000
-    .global lbl_8051A13C
-    lbl_8051A13C:
-        .float 0.1
-    .global lbl_8051A140
-    lbl_8051A140:
-        .4byte 0x42B40000
-    .global lbl_8051A144
-    lbl_8051A144:
-        .4byte 0x3F4CCCCD
-    .global lbl_8051A148
-    lbl_8051A148:
-        .float 0.5
-    .global lbl_8051A14C
-    lbl_8051A14C:
-        .4byte 0x3C03126F
-    .global lbl_8051A150
-    lbl_8051A150:
-        .4byte 0x40E00000
-    .global lbl_8051A154
-    lbl_8051A154:
-        .4byte 0x3DF5C28F
-    .global lbl_8051A158
-    lbl_8051A158:
-        .4byte 0x3F733333
-    .global lbl_8051A15C
-    lbl_8051A15C:
-        .4byte 0x41700000
-    .global lbl_8051A160
-    lbl_8051A160:
-        .float 0.3
-    .global lbl_8051A164
-    lbl_8051A164:
-        .4byte 0x3EB33333
-    .global lbl_8051A168
-    lbl_8051A168:
-        .float 0.15
-    .global lbl_8051A16C
-    lbl_8051A16C:
-        .4byte 0x3F2147AE
-    .global lbl_8051A170
-    lbl_8051A170:
-        .4byte 0x3F451EB8
-    .global lbl_8051A174
-    lbl_8051A174:
-        .4byte 0x41E80000
-    .global lbl_8051A178
-    lbl_8051A178:
-        .4byte 0x47000000
-    .global lbl_8051A17C
-    lbl_8051A17C:
-        .4byte 0xBF800000
-    .global lbl_8051A180
-    lbl_8051A180:
-        .4byte 0x41200000
-        .4byte 0x00000000
-    .global lbl_8051A188
-    lbl_8051A188:
-        .4byte 0x43300000
-        .4byte 0x80000000
-    .global lbl_8051A190
-    lbl_8051A190:
-        .4byte 0x41F00000
-    .global lbl_8051A194
-    lbl_8051A194:
-        .4byte 0x43A2F983
-    .global lbl_8051A198
-    lbl_8051A198:
-        .4byte 0xC3A2F983
-    .global lbl_8051A19C
-    lbl_8051A19C:
-        .4byte 0x3F19999A
-    .global lbl_8051A1A0
-    lbl_8051A1A0:
-        .4byte 0x40C90FDB
-    .global lbl_8051A1A4
-    lbl_8051A1A4:
-        .4byte 0x38D1B717
-    .global lbl_8051A1A8
-    lbl_8051A1A8:
-        .4byte 0x3F400000
-    .global lbl_8051A1AC
-    lbl_8051A1AC:
-        .4byte 0x3CA3D70A
-    .global lbl_8051A1B0
-    lbl_8051A1B0:
-        .4byte 0x3E4CCCCD
-    .global lbl_8051A1B4
-    lbl_8051A1B4:
-        .4byte 0xBF000000
-    .global lbl_8051A1B8
-    lbl_8051A1B8:
-        .4byte 0x3F666666
-    .global lbl_8051A1BC
-    lbl_8051A1BC:
-        .asciz "zukan"
-        .skip 2
-    .global lbl_8051A1C4
-    lbl_8051A1C4:
-        .asciz "Teki"
-        .skip 3
-    .global lbl_8051A1CC
-    lbl_8051A1CC:
-        .asciz "Pellet"
-        .skip 1
-    .global lbl_8051A1D4
-    lbl_8051A1D4:
-        .asciz "None"
-        .skip 3
-    .global lbl_8051A1DC
-    lbl_8051A1DC:
-        .4byte 0x40400000
-    .global lbl_8051A1E0
-    lbl_8051A1E0:
-        .4byte 0x41100000
-        .4byte 0x00000000
-    .global lbl_8051A1E8
-    lbl_8051A1E8:
-        .4byte 0x43300000
-        .4byte 0x00000000
-    .global lbl_8051A1F0
-    lbl_8051A1F0:
-        .float 0.25
-    .global lbl_8051A1F4
-    lbl_8051A1F4:
-        .4byte 0x3BA3D70A
-    .global lbl_8051A1F8
-    lbl_8051A1F8:
-        .4byte 0x75730000
-    .global lbl_8051A1FC
-    lbl_8051A1FC:
-        .4byte 0xC47A0000
-    .global lbl_8051A200
-    lbl_8051A200:
-        .4byte 0x447A0000
-    .global lbl_8051A204
-    lbl_8051A204:
-        .4byte 0x4B435000
-    .global lbl_8051A208
-    lbl_8051A208:
-        .4byte 0xCB435000
-    .global lbl_8051A20C
-    lbl_8051A20C:
-        .4byte 0x42800000
-    .global lbl_8051A210
-    lbl_8051A210:
-        .4byte 0x0A000000
-    .global lbl_8051A214
-    lbl_8051A214:
-        .4byte 0x420C0000
-    .global lbl_8051A218
-    lbl_8051A218:
-        .4byte 0x40490FDB
-    .global lbl_8051A21C
-    lbl_8051A21C:
-        .4byte 0x3BB60B61
-    .global lbl_8051A220
-    lbl_8051A220:
-        .4byte 0x43480000
-    .global lbl_8051A224
-    lbl_8051A224:
-        .4byte 0x64616D65
-        .4byte 0x6B0A0000
-        .4byte 0x00000000
-*/
-
 namespace Game {
 namespace IllustratedBook {
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000098
+/**
+ * @note Address: N/A
+ * @note Size: 0x98
  */
 DebugParms::DebugParms()
     : CNode("図鑑デバッグ") // "Illustrated Book Debugging"
@@ -697,22 +58,20 @@ DebugParms::DebugParms()
 	_1C[5] = 100.0f;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000044
+/**
+ * @note Address: N/A
+ * @note Size: 0x44
  */
 EnemyTexMgr::EnemyTexMgr()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000F0
+/**
+ * @note Address: N/A
+ * @note Size: 0xF0
  */
-unknown EnemyTexMgr::create()
+void EnemyTexMgr::create()
 {
 	IconTexture::Mgr::create(EnemyTypeID::EnemyID_COUNT);
 	mLoader.loadResource("/user/Yamashita/enemyTex/arc.szs");
@@ -735,10 +94,9 @@ unknown EnemyTexMgr::create()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80221028
- * Size:	000284
+/**
+ * @note Address: 0x80221028
+ * @note Size: 0x284
  */
 Camera::Camera(Controller* input)
     : mController(input)
@@ -762,7 +120,7 @@ Camera::Camera(Controller* input)
     , mCurrViewAngle(45.0f)
     , mMinViewAngle(0.1f)
     , mMaxViewAngle(90.0f)
-    , _294(0.0f)
+    , mFocusLevel(0.0f)
     , _298(0.0f)
     , _29C(0.8f)
     , _2A0(Vector3f::zero)
@@ -771,194 +129,59 @@ Camera::Camera(Controller* input)
     , _2C4(Vector3f::zero)
     , mVibrationForce(1.0f, 0.0f, 0.0f)
 {
-	setName("図鑑カメラ");
+	setName("図鑑カメラ"); // 'illustrated book camera'
 	move(Vector3f::zero);
-	_2DC = 0.5f;
-	_2E0 = 0.5f;
-	_2E4 = 0.05f;
-	_2E8 = 0.008f;
-	_2EC = 7.0f;
-	_2F0 = 0.12f;
-	_2F4 = 0.95f;
-	_2F8 = 0.1f;
-	_2FC = 15.0f;
-	_300 = 0.3f;
-	_304 = 0.8f;
-	_308 = 0.35f;
-	_30C = 0.15f;
-	_310 = 0.15f;
-	_314 = 0.63f;
-	_318 = 0.5f;
-	_31C = 0.77f;
-	_320 = 0.5f;
+	_2DC            = 0.5f;
+	_2E0            = 0.5f;
+	_2E4            = 0.05f;
+	_2E8            = 0.008f;
+	_2EC            = 7.0f;
+	_2F0            = 0.12f;
+	_2F4            = 0.95f;
+	_2F8            = 0.1f;
+	_2FC            = 15.0f;
+	_300            = 0.3f;
+	mFovChangeSpeed = 0.8f;
+	_308            = 0.35f;
+	_30C            = 0.15f;
+	_310            = 0.15f;
+	_314            = 0.63f;
+	_318            = 0.5f;
+	_31C            = 0.77f;
+	_320            = 0.5f;
 }
 
-/*
- * --INFO--
- * Address:	802212AC
- * Size:	0001D8
+/**
+ * @note Address: 0x802212AC
+ * @note Size: 0x1D8
  */
 void Camera::startVibration(int type)
 {
-	f32 calc = type / 29.0f;
-	Vector3f mod;
-	mod.x = randFloat() - 0.5f;
 	f32 factor;
-	if (randFloat() < 0.5f) {
-		factor = 1.0f;
-	} else {
-		factor = -1.0f;
-	}
-	mod.z = (randFloat() + 1.0f) * factor;
-	mod.y = randFloat() - 0.5f;
+	f32 calc = type / 29.0f;
+	Vector3f mod(randFloat() - 0.5f, (randFloat() + 1.0f) * (randFloat() < 0.5f ? -1.0f : 1.0f), randFloat() - 0.5f);
 	mod.normalise();
-	mVibrationForce += mod * (calc * 10.0f);
-	/*
-	stwu     r1, -0x70(r1)
-	mflr     r0
-	stw      r0, 0x74(r1)
-	stfd     f31, 0x60(r1)
-	psq_st   f31, 104(r1), 0, qr0
-	stfd     f30, 0x50(r1)
-	psq_st   f30, 88(r1), 0, qr0
-	stfd     f29, 0x40(r1)
-	psq_st   f29, 72(r1), 0, qr0
-	stw      r31, 0x3c(r1)
-	xoris    r4, r4, 0x8000
-	lis      r0, 0x4330
-	stw      r4, 0xc(r1)
-	mr       r31, r3
-	lfd      f2, lbl_8051A188@sda21(r2)
-	stw      r0, 8(r1)
-	lfs      f0, lbl_8051A174@sda21(r2)
-	lfd      f1, 8(r1)
-	fsubs    f1, f1, f2
-	fdivs    f29, f1, f0
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0x14(r1)
-	lfd      f3, lbl_8051A188@sda21(r2)
-	stw      r0, 0x10(r1)
-	lfs      f1, lbl_8051A178@sda21(r2)
-	lfd      f2, 0x10(r1)
-	lfs      f0, lbl_8051A148@sda21(r2)
-	fsubs    f2, f2, f3
-	fdivs    f1, f2, f1
-	fsubs    f30, f1, f0
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0x1c(r1)
-	lfd      f3, lbl_8051A188@sda21(r2)
-	stw      r0, 0x18(r1)
-	lfs      f1, lbl_8051A178@sda21(r2)
-	lfd      f2, 0x18(r1)
-	lfs      f0, lbl_8051A148@sda21(r2)
-	fsubs    f2, f2, f3
-	fdivs    f1, f2, f1
-	fcmpo    cr0, f1, f0
-	bge      lbl_80221368
-	lfs      f31, lbl_8051A17C@sda21(r2)
-	b        lbl_8022136C
-
-lbl_80221368:
-	lfs      f31, lbl_8051A11C@sda21(r2)
-
-lbl_8022136C:
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0x24(r1)
-	lfd      f3, lbl_8051A188@sda21(r2)
-	stw      r0, 0x20(r1)
-	lfs      f1, lbl_8051A178@sda21(r2)
-	lfd      f2, 0x20(r1)
-	lfs      f0, lbl_8051A11C@sda21(r2)
-	fsubs    f2, f2, f3
-	fdivs    f1, f2, f1
-	fadds    f0, f0, f1
-	fmuls    f31, f0, f31
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0x2c(r1)
-	fmuls    f4, f31, f31
-	lfd      f3, lbl_8051A188@sda21(r2)
-	fmuls    f5, f30, f30
-	stw      r0, 0x28(r1)
-	lfs      f2, lbl_8051A178@sda21(r2)
-	lfd      f0, 0x28(r1)
-	lfs      f1, lbl_8051A148@sda21(r2)
-	fsubs    f3, f0, f3
-	lfs      f0, lbl_8051A128@sda21(r2)
-	fdivs    f2, f3, f2
-	fsubs    f2, f2, f1
-	fmadds   f1, f2, f2, f4
-	fadds    f1, f5, f1
-	fcmpo    cr0, f1, f0
-	ble      lbl_802213FC
-	ble      lbl_80221400
-	frsqrte  f0, f1
-	fmuls    f1, f0, f1
-	b        lbl_80221400
-
-lbl_802213FC:
-	fmr      f1, f0
-
-lbl_80221400:
-	lfs      f0, lbl_8051A128@sda21(r2)
-	fcmpo    cr0, f1, f0
-	ble      lbl_80221420
-	lfs      f0, lbl_8051A11C@sda21(r2)
-	fdivs    f0, f0, f1
-	fmuls    f2, f2, f0
-	fmuls    f31, f31, f0
-	fmuls    f30, f30, f0
-
-lbl_80221420:
-	lfs      f1, lbl_8051A180@sda21(r2)
-	lfs      f0, 0x2d0(r31)
-	fmuls    f1, f1, f29
-	fmuls    f2, f2, f1
-	fmuls    f31, f31, f1
-	fmuls    f30, f30, f1
-	fadds    f0, f0, f2
-	stfs     f0, 0x2d0(r31)
-	lfs      f0, 0x2d4(r31)
-	fadds    f0, f0, f31
-	stfs     f0, 0x2d4(r31)
-	lfs      f0, 0x2d8(r31)
-	fadds    f0, f0, f30
-	stfs     f0, 0x2d8(r31)
-	psq_l    f31, 104(r1), 0, qr0
-	lfd      f31, 0x60(r1)
-	psq_l    f30, 88(r1), 0, qr0
-	lfd      f30, 0x50(r1)
-	psq_l    f29, 72(r1), 0, qr0
-	lfd      f29, 0x40(r1)
-	lwz      r0, 0x74(r1)
-	lwz      r31, 0x3c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x70
-	blr
-	*/
+	mod *= (calc * 10.0f);
+	mVibrationForce += mod;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000184
+/**
+ * @note Address: N/A
+ * @note Size: 0x184
  */
-void Camera::debugDraw(Graphics&)
+void Camera::debugDraw(Graphics& gfx)
 {
-	// UNUSED FUNCTION
+	OSReport("radius:%6.3f");
+	OSReport("angle :%6.3f");
+	OSReport("height:%6.3f");
+	OSReport("fovy  :%6.3f");
+	mHorizontalAngle = 30.0f;
+	// just to line stuff up.
 }
 
-/*
- * --INFO--
- * Address:	80221484
- * Size:	000088
+/**
+ * @note Address: 0x80221484
+ * @note Size: 0x88
  */
 void Camera::move(const Vector3f& pos)
 {
@@ -970,10 +193,9 @@ void Camera::move(const Vector3f& pos)
 	resetControl();
 }
 
-/*
- * --INFO--
- * Address:	8022150C
- * Size:	000128
+/**
+ * @note Address: 0x8022150C
+ * @note Size: 0x128
  */
 void Camera::setTarget(Creature* obj)
 {
@@ -991,10 +213,9 @@ void Camera::setTarget(Creature* obj)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80221634
- * Size:	000274
+/**
+ * @note Address: 0x80221634
+ * @note Size: 0x274
  */
 void Camera::resetControl()
 {
@@ -1008,8 +229,7 @@ void Camera::resetControl()
 	_284                  = 0.0f;
 	_280                  = 0.0f;
 
-	_1A0 = Vector3f(_1B8.x + mObjectRadius * pikmin2_sinf(mHorizontalAngle), _1B8.y,
-	                _1B8.z + mObjectRadius * pikmin2_cosf(mHorizontalAngle));
+	_1A0 = Vector3f(_1B8.x + mObjectRadius * sinf(mHorizontalAngle), _1B8.y, _1B8.z + mObjectRadius * cosf(mHorizontalAngle));
 	if (mapMgr) {
 		_1A0.y = mapMgr->getMinY(_1A0) + mCurrentHeight;
 	}
@@ -1018,26 +238,148 @@ void Camera::resetControl()
 	_2C4            = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00001C
+/**
+ * @note Address: N/A
+ * @note Size: 0x1C
  */
 void Camera::setAtOffset(const Vector3f& vec)
 {
-	// is this func supposed to be const? if it is then I have no clue how this would work
 	mObjectOffset.x = vec.x;
 	mObjectOffset.y = vec.y;
 	mObjectOffset.z = vec.z;
 }
 
-/*
- * --INFO--
- * Address:	802218A8
- * Size:	000904
+/**
+ * @note Address: 0x802218A8
+ * @note Size: 0x904
  */
-bool Camera::doUpdate()
+void Camera::doUpdate()
 {
+	Vector3f cameraPos = Vector3f::zero; // f31, f30, f29
+	Sys::Sphere targetSphere;            // 0x24
+	if (mTargetObject) {
+		mTargetObject->getBoundingSphere(targetSphere);
+		f32 minY = mapMgr->getMinY(targetSphere.mPosition);
+		if (targetSphere.mPosition.y < minY) {
+			targetSphere.mPosition.y = minY;
+		}
+	} else {
+		targetSphere.mPosition = _1B8;
+	}
+
+	mGoalPosition += _1F0;
+	mPositionList[mCurrentPositionIndex] = targetSphere.mPosition;
+
+	if (++mCurrentPositionIndex >= 10) {
+		mCurrentPositionIndex = 0;
+	}
+
+	for (int i = 0; i < 10; i++) {
+		cameraPos += mPositionList[i];
+	}
+
+	cameraPos *= 0.1f;
+
+	_1F0 += (cameraPos - mGoalPosition) * 0.1f;
+	_1F0 *= 0.6f;
+
+	if (!Screen::gGame2DMgr->isAppearConfirmWindow()) {
+		int fovInc = ((mController->getButton() / 4) & JUTGamePad::PRESS_DPAD_LEFT)
+		           - ((mController->getButton() / 8) & JUTGamePad::PRESS_DPAD_LEFT);
+		addFovy(fovInc);
+
+		f32 angleRatio = (mViewAngle - mMinViewAngle) / (mMaxViewAngle - mMinViewAngle);
+
+		mCurrentHeight += _2FC * mController->getSubStickY();
+		if (mCurrentHeight < mMinHeight) {
+			mCurrentHeight = mMinHeight;
+		}
+		if (mCurrentHeight > mMaxHeight) {
+			mCurrentHeight = mMaxHeight;
+		}
+
+		mHorizontalAngle += _2F8 * mController->getSubStickX();
+		if (mHorizontalAngle > TAU) {
+			mHorizontalAngle -= TAU;
+		}
+
+		if (mHorizontalAngle < 0.0f) {
+			mHorizontalAngle += TAU;
+		}
+
+		if (Screen::gGame2DMgr->isZukanEnlargedWindow()) {
+			_27C = 100.0f * mController->getMainStickX();
+			_284 = 100.0f * mController->getMainStickY();
+		} else {
+			_27C = 0.0f;
+			_284 = 0.0f;
+		}
+
+		f32 factor = (angleRatio * (_30C - _310) + _310);
+		_278 += factor * (_27C - _278);
+		_280 += factor * (_284 - _280);
+
+		Vector3f pos = Vector3f(mObjectRadius * sinf(mHorizontalAngle) + _1B8.x, _1B8.y, mObjectRadius * cosf(mHorizontalAngle) + _1B8.z);
+		pos.y        = mCurrentHeight + mapMgr->getMinY(pos);
+
+		Vector3f sep = pos - _1A0;
+		sep *= _300;
+		_1A0 += sep;
+
+		Sys::Sphere moveSphere(_1A0, 10.0f);
+		MoveInfo info(&moveSphere, &Vector3f::zero, 0.0f);
+
+		mapMgr->traceMove(info, sys->mDeltaTime);
+
+		f32 newMinY = mapMgr->getMinY(moveSphere.mPosition) + 10.0f;
+		if (moveSphere.mPosition.y < newMinY) {
+			moveSphere.mPosition.y = newMinY;
+		}
+
+		_1A0 = moveSphere.mPosition;
+	}
+
+	Vector3f sep = mGoalPosition - mPosition;
+	f32 dist     = sep.length();
+	if (dist > 0.0001f) {
+		sep *= 1.0f / dist;
+	} else {
+		sep = Vector3f(0.0f, -1.0f, 0.0f);
+	}
+
+	Vector3f vec2(_2A0.x + _278, _2A0.y + _280, _2A0.z);
+
+	Vector3f yAxis(0.0f, 1.0f, 0.0f);
+	Vector3f crossVec  = cross(sep, yAxis);
+	Vector3f crossVec2 = cross(crossVec, vec2);
+
+	_1AC.x = crossVec2.x + (mGoalPosition.x + mObjectOffset.x); // yikes at whatever's actually going on here
+	_1AC.y = crossVec2.y + (mGoalPosition.y + mObjectOffset.y);
+	_1AC.z = crossVec2.z + (mGoalPosition.z + mObjectOffset.z);
+
+	updateCameraShake();
+	updateFocus();
+
+	Vector3f vec = Vector3f::zero;
+
+	mVibrationForce.x *= 0.75f * _314;
+	mVibrationForce.y *= _314;
+	mVibrationForce.z *= 0.75f * _314;
+
+	_2C4 += mVibrationForce;
+
+	Vector3f newSep = _2C4 - vec;
+	mVibrationForce.x -= _318 * newSep.x;
+	mVibrationForce.y -= _31C * newSep.y;
+	mVibrationForce.z -= _320 * newSep.z;
+
+	mFocusLevel += 0.05f * mVibrationForce.length();
+
+	mPosition = _1A0 + _2C4;
+
+	Vector3f lookOffset = _2C4;
+	lookOffset *= 10.0f;
+	mLookAtPosition = _1AC + lookOffset;
 	/*
 	stwu     r1, -0x120(r1)
 	mflr     r0
@@ -1659,157 +1001,57 @@ lbl_802220FC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802221AC
- * Size:	000204
+/**
+ * @note Address: 0x802221AC
+ * @note Size: 0x204
  */
 void Camera::updateCameraShake()
 {
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stfd     f31, 0x30(r1)
-	psq_st   f31, 56(r1), 0, qr0
-	stw      r31, 0x2c(r1)
-	mr       r31, r3
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0xc(r1)
-	lfd      f3, lbl_8051A188@sda21(r2)
-	stw      r0, 8(r1)
-	lfs      f1, lbl_8051A178@sda21(r2)
-	lfd      f2, 8(r1)
-	lfs      f0, 0x2dc(r31)
-	fsubs    f2, f2, f3
-	fdivs    f1, f2, f1
-	fcmpo    cr0, f1, f0
-	bge      lbl_802222E4
-	lfs      f31, 0x2e0(r31)
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0xc(r1)
-	lfd      f3, lbl_8051A188@sda21(r2)
-	stw      r0, 8(r1)
-	lfs      f2, lbl_8051A178@sda21(r2)
-	lfd      f0, 8(r1)
-	lfs      f1, 0x2e4(r31)
-	fsubs    f3, f0, f3
-	lfs      f0, 0x294(r31)
-	fdivs    f2, f3, f2
-	fmadds   f0, f1, f2, f0
-	stfs     f0, 0x294(r31)
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0x14(r1)
-	lfd      f3, lbl_8051A188@sda21(r2)
-	stw      r0, 0x10(r1)
-	lfs      f1, lbl_8051A178@sda21(r2)
-	lfd      f2, 0x10(r1)
-	lfs      f0, 0x2e8(r31)
-	fsubs    f2, f2, f3
-	fdivs    f1, f2, f1
-	fcmpo    cr0, f1, f0
-	bge      lbl_80222274
-	lfs      f0, 0x2ec(r31)
-	fadds    f31, f31, f0
+	if (randFloat() < _2DC) {
+		f32 val = _2E0;
+		mFocusLevel += _2E4 * randFloat();
 
-lbl_80222274:
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0x1c(r1)
-	lfd      f3, lbl_8051A188@sda21(r2)
-	stw      r0, 0x18(r1)
-	lfs      f1, lbl_8051A178@sda21(r2)
-	lfd      f2, 0x18(r1)
-	lfs      f0, lbl_8051A148@sda21(r2)
-	fsubs    f2, f2, f3
-	fdivs    f1, f2, f1
-	fsubs    f0, f1, f0
-	fmuls    f0, f31, f0
-	stfs     f0, 0x2ac(r31)
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0x24(r1)
-	lfd      f3, lbl_8051A188@sda21(r2)
-	stw      r0, 0x20(r1)
-	lfs      f1, lbl_8051A178@sda21(r2)
-	lfd      f2, 0x20(r1)
-	lfs      f0, lbl_8051A148@sda21(r2)
-	fsubs    f2, f2, f3
-	fdivs    f1, f2, f1
-	fsubs    f0, f1, f0
-	fmuls    f0, f31, f0
-	stfs     f0, 0x2b0(r31)
+		if (randFloat() < _2E8) {
+			val += _2EC;
+		}
 
-lbl_802222E4:
-	lfs      f1, 0x2ac(r31)
-	lfs      f0, 0x2a0(r31)
-	lfs      f4, 0x2f0(r31)
-	fsubs    f5, f1, f0
-	lfs      f0, 0x2b8(r31)
-	lfs      f3, 0x2b0(r31)
-	lfs      f1, 0x2a4(r31)
-	fmuls    f5, f5, f4
-	lfs      f2, 0x2b4(r31)
-	fsubs    f3, f3, f1
-	lfs      f1, 0x2a8(r31)
-	fadds    f0, f0, f5
-	fsubs    f1, f2, f1
-	fmuls    f3, f3, f4
-	stfs     f0, 0x2b8(r31)
-	fmuls    f1, f1, f4
-	lfs      f0, 0x2bc(r31)
-	fadds    f0, f0, f3
-	stfs     f0, 0x2bc(r31)
-	lfs      f0, 0x2c0(r31)
-	fadds    f0, f0, f1
-	stfs     f0, 0x2c0(r31)
-	lfs      f1, 0x2f4(r31)
-	lfs      f0, 0x2b8(r31)
-	fmuls    f0, f0, f1
-	stfs     f0, 0x2b8(r31)
-	lfs      f0, 0x2bc(r31)
-	fmuls    f0, f0, f1
-	stfs     f0, 0x2bc(r31)
-	lfs      f0, 0x2c0(r31)
-	fmuls    f0, f0, f1
-	stfs     f0, 0x2c0(r31)
-	lfs      f1, 0x2a0(r31)
-	lfs      f0, 0x2b8(r31)
-	fadds    f0, f1, f0
-	stfs     f0, 0x2a0(r31)
-	lfs      f1, 0x2a4(r31)
-	lfs      f0, 0x2bc(r31)
-	fadds    f0, f1, f0
-	stfs     f0, 0x2a4(r31)
-	lfs      f1, 0x2a8(r31)
-	lfs      f0, 0x2c0(r31)
-	fadds    f0, f1, f0
-	stfs     f0, 0x2a8(r31)
-	psq_l    f31, 56(r1), 0, qr0
-	lwz      r0, 0x44(r1)
-	lfd      f31, 0x30(r1)
-	lwz      r31, 0x2c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
+		_2AC.x = val * (randFloat() - 0.5f);
+		_2AC.y = val * (randFloat() - 0.5f);
+	}
+
+	Vector3f sep = _2AC - _2A0;
+	sep *= _2F0;
+	_2B8 += sep;
+	_2B8 *= _2F4;
+
+	_2A0 += _2B8;
 }
 
-/*
- * --INFO--
- * Address:	802223B0
- * Size:	0000E8
+/**
+ * @note Address: 0x802223B0
+ * @note Size: 0xE8
  */
 void Camera::updateFocus()
 {
+	f32 fov = absF(mCurrViewAngle - mViewAngle);
+	f32 y   = absF(_27C - _278);
+	f32 x   = absF(_284 - _280);
+	if (fov > 1.0f || x > 30.0f || y > 30.0f) {
+		mFocusLevel += 0.05f;
+	}
+
+	_298 += (0.2f - mFocusLevel) * 0.02f;
+	if (_298 > 0.5f) {
+		_298 = 0.5f;
+	}
+	if (_298 < -0.5f) {
+		_298 = -0.5f;
+	}
+	_298 *= _29C;
+	mFocusLevel += _298;
+	if (mFocusLevel > 1.0f) {
+		mFocusLevel = 1.0f;
+	}
 	/*
 	lfs      f1, 0x288(r3)
 	lfs      f0, 0x28(r3)
@@ -1880,60 +1122,43 @@ lbl_80222460:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000020
+/**
+ * @note Address: N/A
+ * @note Size: 0x20
  */
-unknown Camera::getFocus()
+f32 Camera::getFocus()
 {
-	// UNUSED FUNCTION
+	f32 focus = FABS(mFocusLevel);
+	if (focus > 0.9f) {
+		focus = 0.9f;
+	}
+
+	return focus;
 }
 
-/*
- * --INFO--
- * Address:	80222498
- * Size:	000054
+/**
+ * @note Address: 0x80222498
+ * @note Size: 0x54
  */
-void Camera::addFovy(f32)
+void Camera::addFovy(f32 fov)
 {
-	/*
-	lfs      f2, 0x304(r3)
-	lfs      f0, 0x288(r3)
-	fmadds   f0, f1, f2, f0
-	stfs     f0, 0x288(r3)
-	lfs      f0, 0x288(r3)
-	lfs      f1, 0x28c(r3)
-	fcmpo    cr0, f0, f1
-	bge      lbl_802224BC
-	stfs     f1, 0x288(r3)
-
-lbl_802224BC:
-	lfs      f0, 0x288(r3)
-	lfs      f1, 0x290(r3)
-	fcmpo    cr0, f0, f1
-	ble      lbl_802224D0
-	stfs     f1, 0x288(r3)
-
-lbl_802224D0:
-	lfs      f0, 0x288(r3)
-	lfs      f1, 0x28(r3)
-	lfs      f2, 0x308(r3)
-	fsubs    f0, f0, f1
-	fmadds   f0, f2, f0, f1
-	stfs     f0, 0x28(r3)
-	blr
-	*/
+	mCurrViewAngle += fov * mFovChangeSpeed;
+	if (mCurrViewAngle < mMinViewAngle) {
+		mCurrViewAngle = mMinViewAngle;
+	}
+	if (mCurrViewAngle > mMaxViewAngle) {
+		mCurrViewAngle = mMaxViewAngle;
+	}
+	mViewAngle += _308 * (mCurrViewAngle - mViewAngle);
 }
 
 } // namespace IllustratedBook
 
 namespace SingleGame {
 
-/*
- * --INFO--
- * Address:	802224EC
- * Size:	0000EC
+/**
+ * @note Address: 0x802224EC
+ * @note Size: 0xEC
  */
 ZukanState::ZukanState()
     : State(SGS_Zukan)
@@ -1958,10 +1183,9 @@ ZukanState::ZukanState()
 	setMode(ModeNone);
 }
 
-/*
- * --INFO--
- * Address:	802225D8
- * Size:	00036C
+/**
+ * @note Address: 0x802225D8
+ * @note Size: 0x36C
  */
 void ZukanState::init(SingleGameSection* game, StateArg* arg)
 {
@@ -2004,44 +1228,43 @@ void ZukanState::init(SingleGameSection* game, StateArg* arg)
 	gameSystem->mTimeMgr->resetFlag(1);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E4
+static const char* modeNames[9]
+    = { "StartTeki", "StartPellet", "ModeChangeToTeki", "Teki", "ChangeTeki", "ModeChangeToPellet", "Pellet", "ChangePellet", "None" };
+// supposed to be pointers to the above strings, but I cant get that to work, this fixes the size of rodata for now
+static const u32 dumb[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+/**
+ * @note Address: N/A
+ * @note Size: 0xE4
  */
-unknown ZukanState::startTekiMode(bool)
+void ZukanState::startTekiMode(bool)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E4
+/**
+ * @note Address: N/A
+ * @note Size: 0xE4
  */
-unknown ZukanState::startPelletMode(bool)
+void ZukanState::startPelletMode(bool)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80222944
- * Size:	000014
+/**
+ * @note Address: 0x80222944
+ * @note Size: 0x14
  */
 void ZukanState::setMode(CMode mode)
 {
-	static const char* modeNames[9]
-	    = { "StartTeki", "StartPellet", "ModeChangeToTeki", "Teki", "ChangeTeki", "ModeChangeToPellet", "Pellet", "ChangePellet", "None" };
 	if (mCurrMode != mode) {
 		mCurrMode = mode;
 	}
 }
 
-/*
- * --INFO--
- * Address:	80222958
- * Size:	00072C
+/**
+ * @note Address: 0x80222958
+ * @note Size: 0x72C
  */
 void ZukanState::exec(SingleGameSection* game)
 {
@@ -2051,7 +1274,7 @@ void ZukanState::exec(SingleGameSection* game)
 		gameSystem->mTimeMgr->mSpeedFactor = 9.0f;
 	}
 
-	if (!(mDebugParms->mFlags.typeView & 2)) {
+	if (!(mDebugParms->mFlags.isSet(2))) {
 		if (mCurrMode == ModeTeki) {
 			// If in the enemy mode, and the conditions to need to load something are met
 			if (mCurrentEnemyIndex >= 0 && mCurrentEnemyIndex < EnemyTypeID::EnemyID_COUNT && mDoDraw
@@ -2079,6 +1302,7 @@ void ZukanState::exec(SingleGameSection* game)
 	    && !Screen::gGame2DMgr->isZukanMemoWindow() && (mController->getButtonDown() & (Controller::PRESS_R | Controller::PRESS_L))) {
 		switch (mCurrMode) {
 		case ModeTeki:
+		case ModeChangeTeki:
 			bool test = false;
 			if (Screen::gGame2DMgr->isZukanEnemy()) {
 				setMode(ModeChangeToPellet);
@@ -2098,10 +1322,12 @@ void ZukanState::exec(SingleGameSection* game)
 				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
 			}
 			break;
+
 		case ModePellet:
+		case ModeChangePellet:
 			test = false;
 			if (Screen::gGame2DMgr->isZukanItem()) {
-				setMode(ModeChangeTeki);
+				setMode(ModeChangeToTeki);
 				Morimura::DispMemberZukanEnemy disp;
 				disp.mDebugExpHeap  = mExtraHeapFor2D;
 				disp.mTexture       = mTexture2;
@@ -2118,6 +1344,7 @@ void ZukanState::exec(SingleGameSection* game)
 				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
 			}
 			break;
+
 		default:
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
 			break;
@@ -2125,10 +1352,15 @@ void ZukanState::exec(SingleGameSection* game)
 	}
 
 	if (!mDoDraw) {
-		gameSystem->mTimeMgr->setFlag(1);
+		gameSystem->mTimeMgr->setFlag(TIMEFLAG_Stopped);
 		Screen::gGame2DMgr->update();
-		if (mCurrMode == ModeStartTeki) {
-			if (mDvdThread.mMode == 2) {
+		if (mCurrMode == ModeStartTeki || mCurrMode == ModeStartPellet) {
+			if (mDvdThread.mMode != 2) {
+				return;
+			}
+
+			// start teki
+			if (mCurrMode == ModeStartTeki) {
 				setMode(ModeChangeToTeki);
 				Morimura::DispMemberZukanEnemy disp;
 				disp.mDebugExpHeap  = mExtraHeapFor2D;
@@ -2138,8 +1370,10 @@ void ZukanState::exec(SingleGameSection* game)
 				disp.mPrevSelection = &_110;
 				Screen::gGame2DMgr->open_ZukanEnemy(disp);
 				startWipe(0.0f);
+				return;
 			}
-		} else if (mCurrMode == ModeStartPellet) {
+
+			// start pellet
 			setMode(ModeChangeToPellet);
 			Morimura::DispMemberZukanItem disp;
 			disp.mDebugExpHeap  = mExtraHeapFor2D;
@@ -2149,22 +1383,20 @@ void ZukanState::exec(SingleGameSection* game)
 			disp.mPrevSelection = &_114;
 			Screen::gGame2DMgr->open_ZukanItem(disp);
 			startWipe(0.0f);
-		} else {
-			if (mDvdThread.mMode == 2) {
-				PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
-				PSSystem::checkSceneMgr(mgr);
-				PSM::Scene_Objects* scene = static_cast<PSM::Scene_Objects*>(mgr->getChildScene());
-				scene->adaptObjMgr();
-				mDoDraw = true;
-				gameSystem->mTimeMgr->resetFlag(1);
-			}
+			return;
+		}
+
+		if (mDvdThread.mMode == 2) {
+			static_cast<PSM::Scene_Objects*>(PSMGetChildScene())->adaptObjMgr();
+			mDoDraw = true;
+			gameSystem->mTimeMgr->resetFlag(TIMEFLAG_Stopped);
 		}
 
 		return;
 	}
 
 	switch (mCurrMode) {
-	case ModeStartTeki:
+	case ModeChangeToTeki:
 		execModeChange(game, ModeTeki);
 		break;
 	case ModeChangeToPellet:
@@ -2743,10 +1975,9 @@ lbl_80223064:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80223084
- * Size:	00016C
+/**
+ * @note Address: 0x80223084
+ * @note Size: 0x16C
  */
 void ZukanState::execModeChange(SingleGameSection* game, CMode mode)
 {
@@ -2789,10 +2020,9 @@ void ZukanState::execModeChange(SingleGameSection* game, CMode mode)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802231F0
- * Size:	0000E0
+/**
+ * @note Address: 0x802231F0
+ * @note Size: 0xE0
  */
 void ZukanState::execChangeTeki(SingleGameSection* game)
 {
@@ -2820,19 +2050,65 @@ void ZukanState::execChangeTeki(SingleGameSection* game)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802232D0
- * Size:	0005A4
+/**
+ * @note Address: 0x802232D0
+ * @note Size: 0x5A4
  */
-unknown ZukanState::execTeki(SingleGameSection* game)
+void ZukanState::execTeki(SingleGameSection* game)
 {
-	if (!Screen::gGame2DMgr->isZukanMemoWindow() && mController->getButtonDown() & Controller::PRESS_Z && generalEnemyMgr) {
+	// LET'S MAKE CARROTS
+	if (mController->getButtonDown() & Controller::PRESS_A && Screen::gGame2DMgr->getZukanEnemyCurrSelectId() != -1
+	    && !Screen::gGame2DMgr->isAppearConfirmWindow()) {
+		Piki* piki = pikiMgr->birth();
+		if (piki) {
+			PikiInitArg initArg(PIKISTATE_Carrot);
+			piki->init(&initArg);
+			piki->changeShape(Carrot);
+
+			Vector3f lookAtPos = mCamera->getLookAtPosition();
+			Vector3f cameraPos = mCamera->getPosition();
+
+			Vector3f viewVec = mCamera->getViewVector();
+			viewVec.length(); // unused + regswaps
+
+			f32 randAngle = TAU * randFloat();
+			f32 randDist  = 100.0f * randFloat();
+
+			Vector3f direction = Vector3f(randDist * sinf(randAngle), 0.0f, randDist * cosf(randAngle));
+			Vector3f position  = cameraPos; // 0x58
+			Vector3f velocity  = (lookAtPos + direction) - cameraPos;
+			velocity *= mDebugParms->_1C[3];
+
+			velocity.y = velocity.y + (mDebugParms->_1C[5] * randFloat() + mDebugParms->_1C[4]);
+			piki->setVelocity(velocity);
+
+			velocity.normalise();
+
+			Vector3f yAxis(0.0f, 1.0f, 0.0f);
+			Vector3f perpVec = cross(velocity, yAxis);
+			perpVec *= mDebugParms->_1C[1];
+			position += perpVec;
+			position.y += mDebugParms->_1C[2];
+
+			f32 minY = 10.0f + mapMgr->getMinY(position);
+			if (position.y < minY) {
+				position.y = minY;
+			}
+
+			piki->setPosition(position, false);
+
+			piki->mFaceDir = TAU * randFloat();
+
+			PSSystem::spSysIF->playSystemSe(PSSE_PK_CARROT_THROW, 0);
+		}
+	}
+
+	if (!Screen::gGame2DMgr->isAppearConfirmWindow() && mController->getButtonDown() & Controller::PRESS_Z && generalEnemyMgr) {
 		GeneralMgrIterator<EnemyBase> iterator(generalEnemyMgr);
 		CI_LOOP(iterator)
 		{
 			EnemyBase* obj = iterator.getObject();
-			InteractDope act(nullptr, 1);
+			InteractDope act(nullptr, SPRAY_TYPE_BITTER);
 			obj->stimulate(act);
 		}
 	}
@@ -2840,9 +2116,11 @@ unknown ZukanState::execTeki(SingleGameSection* game)
 	int newID;
 	switch (Screen::gGame2DMgr->check_ZukanEnemyRequest(newID)) {
 	case 1:
-		if (newID != mCurrentEnemyIndex && !(mDebugParms->mFlags.typeView & 2)) {
+		if (newID != mCurrentEnemyIndex && !mDebugParms->mFlags.isSet(2)) {
 			createEnemy(newID);
 		}
+		break;
+	case 0:
 		break;
 	}
 	game->BaseGameSection::doUpdate();
@@ -3239,10 +2517,9 @@ lbl_80223820:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80223874
- * Size:	000018
+/**
+ * @note Address: 0x80223874
+ * @note Size: 0x18
  */
 void ZukanState::startWipe(f32 time)
 {
@@ -3251,10 +2528,9 @@ void ZukanState::startWipe(f32 time)
 	mChangeSelMaxTime = time;
 }
 
-/*
- * --INFO--
- * Address:	8022388C
- * Size:	00003C
+/**
+ * @note Address: 0x8022388C
+ * @note Size: 0x3C
  */
 void ZukanState::createEnemy(int id)
 {
@@ -3270,20 +2546,22 @@ void ZukanState::createEnemy(int id)
 	mChangeSelMaxTime = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00003C
+/**
+ * @note Address: N/A
+ * @note Size: 0x3C
  */
 void ZukanState::createItem(int)
 {
+	OSReport("READY:%d Enemy:%d Item:%d");
+	OSReport("enemy:%d item:%d");
+	OSReport("heapA %d");
+	OSReport("heapB %d");
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	802238C8
- * Size:	0000EC
+/**
+ * @note Address: 0x802238C8
+ * @note Size: 0xEC
  */
 void SingleGame::ZukanState::execChangePellet(SingleGameSection* game)
 {
@@ -3313,12 +2591,11 @@ void SingleGame::ZukanState::execChangePellet(SingleGameSection* game)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802239B4
- * Size:	0000B4
+/**
+ * @note Address: 0x802239B4
+ * @note Size: 0xB4
  */
-unknown ZukanState::execPellet(SingleGameSection* game)
+void ZukanState::execPellet(SingleGameSection* game)
 {
 	getMaxPelletID();
 	int arg;
@@ -3327,7 +2604,7 @@ unknown ZukanState::execPellet(SingleGameSection* game)
 	case 0:
 		break;
 	case 1:
-		if (arg != mCurrentPelletIndex && !(mDebugParms->mFlags.typeView & 2) && mCurrMode == ModePellet) {
+		if (arg != mCurrentPelletIndex && !mDebugParms->mFlags.isSet(2) && mCurrMode == ModePellet) {
 			mCurrentPelletIndex = arg;
 			setMode(ModeChangePellet);
 			mChangeSelState   = 0;
@@ -3339,17 +2616,20 @@ unknown ZukanState::execPellet(SingleGameSection* game)
 	game->BaseGameSection::doUpdate();
 }
 
-/*
- * --INFO--
- * Address:	80223A68
- * Size:	00003C
+/**
+ * @note Address: 0x80223A68
+ * @note Size: 0x3C
  */
-int ZukanState::getMaxPelletID() { return PelletList::Mgr::getCount(PelletList::ITEM) + PelletList::Mgr::getCount(PelletList::OTAKARA); }
+int ZukanState::getMaxPelletID()
+{
+	int ota   = PelletList::Mgr::getCount(PelletList::OTAKARA);
+	int items = PelletList::Mgr::getCount(PelletList::ITEM);
+	return ota + items;
+}
 
-/*
- * --INFO--
- * Address:	80223AA4
- * Size:	00007C
+/**
+ * @note Address: 0x80223AA4
+ * @note Size: 0x7C
  */
 PelletConfig* ZukanState::getCurrentPelletConfig(int id)
 {
@@ -3364,10 +2644,9 @@ PelletConfig* ZukanState::getCurrentPelletConfig(int id)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80223B20
- * Size:	000080
+/**
+ * @note Address: 0x80223B20
+ * @note Size: 0x80
  */
 PelletList::cKind ZukanState::convertPelletID(int& ret, int id)
 {
@@ -3386,10 +2665,9 @@ PelletList::cKind ZukanState::convertPelletID(int& ret, int id)
 	return kind;
 }
 
-/*
- * --INFO--
- * Address:	80223BA0
- * Size:	000274
+/**
+ * @note Address: 0x80223BA0
+ * @note Size: 0x274
  */
 void ZukanState::draw(SingleGameSection* game, Graphics& gfx)
 {
@@ -3397,7 +2675,7 @@ void ZukanState::draw(SingleGameSection* game, Graphics& gfx)
 		mCamera->update();
 		gfx.setupJ2DOrthoGraphDefault();
 		gfx.mOrthoGraph.setPort();
-		J2DFillBox(0.0f, 0.0f, (f32)getWindowWidth(), (f32)getWindowHeight(), mParms->mColorSetting._54, mParms->mColorSetting._54,
+		J2DFillBox(0.0f, 0.0f, getWindowWidth(), getWindowHeight(), mParms->mColorSetting._54, mParms->mColorSetting._54,
 		           mParms->mColorSetting._58, mParms->mColorSetting._58);
 		game->BaseGameSection::draw3D(gfx);
 		drawLightEffect(game, gfx);
@@ -3405,9 +2683,12 @@ void ZukanState::draw(SingleGameSection* game, Graphics& gfx)
 		drawGradationEffect(game, gfx);
 		mTexture2->capture(0, 0, GX_TF_RGB565, false, 0);
 	}
+
 	gfx.mOrthoGraph.setPort();
-	JUtility::TColor color(0x43300000);
-	J2DFillBox(0.0f, 0.0f, sys->getRenderModeObj()->fbWidth, sys->getRenderModeObj()->efbHeight, color);
+	JUtility::TColor color(0, 0, 0, 255);
+	u16 height = sys->getRenderModeObj()->efbHeight;
+	u16 width  = sys->getRenderModeObj()->fbWidth;
+	J2DFillBox(0.0f, 0.0f, width, height, color);
 	j3dSys.drawInit();
 	game->BaseGameSection::draw2D(gfx);
 	/*
@@ -3576,15 +2857,57 @@ lbl_80223D64:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80223E14
- * Size:	000578
+/**
+ * @note Address: 0x80223E14
+ * @note Size: 0x578
  */
 void ZukanState::drawGradationEffect(SingleGameSection*, Graphics& gfx)
 {
+	f32 focus = mCamera->getFocus();
+	if (focus > 1.0f) {
+		focus = 1.0f;
+	}
+	JUTTexture* tex = mTexture;
+	tex->init();
 	GXInvalidateTexAll();
+	tex->capture(0, 0, GX_TF_RGB565, true, GX_FALSE);
+	tex->capture(0, 0, GX_TF_RGB565, true, GX_FALSE);
+
+	f32 min = 3.0f;
+	f32 max = -min;
+	for (int i = 0; i < 4; i++) {
+		J2DPicture pic(tex);
+		JUtility::TColor color(255, 255, 255, 127);
+		pic.setCornerColor(color);
+		GXSetAlphaUpdate(GX_FALSE);
+		pic.draw(min, min, mWindowBounds.getWidth(), mWindowBounds.getHeight(), false, false, false);
+
+		color.a -= 16;
+		pic.setCornerColor(color);
+		pic.draw(max, min, mWindowBounds.getWidth(), mWindowBounds.getHeight(), false, false, false);
+
+		color.a -= 16;
+		pic.setCornerColor(color);
+		pic.draw(min, max, mWindowBounds.getWidth(), mWindowBounds.getHeight(), false, false, false);
+
+		color.a -= 16;
+		pic.setCornerColor(color);
+		pic.draw(max, max, mWindowBounds.getWidth(), mWindowBounds.getHeight(), false, false, false);
+
+		GXInvalidateTexAll();
+		tex->capture(0, 0, GX_TF_RGB565, true, GX_FALSE);
+	}
+
 	gfx.setupJ2DOrthoGraphDefault();
+	gfx.mOrthoGraph.setPort();
+
+	J2DPicture pic(mTexture2);
+	J2DPicture* picPtr = &pic;
+	picPtr->insert(tex, pic.mTextureCount, 1.0f);
+	f32 inv = 1.0f - focus;
+	picPtr->setBlendColorRatio(inv, focus, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+	picPtr->setBlendAlphaRatio(inv, focus, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+	picPtr->draw(0.0f, 0.0f, 0, false, false, false);
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x390(r1)
@@ -3946,15 +3269,154 @@ void ZukanState::drawGradationEffect(SingleGameSection*, Graphics& gfx)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8022438C
- * Size:	0007C0
+/**
+ * @note Address: 0x8022438C
+ * @note Size: 0x7C0
  */
 void ZukanState::drawLightEffect(SingleGameSection* game, Graphics& gfx)
 {
 	GXInvalidateTexAll();
+	mTexture->capture(0, 0, GX_TF_RGB565, true, GX_FALSE);
 	gfx.setupJ2DOrthoGraphDefault();
+	gfx.mOrthoGraph.setPort();
+
+	Vector3f sep = mCamera->mLookAtPosition - mCamera->mPosition;
+	sep.normalise();
+
+	Color4 color; // r30, r29, r28, r27
+	if (mCurrMode == ModePellet) {
+		sep.y += JMath::sincosTable_.mTable[113].first;
+		sep.y /= JMath::sincosTable_.mTable[56].first;
+		sep.y += 0.1f;
+		color = mParms->mColorSetting._5C;
+	} else {
+		sep.y += JMath::sincosTable_.mTable[85].first;
+		sep.y /= JMath::sincosTable_.mTable[56].first;
+		color = mParms->mColorSetting._5C;
+	}
+
+	if (sep.y < 0.0f) {
+		sep.y = 0.0f;
+	} else if (sep.y > 1.0f) {
+		sep.y = 1.0f;
+	}
+
+	_108 += mDebugParms->_1C[0] * (sep.y - _108);
+
+	if (_108 > 0.0f) {
+		f32 x = mWindowBounds.getWidth();  // f27
+		f32 y = mWindowBounds.getHeight(); // f26
+
+		mTexture->load(GX_TEXMAP0);
+		GXSetNumChans(1);
+		GXSetNumTevStages(1);
+		GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_C0, GX_CC_TEXC, GX_CC_ZERO);
+		GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_DIVIDE_2, GX_TRUE, GX_TEVPREV);
+		GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_A0, GX_CA_TEXA, GX_CA_ZERO);
+		GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+		GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+		GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+		GXClearVtxDesc();
+		GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
+		GXSetVtxDesc(GX_VA_CLR0, GX_DIRECT);
+		GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
+		GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+		GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_POS_XYZ, GX_RGBA8, 0);
+		GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_POS_XYZ, GX_F32, 0);
+		GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_ONE, GX_LO_SET);
+		GXSetZMode(GX_FALSE, GX_LESS, GX_FALSE);
+		GXSetCurrentMtx(0);
+		GXSetNumTexGens(1);
+		GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEXCOORD0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+
+		for (int i = 0; i < 4; i++) {
+			f32 thisFactor = (f32)i / 4;
+			f32 nextFactor = (f32)(i + 1) / 4;
+			f32 factor     = (_108 - thisFactor) / (nextFactor); // f2
+			if (factor > 1.0f) {
+				factor = 1.0f;
+			}
+
+			if (factor > 0.0f) {
+				f32 alphaF = factor * (f32)color.a;
+				color.a    = (alphaF >= 0.0f) ? 0.5f + alphaF : alphaF - 0.5f;
+				GXSetTevColor(GX_TEVREG0, color.toGXColor());
+
+				f32 u    = 0.005f * (f32)(i + 1); // f22
+				f32 v    = -u;                    // f24
+				f32 zero = 0.0f;
+				f32 one  = 1.0f;
+
+				GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
+				GXPosition3f32(zero, zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(u, v);
+
+				GXPosition3f32(x + zero, zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(one + u, v);
+
+				GXPosition3f32(zero, y + zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(u, one + v);
+
+				GXPosition3f32(x + zero, y + zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(one + u, one + v);
+
+				GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
+				GXPosition3f32(zero, zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(v, v);
+
+				GXPosition3f32(x + zero, zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(one + v, v);
+
+				GXPosition3f32(zero, y + zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(v, one + v);
+
+				GXPosition3f32(x + zero, y + zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(one + v, one + v);
+
+				GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
+				GXPosition3f32(zero, zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(u, u);
+
+				GXPosition3f32(x + zero, zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(one + u, u);
+
+				GXPosition3f32(zero, y + zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(u, one + u);
+
+				GXPosition3f32(x + zero, y + zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(one + u, one + u);
+
+				GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
+				GXPosition3f32(zero, zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(v, u);
+
+				GXPosition3f32(x + zero, zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(1.0f + v, u);
+
+				GXPosition3f32(zero, y + zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(v, 1.0f + u);
+
+				GXPosition3f32(x + zero, y + zero, zero);
+				GXColor4u8(255, 255, 255, 255);
+				GXPosition2f32(1.0f + v, 1.0f + u);
+			}
+		}
+	}
 	/*
 	.loc_0x0:
 	  stwu      r1, -0xF0(r1)
@@ -4482,41 +3944,43 @@ void ZukanState::drawLightEffect(SingleGameSection* game, Graphics& gfx)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000404
+/**
+ * @note Address: N/A
+ * @note Size: 0x404
  */
-unknown ZukanState::debugDraw(Graphics&)
+void ZukanState::debugDraw(Graphics&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80224B4C
- * Size:	000994
+/**
+ * @note Address: 0x80224B4C
+ * @note Size: 0x994
  */
 void ZukanState::dvdloadA()
 {
 	mMainHeap = JKRExpHeap::create(mParentHeap->getFreeSize(), mParentHeap, true);
 	mMainHeap->becomeCurrentHeap();
-	char path[256];
+	char path[256]; // 0x160
 	sprintf(path, "user/Yamashita/zukan/%s/%s/arc.szs", "us", sDirName[mMapIndex]);
-	JKRArchive* arc = JKRArchive::mount(path, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Tail);
+	JKRArchive* arc = JKRMountArchive(path, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Tail);
 	P2ASSERTLINE(2457, arc);
 	mParms = new IllustratedBook::Parms;
 	mParms->loadFile(arc);
 	mGameSect->addGenNode(mParms);
 	PSSystem::SingletonBase<PSM::ObjMgr>::newInstance();
-	mWindowBounds = Rectf(0.0f, 0.0f, sys->getRenderModeObj()->fbWidth * 0.6f * 0.75f * 0.25f + 0.5f,
-	                      sys->getRenderModeObj()->efbHeight * 0.75f * 0.25f + 0.5f);
+	u16 width     = sys->getRenderModeObj()->fbWidth;
+	u16 height    = sys->getRenderModeObj()->efbHeight;
+	int newWidth  = (int)((f32)width * 0.6f * 0.75f * 0.25f + 0.5f) * 4;
+	int newHeight = (int)((f32)height * 0.75f * 0.25f + 0.5f) * 4;
+	Rectf bounds(0.0f, 0.0f, newWidth, newHeight);
+	mWindowBounds = bounds;
 	mCameraAspect = 0.0f;
 
-	mTexture2             = new JUTTexture(getWindowWidth(), getWindowHeight(), GX_TF_RGB565);
+	mTexture2             = new JUTTexture((int)getWindowWidth(), (int)getWindowHeight(), GX_TF_RGB565);
 	mTexture2->mMinFilter = 0;
 	mTexture2->mMagFilter = 0;
-	mTexture              = new JUTTexture(getWindowWidth() / 2, getWindowHeight() / 2, GX_TF_RGB565);
+	mTexture              = new JUTTexture((int)getWindowWidth() / 2, (int)getWindowHeight() / 2, GX_TF_RGB565);
 	mTexture->mMinFilter  = 0;
 	mTexture->mMagFilter  = 0;
 	mGameSect->useSpecificFBTexture(mTexture);
@@ -4538,10 +4002,8 @@ void ZukanState::dvdloadA()
 	vp1->updateCameraAspect();
 	vp2->mCamera = mCamera;
 	vp2->updateCameraAspect();
-	vp1->_48       = mCameraAspect.x;
-	vp1->mVpScaleY = mCameraAspect.y;
-	vp1->port      = 1.0f;
-	vp1->mVpScaleX = 1.0f;
+	vp1->_48 = mCameraAspect;
+	vp1->_50 = Vector2f(1.0f);
 	vp1->setRect(mWindowBounds);
 
 	particleMgr->setViewport(*gfx);
@@ -4563,16 +4025,12 @@ void ZukanState::dvdloadA()
 	}
 
 	PSGame::SceneInfo info;
-	info.mCameras      = 1;
-	info.mCam1Position = mCamera->getSoundPositionPtr();
-	info.mCam2Position = mCamera->getSoundPositionPtr();
-	info.mCameraMtx    = mCamera->getSoundMatrixPtr();
-	info.mBounds.minX  = -1000.0f;
-	info.mBounds.minY  = -1000.0f;
-	info.mBounds.minZ  = -1000.0f;
-	info.mBounds.maxX  = 1000.0f;
-	info.mBounds.maxY  = 1000.0f;
-	info.mBounds.maxZ  = 1000.0f;
+	info.mCameras         = 1;
+	info.mCam1Position[0] = *mCamera->getSoundPositionPtr();
+	info.mCam2Position[0] = *mCamera->getSoundPositionPtr();
+	info.mCameraMtx[0]    = *mCamera->getSoundMatrixPtr();
+	info.mBounds.mMin.set(-1000.0f, -1000.0f, -1000.0f);
+	info.mBounds.mMax.set(1000.0f, 1000.0f, 1000.0f);
 	info.setStageFlag(PSGame::SceneInfo::SCENEFLAG_Unk0, PSGame::SceneInfo::SFBS_1);
 	info.mSceneType = PSGame::SceneInfo::PIKLOPEDIA;
 
@@ -4590,16 +4048,15 @@ void ZukanState::dvdloadA()
 	void* file = arc->getResource("course.txt");
 	P2ASSERTLINE(2603, file);
 	RamStream stream(file, -1);
-	stream.mMode = STREAM_MODE_TEXT;
-	stream.resetPosition(1, 1);
+	stream.resetPosition(true, 1);
 	mCourseInfo = new CourseInfo;
 	mCourseInfo->read(stream);
 	mCourseInfo->dump();
 	Stages::createMapMgr(mCourseInfo, nullptr);
 
 	cellMgr     = new CellPyramid;
-	platCellMgr = cellMgr;
-	BoundBox2d bound(128000.0f, 128000.0f, -128000.0f, -128000.0f);
+	platCellMgr = nullptr;
+	BoundBox2d bound(12800000.0f, 12800000.0f, -12800000.0f, -12800000.0f);
 	mapMgr->getBoundBox2d(bound);
 	JKRGetCurrentHeap()->getFreeSize();
 	cellMgr->create(bound, 64.0f);
@@ -5295,10 +4752,9 @@ lbl_802254A0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802254E0
- * Size:	0000E4
+/**
+ * @note Address: 0x802254E0
+ * @note Size: 0xE4
  */
 void ZukanState::createTeki(int)
 {
@@ -5311,10 +4767,9 @@ void ZukanState::createTeki(int)
 	mDoDraw = false;
 }
 
-/*
- * --INFO--
- * Address:	802255C4
- * Size:	000040
+/**
+ * @note Address: 0x802255C4
+ * @note Size: 0x40
  */
 void ZukanState::createPellet(int)
 {
@@ -5322,23 +4777,20 @@ void ZukanState::createPellet(int)
 	mDoDraw = false;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E4
+/**
+ * @note Address: N/A
+ * @note Size: 0xE4
  */
 void ZukanState::dvdloadB_common()
 {
 	if (mCurrObjHeap) {
 		if (generalEnemyMgr) {
 			clearHeapB_teki();
+		} else if (mCurrentPellet) {
+			clearHeapB_pellet();
 		} else {
-			if (mCurrentPellet) {
-				clearHeapB_pellet();
-			} else {
-				clearHeapB_common();
-				mMainHeap->becomeCurrentHeap();
-			}
+			clearHeapB_common();
+			mMainHeap->becomeCurrentHeap();
 		}
 	}
 	mHeapSize = mMainHeap->getFreeSize();
@@ -5352,106 +4804,224 @@ void ZukanState::dvdloadB_common()
 	particleMgr->start();
 }
 
-/*
- * --INFO--
- * Address:	80225604
- * Size:	000CDC
+/**
+ * @note Address: 0x80225604
+ * @note Size: 0xCDC
  */
 void ZukanState::dvdloadB_teki()
 {
 	dvdloadB_common();
 	if (mCurrentEnemyIndex == Game::EnemyTypeID::EnemyID_Pelplant) {
 		OSReport("ペレット草なのでペレットをロードします free:%d \n", JKRGetCurrentHeap()->getFreeSize()); // "pellet grass so load pellets"
-		PelletNumber::mgr->loadResources();
+		PelletNumber::mgr->setupResources();
 		OSReport("だした free:%d \n", JKRGetCurrentHeap()->getFreeSize()); // "started"
 	}
 	P2ASSERTLINE(2747, !generalEnemyMgr);
 	generalEnemyMgr = new GeneralEnemyMgr;
 	gameSystem->addObjectMgr(generalEnemyMgr);
-	if (mCurrentEnemyIndex == -1) {
-		IllustratedBook::EnemyParms* parm = &mParms->mEnemyParms.mEnemyParms[0];
-		Vector3f pos(mParms->mPosParmsList.mParms[0].mParms.mAppearPosX.mValue, mParms->mPosParmsList.mParms[0].mParms.mAppearPosY.mValue,
-		             mParms->mPosParmsList.mParms[0].mParms.mAppearPosZ.mValue);
-		mCamera->move(pos);
-		mCamera->setAtOffset(Vector3f(parm->mCameraParms.mParms.mOffsetX.mValue, parm->mCameraParms.mParms.mOffsetY.mValue,
-		                              parm->mCameraParms.mParms.mOffsetZ.mValue));
-		mCamera->mObjectRadius  = parm->mCameraParms.mParms.mRadius.mValue;
-		mCamera->mCurrentHeight = parm->mCameraParms.mParms.mInitialHeight.mValue;
-		mCamera->setMinMaxHeight(parm->mCameraParms.mParms.mMinHeight.mValue, parm->mCameraParms.mParms.mMaxHeight.mValue);
-		mCamera->setViewAngleParms(parm->mCameraParms.mParms.mInitialViewAngle.mValue, parm->mCameraParms.mParms.mMinViewAngle.mValue,
-		                           parm->mCameraParms.mParms.mMaxViewAngle.mValue);
-		mCamera->mHorizontalAngle = parm->mCameraParms.mParms.mInitialRotation.mValue * DEG2RAD * PI;
+	if (mCurrentEnemyIndex != -1) {
+		P2ASSERTBOUNDSLINE(2753, 0, mCurrentEnemyIndex, EnemyTypeID::EnemyID_COUNT);
+
+		IllustratedBook::EnemyParms* parms = &mParms->mEnemyParms.mEnemyParms[mCurrentEnemyIndex];
+		int id                             = 0;
+		if (parms->mGroupID < 10) {
+			id = parms->mGroupID;
+		} else {
+			parms->mGroupID = 0;
+		}
+		f32 range                                = *parms->mParms.mAppearRange(); // f31
+		u8 count                                 = *parms->mParms.mAppearNum();   // r25
+		IllustratedBook::PositionParms* posParms = &mParms->mPosParmsList.mParms[id];
+		Vector3f posOffset;
+		posOffset.set(*posParms->mParms.mAppearPosX(), *posParms->mParms.mAppearPosY(), *posParms->mParms.mAppearPosZ()); // f30, f29, f28
+
+		OSReport("敵をアロック %d匹　free:%d \n", count, JKRGetCurrentHeap()->getFreeSize());
+		bool makeSpectralids = false;
+		TekiStat::Info* info = playData->mTekiStatMgr.getTekiInfo(mCurrentEnemyIndex);
+		if (info && info->mKilledTekiCount > 16) {
+			makeSpectralids = true;
+		}
+
+		if (makeSpectralids) {
+			switch (mCurrentEnemyIndex) {
+			case EnemyTypeID::EnemyID_Chappy:
+			case EnemyTypeID::EnemyID_BlueChappy:
+			case EnemyTypeID::EnemyID_YellowChappy:
+				generalEnemyMgr->addEnemyNum(EnemyTypeID::EnemyID_ShijimiChou, 5, nullptr);
+				break;
+			}
+		}
+
+		generalEnemyMgr->addEnemyNum(mCurrentEnemyIndex, count, nullptr);
+		generalEnemyMgr->allocateEnemys(1, 0xFA000);
+		generalEnemyMgr->setupSoundViewerAndBas();
+
+		f32 size = 35.0f; // f27
+		if (parms->mParms.mSize()) {
+			size = *parms->mParms.mSize();
+		}
+
+		Vector3f* spawnPositions = new Vector3f[count]; // r29
+		Vector3f* tempPositions  = new Vector3f[count]; // r28
+		for (int i = 0; i < count; i++) {
+			// first enemy, set position to zero
+			if (i == 0) {
+				spawnPositions[i] = 0.0f;
+				continue;
+			}
+			// other enemies, randomly distribute in circle of radius `range`
+			f32 randAngle = TAU * randFloat(); // f26
+			f32 radius    = range * randFloat();
+
+			spawnPositions[i] = Vector3f(radius * sinf(randAngle), 0.0f, radius * cosf(randAngle));
+		}
+
+		// jitter positions (5 iterations)
+		for (int i = 0; i < 5; i++) {
+			// set temp vectors to zero
+			for (int j = 0; j < count; j++) {
+				tempPositions[j].setZero();
+			}
+
+			// jitter temp positions in pairs
+			for (int j = 0; j < count; j++) {
+				for (int k = j + 1; k < count; k++) {
+					Vector3f sep = spawnPositions[j] - spawnPositions[k];
+					f32 dist     = sep.length();
+
+					if (dist < size) {
+						sep.normalise();
+
+						f32 factor = 0.5f * (size - dist);
+						sep *= factor;
+						tempPositions[j] += sep;
+						tempPositions[k] -= sep;
+					}
+				}
+			}
+
+			// update spawn positions with jittered positions (and make sure they're on the floor)
+			for (int j = 0; j < count; j++) {
+				spawnPositions[j] += tempPositions[j];
+				spawnPositions[j].y = mapMgr->getMinY(spawnPositions[j]);
+			}
+		}
+
+		// spawn enemies
+		for (int i = 0; i < count; i++) {
+			EnemyBirthArg arg;
+			// first enemy faces set direction, others face randomly
+			if (i == 0) {
+				arg.mFaceDir = 0.0f;
+			} else {
+				arg.mFaceDir = TAU * randFloat();
+			}
+
+			arg.mPosition = spawnPositions[i];
+			arg.mPosition += posOffset;
+
+			// make sure enemies spawn on the floor
+			arg.mPosition.y = mapMgr->getMinY(arg.mPosition);
+
+			EnemyBase* enemy = generalEnemyMgr->birth(mCurrentEnemyIndex, arg);
+			if (!enemy) {
+				JUT_PANICLINE(2879, "** BIRTH FAILED !! ID:%d \n", mCurrentEnemyIndex);
+			} else {
+				enemy->init(nullptr);
+				if (i == 0) { // make first enemy "current" enemy
+					mCurrentEnemy = enemy;
+				}
+			}
+		}
+
+		delete spawnPositions;
+		delete tempPositions;
+
+		if (makeSpectralids) {
+			switch (mCurrentEnemyIndex) {
+			case EnemyTypeID::EnemyID_Chappy:
+			case EnemyTypeID::EnemyID_BlueChappy:
+			case EnemyTypeID::EnemyID_YellowChappy:
+				ShijimiChou::Mgr* mgr = static_cast<ShijimiChou::Mgr*>(generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_ShijimiChou));
+				if (mgr) {
+					EnemyBirthArg arg;
+					arg.mPosition = mCurrentEnemy->getPosition();
+					arg.mPosition.y += 45.0f;
+					arg.mFaceDir = randFloat() * TAU;
+					mgr->createGroupByEnemy(arg, mCurrentEnemy, 5, false);
+				}
+				break;
+			}
+		}
+
+		mCamera->setTarget(mCurrentEnemy);
+		mCamera->setAtOffset(Vector3f(*parms->mCameraParms.mParms.mOffsetX(), *parms->mCameraParms.mParms.mOffsetY(),
+		                              *parms->mCameraParms.mParms.mOffsetZ()));
+		mCamera->mObjectRadius  = *parms->mCameraParms.mParms.mRadius();
+		mCamera->mCurrentHeight = *parms->mCameraParms.mParms.mInitialHeight();
+		mCamera->setMinMaxHeight(*parms->mCameraParms.mParms.mMinHeight(), *parms->mCameraParms.mParms.mMaxHeight());
+		mCamera->setViewAngleParms(*parms->mCameraParms.mParms.mInitialViewAngle(), *parms->mCameraParms.mParms.mMinViewAngle(),
+		                           *parms->mCameraParms.mParms.mMaxViewAngle());
+
+		mCamera->mHorizontalAngle = TORADIANS(*parms->mCameraParms.mParms.mInitialRotation());
+
+		int initCarrotCount = 0;
+
+		// buried enemies (snagrets and shears) spawn 10 carrots to start
+		switch (mCurrentEnemyIndex) {
+		case EnemyTypeID::EnemyID_SnakeCrow:
+		case EnemyTypeID::EnemyID_SnakeWhole:
+		case EnemyTypeID::EnemyID_UjiA:
+		case EnemyTypeID::EnemyID_UjiB:
+		case EnemyTypeID::EnemyID_Tobi:
+			initCarrotCount = 10;
+			break;
+		}
+
+		if (initCarrotCount <= 0) {
+			return;
+		}
+
+		for (int i = 0; i < initCarrotCount; i++) {
+			Piki* piki = pikiMgr->birth();
+			if (piki) {
+				PikiInitArg initArg(PIKISTATE_Carrot);
+				piki->init(&initArg);
+				piki->changeShape(Carrot);
+
+				Vector3f lookAtPos = mCamera->getLookAtPosition();
+
+				Vector3f viewVec = mCamera->getViewVector();
+				viewVec.length(); // unused + regswaps
+
+				f32 randAngle = TAU * randFloat();
+				f32 randDist  = 100.0f * randFloat();
+
+				Vector3f direction = Vector3f(randDist * sinf(randAngle), 0.0f, randDist * cosf(randAngle));
+				Vector3f position  = (lookAtPos + direction);
+				position.y += 200.0f;
+
+				piki->setPosition(position, false);
+
+				piki->mFaceDir = TAU * randFloat();
+			}
+		}
+
 		return;
 	}
-	P2ASSERTBOUNDSLINE(2753, mCurrentEnemyIndex, 0, EnemyTypeID::EnemyID_COUNT);
 
-	int id = mParms->mEnemyParms.mEnemyParms[mCurrentEnemyIndex].mGroupID;
-	if (id > 10) {
-		mParms->mEnemyParms.mEnemyParms[mCurrentEnemyIndex].mGroupID = 0;
-		id                                                           = 0;
-	}
-	int count = mParms->mEnemyParms.mEnemyParms[mCurrentEnemyIndex].mParms.mAppearNum;
-	OSReport("敵をアロック %d匹free:%d \n", count, JKRGetCurrentHeap()->getFreeSize());
-	TekiStat::Info* info = playData->mTekiStatMgr.getTekiInfo(mCurrentEnemyIndex);
-	bool makeSpectralids = info && info->mKilledTekiCount > 16;
-	if (makeSpectralids) {
-		switch (mCurrentEnemyIndex) {
-		case EnemyTypeID::EnemyID_Chappy:
-		case EnemyTypeID::EnemyID_BlueChappy:
-		case EnemyTypeID::EnemyID_YellowChappy:
-			generalEnemyMgr->addEnemyNum(EnemyTypeID::EnemyID_ShijimiChou, 5, nullptr);
-			break;
-		}
-	}
-	generalEnemyMgr->addEnemyNum(mCurrentEnemyIndex, count, nullptr);
-	generalEnemyMgr->allocateEnemys(1, 0xfa000);
-	generalEnemyMgr->setupSoundViewerAndBas();
-
-	Vector3f* vecsA = new Vector3f[count];
-	Vector3f* vecsB = new Vector3f[count];
-	for (int i = 0; i < count; i++) {
-		vecsA[i] = 0.0f;
-		vecsB[i] = 0.0f;
-	}
-
-	for (int i = 0; i < count; i++) {
-		EnemyBirthArg arg;
-		if (i == 0) {
-			arg.mFaceDir = 0.0f;
-		} else {
-			arg.mFaceDir = randFloat() * TAU;
-		}
-		EnemyBase* obj = generalEnemyMgr->birth(mCurrentEnemyIndex, arg);
-		if (obj) {
-			obj->init(nullptr);
-			if (i == 0) {
-				mCurrentEnemy = obj;
-			}
-		} else {
-			JUT_PANICLINE(2879, "** BIRTH FAILED !! ID:%d \n", mCurrentEnemyIndex);
-		}
-	}
-
-	delete vecsA;
-	delete vecsB;
-
-	if (makeSpectralids) {
-		switch (mCurrentEnemyIndex) {
-		case EnemyTypeID::EnemyID_Chappy:
-		case EnemyTypeID::EnemyID_BlueChappy:
-		case EnemyTypeID::EnemyID_YellowChappy:
-			ShijimiChou::Mgr* mgr = static_cast<ShijimiChou::Mgr*>(generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_ShijimiChou));
-			if (mgr) {
-				EnemyBirthArg arg;
-				arg.mPosition = mCurrentEnemy->getPosition();
-				arg.mFaceDir  = randFloat() * TAU;
-				mgr->createGroupByEnemy(arg, mCurrentEnemy, 5, false);
-			}
-			break;
-		}
-	}
-
-	mCamera->setTarget(mCurrentEnemy);
+	IllustratedBook::EnemyParms* parm = mParms->mEnemyParms.mEnemyParms;
+	Vector3f pos(*mParms->mPosParmsList.mParms[0].mParms.mAppearPosX(), *mParms->mPosParmsList.mParms[0].mParms.mAppearPosY(),
+	             *mParms->mPosParmsList.mParms[0].mParms.mAppearPosZ());
+	mCamera->move(pos);
+	mCamera->setAtOffset(
+	    Vector3f(*parm->mCameraParms.mParms.mOffsetX(), *parm->mCameraParms.mParms.mOffsetY(), *parm->mCameraParms.mParms.mOffsetZ()));
+	mCamera->mObjectRadius  = *parm->mCameraParms.mParms.mRadius();
+	mCamera->mCurrentHeight = *parm->mCameraParms.mParms.mInitialHeight();
+	mCamera->setMinMaxHeight(*parm->mCameraParms.mParms.mMinHeight(), *parm->mCameraParms.mParms.mMaxHeight());
+	mCamera->setViewAngleParms(*parm->mCameraParms.mParms.mInitialViewAngle(), *parm->mCameraParms.mParms.mMinViewAngle(),
+	                           *parm->mCameraParms.mParms.mMaxViewAngle());
+	mCamera->mHorizontalAngle = TORADIANS(*parm->mCameraParms.mParms.mInitialRotation());
 	/*
 	stwu     r1, -0x180(r1)
 	mflr     r0
@@ -6400,10 +5970,9 @@ lbl_8022629C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802262E0
- * Size:	0004B0
+/**
+ * @note Address: 0x802262E0
+ * @note Size: 0x4B0
  */
 void ZukanState::dvdloadB_pellet()
 {
@@ -6411,18 +5980,21 @@ void ZukanState::dvdloadB_pellet()
 	IllustratedBook::ItemParms* parm;
 	if (mCurrentPelletIndex != -1) {
 		parm   = &mParms->mItemParms.mItemParms[mCurrentPelletIndex];
-		int id = parm->mGroupID;
-		if (id > 10) {
+		int id = 0;
+		if (parm->mGroupID < 10) {
+			id = parm->mGroupID;
+		} else {
 			parm->mGroupID = 0;
-			id             = 0;
 		}
+		IllustratedBook::PositionParms* posParms = &mParms->mPosParmsList.mParms[id];
 		PelletInitArg arg;
 		PelletConfig* config = getCurrentPelletConfig(mCurrentPelletIndex);
-		arg.mPelletIndex     = mCurrentPelletIndex;
-		arg.mPelletType      = convertPelletID(arg.mPelletIndex, arg.mPelletIndex);
+		int index;
+		arg.mPelletType = convertPelletID(index, mCurrentPelletIndex);
 
 		arg.mTextIdentifier = config->mParams.mName.mData;
 		arg.mPelletColor    = 0;
+		arg.mPelletIndex    = index;
 		arg.mState          = 3;
 		pelletMgr->setUse(&arg);
 		if (arg.mPelletType == PelletList::OTAKARA) {
@@ -6432,9 +6004,8 @@ void ZukanState::dvdloadB_pellet()
 		}
 		mCurrentPellet = pelletMgr->birth(&arg);
 		if (mCurrentPellet) {
-			Vector3f pos(mParms->mPosParmsList.mParms[id].mParms.mAppearPosX.mValue + parm->mParms.mOffsetX.mValue,
-			             mParms->mPosParmsList.mParms[id].mParms.mAppearPosY.mValue,
-			             mParms->mPosParmsList.mParms[id].mParms.mAppearPosZ.mValue + parm->mParms.mOffsetZ.mValue);
+			Vector3f pos(posParms->mParms.mAppearPosX.mValue + parm->mParms.mOffsetX.mValue, posParms->mParms.mAppearPosY.mValue,
+			             posParms->mParms.mAppearPosZ.mValue + parm->mParms.mOffsetZ.mValue);
 			pos.y = parm->mParms.mOffsetY.mValue + (mCurrentPellet->getCylinderHeight() * 0.5f + mapMgr->getMinY(pos));
 			mCurrentPellet->setPosition(pos, false);
 			mCamera->setTarget(mCurrentPellet);
@@ -6449,11 +6020,12 @@ void ZukanState::dvdloadB_pellet()
 		}
 
 	} else {
-		parm           = &mParms->mItemParms.mItemParms[0];
-		mCurrentPellet = nullptr;
-		Vector3f pos(mParms->mPosParmsList.mParms[0].mParms.mAppearPosX.mValue + parm->mParms.mOffsetX.mValue,
-		             mParms->mPosParmsList.mParms[0].mParms.mAppearPosY.mValue + parm->mParms.mOffsetY.mValue,
-		             mParms->mPosParmsList.mParms[0].mParms.mAppearPosZ.mValue + parm->mParms.mOffsetZ.mValue);
+		IllustratedBook::Parms* mainParms = mParms;
+		parm                              = &mainParms->mItemParms.mItemParms[0];
+		mCurrentPellet                    = nullptr;
+		Vector3f pos(mainParms->mPosParmsList.mParms[0].mParms.mAppearPosX.mValue + parm->mParms.mOffsetX.mValue,
+		             mainParms->mPosParmsList.mParms[0].mParms.mAppearPosY.mValue + parm->mParms.mOffsetY.mValue,
+		             mainParms->mPosParmsList.mParms[0].mParms.mAppearPosZ.mValue + parm->mParms.mOffsetZ.mValue);
 		mCamera->move(pos);
 	}
 
@@ -6464,345 +6036,12 @@ void ZukanState::dvdloadB_pellet()
 	mCamera->setMinMaxHeight(parm->mCameraParms.mParms.mMinHeight.mValue, parm->mCameraParms.mParms.mMaxHeight.mValue);
 	mCamera->setViewAngleParms(parm->mCameraParms.mParms.mInitialViewAngle.mValue, parm->mCameraParms.mParms.mMinViewAngle.mValue,
 	                           parm->mCameraParms.mParms.mMaxViewAngle.mValue);
-	mCamera->mHorizontalAngle = parm->mCameraParms.mParms.mInitialRotation.mValue * DEG2RAD * PI;
-	/*
-	stwu     r1, -0x80(r1)
-	mflr     r0
-	stw      r0, 0x84(r1)
-	stfd     f31, 0x70(r1)
-	psq_st   f31, 120(r1), 0, qr0
-	stmw     r25, 0x54(r1)
-	mr       r29, r3
-	lwz      r0, 0xdc(r3)
-	cmplwi   r0, 0
-	beq      lbl_8022633C
-	lwz      r0, generalEnemyMgr__4Game@sda21(r13)
-	cmplwi   r0, 0
-	beq      lbl_8022631C
-	bl       clearHeapB_teki__Q34Game10SingleGame10ZukanStateFv
-	b        lbl_8022633C
-
-lbl_8022631C:
-	lwz      r0, 0xac(r29)
-	cmplwi   r0, 0
-	beq      lbl_80226330
-	bl       clearHeapB_pellet__Q34Game10SingleGame10ZukanStateFv
-	b        lbl_8022633C
-
-lbl_80226330:
-	bl       clearHeapB_common__Q34Game10SingleGame10ZukanStateFv
-	lwz      r3, 0xd8(r29)
-	bl       becomeCurrentHeap__7JKRHeapFv
-
-lbl_8022633C:
-	lwz      r3, 0xd8(r29)
-	bl       getFreeSize__7JKRHeapFv
-	stw      r3, 0xe4(r29)
-	addi     r3, r2, lbl_8051A210@sda21
-	crclr    6
-	bl       OSReport
-	lis      r3, lbl_804830DC@ha
-	lwz      r4, 0xe4(r29)
-	addi     r3, r3, lbl_804830DC@l
-	crclr    6
-	bl       OSReport
-	lwz      r25, 0xd8(r29)
-	mr       r3, r25
-	bl       getFreeSize__7JKRHeapFv
-	mr       r4, r25
-	li       r5, 1
-	bl       create__10JKRExpHeapFUlP7JKRHeapb
-	stw      r3, 0xdc(r29)
-	lwz      r3, 0xdc(r29)
-	bl       becomeCurrentHeap__7JKRHeapFv
-	lwz      r3, pikiMgr__4Game@sda21(r13)
-	li       r4, 0x64
-	bl       "alloc__27MonoObjectMgr<Q24Game4Piki>Fi"
-	lwz      r4, 0x94(r29)
-	lwz      r3, particleMgr@sda21(r13)
-	lwz      r0, 0x128(r4)
-	stw      r0, 0x18(r3)
-	lwz      r3, particleMgr@sda21(r13)
-	bl       start__11ParticleMgrFv
-	lwz      r0, 0xa8(r29)
-	cmpwi    r0, -1
-	beq      lbl_802266A0
-	lwz      r3, 0x100(r29)
-	mulli    r0, r0, 0x278
-	li       r4, 0
-	addis    r3, r3, 1
-	lwz      r3, 0x278(r3)
-	add      r31, r3, r0
-	lbz      r0, 0xa0(r31)
-	cmplwi   r0, 0xa
-	bge      lbl_802263E8
-	mr       r4, r0
-	b        lbl_802263F0
-
-lbl_802263E8:
-	li       r0, 0
-	stb      r0, 0xa0(r31)
-
-lbl_802263F0:
-	lis      r3, __vt__Q24Game15CreatureInitArg@ha
-	lwz      r8, 0x100(r29)
-	addi     r0, r3, __vt__Q24Game15CreatureInitArg@l
-	li       r6, 0
-	lis      r3, __vt__Q24Game13PelletInitArg@ha
-	stw      r0, 0x20(r1)
-	li       r0, -1
-	li       r5, 0xff
-	mulli    r7, r4, 0xc0
-	addi     r3, r3, __vt__Q24Game13PelletInitArg@l
-	li       r4, 1
-	stw      r3, 0x20(r1)
-	li       r3, 3
-	addi     r30, r7, 0x90
-	stb      r6, 0x3c(r1)
-	add      r30, r8, r30
-	sth      r6, 0x34(r1)
-	stb      r5, 0x36(r1)
-	stw      r6, 0x38(r1)
-	stb      r6, 0x37(r1)
-	stb      r4, 0x24(r1)
-	stb      r6, 0x3d(r1)
-	stw      r0, 0x44(r1)
-	stw      r0, 0x40(r1)
-	stb      r6, 0x3e(r1)
-	stb      r6, 0x3f(r1)
-	lwz      r25, 0xa8(r29)
-	bl       getConfigList__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	mr       r26, r3
-	li       r3, 4
-	bl       getConfigList__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	mr       r28, r3
-	li       r3, 3
-	bl       getConfigList__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	li       r3, 4
-	bl       getConfigList__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	li       r3, 3
-	bl       getCount__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	mr       r27, r3
-	li       r3, 4
-	bl       getCount__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	cmpw     r25, r27
-	bge      lbl_802264A4
-	li       r0, 3
-	b        lbl_802264AC
-
-lbl_802264A4:
-	subf     r25, r27, r25
-	li       r0, 4
-
-lbl_802264AC:
-	cmpwi    r0, 3
-	bne      lbl_802264C8
-	mr       r3, r26
-	mr       r4, r25
-	bl       getPelletConfig__Q24Game16PelletConfigListFi
-	mr       r27, r3
-	b        lbl_802264D8
-
-lbl_802264C8:
-	mr       r3, r28
-	mr       r4, r25
-	bl       getPelletConfig__Q24Game16PelletConfigListFi
-	mr       r27, r3
-
-lbl_802264D8:
-	lwz      r25, 0xa8(r29)
-	li       r3, 3
-	bl       getConfigList__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	li       r3, 4
-	bl       getConfigList__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	li       r3, 3
-	bl       getCount__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	mr       r28, r3
-	li       r3, 4
-	bl       getCount__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	cmpw     r25, r28
-	bge      lbl_80226514
-	mr       r7, r25
-	li       r0, 3
-	b        lbl_8022651C
-
-lbl_80226514:
-	subf     r7, r28, r25
-	li       r0, 4
-
-lbl_8022651C:
-	stb      r0, 0x36(r1)
-	li       r5, 0
-	li       r0, 3
-	lwz      r3, pelletMgr__4Game@sda21(r13)
-	lwz      r6, 0x40(r27)
-	addi     r4, r1, 0x20
-	stw      r6, 0x28(r1)
-	stw      r5, 0x2c(r1)
-	stw      r7, 0x30(r1)
-	sth      r0, 0x34(r1)
-	bl       setUse__Q24Game9PelletMgrFPQ24Game13PelletInitArg
-	lbz      r0, 0x36(r1)
-	cmplwi   r0, 3
-	bne      lbl_8022656C
-	lwz      r3, mgr__Q24Game13PelletOtakara@sda21(r13)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x44(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80226580
-
-lbl_8022656C:
-	lwz      r3, mgr__Q24Game10PelletItem@sda21(r13)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x44(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80226580:
-	lwz      r3, pelletMgr__4Game@sda21(r13)
-	addi     r4, r1, 0x20
-	bl       birth__Q24Game9PelletMgrFPQ24Game13PelletInitArg
-	stw      r3, 0xac(r29)
-	lwz      r0, 0xac(r29)
-	cmplwi   r0, 0
-	beq      lbl_802266F0
-	lfs      f3, 0x8c(r30)
-	addi     r4, r1, 0x14
-	lfs      f2, 0x8c(r31)
-	lfs      f1, 0x3c(r30)
-	lfs      f0, 0x3c(r31)
-	fadds    f3, f3, f2
-	lfs      f2, 0x64(r30)
-	fadds    f0, f1, f0
-	lwz      r3, mapMgr__4Game@sda21(r13)
-	stfs     f2, 0x18(r1)
-	stfs     f0, 0x14(r1)
-	stfs     f3, 0x1c(r1)
-	lwz      r12, 4(r3)
-	lwz      r12, 0x28(r12)
-	mtctr    r12
-	bctrl
-	fmr      f31, f1
-	lwz      r3, 0xac(r29)
-	bl       getCylinderHeight__Q24Game6PelletFv
-	lfs      f2, lbl_8051A148@sda21(r2)
-	addi     r4, r1, 0x14
-	lfs      f0, 0x64(r31)
-	li       r5, 0
-	fmadds   f1, f2, f1, f31
-	fadds    f0, f0, f1
-	stfs     f0, 0x18(r1)
-	lwz      r3, 0xac(r29)
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-	lwz      r3, 0x98(r29)
-	lwz      r4, 0xac(r29)
-	bl       setTarget__Q34Game15IllustratedBook6CameraFPQ24Game8Creature
-	lfs      f4, 0x1b8(r31)
-	lfs      f3, 0x190(r31)
-	lwz      r3, 0x98(r29)
-	lfs      f0, 0x168(r31)
-	lfs      f1, lbl_8051A21C@sda21(r2)
-	stfs     f0, 0x1e4(r3)
-	lfs      f2, lbl_8051A218@sda21(r2)
-	stfs     f3, 0x1e8(r3)
-	stfs     f4, 0x1ec(r3)
-	lfs      f0, 0xc8(r31)
-	lwz      r3, 0x98(r29)
-	stfs     f0, 0x1c8(r3)
-	lfs      f0, 0xf0(r31)
-	lwz      r3, 0x98(r29)
-	stfs     f0, 0x1cc(r3)
-	lfs      f3, 0x140(r31)
-	lwz      r3, 0x98(r29)
-	lfs      f0, 0x118(r31)
-	stfs     f0, 0x1d0(r3)
-	stfs     f3, 0x1d4(r3)
-	lfs      f4, 0x230(r31)
-	lfs      f3, 0x208(r31)
-	lfs      f0, 0x1e0(r31)
-	lwz      r3, 0x98(r29)
-	stfs     f0, 0x28(r3)
-	stfs     f0, 0x288(r3)
-	stfs     f3, 0x28c(r3)
-	stfs     f4, 0x290(r3)
-	lfs      f0, 0x258(r31)
-	lwz      r3, 0x98(r29)
-	fmuls    f0, f1, f0
-	fmuls    f0, f2, f0
-	stfs     f0, 0x1c4(r3)
-	b        lbl_802266F0
-
-lbl_802266A0:
-	lwz      r5, 0x100(r29)
-	li       r0, 0
-	addi     r4, r1, 8
-	addis    r3, r5, 1
-	lwz      r31, 0x278(r3)
-	stw      r0, 0xac(r29)
-	lfs      f1, 0x11c(r5)
-	lfs      f0, 0x8c(r31)
-	lfs      f3, 0xf4(r5)
-	lfs      f2, 0x64(r31)
-	fadds    f4, f1, f0
-	lfs      f1, 0xcc(r5)
-	lfs      f0, 0x3c(r31)
-	fadds    f2, f3, f2
-	fadds    f0, f1, f0
-	stfs     f4, 0x10(r1)
-	stfs     f2, 0xc(r1)
-	stfs     f0, 8(r1)
-	lwz      r3, 0x98(r29)
-	bl       "move__Q34Game15IllustratedBook6CameraFRC10Vector3<f>"
-
-lbl_802266F0:
-	lfs      f4, 0x1b8(r31)
-	lfs      f3, 0x190(r31)
-	lwz      r3, 0x98(r29)
-	lfs      f0, 0x168(r31)
-	lfs      f1, lbl_8051A21C@sda21(r2)
-	stfs     f0, 0x1e4(r3)
-	lfs      f2, lbl_8051A218@sda21(r2)
-	stfs     f3, 0x1e8(r3)
-	stfs     f4, 0x1ec(r3)
-	lfs      f0, 0xc8(r31)
-	lwz      r3, 0x98(r29)
-	stfs     f0, 0x1c8(r3)
-	lfs      f0, 0xf0(r31)
-	lwz      r3, 0x98(r29)
-	stfs     f0, 0x1cc(r3)
-	lfs      f3, 0x140(r31)
-	lwz      r3, 0x98(r29)
-	lfs      f0, 0x118(r31)
-	stfs     f0, 0x1d0(r3)
-	stfs     f3, 0x1d4(r3)
-	lfs      f4, 0x230(r31)
-	lfs      f3, 0x208(r31)
-	lfs      f0, 0x1e0(r31)
-	lwz      r3, 0x98(r29)
-	stfs     f0, 0x28(r3)
-	stfs     f0, 0x288(r3)
-	stfs     f3, 0x28c(r3)
-	stfs     f4, 0x290(r3)
-	lfs      f0, 0x258(r31)
-	lwz      r3, 0x98(r29)
-	fmuls    f0, f1, f0
-	fmuls    f0, f2, f0
-	stfs     f0, 0x1c4(r3)
-	psq_l    f31, 120(r1), 0, qr0
-	lfd      f31, 0x70(r1)
-	lmw      r25, 0x54(r1)
-	lwz      r0, 0x84(r1)
-	mtlr     r0
-	addi     r1, r1, 0x80
-	blr
-	*/
+	mCamera->mHorizontalAngle = TORADIANS(parm->mCameraParms.mParms.mInitialRotation.mValue);
 }
 
-/*
- * --INFO--
- * Address:	80226790
- * Size:	000090
+/**
+ * @note Address: 0x80226790
+ * @note Size: 0x90
  */
 void ZukanState::clearHeapB_common()
 {
@@ -6815,16 +6054,15 @@ void ZukanState::clearHeapB_common()
 	particleMgr->killAll();
 	particleMgr->reset();
 	shadowMgr->killAll();
-	rumbleMgr->stopRumble(2);
+	rumbleMgr->stopRumble(RUMBLEID_Both);
 	mCurrObjHeap->freeAll();
 	mCurrObjHeap->destroy();
 	mCurrObjHeap = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80226820
- * Size:	0003BC
+/**
+ * @note Address: 0x80226820
+ * @note Size: 0x3BC
  */
 void ZukanState::clearHeapB_teki()
 {
@@ -6839,7 +6077,7 @@ void ZukanState::clearHeapB_teki()
 			if (i < 200) {
 				buffer[i++] = pelt;
 			} else {
-				JUT_PANICLINE(3221, "too many pellet\n");
+				JUT_PANICLINE(3164, "too many pellet\n");
 			}
 		}
 		for (int j = 0; j < i; j++) {
@@ -6848,310 +6086,31 @@ void ZukanState::clearHeapB_teki()
 		pelletMgr->resetMgrs();
 		dynParticleMgr->resetMgr();
 
-		i = 0;
+		int j = 0;
 		Piki* buffer2[200];
 		Iterator<Piki> iterator2(pikiMgr);
-		CI_LOOP(iterator2) { buffer2[i++] = *iterator2; }
-		for (int j = 0; j < i; j++) {
-			PikiKillArg arg(0x10001);
-			buffer2[j]->kill(&arg);
+		CI_LOOP(iterator2) { buffer2[j++] = *iterator2; }
+
+		PikiKillArg arg(0x10001);
+		for (int k = 0; k < j; k++) {
+			buffer2[k]->kill(&arg);
 		}
 		pikiMgr->resetMgr();
 		if (generalEnemyMgr) {
+			generalEnemyMgr->killAll();
 			gameSystem->detachObjectMgr(generalEnemyMgr);
 			generalEnemyMgr = nullptr;
+			mCurrentEnemy   = nullptr;
 		}
 
 		clearHeapB_common();
 	}
 	mMainHeap->becomeCurrentHeap();
-	/*
-	stwu     r1, -0x690(r1)
-	mflr     r0
-	stw      r0, 0x694(r1)
-	stmw     r26, 0x678(r1)
-	mr       r30, r3
-	lwz      r0, 0xdc(r3)
-	cmplwi   r0, 0
-	beq      lbl_80226BC0
-	addi     r3, r1, 0x20
-	li       r26, 0
-	li       r29, 0
-	bl       __ct__Q24Game14PelletIteratorFv
-	addi     r3, r1, 0x20
-	bl       first__Q24Game14PelletIteratorFv
-	lis      r4, lbl_80482EDC@ha
-	lis      r3, lbl_80483170@ha
-	addi     r27, r1, 0x350
-	addi     r31, r4, lbl_80482EDC@l
-	addi     r28, r3, lbl_80483170@l
-	b        lbl_802268AC
-
-lbl_80226870:
-	addi     r3, r1, 0x20
-	bl       __ml__Q24Game14PelletIteratorFv
-	cmpwi    r26, 0xc8
-	bge      lbl_80226890
-	stwx     r3, r27, r29
-	addi     r26, r26, 1
-	addi     r29, r29, 4
-	b        lbl_802268A4
-
-lbl_80226890:
-	mr       r3, r31
-	mr       r5, r28
-	li       r4, 0xc5c
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_802268A4:
-	addi     r3, r1, 0x20
-	bl       next__Q24Game14PelletIteratorFv
-
-lbl_802268AC:
-	addi     r3, r1, 0x20
-	bl       isDone__Q24Game14PelletIteratorFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_80226870
-	addi     r27, r1, 0x350
-	li       r28, 0
-	b        lbl_802268DC
-
-lbl_802268C8:
-	lwz      r3, 0(r27)
-	li       r4, 0
-	bl       kill__Q24Game8CreatureFPQ24Game15CreatureKillArg
-	addi     r27, r27, 4
-	addi     r28, r28, 1
-
-lbl_802268DC:
-	cmpw     r28, r26
-	blt      lbl_802268C8
-	lwz      r3, pelletMgr__4Game@sda21(r13)
-	bl       resetMgrs__Q24Game9PelletMgrFv
-	lwz      r3, dynParticleMgr__4Game@sda21(r13)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x80(r12)
-	mtctr    r12
-	bctrl
-	li       r0, 0
-	lwz      r3, pikiMgr__4Game@sda21(r13)
-	lis      r4, "__vt__22Iterator<Q24Game4Piki>"@ha
-	stw      r0, 0x1c(r1)
-	addi     r4, r4, "__vt__22Iterator<Q24Game4Piki>"@l
-	cmplwi   r0, 0
-	stw      r4, 0x10(r1)
-	li       r31, 0
-	li       r29, 0
-	stw      r0, 0x14(r1)
-	stw      r3, 0x18(r1)
-	bne      lbl_80226948
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x14(r1)
-	b        lbl_802269D0
-
-lbl_80226948:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x14(r1)
-	b        lbl_802269B4
-
-lbl_80226960:
-	lwz      r3, 0x18(r1)
-	lwz      r4, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x1c(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_802269D0
-	lwz      r3, 0x18(r1)
-	lwz      r4, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x14(r1)
-
-lbl_802269B4:
-	lwz      r12, 0x10(r1)
-	addi     r3, r1, 0x10
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_80226960
-
-lbl_802269D0:
-	addi     r28, r1, 0x30
-	b        lbl_80226AB4
-
-lbl_802269D8:
-	lwz      r3, 0x18(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x1c(r1)
-	addi     r31, r31, 1
-	stwx     r3, r28, r29
-	addi     r29, r29, 4
-	cmplwi   r0, 0
-	bne      lbl_80226A24
-	lwz      r3, 0x18(r1)
-	lwz      r4, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x14(r1)
-	b        lbl_80226AB4
-
-lbl_80226A24:
-	lwz      r3, 0x18(r1)
-	lwz      r4, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x14(r1)
-	b        lbl_80226A98
-
-lbl_80226A44:
-	lwz      r3, 0x18(r1)
-	lwz      r4, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x1c(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_80226AB4
-	lwz      r3, 0x18(r1)
-	lwz      r4, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x14(r1)
-
-lbl_80226A98:
-	lwz      r12, 0x10(r1)
-	addi     r3, r1, 0x10
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_80226A44
-
-lbl_80226AB4:
-	lwz      r3, 0x18(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0x14(r1)
-	cmplw    r4, r3
-	bne      lbl_802269D8
-	lis      r3, __vt__Q24Game15CreatureKillArg@ha
-	lis      r4, 0x00010001@ha
-	addi     r0, r3, __vt__Q24Game15CreatureKillArg@l
-	lis      r3, __vt__Q24Game11PikiKillArg@ha
-	stw      r0, 8(r1)
-	addi     r4, r4, 0x00010001@l
-	addi     r0, r3, __vt__Q24Game11PikiKillArg@l
-	addi     r27, r1, 0x30
-	stw      r4, 0xc(r1)
-	li       r26, 0
-	stw      r0, 8(r1)
-	b        lbl_80226B18
-
-lbl_80226B04:
-	lwz      r3, 0(r27)
-	addi     r4, r1, 8
-	bl       kill__Q24Game8CreatureFPQ24Game15CreatureKillArg
-	addi     r27, r27, 4
-	addi     r26, r26, 1
-
-lbl_80226B18:
-	cmpw     r26, r31
-	blt      lbl_80226B04
-	lwz      r3, pikiMgr__4Game@sda21(r13)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x80(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, generalEnemyMgr__4Game@sda21(r13)
-	cmplwi   r3, 0
-	beq      lbl_80226B5C
-	bl       killAll__Q24Game15GeneralEnemyMgrFv
-	lwz      r3, gameSystem__4Game@sda21(r13)
-	lwz      r4, generalEnemyMgr__4Game@sda21(r13)
-	bl       detachObjectMgr__Q24Game10GameSystemFP16GenericObjectMgr
-	li       r0, 0
-	stw      r0, generalEnemyMgr__4Game@sda21(r13)
-	stw      r0, 0xa4(r30)
-
-lbl_80226B5C:
-	lwz      r3, farmMgr__Q24Game4Farm@sda21(r13)
-	cmplwi   r3, 0
-	beq      lbl_80226B6C
-	bl       initAllFarmObjectNodes__Q34Game4Farm7FarmMgrFv
-
-lbl_80226B6C:
-	lwz      r3, pelletMgr__4Game@sda21(r13)
-	bl       resetMgrs__Q24Game9PelletMgrFv
-	lwz      r3, cellMgr__4Game@sda21(r13)
-	bl       clearAllCollBuffer__Q24Game11CellPyramidFv
-	lwz      r3, cellMgr__4Game@sda21(r13)
-	bl       clear__Q24Game11CellPyramidFv
-	lwz      r3, particleMgr@sda21(r13)
-	bl       killAll__11ParticleMgrFv
-	lwz      r3, particleMgr@sda21(r13)
-	bl       reset__11ParticleMgrFv
-	lwz      r3, shadowMgr__4Game@sda21(r13)
-	bl       killAll__Q24Game9ShadowMgrFv
-	lwz      r3, rumbleMgr__4Game@sda21(r13)
-	li       r4, 2
-	bl       stopRumble__Q24Game9RumbleMgrFi
-	lwz      r3, 0xdc(r30)
-	bl       freeAll__7JKRHeapFv
-	lwz      r3, 0xdc(r30)
-	bl       destroy__7JKRHeapFv
-	li       r0, 0
-	stw      r0, 0xdc(r30)
-
-lbl_80226BC0:
-	lwz      r3, 0xd8(r30)
-	bl       becomeCurrentHeap__7JKRHeapFv
-	lmw      r26, 0x678(r1)
-	lwz      r0, 0x694(r1)
-	mtlr     r0
-	addi     r1, r1, 0x690
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	80226BDC
- * Size:	000174
+/**
+ * @note Address: 0x80226BDC
+ * @note Size: 0x174
  */
 void ZukanState::clearHeapB_pellet()
 {
@@ -7182,51 +6141,24 @@ void ZukanState::clearHeapB_pellet()
 	mMainHeap->becomeCurrentHeap();
 }
 
-/*
- * --INFO--
- * Address:	80226D50
- * Size:	0003AC
+/**
+ * @note Address: 0x80226D50
+ * @note Size: 0x3AC
  */
-unknown ZukanState::clearHeaps()
+void ZukanState::clearHeaps()
 {
 	pikiMgr->resetMgr();
 	if (mCurrentEnemy) {
 		clearHeapB_teki();
 	} else if (mCurrentPellet) {
-		if (mCurrObjHeap) {
-			if (mCurrentPellet) {
-				Pellet* buffer[200];
-				int i = 0;
-				PelletIterator iterator;
-				CI_LOOP(iterator)
-				{
-					// you know, just in case you had 200 pellets loaded at once
-					Pellet* pelt = *iterator;
-					if (i < 200) {
-						buffer[i++] = pelt;
-					} else {
-						JUT_PANICLINE(3221, "too many pellet\n");
-					}
-				}
-				for (int j = 0; j < i; j++) {
-					buffer[j]->kill(nullptr);
-				}
-				pelletMgr->resetMgrs();
-				dynParticleMgr->resetMgr();
-				mCurrentPellet = nullptr;
-			}
-			clearHeapB_common();
-		}
-		mMainHeap->becomeCurrentHeap();
+		clearHeapB_pellet();
 	} else {
 		clearHeapB_common();
 	}
 	PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
 	PSSystem::checkSceneMgr(mgr);
 	mgr->deleteCurrentScene();
-	if (PSSystem::SingletonBase<PSM::ObjMgr>::sInstance) {
-		PSSystem::SingletonBase<PSM::ObjMgr>::sInstance->~ObjMgr();
-	}
+	delete PSSystem::SingletonBase<PSM::ObjMgr>::sInstance;
 	PSSystem::SingletonBase<PSM::ObjMgr>::sInstance = nullptr;
 	if (mMainHeap) {
 		mGameSect->restoreFBTexture();
@@ -7263,284 +6195,11 @@ unknown ZukanState::clearHeaps()
 	mCurrObjHeap = nullptr;
 	mMainHeap    = nullptr;
 	mParentHeap  = nullptr;
-	/*
-	stwu     r1, -0x350(r1)
-	mflr     r0
-	lis      r4, lbl_80482E60@ha
-	stw      r0, 0x354(r1)
-	stmw     r27, 0x33c(r1)
-	mr       r31, r3
-	addi     r28, r4, lbl_80482E60@l
-	lwz      r3, pikiMgr__4Game@sda21(r13)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x80(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0xa4(r31)
-	cmplwi   r0, 0
-	beq      lbl_80226D98
-	mr       r3, r31
-	bl       clearHeapB_teki__Q34Game10SingleGame10ZukanStateFv
-	b        lbl_80226F44
-
-lbl_80226D98:
-	lwz      r3, 0xac(r31)
-	cmplwi   r3, 0
-	beq      lbl_80226EE0
-	lwz      r0, 0xdc(r31)
-	cmplwi   r0, 0
-	beq      lbl_80226ED4
-	cmplwi   r3, 0
-	beq      lbl_80226E70
-	li       r27, 0
-	addi     r3, r1, 8
-	mr       r30, r27
-	bl       __ct__Q24Game14PelletIteratorFv
-	addi     r3, r1, 8
-	bl       first__Q24Game14PelletIteratorFv
-	addi     r29, r1, 0x18
-	b        lbl_80226E14
-
-lbl_80226DD8:
-	addi     r3, r1, 8
-	bl       __ml__Q24Game14PelletIteratorFv
-	cmpwi    r27, 0xc8
-	bge      lbl_80226DF8
-	stwx     r3, r29, r30
-	addi     r27, r27, 1
-	addi     r30, r30, 4
-	b        lbl_80226E0C
-
-lbl_80226DF8:
-	addi     r3, r28, 0x7c
-	addi     r5, r28, 0x310
-	li       r4, 0xc95
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_80226E0C:
-	addi     r3, r1, 8
-	bl       next__Q24Game14PelletIteratorFv
-
-lbl_80226E14:
-	addi     r3, r1, 8
-	bl       isDone__Q24Game14PelletIteratorFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_80226DD8
-	addi     r30, r1, 0x18
-	li       r29, 0
-	b        lbl_80226E44
-
-lbl_80226E30:
-	lwz      r3, 0(r30)
-	li       r4, 0
-	bl       kill__Q24Game8CreatureFPQ24Game15CreatureKillArg
-	addi     r30, r30, 4
-	addi     r29, r29, 1
-
-lbl_80226E44:
-	cmpw     r29, r27
-	blt      lbl_80226E30
-	lwz      r3, pelletMgr__4Game@sda21(r13)
-	bl       resetMgrs__Q24Game9PelletMgrFv
-	lwz      r3, dynParticleMgr__4Game@sda21(r13)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x80(r12)
-	mtctr    r12
-	bctrl
-	li       r0, 0
-	stw      r0, 0xac(r31)
-
-lbl_80226E70:
-	lwz      r3, farmMgr__Q24Game4Farm@sda21(r13)
-	cmplwi   r3, 0
-	beq      lbl_80226E80
-	bl       initAllFarmObjectNodes__Q34Game4Farm7FarmMgrFv
-
-lbl_80226E80:
-	lwz      r3, pelletMgr__4Game@sda21(r13)
-	bl       resetMgrs__Q24Game9PelletMgrFv
-	lwz      r3, cellMgr__4Game@sda21(r13)
-	bl       clearAllCollBuffer__Q24Game11CellPyramidFv
-	lwz      r3, cellMgr__4Game@sda21(r13)
-	bl       clear__Q24Game11CellPyramidFv
-	lwz      r3, particleMgr@sda21(r13)
-	bl       killAll__11ParticleMgrFv
-	lwz      r3, particleMgr@sda21(r13)
-	bl       reset__11ParticleMgrFv
-	lwz      r3, shadowMgr__4Game@sda21(r13)
-	bl       killAll__Q24Game9ShadowMgrFv
-	lwz      r3, rumbleMgr__4Game@sda21(r13)
-	li       r4, 2
-	bl       stopRumble__Q24Game9RumbleMgrFi
-	lwz      r3, 0xdc(r31)
-	bl       freeAll__7JKRHeapFv
-	lwz      r3, 0xdc(r31)
-	bl       destroy__7JKRHeapFv
-	li       r0, 0
-	stw      r0, 0xdc(r31)
-
-lbl_80226ED4:
-	lwz      r3, 0xd8(r31)
-	bl       becomeCurrentHeap__7JKRHeapFv
-	b        lbl_80226F44
-
-lbl_80226EE0:
-	lwz      r3, farmMgr__Q24Game4Farm@sda21(r13)
-	cmplwi   r3, 0
-	beq      lbl_80226EF0
-	bl       initAllFarmObjectNodes__Q34Game4Farm7FarmMgrFv
-
-lbl_80226EF0:
-	lwz      r3, pelletMgr__4Game@sda21(r13)
-	bl       resetMgrs__Q24Game9PelletMgrFv
-	lwz      r3, cellMgr__4Game@sda21(r13)
-	bl       clearAllCollBuffer__Q24Game11CellPyramidFv
-	lwz      r3, cellMgr__4Game@sda21(r13)
-	bl       clear__Q24Game11CellPyramidFv
-	lwz      r3, particleMgr@sda21(r13)
-	bl       killAll__11ParticleMgrFv
-	lwz      r3, particleMgr@sda21(r13)
-	bl       reset__11ParticleMgrFv
-	lwz      r3, shadowMgr__4Game@sda21(r13)
-	bl       killAll__Q24Game9ShadowMgrFv
-	lwz      r3, rumbleMgr__4Game@sda21(r13)
-	li       r4, 2
-	bl       stopRumble__Q24Game9RumbleMgrFi
-	lwz      r3, 0xdc(r31)
-	bl       freeAll__7JKRHeapFv
-	lwz      r3, 0xdc(r31)
-	bl       destroy__7JKRHeapFv
-	li       r0, 0
-	stw      r0, 0xdc(r31)
-
-lbl_80226F44:
-	lwz      r0, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r0, 0
-	bne      lbl_80226F64
-	addi     r3, r28, 0x190
-	addi     r5, r28, 0x90
-	li       r4, 0x1d3
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_80226F64:
-	lwz      r27, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r27, 0
-	bne      lbl_80226F84
-	addi     r3, r28, 0x190
-	addi     r5, r28, 0x90
-	li       r4, 0x1dc
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_80226F84:
-	mr       r3, r27
-	bl       deleteCurrentScene__Q28PSSystem8SceneMgrFv
-	lwz      r3,
-"sInstance__Q28PSSystem28SingletonBase<Q23PSM6ObjMgr>"@sda21(r13) cmplwi   r3, 0
-	beq      lbl_80226FAC
-	lwz      r12, 0x28(r3)
-	li       r4, 1
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80226FAC:
-	li       r0, 0
-	stw      r0,
-"sInstance__Q28PSSystem28SingletonBase<Q23PSM6ObjMgr>"@sda21(r13) lwz      r0,
-0xd8(r31) cmplwi   r0, 0 beq      lbl_8022709C lwz      r3, 0x94(r31) bl
-restoreFBTexture__Q24Game15BaseGameSectionFv lwz      r4,
-generalEnemyMgr__4Game@sda21(r13) cmplwi   r4, 0 beq      lbl_80226FE4 lwz r3,
-gameSystem__4Game@sda21(r13) bl
-detachObjectMgr__Q24Game10GameSystemFP16GenericObjectMgr li       r0, 0 stw r0,
-generalEnemyMgr__4Game@sda21(r13)
-
-lbl_80226FE4:
-	lwz      r4, mapMgr__4Game@sda21(r13)
-	cmplwi   r4, 0
-	beq      lbl_80226FF4
-	lwz      r4, 0(r4)
-
-lbl_80226FF4:
-	lwz      r3, gameSystem__4Game@sda21(r13)
-	bl       detachObjectMgr__Q24Game10GameSystemFP16GenericObjectMgr
-	lwz      r3, 0x94(r31)
-	lwz      r3, 0x128(r3)
-	bl       del__5CNodeFv
-	lwz      r3, 0x94(r31)
-	li       r0, 0
-	stw      r0, 0x128(r3)
-	stw      r0, mapMgr__4Game@sda21(r13)
-	lwz      r3, 0x98(r31)
-	bl       del__5CNodeFv
-	li       r0, 0
-	stw      r0, 0x98(r31)
-	lwz      r3, cameraMgr__4Game@sda21(r13)
-	bl       del__5CNodeFv
-	li       r0, 0
-	lwz      r3, shadowMgr__4Game@sda21(r13)
-	stw      r0, cameraMgr__4Game@sda21(r13)
-	bl       del__5CNodeFv
-	li       r0, 0
-	lwz      r3, rumbleMgr__4Game@sda21(r13)
-	stw      r0, shadowMgr__4Game@sda21(r13)
-	bl       del__5CNodeFv
-	li       r0, 0
-	stw      r0, rumbleMgr__4Game@sda21(r13)
-	stw      r0, 0x94(r31)
-	lwz      r3, sys@sda21(r13)
-	lwz      r3, 0x24(r3)
-	bl       deleteViewports__8GraphicsFv
-	li       r0, 0
-	lwz      r3, naviMgr__4Game@sda21(r13)
-	stw      r0, cellMgr__4Game@sda21(r13)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x80(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x100(r31)
-	bl       del__5CNodeFv
-	lwz      r3, 0x104(r31)
-	bl       del__5CNodeFv
-	lwz      r3, 0xd8(r31)
-	bl       destroy__7JKRHeapFv
-
-lbl_8022709C:
-	lwz      r3, gGame2DMgr__6Screen@sda21(r13)
-	lwz      r3, 0x18(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0xd4(r31)
-	cmplwi   r0, 0
-	beq      lbl_802270D8
-	lwz      r3, 0xf0(r31)
-	bl       destroy__7JKRHeapFv
-	li       r0, 0
-	stw      r0, 0xf0(r31)
-	lwz      r3, 0xd4(r31)
-	bl       destroy__7JKRHeapFv
-
-lbl_802270D8:
-	li       r0, 0
-	stw      r0, 0xdc(r31)
-	stw      r0, 0xd8(r31)
-	stw      r0, 0xd4(r31)
-	lmw      r27, 0x33c(r1)
-	lwz      r0, 0x354(r1)
-	mtlr     r0
-	addi     r1, r1, 0x350
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	802270FC
- * Size:	0000A8
+/**
+ * @note Address: 0x802270FC
+ * @note Size: 0xA8
  */
 void ZukanState::cleanup(SingleGameSection* game)
 {
@@ -7550,7 +6209,7 @@ void ZukanState::cleanup(SingleGameSection* game)
 	gameSystem->mMode                  = GSM_STORY_MODE;
 	gameSystem->mTimeMgr->mSpeedFactor = 1.0f;
 	mBackupHeap->becomeCurrentHeap();
-	JUT_ASSERTLINE(3346, (int)mBackupHeap->getFreeSize() == sParentHeapFreeSize, "damek");
+	JUT_ASSERTLINE(3346, (int)mBackupHeap->getFreeSize() == sParentHeapFreeSize, "damek\n");
 }
 
 } // namespace SingleGame

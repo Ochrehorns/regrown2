@@ -5,7 +5,7 @@
 #include "PSM/EventLink.h"
 #include "PSM/ObjCalc.h"
 #include "PSM/Scene.h"
-#include "PSSystem/PSBgm.h"
+#include "PSSystem/PSSeq.h"
 #include "PSSystem/PSGame.h"
 #include "PSSystem/Seq.h"
 #include "types.h"

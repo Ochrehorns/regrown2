@@ -3,11 +3,11 @@
 
 #include "types.h"
 #include "PSSystem/PSBgmTask.h"
-#include "PSSystem/Director.h"
 #include "JSystem/JAudio/JAS/JASTrack.h"
 #include "JSystem/JAudio/JAD/JADDataMgr.h"
 
 namespace PSSystem {
+struct JumpBgmPort;
 
 /**
  * @size 0x1
@@ -27,11 +27,13 @@ struct BeatMgr {
  * @size 0x2C
  */
 struct SeqTrackBase {
-	virtual bool update();        // _08
+	virtual u16 update();         // _08
 	virtual void init(JASTrack*); // _0C
 	virtual void onStopSeq() = 0; // _10
 
 	TaskEntryMgr* getTaskEntryList();
+
+	inline void removeEntry() { getTaskEntryList()->removeAllEntry(); }
 
 	TaskEntryMgr mTaskEntryMgr; // _04
 };
@@ -42,7 +44,7 @@ struct SeqTrackBase {
 struct SeqTrackRoot : public SeqTrackBase {
 	SeqTrackRoot();
 
-	virtual bool update() // _08 (weak)
+	virtual u16 update() // _08 (weak)
 	{
 		mBeatMgr.proc();
 		return SeqTrackBase::update();
@@ -58,24 +60,26 @@ struct SeqTrackRoot : public SeqTrackBase {
 
 	// _00      = VTABLE
 	// _04-_2C  = SeqBase
-	u16 _2C;                       // _2C
-	u16 _2E;                       // _2E
-	u16 _30;                       // _30
-	u16 _32;                       // _32
-	f32 _34;                       // _34
-	int _38;                       // _38 - unknown
-	BeatMgr mBeatMgr;              // _3C
-	u8 _3D;                        // _3D - possibly padding or part of BeatMgr
-	u16 _3E;                       // _3E
-	TaskEntry_Tempo _40;           // _40
-	TaskEntry_OuterParam _100;     // _100
-	TaskEntry_PitMod _16C;         // _16C
-	TaskEntry_BankRandTask _20C;   // _20C
-	JADUtility::DataMgrNode* _2C4; // _2C4
+	u16 mStandardTempo;             // _2C, for olimar
+	u16 mActiveTempo;               // _2E, actual active tempo
+	u16 mSwingTempoMin;             // _30, min tempo for louie swing
+	u16 mSwingTempoMax;             // _32, max tempo for louie swing
+	f32 mSwingMagnitude;            // _34, how significant the swing is (?)
+	int mSwingState;                // _38, 0 = olimar, 1 = louie
+	BeatMgr mBeatMgr;               // _3C
+	u8 _3D;                         // _3D - possibly padding or part of BeatMgr
+	u16 _3E;                        // _3E
+	TaskEntry_Tempo mTempoTask;     // _40, for low health
+	TaskEntry_OuterParam _100;      // _100
+	TaskEntry_PitMod mPitchModTask; // _16C, for taking damage
+	TaskEntry_BankRandTask _20C;    // _20C
 };
 
 struct SeqTrackRoot_JumpBgm : public SeqTrackRoot {
+	SeqTrackRoot_JumpBgm(JumpBgmPort* port) { mJumpPort = port; }
 	virtual void onBeatTop(); // _18
+
+	JumpBgmPort* mJumpPort; // _2C4
 };
 
 /**

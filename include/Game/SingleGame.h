@@ -55,6 +55,14 @@ struct FSM : public StateMachine<SingleGameSection> {
 	void draw(Game::SingleGameSection*, Graphics&); // UNUSED
 	State* getState(int);
 
+	inline bool assertValidID(int id)
+	{
+		if (id < 0 || id >= mLimit) {
+			return false;
+		}
+		return true;
+	}
+
 	// _00     = VTBL
 	// _00-_1C = StateMachine
 };
@@ -76,11 +84,11 @@ struct State : public FSMState<SingleGameSection> {
 	virtual void on_section_fadeout(SingleGameSection*) { }                       // _40 (weak)
 	virtual void on_demo_timer(SingleGameSection*, u32) { }                       // _44 (weak)
 
-	State* accountEarnings(SingleGameSection*, PelletCropMemory*, bool);
+	void accountEarnings(SingleGameSection*, PelletCropMemory*, bool);
 
 	// _00     = VTBL
 	// _00-_0C = FSMState
-	u8 _0C[4]; // _0C
+	char* mName; // _0C, unused/educated guess
 };
 
 /**
@@ -99,7 +107,7 @@ struct CaveDayEndState : public State {
 
 	// _00     = VTBL
 	// _00-_10 = State
-	f32 _10; // _10
+	f32 mFadeTimer; // _10
 };
 
 struct CaveResultArg : public StateArg {
@@ -122,25 +130,25 @@ struct CaveResultState : public State {
 
 	// Unused/inlined:
 	void initNext(SingleGameSection*);
-	unknown open2D(SingleGameSection*);
+	void open2D(SingleGameSection*);
 
 	// _00     = VTBL
 	// _00-_10 = State
-	u16 _10;                        //_10
-	u16 _12;                        //_12
-	unknown _14;                    //_14
-	f32 _18;                        //_18
-	Controller* _1C;                //_1C
-	Result::TNode _20;              //_20
-	ResultTexMgr::Mgr* _70;         //_70
-	JKRHeap* _74;                   //_74
-	u8 _78[4];                      // _78
-	Delegate<CaveResultState>* _7C; // _7C
-	DvdThreadCommand _80;           // _80
-	SingleGameSection* mSection;    // _EC
-	JKRHeap* _F0;                   // _F0
-	JKRHeap* _F4;                   // _F4
-	u8 _F8;                         // _F8
+	u16 mGameState;                           //_10, what to do following the result state
+	u16 mStatus;                              //_12
+	unknown _14;                              //_14
+	f32 mStartTimer;                          //_18
+	Controller* mController;                  //_1C
+	Result::TNode mResultNodes;               //_20
+	ResultTexMgr::Mgr* mResultTextures;       //_70
+	JKRHeap* mResultTexHeap;                  //_74
+	u8 _78[4];                                // _78
+	Delegate<CaveResultState>* mLoadCallback; // _7C
+	DvdThreadCommand mDvdThread;              // _80
+	SingleGameSection* mSection;              // _EC
+	JKRHeap* mMainHeap;                       // _F0
+	JKRHeap* mBackupHeap;                     // _F4
+	u8 mIsCaveComplete;                       // _F8
 	u32 : 0;
 	u8 _FC[4]; // _FC
 };
@@ -180,18 +188,29 @@ struct CaveState : public State {
 };
 
 struct DayEndArg : public StateArg {
-	DayEndArg(u16 p1)
-	    : mEndType(p1)
+	DayEndArg(u16 endType)
+	    : mEndType(endType)
 	{
 	}
 
-	u16 mEndType;
+	u16 mEndType; // _00
 };
 
 /**
  * @size{0x20}
  */
 struct DayEndState : public State {
+	enum DayEndType {
+		DETYPE_Normal       = 0,
+		DETYPE_PikminZero   = 1,
+		DETYPE_CaptainsDown = 2,
+	};
+
+	enum DayEndStatus {
+		DESTATE_PlayCutscene = 0, // before/during cutscene; plays cutscene
+		DESTATE_Cleanup      = 1, // after cutscene; cleans up data, advances day, triggers day end results
+	};
+
 	inline DayEndState()
 	    : State(SGS_DayEnd)
 	{
@@ -243,11 +262,11 @@ struct EndingState : public State {
 		EndingStatus_ShowFinalResultsComplete = 10
 	};
 
-	virtual void init(SingleGameSection* game, StateArg* arg); // _08
-	virtual void exec(SingleGameSection* game);                // _0C
-	virtual void cleanup(SingleGameSection* game);             // _10
-	virtual void draw(SingleGameSection* game, Graphics& gfx); // _20
-	virtual void do_dvdload();                                 // _48 (weak)
+	virtual void init(SingleGameSection* game, StateArg* settings); // _08
+	virtual void exec(SingleGameSection* game);                     // _0C
+	virtual void cleanup(SingleGameSection* game);                  // _10
+	virtual void draw(SingleGameSection* game, Graphics& gfx);      // _20
+	virtual void do_dvdload();                                      // _48 (weak)
 
 	void dvdload();
 
@@ -299,14 +318,14 @@ struct FileState : public State {
 };
 
 struct GameArg : public StateArg {
-	inline GameArg(bool check, u16 val)
+	inline GameArg(bool check, u16 startType)
 	    : _00(check)
-	    , _02(val)
+	    , mStartType(startType)
 	{
 	}
 
-	bool _00; // _00
-	u16 _02;  // _02
+	bool _00;       // _00
+	u16 mStartType; // _02
 };
 
 /**
@@ -316,7 +335,9 @@ struct GameState : public State {
 	/**
 	 * @fabricated
 	 */
-	enum RepayDemoState { RDS_0 = 0, RRD_1, RDS_2, RDS_3, RDS_4 };
+	enum RepayDemoState { RDS_0 = 0, RDS_1, RDS_2, RDS_3, RDS_4 };
+
+	enum startType { Start_NormalLand = 0, Start_ReturnCave = 1, Start_EndDay = 2, Start_Unk3 = 3, Start_Unk4 = 4, Start_NewGame = 5 };
 
 	inline GameState()
 	    : State(SGS_Game)
@@ -346,14 +367,13 @@ struct GameState : public State {
 
 	// _00     = VTBL
 	// _00-_10 = State
-	u8 _10;  // _10
-	u8 _11;  // _11
-	f32 _14; // _14
-	u8 _18;  // _18
-	u8 _19;  // _19
-	u32 : 0;
-	u8 _1C[4]; // _1C
-	u8 _20;    // _20
+	bool mIsPostExtinct; // _10
+	u8 _11;              // _11
+	f32 _14;             // _14
+	u8 mDoExit;          // _18
+	u8 mCheckRepay;      // _19
+	f32 mRepayTimer;     // _1C
+	u8 mInSaveScreen;    // _20
 };
 
 struct LoadArg : public StateArg {
@@ -411,7 +431,7 @@ struct LoadState : public State {
 struct MainResultState : public State {
 	MainResultState();
 
-	virtual void init(SingleGameSection* game, StateArg* arg);                        // _08
+	virtual void init(SingleGameSection* game, StateArg* settings);                   // _08
 	virtual void exec(SingleGameSection* game);                                       // _0C
 	virtual void cleanup(SingleGameSection* game);                                    // _10
 	virtual void draw(SingleGameSection* game, Graphics& gfx);                        // _20
@@ -423,6 +443,14 @@ struct MainResultState : public State {
 
 	// Unused/inlined:
 	unknown open2D(SingleGameSection* game);
+
+	enum ResultStatus {
+		Result_LoadData     = 0,
+		Result_Unused1      = 1,
+		Result_OpenWait     = 2,
+		Result_ScreenActive = 3,
+		Result_Finish       = 4,
+	};
 
 	// _00     = VTBL
 	// _00-_10 = State
@@ -515,15 +543,15 @@ struct ZukanState : public State {
 	 * @real
 	 */
 	enum CMode {
-		ModeStartTeki = 0,
-		ModeStartPellet,
-		ModeChangeToTeki,
-		ModeTeki,
-		ModeChangeTeki,
-		ModeChangeToPellet,
-		ModePellet,
-		ModeChangePellet,
-		ModeNone,
+		ModeStartTeki      = 0,
+		ModeStartPellet    = 1,
+		ModeChangeToTeki   = 2,
+		ModeTeki           = 3,
+		ModeChangeTeki     = 4,
+		ModeChangeToPellet = 5,
+		ModePellet         = 6,
+		ModeChangePellet   = 7,
+		ModeNone           = 8,
 	};
 
 	/**
@@ -536,15 +564,15 @@ struct ZukanState : public State {
 
 	ZukanState();
 
-	virtual void init(SingleGameSection* game, StateArg* arg); // _08
-	virtual void exec(SingleGameSection* game);                // _0C
-	virtual void cleanup(SingleGameSection* game);             // _10
-	virtual void draw(SingleGameSection* game, Graphics& gfx); // _20
+	virtual void init(SingleGameSection* game, StateArg* settings); // _08
+	virtual void exec(SingleGameSection* game);                     // _0C
+	virtual void cleanup(SingleGameSection* game);                  // _10
+	virtual void draw(SingleGameSection* game, Graphics& gfx);      // _20
 
 	void clearHeapB_common();
 	void clearHeapB_pellet();
 	void clearHeapB_teki();
-	unknown clearHeaps();
+	void clearHeaps();
 	static PelletList::cKind convertPelletID(int&, int);
 	void createEnemy(int);
 	void createPellet(int);
@@ -557,8 +585,8 @@ struct ZukanState : public State {
 	void execChangePellet(SingleGameSection* game);
 	void execChangeTeki(SingleGameSection* game);
 	void execModeChange(SingleGameSection* game, CMode mode);
-	unknown execPellet(SingleGameSection* game);
-	unknown execTeki(SingleGameSection* game);
+	void execPellet(SingleGameSection* game);
+	void execTeki(SingleGameSection* game);
 	void setMode(CMode mode);
 	void startWipe(f32 DemoTimers);
 
@@ -566,14 +594,14 @@ struct ZukanState : public State {
 	static PelletConfig* getCurrentPelletConfig(int id);
 
 	// Unused/inlined:
-	unknown startTekiMode(bool);
-	unknown startPelletMode(bool);
+	void startTekiMode(bool);
+	void startPelletMode(bool);
 	void createItem(int);
-	unknown debugDraw(Graphics&);
+	void debugDraw(Graphics&);
 	void dvdloadB_common();
 
-	inline int getWindowWidth() { return mWindowBounds.p2.x - mWindowBounds.p1.x; }
-	inline int getWindowHeight() { return mWindowBounds.p2.y - mWindowBounds.p1.y; }
+	inline f32 getWindowWidth() { return mWindowBounds.p2.x - mWindowBounds.p1.x; }
+	inline f32 getWindowHeight() { return mWindowBounds.p2.y - mWindowBounds.p1.y; }
 
 	// _00     = VTBL
 	// _00-_10 = State

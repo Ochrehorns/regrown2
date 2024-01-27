@@ -9,17 +9,15 @@
 
 namespace Game {
 namespace CommonSaveData {
-/*
- * --INFO--
- * Address:	80446C68
- * Size:	000044
+/**
+ * @note Address: 0x80446C68
+ * @note Size: 0x44
  */
 Mgr::Mgr() { setDefault(); }
 
-/*
- * --INFO--
- * Address:	80446CAC
- * Size:	000078
+/**
+ * @note Address: 0x80446CAC
+ * @note Size: 0x78
  */
 void Mgr::setDefault()
 {
@@ -40,34 +38,31 @@ void Mgr::setDefault()
 	reset();
 }
 
-/*
- * --INFO--
- * Address:	80446D24
- * Size:	000018
+/**
+ * @note Address: 0x80446D24
+ * @note Size: 0x18
  */
-void CommonSaveData::Mgr::setCardSerialNo(u64 tag)
+void Mgr::setCardSerialNo(u64 tag)
 {
 	mCardSerialNo = tag;
-	mFlags.typeView |= 1;
+	mFlags.set(1);
 }
 
-/*
- * --INFO--
- * Address:	80446D3C
- * Size:	000020
+/**
+ * @note Address: 0x80446D3C
+ * @note Size: 0x20
  */
-void CommonSaveData::Mgr::resetCardSerialNo()
+void Mgr::resetCardSerialNo()
 {
 	mCardSerialNo = 0xcdcdcdcdcdcdcdcd;
-	mFlags.typeView &= ~1;
+	mFlags.unset(1);
 }
 
-/*
- * --INFO--
- * Address:	80446D5C
- * Size:	0000AC
+/**
+ * @note Address: 0x80446D5C
+ * @note Size: 0xAC
  */
-void CommonSaveData::Mgr::write(Stream& output)
+void Mgr::write(Stream& output)
 {
 	output.mMode = STREAM_MODE_BINARY;
 	if (output.mMode == STREAM_MODE_TEXT) {
@@ -83,12 +78,11 @@ void CommonSaveData::Mgr::write(Stream& output)
 	PlayCommonData::write(output);
 }
 
-/*
- * --INFO--
- * Address:	80446E08
- * Size:	0000AC
+/**
+ * @note Address: 0x80446E08
+ * @note Size: 0xAC
  */
-void CommonSaveData::Mgr::read(Stream& input)
+void Mgr::read(Stream& input)
 {
 	input.mMode = STREAM_MODE_BINARY;
 	if (input.mMode == STREAM_MODE_TEXT) {
@@ -104,12 +98,11 @@ void CommonSaveData::Mgr::read(Stream& input)
 	PlayCommonData::read(input);
 }
 
-/*
- * --INFO--
- * Address:	80446EB4
- * Size:	000100
+/**
+ * @note Address: 0x80446EB4
+ * @note Size: 0x100
  */
-void CommonSaveData::Mgr::setup()
+void Mgr::setup()
 {
 	BOOL soundModeCheck = OSGetSoundMode();
 	switch (soundModeCheck) {
@@ -140,31 +133,28 @@ void CommonSaveData::Mgr::setup()
 	setDeflicker();
 }
 
-/*
- * --INFO--
- * Address:	80446FB4
- * Size:	000014
+/**
+ * @note Address: 0x80446FB4
+ * @note Size: 0x14
  */
-void CommonSaveData::Mgr::resetPlayer(s8 fileIndex)
+void Mgr::resetPlayer(s8 fileIndex)
 {
 	mFileIndex = fileIndex;
 	mTime      = 0;
 	_18        = 0;
 }
 
-/*
- * --INFO--
- * Address:	80446FC8
- * Size:	000030
+/**
+ * @note Address: 0x80446FC8
+ * @note Size: 0x30
  */
-void CommonSaveData::Mgr::setDeflicker() { setDeflicker(mDeflicker); }
+void Mgr::setDeflicker() { setDeflicker(mDeflicker); }
 
-/*
- * --INFO--
- * Address:	80446FF8
- * Size:	0000D0
+/**
+ * @note Address: 0x80446FF8
+ * @note Size: 0xD0
  */
-void CommonSaveData::Mgr::setDeflicker(bool deflicker)
+void Mgr::setDeflicker(bool deflicker)
 {
 	_GXRenderModeObj* obj = System::getRenderModeObj();
 	mDeflicker            = deflicker;
@@ -198,48 +188,44 @@ void CommonSaveData::Mgr::setDeflicker(bool deflicker)
 	}
 }
 
-/*
- * --INFO--
- * Address:	804470C8
- * Size:	000034
+/**
+ * @note Address: 0x804470C8
+ * @note Size: 0x34
  */
-void CommonSaveData::Mgr::setSoundModeMono()
+void Mgr::setSoundModeMono()
 {
 	mSoundMode = SM_Mono;
 	JAIGlobalParameter::setParamSoundOutputMode(SM_Mono);
 	OSSetSoundMode(false);
 }
 
-/*
- * --INFO--
- * Address:	804470FC
- * Size:	000034
+/**
+ * @note Address: 0x804470FC
+ * @note Size: 0x34
  */
-void CommonSaveData::Mgr::setSoundModeStereo()
+void Mgr::setSoundModeStereo()
 {
 	mSoundMode = SM_Stereo;
 	JAIGlobalParameter::setParamSoundOutputMode(SM_Stereo);
 	OSSetSoundMode(true);
 }
 
-/*
- * --INFO--
- * Address:	80447130
- * Size:	000034
+/**
+ * @note Address: 0x80447130
+ * @note Size: 0x34
  */
-void CommonSaveData::Mgr::setSoundModeSurround()
+void Mgr::setSoundModeSurround()
 {
 	mSoundMode = SM_SurroundSound;
 	JAIGlobalParameter::setParamSoundOutputMode(SM_SurroundSound);
 	OSSetSoundMode(true);
 }
 
-/*
- * --INFO--
- * Address:	80447164
- * Size:	00012C
+/**
+ * @note Address: 0x80447164
+ * @note Size: 0x12C
  */
-void CommonSaveData::Mgr::setBgmVolume(f32 volume)
+void Mgr::setBgmVolume(f32 volume)
 {
 	bool temp = OSDisableInterrupts();
 	OSDisableScheduler();
@@ -263,18 +249,17 @@ void CommonSaveData::Mgr::setBgmVolume(f32 volume)
 			newCalc = calc - 0.5f;
 		}
 		mMusicVol = newCalc;
-		PSSystem::getSysIF()->setConfigVol_Bgm(volume);
+		PSGetSystemIFA()->setConfigVol_Bgm(volume);
 	}
 	OSEnableScheduler();
 	OSRestoreInterrupts(temp);
 }
 
-/*
- * --INFO--
- * Address:	80447290
- * Size:	00012C
+/**
+ * @note Address: 0x80447290
+ * @note Size: 0x12C
  */
-void CommonSaveData::Mgr::setSeVolume(f32 volume)
+void Mgr::setSeVolume(f32 volume)
 {
 	bool temp = OSDisableInterrupts();
 	OSDisableScheduler();
@@ -298,11 +283,12 @@ void CommonSaveData::Mgr::setSeVolume(f32 volume)
 			newCalc = calc - 0.5f;
 		}
 		mSeVol = newCalc;
-		PSSystem::getSysIF()->setConfigVol_Se(volume);
+		PSGetSystemIFA()->setConfigVol_Se(volume);
 	}
 
 	OSEnableScheduler();
 	OSRestoreInterrupts(temp);
 }
+
 } // namespace CommonSaveData
 } // namespace Game

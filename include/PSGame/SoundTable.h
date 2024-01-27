@@ -38,7 +38,7 @@ struct CategoryMgr : PSSystem::SingletonBase<CategoryMgr> {
 	void initiate(u8);
 
 	// _00 = VTBL
-	SePerspInfo* _04[6]; // _04, array of pointers, type unknown
+	SePerspInfo* mPerspInfo[6]; // _04, array of pointers, type unknown
 };
 } // namespace SoundTable
 } // namespace PSGame

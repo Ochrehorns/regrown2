@@ -4,9 +4,8 @@
 #include "Rect.h"
 #include "types.h"
 #include "CNode.h"
+#include "Camera.h"
 
-struct Camera;
-struct LookAtCamera;
 struct J2DGrafContext;
 struct J2DOrthoGraph;
 struct Matrixf;
@@ -16,14 +15,14 @@ namespace SysShape {
 struct Model;
 } // namespace SysShape
 
-struct Viewport : CNode {
+struct Viewport : public CNode {
 	Viewport();
 
 	virtual ~Viewport() { } // _08 (weak)
 
 	void draw2dframe(J2DGrafContext&);
 	void getAspect();
-	Matrixf* getMatrix(bool);
+	Matrixf* getMatrix(bool getCurrentViewMtx);
 	void refresh();
 	SysShape::Model* setJ3DViewMtx(bool);
 	void setOrthoGraph2d(J2DOrthoGraph&);
@@ -33,24 +32,31 @@ struct Viewport : CNode {
 	void updateCameraAspect();
 	bool viewable();
 
+	inline void setCamera(Camera* cam)
+	{
+		mCamera = static_cast<LookAtCamera*>(cam);
+		updateCameraAspect();
+	}
+
+	inline Matrixf* getViewMatrix()
+	{
+		if (mCamera) {
+			return mCamera->getViewMatrix(false);
+		}
+
+		return mViewMat;
+	}
+
+	inline Camera* getCamera() { return mCamera; }
+
 	u16 mVpId;             // _18
-	u8 _1A;                // _1A
-	u8 _1B;                // _1B
-	f32 mVpX1;             // _1C
-	f32 mVpY1;             // _20
-	f32 mVpX2;             // _24
-	f32 mVpY2;             // _28
-	f32 mX1;               // _2C
-	f32 mY1;               // _30
-	f32 mX2;               // _34
-	f32 mY2;               // _38
+	Rectf mBounds;         // _1C
+	Rectf mBounds2;        // _2C
 	s8 mFlags;             // _3C
 	Matrixf* mViewMat;     // _40
 	LookAtCamera* mCamera; // _44
-	f32 _48;               // _48
-	f32 mVpScaleY;         // _4C
-	f32 port;              // _50
-	f32 mVpScaleX;         // _54
+	Vector2f _48;          // _48
+	Vector2f _50;          // _50
 };
 
 #endif

@@ -36,7 +36,6 @@
 #include "PSM/ObjMgr.h"
 #include "PSSystem/PSCommon.h"
 #include "PSSystem/PSSystemIF.h"
-#include "PSSystem/PSStream.h"
 #include "PSGame/Global.h"
 
 // Utility
@@ -45,7 +44,7 @@
 
 // Archives
 JKRArchive* Game::gParmArc;
-PSGame::BASARC* PSSystem::ArcMgr<PSGame::BASARC>::sInstance;
+PSSystem::ArcMgr<PSGame::BASARC>* PSSystem::ArcMgr<PSGame::BASARC>::sInstance;
 
 // SingletonBase instances
 PSM::BossBgmFader::Mgr* PSSystem::SingletonBase<PSM::BossBgmFader::Mgr>::sInstance;

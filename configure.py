@@ -987,7 +987,7 @@ LIBS = [
             ["plugProjectKandoU/radarInfo", True],
             ["plugProjectKandoU/singleGS_Movie", True],
             "plugProjectKandoU/navi_demoCheck",
-            "plugProjectKandoU/singleGS_Zukan",
+            ["plugProjectKandoU/singleGS_Zukan", True],
             "plugProjectKandoU/gameResultTexMgr",
             "plugProjectKandoU/gamePelletList",
             ["plugProjectKandoU/vsGS_Title", True],

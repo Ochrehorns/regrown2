@@ -85,8 +85,8 @@ Demo::Demo()
 {
 	_18               = 0;
 	mDoStartWithAudio = 1;
-	mSoundID          = (SoundID)-1;
-	mSystemSE         = (SoundID)-1;
+	mMovieStartSE     = (SoundID)-1;
+	mMovieEndSE       = (SoundID)-1;
 	mFuncptr          = nullptr;
 };
 
@@ -267,10 +267,10 @@ PSSystem::BgmSeq* Demo::initiate(DemoArg demoArg, u8* unk)
 	// clang-format on
 	{
 		mDoStartWithAudio = false;
-		mSoundID          = PSSE_EV_HOME_PELLET_BACUUM;
+		mMovieStartSE     = PSSE_EV_HOME_PELLET_BACUUM;
 	} else if (streq("g2F_appear_hole", init.mName)) { // change BGM in challenge mode when hole/fountain appear
-		mSoundID = PSSE_SY_WORK_FINISH;
-		mFuncptr = PSChangeBgm_ChallengeGame;
+		mMovieStartSE = PSSE_SY_WORK_FINISH;
+		mFuncptr      = PSChangeBgm_ChallengeGame;
 	} else if (streq("g30_appear_fountain", init.mName)) {
 		mFuncptr = PSChangeBgm_ChallengeGame;
 	} else if (streq("x20_blackman", init.mName) || streq("x03_find_red_onyon", init.mName)) {
@@ -278,20 +278,20 @@ PSSystem::BgmSeq* Demo::initiate(DemoArg demoArg, u8* unk)
 	} else if (streq("s01_dayend", init.mName)) {
 		switch ((u32)demoArg.mCameraName) {
 		case 1:
-			mSoundID = PSSE_PL_DAYEND_KAISAN_LUI;
+			mMovieStartSE = PSSE_PL_DAYEND_KAISAN_LUI;
 			break;
 		case 2:
-			mSoundID = PSSE_PL_DAYEND_KAISAN_SHA;
+			mMovieStartSE = PSSE_PL_DAYEND_KAISAN_SHA;
 			break;
 		default:
 		case 0:
-			mSoundID = PSSE_PL_DAYEND_KAISAN_ORI;
+			mMovieStartSE = PSSE_PL_DAYEND_KAISAN_ORI;
 			break;
 		}
 	}
 
 	if (streq("x20_blackman", init.mName)) {
-		mSoundID = PSSE_EN_TIRE_FALL;
+		mMovieStartSE = PSSE_EN_TIRE_FALL;
 	}
 
 	if (AST_ID != -1) {

@@ -3,6 +3,7 @@
 
 #include "Game/Creature.h"
 #include "Game/IconTexture.h"
+#include "Game/enemyInfo.h"
 #include "JSystem/JUtility/TColor.h"
 #include "Camera.h"
 #include "Controller.h"
@@ -22,7 +23,7 @@ struct Camera : public LookAtCamera {
 	Camera(Controller*);
 
 	virtual ~Camera() { }             // _08 (weak)
-	virtual bool doUpdate();          // _78
+	virtual void doUpdate();          // _78
 	virtual void startVibration(int); // _7C
 
 	void move(const Vector3f&);
@@ -34,7 +35,7 @@ struct Camera : public LookAtCamera {
 
 	// Unused/inlined:
 	void debugDraw(Graphics&);
-	unknown getFocus();
+	f32 getFocus();
 	void setAtOffset(const Vector3f&);
 
 	inline void setMinMaxHeight(f32 min, f32 max)
@@ -75,7 +76,7 @@ struct Camera : public LookAtCamera {
 	f32 mCurrViewAngle;         // _288
 	f32 mMinViewAngle;          // _28C
 	f32 mMaxViewAngle;          // _290
-	f32 _294;                   // _294
+	f32 mFocusLevel;            // _294
 	f32 _298;                   // _298
 	f32 _29C;                   // _29C
 	Vector3f _2A0;              // _2A0
@@ -93,7 +94,7 @@ struct Camera : public LookAtCamera {
 	f32 _2F8;                   // _2F8
 	f32 _2FC;                   // _2FC
 	f32 _300;                   // _300
-	f32 _304;                   // _304
+	f32 mFovChangeSpeed;        // _304
 	f32 _308;                   // _308
 	f32 _30C;                   // _30C
 	f32 _310;                   // _310
@@ -111,7 +112,7 @@ struct EnemyTexMgr : public IconTexture::Mgr {
 	IconTexture::Loader mLoader;
 
 	// Unused/inlined:
-	unknown create(); // might be static?
+	void create(); // might be static?
 };
 
 struct CameraParms {
@@ -166,11 +167,11 @@ struct ColorSetting : public CNode {
 
 	// _00     = VTBL
 	// _00-_18 = CNode
-	Color4 _18[5][2];     // _18
-	Color4 _40[5];        // _40
-	JUtility::TColor _54; // _54
-	JUtility::TColor _58; // _58
-	Color4 _5C;           // _5C
+	Color4 _18[5][2]; // _18
+	Color4 _40[5];    // _40
+	GXColor _54;      // _54
+	GXColor _58;      // _58
+	Color4 _5C;       // _5C
 };
 
 struct DebugParms : public CNode {
@@ -181,9 +182,9 @@ struct DebugParms : public CNode {
 
 	// _00     = VTBL
 	// _00-_18 = CNode
-	Color4 _18; // _18
-	f32 _1C[6];
-	BitFlag<u16> mFlags;
+	Color4 _18;          // _18
+	f32 _1C[6];          // _1C
+	BitFlag<u16> mFlags; // _34
 };
 
 struct PositionParms : public CNode {
@@ -259,7 +260,7 @@ struct EnemyModeParms : public CNode {
 
 	// _00     = VTBL
 	// _00-_18 = CNode
-	EnemyParms mEnemyParms[107]; // _18, array of parms for each enemy, 0-101
+	EnemyParms mEnemyParms[EnemyTypeID::EnemyID_COUNT]; // _18, array of parms for each enemy, 0-101
 };
 
 struct ItemParms : public CNode {
