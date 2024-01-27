@@ -27,8 +27,6 @@ struct EnemyTexMgr;
 
 namespace Morimura {
 
-extern int eIDInfo[ENEMY_ZUKAN_COUNT][2];
-
 struct TCallbackScrollMsg : public og::Screen::CallBack_Message {
 	TCallbackScrollMsg();
 
@@ -341,8 +339,13 @@ struct TZukanBase : public TScrollList {
 };
 
 struct TEnemyZukanIndex {
-	void getIndexInfo(int);
+	static TEnemyZukanIndex& getIndexInfo(int);
+
+	int mZukanID; // _00
+	int mEnemyID; // _04
 };
+
+extern TEnemyZukanIndex eIDInfo[ENEMY_ZUKAN_COUNT];
 
 struct TEnemyZukan : public TZukanBase {
 
@@ -464,17 +467,6 @@ struct TEnemyZukan : public TZukanBase {
 	virtual bool isNewSupply(int, bool);                                   // _E4
 	virtual bool isPanelExist();                                           // _E8
 
-	inline int* getEnemyInfo(int index)
-	{
-		int* data = eIDInfo[0];
-		for (int i = 0; i < ENEMY_ZUKAN_COUNT; i++) {
-			if (eIDInfo[i][0] == index) {
-				return eIDInfo[i];
-			}
-		}
-		return eIDInfo[0];
-	}
-
 	u32 getPrice(int);
 	u32 getDefeatNum(int);
 	u32 getKilledNum(int);
@@ -490,7 +482,7 @@ struct TEnemyZukan : public TZukanBase {
 
 struct TItemZukan : public TZukanBase {
 
-#define TREASUREHOARD_CATEGORY_NUM 25
+#define TREASUREHOARD_CATEGORY_NUM 26
 
 	// 2 appears to not exist
 	enum StateID {

@@ -4,7 +4,6 @@
 #include "Game/Navi.h"
 #include "Game/Stickers.h"
 
-
 namespace Game {
 
 namespace HallowMushi {

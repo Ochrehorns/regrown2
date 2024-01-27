@@ -76,8 +76,7 @@ void StateDead::exec(EnemyBase* enemy)
 		enemy->finishMotion();
 	}
 	if (enemy->mCurAnim->mIsPlaying) {
-		switch (enemy->mCurAnim->mType)
-		{
+		switch (enemy->mCurAnim->mType) {
 		case KEYEVENT_END:
 			enemy->kill(nullptr);
 			return;
@@ -90,7 +89,6 @@ void StateDead::exec(EnemyBase* enemy)
 			rumbleMgr->startRumble(11, enemy->mPosition, 2);
 			break;
 		}
-		
 	}
 }
 
@@ -208,7 +206,7 @@ void StateAppear::exec(EnemyBase* enemy)
 		case KEYEVENT_3:
 			usuba->startElec();
 			break;
-		case KEYEVENT_END: 
+		case KEYEVENT_END:
 			if (usuba->mHealth <= 0.0f) {
 				transit(usuba, USUBA_Dead, nullptr);
 				return;
@@ -230,7 +228,6 @@ void StateAppear::cleanup(EnemyBase* enemy)
 	Obj* usuba = OBJ(enemy);
 	usuba->disableEvent(0, EB_NoInterrupt);
 	usuba->enableEvent(0, EB_Cullable);
-
 
 	// dude, this guy has wings
 	if (usuba->mWaterBox) {
@@ -646,8 +643,8 @@ void StateMove::cleanup(EnemyBase* enemy) { }
  */
 void StateAttackBreath::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* usuba              = OBJ(enemy);
-	usuba->mStateTimer      = 0.0f;
+	Obj* usuba         = OBJ(enemy);
+	usuba->mStateTimer = 0.0f;
 	usuba->disableEvent(0, EB_Cullable);
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->setEmotionExcitement();
@@ -677,8 +674,7 @@ void StateAttackBreath::exec(EnemyBase* enemy)
 		return;
 	}
 
-	switch (enemy->mCurAnim->mType)
-	{
+	switch (enemy->mCurAnim->mType) {
 	case KEYEVENT_2:
 		usuba->startFireBreath();
 		break;
@@ -713,7 +709,7 @@ void StateAttackBreath::cleanup(EnemyBase* enemy)
 	Obj* usuba = OBJ(enemy);
 	usuba->enableEvent(0, EB_Cullable);
 	usuba->disableEvent(0, EB_NoInterrupt);
-	
+
 	usuba->setEmotionCaution();
 }
 

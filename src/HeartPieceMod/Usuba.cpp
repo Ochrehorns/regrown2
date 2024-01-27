@@ -25,19 +25,17 @@
 namespace Game {
 namespace Usuba {
 
-
-void Obj::constructor() {
+void Obj::constructor()
+{
 	EnemyBase::constructor();
 	resetBossAppearBGM();
 }
-
 
 void Obj::startBossAttackBGM()
 {
 	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 	PSM::checkBoss(soundObj);
 	soundObj->jumpRequest(3);
-	
 }
 
 /*
@@ -132,7 +130,6 @@ void Obj::onInit(CreatureInitArg* initArg)
 
 	mFsm->start(this, USUBA_Stay, nullptr);
 	resetBossAppearBGM();
-	
 }
 
 /*
@@ -158,7 +155,8 @@ void Obj::doUpdate()
 	// OSReport("Current state: %i\n", getStateID());
 }
 
-void Obj::doUpdateCommon() {
+void Obj::doUpdateCommon()
+{
 	EnemyBase::doUpdateCommon();
 	updateBossBGM();
 }
@@ -189,8 +187,8 @@ void Obj::doDirectDraw(Graphics&) { }
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-
-void Obj::collisionCallback(CollEvent& event) {
+void Obj::collisionCallback(CollEvent& event)
+{
 	EnemyBase::collisionCallback(event);
 	Creature* collCreature = event.mCollidingCreature;
 	if (isElecBody() && collCreature) {
@@ -316,7 +314,8 @@ void Obj::setRandTarget()
 
 	// Randomise the angle a bit and set the target position
 	f32 rngAngle = HALF_PI + (dirToSarai + randWeightFloat(PI));
-	mTargetPos   = Vector3f((radius * pikmin2_sinf(rngAngle)) + mHomePosition.x, mHomePosition.y, (radius * pikmin2_cosf(rngAngle)) + mHomePosition.z);
+	mTargetPos   = Vector3f((radius * pikmin2_sinf(rngAngle)) + mHomePosition.x, mHomePosition.y,
+                          (radius * pikmin2_cosf(rngAngle)) + mHomePosition.z);
 }
 
 /*
@@ -417,7 +416,7 @@ bool Obj::attackTargets()
 {
 	if (mIsBreathingFire) {
 
-		Vector3f lineEnd = mFireGroundHitPos;
+		Vector3f lineEnd   = mFireGroundHitPos;
 		Vector3f lineStart = mModel->getJoint("root")->getWorldMatrix()->getPosition();
 
 		Sys::Sphere sphereStart(lineStart, 0.0f);
@@ -426,9 +425,10 @@ bool Obj::attackTargets()
 		Sys::Sphere sphere = DroughtMath::makeBoundingSphere(sphereStart, sphereEnd);
 
 		CellIteratorArg ciArg = sphere;
-		CellIterator iCell = ciArg;
+		CellIterator iCell    = ciArg;
 
-		CI_LOOP(iCell) {
+		CI_LOOP(iCell)
+		{
 			Creature* creature = static_cast<Creature*>(*iCell);
 
 			Vector3f creaturePos = creature->getPosition();
@@ -436,18 +436,19 @@ bool Obj::attackTargets()
 			f32 lineprogress;
 
 			if (DroughtMath::getSqrDistanceToLine(creaturePos, lineStart, lineEnd, lineprogress) < SQUARE(50.0f) && lineprogress > 0.2f) {
-				InteractFire fire (this, *C_PARMS->mGeneral.mAttackDamage());
+				InteractFire fire(this, *C_PARMS->mGeneral.mAttackDamage());
 				creature->stimulate(fire);
 			}
 		}
 	} // this sphere is within the fire-breath line, hence the else
 	else if (mIsFirePoolActive) {
-		Sys::Sphere fireball (mFireGroundHitPos, 50.0f);
+		Sys::Sphere fireball(mFireGroundHitPos, 50.0f);
 		CellIteratorArg ciArg2 = fireball;
-		CellIterator iCell2 = ciArg2;
-		CI_LOOP(iCell2) {
+		CellIterator iCell2    = ciArg2;
+		CI_LOOP(iCell2)
+		{
 			Creature* creature = static_cast<Creature*>(*iCell2);
-			InteractFire fire (this, *C_PARMS->mGeneral.mAttackDamage());
+			InteractFire fire(this, *C_PARMS->mGeneral.mAttackDamage());
 			creature->stimulate(fire);
 		}
 	}
@@ -496,17 +497,16 @@ void Obj::createEffect()
 	mFireGroundEfx = new efx::TUsubaFireGround;
 } // mFireEfx = new efx::TUsubaEffect(nullptr); }
 
-
-void Obj::createGroundFire() {
+void Obj::createGroundFire()
+{
 	mGroundedFireTimer = *C_PROPERPARMS.mFirePoolLingerTime();
-	mIsFirePoolActive = true;
+	mIsFirePoolActive  = true;
 
 	f32 faceDir = getFaceDir();
 
 	mFireGroundHitPos = mPosition;
 
 	f32 spawnDistance = *C_PROPERPARMS.mFirePoolSpawnDistance();
-
 
 	mFireGroundHitPos.x += pikmin2_sinf(faceDir) * spawnDistance;
 	mFireGroundHitPos.z += pikmin2_cosf(faceDir) * spawnDistance;
@@ -516,42 +516,39 @@ void Obj::createGroundFire() {
 	createFireHitGroundEffect();
 }
 
-void Obj::startFireBreath() {
+void Obj::startFireBreath()
+{
 	mIsBreathingFire = true;
 	createFireEffect();
 	createDischargeSE();
 }
 
-void Obj::endFireBreath() {
+void Obj::endFireBreath()
+{
 	mIsBreathingFire = false;
 	fadeFireEffect();
 }
 
-void Obj::createFireEffect()
-{
-	mFireEfx->create(nullptr);
-}
+void Obj::createFireEffect() { mFireEfx->create(nullptr); }
 
-void Obj::createFireHitGroundEffect() {
+void Obj::createFireHitGroundEffect()
+{
 	efx::Arg arg(mFireGroundHitPos);
 	mFireGroundEfx->create(&arg);
 }
 
-void Obj::fadeFireEffect()
+void Obj::fadeFireEffect() { mFireEfx->fade(); }
+
+void Obj::fadeFireHitGroundEffect() { mFireGroundEfx->fade(); }
+
+void Obj::startElec()
 {
-	mFireEfx->fade();	
-}
-
-void Obj::fadeFireHitGroundEffect() {
-	mFireGroundEfx->fade();
-}
-
-void Obj::startElec() {
 	mIsElecBody = true;
 	startFirefly();
 }
 
-void Obj::endElec() {
+void Obj::endElec()
+{
 	mIsElecBody = false;
 	fadeFirefly();
 }
