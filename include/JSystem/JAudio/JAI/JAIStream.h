@@ -9,88 +9,134 @@
 struct JAIStream : public JAISound {
 	JAIStream();
 
-	virtual void setPortData(u8, u16);            // _08 (weak)
-	virtual u16 getPortData(u8);                  // _0C (weak)
-	virtual void stop(u32);                       // _14 (weak)
-	virtual void setVolume(f32 p1, u32 p2, u8 p3) // _1C (weak)
+	virtual void stop(u32 fadeTime) { JAInter::StreamMgr::releaseStreamBuffer(this, fadeTime); } // _14 (weak)
+	virtual void setVolume(f32 value, u32 moveTime, u8 type)                                     // _1C (weak)
 	{
-		int result = _64[p3].set(p1, p2);
-		if (result == 1) {
-			_50 |= 1 << p3;
+		int result = mStreamParameter.mVolumes[type].set(value, moveTime);
+		if (result == JAInter::MOVEPARA_SetTarget) {
+			mStreamParameter.mVolumeFlags |= 1 << type;
 		}
-		if (_1B4 != nullptr && result != 2) {
-			_1B4->_18 |= 0x40000;
+		if (mStreamParameter.mUpdateData && result != JAInter::MOVEPARA_AlreadySet) {
+			mStreamParameter.mUpdateData->mActiveTrackFlag |= JAInter::SOUNDACTIVE_Volume;
 		}
 	}
-	virtual f32 getVolume(u8);                                                         // _20 (weak)
-	virtual void setPan(f32, u32, u8);                                                 // _24 (weak)
-	virtual f32 getPan(u8);                                                            // _28 (weak)
-	virtual void setPitch(f32, u32, u8);                                               // _2C (weak)
-	virtual f32 getPitch(u8);                                                          // _30 (weak)
-	virtual void setFxmix(f32, u32, u8);                                               // _34 (weak)
-	virtual f32 getFxmix(u8);                                                          // _38 (weak)
-	virtual void setDolby(f32, u32, u8);                                               // _3C (weak)
-	virtual f32 getDolby(u8);                                                          // _40 (weak)
-	virtual void setVolumeU7(u8 p1, u32 p2, u8 p3) { setVolume(p1 / 127.0f, p2, p3); } // _4C (weak)
-	virtual u8 getVolumeU7(u8);                                                        // _50 (weak)
-	virtual void setPanU7(u8, u32, u8);                                                // _54 (weak)
-	virtual u8 getPanU7(u8);                                                           // _58 (weak)
-	virtual void setFxmixU7(u8, u32, u8);                                              // _5C (weak)
-	virtual u8 getFxmixU7(u8);                                                         // _60 (weak)
-	virtual void setDolbyU7(u8, u32, u8);                                              // _64 (weak)
-	virtual u8 getDolbyU7(u8);                                                         // _68 (weak)
-	virtual u32 getFadeCounter();                                                      // _A4
-	virtual void setPrepareFlag(u8);                                                   // _A8 (weak)
-	virtual void checkReady();                                                         // _AC (weak)
+	virtual f32 getVolume(u8 type) // _20 (weak)
+	{
+		if (mState == SOUNDSTATE_Playing || mState == SOUNDSTATE_Fadeout) {
+			return mStreamParameter.mVolumes[type].mCurrentValue;
+		}
+		return -1.0f;
+	}
+	virtual void setPan(f32 value, u32 moveTime, u8 type) // _24 (weak)
+	{
+		int result = mStreamParameter.mPans[type].set(value, moveTime);
+		if (result == JAInter::MOVEPARA_SetTarget) {
+			mStreamParameter.mPanFlags |= 1 << type;
+		}
+		if (mStreamParameter.mUpdateData && result != JAInter::MOVEPARA_AlreadySet) {
+			mStreamParameter.mUpdateData->mActiveTrackFlag |= JAInter::SOUNDACTIVE_Pan;
+		}
+	}
+	virtual f32 getPan(u8 type) // _28 (weak)
+	{
+		if (mState == SOUNDSTATE_Playing || mState == SOUNDSTATE_Fadeout) {
+			return mStreamParameter.mPans[type].mCurrentValue;
+		}
+		return -1.0f;
+	}
+	virtual void setPitch(f32 value, u32 moveTime, u8 type) // _2C (weak)
+	{
+		int result = mStreamParameter.mPitches[type].set(value, moveTime);
+		if (result == JAInter::MOVEPARA_SetTarget) {
+			mStreamParameter.mPitchFlags |= 1 << type;
+		}
+		if (mStreamParameter.mUpdateData && result != JAInter::MOVEPARA_AlreadySet) {
+			mStreamParameter.mUpdateData->mActiveTrackFlag |= JAInter::SOUNDACTIVE_Pitch;
+		}
+	}
+	virtual f32 getPitch(u8 type) // _30 (weak)
+	{
+		if (mState == SOUNDSTATE_Playing || mState == SOUNDSTATE_Fadeout) {
+			return mStreamParameter.mPitches[type].mCurrentValue;
+		}
+		return -1.0f;
+	}
+	virtual void setFxmix(f32 value, u32 moveTime, u8 type) // _34 (weak)
+	{
+		int result = mStreamParameter.mFxmixes[type].set(value, moveTime);
+		if (result == JAInter::MOVEPARA_SetTarget) {
+			mStreamParameter.mFxmixFlags |= 1 << type;
+		}
+		if (mStreamParameter.mUpdateData && result != JAInter::MOVEPARA_AlreadySet) {
+			mStreamParameter.mUpdateData->mActiveTrackFlag |= JAInter::SOUNDACTIVE_Fxmix;
+		}
+	}
+	virtual f32 getFxmix(u8 type) // _38 (weak)
+	{
+		if (mState == SOUNDSTATE_Playing || mState == SOUNDSTATE_Fadeout) {
+			return mStreamParameter.mFxmixes[type].mCurrentValue;
+		}
+		return -1.0f;
+	}
+	virtual void setDolby(f32 value, u32 moveTime, u8 type) // _3C (weak)
+	{
+		int result = mStreamParameter.mDolbys[type].set(value, moveTime);
+		if (result == JAInter::MOVEPARA_SetTarget) {
+			mStreamParameter.mDolbyFlags |= 1 << type;
+		}
+		if (mStreamParameter.mUpdateData && result != JAInter::MOVEPARA_AlreadySet) {
+			mStreamParameter.mUpdateData->mActiveTrackFlag |= JAInter::SOUNDACTIVE_Dolby;
+		}
+	}
+	virtual f32 getDolby(u8 type) // _40 (weak)
+	{
+		if (mState == SOUNDSTATE_Playing || mState == SOUNDSTATE_Fadeout) {
+			return mStreamParameter.mDolbys[type].mCurrentValue;
+		}
+		return -1.0f;
+	}
+	virtual void setVolumeU7(u8 value, u32 moveTime, u8 type) { setVolume(value / 127.0f, moveTime, type); } // _4C (weak)
+	virtual u8 getVolumeU7(u8 type) { return getVolume(type) * 127.0f; }                                     // _50 (weak)
+	virtual void setPanU7(u8 value, u32 moveTime, u8 type) { setPan(value / 127.0f, moveTime, type); }       // _54 (weak)
+	virtual u8 getPanU7(u8 type) { return getPan(type) * 127.0f; }                                           // _58 (weak)
+	virtual void setFxmixU7(u8 value, u32 moveTime, u8 type) { setFxmix(value / 127.0f, moveTime, type); }   // _5C (weak)
+	virtual u8 getFxmixU7(u8 type) { return getFxmix(type) * 127.0f; }                                       // _60 (weak)
+	virtual void setDolbyU7(u8 value, u32 moveTime, u8 type) { setDolby(value / 127.0f, moveTime, type); }   // _64 (weak)
+	virtual u8 getDolbyU7(u8 type) { return getDolby(type) * 127.0f; }                                       // _68 (weak)
+	virtual u32 getFadeCounter();                                                                            // _A4
+	virtual void setPrepareFlag(u8 flag) { setStreamPrepareFlag(flag); }                                     // _A8 (weak)
+	virtual void checkReady() { checkStreamReady(); }                                                        // _AC (weak)
+	virtual void setPortData(u8, u16) { }                                                                    // _08 (weak)
+	virtual u16 getPortData(u8) { return 0xFFFF; }                                                           // _0C (weak)
 
-	void setStreamPrepareFlag(u8);
+	void setStreamPrepareFlag(u8 flag);
 	bool checkStreamReady();
-	void setChannelVolume(u8, f32, u32);
-	void setChannelPan(u8, f32, u32);
+	void setChannelVolume(u8 type, f32 value, u32 moveTime);
+	void setChannelPan(u8 type, f32 value, u32 moveTime);
 
 	// unused/inlined:
-	void setStreamMode(unsigned long);
-	void setStreamInterVolume(unsigned char, f32, unsigned long);
-	void setStreamInterPan(unsigned char, f32, unsigned long);
-	void setStreamInterPitch(unsigned char, f32, unsigned long);
-	void setStreamInterFxmix(unsigned char, f32, unsigned long);
-	void setStreamInterDolby(unsigned char, f32, unsigned long);
-	void setChannelFxmix(unsigned char, f32, unsigned long);
-	void setChannelDolby(unsigned char, f32, unsigned long);
-	void getChannelVolume(unsigned char);
-	void getChannelPan(unsigned char);
-	void getChannelFxmix(unsigned char);
-	void getChannelDolby(unsigned char);
-	void getStreamInterVolume(unsigned char);
-	void getStreamInterPan(unsigned char);
-	void getStreamInterPitch(unsigned char);
-	void getStreamInterFxmix(unsigned char);
-	void getStreamInterDolby(unsigned char);
+	void setStreamMode(u32);
+	void setStreamInterVolume(u8 type, f32 value, u32 moveTime);
+	void setStreamInterPan(u8 type, f32 value, u32 moveTime);
+	void setStreamInterPitch(u8 type, f32 value, u32 moveTime);
+	void setStreamInterFxmix(u8 type, f32 value, u32 moveTime);
+	void setStreamInterDolby(u8 type, f32 value, u32 moveTime);
+	void setChannelFxmix(u8 type, f32 value, u32 moveTime);
+	void setChannelDolby(u8 type, f32 value, u32 moveTime);
+	void getChannelVolume(u8 type);
+	void getChannelPan(u8 type);
+	void getChannelFxmix(u8 type);
+	void getChannelDolby(u8 type);
+	void getStreamInterVolume(u8 type);
+	void getStreamInterPan(u8 type);
+	void getStreamInterPitch(u8 type);
+	void getStreamInterFxmix(u8 type);
+	void getStreamInterDolby(u8 type);
 
 	// _00-_10  = JSULink
 	// _10      = VTABLE
 	// _14-_48  = JAISound
-	u8 _48;                                 // _48 - unknown
-	u32 _4C;                                // _4C
-	u32 _50;                                // _50
-	u32 _54;                                // _54
-	u32 _58;                                // _58
-	u32 _5C;                                // _5C
-	u32 _60;                                // _60
-	JAInter::MoveParaSet _64[20];           // _64 - volume param sets?
-	JAInter::MoveParaSet* _1A4;             // _1A4 - pitch param set?
-	JAInter::MoveParaSet* _1A8;             // _1A8 - pitch param sets?
-	JAInter::MoveParaSetInitZero* _1AC;     // _1AC - FxMix param
-	JAInter::MoveParaSetInitZero* _1B0;     // _1B0
-	JAInter::StreamMgr::StreamUpdate* _1B4; // _1B4 - unknown pointer
-	uint _1B8;                              // _1B8
-	u32 _1BC;                               // _1BC
-	u32 _1C0;                               // _1C0
-	u32 _1C4;                               // _1C4
-	JAInter::MoveParaSet* _1C8;             // _1C8
-	JAInter::MoveParaSet* _1CC;             // _1CC
-	JAInter::MoveParaSet* _1D0;             // _1D0
-	JAInter::MoveParaSet* _1D4;             // _1D4
+	JAInter::StreamParameter mStreamParameter; // _48
 };
 
 #endif

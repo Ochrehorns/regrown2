@@ -1,282 +1,140 @@
+#include "PowerPC_EABI_Support/MetroTRK/trk.h"
 
+// forward declares
+DSIOResult __read_file(u32 handle, u8* buffer, size_t* count, void* ref_con);
+DSIOResult __write_file(u32 handle, u8* buffer, size_t* count, void* ref_con);
+DSIOResult __close_file(u32 handle, u8* buffer, size_t* count, void* ref_con);
+DSIOResult __access_file(u32 handle, u8* buffer, size_t* count, void* ref_con, MessageCommandID cmd);
 
-/*
- * --INFO--
- * Address:	800C0B4C
- * Size:	0000BC
+/**
+ * @note Address: 0x800C0B4C
+ * @note Size: 0xBC
  */
-void __read_console(void)
+DSIOResult __read_console(u32 handle, u8* buffer, size_t* count, void* ref_con)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x20(r1)
-	  mflr      r0
-	  stw       r0, 0x24(r1)
-	  stw       r31, 0x1C(r1)
-	  mr        r31, r5
-	  stw       r30, 0x18(r1)
-	  mr        r30, r4
-	  bl        -0x178
-	  rlwinm.   r0,r3,0,24,31
-	  bne-      .loc_0x30
-	  li        r3, 0x1
-	  b         .loc_0xA4
-
-	.loc_0x30:
-	  bl        -0x3640
-	  cmpwi     r3, 0
-	  bne-      .loc_0x44
-	  li        r3, 0x1
-	  b         .loc_0xA4
-
-	.loc_0x44:
-	  lwz       r0, 0x0(r31)
-	  mr        r6, r30
-	  addi      r5, r1, 0x8
-	  li        r3, 0xD1
-	  stw       r0, 0x8(r1)
-	  li        r4, 0
-	  bl        -0x1168
-	  rlwinm    r0,r3,0,24,31
-	  lwz       r3, 0x8(r1)
-	  cmpwi     r0, 0x1
-	  stw       r3, 0x0(r31)
-	  beq-      .loc_0xA0
-	  bge-      .loc_0x84
-	  cmpwi     r0, 0
-	  bge-      .loc_0x90
-	  b         .loc_0xA0
-
-	.loc_0x84:
-	  cmpwi     r0, 0x3
-	  bge-      .loc_0xA0
-	  b         .loc_0x98
-
-	.loc_0x90:
-	  li        r3, 0
-	  b         .loc_0xA4
-
-	.loc_0x98:
-	  li        r3, 0x2
-	  b         .loc_0xA4
-
-	.loc_0xA0:
-	  li        r3, 0x1
-
-	.loc_0xA4:
-	  lwz       r0, 0x24(r1)
-	  lwz       r31, 0x1C(r1)
-	  lwz       r30, 0x18(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x20
-	  blr
-	*/
+	if (GetUseSerialIO() == 0) {
+		return DS_IOError;
+	}
+	return __read_file(DS_Stdin, buffer, count, ref_con);
 }
 
-/*
- * --INFO--
- * Address:	800C0A90
- * Size:	0000BC
+/**
+ * @note Address: 0x800C0A90
+ * @note Size: 0xBC
  */
-void __TRK_write_console(void)
+DSIOResult __TRK_write_console(u32 handle, u8* buffer, size_t* count, void* ref_con)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x20(r1)
-	  mflr      r0
-	  stw       r0, 0x24(r1)
-	  stw       r31, 0x1C(r1)
-	  mr        r31, r5
-	  stw       r30, 0x18(r1)
-	  mr        r30, r4
-	  bl        -0xBC
-	  rlwinm.   r0,r3,0,24,31
-	  bne-      .loc_0x30
-	  li        r3, 0x1
-	  b         .loc_0xA4
-
-	.loc_0x30:
-	  bl        -0x3584
-	  cmpwi     r3, 0
-	  bne-      .loc_0x44
-	  li        r3, 0x1
-	  b         .loc_0xA4
-
-	.loc_0x44:
-	  lwz       r0, 0x0(r31)
-	  mr        r6, r30
-	  addi      r5, r1, 0x8
-	  li        r3, 0xD0
-	  stw       r0, 0x8(r1)
-	  li        r4, 0x1
-	  bl        -0x10AC
-	  rlwinm    r0,r3,0,24,31
-	  lwz       r3, 0x8(r1)
-	  cmpwi     r0, 0x1
-	  stw       r3, 0x0(r31)
-	  beq-      .loc_0xA0
-	  bge-      .loc_0x84
-	  cmpwi     r0, 0
-	  bge-      .loc_0x90
-	  b         .loc_0xA0
-
-	.loc_0x84:
-	  cmpwi     r0, 0x3
-	  bge-      .loc_0xA0
-	  b         .loc_0x98
-
-	.loc_0x90:
-	  li        r3, 0
-	  b         .loc_0xA4
-
-	.loc_0x98:
-	  li        r3, 0x2
-	  b         .loc_0xA4
-
-	.loc_0xA0:
-	  li        r3, 0x1
-
-	.loc_0xA4:
-	  lwz       r0, 0x24(r1)
-	  lwz       r31, 0x1C(r1)
-	  lwz       r30, 0x18(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x20
-	  blr
-	*/
+	if (GetUseSerialIO() == 0) {
+		return DS_IOError;
+	}
+	return __write_file(DS_Stdout, buffer, count, ref_con);
 }
 
-/*
- * --INFO--
- * Address:	800C0A0C
- * Size:	000084
+/**
+ * @note Address: 0x800C0A0C
+ * @note Size: 0x84
  */
-void __close_console(void)
+DSIOResult __close_console(u32 handle, u8* buffer, size_t* count, void* ref_con) { return __close_file(handle, buffer, count, ref_con); }
+
+/**
+ * @note Address: N/A
+ * @note Size: 0xB4
+ */
+DSIOResult __read_file(u32 handle, u8* buffer, size_t* count, void* ref_con)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  stw       r0, 0x14(r1)
-	  stw       r31, 0xC(r1)
-	  mr        r31, r3
-	  bl        -0x34E4
-	  cmpwi     r3, 0
-	  bne-      .loc_0x28
-	  li        r3, 0x1
-	  b         .loc_0x70
-
-	.loc_0x28:
-	  mr        r4, r31
-	  li        r3, 0xD3
-	  bl        -0xFEC
-	  rlwinm    r0,r3,0,24,31
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0x6C
-	  bge-      .loc_0x50
-	  cmpwi     r0, 0
-	  bge-      .loc_0x5C
-	  b         .loc_0x6C
-
-	.loc_0x50:
-	  cmpwi     r0, 0x3
-	  bge-      .loc_0x6C
-	  b         .loc_0x64
-
-	.loc_0x5C:
-	  li        r3, 0
-	  b         .loc_0x70
-
-	.loc_0x64:
-	  li        r3, 0x2
-	  b         .loc_0x70
-
-	.loc_0x6C:
-	  li        r3, 0x1
-
-	.loc_0x70:
-	  lwz       r0, 0x14(r1)
-	  lwz       r31, 0xC(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
+	return __access_file(handle, buffer, count, ref_con, DSMSG_ReadFile);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000B4
+/**
+ * @note Address: N/A
+ * @note Size: 0xB4
  */
-void __read_file(void)
+DSIOResult __write_file(u32 handle, u8* buffer, size_t* count, void* ref_con)
 {
-	// UNUSED FUNCTION
+	return __access_file(handle, buffer, count, ref_con, DSMSG_WriteFile);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000B4
- */
-void __write_file(void)
-{
-	// UNUSED FUNCTION
-}
-
-/*
- * --INFO--
- * Address:	........
- * Size:	00017C
+/**
+ * @note Address: N/A
+ * @note Size: 0x17C
  */
 void __open_file(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000084
+/**
+ * @note Address: N/A
+ * @note Size: 0x84
  */
-void __close_file(void)
+DSIOResult __close_file(u32 handle, u8* buffer, size_t* count, void* ref_con)
 {
-	// UNUSED FUNCTION
+	u32 r0;
+
+	if (GetTRKConnected() == DS_NoError) {
+		return DS_IOError;
+	}
+
+	r0 = TRKCloseFile(DSMSG_CloseFile, handle);
+
+	switch ((u8)r0) {
+	case DS_IONoError:
+		return DS_IONoError;
+	case DS_IOEOF:
+		return DS_IOEOF;
+	}
+
+	return DS_IOError;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000DC
+/**
+ * @note Address: N/A
+ * @note Size: 0xDC
  */
 void __position_file(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E0
+/**
+ * @note Address: N/A
+ * @note Size: 0xE0
  */
 void convertFileMode(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000C0
+/**
+ * @note Address: N/A
+ * @note Size: 0xC0
  */
-void __access_file(void)
+DSIOResult __access_file(u32 handle, u8* buffer, size_t* count, void* ref_con, MessageCommandID cmd)
 {
-	// UNUSED FUNCTION
+	size_t countTemp;
+	u32 r0;
+
+	if (GetTRKConnected() == DS_NoError) {
+		return DS_IOError;
+	}
+
+	countTemp = *count;
+	r0        = TRKAccessFile(cmd, handle, &countTemp, buffer);
+	*count    = countTemp;
+
+	switch ((u8)r0) {
+	case DS_IONoError:
+		return DS_IONoError;
+	case DS_IOEOF:
+		return DS_IOEOF;
+	}
+
+	return DS_IOError;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0001D0
+/**
+ * @note Address: N/A
+ * @note Size: 0x1D0
  */
 void __open_temp_file(void)
 {

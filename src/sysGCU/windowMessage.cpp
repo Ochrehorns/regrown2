@@ -229,53 +229,58 @@ static const char idk[] = "\0\0\0\0\0\0\0\0\0";
 
 namespace P2JME {
 namespace Window {
-/*
- * --INFO--
- * Address:	8043F188
- * Size:	000050
+/**
+ * @note Address: 0x8043F188
+ * @note Size: 0x50
  */
 DrawInfo::DrawInfo()
     : CNode("")
 {
-	_18    = -1;
-	mTimer = 0.0f;
-	_20    = 0.5f;
+	_18        = -1;
+	mTimer     = 0.0f;
+	mTimeLimit = 0.5f;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000100
+/**
+ * @note Address: N/A
+ * @note Size: 0x100
  */
-void DrawInfoMgr::init(u32)
+void DrawInfoMgr::init(u32 count)
 {
-	// UNUSED FUNCTION
+	P2ASSERTLINE(158, !mInfoList2.getChildCount());
+	P2ASSERTLINE(159, !mInfoList1.getChildCount());
+
+	sys->heapStatusStart("DrawInfoMgr::init", nullptr);
+
+	DrawInfo* info = new DrawInfo[count];
+	for (int i = 0; i < count; i++) {
+		mInfoList2.add(&info[i]);
+	}
+
+	sys->heapStatusEnd("DrawInfoMgr::init");
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000040
+/**
+ * @note Address: N/A
+ * @note Size: 0x40
  */
 void DrawInfoMgr::update()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000050
+/**
+ * @note Address: N/A
+ * @note Size: 0x50
  */
 void DrawInfoMgr::reset()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8043F238
- * Size:	000030
+/**
+ * @note Address: 0x8043F238
+ * @note Size: 0x30
  */
 DrawInfo* DrawInfoMgr::searchDrawInfo(int id)
 {
@@ -290,10 +295,9 @@ DrawInfo* DrawInfoMgr::searchDrawInfo(int id)
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	8043F268
- * Size:	000060
+/**
+ * @note Address: 0x8043F268
+ * @note Size: 0x60
  */
 DrawInfo* DrawInfoMgr::getDrawInfo(int id)
 {
@@ -307,70 +311,64 @@ DrawInfo* DrawInfoMgr::getDrawInfo(int id)
 	return node;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
-void DrawInfoMgr::releaseDrawInfo(DrawInfo*)
+void DrawInfoMgr::releaseDrawInfo(DrawInfo* info)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8043F2C8
- * Size:	00003C
+/**
+ * @note Address: 0x8043F2C8
+ * @note Size: 0x3C
  */
 TSequenceProcessor::TSequenceProcessor(JMessage::TReference* ref, JMessage::TControl* owner)
     : P2JME::TSequenceProcessor(ref, owner)
 {
 }
 
-/*
- * --INFO--
- * Address:	8043F304
- * Size:	0000A4
+/**
+ * @note Address: 0x8043F304
+ * @note Size: 0xA4
  */
 void TSequenceProcessor::doCharacterSE(int)
 {
-	if ((!Game::moviePlayer) || (Game::moviePlayer && !(Game::moviePlayer->isFlag(Game::MVP_IsFinished))) && !(mFlags.typeView & 8)) {
+	if (((!Game::moviePlayer) || (Game::moviePlayer && !(Game::moviePlayer->isFlag(Game::MVP_IsFinished)))) && !mFlags.isSet(8)) {
 		bool isfast        = isFastSE();
 		PSGame::SeMgr* mgr = PSSystem::getSeMgrInstance();
 		mgr->playMessageVoice(PSSE_MP_VOX_BODY_MN, isfast);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8043F3A8
- * Size:	00007C
+/**
+ * @note Address: 0x8043F3A8
+ * @note Size: 0x7C
  */
 void TSequenceProcessor::doCharacterSEStart()
 {
-	if ((!Game::moviePlayer) || (Game::moviePlayer && !(Game::moviePlayer->isFlag(Game::MVP_IsFinished))) && !(mFlags.typeView & 8)) {
+	if (((!Game::moviePlayer) || (Game::moviePlayer && !(Game::moviePlayer->isFlag(Game::MVP_IsFinished)))) && !mFlags.isSet(8)) {
 		PSGame::SeMgr* mgr = PSSystem::getSeMgrInstance();
 		mgr->playMessageVoice(PSSE_MP_VOX_HEAD_A_FLAT, false);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8043F424
- * Size:	00007C
+/**
+ * @note Address: 0x8043F424
+ * @note Size: 0x7C
  */
 void TSequenceProcessor::doCharacterSEEnd()
 {
-	if ((!Game::moviePlayer) || (Game::moviePlayer && !(Game::moviePlayer->isFlag(Game::MVP_IsFinished))) && !(mFlags.typeView & 8)) {
+	if (((!Game::moviePlayer) || (Game::moviePlayer && !(Game::moviePlayer->isFlag(Game::MVP_IsFinished)))) && !mFlags.isSet(8)) {
 		PSGame::SeMgr* mgr = PSSystem::getSeMgrInstance();
 		mgr->playMessageVoice(PSSE_MP_VOX_FOOT_A_UP, false);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8043F4A0
- * Size:	00005C
+/**
+ * @note Address: 0x8043F4A0
+ * @note Size: 0x5C
  */
 void TSequenceProcessor::doFastForwardSE()
 {
@@ -379,10 +377,9 @@ void TSequenceProcessor::doFastForwardSE()
 	PSSystem::spSysIF->playSystemSe(PSSE_MP_VOX_CANCEL, 0);
 }
 
-/*
- * --INFO--
- * Address:	8043F4FC
- * Size:	000060
+/**
+ * @note Address: 0x8043F4FC
+ * @note Size: 0x60
  */
 TRenderingProcessor::TRenderingProcessor(JMessage::TReference* ref)
     : P2JME::TRenderingProcessor(ref)
@@ -390,23 +387,94 @@ TRenderingProcessor::TRenderingProcessor(JMessage::TReference* ref)
 	mSpeed = 30.0f;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000100
+/**
+ * @note Address: N/A
+ * @note Size: 0x100
  */
 void TRenderingProcessor::initDrawInfoMgr(u32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8043F55C
- * Size:	000344
+/**
+ * @note Address: 0x8043F55C
+ * @note Size: 0x344
  */
-BOOL TRenderingProcessor::doDrawCommon(f32, f32, Matrixf*, Matrixf*)
+BOOL TRenderingProcessor::doDrawCommon(f32 a1, f32 a2, Matrixf* mtx1, Matrixf* mtx2)
 {
+	DrawInfo* info = nullptr;
+	FOREACH_NODE(DrawInfo, mDrawInfo.mInfoList1.mChild, node)
+	{
+		if (_40 == node->_18) {
+			info = node;
+		}
+	};
+
+	f32 speed = mSpeed;
+	if (-speed > a2) {
+		f32 speed2 = _3C;
+		f32 calc   = 0.0f;
+		f32 calc2;
+		if (speed + speed2 < a2) {
+
+			if (a2 < 0.0f) {
+				calc2 = calc;
+				if (speed2 < a2) {
+					calc2 = a2;
+					if (a2 > 0.0f) {
+						calc2 = a2 - speed2;
+					}
+					speed2   = 0.0f;
+					speed2   = speed * speed - calc2 * calc2;
+					speed2   = _sqrtf(speed2);
+					speed2   = -speed2;
+					speed    = JMath::atanTable_.atan2_(speed2, calc2);
+					calc     = speed + HALF_PI;
+					f32 what = calc2 / mSpeed * 255.0f;
+					calc     = (what > 0.0f) ? what + 0.5f : what - 0.5f;
+					calc2    = speed2 + mSpeed;
+				}
+			}
+			if (!info) {
+				info = (DrawInfo*)mDrawInfo.mInfoList1.mChild;
+				if (info) {
+					info->_18    = _40;
+					info->mTimer = 0.0f;
+					info->del();
+					mDrawInfo.mInfoList1.add(info);
+					doGetDrawInfo(info);
+				}
+			}
+
+			Matrixf mtx;
+			if (info) {
+				Vector3f pos(a1, a2, calc2);
+				makeMatrix(&mtx, info, calc, pos);
+			} else {
+				Vector3f pos(a1, a2, calc2);
+				mtx.makeT(pos);
+			}
+
+			if (mtx2) {
+				PSMTXCopy(mtx.mMatrix.mtxView, mtx2->mMatrix.mtxView);
+				mtx2->mMatrix.structView.tx += 10.0f;
+				mtx2->mMatrix.structView.ty += 5.0f;
+				PSMTXConcat(mMtx1->mMatrix.mtxView, mtx2->mMatrix.mtxView, mtx2->mMatrix.mtxView);
+				PSMTXConcat(mMtx2->mMatrix.mtxView, mtx2->mMatrix.mtxView, mtx2->mMatrix.mtxView);
+			}
+			PSMTXConcat(mMtx1->mMatrix.mtxView, mtx.mMatrix.mtxView, mtx.mMatrix.mtxView);
+			PSMTXConcat(mMtx2->mMatrix.mtxView, mtx.mMatrix.mtxView, mtx.mMatrix.mtxView);
+			if (mtx1) {
+				PSMTXCopy(mtx.mMatrix.mtxView, mtx1->mMatrix.mtxView);
+			} else {
+				GXLoadPosMtxImm(mtx.mMatrix.mtxView, 0);
+			}
+		}
+		return (int)(calc * _78);
+	}
+
+	return false;
+
 	/*
 	stwu     r1, -0xe0(r1)
 	mflr     r0
@@ -660,13 +728,37 @@ lbl_8043F834:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8043F8A4
- * Size:	000284
+/**
+ * @note Address: 0x8043F8A4
+ * @note Size: 0x284
  */
-void TRenderingProcessor::makeMatrix(Matrixf*, DrawInfo*, f32, Vector3f)
+void TRenderingProcessor::makeMatrix(Matrixf* mtx, DrawInfo* info, f32 angle, Vector3f pos)
 {
+	switch (mMatrixType) {
+	case 0: {
+		f32 calc = info->getCalc();
+		Vector3f scale(1.0f, -((1.0f - calc) * 0.8f * cosf(calc) - 1.0f), 1.0f);
+		calc = info->getCalc();
+		Vector3f rotate(angle, 0.0f, -((1.0f - calc) * HALF_PI * cosf(calc)));
+		mtx->makeSRT(scale, rotate, pos);
+		break;
+	}
+	case 1: {
+		f32 calc = info->getCalc();
+		Vector3f scale(fabs((1.0f - calc) * cosf(calc) * 2.0f * (1.0f - calc)) + 1.0f);
+		Vector3f rotate(angle, 0.0f, 0.0f);
+		mtx->makeSRT(scale, rotate, pos);
+		break;
+	}
+	case 2: {
+		f32 calc = info->getCalc();
+		pos.y    = -(fabs(calc * cosf(calc) * 4.0f * calc) * 15.0f - pos.y);
+		Vector3f scale(1.0f);
+		Vector3f rotate(angle, 0.0f, 0.0f);
+		mtx->makeSRT(scale, rotate, pos);
+		break;
+	}
+	}
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x60(r1)
@@ -851,13 +943,31 @@ void TRenderingProcessor::makeMatrix(Matrixf*, DrawInfo*, f32, Vector3f)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8043FB28
- * Size:	000188
+/**
+ * @note Address: 0x8043FB28
+ * @note Size: 0x188
  */
-void TRenderingProcessor::doDrawLetter(f32, f32, f32, f32, int, bool)
+f32 TRenderingProcessor::doDrawLetter(f32, f32, f32 x, f32 y, int a1, bool flag)
 {
+	f32 wid;
+	Matrixf mtx1;
+	Matrixf mtx2;
+	u8 ret = doDrawCommon(x, y, &mtx1, &mtx2);
+	if (ret) {
+		GXLoadPosMtxImm(mtx2.mMatrix.mtxView, 0);
+		JUtility::TColor color(ret >> 1, ret, ret, ret);
+		mMainFont->setGradColor(color, color);
+		mMainFont->drawChar_scale(0.0f, 0.0f, x, y, a1, flag);
+		GXLoadPosMtxImm(mtx1.mMatrix.mtxView, 0);
+		mColorData[0].a = ret;
+		mColorData[1].a = ret;
+		JUtility::TColor color3;
+		mMainFont->setGradColor(color, color3);
+		wid = mMainFont->drawChar_scale(0.0f, 0.0f, x, y, a1, flag);
+	} else {
+		wid = calcWidth(mMainFont, a1, x, flag);
+	}
+	return wid;
 	/*
 	.loc_0x0:
 	  stwu      r1, -0xB0(r1)
@@ -965,13 +1075,30 @@ void TRenderingProcessor::doDrawLetter(f32, f32, f32, f32, int, bool)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8043FCB0
- * Size:	00017C
+/**
+ * @note Address: 0x8043FCB0
+ * @note Size: 0x17C
  */
-void TRenderingProcessor::doDrawRuby(f32, f32, f32, f32, int, bool)
+f32 TRenderingProcessor::doDrawRuby(f32, f32, f32 x, f32 y, int a1, bool flag)
 {
+	f32 wid;
+	Matrixf mtx1;
+	Matrixf mtx2;
+	u8 ret = doDrawCommon(x, y, &mtx1, &mtx2);
+	if (ret) {
+		JUtility::TColor color(ret >> 1, ret, ret, ret);
+		mRubyFont->setCharColor(color);
+
+		GXColor col(_CC);
+		GXSetTevColor(GX_TEVREG1, col);
+		wid = mRubyFont->drawChar_scale(0.0f, 0.0f, x, y, a1, flag);
+
+		GXColor col2(_CC);
+		GXSetTevColor(GX_TEVREG0, col2);
+	} else {
+		wid = calcWidth(mRubyFont, a1, x, flag);
+	}
+	return wid;
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x50(r1)
@@ -1076,13 +1203,41 @@ void TRenderingProcessor::doDrawRuby(f32, f32, f32, f32, int, bool)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8043FE2C
- * Size:	0001DC
+/**
+ * @note Address: 0x8043FE2C
+ * @note Size: 0x1DC
  */
-void TRenderingProcessor::doDrawImage(JUTTexture*, f32, f32, f32, f32)
+void TRenderingProcessor::doDrawImage(JUTTexture* tex, f32, f32, f32 x, f32 y)
 {
+	Matrixf mtx1;
+	Matrixf mtx2;
+	u8 ret = doDrawCommon(x, y, &mtx1, &mtx2);
+	if (ret) {
+		mColorData[3].a = (mColorData[3].a * ret) / 255;
+		mColorData[4].a = (mColorData[4].a * ret) / 255;
+		JUtility::TColor color(mColorData[3]);
+		JUtility::TColor color2(mColorData[4]);
+
+		setImageGX();
+		GXLoadPosMtxImm(mtx2.mMatrix.mtxView, 0);
+
+		mColorData[3].r = 0;
+		mColorData[3].g = 0;
+		mColorData[3].b = 0;
+		mColorData[3].a >>= 1;
+
+		mColorData[4].r = 0;
+		mColorData[4].g = 0;
+		mColorData[4].b = 0;
+		mColorData[4].a = 0;
+
+		P2JME::TRenderingProcessor::drawImage(tex, 0.0f, 0.0f, x, y);
+		GXLoadPosMtxImm(mtx1.mMatrix.mtxView, 0);
+
+		mColorData[3] = color;
+		mColorData[4] = color2;
+		P2JME::TRenderingProcessor::drawImage(tex, 0.0f, 0.0f, x, y);
+	}
 	/*
 	.loc_0x0:
 	  stwu      r1, -0xA0(r1)
@@ -1209,26 +1364,24 @@ void TRenderingProcessor::doDrawImage(JUTTexture*, f32, f32, f32, f32)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80440008
- * Size:	000040
+/**
+ * @note Address: 0x80440008
+ * @note Size: 0x40
  */
 void TRenderingProcessor::update()
 {
 	FOREACH_NODE(DrawInfo, mDrawInfo.mInfoList1.mChild, node)
 	{
 		node->mTimer += sys->mDeltaTime;
-		if (node->mTimer > node->_20) {
-			node->mTimer = node->_20;
+		if (node->mTimer > node->mTimeLimit) {
+			node->mTimer = node->mTimeLimit;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	80440048
- * Size:	0000A4
+/**
+ * @note Address: 0x80440048
+ * @note Size: 0xA4
  */
 void TRenderingProcessor::reset()
 {
@@ -1243,176 +1396,79 @@ void TRenderingProcessor::reset()
 	}
 }
 
-/*
- * --INFO--
- * Address:	804400EC
- * Size:	000050
+/**
+ * @note Address: 0x804400EC
+ * @note Size: 0x50
  */
 TControl::TControl()
 {
-	_50 = 4.0f;
-	_54 = 0.0f;
-	_58 = 0.0f;
+	_50     = 4.0f;
+	mTimer1 = 0.0f;
+	mTimer2 = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	8044013C
- * Size:	000100
+/**
+ * @note Address: 0x8044013C
+ * @note Size: 0x100
  */
 void TControl::initRenderingProcessor(u32 count)
 {
 	Window::TRenderingProcessor* proc = static_cast<Window::TRenderingProcessor*>(mTextRenderProc);
-	P2ASSERTLINE(158, !proc->mDrawInfo.mInfoList2.getChildCount());
-	P2ASSERTLINE(159, !proc->mDrawInfo.mInfoList1.getChildCount());
-
-	sys->heapStatusStart("DrawInfoMgr::init", nullptr);
-
-	DrawInfo* info = new DrawInfo[count];
-	for (int i = 0; i < count; i++) {
-		proc->mDrawInfo.mInfoList2.add(&info[i]);
-	}
-
-	sys->heapStatusEnd("DrawInfoMgr::init");
+	proc->mDrawInfo.init(count);
 }
 
-/*
- * --INFO--
- * Address:	8044023C
- * Size:	000188
+/**
+ * @note Address: 0x8044023C
+ * @note Size: 0x188
  */
 bool TControl::update(Controller* control1, Controller* control2)
 {
 	setController(control1, control2);
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r4
-	stw      r30, 0x18(r1)
-	mr       r30, r3
-	bl       setController__Q25P2JME8TControlFP10ControllerP10Controller
-	mr       r3, r30
-	bl       update__Q25P2JME8TControlFv
-	lwz      r4, 0x3c(r30)
-	cmplwi   r4, 0
-	beq      lbl_804403AC
-	lwz      r5, 0x68(r4)
-	rlwinm.  r0, r5, 0, 0x1d, 0x1d
-	beq      lbl_804403AC
-	clrlwi.  r0, r5, 0x1f
-	bne      lbl_804402B8
-	ori      r0, r5, 1
-	lfs      f0, lbl_80520924@sda21(r2)
-	stw      r0, 0x68(r4)
-	lwz      r4, 0x40(r30)
-	lfs      f1, 0x58(r4)
-	stfs     f1, 0x54(r30)
-	lwz      r4, 0x40(r30)
-	lfs      f2, 0x54(r30)
-	lfs      f1, 0x3c(r4)
-	fsubs    f1, f2, f1
-	stfs     f1, 0x58(r30)
-	stfs     f0, 0x48(r30)
-	b        lbl_804403AC
+	bool ret = P2JME::TControl::update();
 
-lbl_804402B8:
-	lfs      f1, 0x48(r30)
-	lfs      f0, lbl_80520928@sda21(r2)
-	lfs      f2, lbl_80520950@sda21(r2)
-	fdivs    f3, f1, f0
-	fcmpo    cr0, f3, f2
-	ble      lbl_804402EC
-	rlwinm   r0, r5, 0, 0, 0x1e
-	stw      r0, 0x68(r4)
-	lwz      r4, 0x3c(r30)
-	lwz      r0, 0x68(r4)
-	rlwinm   r0, r0, 0, 0x1e, 0x1c
-	stw      r0, 0x68(r4)
-	b        lbl_8044033C
+	P2JME::TSequenceProcessor* proc = mSequenceProc;
+	if (proc) {
+		u32 flag = proc->mFlags.typeView;
+		if (flag & 4) {
 
-lbl_804402EC:
-	lfs      f1, lbl_80520968@sda21(r2)
-	lfs      f0, lbl_80520924@sda21(r2)
-	fmuls    f2, f1, f3
-	fcmpo    cr0, f2, f0
-	bge      lbl_80440304
-	fneg     f2, f2
+			if (!(flag & 1)) {
+				proc->mFlags.set(1);
+				mTimer1 = mTextRenderProc->_58;
+				mTimer2 = mTimer1 - mTextRenderProc->_3C;
+				mTimer  = 0.0f;
+			} else {
+				f32 calc  = 1.0f;
+				f32 calc2 = mTimer / 0.5f;
+				if (calc2 > 1.0f) {
+					proc->mFlags.unset(1);
+					mSequenceProc->mFlags.unset(4);
+				} else {
+					calc = (1.0f - cosf(calc2 * PI)) * 0.5f;
+				}
+				mTextRenderProc->_58 = calc * (mTimer2 - mTimer1) + mTimer1;
 
-lbl_80440304:
-	lfs      f0, lbl_8052094C@sda21(r2)
-	lis      r4, sincosTable___5JMath@ha
-	addi     r4, r4, sincosTable___5JMath@l
-	lfs      f1, lbl_80520950@sda21(r2)
-	fmuls    f0, f2, f0
-	lfs      f2, lbl_80520928@sda21(r2)
-	fctiwz   f0, f0
-	stfd     f0, 8(r1)
-	lwz      r0, 0xc(r1)
-	rlwinm   r0, r0, 3, 0x12, 0x1c
-	add      r4, r4, r0
-	lfs      f0, 4(r4)
-	fsubs    f0, f1, f0
-	fmuls    f2, f2, f0
-
-lbl_8044033C:
-	lfs      f1, 0x54(r30)
-	cmplwi   r31, 0
-	lfs      f0, 0x58(r30)
-	lwz      r4, 0x40(r30)
-	fsubs    f0, f0, f1
-	fmadds   f0, f2, f0, f1
-	stfs     f0, 0x58(r4)
-	beq      lbl_80440368
-	lwz      r0, 0x18(r31)
-	rlwinm.  r0, r0, 0, 0x16, 0x16
-	bne      lbl_8044037C
-
-lbl_80440368:
-	cmplwi   r31, 0
-	beq      lbl_80440398
-	lwz      r0, 0x18(r31)
-	rlwinm.  r0, r0, 0, 0x16, 0x16
-	beq      lbl_80440398
-
-lbl_8044037C:
-	lwz      r4, sys@sda21(r13)
-	lfs      f2, lbl_80520958@sda21(r2)
-	lfs      f1, 0x54(r4)
-	lfs      f0, 0x48(r30)
-	fmadds   f0, f2, f1, f0
-	stfs     f0, 0x48(r30)
-	b        lbl_804403AC
-
-lbl_80440398:
-	lwz      r4, sys@sda21(r13)
-	lfs      f1, 0x48(r30)
-	lfs      f0, 0x54(r4)
-	fadds    f0, f1, f0
-	stfs     f0, 0x48(r30)
-
-lbl_804403AC:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+				// I would imagine the second of these was supposed to be for controller 2, but very cool
+				if ((control1 && control1->getButton() & Controller::PRESS_B)
+				    || (control1 && control1->getButton() & Controller::PRESS_B)) {
+					mTimer += sys->mDeltaTime * 2.0f;
+				} else {
+					mTimer += sys->mDeltaTime;
+				}
+			}
+		}
+	}
+	return ret;
 }
 
-/*
- * --INFO--
- * Address:	804403C4
- * Size:	000020
+/**
+ * @note Address: 0x804403C4
+ * @note Size: 0x20
  */
 void TControl::reset() { P2JME::TControl::reset(); }
 
-/*
- * --INFO--
- * Address:	804403E4
- * Size:	00007C
+/**
+ * @note Address: 0x804403E4
+ * @note Size: 0x7C
  */
 void TControl::draw(Graphics& gfx)
 {
@@ -1423,10 +1479,9 @@ void TControl::draw(Graphics& gfx)
 	P2JME::TControl::draw(mtx.mMatrix.mtxView, gfx.mPerspGraph.mPosMtx);
 }
 
-/*
- * --INFO--
- * Address:	80440460
- * Size:	000050
+/**
+ * @note Address: 0x80440460
+ * @note Size: 0x50
  */
 bool TControl::onInit()
 {

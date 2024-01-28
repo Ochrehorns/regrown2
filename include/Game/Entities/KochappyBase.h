@@ -25,7 +25,7 @@ namespace KochappyBase {
 struct Parms;
 
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -35,25 +35,25 @@ struct Obj : public EnemyBase {
 	Obj();
 
 	//////////////// VTABLE - Note: this order is needed for correct weak function ordering
-	virtual void onInit(CreatureInitArg* settings);                // _30
-	virtual void doDirectDraw(Graphics& gfx);                      // _50
-	virtual void bounceCallback(Sys::Triangle* tri);               // _E8
-	virtual void getShadowParam(ShadowParam& settings);            // _134
-	virtual ~Obj() { }                                             // _1BC (weak)
-	virtual void birth(Vector3f&, f32);                            // _1C0
-	virtual void setInitialSetting(EnemyInitialParamBase* params); // _1C4
-	virtual void doUpdate();                                       // _1C8
-	virtual void doDebugDraw(Graphics& gfx);                       // _1EC
-	virtual void changeMaterial() = 0;                             // _200
-	virtual Vector3f getOffsetForMapCollision();                   // _224
-	virtual void initMouthSlots();                                 // _22C
-	virtual void initWalkSmokeEffect();                            // _230
-	virtual WalkSmokeEffect::Mgr* getWalkSmokeEffectMgr();         // _234
-	virtual bool pressCallBack(Creature*, f32, CollPart*);         // _27C
-	virtual void doStartStoneState();                              // _2A4
-	virtual void doFinishStoneState();                             // _2A8
-	virtual void startCarcassMotion();                             // _2C4
-	virtual void setFSM(FSM* fsm)                                  // _2F8 (weak)
+	virtual void onInit(CreatureInitArg* settings);                           // _30
+	virtual void doDirectDraw(Graphics& gfx);                                 // _50
+	virtual void bounceCallback(Sys::Triangle* tri);                          // _E8
+	virtual void getShadowParam(ShadowParam& settings);                       // _134
+	virtual ~Obj() { }                                                        // _1BC (weak)
+	virtual void birth(Vector3f&, f32);                                       // _1C0
+	virtual void setInitialSetting(EnemyInitialParamBase* params);            // _1C4
+	virtual void doUpdate();                                                  // _1C8
+	virtual void doDebugDraw(Graphics& gfx);                                  // _1EC
+	virtual void changeMaterial() = 0;                                        // _200
+	virtual Vector3f getOffsetForMapCollision();                              // _224
+	virtual void initMouthSlots();                                            // _22C
+	virtual void initWalkSmokeEffect();                                       // _230
+	virtual WalkSmokeEffect::Mgr* getWalkSmokeEffectMgr();                    // _234
+	virtual bool pressCallBack(Creature* source, f32 damage, CollPart* part); // _27C
+	virtual void doStartStoneState();                                         // _2A4
+	virtual void doFinishStoneState();                                        // _2A8
+	virtual void startCarcassMotion();                                        // _2C4
+	virtual void setFSM(FSM* fsm)                                             // _2F8 (weak)
 	{
 		mFsm = fsm;
 		mFsm->init(this);
@@ -79,7 +79,7 @@ struct Obj : public EnemyBase {
 	FSM* mFsm;                          // _2BC
 	MouthSlots mMouthSlots;             // _2C0
 	SysShape::Joint* mShadowJoint;      // _2C8
-	f32 _2CC;                           // _2CC
+	f32 mAlertTime;                     // _2CC
 	WalkSmokeEffect::Mgr mWalkSmokeMgr; // _2D0
 	                                    // _2D4 = PelletView
 };
@@ -102,15 +102,15 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		inline ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mFp01(this, 'fp01', "ぼんやり時間", 2.0f, 0.0f, 100.0f)            // 'absentminded time'
-		    , mPoisonDamage(this, 'fp02', "白ピクミン毒", 300.0f, 0.0f, 1000.0f) // 'white pikmin poison'
-		    , mFp03(this, 'fp03', "回転終了角度", 90.0f, 0.0f, 180.0f)           // 'rotation end angle'
+		    , mAbsentMindedTime(this, 'fp01', "ぼんやり時間", 2.0f, 0.0f, 100.0f)  // 'absentminded time'
+		    , mPoisonDamage(this, 'fp02', "白ピクミン毒", 300.0f, 0.0f, 1000.0f)   // 'white pikmin poison'
+		    , mRotationEndAngle(this, 'fp03', "回転終了角度", 90.0f, 0.0f, 180.0f) // 'rotation end angle'
 		{
 		}
 
-		Parm<f32> mFp01;         // _804
-		Parm<f32> mPoisonDamage; // _82C
-		Parm<f32> mFp03;         // _854
+		Parm<f32> mAbsentMindedTime; // _804
+		Parm<f32> mPoisonDamage;     // _82C
+		Parm<f32> mRotationEndAngle; // _854
 	};
 
 	virtual void read(Stream& stream) // _08 (weak)
@@ -124,6 +124,19 @@ struct Parms : public EnemyParmsBase {
 
 	// _00-_7F8	= EnemyParmsBase
 	ProperParms mProperParms; // _7F8
+};
+
+enum AnimID {
+	KOCHAPPYANIM_Attack = 0,
+	KOCHAPPYANIM_Dead   = 1,
+	KOCHAPPYANIM_Flick  = 2,
+	KOCHAPPYANIM_Move   = 3, // 'move1'
+	KOCHAPPYANIM_Press  = 4, // 'type1'
+	KOCHAPPYANIM_Carry  = 5, // 'type5'
+	KOCHAPPYANIM_Wait   = 6, // 'wait1'
+	KOCHAPPYANIM_Turn   = 7, // 'waitact1'
+	KOCHAPPYANIM_Eat    = 8, // 'waitact2'
+	KOCHAPPYANIM_AnimCount,  // 9
 };
 
 struct ProperAnimator : public EnemyAnimatorBase {
@@ -166,9 +179,9 @@ struct State : public EnemyFSMState {
 struct StateAttack : public State {
 	StateAttack(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -177,9 +190,9 @@ struct StateAttack : public State {
 struct StateDead : public State {
 	StateDead(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -188,7 +201,7 @@ struct StateDead : public State {
 struct StateDemo : public State {
 	StateDemo(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -201,32 +214,32 @@ struct FlickArg : public StateArg {
 struct StateFlick : public State {
 	StateFlick(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
-	int _10; // _10
+	int mNextState; // _10
 };
 
 struct StateGoHome : public State {
 	StateGoHome(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
-	int _10; // _10
+	int mNextState; // _10
 };
 
 struct StatePress : public State {
 	StatePress(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -235,36 +248,36 @@ struct StatePress : public State {
 struct StateTurn : public State {
 	StateTurn(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
-	int _10; // _10
+	int mNextState; // _10
 };
 
 struct StateTurnToHome : public State {
 	StateTurnToHome(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
 };
 
 struct WaitArg : public StateArg {
-	u32 _00; // _00
+	u32 mID; // _00
 };
 
 struct StateWait : public State {
 	StateWait(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -273,13 +286,13 @@ struct StateWait : public State {
 struct StateWalk : public State {
 	StateWalk(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
-	int _10; // _10
+	int mNextState; // _10
 };
 /////////////////////////////////////////////////////////////////
 

@@ -862,7 +862,6 @@ typedef enum _GXTevAlphaArg {
 	GX_CA_RASA  = 5,
 	GX_CA_KONST = 6,
 	GX_CA_ZERO  = 7,
-	GX_ZERO     = 7,
 } GXTevAlphaArg;
 
 // TEV bias.

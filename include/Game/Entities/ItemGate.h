@@ -17,11 +17,16 @@ enum GateStates {
 	GATESTATE_MAX, // 3
 };
 
+enum GateColor {
+	GATECOLOR_White = 0,
+	GATECOLOR_Black = 1,
+};
+
 namespace Game {
 struct ItemGate;
 
 struct ItemGateInitArg : public CreatureInitArg {
-	virtual const char* getName(); // _08 (weak)
+	virtual const char* getName() { return "ItemGateInitArg"; } // _08 (weak)
 
 	// _00     = VTBL
 	f32 mFaceDir; // _04
@@ -40,8 +45,8 @@ struct GateState : public ItemState<ItemGate> {
 	{
 	}
 
-	virtual void onDamage(ItemGate*, f32);                         // _20 (weak)
-	virtual void onKeyEvent(ItemGate*, const SysShape::KeyEvent&); // _24 (weak)
+	virtual void onDamage(ItemGate*, f32) { }                         // _20 (weak)
+	virtual void onKeyEvent(ItemGate*, const SysShape::KeyEvent&) { } // _24 (weak)
 
 	// _00     = VTBL
 	// _00-_0C = ItemState
@@ -129,6 +134,10 @@ struct ItemGate : public WorkItem<ItemGate, GateFSM, GateState> {
 
 	inline f32 getGateHealth();
 
+	// unused/inlined:
+	void startDamageMotion();
+	void startDownMotion();
+
 	// _00      = VTBL
 	// _00-_1E0 = FSMItem
 	Mabiki mMabiki;                     // _1EC
@@ -147,7 +156,7 @@ struct ItemGate : public WorkItem<ItemGate, GateFSM, GateState> {
 	Plane mPlanes[4];                   // _224
 	Vector3f _264;                      // _264
 	Vector3f _270;                      // _270
-	u8 mColor;                          // _27C, unknown
+	u8 mColor;                          // _27C
 	Sys::MatBaseAnimator* mMatAnimator; // _280
 };
 
@@ -164,7 +173,7 @@ struct ItemGateMgr : public BaseItemMgr {
 	virtual u32 generatorGetID();                                         // _58 (weak)
 	virtual BaseItem* generatorBirth(Vector3f&, Vector3f&, GenItemParm*); // _5C
 	virtual void generatorWrite(Stream&, GenItemParm*);                   // _60
-	virtual void generatorRead(Stream&, GenItemParm*, unsigned long);     // _64
+	virtual void generatorRead(Stream&, GenItemParm*, u32);               // _64
 	virtual u32 generatorLocalVersion();                                  // _68 (weak)
 	virtual GenItemParm* generatorNewItemParm();                          // _70
 	virtual char* getCaveName(int);                                       // _74

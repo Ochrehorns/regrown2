@@ -13,12 +13,13 @@ extern "C" {
 
 /////////// TRANSFORM FUNCTIONS ////////////
 // Matrix and projection functions.
-extern void GXSetProjection(Mtx44 mtx, GXProjectionType type);
-extern void GXSetProjectionv(f32* ptr);
+extern void GXSetProjection(const Mtx44 mtx, GXProjectionType type);
+extern void GXSetProjectionv(const f32* ptr);
 extern void GXLoadPosMtxImm(Mtx mtx, u32 id);
 extern void GXLoadNrmMtxImm(Mtx mtx, u32 id);
 extern void GXSetCurrentMtx(u32 id);
-extern void GXLoadTexMtxImm(f32 mtx[][4], u32 id, GXTexMtxType type);
+extern void GXLoadTexMtxImm(const Mtx mtx, u32 id, GXTexMtxType type);
+extern void __GXSetMatrixIndex(GXAttr index);
 
 // Viewport functions.
 extern void __GXSetViewport(); // confirm types
@@ -26,6 +27,7 @@ extern void GXSetViewport(f32 left, f32 top, f32 width, f32 height, f32 nearZ, f
 
 // Scissor/clip functions.
 extern void GXSetScissor(u32 left, u32 top, u32 width, u32 height);
+extern void GXSetScissorBoxOffset(s32 x, s32 y);
 extern void GXGetScissor(u32* left, u32* top, u32* width, u32* height);
 extern void GXGetScissorBoxOffset(int xOffset, int yOffset);
 extern void GXSetClipMode(GXClipMode mode);

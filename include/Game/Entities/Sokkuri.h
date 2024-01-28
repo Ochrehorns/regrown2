@@ -34,29 +34,29 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mFp01(this, 'fp01', "移動時間最大", 1.0f, 0.0f, 10.0f)      // 'maximum travel time'
-		    , mFp02(this, 'fp02', "移動時間最小", 0.0f, 0.0f, 10.0f)      // 'minimum travel time'
-		    , mFp03(this, 'fp03', "移動角度最大", 90.0f, 0.0f, 180.0f)    // 'maximum moving angle'
-		    , mFp04(this, 'fp04', "移動角度最小", 45.0f, 0.0f, 180.0f)    // 'minimum moving angle'
-		    , mFp11(this, 'fp11', "待機確率", 0.25f, 0.0f, 1.0f)          // 'waiting probability'
-		    , mFp12(this, 'fp12', "待機時間最大", 2.0f, 0.0f, 10.0f)      // 'maximum waiting time'
-		    , mFp13(this, 'fp13', "待機時間最小", 1.0f, 0.0f, 10.0f)      // 'minimum waiting time'
-		    , mFp21(this, 'fp21', "水中移動速度", 25.0f, 0.0f, 1000.0f)   // 'underwater movement speed'
-		    , mFp22(this, 'fp22', "水中回転速度率", 0.05f, 0.0f, 1.0f)    // 'underwater rotation rate'
-		    , mFp23(this, 'fp23', "水中回転最大速度", 1.0f, 0.0f, 360.0f) // 'underwater rotation maximum speed'
+		    , mMaxTravelTime(this, 'fp01', "移動時間最大", 1.0f, 0.0f, 10.0f)                   // 'maximum travel time'
+		    , mMinTravelTime(this, 'fp02', "移動時間最小", 0.0f, 0.0f, 10.0f)                   // 'minimum travel time'
+		    , mMaxMoveAngle(this, 'fp03', "移動角度最大", 90.0f, 0.0f, 180.0f)                  // 'maximum moving angle'
+		    , mMinMoveAngle(this, 'fp04', "移動角度最小", 45.0f, 0.0f, 180.0f)                  // 'minimum moving angle'
+		    , mWaitingProbability(this, 'fp11', "待機確率", 0.25f, 0.0f, 1.0f)                  // 'waiting probability'
+		    , mMaxWaitingTime(this, 'fp12', "待機時間最大", 2.0f, 0.0f, 10.0f)                  // 'maximum waiting time'
+		    , mMinWaitingTime(this, 'fp13', "待機時間最小", 1.0f, 0.0f, 10.0f)                  // 'minimum waiting time'
+		    , mUnderwaterMoveSpeed(this, 'fp21', "水中移動速度", 25.0f, 0.0f, 1000.0f)          // 'underwater movement speed'
+		    , mUnderwaterRotationRate(this, 'fp22', "水中回転速度率", 0.05f, 0.0f, 1.0f)        // 'underwater rotation rate'
+		    , mUnderwaterRotationMaxSpeed(this, 'fp23', "水中回転最大速度", 1.0f, 0.0f, 360.0f) // 'underwater rotation maximum speed'
 		{
 		}
 
-		Parm<f32> mFp01; // _804
-		Parm<f32> mFp02; // _82C
-		Parm<f32> mFp03; // _854
-		Parm<f32> mFp04; // _87C
-		Parm<f32> mFp11; // _8A4
-		Parm<f32> mFp12; // _8CC
-		Parm<f32> mFp13; // _8F4
-		Parm<f32> mFp21; // _91C
-		Parm<f32> mFp22; // _944
-		Parm<f32> mFp23; // _96C
+		Parm<f32> mMaxTravelTime;              // _804
+		Parm<f32> mMinTravelTime;              // _82C
+		Parm<f32> mMaxMoveAngle;               // _854
+		Parm<f32> mMinMoveAngle;               // _87C
+		Parm<f32> mWaitingProbability;         // _8A4
+		Parm<f32> mMaxWaitingTime;             // _8CC
+		Parm<f32> mMinWaitingTime;             // _8F4
+		Parm<f32> mUnderwaterMoveSpeed;        // _91C
+		Parm<f32> mUnderwaterRotationRate;     // _944
+		Parm<f32> mUnderwaterRotationMaxSpeed; // _96C
 	};
 
 	Parms() { }
@@ -86,7 +86,7 @@ struct Obj : public EnemyBase {
 	virtual void doDebugDraw(Graphics& gfx);                                    // _1EC
 	virtual Vector3f getOffsetForMapCollision();                                // _224
 	virtual void createEfxHamon();                                              // _250
-	virtual bool pressCallBack(Creature*, f32, CollPart*);                      // _27C
+	virtual bool pressCallBack(Creature* source, f32 damage, CollPart* part);   // _27C
 	virtual bool hipdropCallBack(Creature* source, f32 damage, CollPart* part); // _284
 	virtual void doStartStoneState();                                           // _2A4
 	virtual void doFinishStoneState();                                          // _2A8
@@ -111,7 +111,7 @@ struct Obj : public EnemyBase {
 
 	Creature* getSearchedTarget();
 
-	inline f32 getMinAngle() { return C_PROPERPARMS.mFp04.mValue; }
+	inline f32 getMinAngle() { return C_PROPERPARMS.mMinMoveAngle.mValue; }
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
@@ -128,7 +128,7 @@ struct Mgr : public EnemyMgrBase {
 	Mgr(int objLimit, u8 modelType);
 
 	// virtual ~Mgr();                                     // _58 (weak)
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual void doAlloc();                            // _A8
 	virtual void loadModelData();                      // _C8
@@ -146,6 +146,19 @@ struct Mgr : public EnemyMgrBase {
 	Obj* mObj; // _44, likely an array of Objs
 };
 
+enum AnimID {
+	SOKKURIANIM_RunGround = 0, // 'run1'
+	SOKKURIANIM_Appear    = 1, // 'appear1'
+	SOKKURIANIM_Wait      = 2, // 'wait1'
+	SOKKURIANIM_Hide      = 3, // 'hide1'
+	SOKKURIANIM_Dead      = 4, // 'dead1'
+	SOKKURIANIM_PressDead = 5, // 'pdead1'
+	SOKKURIANIM_RunWater  = 6, // 'wrun1'
+	SOKKURIANIM_Flick     = 7, // 'flick1'
+	SOKKURIANIM_Carry     = 8, // 'type5'
+	SOKKURIANIM_AnimCount,     // 9
+};
+
 struct ProperAnimator : public EnemyAnimatorBase {
 	virtual ~ProperAnimator() { }                                    // _08 (weak)
 	virtual void setAnimMgr(SysShape::AnimMgr* mgr);                 // _0C
@@ -160,7 +173,7 @@ struct ProperAnimator : public EnemyAnimatorBase {
 /////////////////////////////////////////////////////////////////
 // STATE MACHINE DEFINITIONS
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -183,9 +196,9 @@ struct StateAppear : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -197,9 +210,9 @@ struct StateDead : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -211,9 +224,9 @@ struct StateDisappear : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -225,9 +238,9 @@ struct StateFlick : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -239,9 +252,9 @@ struct StateMoveGround : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -253,9 +266,9 @@ struct StateMoveWater : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -267,9 +280,9 @@ struct StatePress : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -281,9 +294,9 @@ struct StateStay : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -295,9 +308,9 @@ struct StateWait : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

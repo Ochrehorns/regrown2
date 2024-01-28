@@ -5,10 +5,9 @@
 
 namespace Game {
 namespace Baby {
-/*
- * --INFO--
- * Address:	8028C584
- * Size:	0001D0
+/**
+ * @note Address: 0x8028C584
+ * @note Size: 0x1D0
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -19,24 +18,22 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateAttack);
 }
 
-/*
- * --INFO--
- * Address:	8028C754
- * Size:	000058
+/**
+ * @note Address: 0x8028C754
+ * @note Size: 0x58
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* baby = static_cast<Obj*>(enemy);
+	Obj* baby = OBJ(enemy);
 	baby->createHoney();
 	baby->deathProcedure();
 	baby->mTargetVelocity = Vector3f(0.0f);
-	baby->startMotion(0, nullptr);
+	baby->startMotion(BABYANIM_Dead, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8028C7AC
- * Size:	000044
+/**
+ * @note Address: 0x8028C7AC
+ * @note Size: 0x44
  */
 void StateDead::exec(EnemyBase* enemy)
 {
@@ -45,26 +42,24 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028C7F0
- * Size:	000004
+/**
+ * @note Address: 0x8028C7F0
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8028C7F4
- * Size:	0000DC
+/**
+ * @note Address: 0x8028C7F4
+ * @note Size: 0xDC
  */
 void StatePress::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* baby = static_cast<Obj*>(enemy);
+	Obj* baby = OBJ(enemy);
 	baby->createHoney();
 	baby->mHealth = 0.0f;
 	baby->deathProcedure();
 	baby->mTargetVelocity = Vector3f(0.0f);
-	baby->startMotion(1, nullptr);
+	baby->startMotion(BABYANIM_DeadPress, nullptr);
 	Vector3f position = baby->getPosition();
 
 	efx::Arg fxArg(position);
@@ -73,10 +68,9 @@ void StatePress::init(EnemyBase* enemy, StateArg* stateArg)
 	bechaEffect.create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	8028C8D0
- * Size:	000044
+/**
+ * @note Address: 0x8028C8D0
+ * @note Size: 0x44
  */
 void StatePress::exec(EnemyBase* enemy)
 {
@@ -85,29 +79,26 @@ void StatePress::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028C914
- * Size:	000004
+/**
+ * @note Address: 0x8028C914
+ * @note Size: 0x4
  */
 void StatePress::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8028C918
- * Size:	000040
+/**
+ * @note Address: 0x8028C918
+ * @note Size: 0x40
  */
 void StateBorn::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* baby = static_cast<Obj*>(enemy);
+	Obj* baby = OBJ(enemy);
 	baby->createBornEffect();
-	baby->startMotion(5, nullptr);
+	baby->startMotion(BABYANIM_Born, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8028C958
- * Size:	0000D8
+/**
+ * @note Address: 0x8028C958
+ * @note Size: 0xD8
  */
 void StateBorn::exec(EnemyBase* enemy)
 {
@@ -130,52 +121,49 @@ void StateBorn::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028CA30
- * Size:	000004
+/**
+ * @note Address: 0x8028CA30
+ * @note Size: 0x4
  */
 void StateBorn::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8028CA34
- * Size:	000034
+/**
+ * @note Address: 0x8028CA34
+ * @note Size: 0x34
  */
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* baby             = static_cast<Obj*>(enemy);
+	Obj* baby             = OBJ(enemy);
 	baby->mTargetCreature = nullptr;
-	baby->startMotion(2, nullptr);
+	baby->startMotion(BABYANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8028CA68
- * Size:	000468
+/**
+ * @note Address: 0x8028CA68
+ * @note Size: 0x468
  */
 // NON-MATCHING
 void StateMove::exec(EnemyBase* enemy)
 {
-	Obj* baby = static_cast<Obj*>(enemy);
+	Obj* baby = OBJ(enemy);
 	if (baby->mHealth <= 0.0f) {
 		transit(baby, BABY_Dead, nullptr);
 		return;
 	}
 
-	Creature* creature = EnemyFunc::getNearestPikminOrNavi(baby, CG_PARMS(baby)->mGeneral.mViewAngle.mValue,
-	                                                       CG_PARMS(baby)->mGeneral.mSightRadius.mValue, nullptr, nullptr, nullptr);
+	Creature* creature = EnemyFunc::getNearestPikminOrNavi(baby, CG_GENERALPARMS(baby).mViewAngle.mValue,
+	                                                       CG_GENERALPARMS(baby).mSightRadius.mValue, nullptr, nullptr, nullptr);
 
 	if (creature) {
 
 		// Vector3f targetPos = creature->getPosition();
 		f32 angleDist = baby->turnToTarget(creature);
 
-		f32 limit   = PI * (DEG2RAD * *CG_PARMS(baby)->mGeneral.mMinAttackRange());
+		f32 limit   = PI * (DEG2RAD * CG_GENERALPARMS(baby).mMaxAttackAngle());
 		f32 absDist = FABS(angleDist);
 
 		if (absDist <= limit) {
-			f32 speed    = CG_PARMS(baby)->mGeneral.mMoveSpeed.mValue;
+			f32 speed    = CG_GENERALPARMS(baby).mMoveSpeed.mValue;
 			f32 sintheta = (f32)sin(baby->getFaceDir());
 			f32 y        = baby->getTargetVelocity().y;
 			f32 costheta = (f32)cos(baby->getFaceDir());
@@ -183,7 +171,7 @@ void StateMove::exec(EnemyBase* enemy)
 			baby->mTargetVelocity = Vector3f(speed * sintheta, y, speed * costheta);
 
 		} else {
-			f32 speed    = CG_PARMS(baby)->mGeneral.mMoveSpeed.mValue * 0.25f;
+			f32 speed    = CG_GENERALPARMS(baby).mMoveSpeed.mValue * 0.25f;
 			f32 sintheta = (f32)sin(baby->getFaceDir());
 			f32 y        = baby->getTargetVelocity().y;
 			f32 costheta = (f32)cos(baby->getFaceDir());
@@ -191,8 +179,8 @@ void StateMove::exec(EnemyBase* enemy)
 			baby->mTargetVelocity = Vector3f(speed * sintheta, y, speed * costheta);
 		}
 
-		if (baby->checkDistAndAngle(creature, angleDist, CG_PARMS(baby)->mGeneral.mMaxAttackRange.mValue,
-		                            CG_PARMS(baby)->mGeneral.mMinAttackRange.mValue)) {
+		if (baby->isTargetAttackable(creature, angleDist, CG_GENERALPARMS(baby).mMaxAttackRange.mValue,
+		                             CG_GENERALPARMS(baby).mMaxAttackAngle.mValue)) {
 			transit(baby, BABY_Attack, nullptr);
 		}
 
@@ -509,45 +497,42 @@ lbl_8028CE80:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8028CED0
- * Size:	000004
+/**
+ * @note Address: 0x8028CED0
+ * @note Size: 0x4
  */
 void StateMove::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8028CED4
- * Size:	000050
+/**
+ * @note Address: 0x8028CED4
+ * @note Size: 0x50
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mTargetVelocity = Vector3f(0.0f);
 	enemy->setEmotionExcitement();
-	enemy->startMotion(3, nullptr);
+	enemy->startMotion(BABYANIM_Attack, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8028CF24
- * Size:	000104
+/**
+ * @note Address: 0x8028CF24
+ * @note Size: 0x104
  */
 void StateAttack::exec(EnemyBase* enemy)
 {
-	Obj* baby = static_cast<Obj*>(enemy);
+	Obj* baby = OBJ(enemy);
 	if (baby->mCurAnim->mIsPlaying) {
 		if ((u32)baby->mCurAnim->mType == KEYEVENT_2) {
-			Parms* parms = static_cast<Parms*>(baby->mParms);
+			Parms* parms = CG_PARMS(baby);
 			EnemyFunc::attackNavi(baby, parms->mGeneral.mAttackRadius.mValue, parms->mGeneral.mAttackHitAngle.mValue,
 			                      parms->mGeneral.mAttackDamage.mValue, nullptr, nullptr);
 			EnemyFunc::eatPikmin(baby, nullptr);
 			int slotCount = baby->getSlotPikiNum();
 			if (slotCount == 0) {
-				baby->startMotion(4, nullptr);
+				baby->startMotion(BABYANIM_AttackFail, nullptr);
 			}
 		} else if ((u32)baby->mCurAnim->mType == KEYEVENT_3) {
-			Parms* parms = static_cast<Parms*>(baby->mParms);
+			Parms* parms = CG_PARMS(baby);
 			EnemyFunc::swallowPikmin(baby, parms->mProperParms.mPoisonDamage.mValue, nullptr);
 		} else if ((u32)baby->mCurAnim->mType == KEYEVENT_END) {
 			if (baby->mHealth <= 0.0f) {
@@ -558,10 +543,10 @@ void StateAttack::exec(EnemyBase* enemy)
 		}
 	}
 }
-/*
- * --INFO--
- * Address:	8028D028
- * Size:	000024
+
+/**
+ * @note Address: 0x8028D028
+ * @note Size: 0x24
  */
 void StateAttack::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 } // namespace Baby

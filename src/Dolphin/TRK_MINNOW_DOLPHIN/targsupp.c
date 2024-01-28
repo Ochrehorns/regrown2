@@ -1,27 +1,20 @@
-// clang-format off
-asm void TRKAccessFile(void)
-{
-	nofralloc
-	twi 31, r0, 0
-	blr 
-}
-asm void TRKOpenFile(void)
-{
-	nofralloc
-	twi 31, r0, 0
-	blr 
-}
+#include "Dolphin/os.h"
 
-asm void TRKCloseFile(void)
+ASM void targsupp(void) // encapsulating function to get the file to align properly
 {
+#ifdef __MWERKS__ // clang-format off
 	nofralloc
-	twi 31, r0, 0
-	blr 
+	entry TRKAccessFile
+		twi 31, r0, 0
+		blr
+	entry TRKOpenFile
+		twi 31, r0, 0
+		blr
+	entry TRKCloseFile
+		twi 31, r0, 0
+		blr
+	entry TRKPositionFile
+		twi 31, r0, 0
+		blr
+#endif // clang-format on
 }
-asm void TRKPositionFile(void)
-{
-	nofralloc
-	twi 31, r0, 0
-	blr 
-}
-// clang-format on

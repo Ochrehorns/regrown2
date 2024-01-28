@@ -9,10 +9,9 @@
 
 namespace Game {
 namespace Bomb {
-/*
- * --INFO--
- * Address:	803493F8
- * Size:	000078
+/**
+ * @note Address: 0x803493F8
+ * @note Size: 0x78
  */
 void FSM::init(EnemyBase*)
 {
@@ -21,10 +20,9 @@ void FSM::init(EnemyBase*)
 	registerState(new StateBomb(BOMB_Bomb));
 }
 
-/*
- * --INFO--
- * Address:	80349470
- * Size:	00003C
+/**
+ * @note Address: 0x80349470
+ * @note Size: 0x3C
  */
 StateWait::StateWait(int stateID)
     : State(stateID)
@@ -32,28 +30,26 @@ StateWait::StateWait(int stateID)
 	mName = "wait";
 }
 
-/*
- * --INFO--
- * Address:	803494AC
- * Size:	00005C
+/**
+ * @note Address: 0x803494AC
+ * @note Size: 0x5C
  */
 void Bomb::StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* bomb = static_cast<Obj*>(enemy);
-	bomb->startMotion(0, nullptr);
+	Obj* bomb = OBJ(enemy);
+	bomb->startMotion(BOMBANIM_HitStart, nullptr);
 	bomb->stopMotion();
 	bomb->setEmotionCaution();
 	_10 = 0;
 }
 
-/*
- * --INFO--
- * Address:	80349508
- * Size:	000148
+/**
+ * @note Address: 0x80349508
+ * @note Size: 0x148
  */
 void Bomb::StateWait::exec(EnemyBase* enemy)
 {
-	Obj* bomb = static_cast<Obj*>(enemy);
+	Obj* bomb = OBJ(enemy);
 	if ((bomb->_2BC != 0) && (bomb->mCaptureMatrix == nullptr)) {
 		_10++;
 		if (_10 > 200) {
@@ -64,6 +60,7 @@ void Bomb::StateWait::exec(EnemyBase* enemy)
 	if (!bomb->isStopMotion()) {
 		bomb->addDamage(sys->mDeltaTime, 1.0f);
 		bomb->mSoundObj->startSound(PSSE_EN_BOMB_LOOP, 0);
+
 	} else if (bomb->isAnimStart()) {
 		bomb->enableEvent(0, EB_NoInterrupt);
 		bomb->startMotion();
@@ -71,22 +68,21 @@ void Bomb::StateWait::exec(EnemyBase* enemy)
 		bomb->setEmotionExcitement();
 	}
 
-	if (bomb->mCurAnim->mIsPlaying != 0) {
+	if (bomb->mCurAnim->mIsPlaying) {
 		switch (bomb->mCurAnim->mType) {
-		case 2:
+		case KEYEVENT_2:
 			bomb->disableEvent(0, EB_NoInterrupt);
 			break;
-		case 1000:
+		case KEYEVENT_END:
 			transit(bomb, BOMB_Bomb, nullptr);
 			break;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	80349650
- * Size:	00003C
+/**
+ * @note Address: 0x80349650
+ * @note Size: 0x3C
  */
 StateBomb::StateBomb(int stateID)
     : State(stateID)
@@ -94,23 +90,21 @@ StateBomb::StateBomb(int stateID)
 	mName = "bomb";
 }
 
-/*
- * --INFO--
- * Address:	8034968C
- * Size:	000060
+/**
+ * @note Address: 0x8034968C
+ * @note Size: 0x60
  */
 void Bomb::StateBomb::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->disableEvent(0, EB_Cullable);
-	enemy->startMotion(1, nullptr);
+	enemy->startMotion(BOMBANIM_HitLoop, nullptr);
 	enemy->setEmotionExcitement();
 	_10 = 0;
 }
 
-/*
- * --INFO--
- * Address:	803496EC
- * Size:	0005C4
+/**
+ * @note Address: 0x803496EC
+ * @note Size: 0x5C4
  */
 void StateBomb::exec(EnemyBase* enemy)
 {
@@ -133,18 +127,18 @@ void StateBomb::exec(EnemyBase* enemy)
 			if (abcdPtr->create(&fxArg)) {
 				efghPtr->create(&fxArg);
 			}
-			static_cast<Obj*>(enemy)->mEfxLight->forceKill();
+			OBJ(enemy)->mEfxLight->forceKill();
 			enemy->mSoundObj->startSound(PSSE_PK_SE_BOMB, 0);
 
 			if (enemy->mWaterBox) {
-				static_cast<Obj*>(enemy)->bombEffInWater();
+				OBJ(enemy)->bombEffInWater();
 			}
 
 			cameraMgr->startVibration(12, effectPos, 2);
-			rumbleMgr->startRumble(15, effectPos, 2);
+			rumbleMgr->startRumble(15, effectPos, RUMBLEID_Both);
 
 			Vector3f position = enemy->getPosition();
-			Parms* parms      = static_cast<Parms*>(enemy->mParms);
+			Parms* parms      = CG_PARMS(enemy);
 			f32 offset        = parms->mProperParms.mBlastRangeHeight.mValue;
 			f32 max           = position.y + offset;
 			f32 min           = position.y - offset;
@@ -171,9 +165,9 @@ void StateBomb::exec(EnemyBase* enemy)
 							creature->stimulate(interBomb);
 
 						} else if (creature->isNavi() || creature->isPiki()) {
-							Creature* target = static_cast<Obj*>(enemy)->mCarrier;
+							Creature* target = OBJ(enemy)->mCarrier;
 
-							if (static_cast<Obj*>(enemy)->mCarrier == nullptr) {
+							if (OBJ(enemy)->mCarrier == nullptr) {
 								target = enemy;
 							}
 
@@ -186,7 +180,7 @@ void StateBomb::exec(EnemyBase* enemy)
 								pikiWeight = 200.0f;
 							}
 
-							f32 force = static_cast<Parms*>(enemy->mParms)->mGeneral.mAttackDamage.mValue;
+							f32 force = CG_GENERALPARMS(enemy).mAttackDamage.mValue;
 							sep *= pikiWeight;
 							sep.y = pikiWeight;
 

@@ -5,18 +5,16 @@
 namespace Game {
 namespace Cave {
 
-/*
- * --INFO--
- * Address:	80245664
- * Size:	000008
+/**
+ * @note Address: 0x80245664
+ * @note Size: 0x8
  * Matches!
  */
 RandMapChecker::RandMapChecker(MapNode* mapnode) { mMapNode = mapnode; }
 
-/*
- * --INFO--
- * Address:	8024566C
- * Size:	00007C
+/**
+ * @note Address: 0x8024566C
+ * @note Size: 0x7C
  * Matches!
  */
 bool RandMapChecker::isPutOnMap(MapNode* mapnode)
@@ -30,10 +28,9 @@ bool RandMapChecker::isPutOnMap(MapNode* mapnode)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	802456E8
- * Size:	0000F0
+/**
+ * @note Address: 0x802456E8
+ * @note Size: 0xF0
  * Description: Appears to check if map parts would overlap
  * Matches!
  */
@@ -61,10 +58,9 @@ bool RandMapChecker::isPartsOnParts(MapNode* mapnode)
 	return false;
 };
 
-/*
- * --INFO--
- * Address:	802457D8
- * Size:	000220
+/**
+ * @note Address: 0x802457D8
+ * @note Size: 0x220
  * Matches!
  */
 bool RandMapChecker::isDoorOnParts(MapNode* mapnode)
@@ -97,13 +93,13 @@ bool RandMapChecker::isDoorOnParts(MapNode* mapnode)
 
 		if (!b_flag) {
 			switch (mapnode->getDoorDirect(doorIndex)) {
-			case CD_UP:
+			case CD_Up:
 				outerY1--;
 				break;
-			case CD_LEFT:
+			case CD_Left:
 				outerX1--;
-			case CD_RIGHT:
-			case CD_DOWN:
+			case CD_Right:
+			case CD_Down:
 				break;
 			}
 
@@ -127,10 +123,9 @@ bool RandMapChecker::isDoorOnParts(MapNode* mapnode)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	802459F8
- * Size:	0001E8
+/**
+ * @note Address: 0x802459F8
+ * @note Size: 0x1E8
  * Matches!
  */
 bool RandMapChecker::isPartsOnDoor(MapNode* mapnode)
@@ -166,13 +161,13 @@ bool RandMapChecker::isPartsOnDoor(MapNode* mapnode)
 
 				if (!b_flag) {
 					switch (child->getDoorDirect(adjustInfoIndex)) {
-					case CD_UP:
+					case CD_Up:
 						innerY1--;
 						break;
-					case CD_LEFT:
+					case CD_Left:
 						innerX1--;
-					case CD_RIGHT:
-					case CD_DOWN:
+					case CD_Right:
+					case CD_Down:
 						break;
 					}
 
@@ -189,11 +184,10 @@ bool RandMapChecker::isPartsOnDoor(MapNode* mapnode)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80245BE0
- * Size:	00007C
- * Matches!
+/**
+ * @note Address: 0x80245BE0
+ * @note Size: 0x7C
+ *
  */
 bool RandMapChecker::isInnerBox(int outerX1, int outerY1, int outerX2, int outerY2, int innerX1, int innerY1, int innerX2, int innerY2)
 {
@@ -201,18 +195,16 @@ bool RandMapChecker::isInnerBox(int outerX1, int outerY1, int outerX2, int outer
 		if (outerY1 < innerY1) {
 			if (outerX2 > innerX1 && outerY2 > innerY1)
 				return true;
-		} else {
-			if (outerY1 < innerY2 && outerX2 > innerX1)
-				return true;
+		} else if (outerY1 < innerY2 && outerX2 > innerX1) {
+			return true;
 		}
 	} else {
 		if (outerX1 < innerX2) {
 			if (outerY1 < innerY1) {
 				if (outerY2 > innerY1)
 					return true;
-			} else {
-				if (outerY1 < innerY2)
-					return true;
+			} else if (outerY1 < innerY2) {
+				return true;
 			}
 		}
 	}

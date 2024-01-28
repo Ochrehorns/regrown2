@@ -2,7 +2,7 @@ NISHIMURA_FILES:=\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/nslibmath.o\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/ShadowCylinder.o\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/playCamera.o\
-	$(BUILD_DIR)/asm/plugProjectNishimuraU/shadowMgr.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/shadowMgr.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/MapUnit.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/MapNode.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/EnemyUnit.o\
@@ -16,7 +16,7 @@ NISHIMURA_FILES:=\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/MapCreator.o\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/RandMapScore.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/ItemUnit.o\
-	$(BUILD_DIR)/asm/plugProjectNishimuraU/RandItemUnit.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/RandItemUnit.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/GateUnit.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/RandGateUnit.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/ObjectLayout.o\
@@ -30,7 +30,7 @@ NISHIMURA_FILES:=\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/FrogState.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/FrogAnimator.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/FrogMgr.o\
-	$(BUILD_DIR)/asm/plugProjectNishimuraU/Frog.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/Frog.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/UjibMgr.o\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/Ujib.o\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/UjibState.o\
@@ -45,7 +45,7 @@ NISHIMURA_FILES:=\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/QurioneAnimator.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/RumbleData.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/MaroFrogMgr.o\
-	$(BUILD_DIR)/asm/plugProjectNishimuraU/MaroFrog.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/MaroFrog.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/RockState.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/RockAnimator.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/RockMgr.o\
@@ -77,10 +77,10 @@ NISHIMURA_FILES:=\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/TankState.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/TankAnimator.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/TankMgr.o\
-	$(BUILD_DIR)/asm/plugProjectNishimuraU/Tank.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/Tank.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/CatfishMgr.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/Catfish.o\
-	$(BUILD_DIR)/asm/plugProjectNishimuraU/TadpoleState.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/TadpoleState.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/TadpoleAnimator.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/TadpoleMgr.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/Tadpole.o\
@@ -140,8 +140,8 @@ NISHIMURA_FILES:=\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/DamagumoAnimator.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/DamagumoMgr.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/Damagumo.o\
-	$(BUILD_DIR)/asm/plugProjectNishimuraU/IKSystemMgr.o\
-	$(BUILD_DIR)/asm/plugProjectNishimuraU/IKSystemBase.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/IKSystemMgr.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/IKSystemBase.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/DamagumoShadow.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/KurageState.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/KurageAnimator.o\
@@ -180,7 +180,7 @@ NISHIMURA_FILES:=\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/BigFootMgr.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/BigFootShadow.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/BigFoot.o\
-	$(BUILD_DIR)/asm/plugProjectNishimuraU/SnakeWholeState.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/SnakeWholeState.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/SnakeWholeAnimator.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/SnakeWholeMgr.o\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/SnakeWhole.o\

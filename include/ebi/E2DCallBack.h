@@ -17,11 +17,21 @@ struct E2DCallBack_Base : public P2DScreen::CallBackNode {
 	{
 	}
 
-	virtual ~E2DCallBack_Base() { }                   // _08 (weak)
-	virtual void update();                            // _10 (weak)
-	virtual void draw(Graphics&, J2DGrafContext&);    // _14 (weak)
-	virtual void do_update();                         // _1C (weak)
-	virtual void do_draw(Graphics&, J2DGrafContext&); // _20 (weak)
+	virtual ~E2DCallBack_Base() { } // _08 (weak)
+	virtual void update()
+	{
+		if (mIsEnabled) {
+			do_update();
+		}
+	} // _10 (weak)
+	virtual void draw(Graphics& gfx, J2DGrafContext& graf)
+	{
+		if (mIsEnabled) {
+			do_draw(gfx, graf);
+		}
+	}                                                    // _14 (weak)
+	virtual void do_update() { }                         // _1C (weak)
+	virtual void do_draw(Graphics&, J2DGrafContext&) { } // _20 (weak)
 
 	// _00     = VTBL
 	// _00-_1C = P2DScreen::CallBackNode
@@ -56,10 +66,45 @@ struct E2DCallBack_AnmBase : public E2DCallBack_Base {
 };
 
 struct E2DCallBack_BlinkAlpha : public E2DCallBack_Base {
+	E2DCallBack_BlinkAlpha()
+	{
+		mWeight         = 0.0f;
+		mSpeed          = 0.03333f;
+		mIsTowardAlpha0 = true;
+		_29             = false;
+		mAlpha0         = 255;
+		mAlpha1         = 0;
+	}
 	virtual ~E2DCallBack_BlinkAlpha() { } // _08 (weak)
 	virtual void do_update();             // _1C
 
 	inline f32 getAlphaWeight() { return mWeight; }
+
+	inline void enable()
+	{
+		mAlpha0         = 255;
+		mAlpha1         = 85;
+		mIsEnabled      = true;
+		mSpeed          = sys->mDeltaTime * 3.33333333f;
+		mWeight         = 0.0f;
+		mIsTowardAlpha0 = true;
+		_29             = false;
+	}
+
+	inline void startToward0()
+	{
+		mIsEnabled      = true;
+		mSpeed          = sys->mDeltaTime * 1.6666666f;
+		mWeight         = 0.0f;
+		mIsTowardAlpha0 = true;
+		_29             = false;
+	}
+
+	inline void disable()
+	{
+		mIsTowardAlpha0 = false;
+		_29             = true;
+	}
 
 	// _00     = VTBL
 	// _00-_20 = E2DCallBack_Base
@@ -88,7 +133,11 @@ struct E2DCallBack_BlinkFontColor : public E2DCallBack_Base {
 	virtual void do_update();                 // _1C
 
 	void set(J2DTextBox*, J2DTextBox*);
-	void set(ebi::E2DFullFontColor&, ebi::E2DFullFontColor&);
+	void set(E2DFullFontColor& fontA, E2DFullFontColor& fontB)
+	{
+		mFonts[0] = fontA;
+		mFonts[1] = fontB;
+	}
 
 	inline void setColors(int i, J2DTextBox* pane)
 	{
@@ -101,24 +150,27 @@ struct E2DCallBack_BlinkFontColor : public E2DCallBack_Base {
 	inline void enable()
 	{
 		mIsEnabled      = true;
-		mSpeed          = sys->mDeltaTime * 3.333333f;
+		mSpeed          = sys->mDeltaTime * 3.33333333f;
 		mColor1Weight   = 0.0f;
 		mIsTowardColor1 = true;
 		_49             = 0;
 	}
 
-	// needs tweaking
-	inline void setPaneColors()
+	inline void disable()
 	{
-		mIsEnabled       = false;
-		J2DTextBox* pane = static_cast<J2DTextBox*>(mPane);
-		if (pane) {
-			pane->mCharColor.set(mFonts[0].mCol1);
-			pane->mGradientColor.set(mFonts[0].mCol2);
-			JUtility::TColor white = mFonts[0].mWhite;
-			pane->setWhite(white);
-			JUtility::TColor black = mFonts[0].mBlack;
-			pane->setBlack(black);
+		mIsTowardColor1 = false;
+		_49             = 1;
+	}
+
+	inline void setPaneColors(int colorID)
+	{
+		mIsEnabled = false;
+		if (mPane) {
+			J2DTextBox* pane = static_cast<J2DTextBox*>(mPane);
+			pane->setCharColor(mFonts[colorID].mCol1);
+			pane->setGradientColor(mFonts[colorID].mCol2);
+			pane->setWhite(mFonts[colorID].mWhite);
+			pane->setBlack(mFonts[colorID].mBlack);
 		}
 	}
 
@@ -135,7 +187,12 @@ struct E2DCallBack_CalcAnimation : public E2DCallBack_Base {
 	E2DCallBack_CalcAnimation() { }
 
 	virtual ~E2DCallBack_CalcAnimation() { } // _08 (weak)
-	virtual void do_update();                // _1C (weak)
+	virtual void do_update()
+	{
+		if (mPane->getTypeID() == 8) {
+			static_cast<J2DScreen*>(mPane)->animation();
+		}
+	} // _1C (weak)
 
 	// _00     = VTBL
 	// _00-_20 = E2DCallBack_Base
@@ -143,7 +200,7 @@ struct E2DCallBack_CalcAnimation : public E2DCallBack_Base {
 
 // Size: 0x40
 struct E2DCallBack_Purupuru : public E2DCallBack_Base {
-	E2DCallBack_Purupuru();
+	E2DCallBack_Purupuru() { mScale = 1.0f; }
 
 	virtual ~E2DCallBack_Purupuru() { } // _08 (weak)
 	virtual void do_update();           // _1C
@@ -157,11 +214,11 @@ struct E2DCallBack_Purupuru : public E2DCallBack_Base {
 struct E2DCallBack_WindowCursor : public E2DCallBack_Base {
 
 	E2DCallBack_WindowCursor()
-	    : _40(0)
-	    , _44(0)
+	    : mCounter(0)
+	    , mCounterMax(0)
 	{
-		mScale = 1.0f;
-		_68    = nullptr;
+		mScale      = 1.0f;
+		mWindowPane = nullptr;
 	}
 
 	virtual ~E2DCallBack_WindowCursor() { } // _08 (weak)
@@ -171,11 +228,11 @@ struct E2DCallBack_WindowCursor : public E2DCallBack_Base {
 	// _00-_20 = E2DCallBack_Base
 	JGeometry::TBox2f mBounds1;     // _20
 	JGeometry::TBox2f mBounds2;     // _30
-	u32 _40;                        // _40
-	u32 _44;                        // _44
+	u32 mCounter;                   // _40
+	u32 mCounterMax;                // _44
 	og::Screen::ScaleMgr mScaleMgr; // _48
 	f32 mScale;                     // _64
-	J2DPane* _68;                   // _68
+	J2DPane* mWindowPane;           // _68
 };
 } // namespace ebi
 

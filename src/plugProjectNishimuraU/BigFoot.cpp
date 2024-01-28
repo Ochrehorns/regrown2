@@ -16,24 +16,21 @@
 namespace Game {
 namespace BigFoot {
 
-/*
- * --INFO--
- * Address:	802C7EF0
- * Size:	000024
+/**
+ * @note Address: 0x802C7EF0
+ * @note Size: 0x24
  */
 void BigFootGroundCallBack::invokeOnGround(int footIdx, WaterBox* wbox) { mObj->createOnGroundEffect(footIdx, wbox); }
 
-/*
- * --INFO--
- * Address:	802C7F14
- * Size:	000024
+/**
+ * @note Address: 0x802C7F14
+ * @note Size: 0x24
  */
 void BigFootGroundCallBack::invokeOffGround(int footIdx, WaterBox* wbox) { mObj->createOffGroundEffect(footIdx, wbox); }
 
-/*
- * --INFO--
- * Address:	802C7F38
- * Size:	00016C
+/**
+ * @note Address: 0x802C7F38
+ * @note Size: 0x16C
  */
 Obj::Obj()
 {
@@ -46,17 +43,15 @@ Obj::Obj()
 	createMaterialAnimation();
 }
 
-/*
- * --INFO--
- * Address:	802C80A4
- * Size:	000004
+/**
+ * @note Address: 0x802C80A4
+ * @note Size: 0x4
  */
 void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-/*
- * --INFO--
- * Address:	802C80A8
- * Size:	000148
+/**
+ * @note Address: 0x802C80A8
+ * @note Size: 0x148
  */
 void Obj::onInit(CreatureInitArg* initArg)
 {
@@ -64,12 +59,12 @@ void Obj::onInit(CreatureInitArg* initArg)
 	EnemyBase::hardConstraintOn();
 	disableEvent(0, EB_PlatformCollEnabled);
 	disableEvent(0, EB_LeaveCarcass);
-	mStateTimer     = 0.0f;
-	mNextState      = BIGFOOT_NULL;
-	mTargetPosition = mHomePosition;
-	mShadowScale    = 0.0f;
-	_2DC            = false;
-	mIsSmoking      = false;
+	mStateTimer         = 0.0f;
+	mNextState          = BIGFOOT_NULL;
+	mTargetPosition     = mHomePosition;
+	mShadowScale        = 0.0f;
+	mUpdateMaterialAnim = false;
+	mIsSmoking          = false;
 	resetFlickWalkTimeMax();
 	mIsEnraged = false;
 	setupIKSystem();
@@ -81,17 +76,16 @@ void Obj::onInit(CreatureInitArg* initArg)
 	shadowMgr->delShadow(this);
 	startMaterialAnimation();
 	mFsm->start(this, BIGFOOT_Stay, nullptr);
-	if (gameSystem && gameSystem->mMode == GSM_PIKLOPEDIA) {
+	if (gameSystem && gameSystem->isZukanMode()) {
 		mFsm->transit(this, BIGFOOT_Land, nullptr); // land immediately if in piklopedia mode
 	} else {
 		doAnimationCullingOff();
 	}
 }
 
-/*
- * --INFO--
- * Address:	802C81F0
- * Size:	000044
+/**
+ * @note Address: 0x802C81F0
+ * @note Size: 0x44
  */
 void Obj::onKill(CreatureKillArg* killArg)
 {
@@ -99,10 +93,9 @@ void Obj::onKill(CreatureKillArg* killArg)
 	EnemyBase::onKill(killArg);
 }
 
-/*
- * --INFO--
- * Address:	802C8234
- * Size:	000050
+/**
+ * @note Address: 0x802C8234
+ * @note Size: 0x50
  */
 void Obj::doUpdate()
 {
@@ -111,10 +104,9 @@ void Obj::doUpdate()
 	updateIKSystem();
 }
 
-/*
- * --INFO--
- * Address:	802C8284
- * Size:	000034
+/**
+ * @note Address: 0x802C8284
+ * @note Size: 0x34
  */
 void Obj::doUpdateCommon()
 {
@@ -122,10 +114,9 @@ void Obj::doUpdateCommon()
 	updateBossBGM();
 }
 
-/*
- * --INFO--
- * Address:	802C82B8
- * Size:	000098
+/**
+ * @note Address: 0x802C82B8
+ * @note Size: 0x98
  */
 void Obj::doAnimationCullingOff()
 {
@@ -133,7 +124,7 @@ void Obj::doAnimationCullingOff()
 	doAnimationUpdateAnimator();
 	doAnimationIKSystem();
 
-	PSMTXCopy(mObjMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
+	PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
 	mModel->mJ3dModel->calc();
 
 	mCollTree->update();
@@ -143,24 +134,21 @@ void Obj::doAnimationCullingOff()
 	finishAnimationIKSystem();
 }
 
-/*
- * --INFO--
- * Address:	802C8350
- * Size:	000004
+/**
+ * @note Address: 0x802C8350
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	802C8354
- * Size:	000020
+/**
+ * @note Address: 0x802C8354
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	802C8374
- * Size:	00004C
+/**
+ * @note Address: 0x802C8374
+ * @note Size: 0x4C
  */
 void Obj::setFSM(FSM* fsm)
 {
@@ -169,10 +157,9 @@ void Obj::setFSM(FSM* fsm)
 	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	802C83C0
- * Size:	00003C
+/**
+ * @note Address: 0x802C83C0
+ * @note Size: 0x3C
  */
 void Obj::getShadowParam(ShadowParam& param)
 {
@@ -182,10 +169,9 @@ void Obj::getShadowParam(ShadowParam& param)
 	param.mSize                     = 0.1f;
 }
 
-/*
- * --INFO--
- * Address:	802C83FC
- * Size:	000050
+/**
+ * @note Address: 0x802C83FC
+ * @note Size: 0x50
  */
 bool Obj::needShadow()
 {
@@ -196,10 +182,9 @@ bool Obj::needShadow()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802C844C
- * Size:	00009C
+/**
+ * @note Address: 0x802C844C
+ * @note Size: 0x9C
  */
 bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* collpart)
 {
@@ -211,10 +196,9 @@ bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* collpart)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	802C84E8
- * Size:	0001AC
+/**
+ * @note Address: 0x802C84E8
+ * @note Size: 0x1AC
  */
 void Obj::collisionCallback(CollEvent& event)
 {
@@ -223,7 +207,7 @@ void Obj::collisionCallback(CollEvent& event)
 		if (creature && event.mCollisionObj && creature->isAlive() && creature->mBounceTriangle) {
 			if (creature->isNavi() || creature->isPiki()) {
 				if (isCollisionCheck(event.mHitPart)) {
-					InteractPress press(this, C_PARMS->mGeneral.mAttackDamage.mValue, nullptr);
+					InteractPress press(this, C_GENERALPARMS.mAttackDamage.mValue, nullptr);
 					creature->stimulate(press);
 				}
 			} else if (creature->isTeki() && isCollisionCheck(event.mHitPart)) {
@@ -236,10 +220,9 @@ void Obj::collisionCallback(CollEvent& event)
 	setCollEvent(event);
 }
 
-/*
- * --INFO--
- * Address:	802C8694
- * Size:	000044
+/**
+ * @note Address: 0x802C8694
+ * @note Size: 0x44
  */
 void Obj::doStartStoneState()
 {
@@ -249,15 +232,14 @@ void Obj::doStartStoneState()
 	startStoneStateBossAttackLoopBGM();
 }
 
-/*
- * --INFO--
- * Address:	802C86D8
- * Size:	00006C
+/**
+ * @note Address: 0x802C86D8
+ * @note Size: 0x6C
  */
 void Obj::doFinishStoneState()
 {
 	EnemyBase::doFinishStoneState();
-	EnemyFunc::flickStickPikmin(this, 1.0f, 10.0f, 0.0f, -1000.0f, nullptr);
+	EnemyFunc::flickStickPikmin(this, 1.0f, 10.0f, 0.0f, FLICK_BACKWARD_ANGLE, nullptr);
 	if (mIsSmoking) {
 		startPinchJointEffect();
 	}
@@ -266,36 +248,32 @@ void Obj::doFinishStoneState()
 	finishStoneStateBossAttackLoopBGM();
 }
 
-/*
- * --INFO--
- * Address:	802C8744
- * Size:	000020
+/**
+ * @note Address: 0x802C8744
+ * @note Size: 0x20
  */
 void Obj::doStartMovie() { effectDrawOff(); }
 
-/*
- * --INFO--
- * Address:	802C8764
- * Size:	000020
+/**
+ * @note Address: 0x802C8764
+ * @note Size: 0x20
  */
 void Obj::doEndMovie() { effectDrawOn(); }
 
-/*
- * --INFO--
- * Address:	802C8784
- * Size:	000060
+/**
+ * @note Address: 0x802C8784
+ * @note Size: 0x60
  */
 void Obj::getThrowupItemPosition(Vector3f* position)
 {
 	Matrixf* mat = mModel->getJoint("kosi")->getWorldMatrix();
-	*position    = mat->getBasis(3);
+	*position    = mat->getColumn(3);
 	position->y -= 100.0f;
 }
 
-/*
- * --INFO--
- * Address:	802C87E4
- * Size:	000014
+/**
+ * @note Address: 0x802C87E4
+ * @note Size: 0x14
  */
 void Obj::getThrowupItemVelocity(Vector3f* velocity)
 {
@@ -304,66 +282,63 @@ void Obj::getThrowupItemVelocity(Vector3f* velocity)
 	velocity->x = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	802C87F8
- * Size:	00008C
+/**
+ * @note Address: 0x802C87F8
+ * @note Size: 0x8C
  */
 void Obj::resetFlickWalkTimeMax()
 {
-	f32 travelTime = *C_PROPERPARMS.mNormalTravelTime();
-	f32 halfTime   = *C_PROPERPARMS.mNormalTravelTime() * 0.5f;
+	f32 travelTime = C_PROPERPARMS.mNormalTravelTime();
+	f32 halfTime   = C_PROPERPARMS.mNormalTravelTime() * 0.5f;
 
 	mFlickWalkTimeMax = halfTime + randWeightFloat(travelTime);
 }
 
-/*
- * --INFO--
- * Address:	802C8884
- * Size:	00008C
+/**
+ * @note Address: 0x802C8884
+ * @note Size: 0x8C
  */
 void Obj::setFlickWalkTimeMax()
 {
-	f32 travelTime = *C_PROPERPARMS.mPostShakeTravelTime();
-	f32 halfTime   = *C_PROPERPARMS.mPostShakeTravelTime() * 0.5f;
+	f32 travelTime = C_PROPERPARMS.mPostShakeTravelTime();
+	f32 halfTime   = C_PROPERPARMS.mPostShakeTravelTime() * 0.5f;
 
 	mFlickWalkTimeMax = halfTime + randWeightFloat(travelTime);
 }
 
-/*
- * --INFO--
- * Address:	802C8910
- * Size:	0003F0
+/**
+ * @note Address: 0x802C8910
+ * @note Size: 0x3F0
  */
 void Obj::getTargetPosition()
 {
-	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(*C_PARMS->mGeneral.mTerritoryRadius())) {
+	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
 		if (mIsEnraged) {
-			f32 adjustAngle = (randWeightFloat(2.0f * mIkSystemParms->_34) - mIkSystemParms->_34) * DEG2RAD * PI;
+			f32 adjustAngle = (randWeightFloat(2.0f * mIkSystemParms->mEnragedAngle) - mIkSystemParms->mEnragedAngle) * DEG2RAD * PI;
 			f32 randAngle   = mFaceDir + adjustAngle;
 			// different stomping behavior if enraged
-			mTargetPosition.x = *C_PROPERPARMS.mMovementOffset() * pikmin2_sinf(randAngle) + mPosition.x;
+			mTargetPosition.x = C_PROPERPARMS.mMovementOffset() * sinf(randAngle) + mPosition.x;
 			mTargetPosition.y = mPosition.y;
-			mTargetPosition.z = *C_PROPERPARMS.mMovementOffset() * pikmin2_cosf(randAngle) + mPosition.z;
+			mTargetPosition.z = C_PROPERPARMS.mMovementOffset() * cosf(randAngle) + mPosition.z;
 
 		} else {
 			ConditionNotStickClient condition(this);
-			Piki* piki = EnemyFunc::getNearestPikmin(this, C_PARMS->mGeneral.mViewAngle.mValue, C_PARMS->mGeneral.mSightRadius.mValue,
-			                                         nullptr, &condition);
+			Piki* piki = EnemyFunc::getNearestPikmin(this, C_GENERALPARMS.mViewAngle.mValue, C_GENERALPARMS.mSightRadius.mValue, nullptr,
+			                                         &condition);
 			if (piki) {
 				mTargetPosition = piki->getPosition();
 			} else if (sqrDistanceXZ(mPosition, mTargetPosition) < 625.0f) {
-				f32 range    = (C_PARMS->mGeneral.mTerritoryRadius.mValue - C_PARMS->mGeneral.mHomeRadius.mValue);
-				f32 randDist = C_PARMS->mGeneral.mHomeRadius.mValue + randWeightFloat(range);
+				f32 range    = (C_GENERALPARMS.mTerritoryRadius.mValue - C_GENERALPARMS.mHomeRadius.mValue);
+				f32 randDist = C_GENERALPARMS.mHomeRadius.mValue + randWeightFloat(range);
 				f32 ang2     = JMath::atanTable_.atan2_(mPosition.x - mHomePosition.x, mPosition.z - mHomePosition.z);
 				f32 ang1     = randWeightFloat(PI);
 
 				f32 ang3      = HALF_PI;
 				f32 randAngle = ang2 + ang1 + ang3; // dumb fix for regswap
 				// they're both sin??????? -EpochFlame
-				mTargetPosition.x = randDist * pikmin2_sinf(randAngle) + mHomePosition.x;
+				mTargetPosition.x = randDist * sinf(randAngle) + mHomePosition.x;
 				mTargetPosition.y = mHomePosition.y;
-				mTargetPosition.z = randDist * pikmin2_sinf(randAngle) + mHomePosition.z;
+				mTargetPosition.z = randDist * sinf(randAngle) + mHomePosition.z;
 			}
 		}
 	} else {
@@ -373,10 +348,9 @@ void Obj::getTargetPosition()
 	setIKSystemTargetPosition(mTargetPosition);
 }
 
-/*
- * --INFO--
- * Address:	802C8D00
- * Size:	00010C
+/**
+ * @note Address: 0x802C8D00
+ * @note Size: 0x10C
  */
 void Obj::createIKSystem()
 {
@@ -385,10 +359,9 @@ void Obj::createIKSystem()
 	mGroundCallBack = new BigFootGroundCallBack(this);
 }
 
-/*
- * --INFO--
- * Address:	802C8E0C
- * Size:	000124
+/**
+ * @note Address: 0x802C8E0C
+ * @note Size: 0x124
  */
 void Obj::setupIKSystem()
 {
@@ -408,150 +381,134 @@ void Obj::setupIKSystem()
 	mIkSystemMgr->mJointGroundCallBack = mGroundCallBack;
 }
 
-/*
- * --INFO--
- * Address:	802C8F30
- * Size:	000124
+/**
+ * @note Address: 0x802C8F30
+ * @note Size: 0x124
  */
 void Obj::setIKParameter()
 {
-	mIkSystemParms->_00 = 12;
-	mIkSystemParms->_04 = 10.0f;
-	mIkSystemParms->_08 = 40.0f;
-	mIkSystemParms->_28 = 0.5f;
-	mIkSystemParms->_38 = C_PARMS->mGeneral.mRotationalSpeed.mValue;
-	mIkSystemParms->_2C = C_PARMS->mGeneral.mMoveSpeed.mValue;
+	mIkSystemParms->mLegCount           = 12;
+	mIkSystemParms->mFootPositionOffset = 10.0f;
+	mIkSystemParms->mFootPositionRadius = 40.0f;
+	mIkSystemParms->mBendFactor         = 0.5f;
+	mIkSystemParms->mMaxTurnAngle       = C_GENERALPARMS.mMaxTurnAngle.mValue;
+	mIkSystemParms->mMoveSpeed          = C_GENERALPARMS.mMoveSpeed.mValue;
 
 	if (mIsEnraged) {
-		mIkSystemParms->_14           = C_PROPERPARMS.mBaseCoefficients.mValue;
-		mIkSystemParms->_18           = C_PROPERPARMS.mFp12.mValue;
-		mIkSystemParms->_1C           = C_PROPERPARMS.mFp13.mValue;
-		mIkSystemParms->_20           = C_PROPERPARMS.mFp15.mValue;
-		mIkSystemParms->_24           = C_PROPERPARMS.mFp14.mValue;
-		mIkSystemParms->mHeightOffset = C_PROPERPARMS.mFp16.mValue;
+		mIkSystemParms->mBottomJointMoveSpeed = C_PROPERPARMS.mEnragedBaseCoefficient.mValue;
+		mIkSystemParms->mRaiseSlowdownFactor  = C_PROPERPARMS.mEnragedRaiseSlowdownFactor.mValue;
+		mIkSystemParms->mDownwardAccelFactor  = C_PROPERPARMS.mEnragedDownwardAccelFactor.mValue;
+		mIkSystemParms->mMaxDecelFactor       = C_PROPERPARMS.mEnragedMaxDecelFactor.mValue;
+		mIkSystemParms->mMinDecelFactor       = C_PROPERPARMS.mEnragedMinDecelFactor.mValue;
+		mIkSystemParms->mHeightOffset         = C_PROPERPARMS.mEnragedLegSwing.mValue;
 	} else {
-		mIkSystemParms->_14           = C_PROPERPARMS.mBaseCoefficient.mValue;
-		mIkSystemParms->_18           = C_PROPERPARMS.mRaiseSlowdownFactor.mValue;
-		mIkSystemParms->_1C           = C_PROPERPARMS.mDownwardAccelFactor.mValue;
-		mIkSystemParms->_20           = C_PROPERPARMS.mMaxDecelFactor.mValue;
-		mIkSystemParms->_24           = C_PROPERPARMS.mMinDecelFactor.mValue;
-		mIkSystemParms->mHeightOffset = C_PROPERPARMS.mLegSwing.mValue;
+		mIkSystemParms->mBottomJointMoveSpeed = C_PROPERPARMS.mBaseCoefficient.mValue;
+		mIkSystemParms->mRaiseSlowdownFactor  = C_PROPERPARMS.mRaiseSlowdownFactor.mValue;
+		mIkSystemParms->mDownwardAccelFactor  = C_PROPERPARMS.mDownwardAccelFactor.mValue;
+		mIkSystemParms->mMaxDecelFactor       = C_PROPERPARMS.mMaxDecelFactor.mValue;
+		mIkSystemParms->mMinDecelFactor       = C_PROPERPARMS.mMinDecelFactor.mValue;
+		mIkSystemParms->mHeightOffset         = C_PROPERPARMS.mLegSwing.mValue;
 	}
 }
 
-/*
- * --INFO--
- * Address:	802C9054
- * Size:	000020
+/**
+ * @note Address: 0x802C9054
+ * @note Size: 0x20
  */
 void Obj::setIKSystemTargetPosition(Vector3f& targetPos) { mIkSystemMgr->mTargetPosition = targetPos; }
 
-/*
- * --INFO--
- * Address:	802C9074
- * Size:	000060
+/**
+ * @note Address: 0x802C9074
+ * @note Size: 0x60
  */
 void Obj::updateIKSystem()
 {
 	mIkSystemMgr->doUpdate();
-	mPosition   = Vector3f(mIkSystemMgr->_38);
+	mPosition   = Vector3f(mIkSystemMgr->mCentrePosition);
 	mFaceDir    = mIkSystemMgr->mFaceDir;
 	mRotation.y = mFaceDir;
 }
 
-/*
- * --INFO--
- * Address:	802C90D4
- * Size:	000060
+/**
+ * @note Address: 0x802C90D4
+ * @note Size: 0x60
  */
 void Obj::doAnimationIKSystem()
 {
 	mIkSystemMgr->setAnimationCallBack();
 	Vector3f translation = Vector3f(mIkSystemMgr->mTraceCentrePosition);
-	mObjMatrix.makeSRT(mScale, mRotation, translation);
+	mBaseTrMatrix.makeSRT(mScale, mRotation, translation);
 }
 
-/*
- * --INFO--
- * Address:	802C9134
- * Size:	000024
+/**
+ * @note Address: 0x802C9134
+ * @note Size: 0x24
  */
 void Obj::finishAnimationIKSystem() { mIkSystemMgr->resetAnimationCallBack(); }
 
-/*
- * --INFO--
- * Address:	802C9158
- * Size:	000024
+/**
+ * @note Address: 0x802C9158
+ * @note Size: 0x24
  */
 void Obj::startProgramedIK() { mIkSystemMgr->startProgramedIK(); }
 
-/*
- * --INFO--
- * Address:	802C917C
- * Size:	000024
+/**
+ * @note Address: 0x802C917C
+ * @note Size: 0x24
  */
 void Obj::startIKMotion() { mIkSystemMgr->startIKMotion(); }
 
-/*
- * --INFO--
- * Address:	802C91A0
- * Size:	000024
+/**
+ * @note Address: 0x802C91A0
+ * @note Size: 0x24
  */
 void Obj::finishIKMotion() { mIkSystemMgr->finishIKMotion(); }
 
-/*
- * --INFO--
- * Address:	802C91C4
- * Size:	000024
+/**
+ * @note Address: 0x802C91C4
+ * @note Size: 0x24
  */
 void Obj::forceFinishIKMotion() { mIkSystemMgr->forceFinishIKMotion(); }
 
-/*
- * --INFO--
- * Address:	802C91E8
- * Size:	000024
+/**
+ * @note Address: 0x802C91E8
+ * @note Size: 0x24
  */
 bool Obj::isFinishIKMotion() { return mIkSystemMgr->isFinishIKMotion(); }
 
-/*
- * --INFO--
- * Address:	802C920C
- * Size:	000024
+/**
+ * @note Address: 0x802C920C
+ * @note Size: 0x24
  */
 void Obj::startBlendMotion() { mIkSystemMgr->startBlendMotion(); }
 
-/*
- * --INFO--
- * Address:	802C9230
- * Size:	000024
+/**
+ * @note Address: 0x802C9230
+ * @note Size: 0x24
  */
 void Obj::finishBlendMotion() { mIkSystemMgr->finishBlendMotion(); }
 
-/*
- * --INFO--
- * Address:	802C9254
- * Size:	000020
+/**
+ * @note Address: 0x802C9254
+ * @note Size: 0x20
  */
 Vector3f Obj::getTraceCentrePosition() { return mIkSystemMgr->mTraceCentrePosition; }
 
-/*
- * --INFO--
- * Address:	802C9274
- * Size:	000024
+/**
+ * @note Address: 0x802C9274
+ * @note Size: 0x24
  */
-bool Obj::isCollisionCheck(CollPart* collpart) { return mIkSystemMgr->isCollisionCheck(collpart); }
+bool Obj::isCollisionCheck(CollPart* part) { return mIkSystemMgr->isCollisionCheck(part); }
 
-/*
- * --INFO--
- * Address:	802C9298
- * Size:	000048
+/**
+ * @note Address: 0x802C9298
+ * @note Size: 0x48
  */
 void Obj::createShadowSystem() { mShadowMgr = new BigFootShadowMgr(this); }
 
-/*
- * --INFO--
- * Address:	802C92E0
- * Size:	000074
+/**
+ * @note Address: 0x802C92E0
+ * @note Size: 0x74
  */
 void Obj::setupShadowSystem()
 {
@@ -563,41 +520,37 @@ void Obj::setupShadowSystem()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802C9354
- * Size:	000024
+/**
+ * @note Address: 0x802C9354
+ * @note Size: 0x24
  */
 void Obj::doAnimationShadowSystem() { mShadowMgr->update(); }
 
-/*
- * --INFO--
- * Address:	802C9378
- * Size:	000054
+/**
+ * @note Address: 0x802C9378
+ * @note Size: 0x54
  */
 void Obj::createMaterialAnimation() { mMatLoopAnimator = new Sys::MatLoopAnimator(); }
 
-/*
- * --INFO--
- * Address:	802C93CC
- * Size:	00003C
+/**
+ * @note Address: 0x802C93CC
+ * @note Size: 0x3C
  */
 void Obj::startMaterialAnimation()
 {
-	Mgr* mgr = static_cast<Mgr*>(mMgr);
+	Mgr* mgr = C_MGR;
 	mMatLoopAnimator->start((Sys::MatBaseAnimation*)mgr->mTevRegAnimation); // silly cast
 }
 
-/*
- * --INFO--
- * Address:	802C9408
- * Size:	0000F0
+/**
+ * @note Address: 0x802C9408
+ * @note Size: 0xF0
  */
 void Obj::updateMaterialAnimation()
 {
-	if (_2DC) {
+	if (mUpdateMaterialAnim) {
 		f32 maxFrame;
-		f32 currFrame = mMatLoopAnimator[0]._08;
+		f32 currFrame = mMatLoopAnimator[0].mCurrFrame;
 		if (mMatLoopAnimator[0].mAnimation) {
 			maxFrame = mMatLoopAnimator[0].mAnimation->getFrameMax();
 		} else {
@@ -617,15 +570,14 @@ void Obj::updateMaterialAnimation()
 			mShadowScale = 0.0f;
 		}
 	} else {
-		mMatLoopAnimator[0].setCurrentFrame((1.0f - mHealth / C_PARMS->mGeneral.mHealth.mValue) * 50.0f);
+		mMatLoopAnimator[0].setCurrentFrame((1.0f - mHealth / C_GENERALPARMS.mHealth.mValue) * 50.0f);
 		mMatLoopAnimator[0].animate(0.0f);
 	}
 }
 
-/*
- * --INFO--
- * Address:	802C94F8
- * Size:	000090
+/**
+ * @note Address: 0x802C94F8
+ * @note Size: 0x90
  */
 void Obj::setupCollision()
 {
@@ -638,10 +590,9 @@ void Obj::setupCollision()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802C9588
- * Size:	0000A4
+/**
+ * @note Address: 0x802C9588
+ * @note Size: 0xA4
  */
 void Obj::createItemAndEnemy()
 {
@@ -657,74 +608,68 @@ void Obj::createItemAndEnemy()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802C962C
- * Size:	0000C8
+/**
+ * @note Address: 0x802C962C
+ * @note Size: 0xC8
  */
 void Obj::startBossChargeBGM()
 {
 	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 	PSM::checkBoss(soundObj);
-	soundObj->jumpRequest(2);
+	soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_AttackPrep);
 }
 
-/*
- * --INFO--
- * Address:	802C96F4
- * Size:	0000C8
+/**
+ * @note Address: 0x802C96F4
+ * @note Size: 0xC8
  */
 void Obj::startBossAttackLoopBGM()
 {
 	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 	PSM::checkBoss(soundObj);
-	soundObj->jumpRequest(8);
+	soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_AttackLong);
 }
 
-/*
- * --INFO--
- * Address:	802C97BC
- * Size:	0000C8
+/**
+ * @note Address: 0x802C97BC
+ * @note Size: 0xC8
  */
 void Obj::finishBossAttackLoopBGM()
 {
 	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 	PSM::checkBoss(soundObj);
-	soundObj->jumpRequest(1);
+	soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_MainLoop);
 }
 
-/*
- * --INFO--
- * Address:	802C9884
- * Size:	0000D4
+/**
+ * @note Address: 0x802C9884
+ * @note Size: 0xD4
  */
 void Obj::startStoneStateBossAttackLoopBGM()
 {
 	if (mIsEnraged) {
 		PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 		PSM::checkBoss(soundObj);
-		soundObj->jumpRequest(1);
+		soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_MainLoop);
 	}
 }
 
-/*
- * --INFO--
- * Address:	802C9958
- * Size:	0000D4
+/**
+ * @note Address: 0x802C9958
+ * @note Size: 0xD4
  */
 void Obj::finishStoneStateBossAttackLoopBGM()
 {
 	if (mIsEnraged) {
 		PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 		PSM::checkBoss(soundObj);
-		soundObj->jumpRequest(8);
+		soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_AttackLong);
 	}
 }
 
-/*
- * --INFO--
- * Address:	802C9A2C
- * Size:	0000FC
+/**
+ * @note Address: 0x802C9A2C
+ * @note Size: 0xFC
  */
 void Obj::updateBossBGM()
 {
@@ -738,10 +683,9 @@ void Obj::updateBossBGM()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802C9B28
- * Size:	0000BC
+/**
+ * @note Address: 0x802C9B28
+ * @note Size: 0xBC
  */
 void Obj::resetBossAppearBGM()
 {
@@ -750,10 +694,9 @@ void Obj::resetBossAppearBGM()
 	soundObj->setAppearFlag(false);
 }
 
-/*
- * --INFO--
- * Address:	802C9BE4
- * Size:	0000BC
+/**
+ * @note Address: 0x802C9BE4
+ * @note Size: 0xBC
  */
 void Obj::setBossAppearBGM()
 {
@@ -762,10 +705,9 @@ void Obj::setBossAppearBGM()
 	soundObj->setAppearFlag(true);
 }
 
-/*
- * --INFO--
- * Address:	802C9CA0
- * Size:	0006C8
+/**
+ * @note Address: 0x802C9CA0
+ * @note Size: 0x6C8
  */
 void Obj::createEffect()
 {
@@ -796,10 +738,9 @@ void Obj::createEffect()
 	mBodyHairFX    = new efx::TOdamaFur1;
 }
 
-/*
- * --INFO--
- * Address:	802CA368
- * Size:	0001E4
+/**
+ * @note Address: 0x802CA368
+ * @note Size: 0x1E4
  */
 void Obj::setupEffect()
 {
@@ -830,10 +771,9 @@ void Obj::setupEffect()
 	mBodyHairFX->mMtx = mModel->getJoint("kosi")->getWorldMatrix();
 }
 
-/*
- * --INFO--
- * Address:	802CA54C
- * Size:	000228
+/**
+ * @note Address: 0x802CA54C
+ * @note Size: 0x228
  */
 void Obj::createOnGroundEffect(int footIdx, WaterBox* wbox)
 {
@@ -866,13 +806,12 @@ void Obj::createOnGroundEffect(int footIdx, WaterBox* wbox)
 
 	PSStartSoundVec(PSSE_EN_BIGFOOT_WALK, (Vec*)&mJointPositions[footIdx][3]);
 	cameraMgr->startVibration(6, effectPos, 2);
-	rumbleMgr->startRumble(14, effectPos, 2);
+	rumbleMgr->startRumble(14, effectPos, RUMBLEID_Both);
 }
 
-/*
- * --INFO--
- * Address:	802CA774
- * Size:	000164
+/**
+ * @note Address: 0x802CA774
+ * @note Size: 0x164
  */
 void Obj::createOffGroundEffect(int footIdx, WaterBox* wbox)
 {
@@ -886,7 +825,7 @@ void Obj::createOffGroundEffect(int footIdx, WaterBox* wbox)
 		getJAIObject()->startSound(PSSE_EN_BIGFOOT_RAISE_FAST, 0);
 
 	} else {
-		f32 healthRatio = mHealth / C_PARMS->mGeneral.mHealth.mValue;
+		f32 healthRatio = mHealth / C_GENERALPARMS.mHealth.mValue;
 		if (healthRatio < 0.175f) {
 			getJAIObject()->startSound(PSSE_EN_BIGFOOT_RAISE3, 0);
 		} else if (healthRatio < 0.35f) {
@@ -897,10 +836,9 @@ void Obj::createOffGroundEffect(int footIdx, WaterBox* wbox)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CA8D8
- * Size:	0001A0
+/**
+ * @note Address: 0x802CA8D8
+ * @note Size: 0x1A0
  */
 void Obj::startPinchJointEffect()
 {
@@ -928,10 +866,9 @@ void Obj::startPinchJointEffect()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CAA78
- * Size:	000058
+/**
+ * @note Address: 0x802CAA78
+ * @note Size: 0x58
  */
 void Obj::finishPinchJointEffect()
 {
@@ -940,10 +877,9 @@ void Obj::finishPinchJointEffect()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CAAD0
- * Size:	0001C0
+/**
+ * @note Address: 0x802CAAD0
+ * @note Size: 0x1C0
  */
 void Obj::startDeadEffect()
 {
@@ -972,10 +908,9 @@ void Obj::startDeadEffect()
 	finishPinchJointEffect();
 }
 
-/*
- * --INFO--
- * Address:	802CAC90
- * Size:	000254
+/**
+ * @note Address: 0x802CAC90
+ * @note Size: 0x254
  */
 void Obj::updatePinchLife()
 {
@@ -983,7 +918,7 @@ void Obj::updatePinchLife()
 		return;
 	}
 
-	f32 healthRatio = mHealth / C_PARMS->mGeneral.mHealth.mValue;
+	f32 healthRatio = mHealth / C_GENERALPARMS.mHealth.mValue;
 	if (mIsSmoking) {
 		if (healthRatio > 0.35f) {
 			finishPinchJointEffect();
@@ -997,10 +932,9 @@ void Obj::updatePinchLife()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CAEE4
- * Size:	000074
+/**
+ * @note Address: 0x802CAEE4
+ * @note Size: 0x74
  */
 void Obj::startFurEffect()
 {
@@ -1010,10 +944,9 @@ void Obj::startFurEffect()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CAF58
- * Size:	00006C
+/**
+ * @note Address: 0x802CAF58
+ * @note Size: 0x6C
  */
 void Obj::finishFurEffect()
 {
@@ -1023,10 +956,9 @@ void Obj::finishFurEffect()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CAFC4
- * Size:	000068
+/**
+ * @note Address: 0x802CAFC4
+ * @note Size: 0x68
  */
 void Obj::updateDeadFurEffect()
 {
@@ -1036,10 +968,9 @@ void Obj::updateDeadFurEffect()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CB02C
- * Size:	0001D8
+/**
+ * @note Address: 0x802CB02C
+ * @note Size: 0x1D8
  */
 void Obj::effectDrawOn()
 {
@@ -1079,10 +1010,9 @@ void Obj::effectDrawOn()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CB204
- * Size:	0001D8
+/**
+ * @note Address: 0x802CB204
+ * @note Size: 0x1D8
  */
 void Obj::effectDrawOff()
 {
@@ -1122,10 +1052,9 @@ void Obj::effectDrawOff()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CB3DC
- * Size:	000038
+/**
+ * @note Address: 0x802CB3DC
+ * @note Size: 0x38
  */
 void Obj::addShadowScale()
 {

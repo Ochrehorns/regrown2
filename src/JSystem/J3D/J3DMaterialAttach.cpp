@@ -3,85 +3,67 @@
 #include "JSystem/J3D/J3DMaterialAnm.h"
 #include "JSystem/J3D/J3DMaterial.h"
 #include "JSystem/J3D/J3DTypes.h"
-#include "types.h"
+#include "JSystem/J3D/J3DTexMtx.h"
 
-/*
-    Generated from dpostproc
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__16J3DMaterialTable
-    __vt__16J3DMaterialTable:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__16J3DMaterialTableFv
-        .4byte 0
-*/
-
-/*
- * --INFO--
- * Address:	80083C4C
- * Size:	000028
+/**
+ * @note Address: 0x80083C4C
+ * @note Size: 0x28
  */
 void J3DMaterialTable::clear()
 {
-	mCount1     = 0;
-	mCount2     = 0;
-	mMaterials1 = nullptr;
-	_0C         = nullptr;
-	mMaterials2 = nullptr;
-	mTexture    = nullptr;
-	_18         = nullptr;
-	_1C         = 0;
+	mMaterialNum       = 0;
+	mUniqueMaterialNum = 0;
+	mMaterials         = nullptr;
+	mMaterialNames     = nullptr;
+	mUniqueMaterials   = 0;
+	mTextures          = nullptr;
+	mTextureNames      = nullptr;
+	_1C                = 0;
 }
 
-/*
- * --INFO--
- * Address:	80083C74
- * Size:	000034
+/**
+ * @note Address: 0x80083C74
+ * @note Size: 0x34
  * __ct
  */
 J3DMaterialTable::J3DMaterialTable() { clear(); }
 
-/*
- * --INFO--
- * Address:	80083CA8
- * Size:	000048
+/**
+ * @note Address: 0x80083CA8
+ * @note Size: 0x48
  * __dt
  */
 J3DMaterialTable::~J3DMaterialTable() { }
 
-/*
- * --INFO--
- * Address:	80083CF0
- * Size:	000018
+/**
+ * @note Address: 0x80083CF0
+ * @note Size: 0x18
  */
 J3DMatColorAnm::J3DMatColorAnm()
-    : _00(0)
-    , _02(1)
+    : mIndex(0)
+    , mAnmFlag(1)
     , mAnm(nullptr)
 {
 }
 
-/*
- * --INFO--
- * Address:	80083D08
- * Size:	000024
+/**
+ * @note Address: 0x80083D08
+ * @note Size: 0x24
  */
 J3DTexNoAnm::J3DTexNoAnm()
-    : _04(0)
-    , _06(1)
+    : mIndex(0)
+    , mAnmFlag(1)
     , mAnm(nullptr)
 {
 }
 
-/*
- * --INFO--
- * Address:	80083D2C
- * Size:	0001C4
+/**
+ * @note Address: 0x80083D2C
+ * @note Size: 0x1C4
  */
 J3DErrType J3DMaterialTable::allocTexMtxAnimator(J3DAnmTextureSRTKey* p1, J3DTexMtxAnm** p2)
 {
-	u16 elementCount = p1->_14 / 3;
+	u16 elementCount = p1->mAnimTableNum1 / 3;
 	*p2              = new J3DTexMtxAnm[elementCount];
 	// J3DTexMtxAnm* v1 = new J3DTexMtxAnm[elementCount];
 	// *p2 = v1;
@@ -239,14 +221,13 @@ lbl_80083EDC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80083EF0
- * Size:	000018
+/**
+ * @note Address: 0x80083EF0
+ * @note Size: 0x18
  */
 J3DTexMtxAnm::J3DTexMtxAnm()
     : mIndex(0)
-    , _02(1)
+    , mAnmFlag(1)
     , mAnm(nullptr)
 {
 	/*
@@ -301,15 +282,14 @@ J3DTexMtxAnm::J3DTexMtxAnm()
 // 	return 0;
 // }
 
-/*
- * --INFO--
- * Address:	80083F08
- * Size:	00032C
+/**
+ * @note Address: 0x80083F08
+ * @note Size: 0x32C
  */
 J3DErrType J3DMaterialTable::allocTevRegAnimator(J3DAnmTevRegKey* tevRegKey, J3DTevColorAnm** tevColorAnms, J3DTevKColorAnm** tevKColorAnms)
 {
-	u16 tevColorAnmCount  = tevRegKey->mCountTevColorAnm;
-	u16 tevKColorAnmCount = tevRegKey->mCountTevKColorAnm;
+	u16 tevColorAnmCount  = tevRegKey->mCRegUpdateMaterialNum;
+	u16 tevKColorAnmCount = tevRegKey->mKRegUpdateMaterialNum;
 	*tevColorAnms         = new J3DTevColorAnm[tevColorAnmCount];
 
 	// s32 result = initTevColorAnms(tevRegKey, *tevColorAnms, tevColorAnmCount);
@@ -322,7 +302,7 @@ J3DErrType J3DMaterialTable::allocTevRegAnimator(J3DAnmTevRegKey* tevRegKey, J3D
 	}
 	for (u16 i = 0; i < tevColorAnmCount; i++) {
 		(*tevColorAnms)[i].mIndex = i;
-		(*tevColorAnms)[i].mKey   = tevRegKey;
+		(*tevColorAnms)[i].mAnm   = tevRegKey;
 	}
 
 	*tevKColorAnms = new J3DTevKColorAnm[tevKColorAnmCount];
@@ -336,7 +316,7 @@ J3DErrType J3DMaterialTable::allocTevRegAnimator(J3DAnmTevRegKey* tevRegKey, J3D
 	}
 	for (u16 i = 0; i < tevKColorAnmCount; i++) {
 		(*tevKColorAnms)[i].mIndex = i;
-		(*tevKColorAnms)[i].mKey   = tevRegKey;
+		(*tevKColorAnms)[i].mAnm   = tevRegKey;
 	}
 
 	return JET_Success;
@@ -574,15 +554,14 @@ J3DErrType J3DMaterialTable::allocTevRegAnimator(J3DAnmTevRegKey* tevRegKey, J3D
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80084234
- * Size:	000018
+/**
+ * @note Address: 0x80084234
+ * @note Size: 0x18
  */
 J3DTevKColorAnm::J3DTevKColorAnm()
     : mIndex(0)
-    , _02(1)
-    , mKey(nullptr)
+    , mAnmFlag(1)
+    , mAnm(nullptr)
 {
 	/*
 	li       r4, 0
@@ -594,15 +573,14 @@ J3DTevKColorAnm::J3DTevKColorAnm()
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8008424C
- * Size:	000018
+/**
+ * @note Address: 0x8008424C
+ * @note Size: 0x18
  */
 J3DTevColorAnm::J3DTevColorAnm()
     : mIndex(0)
-    , _02(1)
-    , mKey(nullptr)
+    , mAnmFlag(1)
+    , mAnm(nullptr)
 {
 	/*
 	li       r4, 0
@@ -614,79 +592,71 @@ J3DTevColorAnm::J3DTevColorAnm()
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80084264
- * Size:	0000AC
+/**
+ * @note Address: 0x80084264
+ * @note Size: 0xAC
  */
-void J3DMaterialTable::removeTexMtxAnimator(J3DAnmTextureSRTKey*)
+bool J3DMaterialTable::removeTexMtxAnimator(J3DAnmTextureSRTKey* anm)
 {
-	/*
-	lis      r5, 0x55555556@ha
-	lhz      r0, 0x14(r4)
-	addi     r5, r5, 0x55555556@l
-	li       r10, 0
-	mulhw    r5, r5, r0
-	li       r11, 0
-	srwi     r0, r5, 0x1f
-	add      r0, r5, r0
-	clrlwi   r7, r0, 0x10
-	b        lbl_800842FC
+	u16 count  = anm->getUpdateMaterialNum();
+	bool found = false;
+	for (u16 i = 0; i < count; i++) {
+		u16 matID = anm->mUpdateMaterialID[i];
+		if (matID != 0xffff) {
+			J3DMaterialAnm* matanm = mMaterials[matID]->getMaterialAnm();
+			u8 id                  = anm->mUpdateTexMtxID[i];
 
-lbl_8008428C:
-	lwz      r5, 0x2c(r4)
-	rlwinm   r0, r11, 1, 0xf, 0x1e
-	clrlwi   r9, r11, 0x10
-	lhzx     r0, r5, r0
-	cmplwi   r0, 0xffff
-	beq      lbl_800842F8
-	lwz      r6, 8(r3)
-	rlwinm   r5, r0, 2, 0xe, 0x1d
-	lis      r0, 0xc000
-	lwzx     r5, r6, r5
-	lwz      r8, 0x3c(r5)
-	cmplw    r8, r0
-	bge      lbl_800842C4
-	b        lbl_800842C8
+			if (!matanm) {
+				found = true;
+				continue;
+			}
 
-lbl_800842C4:
-	li       r8, 0
-
-lbl_800842C8:
-	lwz      r5, 0x28(r4)
-	cmplwi   r8, 0
-	lbzx     r0, r5, r9
-	bne      lbl_800842E0
-	li       r10, 1
-	b        lbl_800842F8
-
-lbl_800842E0:
-	cmplwi   r0, 0xff
-	beq      lbl_800842F8
-	rlwinm   r5, r0, 3, 0x15, 0x1c
-	li       r6, 0
-	addi     r0, r5, 0x16
-	sthx     r6, r8, r0
-
-lbl_800842F8:
-	addi     r11, r11, 1
-
-lbl_800842FC:
-	clrlwi   r0, r11, 0x10
-	cmplw    r0, r7
-	blt      lbl_8008428C
-	mr       r3, r10
-	blr
-	*/
+			if (id != 0xff) {
+				matanm->mTexMtxAnmList[id].mAnmFlag = 0;
+			}
+		}
+	}
+	return found;
 }
 
-/*
- * --INFO--
- * Address:	80084310
- * Size:	00011C
+/**
+ * @note Address: 0x80084310
+ * @note Size: 0x11C
  */
-void J3DMaterialTable::removeTevRegAnimator(J3DAnmTevRegKey*)
+bool J3DMaterialTable::removeTevRegAnimator(J3DAnmTevRegKey* anm)
 {
+	u16 count  = anm->getCRegUpdateMaterialNum();
+	bool found = false;
+	u16 kcount = anm->getKRegUpdateMaterialNum();
+
+	for (u16 i = 0; i < count; i++) {
+		u16 matID = anm->getCRegUpdateMaterialID(i);
+		if (matID != 0xffff) {
+			J3DMaterialAnm* matanm = mMaterials[matID]->getMaterialAnm();
+			u8 id                  = anm->mCRegKeyTable[i]._18[0];
+
+			if (!matanm) {
+				found = true;
+				continue;
+			}
+			matanm->mTevColAnmList[id].mAnmFlag = 0;
+		}
+	}
+
+	for (u16 i = 0; i < kcount; i++) {
+		u16 matID = anm->getKRegUpdateMaterialID(i);
+		if (matID != 0xffff) {
+			J3DMaterialAnm* matanm = mMaterials[matID]->getMaterialAnm();
+
+			u8 id = anm->mKRegKeyTable[i]._18[0];
+			if (!matanm) {
+				found = true;
+				continue;
+			}
+			matanm->mTevKColAnmList[id].mAnmFlag = 0;
+		}
+	}
+	return found;
 	/*
 	lhz      r9, 0xc(r4)
 	li       r5, 0
@@ -786,13 +756,39 @@ lbl_80084418:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8008442C
- * Size:	0000BC
+/**
+ * @note Address: 0x8008442C
+ * @note Size: 0xBC
  */
-void J3DMaterialTable::entryMatColorAnimator(J3DAnmColor*)
+J3DErrType J3DMaterialTable::entryMatColorAnimator(J3DAnmColor* anm)
 {
+	J3DErrType result = JET_Success;
+	const u16 count   = anm->getUpdateMaterialNum();
+
+	if (_1C == 1) {
+		return JET_LockedModelData;
+	}
+
+	for (u16 i = 0; i < count; i++) {
+		u16 matID = anm->getUpdateMaterialID(i);
+		if (matID != 0xffff) {
+			J3DMaterialAnm* matanm = mMaterials[matID]->getMaterialAnm();
+
+			if (!matanm) {
+				result = JET_NoMatAnm;
+				continue;
+			}
+
+			J3DMatColorAnm newanm(anm, i, 1);
+
+			if (newanm.getIndex() == 0) {
+				matanm->mMatColAnmList[0].mAnmFlag = 0;
+			} else {
+				matanm->mMatColAnmList[0] = newanm;
+			}
+		}
+	}
+	return result;
 	/*
 	stwu     r1, -0x10(r1)
 	li       r8, 0
@@ -862,13 +858,79 @@ lbl_800844E0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800844E8
- * Size:	000380
+/**
+ * @note Address: 0x800844E8
+ * @note Size: 0x380
  */
-void J3DMaterialTable::entryTexMtxAnimator(J3DAnmTextureSRTKey*)
+J3DErrType J3DMaterialTable::entryTexMtxAnimator(J3DAnmTextureSRTKey* anm)
 {
+	J3DErrType result = JET_Success;
+	const u16 count   = anm->getUpdateMaterialNum();
+
+	if (_1C == 1) {
+		return JET_LockedModelData;
+	}
+
+	for (u16 i = 0; i < count; i++) {
+		u16 matID = anm->getUpdateMaterialID(i);
+		if (matID != 0xffff) {
+			J3DMaterial* mat       = mMaterials[matID];
+			u8 texmtxid            = anm->mUpdateTexMtxID[i];
+			J3DMaterialAnm* matanm = mat->getMaterialAnm();
+
+			if (!matanm) {
+				result = JET_NoMatAnm;
+				continue;
+			}
+
+			if (texmtxid != 255 && mat->mTexGenBlock->getTexMtx(texmtxid) == nullptr) {
+				J3DTexMtx* mtx = new J3DTexMtx;
+				result         = JET_OutOfMemory;
+				mat->mTexGenBlock->setTexMtx(texmtxid, mtx);
+			}
+		}
+	}
+
+	if (result == JET_Success) {
+		return result;
+	}
+
+	if (_1C == 1) {
+		return JET_LockedModelData;
+	}
+
+	for (u16 i = 0; i < count; i++) {
+		u16 matID = anm->getUpdateMaterialID(i);
+		if (matID != 0xffff) {
+			J3DMaterial* mat       = mMaterials[matID];
+			J3DMaterialAnm* matanm = mat->getMaterialAnm();
+			u8 texmtxid            = anm->mUpdateTexMtxID[i];
+
+			if (!matanm) {
+				result = JET_NoMatAnm;
+				continue;
+			}
+
+			if (texmtxid != 255) {
+				if (mat->mTexGenBlock->getTexCoord(texmtxid)) {
+					mat->mTexGenBlock->getTexCoord(texmtxid)->mTexGenMtx = texmtxid + 3 + GX_TEXMTX0;
+				}
+				J3DTexMtx* mtx = mat->mTexGenBlock->getTexMtx(texmtxid);
+				mtx->mTexMtxInfo.mInfo |= anm->mTexMtxCalcType << 7;
+				mtx->mTexMtxInfo.mCenter = anm->_40[texmtxid];
+
+				J3DTexMtxAnm newanm(anm, i, 1);
+
+				if (newanm.mIndex == 0) {
+					matanm->mTexMtxAnmList[texmtxid].mAnmFlag = 0;
+				} else {
+					matanm->mTexMtxAnmList[texmtxid] = newanm;
+				}
+			}
+		}
+	}
+
+	return result;
 	/*
 	stwu     r1, -0x40(r1)
 	mflr     r0
@@ -1137,13 +1199,61 @@ lbl_80084854:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80084868
- * Size:	000198
+/**
+ * @note Address: 0x80084868
+ * @note Size: 0x198
  */
-void J3DMaterialTable::entryTevRegAnimator(J3DAnmTevRegKey*)
+J3DErrType J3DMaterialTable::entryTevRegAnimator(J3DAnmTevRegKey* anm)
 {
+	u16 count        = anm->getCRegUpdateMaterialNum();
+	J3DErrType found = JET_Success;
+	u16 kcount       = anm->getKRegUpdateMaterialNum();
+
+	if (_1C == 1) {
+		return JET_LockedModelData;
+	}
+
+	for (u16 i = 0; i < count; i++) {
+		u16 matID = anm->getCRegUpdateMaterialID(i);
+		if (matID != 0xffff) {
+			J3DMaterialAnm* matanm = mMaterials[matID]->getMaterialAnm();
+			u8 index               = anm->getCRegUpdateMaterialID(i);
+
+			if (!matanm) {
+				found = JET_NoMatAnm;
+				continue;
+			}
+
+			J3DTevColorAnm newanm(anm, i, 1);
+
+			if (newanm.mIndex == 0) {
+				matanm->mTevColAnmList[index].mAnmFlag = 0;
+			} else {
+				matanm->mTevColAnmList[index] = newanm;
+			}
+		}
+	}
+
+	for (u16 i = 0; i < kcount; i++) {
+		u16 matID = anm->getKRegUpdateMaterialID(i);
+		if (matID != 0xffff) {
+			J3DMaterialAnm* matanm = mMaterials[matID]->getMaterialAnm();
+			u8 index               = anm->getKRegUpdateMaterialID(i);
+			if (!matanm) {
+				found = JET_NoMatAnm;
+				continue;
+			}
+
+			J3DTevKColorAnm newanm(anm, i, 1);
+
+			if (newanm.mIndex == 0) {
+				matanm->mTevKColAnmList[index].mAnmFlag = 0;
+			} else {
+				matanm->mTevKColAnmList[index] = newanm;
+			}
+		}
+	}
+	return found;
 	/*
 	stwu     r1, -0x20(r1)
 	li       r5, 0

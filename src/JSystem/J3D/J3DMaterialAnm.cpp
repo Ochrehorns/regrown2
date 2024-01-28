@@ -10,10 +10,9 @@
 #include "JSystem/J3D/J3DTypes.h"
 #include "types.h"
 
-/*
- * --INFO--
- * Address:	8006A0F4
- * Size:	000070
+/**
+ * @note Address: 0x8006A0F4
+ * @note Size: 0x70
  * initialize__14J3DMaterialAnmFv
  */
 void J3DMaterialAnm::initialize()
@@ -35,10 +34,9 @@ void J3DMaterialAnm::initialize()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8006A164
- * Size:	0001EC
+/**
+ * @note Address: 0x8006A164
+ * @note Size: 0x1EC
  * calc__14J3DMaterialAnmCFP11J3DMaterial
  */
 void J3DMaterialAnm::calc(J3DMaterial* material) const
@@ -59,20 +57,17 @@ void J3DMaterialAnm::calc(J3DMaterial* material) const
 	}
 	for (u32 i = 0; i < 3; i++) {
 		if (mTevColAnmList[i].getAnmFlag()) {
-			GXColorS10* color = material->getTevBlock()->getTevColor(i);
-			mTevColAnmList[i].calc(color);
+			mTevColAnmList[i].calc(material->getTevBlock()->getTevColor(i));
 		}
 	}
 	for (u32 i = 0; i < 4; i++) {
 		if (mTevKColAnmList[i].getAnmFlag()) {
-			GXColor* color = material->mTevBlock->getTevKColor(i);
-			mTevKColAnmList[i].calc(color);
+			mTevKColAnmList[i].calc(material->mTevBlock->getTevKColor(i));
 		}
 	}
 	for (u32 i = 0; i < 8; i++) {
 		if (mTexMtxAnmList[i].getAnmFlag()) {
-			J3DTextureSRTInfo* info = &material->mTexGenBlock->getTexMtx(i)->mSrtInfo;
-			mTexMtxAnmList[i].calc(info);
+			mTexMtxAnmList[i].calc(&material->mTexGenBlock->getTexMtx(i)->mTexMtxInfo.mSRT);
 		}
 	}
 

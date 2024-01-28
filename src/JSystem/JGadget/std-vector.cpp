@@ -2,56 +2,32 @@
 #include "JSystem/JGadget/vector.h"
 #include "types.h"
 
-/*
-    Generated from dpostproc
-*/
-
 typedef JGadget::TVector<void*, JGadget::TAllocator> TVPVBase;
 
 namespace JGadget {
-/*
- * --INFO--
- * Address:	8002766C
- * Size:	000008
+/**
+ * @note Address: 0x8002766C
+ * @note Size: 0x8
  */
-u32 vector::extend_default(unsigned long, unsigned long, unsigned long)
-{
-	/*
-	.loc_0x0:
-	  rlwinm    r3,r4,1,0,30
-	  blr
-	*/
-}
+u32 vector::extend_default(u32 p1, u32 p2, u32 p3) { return p2 * 2; }
 
-/*
- * --INFO--
- * Address:	80027674
- * Size:	00002C
+/**
+ * @note Address: 0x80027674
+ * @note Size: 0x2C
  * __ct__Q27JGadget20TVector_pointer_voidFRCQ27JGadget14TAllocator<Pv>
  */
-TVector_pointer_void::TVector_pointer_void(const TAllocator<void*>& allocator)
-    : TVector(allocator)
+TVector_pointer_void::TVector_pointer_void(const TVoidAllocator& allocator)
 {
-	/*
-	.loc_0x0:
-	  lbz       r0, 0x0(r4)
-	  li        r5, 0
-	  lis       r4, 0x8002
-	  stb       r0, 0x0(r3)
-	  addi      r0, r4, 0x766C
-	  stw       r5, 0x4(r3)
-	  lwz       r4, 0x4(r3)
-	  stw       r4, 0x8(r3)
-	  stw       r5, 0xC(r3)
-	  stw       r0, 0x10(r3)
-	  blr
-	*/
+	_00     = allocator._00;
+	_04     = nullptr;
+	mBegin  = _04;
+	mEnd    = nullptr;
+	mExtend = vector::extend_default;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000104
+/**
+ * @note Address: N/A
+ * @note Size: 0x104
  */
 template <>
 TVPVBase::~TVector()
@@ -59,20 +35,18 @@ TVPVBase::~TVector()
 	// UNUSED FUNCTION
 }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	000030
+// /**
+//  * @note Address: N/A
+//  * @note Size: 0x30
 //  */
 // TVector_pointer_void::TVector_pointer_void(u32, void* const&, const JGadget::TAllocator<void*>& allocator)
 // {
 // 	// UNUSED FUNCTION
 // }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	000064
+// /**
+//  * @note Address: N/A
+//  * @note Size: 0x64
 //  */
 // template <>
 // TVPVBase::TVector(u32, void* const&, const TAllocator<void*>&)
@@ -80,10 +54,9 @@ TVPVBase::~TVector()
 // 	// UNUSED FUNCTION
 // }
 
-/*
- * --INFO--
- * Address:	800276A0
- * Size:	000078
+/**
+ * @note Address: 0x800276A0
+ * @note Size: 0x78
  */
 template <>
 void TVPVBase::insert(void**, u32, void* const&)
@@ -131,10 +104,9 @@ void TVPVBase::insert(void**, u32, void* const&)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80027718
- * Size:	000470
+/**
+ * @note Address: 0x80027718
+ * @note Size: 0x470
  */
 template <>
 void TVPVBase::Insert_raw(void**, u32)
@@ -500,10 +472,9 @@ void TVPVBase::Insert_raw(void**, u32)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000054
+/**
+ * @note Address: N/A
+ * @note Size: 0x54
  */
 // template <>
 // TVPVBase::Destructed_deallocate_::~Destructed_deallocate_()
@@ -511,10 +482,9 @@ void TVPVBase::Insert_raw(void**, u32)
 // 	// UNUSED FUNCTION
 // }
 
-/*
- * --INFO--
- * Address:	80027B88
- * Size:	000108
+/**
+ * @note Address: 0x80027B88
+ * @note Size: 0x108
  */
 TVector_pointer_void::~TVector_pointer_void()
 {
@@ -604,10 +574,9 @@ lbl_80027C74:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80027C90
- * Size:	000020
+/**
+ * @note Address: 0x80027C90
+ * @note Size: 0x20
  */
 void TVector_pointer_void::insert(void**, void* const&)
 {
@@ -620,10 +589,9 @@ void TVector_pointer_void::insert(void**, void* const&)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80027CB0
- * Size:	000058
+/**
+ * @note Address: 0x80027CB0
+ * @note Size: 0x58
  */
 template <>
 void TVPVBase::insert(void**, void* const&)
@@ -655,30 +623,27 @@ void TVPVBase::insert(void**, void* const&)
 	*/
 }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	000020
+// /**
+//  * @note Address: N/A
+//  * @note Size: 0x20
 //  */
-// void TVector_pointer_void::insert(void**, unsigned long, void* const&)
+// void TVector_pointer_void::insert(void**, u32, void* const&)
 // {
 // 	// UNUSED FUNCTION
 // }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	0000BC
+// /**
+//  * @note Address: N/A
+//  * @note Size: 0xBC
 //  */
 // void TVector_pointer_void::erase(void**)
 // {
 // 	// UNUSED FUNCTION
 // }
 
-/*
- * --INFO--
- * Address:	80027D08
- * Size:	0000B8
+/**
+ * @note Address: 0x80027D08
+ * @note Size: 0xB8
  */
 void TVector_pointer_void::erase(void**, void**)
 {
@@ -744,20 +709,18 @@ lbl_80027DAC:
 	*/
 }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	000020
+// /**
+//  * @note Address: N/A
+//  * @note Size: 0x20
 //  */
-// void TVector_pointer_void::assign(unsigned long, void* const&)
+// void TVector_pointer_void::assign(u32, void* const&)
 // {
 // 	// UNUSED FUNCTION
 // }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000DC
+/**
+ * @note Address: N/A
+ * @note Size: 0xDC
  */
 template <>
 void TVPVBase::assign(u32, void* const&)
@@ -765,20 +728,18 @@ void TVPVBase::assign(u32, void* const&)
 	// UNUSED FUNCTION
 }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	000020
+// /**
+//  * @note Address: N/A
+//  * @note Size: 0x20
 //  */
-// void TVector_pointer_void::resize(unsigned long, void* const&)
+// void TVector_pointer_void::resize(u32, void* const&)
 // {
 // 	// UNUSED FUNCTION
 // }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00005C
+/**
+ * @note Address: N/A
+ * @note Size: 0x5C
  */
 template <>
 void TVPVBase::resize(u32, void* const&)
@@ -786,10 +747,9 @@ void TVPVBase::resize(u32, void* const&)
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00013C
+/**
+ * @note Address: N/A
+ * @note Size: 0x13C
  */
 template <>
 void TVPVBase::Resize_raw(u32)
@@ -797,30 +757,27 @@ void TVPVBase::Resize_raw(u32)
 	// UNUSED FUNCTION
 }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	00013C
+// /**
+//  * @note Address: N/A
+//  * @note Size: 0x13C
 //  */
-// void JGadget::TVector_pointer_void::reserve(unsigned long)
+// void JGadget::TVector_pointer_void::reserve(u32)
 // {
 // 	// UNUSED FUNCTION
 // }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	000030
+// /**
+//  * @note Address: N/A
+//  * @note Size: 0x30
 //  */
 // void JGadget::TVector_pointer_void::operator=(TVector_pointer_void const&)
 // {
 // 	// UNUSED FUNCTION
 // }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000368
+/**
+ * @note Address: N/A
+ * @note Size: 0x368
  */
 template <>
 void TVPVBase::operator=(const TVPVBase& rhs)
@@ -828,22 +785,20 @@ void TVPVBase::operator=(const TVPVBase& rhs)
 	// UNUSED FUNCTION
 }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	000020
+// /**
+//  * @note Address: N/A
+//  * @note Size: 0x20
 //  */
-// void JGadget::TVector_pointer_void::Insert_raw(void**, unsigned long)
+// void JGadget::TVector_pointer_void::Insert_raw(void**, u32)
 // {
 // 	// UNUSED FUNCTION
 // }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	000020
+// /**
+//  * @note Address: N/A
+//  * @note Size: 0x20
 //  */
-// void JGadget::TVector_pointer_void::Resize_raw(unsigned long)
+// void JGadget::TVector_pointer_void::Resize_raw(u32)
 // {
 // 	// UNUSED FUNCTION
 // }

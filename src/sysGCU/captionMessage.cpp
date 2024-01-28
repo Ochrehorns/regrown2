@@ -4,17 +4,25 @@
 namespace P2JME {
 namespace Caption {
 
-/*
- * --INFO--
- * Address:	80450FC0
- * Size:	00000C
+/**
+ * @note Address: N/A
+ * @note Size: 0x44
  */
-void TRenderingProcessor::doGetDrawInfo(Window::DrawInfo* info) { info->_20 = 0.266667f; }
+TRenderingProcessor::TRenderingProcessor(JMessage::TReference* ref)
+    : Window::TRenderingProcessor(ref)
+{
+	_144 = 1.0f;
+}
 
-/*
- * --INFO--
- * Address:	80450FCC
- * Size:	0001EC
+/**
+ * @note Address: 0x80450FC0
+ * @note Size: 0xC
+ */
+void TRenderingProcessor::doGetDrawInfo(Window::DrawInfo* info) { info->mTimeLimit = 0.26666669f; }
+
+/**
+ * @note Address: 0x80450FCC
+ * @note Size: 0x1EC
  */
 BOOL TRenderingProcessor::doDrawCommon(f32 x, f32 y, Matrixf* mtx1, Matrixf* mtx2)
 {
@@ -22,56 +30,32 @@ BOOL TRenderingProcessor::doDrawCommon(f32 x, f32 y, Matrixf* mtx1, Matrixf* mtx
 	Matrixf mtx;
 	Window::DrawInfo* info = mDrawInfo.searchDrawInfo(_40);
 	if (!info) {
-		doGetDrawInfo(mDrawInfo.getDrawInfo(_40));
+		info = mDrawInfo.getDrawInfo(_40);
+		doGetDrawInfo(info);
 	}
 
 	if (info) {
 		Vector3f t(x, y, 0.0f);
 		mtx.makeT(t);
-		ret = ret * (info->mTimer / info->_20);
+		ret = ret * (info->mTimer / info->mTimeLimit);
 	} else {
 		Vector3f t(x, y, 0.0f);
 		mtx.makeT(t);
 	}
 
 	if (mtx2) {
-		PSMTXCopy(mtx.mMatrix.mtxView, mtx1->mMatrix.mtxView);
-		// offset for shadow
-		// f32 shadowX                 = 10.0f;
-		// f32 shadowY                 = 5.0f;
-		// mtx2->mMatrix.structView.tx = mtx2->mMatrix.structView.tx + 10.0f;
-		// mtx2->mMatrix.structView.ty = 5.0f + mtx2->mMatrix.structView.ty;
-		// (*mtx2)(0, 3) += 10.0f;
-		// (*mtx2)(1, 3) += 5.0f;
-		// Vector2f v1(10.0f, 5.0f);
-		// mtx2->translateXY(v1);
-		// Vector3f translation;
-		// mtx2->getTranslation(translation);
-		// translation.x += 10.0f;
-		// translation.y += 5.0f;
+		PSMTXCopy(mtx.mMatrix.mtxView, mtx2->mMatrix.mtxView);
 
-		// f32 x = (*mtx2)(0, 3);
-		// x += 10.0f;
-		// f32 y = (*mtx2)(1, 3);
-		// y += 5.0f;
-		// (*mtx2)(0, 3) = x;
-		// (*mtx2)(1, 3) = y;
+		// one option, wrong:
+		// Vector3f translation = mtx2->getBasis(3);
+		// Vector3f offset(10.0f, 5.0f, 0.0f);
+		// mtx2->setBasis(3, translation.x + offset.x, translation.y + offset.y, translation.z);
 
-		// f32& x = (*mtx2)(0, 3);
-		// f32& y = (*mtx2)(1, 3);
-		// x += 10.0f;
-		// y += 5.0f;
-
-		// Vector3f vec((*mtx2)(0, 3), (*mtx2)(1, 3), (*mtx2)(2,3));
-		// Vector3f translation;
-		// mtx2->getTranslation(translation);
-		// translation += Vector3f(10.0f, 6.0f, 0.0f);
-		// mtx2->setTranslation(translation);
-
-		Vector2f translation;
-		mtx2->getTranslationXY(translation);
-		translation += Vector2f(10.0f, 6.0f);
-		mtx2->setTranslationXY(translation);
+		// another option, also wrong:
+		Vector3f translation = mtx2->getColumn(3);
+		translation.x += 10.0f;
+		translation.y += 5.0f;
+		mtx2->setColumn(3, translation.x, translation.y, translation.z);
 
 		PSMTXConcat(mMtx1->mMatrix.mtxView, mtx2->mMatrix.mtxView, mtx2->mMatrix.mtxView);
 		PSMTXConcat(mMtx2->mMatrix.mtxView, mtx2->mMatrix.mtxView, mtx2->mMatrix.mtxView);
@@ -84,18 +68,13 @@ BOOL TRenderingProcessor::doDrawCommon(f32 x, f32 y, Matrixf* mtx1, Matrixf* mtx
 	} else {
 		GXLoadPosMtxImm(mtx.mMatrix.mtxView, 0);
 	}
-	if (ret >= 0.0f) {
-		ret = ret + 0.5f;
-	} else {
-		ret = ret - 0.5f;
-	}
-	return (u8)ret;
+
+	return (u8)((ret >= 0.0f) ? ret + 0.5f : ret - 0.5f);
 }
 
-/*
- * --INFO--
- * Address:	804511B8
- * Size:	000054
+/**
+ * @note Address: 0x804511B8
+ * @note Size: 0x54
  */
 TControl::TControl()
 {
@@ -105,10 +84,9 @@ TControl::TControl()
 	_68         = 6;
 }
 
-/*
- * --INFO--
- * Address:	8045120C
- * Size:	0000E8
+/**
+ * @note Address: 0x8045120C
+ * @note Size: 0xE8
  */
 bool TControl::onInit()
 {
@@ -127,10 +105,9 @@ bool TControl::onInit()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	804512F4
- * Size:	000034
+/**
+ * @note Address: 0x804512F4
+ * @note Size: 0x34
  */
 void TControl::reset()
 {
@@ -138,12 +115,11 @@ void TControl::reset()
 	mState = 0;
 }
 
-/*
- * --INFO--
- * Address:	80451328
- * Size:	000128
+/**
+ * @note Address: 0x80451328
+ * @note Size: 0x128
  */
-bool TControl::updateSetFrame(long frame)
+bool TControl::updateSetFrame(s32 frame)
 {
 	bool ret = false;
 	if (mState == 0 && frame >= mStartFrame && frame <= mEndFrame + _68) {
@@ -167,10 +143,9 @@ bool TControl::updateSetFrame(long frame)
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	80451450
- * Size:	000084
+/**
+ * @note Address: 0x80451450
+ * @note Size: 0x84
  */
 void TControl::draw(Graphics& gfx)
 {
@@ -183,12 +158,11 @@ void TControl::draw(Graphics& gfx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	804514D4
- * Size:	000058
+/**
+ * @note Address: 0x804514D4
+ * @note Size: 0x58
  */
-void TControl::start(char* name, long start, long end)
+void TControl::start(char* name, s32 start, s32 end)
 {
 	setMessageID(name);
 	mStartFrame = start;

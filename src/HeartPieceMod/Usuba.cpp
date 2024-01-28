@@ -192,7 +192,7 @@ void Obj::collisionCallback(CollEvent& event)
 	EnemyBase::collisionCallback(event);
 	Creature* collCreature = event.mCollidingCreature;
 	if (isElecBody() && collCreature) {
-		InteractDenki denki(this, *C_PARMS->mGeneral.mAttackDamage(), &Vector3f::zero);
+		InteractDenki denki(this, C_PARMS->mGeneral.mAttackDamage(), &Vector3f::zero);
 		collCreature->stimulate(denki);
 	}
 }
@@ -205,7 +205,7 @@ void Obj::collisionCallback(CollEvent& event)
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
 	Matrixf* bodyMtx      = mModel->getJoint("body")->getWorldMatrix();
-	shadowParam.mPosition = bodyMtx->getBasis(3);
+	shadowParam.mPosition = bodyMtx->getColumn(3);
 
 	if (isAlive()) {
 		int stateId = getStateID();
@@ -374,9 +374,9 @@ int Obj::getStickPikminNum() { return mStuckPikminCount; }
  */
 FakePiki* Obj::getAttackableTarget()
 {
-	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(*C_PARMS->mGeneral.mTerritoryRadius())) {
-		f32 maxAngle = PI * (DEG2RAD * *C_PARMS->mGeneral.mViewAngle());
-		f32 maxDist  = SQUARE(*C_PARMS->mGeneral.mSightRadius());
+	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(C_PARMS->mGeneral.mTerritoryRadius())) {
+		f32 maxAngle = PI * (DEG2RAD * C_PARMS->mGeneral.mViewAngle());
+		f32 maxDist  = SQUARE(C_PARMS->mGeneral.mSightRadius());
 
 		Iterator<Piki> iterator(pikiMgr);
 		CI_LOOP(iterator)
@@ -417,7 +417,7 @@ bool Obj::attackTargets()
 	if (mIsBreathingFire) {
 
 		Vector3f lineEnd   = mFireGroundHitPos;
-		Vector3f lineStart = mModel->getJoint("root")->getWorldMatrix()->getPosition();
+		Vector3f lineStart = mModel->getJoint("root")->getWorldMatrix()->getTranslation();
 
 		Sys::Sphere sphereStart(lineStart, 0.0f);
 		Sys::Sphere sphereEnd(lineEnd, 50.0f);
@@ -436,7 +436,7 @@ bool Obj::attackTargets()
 			f32 lineprogress;
 
 			if (DroughtMath::getSqrDistanceToLine(creaturePos, lineStart, lineEnd, lineprogress) < SQUARE(50.0f) && lineprogress > 0.2f) {
-				InteractFire fire(this, *C_PARMS->mGeneral.mAttackDamage());
+				InteractFire fire(this, C_PARMS->mGeneral.mAttackDamage());
 				creature->stimulate(fire);
 			}
 		}
@@ -448,7 +448,7 @@ bool Obj::attackTargets()
 		CI_LOOP(iCell2)
 		{
 			Creature* creature = static_cast<Creature*>(*iCell2);
-			InteractFire fire(this, *C_PARMS->mGeneral.mAttackDamage());
+			InteractFire fire(this, C_PARMS->mGeneral.mAttackDamage());
 			creature->stimulate(fire);
 		}
 	}
@@ -499,14 +499,14 @@ void Obj::createEffect()
 
 void Obj::createGroundFire()
 {
-	mGroundedFireTimer = *C_PROPERPARMS.mFirePoolLingerTime();
+	mGroundedFireTimer = C_PROPERPARMS.mFirePoolLingerTime();
 	mIsFirePoolActive  = true;
 
 	f32 faceDir = getFaceDir();
 
 	mFireGroundHitPos = mPosition;
 
-	f32 spawnDistance = *C_PROPERPARMS.mFirePoolSpawnDistance();
+	f32 spawnDistance = C_PROPERPARMS.mFirePoolSpawnDistance();
 
 	mFireGroundHitPos.x += pikmin2_sinf(faceDir) * spawnDistance;
 	mFireGroundHitPos.z += pikmin2_cosf(faceDir) * spawnDistance;

@@ -77,6 +77,7 @@ enum AttackID {
 	BIGATTACK_Fire  = 1,
 	BIGATTACK_Gas   = 2,
 	BIGATTACK_Water = 3,
+	BIGATTACK_Count, // 4
 };
 
 enum EyeColorTargetID {
@@ -100,8 +101,8 @@ struct Obj : public EnemyBase {
 	virtual void doAnimationCullingOff();                                       // _1DC
 	virtual void doDebugDraw(Graphics& gfx);                                    // _1EC
 	virtual void changeMaterial();                                              // _200
-	virtual void getThrowupItemPosition(Vector3f*);                             // _268
-	virtual void getThrowupItemVelocity(Vector3f*);                             // _26C
+	virtual void getThrowupItemPosition(Vector3f* position);                    // _268
+	virtual void getThrowupItemVelocity(Vector3f* velocity);                    // _26C
 	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part);  // _278
 	virtual bool hipdropCallBack(Creature* source, f32 damage, CollPart* part); // _284
 	virtual void doStartStoneState();                                           // _2A4
@@ -125,7 +126,7 @@ struct Obj : public EnemyBase {
 	void createIKSystem();
 	void setupIKSystem();
 	void setIKParameter();
-	void setIKSystemTargetPosition(Vector3f&);
+	void setIKSystemTargetPosition(Vector3f& targetPos);
 	void updateIKSystem();
 	void doAnimationIKSystem();
 	void finishAnimationIKSystem();
@@ -138,7 +139,7 @@ struct Obj : public EnemyBase {
 	void finishBlendMotion();
 	void checkJointScaleOn();
 	Vector3f getTraceCentrePosition();
-	Vector3f* getJointPositionPtr(int, int);
+	Vector3f* getJointPositionPtr(int jointIndex, int positionIndex);
 	void createShadowSystem();
 	void setupShadowSystem();
 	void doAnimationShadowSystem();
@@ -146,12 +147,12 @@ struct Obj : public EnemyBase {
 	void setupTreasure();
 	void updateTreasure();
 	void dropTreasure();
-	bool dropTreasure(int);
+	bool dropTreasure(int treasureIndex);
 	bool isCapturedTreasure();
-	bool isCapturedTreasure(int);
+	bool isCapturedTreasure(int treasureIndex);
 	int getCapturedTreasureNum();
-	bool addTreasureDamage(int, f32);
-	void flickStickCollPartPikmin(CollPart*);
+	bool addTreasureDamage(int treasureIndex, f32 damage);
+	void flickStickCollPartPikmin(CollPart* part);
 	void releaseItemLoozy();
 	void createAttack();
 	void setupAttack();
@@ -165,16 +166,16 @@ struct Obj : public EnemyBase {
 	int getFireAttackAnimIndex();
 	f32 getPreAttackTimeMax();
 	f32 getAttackTimeMax();
-	bool isNormalAttack(int);
+	bool isNormalAttack(int treasureIndex);
 	void resetMaterialColor();
-	void resetTargetMatBodyColor(bool);
+	void resetTargetMatBodyColor(bool isVisible);
 	void resetCurrentMatBodyColor();
 	void resetTargetEyeMatColor();
 	void resetCurrentMatEyeColor();
 	void setMatEyeAnimSpeed();
-	void setAttackMaterialColor(bool);
+	void setAttackMaterialColor(bool isFast);
 	void updateMaterialColor();
-	void startBlendAnimation(int, bool);
+	void startBlendAnimation(int animIdx, bool blendAnimation);
 	void endBlendAnimation();
 	int getCurrAnimationIndex();
 	void startBossChargeBGM();
@@ -187,17 +188,17 @@ struct Obj : public EnemyBase {
 	void setBossAppearBGM();
 	void createEffect();
 	void setupEffect();
-	void createOnGroundEffect(int, WaterBox*);
-	void createOffGroundEffect(int, WaterBox*);
-	void startTreasurePinchSmoke(int);
-	void finishTreasurePinchSmoke(int);
-	void createDropTreasureEffect(int);
+	void createOnGroundEffect(int footIdx, WaterBox* wb);
+	void createOffGroundEffect(int footIdx, WaterBox* wb);
+	void startTreasurePinchSmoke(int treasureIndex);
+	void finishTreasurePinchSmoke(int treasureIndex);
+	void createDropTreasureEffect(int treasureIndex);
 	void createAppearBodyEffect();
-	void createAppearLegEffect(int);
-	void createDeadBombLegEffect(int);
+	void createAppearLegEffect(int legIdx);
+	void createDeadBombLegEffect(int legIdx);
 	void createDeadBombBodyEffect();
-	void startDeadBubbleLegEffect(int);
-	void finishDeadBubbleLegEffect(int);
+	void startDeadBubbleLegEffect(int legIdx);
+	void finishDeadBubbleLegEffect(int legIdx);
 	void startDeadBubbleBodyEffect();
 	void finishDeadBubbleBodyEffect();
 	void startDeadBubbleMouthEffect();
@@ -281,7 +282,7 @@ struct Mgr : public EnemyMgrBase {
 
 	//////////////// VTABLE
 	// virtual ~Mgr();                                     // _58 (weak)
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual void doAlloc();                            // _A8
 	virtual SysShape::Model* createModel();            // _B0
@@ -305,143 +306,150 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mFp01(this, 'fp01', "ベース係数", 3.0f, 0.0f, 10.0f)                  // 'base factor'
-		    , mFp02(this, 'fp02', "上げ減速係数", -0.2f, -5.0f, 5.0f)               // 'raising deceleration factor'
-		    , mFp03(this, 'fp03', "下げ加速係数", 0.5f, -5.0f, 5.0f)                // 'downward acceleration factor'
-		    , mFp04(this, 'fp04', "最低減加速係数", -2.0f, -10.0f, 10.0f)           // 'min reduced acceleration factor'
-		    , mFp05(this, 'fp05', "最高減加速係数", 10.0f, -10.0f, 10.0f)           // 'max deceleration acceleration factor'
-		    , mFp06(this, 'fp06', "足の振り上げ", 120.0f, 0.0f, 200.0f)             // 'leg swing'
-		    , mFp10(this, 'fp10', "予\備時間(電気)", 2.5f, 0.0f, 10.0f)             // 'wait time (electricity)'
-		    , mFp11(this, 'fp11', "予\備時間(火:1)", 2.8f, 0.0f, 10.0f)             // 'wait time (fire:1)'
-		    , mFp31(this, 'fp31', "予\備時間(火:2)", 2.5f, 0.0f, 10.0f)             // 'wait time (fire:2)'
-		    , mFp12(this, 'fp12', "予\備時間(ガス)", 2.5f, 0.0f, 10.0f)             // 'wait time (gas)'
-		    , mFp13(this, 'fp13', "予\備時間(水)", 2.5f, 0.0f, 10.0f)               // 'wait time (water)'
-		    , mElecAttackTimeMax(this, 'fp20', "攻撃時間(電気)", 5.0f, 0.0f, 10.0f) // 'attack time (electricity)'
-		    , mFireAttackTimeMax(this, 'fp21', "攻撃時間(火)", 5.0f, 0.0f, 10.0f)   // 'attack time (fire)'
-		    , mGasAttackTimeMax(this, 'fp22', "攻撃時間(ガス)", 5.0f, 0.0f, 10.0f)  // 'attack time (gas)'
-		    , mWaterAttackTimeMax(this, 'fp23', "攻撃時間(水)", 5.0f, 0.0f, 10.0f)  // 'attack time (water)'
-		    , mFe00(this, 'fe00', "跳返係数(1-1)", 0.75f, 0.0f, 1.0f)               // 'bounce coefficient (1-1)'
-		    , mFe01(this, 'fe01', "摩擦係数(1-1)", 0.65f, 0.0f, 1.0f)               // 'friction coefficient (1-1)'
-		    , mFe02(this, 'fe02', "XZ初速Base(1-1)", 100.0f, 0.0f, 500.0f)          // 'XZ muzzle velocity Base (1-1)'
-		    , mFe03(this, 'fe03', "XZ初速Rand(1-1)", 220.0f, 0.0f, 500.0f)          // 'XZ muzzle velocity Rand (1-1)'
-		    , mFe04(this, 'fe04', "Y初速Base(1-1)", 170.0f, 0.0f, 500.0f)           // 'Y muzzle velocity Base (1-1)'
-		    , mFe05(this, 'fe05', "Y初速Rand(1-1)", 200.0f, 0.0f, 500.0f)           // 'Y muzzle velocity Rand (1-1)'
-		    , mFe06(this, 'fe06', "放電開始(1-1)", 2.7f, 0.0f, 5.0f)                // 'discharge start (1-1)'
-		    , mFe08(this, 'fe08', "連鎖間隔(1-1)", 0.02f, 0.0f, 1.0f)               // 'chain interval (1-1)'
-		    , mFe07(this, 'fe07', "放電数(1-1)", 10, 0, 16)                         // 'number of discharges (1-1)'
-		    , mFe10(this, 'fe10', "跳返係数(1-2)", 0.7f, 0.0f, 1.0f)                // 'bounce coefficient (1-2)'
-		    , mFe11(this, 'fe11', "摩擦係数(1-2)", 0.65f, 0.0f, 1.0f)               // 'friction coefficient (1-2)'
-		    , mFe12(this, 'fe12', "XZ初速Base(1-2)", 80.0f, 0.0f, 500.0f)           // 'XZ muzzle velocity Base (1-2)'
-		    , mFe13(this, 'fe13', "XZ初速Rand(1-2)", 250.0f, 0.0f, 500.0f)          // 'XZ muzzle velocity Rand (1-2)'
-		    , mFe14(this, 'fe14', "Y初速Base(1-2)", 350.0f, 0.0f, 500.0f)           // 'Y muzzle velocity Base (1-2)'
-		    , mFe15(this, 'fe15', "Y初速Rand(1-2)", 100.0f, 0.0f, 500.0f)           // 'Y muzzle velocity Rand (1-2)'
-		    , mFe16(this, 'fe16', "放電開始(1-2)", 4.5f, 0.0f, 5.0f)                // 'discharge start (1-2)'
-		    , mFe18(this, 'fe18', "連鎖間隔(1-2)", 0.02f, 0.0f, 1.0f)               // 'chain interval (1-2)'
-		    , mFe17(this, 'fe17', "放電数(1-2)", 12, 0, 16)                         // 'number of discharges (1-2)'
-		    , mFe20(this, 'fe20', "跳返係数(2-1)", 0.97f, 0.0f, 1.0f)               // 'bounce coefficient (2-1)'
-		    , mFe21(this, 'fe21', "摩擦係数(2-1)", 0.75f, 0.0f, 1.0f)               // 'friction coefficient (2-1)'
-		    , mFe22(this, 'fe22', "XZ初速Base(2-1)", 60.0f, 0.0f, 500.0f)           // 'XZ muzzle velocity Base (2-1)'
-		    , mFe23(this, 'fe23', "XZ初速Rand(2-1)", 70.0f, 0.0f, 500.0f)           // 'XZ muzzle velocity Rand (2-1)'
-		    , mFe24(this, 'fe24', "Y初速Base(2-1)", 350.0f, 0.0f, 500.0f)           // 'Y muzzle velocity Base (2-1)'
-		    , mFe25(this, 'fe25', "Y初速Rand(2-1)", 100.0f, 0.0f, 500.0f)           // 'Y muzzle velocity Rand (2-1)'
-		    , mFe26(this, 'fe26', "放電開始(2-1)", 0.5f, 0.0f, 5.0f)                // 'discharge start (2-1)'
-		    , mFe28(this, 'fe28', "連鎖間隔(2-1)", 0.25f, 0.0f, 1.0f)               // 'chain interval (2-1)'
-		    , mFe27(this, 'fe27', "放電数(2-1)", 8, 0, 16)                          // 'number of discharges (2-1)'
-		    , mFe30(this, 'fe30', "跳返係数(2-2)", 0.2f, 0.0f, 1.0f)                // 'bounce coefficient (2-2)'
-		    , mFe31(this, 'fe31', "摩擦係数(2-2)", 0.985f, 0.0f, 1.0f)              // 'friction coefficient (2-2)'
-		    , mFe32(this, 'fe32', "XZ初速Base(2-2)", 100.0f, 0.0f, 500.0f)          // 'XZ muzzle velocity Base (2-2)'
-		    , mFe33(this, 'fe33', "XZ初速Rand(2-2)", 90.0f, 0.0f, 500.0f)           // 'XZ muzzle velocity Rand (2-2)'
-		    , mFe34(this, 'fe34', "Y初速Base(2-2)", 70.0f, 0.0f, 500.0f)            // 'Y muzzle velocity Base (2-2)'
-		    , mFe35(this, 'fe35', "Y初速Rand(2-2)", 20.0f, 0.0f, 500.0f)            // 'Y muzzle velocity Rand (2-2)'
-		    , mFe36(this, 'fe36', "放電開始(2-2)", 0.2f, 0.0f, 5.0f)                // 'discharge start (2-2)'
-		    , mFe38(this, 'fe38', "連鎖間隔(2-2)", 0.15f, 0.0f, 1.0f)               // 'chain interval (2-2)'
-		    , mFe37(this, 'fe37', "放電数(2-2)", 14, 0, 16)                         // 'number of discharges (2-2)'
-		    , mFe99(this, 'fe99', "パターンチェック", 0, 0, 4)                      // 'pattern check'
-		    , mFf00(this, 'ff00', "火炎スケール(1)", 1.0f, 0.5f, 5.0f)              // 'flame scale (1)'
-		    , mFf10(this, 'ff10', "火炎スケール(2)", 1.25f, 0.5f, 5.0f)             // 'flame scale (2)'
-		    , mFg99x01(this, 'fg99', "パターンチェック", 0, 0, 2)                   // 'pattern check'
-		    , mFg00(this, 'fg00', "回転スピード(1)", 0.015f, 0.01f, 0.03f)          // 'rotation speed (1)'
-		    , mFg10(this, 'fg10', "回転スピード(2)", 0.02f, 0.01f, 0.03f)           // 'rotation speed (2)'
-		    , mFg30(this, 'fg30', "反転時間(2-1)", 30.0f, 0.0f, 30.0f)              // 'reversal time (2-1)'
-		    , mFg40(this, 'fg40', "反転時間(2-2)", 2.0f, 0.0f, 30.0f)               // 'reversal time (2-2)'
-		    , mFg99x02(this, 'fg99', "パターンチェック", 0, 0, 3)                   // 'pattern check'
-		    , mFw00(this, 'fw00', "放水間隔(1)", 0.5f, 0.1f, 1.0f)                  // 'water discharge interval (1)'
-		    , mFw01(this, 'fw01', "ランダム角度(1)", 0.5f, 0.0f, 1.0f)              // 'random angle (1)'
-		    , mFw02(this, 'fw02', "ランダム距離(1)", 100.0f, 0.0f, 500.0f)          // 'random distance (1)'
-		    , mFw10(this, 'fw10', "放水間隔(2)", 0.25f, 0.1f, 1.0f)                 // 'water discharge interval (2)
-		    , mFw11(this, 'fw11', "ランダム角度(2)", 0.4f, 0.0f, 1.0f)              // 'random angle (2)'
-		    , mFw12(this, 'fw12', "ランダム距離(2)", 50.0f, 0.0f, 500.0f)           // 'random distance (2)'
-		    , mFw99(this, 'fw99', "パターンチェック", 0, 0, 2)                      // 'pattern check'
+		    , mBaseFactor(this, 'fp01', "ベース係数", 3.0f, 0.0f, 10.0f)                   // 'base factor'
+		    , mRaiseDecelFactor(this, 'fp02', "上げ減速係数", -0.2f, -5.0f, 5.0f)          // 'raising deceleration factor'
+		    , mDownwardDecelFactor(this, 'fp03', "下げ加速係数", 0.5f, -5.0f, 5.0f)        // 'downward acceleration factor'
+		    , mMinReducedAccelFactor(this, 'fp04', "最低減加速係数", -2.0f, -10.0f, 10.0f) // 'min reduced acceleration factor'
+		    , mMaxDecelAccelFactor(this, 'fp05', "最高減加速係数", 10.0f, -10.0f, 10.0f)   // 'max deceleration acceleration factor'
+		    , mLegSwing(this, 'fp06', "足の振り上げ", 120.0f, 0.0f, 200.0f)                // 'leg swing'
+		    , mElectricityWaitTime(this, 'fp10', "予\備時間(電気)", 2.5f, 0.0f, 10.0f)     // 'wait time (electricity)'
+		    , mFireWaitTime1(this, 'fp11', "予\備時間(火:1)", 2.8f, 0.0f, 10.0f)           // 'wait time (fire:1)'
+		    , mFireWaitTime2(this, 'fp31', "予\備時間(火:2)", 2.5f, 0.0f, 10.0f)           // 'wait time (fire:2)'
+		    , mGasWaitTime(this, 'fp12', "予\備時間(ガス)", 2.5f, 0.0f, 10.0f)             // 'wait time (gas)'
+		    , mWaterWaitTime(this, 'fp13', "予\備時間(水)", 2.5f, 0.0f, 10.0f)             // 'wait time (water)'
+		    , mElecAttackTimeMax(this, 'fp20', "攻撃時間(電気)", 5.0f, 0.0f, 10.0f)        // 'attack time (electricity)'
+		    , mFireAttackTimeMax(this, 'fp21', "攻撃時間(火)", 5.0f, 0.0f, 10.0f)          // 'attack time (fire)'
+		    , mGasAttackTimeMax(this, 'fp22', "攻撃時間(ガス)", 5.0f, 0.0f, 10.0f)         // 'attack time (gas)'
+		    , mWaterAttackTimeMax(this, 'fp23', "攻撃時間(水)", 5.0f, 0.0f, 10.0f)         // 'attack time (water)'
+
+		    , mBounceCoefficient1_1(this, 'fe00', "跳返係数(1-1)", 0.75f, 0.0f, 1.0f)         // 'bounce coefficient (1-1)'
+		    , mFrictionCoefficient1_1(this, 'fe01', "摩擦係数(1-1)", 0.65f, 0.0f, 1.0f)       // 'friction coefficient (1-1)'
+		    , mBaseMuzzleVelocityXZ1_1(this, 'fe02', "XZ初速Base(1-1)", 100.0f, 0.0f, 500.0f) // 'XZ initial velocity Base (1-1)'
+		    , mRandMuzzleVelocityXZ1_1(this, 'fe03', "XZ初速Rand(1-1)", 220.0f, 0.0f, 500.0f) // 'XZ initial velocity Rand (1-1)'
+		    , mBaseMuzzleVelocityY1_1(this, 'fe04', "Y初速Base(1-1)", 170.0f, 0.0f, 500.0f)   // 'Y initial velocity Base (1-1)'
+		    , mRandMuzzleVelocityY1_1(this, 'fe05', "Y初速Rand(1-1)", 200.0f, 0.0f, 500.0f)   // 'Y initial velocity Rand (1-1)'
+		    , mDischargeStart1_1(this, 'fe06', "放電開始(1-1)", 2.7f, 0.0f, 5.0f)             // 'discharge start (1-1)'
+		    , mChainInterval1_1(this, 'fe08', "連鎖間隔(1-1)", 0.02f, 0.0f, 1.0f)             // 'chain interval (1-1)'
+		    , mDischargeCount1_1(this, 'fe07', "放電数(1-1)", 10, 0, 16)                      // 'number of discharges (1-1)'
+
+		    , mBounceCoefficient1_2(this, 'fe10', "跳返係数(1-2)", 0.7f, 0.0f, 1.0f)          // 'bounce coefficient (1-2)'
+		    , mFrictionCoefficient1_2(this, 'fe11', "摩擦係数(1-2)", 0.65f, 0.0f, 1.0f)       // 'friction coefficient (1-2)'
+		    , mBaseMuzzleVelocityXZ1_2(this, 'fe12', "XZ初速Base(1-2)", 80.0f, 0.0f, 500.0f)  // 'XZ initial velocity Base (1-2)'
+		    , mRandMuzzleVelocityXZ1_2(this, 'fe13', "XZ初速Rand(1-2)", 250.0f, 0.0f, 500.0f) // 'XZ initial velocity Rand (1-2)'
+		    , mBaseMuzzleVelocityY1_2(this, 'fe14', "Y初速Base(1-2)", 350.0f, 0.0f, 500.0f)   // 'Y initial velocity Base (1-2)'
+		    , mRandMuzzleVelocityY1_2(this, 'fe15', "Y初速Rand(1-2)", 100.0f, 0.0f, 500.0f)   // 'Y initial velocity Rand (1-2)'
+		    , mDischargeStart1_2(this, 'fe16', "放電開始(1-2)", 4.5f, 0.0f, 5.0f)             // 'discharge start (1-2)'
+		    , mChainInterval1_2(this, 'fe18', "連鎖間隔(1-2)", 0.02f, 0.0f, 1.0f)             // 'chain interval (1-2)'
+		    , mDischargeCount1_2(this, 'fe17', "放電数(1-2)", 12, 0, 16)                      // 'number of discharges (1-2)'
+
+		    , mBounceCoefficient2_1(this, 'fe20', "跳返係数(2-1)", 0.97f, 0.0f, 1.0f)        // 'bounce coefficient (2-1)'
+		    , mFrictionCoefficient2_1(this, 'fe21', "摩擦係数(2-1)", 0.75f, 0.0f, 1.0f)      // 'friction coefficient (2-1)'
+		    , mBaseMuzzleVelocityXZ2_1(this, 'fe22', "XZ初速Base(2-1)", 60.0f, 0.0f, 500.0f) // 'XZ initial velocity Base (2-1)'
+		    , mRandMuzzleVelocityXZ2_1(this, 'fe23', "XZ初速Rand(2-1)", 70.0f, 0.0f, 500.0f) // 'XZ initial velocity Rand (2-1)'
+		    , mBaseMuzzleVelocityY2_1(this, 'fe24', "Y初速Base(2-1)", 350.0f, 0.0f, 500.0f)  // 'Y initial velocity Base (2-1)'
+		    , mRandMuzzleVelocityY2_1(this, 'fe25', "Y初速Rand(2-1)", 100.0f, 0.0f, 500.0f)  // 'Y initial velocity Rand (2-1)'
+		    , mDischargeStart2_1(this, 'fe26', "放電開始(2-1)", 0.5f, 0.0f, 5.0f)            // 'discharge start (2-1)'
+		    , mChainInterval2_1(this, 'fe28', "連鎖間隔(2-1)", 0.25f, 0.0f, 1.0f)            // 'chain interval (2-1)'
+		    , mDischargeCount2_1(this, 'fe27', "放電数(2-1)", 8, 0, 16)                      // 'number of discharges (2-1)'
+
+		    , mBounceCoefficient2_2(this, 'fe30', "跳返係数(2-2)", 0.2f, 0.0f, 1.0f)          // 'bounce coefficient (2-2)'
+		    , mFrictionCoefficient2_2(this, 'fe31', "摩擦係数(2-2)", 0.985f, 0.0f, 1.0f)      // 'friction coefficient (2-2)'
+		    , mBaseMuzzleVelocityXZ2_2(this, 'fe32', "XZ初速Base(2-2)", 100.0f, 0.0f, 500.0f) // 'XZ initial velocity Base (2-2)'
+		    , mRandMuzzleVelocityXZ2_2(this, 'fe33', "XZ初速Rand(2-2)", 90.0f, 0.0f, 500.0f)  // 'XZ initial velocity Rand (2-2)'
+		    , mBaseMuzzleVelocityY2_2(this, 'fe34', "Y初速Base(2-2)", 70.0f, 0.0f, 500.0f)    // 'Y initial velocity Base (2-2)'
+		    , mRandMuzzleVelocityY2_2(this, 'fe35', "Y初速Rand(2-2)", 20.0f, 0.0f, 500.0f)    // 'Y initial velocity Rand (2-2)'
+		    , mDischargeStart2_2(this, 'fe36', "放電開始(2-2)", 0.2f, 0.0f, 5.0f)             // 'discharge start (2-2)'
+		    , mChainInterval2_2(this, 'fe38', "連鎖間隔(2-2)", 0.15f, 0.0f, 1.0f)             // 'chain interval (2-2)'
+		    , mDischargeCount2_2(this, 'fe37', "放電数(2-2)", 14, 0, 16)                      // 'number of discharges (2-2)'
+
+		    , mPatternCheckFlame(this, 'fe99', "パターンチェック", 0, 0, 4)    // 'pattern check'
+		    , mFlameScale1(this, 'ff00', "火炎スケール(1)", 1.0f, 0.5f, 5.0f)  // 'flame scale (1)'
+		    , mFlameScale2(this, 'ff10', "火炎スケール(2)", 1.25f, 0.5f, 5.0f) // 'flame scale (2)'
+
+		    , mPatternCheckRotation(this, 'fg99', "パターンチェック", 0, 0, 2)       // 'pattern check'
+		    , mRotationSpeed1(this, 'fg00', "回転スピード(1)", 0.015f, 0.01f, 0.03f) // 'rotation speed (1)'
+		    , mRotationSpeed2(this, 'fg10', "回転スピード(2)", 0.02f, 0.01f, 0.03f)  // 'rotation speed (2)'
+		    , mReversalTime2_1(this, 'fg30', "反転時間(2-1)", 30.0f, 0.0f, 30.0f)    // 'reversal time (2-1)'
+		    , mReversalTime2_2(this, 'fg40', "反転時間(2-2)", 2.0f, 0.0f, 30.0f)     // 'reversal time (2-2)'
+
+		    , mPatternCheckWater(this, 'fg99', "パターンチェック", 0, 0, 3)            // 'pattern check'
+		    , mWaterDischargeInterval1(this, 'fw00', "放水間隔(1)", 0.5f, 0.1f, 1.0f)  // 'water discharge interval (1)'
+		    , mRandomAngle1(this, 'fw01', "ランダム角度(1)", 0.5f, 0.0f, 1.0f)         // 'random angle (1)'
+		    , mRandomDistance1(this, 'fw02', "ランダム距離(1)", 100.0f, 0.0f, 500.0f)  // 'random distance (1)'
+		    , mWaterDischargeInterval2(this, 'fw10', "放水間隔(2)", 0.25f, 0.1f, 1.0f) // 'water discharge interval (2)
+		    , mRandomAngle2(this, 'fw11', "ランダム角度(2)", 0.4f, 0.0f, 1.0f)         // 'random angle (2)'
+		    , mRandomDistance2(this, 'fw12', "ランダム距離(2)", 50.0f, 0.0f, 500.0f)   // 'random distance (2)'
+		    , mPatternCheck4(this, 'fw99', "パターンチェック", 0, 0, 2)                // 'pattern check'
 		{
 		}
 
-		Parm<f32> mFp01;               // _804
-		Parm<f32> mFp02;               // _82C
-		Parm<f32> mFp03;               // _854
-		Parm<f32> mFp04;               // _87C
-		Parm<f32> mFp05;               // _8A4
-		Parm<f32> mFp06;               // _8CC
-		Parm<f32> mFp10;               // _8F4
-		Parm<f32> mFp11;               // _91C
-		Parm<f32> mFp31;               // _944
-		Parm<f32> mFp12;               // _96C
-		Parm<f32> mFp13;               // _994
-		Parm<f32> mElecAttackTimeMax;  // _9BC, fp20
-		Parm<f32> mFireAttackTimeMax;  // _9E4, fp21
-		Parm<f32> mGasAttackTimeMax;   // _A0C, fp22
-		Parm<f32> mWaterAttackTimeMax; // _A34, fp23
-		Parm<f32> mFe00;               // _A5C
-		Parm<f32> mFe01;               // _A84
-		Parm<f32> mFe02;               // _AAC
-		Parm<f32> mFe03;               // _AD4
-		Parm<f32> mFe04;               // _AFC
-		Parm<f32> mFe05;               // _B24
-		Parm<f32> mFe06;               // _B4C
-		Parm<f32> mFe08;               // _B74
-		Parm<int> mFe07;               // _B9C
-		Parm<f32> mFe10;               // _BC4
-		Parm<f32> mFe11;               // _BEC
-		Parm<f32> mFe12;               // _C14
-		Parm<f32> mFe13;               // _C3C
-		Parm<f32> mFe14;               // _C64
-		Parm<f32> mFe15;               // _C8C
-		Parm<f32> mFe16;               // _CB4
-		Parm<f32> mFe18;               // _CDC
-		Parm<int> mFe17;               // _D04
-		Parm<f32> mFe20;               // _D2C
-		Parm<f32> mFe21;               // _D54
-		Parm<f32> mFe22;               // _D7C
-		Parm<f32> mFe23;               // _DA4
-		Parm<f32> mFe24;               // _DCC
-		Parm<f32> mFe25;               // _DF4
-		Parm<f32> mFe26;               // _E1C
-		Parm<f32> mFe28;               // _E44
-		Parm<int> mFe27;               // _E6C
-		Parm<f32> mFe30;               // _E94
-		Parm<f32> mFe31;               // _EBC
-		Parm<f32> mFe32;               // _EE4
-		Parm<f32> mFe33;               // _F0C
-		Parm<f32> mFe34;               // _F34
-		Parm<f32> mFe35;               // _F5C
-		Parm<f32> mFe36;               // _F84
-		Parm<f32> mFe38;               // _FAC
-		Parm<int> mFe37;               // _FD4
-		Parm<int> mFe99;               // _FFC
-		Parm<f32> mFf00;               // _1024
-		Parm<f32> mFf10;               // _104C
-		Parm<int> mFg99x01;            // _1074
-		Parm<f32> mFg00;               // _109C
-		Parm<f32> mFg10;               // _10C4
-		Parm<f32> mFg30;               // _10EC
-		Parm<f32> mFg40;               // _1114
-		Parm<int> mFg99x02;            // _113C
-		Parm<f32> mFw00;               // _1164
-		Parm<f32> mFw01;               // _118C
-		Parm<f32> mFw02;               // _11B4
-		Parm<f32> mFw10;               // _11DC
-		Parm<f32> mFw11;               // _1204
-		Parm<f32> mFw12;               // _122C
-		Parm<int> mFw99;               // _1254
+		Parm<f32> mBaseFactor;              // _804
+		Parm<f32> mRaiseDecelFactor;        // _82C
+		Parm<f32> mDownwardDecelFactor;     // _854
+		Parm<f32> mMinReducedAccelFactor;   // _87C
+		Parm<f32> mMaxDecelAccelFactor;     // _8A4
+		Parm<f32> mLegSwing;                // _8CC
+		Parm<f32> mElectricityWaitTime;     // _8F4
+		Parm<f32> mFireWaitTime1;           // _91C
+		Parm<f32> mFireWaitTime2;           // _944
+		Parm<f32> mGasWaitTime;             // _96C
+		Parm<f32> mWaterWaitTime;           // _994
+		Parm<f32> mElecAttackTimeMax;       // _9BC, fp20
+		Parm<f32> mFireAttackTimeMax;       // _9E4, fp21
+		Parm<f32> mGasAttackTimeMax;        // _A0C, fp22
+		Parm<f32> mWaterAttackTimeMax;      // _A34, fp23
+		Parm<f32> mBounceCoefficient1_1;    // _A5C
+		Parm<f32> mFrictionCoefficient1_1;  // _A84
+		Parm<f32> mBaseMuzzleVelocityXZ1_1; // _AAC
+		Parm<f32> mRandMuzzleVelocityXZ1_1; // _AD4
+		Parm<f32> mBaseMuzzleVelocityY1_1;  // _AFC
+		Parm<f32> mRandMuzzleVelocityY1_1;  // _B24
+		Parm<f32> mDischargeStart1_1;       // _B4C
+		Parm<f32> mChainInterval1_1;        // _B74
+		Parm<int> mDischargeCount1_1;       // _B9C
+		Parm<f32> mBounceCoefficient1_2;    // _BC4
+		Parm<f32> mFrictionCoefficient1_2;  // _BEC
+		Parm<f32> mBaseMuzzleVelocityXZ1_2; // _C14
+		Parm<f32> mRandMuzzleVelocityXZ1_2; // _C3C
+		Parm<f32> mBaseMuzzleVelocityY1_2;  // _C64
+		Parm<f32> mRandMuzzleVelocityY1_2;  // _C8C
+		Parm<f32> mDischargeStart1_2;       // _CB4
+		Parm<f32> mChainInterval1_2;        // _CDC
+		Parm<int> mDischargeCount1_2;       // _D04
+		Parm<f32> mBounceCoefficient2_1;    // _D2C
+		Parm<f32> mFrictionCoefficient2_1;  // _D54
+		Parm<f32> mBaseMuzzleVelocityXZ2_1; // _D7C
+		Parm<f32> mRandMuzzleVelocityXZ2_1; // _DA4
+		Parm<f32> mBaseMuzzleVelocityY2_1;  // _DCC
+		Parm<f32> mRandMuzzleVelocityY2_1;  // _DF4
+		Parm<f32> mDischargeStart2_1;       // _E1C
+		Parm<f32> mChainInterval2_1;        // _E44
+		Parm<int> mDischargeCount2_1;       // _E6C
+		Parm<f32> mBounceCoefficient2_2;    // _E94
+		Parm<f32> mFrictionCoefficient2_2;  // _EBC
+		Parm<f32> mBaseMuzzleVelocityXZ2_2; // _EE4
+		Parm<f32> mRandMuzzleVelocityXZ2_2; // _F0C
+		Parm<f32> mBaseMuzzleVelocityY2_2;  // _F34
+		Parm<f32> mRandMuzzleVelocityY2_2;  // _F5C
+		Parm<f32> mDischargeStart2_2;       // _F84
+		Parm<f32> mChainInterval2_2;        // _FAC
+		Parm<int> mDischargeCount2_2;       // _FD4
+		Parm<int> mPatternCheckFlame;       // _FFC
+		Parm<f32> mFlameScale1;             // _1024
+		Parm<f32> mFlameScale2;             // _104C
+		Parm<int> mPatternCheckRotation;    // _1074
+		Parm<f32> mRotationSpeed1;          // _109C
+		Parm<f32> mRotationSpeed2;          // _10C4
+		Parm<f32> mReversalTime2_1;         // _10EC
+		Parm<f32> mReversalTime2_2;         // _1114
+		Parm<int> mPatternCheckWater;       // _113C
+		Parm<f32> mWaterDischargeInterval1; // _1164
+		Parm<f32> mRandomAngle1;            // _118C
+		Parm<f32> mRandomDistance1;         // _11B4
+		Parm<f32> mWaterDischargeInterval2; // _11DC
+		Parm<f32> mRandomAngle2;            // _1204
+		Parm<f32> mRandomDistance2;         // _122C
+		Parm<int> mPatternCheck4;           // _1254
 	};
 
 	Parms() { }
@@ -457,6 +465,53 @@ struct Parms : public EnemyParmsBase {
 	ProperParms mProperParms; // _7F8
 };
 
+enum AnimID {
+	BIGTREASUREANIM_NULL    = -1,
+	BIGTREASUREANIM_Appear  = 0,
+	BIGTREASUREANIM_Appear2 = 1,
+	BIGTREASUREANIM_Wait1   = 2,
+
+	// Fire attacks (forward, right, left, back)
+	BIGTREASUREANIM_PreAttackF = 3,
+	BIGTREASUREANIM_AttackF    = 4,
+	BIGTREASUREANIM_AttackEndF = 5,
+
+	BIGTREASUREANIM_PreAttackFR = 6,
+	BIGTREASUREANIM_AttackFR    = 7,
+	BIGTREASUREANIM_AttackEndFR = 8,
+
+	BIGTREASUREANIM_PreAttackFL = 9,
+	BIGTREASUREANIM_AttackFL    = 10,
+	BIGTREASUREANIM_AttackEndFL = 11,
+
+	BIGTREASUREANIM_PreAttackFB = 12,
+	BIGTREASUREANIM_AttackFB    = 13,
+	BIGTREASUREANIM_AttackEndFB = 14,
+
+	// Water attack
+	BIGTREASUREANIM_PreAttackW = 15,
+	BIGTREASUREANIM_AttackW    = 16,
+	BIGTREASUREANIM_AttackEndW = 17,
+
+	// Gas attack
+	BIGTREASUREANIM_PreAttackG = 18,
+	BIGTREASUREANIM_AttackG    = 19,
+	BIGTREASUREANIM_AttackEndG = 20,
+
+	// Elec attack
+	BIGTREASUREANIM_PreAttackE = 21,
+	BIGTREASUREANIM_AttackE    = 22,
+	BIGTREASUREANIM_AttackEndE = 23,
+
+	BIGTREASUREANIM_DropItem = 24,
+	BIGTREASUREANIM_Wait2    = 25,
+	BIGTREASUREANIM_Flick    = 26,
+	BIGTREASUREANIM_Dead     = 27,
+	BIGTREASUREANIM_Move1    = 28,
+	BIGTREASUREANIM_Wait2_2  = 29, // repeat of Wait2?
+	BIGTREASUREANIM_AnimCount,     // 30
+};
+
 struct ProperAnimator : public EnemyBlendAnimatorBase {
 	virtual ~ProperAnimator() { } // _08 (weak)
 
@@ -468,40 +523,45 @@ struct BigTreasureShadowMgr {
 	BigTreasureShadowMgr(Obj*);
 
 	void init();
-	void setJointPosPtr(int, int, Vector3f*);
-	void setKosiJointPosPtr(Vector3f*);
+	void setJointPosPtr(int jointIndex, int positionIndex, Vector3f* position);
+	void setKosiJointPosPtr(Vector3f* position);
 	void update();
-	void updateTreasureShadow(JointShadowParm&);
-	void updateHandShadow(JointShadowParm&);
-	void updateAntennaShadow(JointShadowParm&);
+	void updateTreasureShadow(JointShadowParm& settings);
+	void updateHandShadow(JointShadowParm& settings);
+	void updateAntennaShadow(JointShadowParm& settings);
 
-	Matrixf* mBodyMatrix;            // _00
-	Matrixf* mElecMatrix;            // _04
-	Matrixf* mFireMatrix;            // _08
-	Matrixf* mGasMatrix;             // _0C
-	Matrixf* mWaterMatrix;           // _10
-	Matrixf* mLeftArmMatrix[3];      // _14
-	Matrixf* mRightArmMatrix[3];     // _20
-	Matrixf* mLeftAntennaMatrix[2];  // _2C
-	Matrixf* mRightAntennaMatrix[2]; // _34
-	Obj* mObj;                       // _3C
-	Vector3f* mKosiPosition;         // _40
-	Vector3f* mJointPositions[4][4]; // _44
-	JointShadowRootNode* mRootNode;  // _84
-	SphereShadowNode* _88;           // _88
-	SphereShadowNode* _8C;           // _8C
-	TubeShadowSetNode* _90[4];       // _90
-	TubeShadowSetNode* _A0[4];       // _A0
-	TubeShadowSetNode* _B0[4];       // _B0
-	TubeShadowSetNode* _C0[4];       // _C0
-	SphereShadowNode* _D0[4];        // _D0
-	SphereShadowNode* _E0[4];        // _E0
-	SphereShadowNode* _F0[4];        // _F0
-	SphereShadowNode* _100[4];       // _100
-	TubeShadowPosNode* _110[2][4];   // _110
-	SphereShadowNode* _130[2][2];    // _130
-	TubeShadowPosNode* _140[2][5];   // _140
-	SphereShadowNode* _168[2];       // _168
+	inline Matrixf* getTreasureMatrix(int i) { return (&mElecMatrix)[i]; }
+
+	inline Matrixf** getArmMatrices(int i) { return (&mLeftArmMatrix)[i]; }         // 0=left, 1=right
+	inline Matrixf** getAntennaMatrices(int i) { return (&mLeftAntennaMatrix)[i]; } // 0=left, 1=right
+
+	Matrixf* mBodyMatrix;                                    // _00
+	Matrixf* mElecMatrix;                                    // _04
+	Matrixf* mFireMatrix;                                    // _08
+	Matrixf* mGasMatrix;                                     // _0C
+	Matrixf* mWaterMatrix;                                   // _10
+	Matrixf* mLeftArmMatrix[3];                              // _14
+	Matrixf* mRightArmMatrix[3];                             // _20
+	Matrixf* mLeftAntennaMatrix[2];                          // _2C
+	Matrixf* mRightAntennaMatrix[2];                         // _34
+	Obj* mObj;                                               // _3C
+	Vector3f* mKosiPosition;                                 // _40
+	Vector3f* mJointPositions[4][4];                         // _44
+	JointShadowRootNode* mRootNode;                          // _84
+	SphereShadowNode* _88;                                   // _88
+	SphereShadowNode* _8C;                                   // _8C
+	TubeShadowSetNode* _90[4];                               // _90, leg, *jnt1
+	TubeShadowSetNode* _A0[4];                               // _A0, leg, *jnt2
+	TubeShadowSetNode* _B0[4];                               // _B0, leg, *jnt2
+	TubeShadowSetNode* _C0[4];                               // _C0, leg, *jnt3
+	SphereShadowNode* _D0[4];                                // _D0, leg?
+	SphereShadowNode* _E0[4];                                // _E0, leg?
+	SphereShadowNode* _F0[4];                                // _F0, leg?
+	SphereShadowNode* mTreasureShadowNodes[BIGATTACK_Count]; // _100
+	TubeShadowPosNode* mHandTubeNodes[2][4];                 // _110, [0][j] = left hand, [1][j] = right hand
+	SphereShadowNode* mHandSphereNodes[2][2];                // _130, [0][j] = left hand, [1][j] = right hand
+	TubeShadowPosNode* mAntennaTubeNodes[2][5];              // _140, [0][j] = left antenna, [1][j] = right antenna
+	SphereShadowNode* mAntennaSphereNodes[2];                // _168, [0][j] = left antenna, [1][j] = right antenna
 };
 
 struct BigTreasureGroundCallBack : public JointGroundCallBack {
@@ -510,8 +570,8 @@ struct BigTreasureGroundCallBack : public JointGroundCallBack {
 	{
 	}
 
-	virtual void invokeOnGround(int, WaterBox*);  // _08
-	virtual void invokeOffGround(int, WaterBox*); // _0C
+	virtual void invokeOnGround(int footIdx, WaterBox* wb);  // _08
+	virtual void invokeOffGround(int footIdx, WaterBox* wb); // _0C
 
 	// _00	= VTBL
 	Obj* mObj; // _04
@@ -519,8 +579,15 @@ struct BigTreasureGroundCallBack : public JointGroundCallBack {
 
 /////////////////////////////////////////////////////////////////
 // ATTACK DEFINITIONS
+enum BigTreasureFireTypes {
+	BIGFIRE_Root = 0,
+	BIGFIRE_Body = 1,
+	BIGFIRE_Tail = 2,
+	BIGFIRE_TypeCount, // 3
+};
+
 struct AttackShadowNode : public JointShadowNode {
-	AttackShadowNode(int);
+	AttackShadowNode(int nodeCount);
 
 	virtual ~AttackShadowNode() { } // _08 (weak)
 
@@ -528,51 +595,56 @@ struct AttackShadowNode : public JointShadowNode {
 
 	// _00      = VTBL
 	// _00-_24  = JointShadowNode
-	Vector3f* _24; // _24
-	f32 _28;       // _28
+	Vector3f* mPosition; // _24
+	f32 mAngle;          // _28
 };
 
 struct BigTreasureAttackData {
 	inline BigTreasureAttackData()
 	{
-		_00 = 0.75f;
-		_04 = 0.65f;
-		_08 = 100.0f;
-		_0C = 220.0f;
-		_10 = 170.0f;
-		_14 = 200.0f;
-		_18 = 2.7f;
-		_1C = 0.1f;
-		_20 = 15;
-		_24 = 0;
-		_28 = 1.0f;
-		_2C = 1;
-		_30 = 3;
-		_34 = 0.02f;
-		_38 = 30.0f;
-		_3C = 0.5f;
-		_40 = 0.25f;
-		_44 = 50.0f;
+		mElecBounceFactor    = 0.75f;
+		mElecFrictionFactor  = 0.65f;
+		mElecBaseHSpeed      = 100.0f;
+		mElecJitterHSpeed    = 220.0f;
+		mElecBaseVSpeed      = 170.0f;
+		mElecJitterVSpeed    = 200.0f;
+		mElecScatterTime     = 2.7f;
+		mElecChainOffsetTime = 0.1f;
+		mElecMaxNodes        = 15;
+		mElecPlacedNodes     = 0;
+		mAttackScale         = 1.0f;
+		mIsGasRotClockwise   = true;
+		mGasArmNum           = 3;
+		mGasRotationSpeed    = 0.02f;
+		mGasReversalTime     = 30.0f;
+		mWaterShotInterval   = 0.5f;
+		mWaterJitterAngle    = 0.25f;
+		mWaterJitterDistance = 50.0f;
 	}
 
-	f32 _00; // _00
-	f32 _04; // _04
-	f32 _08; // _08
-	f32 _0C; // _0C
-	f32 _10; // _10
-	f32 _14; // _14
-	f32 _18; // _18
-	f32 _1C; // _1C
-	int _20; // _20
-	int _24; // _24
-	f32 _28; // _28
-	u8 _2C;  // _2C
-	int _30; // _30
-	f32 _34; // _34
-	f32 _38; // _38
-	f32 _3C; // _3C
-	f32 _40; // _40
-	f32 _44; // _44
+	// Elec attack params
+	f32 mElecBounceFactor;    // _00
+	f32 mElecFrictionFactor;  // _04
+	f32 mElecBaseHSpeed;      // _08
+	f32 mElecJitterHSpeed;    // _0C
+	f32 mElecBaseVSpeed;      // _10
+	f32 mElecJitterVSpeed;    // _14
+	f32 mElecScatterTime;     // _18
+	f32 mElecChainOffsetTime; // _1C
+	int mElecMaxNodes;        // _20
+	int mElecPlacedNodes;     // _24
+
+	// Fire/gas attack params
+	f32 mAttackScale;        // _28, for fire and gas
+	bool mIsGasRotClockwise; // _2C
+	int mGasArmNum;          // _30, 3 or 4
+	f32 mGasRotationSpeed;   // _34
+	f32 mGasReversalTime;    // _38
+
+	// Water attack params
+	f32 mWaterShotInterval;   // _3C
+	f32 mWaterJitterAngle;    // _40, adds some random jitter on shoot angle so it's not directly at target
+	f32 mWaterJitterDistance; // _44, adds some random jitter on shoot distance so it's not directly at target
 };
 
 struct BigTreasureAttackParameter : public BigTreasureAttackData {
@@ -587,22 +659,25 @@ struct BigTreasureElecAttack : public CNode {
 	bool update();
 
 	void init();
-	void start(Vector3f&, Vector3f&, bool);
-	void startInteract(BigTreasureElecAttack*);
+	void start(Vector3f& velocity, Vector3f& position, bool isVisibleNode);
+	void startInteract(BigTreasureElecAttack* connectedNode);
 	void finish();
+
+	inline BigTreasureElecAttack* getNext() const { return static_cast<BigTreasureElecAttack*>(mNext); }
+	inline BigTreasureElecAttack* getPrev() const { return static_cast<BigTreasureElecAttack*>(mPrev); }
 
 	// _00      = VTBL
 	// _00-_18  = CNode
-	Obj* mOwner;                         // _18
-	BigTreasureAttackData* mAttackData;  // _1C
-	u8 _20;                              // _20
-	Sys::Triangle* _24;                  // _24
-	Vector3f _28;                        // _28
-	Vector3f _34;                        // _34
-	u32 _40;                             // _40, unknown
-	efx::TOootaElec* mEfxElec;           // _44
-	efx::TOootaElecparts* mEfxElecParts; // _48
-	efx::TOootaPhouden* mEfxPhouden;     // _4C
+	Obj* mOwner;                           // _18
+	BigTreasureAttackData* mAttackData;    // _1C
+	bool mIsVisibleNode;                   // _20, has spawned in overworld - first node doesn't spawn and stays in TD
+	Sys::Triangle* mFloorTri;              // _24
+	Vector3f mVelocity;                    // _28
+	Vector3f mPosition;                    // _34
+	BigTreasureElecAttack* mConnectedNode; // _40, next node in chain that was activated by this node
+	efx::TOootaElec* mEfxElec;             // _44
+	efx::TOootaElecparts* mEfxElecParts;   // _48
+	efx::TOootaPhouden* mEfxPhouden;       // _4C
 };
 
 struct BigTreasureFireAttack : public CNode {
@@ -613,16 +688,18 @@ struct BigTreasureFireAttack : public CNode {
 	bool update();
 
 	void init();
-	void start(Vector3f&, Vector3f&);
+	void start(Vector3f& emitDirection, Vector3f& emitPosition);
 	void finish();
+
+	inline BigTreasureFireAttack* getNext() const { return static_cast<BigTreasureFireAttack*>(mNext); }
 
 	// _00      = VTBL
 	// _00-_18  = CNode
 	Obj* mOwner;                        // _18
 	BigTreasureAttackData* mAttackData; // _1C
-	f32 _20;                            // _20
-	Vector3f _24;                       // _24
-	Vector3f _30;                       // _30
+	f32 mEmitRatio;                     // _20, how far has fire extended? (0=at body, 1=max dist)
+	Vector3f mEmitDirection;            // _24
+	Vector3f mEmitPosition;             // _30
 };
 
 struct BigTreasureGasAttack : public CNode {
@@ -633,15 +710,18 @@ struct BigTreasureGasAttack : public CNode {
 	bool update();
 
 	void init();
-	void start(Vector3f&, f32);
+	void start(Vector3f& emitPosition, f32 emitAngle);
+
+	inline BigTreasureGasAttack* getNext() const { return static_cast<BigTreasureGasAttack*>(mNext); }
+	inline BigTreasureGasAttack* getChild() const { return static_cast<BigTreasureGasAttack*>(mChild); }
 
 	// _00      = VTBL
 	// _00-_18  = CNode
 	Obj* mOwner;                        // _18
 	BigTreasureAttackData* mAttackData; // _1C
-	f32 _20;                            // _20
-	Vector3f _24;                       // _24
-	Vector3f _30;                       // _30, gas emit position?
+	f32 mEmitRatio;                     // _20, how far has gas extended? (0=at body, 1=max dist)
+	Vector3f mEmitDirection;            // _24
+	Vector3f mEmitPosition;             // _30
 };
 
 struct BigTreasureWaterAttack : public CNode {
@@ -652,15 +732,17 @@ struct BigTreasureWaterAttack : public CNode {
 	bool update();
 
 	void init();
-	void start(Vector3f&, Vector3f&);
+	void start(Vector3f& velocity, Vector3f& position);
 	void finish();
+
+	inline BigTreasureWaterAttack* getNext() const { return static_cast<BigTreasureWaterAttack*>(mNext); }
 
 	// _00      = VTBL
 	// _00-_18  = CNode
 	Obj* mOwner;                        // _18
 	BigTreasureAttackData* mAttackData; // _1C
-	Vector3f _20;                       // _24
-	Vector3f _2C;                       // _30
+	Vector3f mVelocity;                 // _20
+	Vector3f mPosition;                 // _2C
 	efx::TOootaWbomb* mEfxWaterBomb;    // _38
 };
 
@@ -674,29 +756,29 @@ struct BigTreasureAttackMgr {
 	void startNewFireList();
 	void updateFireAttack();
 	void updateFireEmitPosition();
-	void updateFireSePosition(BigTreasureFireAttack*, int);
+	void updateFireSePosition(BigTreasureFireAttack* attack, int nodeType);
 
 	void startGasAttack();
 	void startNewGasList();
 	void updateGasAttack();
 	void updateGasEmitPosition();
-	void updateGasSePosition(BigTreasureGasAttack*, int);
+	void updateGasSePosition(BigTreasureGasAttack* attack, int armIdx);
 
 	void startWaterAttack();
 	void startNewWaterList();
 	void updateWaterAttack();
 	void updateWaterEmitPosition();
-	void getWaterTargetCreature();
+	Creature* getWaterTargetCreature();
 
 	void setElecAttackParameter();
 	void startElecAttack();
 	void updateElecAttack();
 	void finishAttack();
 
-	void addAttackShadow(BigTreasureWaterAttack*);
-	void addAttackShadow(BigTreasureElecAttack*);
-	void delAttackShadow(BigTreasureWaterAttack*);
-	void delAttackShadow(BigTreasureElecAttack*);
+	void addAttackShadow(BigTreasureWaterAttack* attack);
+	void addAttackShadow(BigTreasureElecAttack* attack);
+	void delAttackShadow(BigTreasureWaterAttack* attack);
+	void delAttackShadow(BigTreasureElecAttack* attack);
 	void updateAttackShadow();
 
 	// unused/inlined:
@@ -709,41 +791,41 @@ struct BigTreasureAttackMgr {
 	void startNewElecList();
 	void finishElecAttack();
 
-	u8 _00[4];                               // _00
-	Obj* mObj;                               // _04
-	f32 _08;                                 // _08
-	f32 _0C;                                 // _0C
-	CNode* _10;                              // _10
-	CNode* mFireAttackNodes;                 // _14
-	efx::TOootaFire* mEfxFire;               // _18
-	Vector3f _1C;                            // _1C
-	Vector3f _28[3];                         // _28
-	CNode* _4C;                              // _4C
-	CNode* mGasAttackNodes;                  // _50
-	f32 _54[4];                              // _54
-	Vector3f mGasEmitPosition;               // _64
-	Vector3f _70[4];                         // _70
-	efx::TOootaGas* mEfxGas[4];              // _A0
-	CNode* _B0;                              // _B0
-	CNode* mWaterAttackNodes;                // _B4
-	efx::TOootaWbomb* mEfxWaterBomb;         // _B8
-	Vector3f mWaterEmitPosition;             // _BC
-	CNode* _C8;                              // _C8
-	CNode* mElecAttackNodes;                 // _CC
-	efx::TOootaElecLeg* mEfxElecLeg[4][3];   // _D0
-	efx::TOootaElecAttack1* mEfxElecAttack1; // _100
-	efx::TOootaElecAttack2* mEfxElecAttack2; // _104
-	u8 _108[0xC];                            // _108, unknown
-	JointShadowRootNode* mShadowRootNode;    // _114
-	AttackShadowNode** mAttackShadowNodes;   // _118, array of 16 ptrs
-	BigTreasureAttackData* mAttackData;      // _11C
+	bool mIsStartAttack[BIGATTACK_Count];          // _00
+	Obj* mObj;                                     // _04
+	f32 mAttackTimer1;                             // _08, used by all attacks
+	f32 mAttackTimer2;                             // _0C, used by gas (reverse rot) and elec (discharge)
+	CNode* mActiveFireList;                        // _10
+	CNode* mFireAttackNodes;                       // _14
+	efx::TOootaFire* mEfxFire;                     // _18
+	Vector3f mFireEmitDirection;                   // _1C
+	Vector3f mFireNodePosition[BIGFIRE_TypeCount]; // _28, indexed by BigTreasureFireTypes
+	CNode* mActiveGasList;                         // _4C
+	CNode* mGasAttackNodes;                        // _50
+	f32 mGasAttackAngles[4];                       // _54
+	Vector3f mGasEmitPosition;                     // _64
+	Vector3f mGasSePosition[4];                    // _70
+	efx::TOootaGas* mEfxGas[4];                    // _A0
+	CNode* mActiveWaterList;                       // _B0
+	CNode* mWaterAttackNodes;                      // _B4
+	efx::TOootaWbomb* mEfxWaterBomb;               // _B8
+	Vector3f mWaterEmitPosition;                   // _BC
+	CNode* mActiveElecList;                        // _C8
+	CNode* mElecAttackNodes;                       // _CC
+	efx::TOootaElecLeg* mEfxElecLeg[4][3];         // _D0
+	efx::TOootaElecAttack1* mEfxElecAttack1;       // _100
+	efx::TOootaElecAttack2* mEfxElecAttack2;       // _104
+	int mElecSENodeIDs[3];                         // _108
+	JointShadowRootNode* mShadowRootNode;          // _114
+	AttackShadowNode** mAttackShadowNodes;         // _118, array of 16 ptrs
+	BigTreasureAttackData* mAttackData;            // _11C
 };
 /////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////
 // STATE MACHINE DEFINITIONS
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -766,9 +848,9 @@ struct StateAttack : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -780,9 +862,9 @@ struct StateDead : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -794,9 +876,9 @@ struct StateDropItem : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -808,9 +890,9 @@ struct StateFlick : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -822,9 +904,9 @@ struct StateItemWait : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -836,9 +918,9 @@ struct StateItemWalk : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -850,9 +932,9 @@ struct StateLand : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -864,9 +946,9 @@ struct StatePreAttack : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -878,9 +960,9 @@ struct StatePutItem : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -892,9 +974,9 @@ struct StateStay : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -906,9 +988,9 @@ struct StateWait : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -920,9 +1002,9 @@ struct StateWalk : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

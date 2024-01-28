@@ -78,6 +78,8 @@ struct CallBack_CounterRV : public P2DScreen::CallBackNode {
 	virtual void setValue(bool, bool); // _28
 	virtual void setValue();           // _2C (weak)
 
+	inline int getMaxCounter() { return (mCurrentCounters >= mCounterLimit) ? mCounterLimit : mCurrentCounters; }
+
 	J2DPane* getMotherPane();
 	void setBlind(bool);
 	void setCenteringMode(EnumCenteringMode);
@@ -98,12 +100,12 @@ struct CallBack_CounterRV : public P2DScreen::CallBackNode {
 	u32* mCountPtr;                   // _20
 	u32 mInitialDisplayValue;         // _24
 	u32 mCurrDisplayValue;            // _28
-	u16 mCurrCounters;                // _2C
-	u16 mCounterLimit;                // _2E /* allocated slot count of _7C */
-	u16 _30;                          // _30
+	u16 mCurrentCounters;             // _2C
+	u16 mCounterLimit;                // _2E
+	u16 mMaxCounterLimit;             // _30
 	f32 mPane12DistX;                 // _34
 	f32 mPane13DistX;                 // _38
-	f32 _3C;                          // _3C
+	f32 mKetaScaleX;                  // _3C
 	Vector2f mPaneScale;              // _40
 	Vector2f mPaneSize;               // _48
 	Vector2f mPanePosition;           // _50
@@ -128,8 +130,8 @@ struct CallBack_CounterRV : public P2DScreen::CallBackNode {
 	SoundID mScaleUpSoundID;          // _94
 	SoundID mScaleDownSoundID;        // _98
 	u8 _9C;                           // _9C
-	f32 _A0;                          // _A0
-	f32 _A4;                          // _A4
+	f32 mPaneOffsetY;                 // _A0
+	f32 mPaneOffsetX;                 // _A4
 
 	static struct StaticValues {
 		inline StaticValues()
@@ -158,7 +160,7 @@ struct CallBack_CounterDay : public CallBack_CounterRV {
 
 	// _00     = VTBL
 	// _00-_A8 = CallBack_CounterRV
-	J2DPicture* _A8; // _A8
+	J2DPicture* mDayPic; // _A8
 };
 
 // Size: 0xCC
@@ -322,6 +324,14 @@ struct CallBack_Message : public P2DScreen::CallBackNode {
 
 	// Unused/inlined:
 	void drawInfo(J2DGrafContext&);
+
+	inline void setBounds(f32 minX, f32 minY, f32 maxX, f32 maxY)
+	{
+		mMinX = minX;
+		mMinY = minY;
+		mMaxX = maxX;
+		mMaxY = maxY;
+	}
 
 	// _00     = VTBL
 	// _00-_1C = P2DScreen::CallBackNode

@@ -8,7 +8,6 @@
 #include "JSystem/JAudio/JAS/JASGenericMemPool.h"
 #include "JSystem/JAudio/JAS/JASChannel.h"
 #include "JSystem/JKernel/JKRThread.h"
-#include "types.h"
 
 JASAudioThread* JASAudioThread::sAudioThread;
 OSThreadQueue JASAudioThread::sThreadQueue;
@@ -16,31 +15,28 @@ u32 JASAudioThread::sVFrameCounter;
 volatile int JASAudioThread::snIntCount;
 bool JASAudioThread::sbPauseFlag;
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000050
+/**
+ * @note Address: N/A
+ * @note Size: 0x50
  */
 JASAudioThread::JASAudioThread(int stackSize, int msgCount, u32 threadPriority)
     : JKRThread(JASDram, stackSize, msgCount, threadPriority)
 {
 }
 
-/*
- * --INFO--
- * Address:	800A5B88
- * Size:	000074
+/**
+ * @note Address: 0x800A5B88
+ * @note Size: 0x74
  */
-void JASAudioThread::create(long threadPriority)
+void JASAudioThread::create(s32 threadPriority)
 {
 	sAudioThread = new (JASDram, 0) JASAudioThread(0x1000, 0x10, threadPriority);
 	OSResumeThread(sAudioThread->mThread);
 }
 
-/*
- * --INFO--
- * Address:	800A5BFC
- * Size:	000038
+/**
+ * @note Address: 0x800A5BFC
+ * @note Size: 0x38
  */
 void JASAudioThread::stop()
 {
@@ -49,10 +45,9 @@ void JASAudioThread::stop()
 	}
 }
 
-/*
- * --INFO--
- * Address:	800A5C34
- * Size:	00017C
+/**
+ * @note Address: 0x800A5C34
+ * @note Size: 0x17C
  */
 void* JASAudioThread::run()
 {
@@ -99,10 +94,9 @@ void* JASAudioThread::run()
 	}
 }
 
-/*
- * --INFO--
- * Address:	800A5DB0
- * Size:	000048
+/**
+ * @note Address: 0x800A5DB0
+ * @note Size: 0x48
  */
 void JASAudioThread::DMACallback()
 {
@@ -111,10 +105,9 @@ void JASAudioThread::DMACallback()
 	OSSendMessage(&sAudioThread->mMsgQueue, (void*)AUDIOMSG_DMA, OS_MESSAGE_NOBLOCK);
 }
 
-/*
- * --INFO--
- * Address:	800A5DF8
- * Size:	000064
+/**
+ * @note Address: 0x800A5DF8
+ * @note Size: 0x64
  */
 void JASAudioThread::DSPCallback(void*)
 {

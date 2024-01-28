@@ -26,7 +26,7 @@ enum EggDrop {
 };
 
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -57,9 +57,9 @@ struct Obj : public EnemyBase {
 	{
 		return EnemyTypeID::EnemyID_Egg;
 	}
-	virtual bool pressCallBack(Creature*, f32, CollPart*); // _27C
-	virtual f32 getDownSmokeScale() { return 0.4f; }       // _2EC (weak)
-	virtual void setFSM(FSM* fsm)                          // _2F8 (weak)
+	virtual bool pressCallBack(Creature* source, f32 damage, CollPart* part); // _27C
+	virtual f32 getDownSmokeScale() { return 0.4f; }                          // _2EC (weak)
+	virtual void setFSM(FSM* fsm)                                             // _2F8 (weak)
 	{
 		mFsm = fsm;
 		mFsm->init(this);
@@ -138,6 +138,11 @@ struct Parms : public EnemyParmsBase {
 	u8 _8D1;                  // _8D1
 };
 
+enum AnimID {
+	EGGANIM_Damage = 0, // 'damage1', only one anim
+	EGGANIM_AnimCount,  // 1
+};
+
 struct ProperAnimator : public EnemyAnimatorBase {
 	virtual ~ProperAnimator() { }                                   // _08
 	virtual void setAnimMgr(SysShape::AnimMgr* mgr);                // _0C
@@ -169,8 +174,8 @@ struct State : public EnemyFSMState {
 struct StateWait : public State {
 	StateWait(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _00
-	virtual void exec(EnemyBase*);            // _04
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _00
+	virtual void exec(EnemyBase* enemy);                     // _04
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

@@ -1,14 +1,12 @@
-#include "types.h"
-#include "PSAutoBgm/MeloArr.h"
 #include "JSystem/JAudio/JALCalc.h"
-#include "JSystem/JUtility/JUTException.h"
+#include "P2Macros.h"
+#include "PSAutoBgm/MeloArr.h"
 
 namespace PSAutoBgm {
 
-/*
- * --INFO--
- * Address:	8033EE9C
- * Size:	00003C
+/**
+ * @note Address: 0x8033EE9C
+ * @note Size: 0x3C
  */
 bool MeloArr_RandomAvoid::avoidChk(MeloArrArg& meloArg)
 {
@@ -17,10 +15,9 @@ bool MeloArr_RandomAvoid::avoidChk(MeloArrArg& meloArg)
 	return out;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
 inline void MeloArrArg::assertCheck() const
 {
@@ -28,16 +25,15 @@ inline void MeloArrArg::assertCheck() const
 	P2ASSERTLINE(90, _01 != 0xFF);
 }
 
-/*
- * --INFO--
- * Address:	8033EED8
- * Size:	000138
+/**
+ * @note Address: 0x8033EED8
+ * @note Size: 0x138
  */
 bool MeloArrMgr::isToAvoid(MeloArrArg& meloArg)
 {
 	MeloArrBase* currLink;
 	meloArg.assertCheck();
-	if (!_12) {
+	if (!mIsActive) {
 		return false;
 	}
 	bool check = false;
@@ -64,7 +60,7 @@ bool MeloArrMgr::isToAvoid(MeloArrArg& meloArg)
 	return check;
 }
 
-/*
+/**
  * Fake function, required to fix weak function ordering, probably due to an inlined
  * method for a struct that doesn't get used elsewhere :c
  */

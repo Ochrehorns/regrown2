@@ -20,10 +20,10 @@ static const char unusedItemGateName[] = "itemGate";
 
 ItemGateMgr* itemGateMgr;
 ItemDengekiGate::Mgr* ItemDengekiGate::mgr;
-/*
- * --INFO--
- * Address:	801C7604
- * Size:	000134
+
+/**
+ * @note Address: 0x801C7604
+ * @note Size: 0x134
  */
 void GateFSM::init(ItemGate* gate)
 {
@@ -33,10 +33,9 @@ void GateFSM::init(ItemGate* gate)
 	registerState(new GateDownState);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00014C
+/**
+ * @note Address: N/A
+ * @note Size: 0x14C
  */
 ItemGate::ItemGate()
     : WorkItem(OBJTYPE_Gate)
@@ -53,17 +52,15 @@ ItemGate::ItemGate()
 	mEgateEfxBC             = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	801C7738
- * Size:	000048
+/**
+ * @note Address: 0x801C7738
+ * @note Size: 0x48
  */
 void ItemGate::constructor() { mSoundObj = new PSM::WorkItem(this); }
 
-/*
- * --INFO--
- * Address:	801C7780
- * Size:	000248
+/**
+ * @note Address: 0x801C7780
+ * @note Size: 0x248
  */
 void ItemGate::onInit(CreatureInitArg* arg)
 {
@@ -81,7 +78,7 @@ void ItemGate::onInit(CreatureInitArg* arg)
 		ItemGateInitArg* gateArg = static_cast<ItemGateInitArg*>(arg);
 		mFaceDir                 = gateArg->mFaceDir;
 	} else {
-		mFaceDir = TAU * randFloat();
+		mFaceDir = randFloat() * TAU;
 	}
 
 	if (mIsElectric) {
@@ -95,27 +92,15 @@ void ItemGate::onInit(CreatureInitArg* arg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801C79C8
- * Size:	000034
- */
-void StateMachine<Game::ItemGate>::start(Game::ItemGate* gate, int stateID, Game::StateArg* args)
-{
-	gate->mCurrentState = nullptr;
-	transit(gate, stateID, args);
-}
-
-/*
- * --INFO--
- * Address:	801C79FC
- * Size:	0001E4
+/**
+ * @note Address: 0x801C79FC
+ * @note Size: 0x1E4
  */
 void ItemGate::onSetPosition()
 {
 	Vector3f rotation(0.0f, mFaceDir, 0.0f);
-	mObjMatrix.makeTR(mPosition, rotation);
-	PSMTXCopy((PSQuaternion*)&mObjMatrix, mModel->mJ3dModel->mPosMtx);
+	mBaseTrMatrix.makeTR(mPosition, rotation);
+	PSMTXCopy((PSQuaternion*)&mBaseTrMatrix, mModel->mJ3dModel->mPosMtx);
 	mModel->mJ3dModel->calc();
 	if (mIsElectric) {
 		ItemDengekiGate::mgr->setupPlatform(this);
@@ -124,7 +109,7 @@ void ItemGate::onSetPosition()
 	}
 	initPlanes();
 
-	WPSearchArg wpSearch(mPosition, nullptr, 0, 10.0f);
+	WPSearchArg wpSearch(mPosition, nullptr, false, 10.0f);
 	if (mapMgr && mapMgr->mRouteMgr) {
 		mWayPoint = mapMgr->mRouteMgr->getNearestWayPoint(wpSearch);
 		mWayPoint->setOpen(false);
@@ -145,10 +130,9 @@ void ItemGate::onSetPosition()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801C7BE0
- * Size:	0000E8
+/**
+ * @note Address: 0x801C7BE0
+ * @note Size: 0xE8
  */
 void ItemGate::doLoad(Stream& stream)
 {
@@ -170,10 +154,9 @@ void ItemGate::doLoad(Stream& stream)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801C7CC8
- * Size:	00004C
+/**
+ * @note Address: 0x801C7CC8
+ * @note Size: 0x4C
  */
 void ItemGate::doSave(Stream& stream)
 {
@@ -181,17 +164,15 @@ void ItemGate::doSave(Stream& stream)
 	stream.writeInt(mSegmentsDown);
 }
 
-/*
- * --INFO--
- * Address:	801C7D14
- * Size:	00001C
+/**
+ * @note Address: 0x801C7D14
+ * @note Size: 0x1C
  */
 void ItemGate::updateBoundSphere() { mBoundingSphere.mPosition = mPosition; }
 
-/*
- * --INFO--
- * Address:	801C7D30
- * Size:	00007C
+/**
+ * @note Address: 0x801C7D30
+ * @note Size: 0x7C
  */
 void ItemGate::update()
 {
@@ -202,10 +183,9 @@ void ItemGate::update()
 	do_updateLOD();
 }
 
-/*
- * --INFO--
- * Address:	801C7DAC
- * Size:	000130
+/**
+ * @note Address: 0x801C7DAC
+ * @note Size: 0x130
  */
 void ItemGate::doAI()
 {
@@ -222,10 +202,9 @@ void ItemGate::doAI()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801C7EDC
- * Size:	000044
+/**
+ * @note Address: 0x801C7EDC
+ * @note Size: 0x44
  */
 void ItemGate::onKeyEvent(const SysShape::KeyEvent& keyEvent)
 {
@@ -234,17 +213,9 @@ void ItemGate::onKeyEvent(const SysShape::KeyEvent& keyEvent)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801C7F20
- * Size:	000004
- */
-void GateState::onKeyEvent(Game::ItemGate*, const SysShape::KeyEvent&) { }
-
-/*
- * --INFO--
- * Address:	801C7F24
- * Size:	00011C
+/**
+ * @note Address: 0x801C7F24
+ * @note Size: 0x11C
  */
 bool ItemGate::interactAttack(Game::InteractAttack& attack)
 {
@@ -264,17 +235,9 @@ bool ItemGate::interactAttack(Game::InteractAttack& attack)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	801C8040
- * Size:	000004
- */
-void GateState::onDamage(Game::ItemGate*, float) { }
-
-/*
- * --INFO--
- * Address:	801C8044
- * Size:	00006C
+/**
+ * @note Address: 0x801C8044
+ * @note Size: 0x6C
  */
 void ItemGate::initMotion()
 {
@@ -287,10 +250,37 @@ void ItemGate::initMotion()
 	mAnimSpeed = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	801C80B0
- * Size:	000290
+/**
+ * @note Address: N/A
+ * @note Size: 0x48
+ */
+void ItemGate::startDamageMotion()
+{
+	mAnimator.startAnim(mSegmentsDown, this);
+	mAnimSpeed = 30.0f;
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x128
+ */
+void ItemGate::startDownMotion()
+{
+	mAnimator.startAnim(mSegmentsDown + 3, this);
+	mAnimSpeed = 30.0f;
+	if (mColor == 0) {
+		efx::TGate1Down gateDown(&mBaseTrMatrix);
+		gateDown.create(nullptr);
+	} else {
+		efx::TGate2Down gateDown(&mBaseTrMatrix);
+		gateDown.create(nullptr);
+	}
+	mMabiki.mBuffer += 200;
+}
+
+/**
+ * @note Address: 0x801C80B0
+ * @note Size: 0x290
  */
 bool ItemGate::getVectorField(Sys::Sphere& sphere, Vector3f& vectorField)
 {
@@ -325,10 +315,9 @@ bool ItemGate::getVectorField(Sys::Sphere& sphere, Vector3f& vectorField)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	801C8340
- * Size:	00011C
+/**
+ * @note Address: 0x801C8340
+ * @note Size: 0x11C
  */
 f32 ItemGate::getWorkDistance(Sys::Sphere& sphere)
 {
@@ -447,13 +436,42 @@ lbl_801C8454:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801C845C
- * Size:	0003A8
+/**
+ * @note Address: 0x801C845C
+ * @note Size: 0x3A8
  */
 void ItemGate::initPlanes()
 {
+	_270 = getDirection(mFaceDir);
+	_264 = getPerpDirection(mFaceDir);
+
+	Vector3f pos = getPosition();
+
+	Vector3f plane0vec = pos + (_270 * 20.0f);
+	mPlanes[0].a       = _270.x;
+	mPlanes[0].b       = _270.y;
+	mPlanes[0].c       = _270.z;
+	mPlanes[0].d       = _270.dot(plane0vec);
+
+	Vector3f vec2      = (-_270.x, -_270.y, _270.z);
+	Vector3f plane1vec = pos + (vec2 * 20.0f);
+	mPlanes[1].a       = vec2.x;
+	mPlanes[1].b       = vec2.y;
+	mPlanes[1].c       = vec2.z;
+	mPlanes[1].d       = vec2.dot(plane1vec);
+
+	Vector3f plane2vec = pos + (_264 * 76.5f);
+	mPlanes[2].a       = _264.x;
+	mPlanes[2].b       = _264.y;
+	mPlanes[2].c       = _264.z;
+	mPlanes[2].d       = _264.dot(plane2vec);
+
+	Vector3f vec3      = (-_264.x, -_264.y, _264.z);
+	Vector3f plane3vec = pos + (vec3 * 76.5f);
+	mPlanes[3].a       = vec3.x;
+	mPlanes[3].b       = vec3.y;
+	mPlanes[3].c       = vec3.z;
+	mPlanes[3].d       = vec3.dot(plane3vec);
 	/*
 	stwu     r1, -0xb0(r1)
 	mflr     r0
@@ -704,16 +722,15 @@ lbl_801C8578:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801C8804
- * Size:	0000D4
+/**
+ * @note Address: 0x801C8804
+ * @note Size: 0xD4
  */
 void ItemGate::changeMaterial()
 {
 	int jointIdx = (mIsElectric) ? 0 : mModel->getJoint("move")->mJointIndex;
 
-	bool showJoint = mCentrePlatInstance->_108 & 1 && mLod.mFlags & 4;
+	bool showJoint = mCentrePlatInstance->mFlags & 1 && mLod.mFlags & 4;
 	mModel->jointVisible(showJoint, (u16)jointIdx);
 	if (mIsElectric) {
 		mMatAnimator->animate(30.0f);
@@ -725,10 +742,9 @@ void ItemGate::changeMaterial()
 
 inline f32 ItemGate::getGateHealth() { return (mMaxSegments - mSegmentsDown - 1) * mMaxSegmentHealth + mCurrentSegmentHealth; }
 
-/*
- * --INFO--
- * Address:	801C88D8
- * Size:	0000A0
+/**
+ * @note Address: 0x801C88D8
+ * @note Size: 0xA0
  */
 
 void ItemGate::getLifeGaugeParam(Game::LifeGaugeParam& param)
@@ -738,54 +754,11 @@ void ItemGate::getLifeGaugeParam(Game::LifeGaugeParam& param)
 	param.mRadius              = 10.0f;
 	param.mCurHealthPercentage = getGateHealth() / (mMaxSegmentHealth * mMaxSegments);
 	param.mIsGaugeShown        = mLod.mFlags & 4;
-	/*
-	stwu     r1, -0x20(r1)
-	lis      r0, 0x4330
-	lfs      f1, lbl_805195E8@sda21(r2)
-	lfs      f0, 0x19c(r3)
-	stw      r0, 8(r1)
-	lfd      f3, lbl_805195A8@sda21(r2)
-	stfs     f0, 0(r4)
-	lfs      f0, lbl_805195B0@sda21(r2)
-	lfs      f2, 0x1a0(r3)
-	stw      r0, 0x10(r1)
-	stfs     f2, 4(r4)
-	lfs      f2, 0x1a4(r3)
-	stfs     f2, 8(r4)
-	lfs      f2, 4(r4)
-	fadds    f1, f2, f1
-	stfs     f1, 4(r4)
-	stfs     f0, 0x10(r4)
-	lwz      r6, 0x210(r3)
-	lwz      r5, 0x20c(r3)
-	xoris    r0, r6, 0x8000
-	lfs      f4, 0x204(r3)
-	stw      r0, 0x14(r1)
-	subf     r5, r5, r6
-	addi     r0, r5, -1
-	lfs      f1, 0x200(r3)
-	xoris    r0, r0, 0x8000
-	lfd      f0, 0x10(r1)
-	stw      r0, 0xc(r1)
-	fsubs    f0, f0, f3
-	lfd      f2, 8(r1)
-	fsubs    f2, f2, f3
-	fmuls    f0, f4, f0
-	fmadds   f1, f4, f2, f1
-	fdivs    f0, f1, f0
-	stfs     f0, 0xc(r4)
-	lbz      r0, 0xd8(r3)
-	rlwinm   r0, r0, 0x1e, 0x1f, 0x1f
-	stb      r0, 0x14(r4)
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801C8978
- * Size:	0001FC
+/**
+ * @note Address: 0x801C8978
+ * @note Size: 0x1FC
  */
 ItemGateMgr::ItemGateMgr()
     : BaseItemMgr(1)
@@ -802,149 +775,16 @@ ItemGateMgr::ItemGateMgr()
 	mCentrePlatform = loadPlatform(arc, "cent.pla");
 	mSidePlatform   = loadPlatform(arc, "side.pla");
 	closeTextArc(arc);
-	JKRArchive::mount("user/Kando/gates/gate-arc.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	JKRMountArchive("user/Kando/gates/gate-arc.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 	SysShape::Model::enableMaterialAnim(mModelData[0], 0);
 	void* brk = JKRFileLoader::getGlbResource("gate_soft.brk", nullptr);
 	mMatTevRegAnim.attachResource(brk, mModelData[0]);
 	sys->heapStatusEnd("ItemGate");
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	extsh.   r0, r4
-	lis      r4, lbl_80480188@ha
-	stw      r31, 0x1c(r1)
-	addi     r31, r4, lbl_80480188@l
-	stw      r30, 0x18(r1)
-	mr       r30, r3
-	stw      r29, 0x14(r1)
-	stw      r28, 0x10(r1)
-	beq      lbl_801C89B0
-	addi     r0, r30, 0x88
-	stw      r0, 4(r30)
-
-lbl_801C89B0:
-	mr       r3, r30
-	li       r4, 0
-	li       r5, 1
-	bl       __ct__Q24Game11BaseItemMgrFi
-	lis      r3, __vt__Q24Game11ItemGateMgr@ha
-	addi     r29, r30, 0x30
-	addi     r0, r3, __vt__Q24Game11ItemGateMgr@l
-	stw      r0, 0(r30)
-	mr       r3, r29
-	bl       __ct__5CNodeFv
-	lis      r4, __vt__16GenericContainer@ha
-	lis      r3, "__vt__27Container<Q24Game8ItemGate>"@ha
-	addi     r0, r4, __vt__16GenericContainer@l
-	lis      r5, __vt__16GenericObjectMgr@ha
-	stw      r0, 0(r29)
-	addi     r0, r3, "__vt__27Container<Q24Game8ItemGate>"@l
-	lis      r4, "__vt__27ObjectMgr<Q24Game8ItemGate>"@ha
-	lis      r3, "__vt__31NodeObjectMgr<Q24Game8ItemGate>"@ha
-	stw      r0, 0(r29)
-	li       r0, 0
-	addi     r6, r4, "__vt__27ObjectMgr<Q24Game8ItemGate>"@l
-	addi     r4, r3, "__vt__31NodeObjectMgr<Q24Game8ItemGate>"@l
-	stb      r0, 0x18(r29)
-	addi     r0, r5, __vt__16GenericObjectMgr@l
-	addi     r28, r29, 0x20
-	addi     r5, r6, 0x2c
-	stw      r0, 0x1c(r29)
-	addi     r0, r4, 0x2c
-	mr       r3, r28
-	stw      r6, 0(r29)
-	stw      r5, 0x1c(r29)
-	stw      r4, 0(r29)
-	stw      r0, 0x1c(r29)
-	bl       __ct__5CNodeFv
-	lis      r4, "__vt__29TObjectNode<Q24Game8ItemGate>"@ha
-	addi     r3, r30, 0x74
-	addi     r0, r4, "__vt__29TObjectNode<Q24Game8ItemGate>"@l
-	stw      r0, 0(r28)
-	bl       __ct__Q23Sys18MatTevRegAnimationFv
-	addi     r0, r2, lbl_805195EC@sda21
-	addi     r4, r31, 0x40
-	stw      r0, 8(r30)
-	li       r5, 0
-	lwz      r3, sys@sda21(r13)
-	bl       heapStatusStart__6SystemFPcP7JKRHeap
-	addi     r0, r31, 0x4c
-	mr       r3, r30
-	stw      r0, 0x28(r30)
-	li       r4, 1
-	bl       setModelSize__Q24Game11BaseItemMgrFi
-	mr       r3, r30
-	addi     r4, r31, 0x68
-	bl       loadArchive__Q24Game11BaseItemMgrFPc
-	mr       r3, r30
-	addi     r4, r31, 0x78
-	li       r5, 0
-	lis      r6, 0x2000
-	bl       loadBmd__Q24Game11BaseItemMgrFPciUl
-	mr       r3, r30
-	addi     r4, r31, 0x88
-	bl       openTextArc__Q24Game11BaseItemMgrFPc
-	mr       r0, r3
-	mr       r3, r30
-	mr       r29, r0
-	addi     r5, r31, 0x98
-	mr       r4, r29
-	bl       loadAnimMgr__Q24Game11BaseItemMgrFP13JKRFileLoaderPc
-	mr       r3, r30
-	mr       r4, r29
-	addi     r5, r31, 0xa8
-	bl       loadCollision__Q24Game11BaseItemMgrFP13JKRFileLoaderPc
-	mr       r3, r30
-	mr       r4, r29
-	addi     r5, r31, 0xb8
-	bl       loadPlatform__Q24Game11BaseItemMgrFP13JKRFileLoaderPc
-	stw      r3, 0x6c(r30)
-	mr       r3, r30
-	mr       r4, r29
-	addi     r5, r31, 0xc4
-	bl       loadPlatform__Q24Game11BaseItemMgrFP13JKRFileLoaderPc
-	stw      r3, 0x70(r30)
-	mr       r3, r30
-	mr       r4, r29
-	bl       closeTextArc__Q24Game11BaseItemMgrFP10JKRArchive
-	addi     r3, r31, 0xd0
-	li       r4, 1
-	li       r5, 0
-	li       r6, 1
-	bl
-mount__10JKRArchiveFPCcQ210JKRArchive10EMountModeP7JKRHeapQ210JKRArchive15EMountDirection
-	lwz      r3, 0x1c(r30)
-	li       r4, 0
-	lwz      r3, 0(r3)
-	bl       enableMaterialAnim__Q28SysShape5ModelFP12J3DModelDatai
-	addi     r3, r31, 0xf0
-	li       r4, 0
-	bl       getGlbResource__13JKRFileLoaderFPCcP13JKRFileLoader
-	lwz      r5, 0x1c(r30)
-	mr       r4, r3
-	addi     r3, r30, 0x74
-	lwz      r5, 0(r5)
-	bl       attachResource__Q23Sys16MatBaseAnimationFPvP12J3DModelData
-	lwz      r3, sys@sda21(r13)
-	addi     r4, r31, 0x40
-	bl       heapStatusEnd__6SystemFPc
-	lwz      r0, 0x24(r1)
-	mr       r3, r30
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	lwz      r28, 0x10(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801C8D94
- * Size:	0000A0
+/**
+ * @note Address: 0x801C8D94
+ * @note Size: 0xA0
  */
 void ItemGateMgr::setupGate(Game::ItemGate* gate)
 {
@@ -955,10 +795,9 @@ void ItemGateMgr::setupGate(Game::ItemGate* gate)
 	gate->mAnimator.startAnim(0, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	801C8E34
- * Size:	000158
+/**
+ * @note Address: 0x801C8E34
+ * @note Size: 0x158
  */
 void ItemGateMgr::setupPlatform(Game::ItemGate* gate)
 {
@@ -967,117 +806,27 @@ void ItemGateMgr::setupPlatform(Game::ItemGate* gate)
 	ID32 centreID            = 'gate';
 	PlatAddInstanceArg platArgCentre;
 	platArgCentre.mItem       = gate;
-	platArgCentre.mMatrix     = moveJointMatrix;
 	platArgCentre.mId         = centreID;
 	platArgCentre.mPlatform   = mCentrePlatform;
+	platArgCentre.mMatrix     = moveJointMatrix;
 	gate->mCentrePlatInstance = platMgr->addInstance(platArgCentre);
 	sys->heapStatusStart("Clone-Plat", nullptr);
 	Matrixf* fixJointMatrix = gate->mModel->getJoint("fix")->getWorldMatrix();
 	ID32 sideID             = 'none';
 	PlatAddInstanceArg platArgSide;
-	platArgSide.mItem       = gate;
-	platArgSide.mMatrix     = fixJointMatrix;
-	platArgSide.mId         = sideID;
-	platArgSide.mPlatform   = mSidePlatform;
-	platArgSide._18         = 1;
-	gate->mSidePlatInstance = platMgr->addInstance(platArgSide);
+	platArgSide.mItem             = gate;
+	platArgSide.mId               = sideID;
+	platArgSide.mPlatform         = mSidePlatform;
+	platArgSide.mMatrix           = fixJointMatrix;
+	platArgSide.mEnableGlobalPlat = true;
+	gate->mSidePlatInstance       = platMgr->addInstance(platArgSide);
 	sys->heapStatusEnd("Clone-Plat");
 	sys->heapStatusEnd("Platform");
-
-	/*
-	stwu     r1, -0x70(r1)
-	mflr     r0
-	lis      r5, lbl_80480294@ha
-	stw      r0, 0x74(r1)
-	addi     r0, r5, lbl_80480294@l
-	li       r5, 0
-	stw      r31, 0x6c(r1)
-	stw      r30, 0x68(r1)
-	mr       r30, r4
-	mr       r4, r0
-	stw      r29, 0x64(r1)
-	mr       r29, r3
-	lwz      r3, sys@sda21(r13)
-	bl       heapStatusStart__6SystemFPcP7JKRHeap
-	lwz      r3, 0x174(r30)
-	addi     r4, r2, lbl_805195D8@sda21
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lis      r4, 0x67617465@ha
-	mr       r31, r3
-	addi     r3, r1, 0x14
-	addi     r4, r4, 0x67617465@l
-	bl       __ct__4ID32FUl
-	addi     r3, r1, 0x40
-	bl       __ct__Q24Game18PlatAddInstanceArgFv
-	stw      r30, 0x40(r1)
-	addi     r3, r1, 0x44
-	addi     r4, r1, 0x14
-	li       r5, 5
-	bl       __copy
-	lwz      r0, 0x1c(r1)
-	addi     r4, r1, 0x40
-	lwz      r3, platMgr__4Game@sda21(r13)
-	stw      r0, 0x4c(r1)
-	lwz      r0, 0x6c(r29)
-	stw      r0, 0x50(r1)
-	stw      r31, 0x54(r1)
-	bl       addInstance__Q24Game7PlatMgrFRQ24Game18PlatAddInstanceArg
-	stw      r3, 0x1f4(r30)
-	lis      r3, lbl_804802A0@ha
-	addi     r4, r3, lbl_804802A0@l
-	li       r5, 0
-	lwz      r3, sys@sda21(r13)
-	bl       heapStatusStart__6SystemFPcP7JKRHeap
-	lwz      r3, 0x174(r30)
-	addi     r4, r2, lbl_805195F4@sda21
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lis      r4, 0x6E6F6E65@ha
-	mr       r31, r3
-	addi     r3, r1, 8
-	addi     r4, r4, 0x6E6F6E65@l
-	bl       __ct__4ID32FUl
-	addi     r3, r1, 0x20
-	bl       __ct__Q24Game18PlatAddInstanceArgFv
-	stw      r30, 0x20(r1)
-	addi     r3, r1, 0x24
-	addi     r4, r1, 8
-	li       r5, 5
-	bl       __copy
-	lwz      r5, 0x10(r1)
-	li       r0, 1
-	lwz      r3, platMgr__4Game@sda21(r13)
-	addi     r4, r1, 0x20
-	stw      r5, 0x2c(r1)
-	lwz      r5, 0x70(r29)
-	stw      r5, 0x30(r1)
-	stw      r31, 0x34(r1)
-	stb      r0, 0x38(r1)
-	bl       addInstance__Q24Game7PlatMgrFRQ24Game18PlatAddInstanceArg
-	stw      r3, 0x1f8(r30)
-	lis      r3, lbl_804802A0@ha
-	addi     r4, r3, lbl_804802A0@l
-	lwz      r3, sys@sda21(r13)
-	bl       heapStatusEnd__6SystemFPc
-	lis      r4, lbl_80480294@ha
-	lwz      r3, sys@sda21(r13)
-	addi     r4, r4, lbl_80480294@l
-	bl       heapStatusEnd__6SystemFPc
-	lwz      r0, 0x74(r1)
-	lwz      r31, 0x6c(r1)
-	lwz      r30, 0x68(r1)
-	lwz      r29, 0x64(r1)
-	mtlr     r0
-	addi     r1, r1, 0x70
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801C8F8C
- * Size:	0001D4
+/**
+ * @note Address: 0x801C8F8C
+ * @note Size: 0x1D4
  */
 BaseItem* ItemGateMgr::birth()
 {
@@ -1089,143 +838,11 @@ BaseItem* ItemGateMgr::birth()
 	objNode->mContents->constructor();
 	sys->heapStatusEnd("ItemGate");
 	return item;
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lis      r4, lbl_804801C8@ha
-	li       r5, 0
-	stw      r0, 0x24(r1)
-	addi     r4, r4, lbl_804801C8@l
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	mr       r30, r3
-	stw      r29, 0x14(r1)
-	lwz      r3, sys@sda21(r13)
-	bl       heapStatusStart__6SystemFPcP7JKRHeap
-	li       r3, 0x284
-	bl       __nw__FUl
-	or.      r31, r3, r3
-	beq      lbl_801C90EC
-	li       r4, 0x404
-	bl       __ct__Q24Game8BaseItemFi
-	lis      r3,
-"__vt__Q24Game59FSMItem<Q24Game8ItemGate,Q24Game7GateFSM,Q24Game9GateState>"@ha
-	li       r0, 0
-	addi     r4, r3,
-"__vt__Q24Game59FSMItem<Q24Game8ItemGate,Q24Game7GateFSM,Q24Game9GateState>"@l
-	li       r3, 0x1c
-	stw      r4, 0(r31)
-	addi     r4, r4, 0x1b0
-	stw      r4, 0x178(r31)
-	stw      r0, 0x1d8(r31)
-	stw      r0, 0x1dc(r31)
-	bl       __nw__FUl
-	cmplwi   r3, 0
-	beq      lbl_801C9030
-	lis      r4, "__vt__Q24Game30StateMachine<Q24Game8ItemGate>"@ha
-	lis      r5, "__vt__Q24Game25ItemFSM<Q24Game8ItemGate>"@ha
-	addi     r0, r4, "__vt__Q24Game30StateMachine<Q24Game8ItemGate>"@l
-	lis      r4, __vt__Q24Game7GateFSM@ha
-	stw      r0, 0(r3)
-	li       r6, -1
-	addi     r5, r5, "__vt__Q24Game25ItemFSM<Q24Game8ItemGate>"@l
-	addi     r0, r4, __vt__Q24Game7GateFSM@l
-	stw      r6, 0x18(r3)
-	stw      r5, 0(r3)
-	stw      r0, 0(r3)
-
-lbl_801C9030:
-	stw      r3, 0x1d8(r31)
-	mr       r4, r31
-	lwz      r3, 0x1d8(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lis      r4,
-"__vt__Q24Game60WorkItem<Q24Game8ItemGate,Q24Game7GateFSM,Q24Game9GateState>"@ha
-	addi     r3, r31, 0x1e0
-	addi     r4, r4,
-"__vt__Q24Game60WorkItem<Q24Game8ItemGate,Q24Game7GateFSM,Q24Game9GateState>"@l
-	stw      r4, 0(r31)
-	addi     r0, r4, 0x1b0
-	stw      r0, 0x178(r31)
-	bl       __ct__Q24Game11TSoundEventFv
-	lis      r3, __vt__Q24Game8ItemGate@ha
-	lis      r4, __ct__5PlaneFv@ha
-	addi     r5, r3, __vt__Q24Game8ItemGate@l
-	li       r6, 0x10
-	stw      r5, 0(r31)
-	addi     r0, r5, 0x1b0
-	addi     r3, r31, 0x224
-	addi     r4, r4, __ct__5PlaneFv@l
-	stw      r0, 0x178(r31)
-	li       r5, 0
-	li       r7, 4
-	bl       __construct_array
-	li       r3, 8
-	bl       __nw__FUl
-	or.      r0, r3, r3
-	beq      lbl_801C90B0
-	bl       __ct__8CollTreeFv
-	mr       r0, r3
-
-lbl_801C90B0:
-	stw      r0, 0x114(r31)
-	li       r3, 0
-	lfs      f0, lbl_80519590@sda21(r2)
-	li       r0, 3
-	lfs      f1, lbl_80519594@sda21(r2)
-	stfs     f0, 0x1d0(r31)
-	lfs      f0, lbl_80519598@sda21(r2)
-	stfs     f1, 0x200(r31)
-	stfs     f0, 0x208(r31)
-	stw      r3, 0x20c(r31)
-	stw      r0, 0x210(r31)
-	stfs     f1, 0x204(r31)
-	stb      r3, 0x218(r31)
-	stw      r3, 0x21c(r31)
-	stw      r3, 0x220(r31)
-
-lbl_801C90EC:
-	li       r3, 0x1c
-	bl       __nw__FUl
-	or.      r29, r3, r3
-	beq      lbl_801C910C
-	bl       __ct__5CNodeFv
-	lis      r3, "__vt__29TObjectNode<Q24Game8ItemGate>"@ha
-	addi     r0, r3, "__vt__29TObjectNode<Q24Game8ItemGate>"@l
-	stw      r0, 0(r29)
-
-lbl_801C910C:
-	stw      r31, 0x18(r29)
-	mr       r4, r29
-	addi     r3, r30, 0x50
-	bl       add__5CNodeFP5CNode
-	lwz      r3, 0x18(r29)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	lis      r4, lbl_804801C8@ha
-	lwz      r3, sys@sda21(r13)
-	addi     r4, r4, lbl_804801C8@l
-	bl       heapStatusEnd__6SystemFPc
-	lwz      r0, 0x24(r1)
-	mr       r3, r31
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801C9160
- * Size:	0001E8
+/**
+ * @note Address: 0x801C9160
+ * @note Size: 0x1E8
  */
 void ItemGateMgr::initDependency()
 {
@@ -1237,17 +854,15 @@ void ItemGateMgr::initDependency()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801C9348
- * Size:	000054
+/**
+ * @note Address: 0x801C9348
+ * @note Size: 0x54
  */
 GenItemParm* ItemGateMgr::generatorNewItemParm() { return new GenGateParm(); }
 
-/*
- * --INFO--
- * Address:	801C939C
- * Size:	0000B0
+/**
+ * @note Address: 0x801C939C
+ * @note Size: 0xB0
  */
 void ItemGateMgr::generatorWrite(Stream& stream, Game::GenItemParm* param)
 {
@@ -1261,10 +876,9 @@ void ItemGateMgr::generatorWrite(Stream& stream, Game::GenItemParm* param)
 	stream.textWriteText("\t#Color\r\n");
 }
 
-/*
- * --INFO--
- * Address:	801C944C
- * Size:	0000A8
+/**
+ * @note Address: 0x801C944C
+ * @note Size: 0xA8
  */
 void ItemGateMgr::generatorRead(Stream& stream, Game::GenItemParm* param, u32 version)
 {
@@ -1280,10 +894,9 @@ void ItemGateMgr::generatorRead(Stream& stream, Game::GenItemParm* param, u32 ve
 	}
 }
 
-/*
- * --INFO--
- * Address:	801C94F4
- * Size:	000228
+/**
+ * @note Address: 0x801C94F4
+ * @note Size: 0x228
  */
 BaseItem* ItemGateMgr::generatorBirth(Vector3f& pos, Vector3f& rot, Game::GenItemParm* param)
 {
@@ -1299,10 +912,9 @@ BaseItem* ItemGateMgr::generatorBirth(Vector3f& pos, Vector3f& rot, Game::GenIte
 	return gate;
 }
 
-/*
- * --INFO--
- * Address:	801C971C
- * Size:	000014
+/**
+ * @note Address: 0x801C971C
+ * @note Size: 0x14
  */
 char* ItemGateMgr::getCaveName(int outsideCave)
 {
@@ -1312,68 +924,61 @@ char* ItemGateMgr::getCaveName(int outsideCave)
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	801C9730
- * Size:	00004C
+/**
+ * @note Address: 0x801C9730
+ * @note Size: 0x4C
  */
 int ItemGateMgr::getCaveID(char* cave) { return -(strncmp("gate", cave, strlen("gate")) != 0); }
 
-/*
- * --INFO--
- * Address:	801C977C
- * Size:	000004
+/**
+ * @note Address: 0x801C977C
+ * @note Size: 0x4
  */
 void GateWaitState::init(Game::ItemGate*, Game::StateArg*) { }
 
-/*
- * --INFO--
- * Address:	801C9780
- * Size:	000004
+/**
+ * @note Address: 0x801C9780
+ * @note Size: 0x4
  */
 void GateWaitState::exec(Game::ItemGate*) { }
 
-/*
- * --INFO--
- * Address:	801C9784
- * Size:	000004
+/**
+ * @note Address: 0x801C9784
+ * @note Size: 0x4
  */
 void GateWaitState::cleanup(Game::ItemGate*) { }
 
-/*
- * --INFO--
- * Address:	801C9788
- * Size:	000040
+/**
+ * @note Address: 0x801C9788
+ * @note Size: 0x40
  */
-void GateWaitState::onDamage(Game::ItemGate* item, float damage)
+void GateWaitState::onDamage(Game::ItemGate* item, f32 damage)
 {
 	item->mDamage += damage;
 	transit(item, GATESTATE_Damaged, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	801C97F8
- * Size:	000004
+/**
+ * @note Address: 0x801C97F8
+ * @note Size: 0x4
  */
 void GateWaitState::onKeyEvent(Game::ItemGate*, const SysShape::KeyEvent&) { }
 
-/*
- * --INFO--
- * Address:	801C97FC
- * Size:	00005C
+/**
+ * @note Address: 0x801C97FC
+ * @note Size: 0x5C
  */
 void GateDamagedState::init(Game::ItemGate* item, Game::StateArg* arg)
 {
-	item->mAnimator.startAnim(item->mSegmentsDown, item);
-	item->mAnimSpeed = 30.0f;
-	mNotInAnim       = false;
+	item->startDamageMotion();
+	// item->mAnimator.startAnim(item->mSegmentsDown, item);
+	// item->mAnimSpeed = 30.0f;
+	mNotInAnim = false;
 }
 
-/*
- * --INFO--
- * Address:	801C9858
- * Size:	0000C0
+/**
+ * @note Address: 0x801C9858
+ * @note Size: 0xC0
  */
 void GateDamagedState::exec(Game::ItemGate* gate)
 {
@@ -1381,59 +986,44 @@ void GateDamagedState::exec(Game::ItemGate* gate)
 	gate->mDamage = 0.0f;
 	if (gate->mCurrentSegmentHealth < 0.0f) {
 		transit(gate, GATESTATE_Down, nullptr);
-	} else {
-		if (mNotInAnim) {
-			if (gate->mDamage > 0.0f) {
-				gate->mAnimator.startAnim(gate->mSegmentsDown, gate);
-				gate->mAnimSpeed = 30.0f;
-			}
+	} else if (mNotInAnim) {
+		if (gate->mDamage > 0.0f) { // flow swap
+			gate->mAnimator.startAnim(gate->mSegmentsDown, gate);
+			gate->mAnimSpeed = 30.0f;
 		} else {
 			transit(gate, GATESTATE_Wait, nullptr);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	801C9918
- * Size:	000004
+/**
+ * @note Address: 0x801C9918
+ * @note Size: 0x4
  */
 void GateDamagedState::cleanup(Game::ItemGate*) { }
 
-/*
- * --INFO--
- * Address:	801C991C
- * Size:	000010
+/**
+ * @note Address: 0x801C991C
+ * @note Size: 0x10
  */
-void GateDamagedState::onDamage(Game::ItemGate* gate, float damage) { gate->mDamage += damage; }
+void GateDamagedState::onDamage(Game::ItemGate* gate, f32 damage) { gate->mDamage += damage; }
 
-/*
- * --INFO--
- * Address:	801C992C
- * Size:	00000C
+/**
+ * @note Address: 0x801C992C
+ * @note Size: 0xC
  */
 void GateDamagedState::onKeyEvent(Game::ItemGate*, const SysShape::KeyEvent&) { mNotInAnim = true; }
 
-/*
- * --INFO--
- * Address:	801C9938
- * Size:	000224
+/**
+ * @note Address: 0x801C9938
+ * @note Size: 0x224
  */
 void GateDownState::init(Game::ItemGate* gate, Game::StateArg* arg)
 {
-	gate->mAnimator.startAnim(gate->mSegmentsDown + 3, gate);
-	gate->mAnimSpeed = 30.0f;
-	if (gate->mColor == 0) {
-		efx::TGate1Down gateDown(&gate->mObjMatrix);
-		gateDown.create(nullptr);
-	} else {
-		efx::TGate2Down gateDown(&gate->mObjMatrix);
-		gateDown.create(nullptr);
-	}
-	gate->mMabiki.mBuffer += 200;
+	gate->startDownMotion();
 	gate->startSound(PSSE_EV_WORK_WALLDOWN);
 	if (gate->mSegmentsDown + 1 == gate->mMaxSegments) {
-		if (gameSystem->mFlags & 0x20 && !playData->isDemoFlag(DEMO_First_Gate_Down)) {
+		if (gameSystem->isFlag(GAMESYS_IsGameWorldActive) && !playData->isDemoFlag(DEMO_First_Gate_Down)) {
 			MoviePlayArg gateMovie("g18_find_gate", nullptr, nullptr, 0);
 			gateMovie.setTarget(gate);
 			moviePlayer->mTargetObject = gate;
@@ -1443,38 +1033,33 @@ void GateDownState::init(Game::ItemGate* gate, Game::StateArg* arg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801C9B5C
- * Size:	000008
+/**
+ * @note Address: 0x801C9B5C
+ * @note Size: 0x8
  */
 f32 ItemGate::getFaceDir() { return mFaceDir; }
 
-/*
- * --INFO--
- * Address:	801C9B64
- * Size:	000004
+/**
+ * @note Address: 0x801C9B64
+ * @note Size: 0x4
  */
 void GateDownState::exec(Game::ItemGate*) { }
 
-/*
- * --INFO--
- * Address:	801C9B68
- * Size:	000004
+/**
+ * @note Address: 0x801C9B68
+ * @note Size: 0x4
  */
 void GateDownState::cleanup(Game::ItemGate*) { }
 
-/*
- * --INFO--
- * Address:	801C9B6C
- * Size:	000010
+/**
+ * @note Address: 0x801C9B6C
+ * @note Size: 0x10
  */
-void GateDownState::onDamage(Game::ItemGate* gate, float damage) { gate->mDamage += damage; }
+void GateDownState::onDamage(Game::ItemGate* gate, f32 damage) { gate->mDamage += damage; }
 
-/*
- * --INFO--
- * Address:	801C9B7C
- * Size:	000168
+/**
+ * @note Address: 0x801C9B7C
+ * @note Size: 0x168
  */
 void GateDownState::onKeyEvent(Game::ItemGate* gate, const SysShape::KeyEvent& keyEvent)
 {
@@ -1498,118 +1083,15 @@ void GateDownState::onKeyEvent(Game::ItemGate* gate, const SysShape::KeyEvent& k
 	} else {
 		transit(gate, GATESTATE_Wait, nullptr);
 	}
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	lwz      r5, 0x20c(r4)
-	addi     r0, r5, 1
-	stw      r0, 0x20c(r4)
-	lfs      f0, 0x204(r4)
-	stfs     f0, 0x200(r4)
-	lwz      r5, 0x20c(r4)
-	lwz      r0, 0x210(r4)
-	cmpw     r5, r0
-	bne      lbl_801C9C8C
-	lwz      r3, 0x1f4(r31)
-	li       r4, 0
-	bl       setCollision__Q24Game12PlatInstanceFb
-	lwz      r3, platMgr__4Game@sda21(r13)
-	lwz      r4, 0x1f4(r31)
-	bl       delInstance__Q24Game7PlatMgrFPQ24Game12PlatInstance
-	mr       r3, r31
-	li       r4, 0
-	lwz      r12, 0(r31)
-	lwz      r12, 0xac(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x1fc(r31)
-	li       r4, 1
-	bl       setOpen__Q24Game8WayPointFb
-	lbz      r0, 0x218(r31)
-	cmplwi   r0, 0
-	beq      lbl_801C9C24
-	lwz      r3, 0x21c(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x220(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-
-lbl_801C9C24:
-	addi     r3, r31, 0x1e0
-	bl       finish__Q24Game11TSoundEventFv
-	lwz      r3, 0x17c(r31)
-	lwz      r12, 0x28(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 0xa
-	beq      lbl_801C9C64
-	lis      r3, lbl_804801A0@ha
-	lis      r5, lbl_804801BC@ha
-	addi     r3, r3, lbl_804801A0@l
-	li       r4, 0x3e5
-	addi     r5, r5, lbl_804801BC@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801C9C64:
-	lwz      r3, 0x17c(r31)
-	lwz      r12, 0x28(r3)
-	lwz      r12, 0x94(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, spSysIF__8PSSystem@sda21(r13)
-	li       r4, 0x181c
-	li       r5, 0
-	bl       playSystemSe__Q28PSSystem5SysIFFUlUl
-	b        lbl_801C9CD0
-
-lbl_801C9C8C:
-	lfs      f1, 0x208(r31)
-	lfs      f0, lbl_80519598@sda21(r2)
-	fcmpo    cr0, f1, f0
-	ble      lbl_801C9CB8
-	lwz      r12, 0(r3)
-	li       r5, 1
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_801C9CD0
-
-lbl_801C9CB8:
-	lwz      r12, 0(r3)
-	li       r5, 0
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_801C9CD0:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801C9CE4
- * Size:	000180
+/**
+ * @note Address: 0x801C9CE4
+ * @note Size: 0x180
  */
 ItemDengekiGate::Mgr::Mgr()
 {
-	mName = "電撃ゲート"; // electric shock gate
+	mItemName = "電撃ゲート"; // electric shock gate
 	sys->heapStatusStart("ItemDengekiGate", nullptr);
 	mObjectPathComponent = "user/Kando/objects/gates";
 	setModelSize(1);
@@ -1621,16 +1103,16 @@ ItemDengekiGate::Mgr::Mgr()
 	mCentrePlatform = loadPlatform(texts, "e-cent.pla");
 	mSidePlatform   = loadPlatform(texts, "e-side.pla");
 	closeTextArc(texts);
-	JKRArchive::mount("user/Kando/gates/e-gate-arc.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	JKRMountArchive("user/Kando/gates/e-gate-arc.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 	SysShape::Model::enableMaterialAnim(mModelData[0], 0);
 	void* brk = JKRFileLoader::getGlbResource("e-gate.btk", nullptr);
 	mMatAnimation.attachResource(brk, mModelData[0]);
 	sys->heapStatusEnd("ItemDengekiGate");
 }
-/*
- * --INFO--
- * Address:	801C9F80
- * Size:	0000A4
+
+/**
+ * @note Address: 0x801C9F80
+ * @note Size: 0xA4
  */
 
 void ItemDengekiGate::Mgr::setupGate(Game::ItemGate* gate)
@@ -1643,10 +1125,9 @@ void ItemDengekiGate::Mgr::setupGate(Game::ItemGate* gate)
 	gate->mAnimator.startAnim(0, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	801CA024
- * Size:	000158
+/**
+ * @note Address: 0x801CA024
+ * @note Size: 0x158
  */
 void ItemDengekiGate::Mgr::setupPlatform(Game::ItemGate* gate)
 {
@@ -1655,123 +1136,33 @@ void ItemDengekiGate::Mgr::setupPlatform(Game::ItemGate* gate)
 	ID32 centreID            = 'elec';
 	PlatAddInstanceArg platArgCentre;
 	platArgCentre.mItem       = gate;
-	platArgCentre.mMatrix     = moveJointMatrix;
 	platArgCentre.mId         = centreID;
 	platArgCentre.mPlatform   = mCentrePlatform;
+	platArgCentre.mMatrix     = moveJointMatrix;
 	gate->mCentrePlatInstance = platMgr->addInstance(platArgCentre);
 	sys->heapStatusStart("Clone-Plat", nullptr);
 	Matrixf* fixJointMatrix = gate->mModel->getJoint("pole")->getWorldMatrix();
 	ID32 sideID             = 'side';
 	PlatAddInstanceArg platArgSide;
-	platArgSide.mItem       = gate;
-	platArgSide.mMatrix     = fixJointMatrix;
-	platArgSide.mId         = sideID;
-	platArgSide.mPlatform   = mSidePlatform;
-	platArgSide._18         = 1;
-	gate->mSidePlatInstance = platMgr->addInstance(platArgSide);
+	platArgSide.mItem             = gate;
+	platArgSide.mId               = sideID;
+	platArgSide.mPlatform         = mSidePlatform;
+	platArgSide.mMatrix           = fixJointMatrix;
+	platArgSide.mEnableGlobalPlat = true;
+	gate->mSidePlatInstance       = platMgr->addInstance(platArgSide);
 	sys->heapStatusEnd("Clone-Plat");
 	sys->heapStatusEnd("Platform");
-	/*
-	stwu     r1, -0x70(r1)
-	mflr     r0
-	lis      r5, lbl_80480294@ha
-	stw      r0, 0x74(r1)
-	addi     r0, r5, lbl_80480294@l
-	li       r5, 0
-	stw      r31, 0x6c(r1)
-	stw      r30, 0x68(r1)
-	mr       r30, r4
-	mr       r4, r0
-	stw      r29, 0x64(r1)
-	mr       r29, r3
-	lwz      r3, sys@sda21(r13)
-	bl       heapStatusStart__6SystemFPcP7JKRHeap
-	lwz      r3, 0x174(r30)
-	addi     r4, r2, lbl_805195B4@sda21
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lis      r4, 0x656C6563@ha
-	mr       r31, r3
-	addi     r3, r1, 0x14
-	addi     r4, r4, 0x656C6563@l
-	bl       __ct__4ID32FUl
-	addi     r3, r1, 0x40
-	bl       __ct__Q24Game18PlatAddInstanceArgFv
-	stw      r30, 0x40(r1)
-	addi     r3, r1, 0x44
-	addi     r4, r1, 0x14
-	li       r5, 5
-	bl       __copy
-	lwz      r0, 0x1c(r1)
-	addi     r4, r1, 0x40
-	lwz      r3, platMgr__4Game@sda21(r13)
-	stw      r0, 0x4c(r1)
-	lwz      r0, 0x88(r29)
-	stw      r0, 0x50(r1)
-	stw      r31, 0x54(r1)
-	bl       addInstance__Q24Game7PlatMgrFRQ24Game18PlatAddInstanceArg
-	stw      r3, 0x1f4(r30)
-	lis      r3, lbl_804802A0@ha
-	addi     r4, r3, lbl_804802A0@l
-	li       r5, 0
-	lwz      r3, sys@sda21(r13)
-	bl       heapStatusStart__6SystemFPcP7JKRHeap
-	lwz      r3, 0x174(r30)
-	addi     r4, r2, lbl_805195F8@sda21
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lis      r4, 0x73696465@ha
-	mr       r31, r3
-	addi     r3, r1, 8
-	addi     r4, r4, 0x73696465@l
-	bl       __ct__4ID32FUl
-	addi     r3, r1, 0x20
-	bl       __ct__Q24Game18PlatAddInstanceArgFv
-	stw      r30, 0x20(r1)
-	addi     r3, r1, 0x24
-	addi     r4, r1, 8
-	li       r5, 5
-	bl       __copy
-	lwz      r5, 0x10(r1)
-	li       r0, 1
-	lwz      r3, platMgr__4Game@sda21(r13)
-	addi     r4, r1, 0x20
-	stw      r5, 0x2c(r1)
-	lwz      r5, 0x8c(r29)
-	stw      r5, 0x30(r1)
-	stw      r31, 0x34(r1)
-	stb      r0, 0x38(r1)
-	bl       addInstance__Q24Game7PlatMgrFRQ24Game18PlatAddInstanceArg
-	stw      r3, 0x1f8(r30)
-	lis      r3, lbl_804802A0@ha
-	addi     r4, r3, lbl_804802A0@l
-	lwz      r3, sys@sda21(r13)
-	bl       heapStatusEnd__6SystemFPc
-	lis      r4, lbl_80480294@ha
-	lwz      r3, sys@sda21(r13)
-	addi     r4, r4, lbl_80480294@l
-	bl       heapStatusEnd__6SystemFPc
-	lwz      r0, 0x74(r1)
-	lwz      r31, 0x6c(r1)
-	lwz      r30, 0x68(r1)
-	lwz      r29, 0x64(r1)
-	mtlr     r0
-	addi     r1, r1, 0x70
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801CA17C
- * Size:	000054
+/**
+ * @note Address: 0x801CA17C
+ * @note Size: 0x54
  */
 GenItemParm* ItemDengekiGate::Mgr::generatorNewItemParm() { return new GenGateParm; }
 
-/*
- * --INFO--
- * Address:	801CA1D0
- * Size:	000084
+/**
+ * @note Address: 0x801CA1D0
+ * @note Size: 0x84
  */
 void ItemDengekiGate::Mgr::generatorWrite(Stream& stream, Game::GenItemParm* param)
 {
@@ -1780,50 +1171,11 @@ void ItemDengekiGate::Mgr::generatorWrite(Stream& stream, Game::GenItemParm* par
 	stream.textWriteTab(stream.mTabCount);
 	stream.writeFloat(gateParam->mLife);
 	stream.textWriteText("\t#ライフ\r\n"); // life
-
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lis      r3, lbl_80480188@ha
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	addi     r31, r3, lbl_80480188@l
-	stw      r30, 0x18(r1)
-	or.      r30, r5, r5
-	stw      r29, 0x14(r1)
-	mr       r29, r4
-	bne      lbl_801CA210
-	addi     r3, r31, 0x18
-	addi     r5, r31, 0x34
-	li       r4, 0x499
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801CA210:
-	lwz      r4, 0x414(r29)
-	mr       r3, r29
-	bl       textWriteTab__6StreamFi
-	lfs      f1, 4(r30)
-	mr       r3, r29
-	bl       writeFloat__6StreamFf
-	mr       r3, r29
-	addi     r4, r31, 0x124
-	crclr    6
-	bl       textWriteText__6StreamFPce
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801CA254
- * Size:	000060
+/**
+ * @note Address: 0x801CA254
+ * @note Size: 0x60
  */
 void ItemDengekiGate::Mgr::generatorRead(Stream& stream, Game::GenItemParm* param, u32 version)
 {
@@ -1832,10 +1184,9 @@ void ItemDengekiGate::Mgr::generatorRead(Stream& stream, Game::GenItemParm* para
 	gateParam->mLife       = stream.readFloat();
 }
 
-/*
- * --INFO--
- * Address:	801CA2B4
- * Size:	0000B8
+/**
+ * @note Address: 0x801CA2B4
+ * @note Size: 0xB8
  */
 BaseItem* ItemDengekiGate::Mgr::generatorBirth(Vector3f& pos, Vector3f& rot, Game::GenItemParm* param)
 {
@@ -1851,10 +1202,9 @@ BaseItem* ItemDengekiGate::Mgr::generatorBirth(Vector3f& pos, Vector3f& rot, Gam
 	return gate;
 }
 
-/*
- * --INFO--
- * Address:	801CA36C
- * Size:	000014
+/**
+ * @note Address: 0x801CA36C
+ * @note Size: 0x14
  */
 char* ItemDengekiGate::Mgr::getCaveName(int outsideCave)
 {
@@ -1864,135 +1214,95 @@ char* ItemDengekiGate::Mgr::getCaveName(int outsideCave)
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	801CA380
- * Size:	00004C
+/**
+ * @note Address: 0x801CA380
+ * @note Size: 0x4C
  */
-int ItemDengekiGate::Mgr::getCaveID(char* cave)
-{
-	return -(strncmp("e-gate", cave, strlen("e-gate")) != 0);
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	addi     r3, r2, lbl_80519600@sda21
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	bl       strlen
-	mr       r5, r3
-	mr       r4, r31
-	addi     r3, r2, lbl_80519600@sda21
-	bl       strncmp
-	neg      r0, r3
-	or       r0, r0, r3
-	srawi    r3, r0, 0x1f
-	lwz      r31, 0xc(r1)
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
+int ItemDengekiGate::Mgr::getCaveID(char* cave) { return -(strncmp("e-gate", cave, strlen("e-gate")) != 0); }
 
-/*
- * --INFO--
- * Address:	801CA3CC
- * Size:	000134
+/**
+ * @note Address: 0x801CA3CC
+ * @note Size: 0x134
  */
-#pragma dont_inline reset
 ItemDengekiGate::Mgr::~Mgr() { }
 
-/*
- * --INFO--
- * Address:	801CA500
- * Size:	00000C
+/**
+ * @note Address: 0x801CA500
+ * @note Size: 0xC
  */
 u32 ItemDengekiGate::Mgr::generatorGetID() { return 'dgat'; }
 
-/*
- * --INFO--
- * Address:	801CA50C
- * Size:	00000C
+/**
+ * @note Address: 0x801CA50C
+ * @note Size: 0xC
  */
 u32 ItemDengekiGate::Mgr::generatorLocalVersion() { return '0000'; }
 
-/*
- * --INFO--
- * Address:	801CA518
- * Size:	00000C
+/**
+ * @note Address: 0x801CA518
+ * @note Size: 0xC
  */
 u32 ItemGateMgr::generatorGetID() { return 'gate'; }
 
-/*
- * --INFO--
- * Address:	801CA524
- * Size:	00000C
+/**
+ * @note Address: 0x801CA524
+ * @note Size: 0xC
  */
 u32 ItemGateMgr::generatorLocalVersion() { return '0002'; }
 
-/*
- * --INFO--
- * Address:	801CA530
- * Size:	00002C
+/**
+ * @note Address: 0x801CA530
+ * @note Size: 0x2C
  */
 void ItemGateMgr::doAnimation() { mNodeObjectMgr.doAnimation(); }
 
-/*
- * --INFO--
- * Address:	801CA55C
- * Size:	00002C
+/**
+ * @note Address: 0x801CA55C
+ * @note Size: 0x2C
  */
 void ItemGateMgr::doEntry() { mNodeObjectMgr.doEntry(); }
 
-/*
- * --INFO--
- * Address:	801CA588
- * Size:	00002C
+/**
+ * @note Address: 0x801CA588
+ * @note Size: 0x2C
  */
 void ItemGateMgr::doSetView(int viewportNumber) { mNodeObjectMgr.doSetView(viewportNumber); }
 
-/*
- * --INFO--
- * Address:	801CA5B4
- * Size:	00002C
+/**
+ * @note Address: 0x801CA5B4
+ * @note Size: 0x2C
  */
 void ItemGateMgr::doViewCalc() { mNodeObjectMgr.doViewCalc(); }
 
-/*
- * --INFO--
- * Address:	801CA5E0
- * Size:	00002C
+/**
+ * @note Address: 0x801CA5E0
+ * @note Size: 0x2C
  */
-void ItemGateMgr::doSimulation(float val) { mNodeObjectMgr.doSimulation(val); }
+void ItemGateMgr::doSimulation(f32 val) { mNodeObjectMgr.doSimulation(val); }
 
-/*
- * --INFO--
- * Address:	801CA60C
- * Size:	00002C
+/**
+ * @note Address: 0x801CA60C
+ * @note Size: 0x2C
  */
 void ItemGateMgr::doDirectDraw(Graphics& gfx) { mNodeObjectMgr.doDirectDraw(gfx); }
 
 efx::TEgateA::~TEgateA() { }
 
-/*
- * --INFO--
- * Address:	801CA6DC
- * Size:	000008
+/**
+ * @note Address: 0x801CA6DC
+ * @note Size: 0x8
  */
 char* ItemGate::getCreatureName() { return "Gate"; }
 
-/*
- * --INFO--
- * Address:	801CA6E4
- * Size:	000008
+/**
+ * @note Address: 0x801CA6E4
+ * @note Size: 0x8
  */
 Mabiki* ItemGate::getMabiki() { return &mMabiki; }
 
-/*
- * --INFO--
- * Address:	801CA6EC
- * Size:	000004
+/**
+ * @note Address: 0x801CA6EC
+ * @note Size: 0x4
  */
 void ItemGate::makeTrMatrix() { }
 

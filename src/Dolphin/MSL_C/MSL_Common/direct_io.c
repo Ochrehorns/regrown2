@@ -10,30 +10,27 @@
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/misc_io.h"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/critical_regions.h"
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00007C
+/**
+ * @note Address: N/A
+ * @note Size: 0x7C
  */
 void fread(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000350
+/**
+ * @note Address: N/A
+ * @note Size: 0x350
  */
 void __fread(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800C6594
- * Size:	00007C
+/**
+ * @note Address: 0x800C6594
+ * @note Size: 0x7C
  */
 size_t fwrite(const void* pPtr, size_t memb_size, size_t num_memb, FILE* pFile)
 {
@@ -46,14 +43,13 @@ size_t fwrite(const void* pPtr, size_t memb_size, size_t num_memb, FILE* pFile)
 	return retval;
 }
 
-/*
- * --INFO--
- * Address:	800C6288
- * Size:	00030C
+/**
+ * @note Address: 0x800C6288
+ * @note Size: 0x30C
  */
 size_t __fwrite(const void* pPtr, size_t memb_size, size_t num_memb, FILE* pFile)
 {
-	unsigned char* cur_ptr;
+	u8* cur_ptr;
 	size_t num_bytes, rem_bytes, bytes_written;
 	int res, buff;
 
@@ -90,22 +86,22 @@ size_t __fwrite(const void* pPtr, size_t memb_size, size_t num_memb, FILE* pFile
 		return 0;
 	}
 
-	cur_ptr       = (unsigned char*)pPtr;
+	cur_ptr       = (u8*)pPtr;
 	bytes_written = 0;
 
 	if (rem_bytes && (pFile->mBufferPtr != pFile->mBuffer || buff)) {
 		pFile->mBufferLength = pFile->mBufferSize - (pFile->mBufferPtr - pFile->mBuffer);
 
 		do {
-			unsigned char* nw = 0;
-			num_bytes         = pFile->mBufferLength;
+			u8* nw    = 0;
+			num_bytes = pFile->mBufferLength;
 
 			if (num_bytes > rem_bytes) {
 				num_bytes = rem_bytes;
 			}
 
 			if (pFile->mMode.buffer_mode == 1 && num_bytes) {
-				if ((nw = (unsigned char*)__memrchr(cur_ptr, '\n', num_bytes)) != 0) {
+				if ((nw = (u8*)__memrchr(cur_ptr, '\n', num_bytes)) != 0) {
 					num_bytes = nw + 1 - cur_ptr;
 				}
 			}
@@ -134,8 +130,8 @@ size_t __fwrite(const void* pPtr, size_t memb_size, size_t num_memb, FILE* pFile
 	}
 
 	if (rem_bytes && buff == 0) {
-		unsigned char* save_buf = (unsigned char*)pFile->mBuffer;
-		size_t save_size        = pFile->mBufferSize;
+		u8* save_buf     = (u8*)pFile->mBuffer;
+		size_t save_size = pFile->mBufferSize;
 
 		pFile->mBuffer     = (char*)cur_ptr;
 		pFile->mBufferSize = rem_bytes;

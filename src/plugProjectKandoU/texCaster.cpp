@@ -10,120 +10,111 @@ static const char unusedName[] = "texCaster";
 
 Mgr* Mgr::sInstance;
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000064
+/**
+ * @note Address: N/A
+ * @note Size: 0x64
  */
 Caster::Caster()
 {
-	_28 = 0;
-	_2C = nullptr;
-	_30 = 0;
-	_34 = 0;
-	_38 = 0;
-	_3C = 0;
-	_40 = 0.0f;
-	_44 = 0.0f;
+	mTriangleCount    = 0;
+	mVertices         = nullptr;
+	mDisplayList      = 0;
+	mDisplayListSize  = 0;
+	mTexturePositions = 0;
+	mStatus           = CS_Hidden;
+	mColor            = 0.0f;
+	mChangeRate       = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	8023C95C
- * Size:	000060
+/**
+ * @note Address: 0x8023C95C
+ * @note Size: 0x60
  */
 Caster::~Caster() { }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000014
+/**
+ * @note Address: N/A
+ * @note Size: 0x14
  */
 void Caster::show()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8023C9BC
- * Size:	000014
+/**
+ * @note Address: 0x8023C9BC
+ * @note Size: 0x14
  */
 void Caster::hide()
 {
-	_40 = 0.0f;
-	_3C = 0;
+	mColor  = 0.0f;
+	mStatus = CS_Hidden;
 }
 
-/*
- * --INFO--
- * Address:	8023C9D0
- * Size:	000080
+/**
+ * @note Address: 0x8023C9D0
+ * @note Size: 0x80
  */
-void Caster::fadein(f32 p1)
+void Caster::fadein(f32 duration)
 {
-	P2ASSERTLINE(59, p1 > 0.0f);
-	_44 = 1.0f / p1;
-	_40 = 0.0f;
-	_3C = 2;
+	P2ASSERTLINE(59, duration > 0.0f);
+	mChangeRate = 1.0f / duration;
+	mColor      = 0.0f;
+	mStatus     = CS_Increasing;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00007C
+/**
+ * @note Address: N/A
+ * @note Size: 0x7C
  */
 void Caster::fadeout(f32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000150
+/**
+ * @note Address: N/A
+ * @note Size: 0x150
  */
 void Caster::makeDL()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000094
+/**
+ * @note Address: N/A
+ * @note Size: 0x94
  */
 void Caster::update()
 {
-	switch (_3C) {
-	case 1:
+	switch (mStatus) {
+	case CS_Finished:
 		break;
-	case 2:
-		_40 += _44 * sys->mDeltaTime;
-		if (_40 >= 1.0f) {
-			_40 = 1.0f;
-			_3C = 1;
+	case CS_Increasing:
+		mColor += mChangeRate * sys->mDeltaTime;
+		if (mColor >= 1.0f) {
+			mColor  = 1.0f;
+			mStatus = CS_Finished;
 		}
 		break;
-	case 3:
-		_40 -= _44 * sys->mDeltaTime;
-		if (_40 <= 0.0f) {
-			_40 = 0.0f;
-			_3C = 0;
+	case CS_Decreasing:
+		mColor -= mChangeRate * sys->mDeltaTime;
+		if (mColor <= 0.0f) {
+			mColor  = 0.0f;
+			mStatus = CS_Hidden;
 		}
 		break;
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000138
+/**
+ * @note Address: N/A
+ * @note Size: 0x138
  */
 void Caster::draw(Graphics& gfx)
 {
 	update();
-	int v = 255.0f * _40;
+	int v = 255.0f * mColor;
 	GXColor color;
 	color.a = v;
 	color.b = v;
@@ -132,22 +123,20 @@ void Caster::draw(Graphics& gfx)
 	GXSetTevColor(GX_TEVREG0, color);
 
 	Mgr::sInstance->getTexture(0);
-	GXSetArray(GX_VA_POS, _2C, sizeof(Vector3f));
-	GXSetArray(GX_VA_TEX0, _38, 8);
-	GXCallDisplayList((void*)_30, _34);
+	GXSetArray(GX_VA_POS, mVertices, sizeof(Vector3f));
+	GXSetArray(GX_VA_TEX0, mTexturePositions, 8);
+	GXCallDisplayList((void*)mDisplayList, mDisplayListSize);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000004
+/**
+ * @note Address: N/A
+ * @note Size: 0x4
  */
 void Caster::drawLine(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000080
+/**
+ * @note Address: N/A
+ * @note Size: 0x80
  */
 Mgr::Mgr()
     : mTextureCount(0)
@@ -156,17 +145,15 @@ Mgr::Mgr()
 {
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000074
+/**
+ * @note Address: N/A
+ * @note Size: 0x74
  */
 Mgr::~Mgr() { sInstance = nullptr; }
 
-/*
- * --INFO--
- * Address:	8023CA50
- * Size:	0000A0
+/**
+ * @note Address: 0x8023CA50
+ * @note Size: 0xA0
  */
 void Mgr::globalInstance()
 {
@@ -176,10 +163,9 @@ void Mgr::globalInstance()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8023CAF0
- * Size:	00006C
+/**
+ * @note Address: 0x8023CAF0
+ * @note Size: 0x6C
  */
 void Mgr::deleteInstance()
 {
@@ -189,14 +175,13 @@ void Mgr::deleteInstance()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8023CB5C
- * Size:	0000E8
+/**
+ * @note Address: 0x8023CB5C
+ * @note Size: 0xE8
  */
 void Mgr::loadResource()
 {
-	JKRArchive* textArc = JKRArchive::mount("user/Kando/texCaster/arc.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	JKRArchive* textArc = JKRMountArchive("user/Kando/texCaster/arc.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 	P2ASSERTLINE(288, textArc);
 	mTextureCount = 1;
 	mTextures     = new JUTTexture*[mTextureCount];
@@ -205,12 +190,11 @@ void Mgr::loadResource()
 	mTextures[0] = new JUTTexture(res);
 }
 
-/*
- * --INFO--
- * Address:	8023CC44
- * Size:	000550
+/**
+ * @note Address: 0x8023CC44
+ * @note Size: 0x550
  */
-Caster* Mgr::create(Sys::Sphere& sphere, f32 p1)
+Caster* Mgr::create(Sys::Sphere& sphere, f32 rotationAngle)
 {
 	Sys::CreateTriangleArg triArg;
 	triArg.mBoundingSphere = sphere;
@@ -221,35 +205,61 @@ Caster* Mgr::create(Sys::Sphere& sphere, f32 p1)
 	if (triArg.mCount == 0) {
 		triArg.mCount    = 2;
 		triArg.mVertices = new Vector3f[6];
-		// float math
-	}
 
-	Caster* caster = new Caster;
-	caster->_18    = sphere;
-	caster->_2C    = triArg.mVertices;
-	caster->_28    = triArg.mCount;
-	caster->_38    = new f32*[caster->_28 * 6];
+		Vector3f spherePos = sphere.mPosition;
+		float sphereRad    = sphere.mRadius;
 
-	for (int i = 0; i < caster->_28; i++) {
-		for (int j = 0; j < 3; j++) {
-			// float math
+		triArg.mVertices[0] = Vector3f(spherePos.x - sphereRad, spherePos.y, spherePos.z - sphereRad);
+		triArg.mVertices[1] = Vector3f(spherePos.x + sphereRad, spherePos.y, spherePos.z + sphereRad);
+		triArg.mVertices[2] = Vector3f(spherePos.x - sphereRad, spherePos.y, spherePos.z + sphereRad);
+		triArg.mVertices[3] = Vector3f(spherePos.x + sphereRad, spherePos.y, spherePos.z - sphereRad);
+		triArg.mVertices[4] = Vector3f(spherePos.x - sphereRad, spherePos.y, spherePos.z + sphereRad);
+		triArg.mVertices[5] = Vector3f(spherePos.x + sphereRad, spherePos.y, spherePos.z + sphereRad);
+
+		for (int i = 0; i < 6; i++) {
+			triArg.mVertices[i].y += triArg._10;
 		}
 	}
 
-	caster->_34 = (caster->_28 * 12 + 34) & ~0x1F;
-	caster->_30 = new (0x20) u8[caster->_34];
+	Caster* caster            = new Caster;
+	caster->mBoundingSphere   = sphere;
+	caster->mVertices         = triArg.mVertices;
+	caster->mTriangleCount    = triArg.mCount;
+	caster->mTexturePositions = new f32*[caster->mTriangleCount * 6];
 
-	// this is wrong
-	caster->_30[0] = 0x90;
-	caster->_30[1] = (caster->_28 * 3) * 16;
-	caster->_30[2] = (caster->_28 * 3);
+	for (int triangleIndex = 0; triangleIndex < caster->mTriangleCount; triangleIndex++) {
+		for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
+			// Calculate the texture position for each vertex
+			Vector3f currentVertex = caster->mVertices[triangleIndex * 3 + vertexIndex];
+			float deltaZ           = currentVertex.z - sphere.mPosition.z;
+			float deltaX           = currentVertex.x - sphere.mPosition.x;
+			float scaleFactor      = (30.0f / sphere.mRadius) * 0.03125f;
 
-	// this is wrong
-	for (int i = 0; i < caster->_34; i++) {
-		caster->_30[i] = i * 2;
+			// Rotate the texture coordinates based on some angle rotationAngle
+			Vector2f rotationVector(sin(rotationAngle), cos(rotationAngle));
+
+			caster->mTexturePositions[triangleIndex * 3 + vertexIndex] = new f32[2];
+			caster->mTexturePositions[triangleIndex * 3 + vertexIndex][0]
+			    = 0.5f + ((deltaZ * rotationVector.x + deltaX * rotationVector.y) * scaleFactor);
+			caster->mTexturePositions[triangleIndex * 3 + vertexIndex][1]
+			    = 0.5f + ((deltaZ * rotationVector.y - deltaX * rotationVector.x) * scaleFactor);
+		}
 	}
 
-	DCFlushRange(caster->_30, caster->_34);
+	caster->mDisplayListSize = OSRoundDown32B(caster->mTriangleCount * 12 + 34);
+	caster->mDisplayList     = new (0x20) u8[caster->mDisplayListSize];
+
+	// this is wrong
+	caster->mDisplayList[0] = 0x90;
+	caster->mDisplayList[1] = (caster->mTriangleCount * 3) * 16;
+	caster->mDisplayList[2] = (caster->mTriangleCount * 3);
+
+	// this is wrong
+	for (int i = 0; i < caster->mDisplayListSize; i++) {
+		caster->mDisplayList[i] = i * 2;
+	}
+
+	DCFlushRange(caster->mDisplayList, caster->mDisplayListSize);
 	mCaster.add(caster);
 	return caster;
 	/*
@@ -618,10 +628,9 @@ lbl_8023D104:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00007C
+/**
+ * @note Address: N/A
+ * @note Size: 0x7C
  */
 void Mgr::getTexture(int idx)
 {
@@ -629,10 +638,9 @@ void Mgr::getTexture(int idx)
 	mTextures[idx]->load(GX_TEXMAP0);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000118
+/**
+ * @note Address: N/A
+ * @note Size: 0x118
  */
 void Mgr::drawInit(Graphics& gfx)
 {
@@ -642,7 +650,7 @@ void Mgr::drawInit(Graphics& gfx)
 	GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
 	GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_C0, GX_CC_ZERO);
 	GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_DIVIDE_2, GX_TRUE, GX_TEVPREV);
-	GXSetTevAlphaIn(GX_TEVSTAGE0, GX_ZERO, GX_CA_A0, GX_CA_TEXA, GX_ZERO);
+	GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_A0, GX_CA_TEXA, GX_CA_ZERO);
 	GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 	GXSetVtxDesc(GX_VA_POS, GX_INDEX16);
 	GXSetVtxDesc(GX_VA_TEX0, GX_INDEX16);
@@ -652,10 +660,9 @@ void Mgr::drawInit(Graphics& gfx)
 	GXSetZMode(GX_TRUE, GX_LEQUAL, GX_FALSE);
 }
 
-/*
- * --INFO--
- * Address:	8023D194
- * Size:	000288
+/**
+ * @note Address: 0x8023D194
+ * @note Size: 0x288
  */
 void Mgr::draw(Graphics& gfx)
 {

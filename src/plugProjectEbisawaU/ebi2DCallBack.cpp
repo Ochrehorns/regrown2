@@ -1,18 +1,17 @@
 #include "JSystem/J2D/J2DAnm.h"
 #include "JSystem/J2D/J2DAnmLoader.h"
 #include "JSystem/JKernel/JKRArchive.h"
-#include "JSystem/JUtility/JUTException.h"
 #include "JSystem/JKernel/JKRFileLoader.h"
 #include "ebi/E2DCallBack.h"
 #include "ebi/Utility.h"
 #include "Dolphin/rand.h"
+#include "P2Macros.h"
 
 namespace ebi {
 
-/*
- * --INFO--
- * Address:	803D068C
- * Size:	000060
+/**
+ * @note Address: 0x803D068C
+ * @note Size: 0x60
  */
 void E2DCallBack_Purupuru::do_update()
 {
@@ -22,10 +21,9 @@ void E2DCallBack_Purupuru::do_update()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D06EC
- * Size:	0002CC
+/**
+ * @note Address: 0x803D06EC
+ * @note Size: 0x2CC
  */
 void E2DCallBack_BlinkFontColor::do_update()
 {
@@ -58,11 +56,7 @@ void E2DCallBack_BlinkFontColor::do_update()
 		EUTColor_complement(mFonts[0].mWhite, mFonts[1].mWhite, weight0, weight1, &white);
 		EUTColor_complement(mFonts[0].mBlack, mFonts[1].mBlack, weight0, weight1, &black);
 
-		// will need inlines for these color setting things but not sure how to tweak yet
-		static_cast<J2DTextBox*>(mPane)->setCharColor(color1);
-		static_cast<J2DTextBox*>(mPane)->setGradientColor(color2);
-		static_cast<J2DTextBox*>(mPane)->setWhite(white);
-		static_cast<J2DTextBox*>(mPane)->setBlack(black);
+		setPaneColors(0);
 	}
 	/*
 	stwu     r1, -0x90(r1)
@@ -259,10 +253,9 @@ lbl_803D0994:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803D09B8
- * Size:	000118
+/**
+ * @note Address: 0x803D09B8
+ * @note Size: 0x118
  */
 void E2DCallBack_BlinkAlpha::do_update()
 {
@@ -287,30 +280,28 @@ void E2DCallBack_BlinkAlpha::do_update()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D0AD0
- * Size:	0000C8
+/**
+ * @note Address: 0x803D0AD0
+ * @note Size: 0xC8
  */
 void E2DCallBack_AnmBase::loadAnm(char* path, JKRArchive* archive, s32 frame, s32 maxFrame)
 {
 	void* resource = JKRFileLoader::getGlbResource(path, archive);
 	P2ASSERTLINE(74, resource);
-	mAnim                  = J2DAnmLoaderDataBase::load(resource);
-	mFrameCtrl.mStartFrame = (s16)frame;
-	mFrameCtrl.mCurrTime   = (s16)frame;
-	mFrameCtrl._0A         = (s16)frame;
+	mAnim             = J2DAnmLoaderDataBase::load(resource);
+	mFrameCtrl.mStart = (s16)frame;
+	mFrameCtrl.mFrame = (s16)frame;
+	mFrameCtrl.mLoop  = (s16)frame;
 
 	if (mAnim->mFrameLength < maxFrame) {
 		maxFrame = mAnim->mFrameLength;
 	}
-	mFrameCtrl.mEndFrame = maxFrame;
+	mFrameCtrl.mEnd = maxFrame;
 }
 
-/*
- * --INFO--
- * Address:	803D0B98
- * Size:	00010C
+/**
+ * @note Address: 0x803D0B98
+ * @note Size: 0x10C
  */
 void E2DCallBack_AnmBase::play(f32 speed, J3DAnmAttr attr, bool doPlayFromStart)
 {
@@ -318,21 +309,20 @@ void E2DCallBack_AnmBase::play(f32 speed, J3DAnmAttr attr, bool doPlayFromStart)
 	P2ASSERTLINE(91, mAnim);
 	mIsEnabled = true;
 	mPane->setAnimation(mAnim);
-	mFrameCtrl.mAttr      = attr;
-	mFrameCtrl.mAnimSpeed = speed;
+	mFrameCtrl.mAttribute = attr;
+	mFrameCtrl.mRate      = speed;
 
 	if (doPlayFromStart) {
-		mFrameCtrl.mCurrTime = mFrameCtrl.mStartFrame;
+		mFrameCtrl.mFrame = mFrameCtrl.mStart;
 	}
 
-	mAnim->mCurrentFrame = mFrameCtrl.mCurrTime;
+	mAnim->mCurrentFrame = mFrameCtrl.mFrame;
 	mIsFinished          = false;
 }
 
-/*
- * --INFO--
- * Address:	803D0CA4
- * Size:	000110
+/**
+ * @note Address: 0x803D0CA4
+ * @note Size: 0x110
  */
 void E2DCallBack_AnmBase::playBack(f32 speed, bool doPlayFromEnd)
 {
@@ -340,20 +330,19 @@ void E2DCallBack_AnmBase::playBack(f32 speed, bool doPlayFromEnd)
 	P2ASSERTLINE(108, mAnim);
 	mIsEnabled = true;
 	mPane->setAnimation(mAnim);
-	mFrameCtrl.mAttr      = J3DAA_UNKNOWN_3;
-	mFrameCtrl.mAnimSpeed = -FABS(speed);
+	mFrameCtrl.mAttribute = J3DAA_UNKNOWN_3;
+	mFrameCtrl.mRate      = -FABS(speed);
 	if (doPlayFromEnd) {
-		mFrameCtrl.mCurrTime = mFrameCtrl.mEndFrame;
+		mFrameCtrl.mFrame = mFrameCtrl.mEnd;
 	}
 
-	mAnim->mCurrentFrame = mFrameCtrl.mCurrTime;
+	mAnim->mCurrentFrame = mFrameCtrl.mFrame;
 	mIsFinished          = false;
 }
 
-/*
- * --INFO--
- * Address:	803D0DB4
- * Size:	000014
+/**
+ * @note Address: 0x803D0DB4
+ * @note Size: 0x14
  */
 void E2DCallBack_AnmBase::stop()
 {
@@ -361,99 +350,91 @@ void E2DCallBack_AnmBase::stop()
 	mIsFinished = true;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000050
+/**
+ * @note Address: N/A
+ * @note Size: 0x50
  */
 void E2DCallBack_AnmBase::disconnect()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	803D0DC8
- * Size:	00003C
+/**
+ * @note Address: 0x803D0DC8
+ * @note Size: 0x3C
  */
 void E2DCallBack_AnmBase::setStartFrame()
 {
-	mFrameCtrl.mCurrTime = mFrameCtrl.mStartFrame;
-	mAnim->mCurrentFrame = mFrameCtrl.mCurrTime;
+	mFrameCtrl.mFrame    = mFrameCtrl.mStart;
+	mAnim->mCurrentFrame = mFrameCtrl.mFrame;
 }
 
-/*
- * --INFO--
- * Address:	803D0E04
- * Size:	00003C
+/**
+ * @note Address: 0x803D0E04
+ * @note Size: 0x3C
  */
 void E2DCallBack_AnmBase::setEndFrame()
 {
-	mFrameCtrl.mCurrTime = mFrameCtrl.mEndFrame;
-	mAnim->mCurrentFrame = mFrameCtrl.mCurrTime;
+	mFrameCtrl.mFrame    = mFrameCtrl.mEnd;
+	mAnim->mCurrentFrame = mFrameCtrl.mFrame;
 }
 
-/*
- * --INFO--
- * Address:	803D0E40
- * Size:	0000C0
+/**
+ * @note Address: 0x803D0E40
+ * @note Size: 0xC0
  */
 void E2DCallBack_AnmBase::setRandFrame()
 {
-	f32 startFrame       = mFrameCtrl.mStartFrame;
-	f32 endFrame         = mFrameCtrl.mEndFrame;
-	mFrameCtrl.mCurrTime = randEbisawaFloat() * (endFrame - startFrame) + startFrame;
-	mAnim->mCurrentFrame = mFrameCtrl.mCurrTime;
+	f32 startFrame       = mFrameCtrl.mStart;
+	f32 endFrame         = mFrameCtrl.mEnd;
+	mFrameCtrl.mFrame    = randEbisawaFloat() * (endFrame - startFrame) + startFrame;
+	mAnim->mCurrentFrame = mFrameCtrl.mFrame;
 }
 
-/*
- * --INFO--
- * Address:	803D0F00
- * Size:	000054
+/**
+ * @note Address: 0x803D0F00
+ * @note Size: 0x54
  */
 f32 E2DCallBack_AnmBase::getPlayFinRate()
 {
-	f32 startFrame = mFrameCtrl.mStartFrame;
-	f32 endFrame   = mFrameCtrl.mEndFrame;
-	return (mFrameCtrl.mCurrTime - startFrame) / (endFrame - startFrame);
+	f32 startFrame = mFrameCtrl.mStart;
+	f32 endFrame   = mFrameCtrl.mEnd;
+	return (mFrameCtrl.mFrame - startFrame) / (endFrame - startFrame);
 }
 
-/*
- * --INFO--
- * Address:	803D0F54
- * Size:	00005C
+/**
+ * @note Address: 0x803D0F54
+ * @note Size: 0x5C
  */
 void E2DCallBack_AnmBase::do_update()
 {
 	if (mPane) {
 		mFrameCtrl.update();
-		mAnim->mCurrentFrame = mFrameCtrl.mCurrTime;
+		mAnim->mCurrentFrame = mFrameCtrl.mFrame;
 	}
-	if (mFrameCtrl._05 & 1) {
+	if (mFrameCtrl.mState & 1) {
 		mIsFinished = true;
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D0FB0
- * Size:	000008
+/**
+ * @note Address: 0x803D0FB0
+ * @note Size: 0x8
  */
 bool E2DCallBack_AnmBase::isFinish() { return mIsFinished; }
 
-/*
- * --INFO--
- * Address:	803D0FB8
- * Size:	00014C
+/**
+ * @note Address: 0x803D0FB8
+ * @note Size: 0x14C
  */
 void E2DCallBack_WindowCursor::do_update()
 {
 	if (mPane) {
-		if (_40) {
-			_40--;
+		if (mCounter) {
+			mCounter--;
 		}
 
-		f32 val = (_44) ? (f32)_40 / (f32)_44 : 0.0f;
+		f32 val = (mCounterMax) ? (f32)mCounter / (f32)mCounterMax : 0.0f;
 
 		JGeometry::TBox2f box;
 		box.i.x = (1.0f - val) * (mBounds2.i.x - mBounds1.i.x) + mBounds1.i.x;
@@ -464,8 +445,8 @@ void E2DCallBack_WindowCursor::do_update()
 		mScale = mScaleMgr.calc();
 		mPane->updateScale(mScale);
 
-		if (_68) {
-			_68->updateScale(mScale * 1.1f);
+		if (mWindowPane) {
+			mWindowPane->updateScale(mScale * 1.1f);
 		}
 	}
 }

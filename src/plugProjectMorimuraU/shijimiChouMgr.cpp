@@ -7,10 +7,9 @@ namespace ShijimiChou {
 
 static const char shijimiChouMgrName[] = "shijimiChouMgr";
 
-/*
- * --INFO--
- * Address:	803884C0
- * Size:	00005C
+/**
+ * @note Address: 0x803884C0
+ * @note Size: 0x5C
  */
 Mgr::Mgr(int objLimit, u8 modelType)
     : EnemyMgrBase(objLimit, modelType)
@@ -20,10 +19,9 @@ Mgr::Mgr(int objLimit, u8 modelType)
 	mName        = "シジミ蝶マネージャ"; // clam butterfly manager
 }
 
-/*
- * --INFO--
- * Address:	8038851C
- * Size:	000150
+/**
+ * @note Address: 0x8038851C
+ * @note Size: 0x150
  */
 void Mgr::doAlloc()
 {
@@ -37,10 +35,9 @@ void Mgr::doAlloc()
 	mMtxCacheRef = new J3DUMtxCacheRef<J3DUMtxAnmCacheTable>(getCacheTable(getModel(), getTransform()));
 }
 
-/*
- * --INFO--
- * Address:	80388964
- * Size:	000038
+/**
+ * @note Address: 0x80388964
+ * @note Size: 0x38
  */
 void Mgr::loadModelData()
 {
@@ -48,10 +45,9 @@ void Mgr::loadModelData()
 	mModelData->newSharedDisplayList(0x00040000);
 }
 
-/*
- * --INFO--
- * Address:	8038899C
- * Size:	000138
+/**
+ * @note Address: 0x8038899C
+ * @note Size: 0x138
  */
 SysShape::Model* Mgr::createModel()
 {
@@ -69,17 +65,16 @@ SysShape::Model* Mgr::createModel()
 	return model;
 }
 
-/*
- * --INFO--
- * Address:	80388AD4
- * Size:	0000C8
+/**
+ * @note Address: 0x80388AD4
+ * @note Size: 0xC8
  */
 EnemyBase* Mgr::birth(EnemyBirthArg& birthArg)
 {
 	Obj* enemy = static_cast<Obj*>(EnemyMgrBase::birth(birthArg));
 	if (enemy) {
-		Obj* leader = static_cast<Obj*>(enemy);
-		birthArg.mPosition.y += CG_PROPERPARMS(leader).mFp03.mValue;
+		Obj* leader = OBJ(enemy);
+		birthArg.mPosition.y += CG_PROPERPARMS(leader).mFlightHeight.mValue;
 
 		leader->mHomePosition = birthArg.mPosition;
 		leader->onSetPosition(birthArg.mPosition);
@@ -97,23 +92,21 @@ EnemyBase* Mgr::birth(EnemyBirthArg& birthArg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80388B9C
- * Size:	000050
+/**
+ * @note Address: 0x80388B9C
+ * @note Size: 0x50
  */
 void Mgr::doAnimation()
 {
 	EnemyMgrBase::doAnimation();
-	if (mGroupLeader && CG_PARMS(mGroupLeader)->_949) {
+	if (mGroupLeader && CG_PARMS(mGroupLeader)->mDoUpdateAnimation) {
 		mUpdateMgr->update();
 	}
 }
 
-/*
- * --INFO--
- * Address:	80388BEC
- * Size:	000058
+/**
+ * @note Address: 0x80388BEC
+ * @note Size: 0x58
  */
 void Mgr::fetch(J3DModel* model, f32 p1)
 {
@@ -123,10 +116,9 @@ void Mgr::fetch(J3DModel* model, f32 p1)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80388C44
- * Size:	0004BC
+/**
+ * @note Address: 0x80388C44
+ * @note Size: 0x4BC
  */
 void Mgr::createGroup(Obj* leader, int count)
 {
@@ -146,8 +138,8 @@ void Mgr::createGroup(Obj* leader, int count)
 
 	rand();
 
-	birthArg.mPosition.x = factor * pikmin2_sinf(birthArg.mFaceDir) + birthArg.mPosition.x;
-	birthArg.mPosition.z = factor * pikmin2_cosf(birthArg.mFaceDir) + birthArg.mPosition.z;
+	birthArg.mPosition.x = factor * sinf(birthArg.mFaceDir) + birthArg.mPosition.x;
+	birthArg.mPosition.z = factor * cosf(birthArg.mFaceDir) + birthArg.mPosition.z;
 
 	leader->mFaceDir    = birthArg.mFaceDir;
 	leader->mRotation.y = leader->mFaceDir;
@@ -165,17 +157,17 @@ void Mgr::createGroup(Obj* leader, int count)
 		birthArg.mFaceDir  = (TAU * (i + 1)) / count;
 
 		if (leader->mSpawnSource == SHIJIMISOURCE_Null) {
-			birthArg.mPosition.x += factor * pikmin2_sinf(birthArg.mFaceDir);
-			birthArg.mPosition.z += factor * pikmin2_cosf(birthArg.mFaceDir);
+			birthArg.mPosition.x += factor * sinf(birthArg.mFaceDir);
+			birthArg.mPosition.z += factor * cosf(birthArg.mFaceDir);
 		}
 		birthArg.mPosition.y += 50.0f * randFloat() - 25.0f;
 
-		f32 redCheck    = CG_PROPERPARMS(leader).mFp06.mValue;
-		f32 purpleCheck = redCheck + CG_PROPERPARMS(leader).mFp07.mValue;
+		f32 redCheck    = CG_PROPERPARMS(leader).mRedSpawnChance.mValue;
+		f32 purpleCheck = redCheck + CG_PROPERPARMS(leader).mPurpleSpawnChance.mValue;
 
 		EnemyBase* enemy = EnemyMgrBase::birth(birthArg);
 		if (enemy) {
-			Obj* chou          = static_cast<Obj*>(enemy);
+			Obj* chou          = OBJ(enemy);
 			chou->mSpawnSource = leader->mSpawnSource;
 
 			f32 typeCheck = randFloat();
@@ -203,16 +195,15 @@ void Mgr::createGroup(Obj* leader, int count)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80389100
- * Size:	0000B8
+/**
+ * @note Address: 0x80389100
+ * @note Size: 0xB8
  */
 void Mgr::createGroupByBigFoot(EnemyBirthArg& birthArg, int count)
 {
 	EnemyBase* enemy = EnemyMgrBase::birth(birthArg);
 	if (enemy) {
-		Obj* chou    = static_cast<Obj*>(enemy);
+		Obj* chou    = OBJ(enemy);
 		mGroupLeader = chou;
 
 		chou->mHomePosition = birthArg.mPosition;
@@ -226,16 +217,15 @@ void Mgr::createGroupByBigFoot(EnemyBirthArg& birthArg, int count)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803891B8
- * Size:	0000B8
+/**
+ * @note Address: 0x803891B8
+ * @note Size: 0xB8
  */
 void Mgr::createGroupByPlants(EnemyBirthArg& birthArg, int count)
 {
 	EnemyBase* enemy = EnemyMgrBase::birth(birthArg);
 	if (enemy) {
-		Obj* chou    = static_cast<Obj*>(enemy);
+		Obj* chou    = OBJ(enemy);
 		mGroupLeader = chou;
 
 		chou->mHomePosition = birthArg.mPosition;
@@ -249,10 +239,9 @@ void Mgr::createGroupByPlants(EnemyBirthArg& birthArg, int count)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80389270
- * Size:	000198
+/**
+ * @note Address: 0x80389270
+ * @note Size: 0x198
  */
 void Mgr::createGroupByEnemy(EnemyBirthArg& birthArg, EnemyBase* enemy, int count, bool check)
 {
@@ -260,8 +249,8 @@ void Mgr::createGroupByEnemy(EnemyBirthArg& birthArg, EnemyBase* enemy, int coun
 	if (chou) {
 		Vector3f birthPos = birthArg.mPosition;
 		if (!check && enemy) {
-			birthPos.x = -(75.0f * pikmin2_sinf(enemy->getFaceDir()) - birthPos.x);
-			birthPos.z = -(75.0f * pikmin2_cosf(enemy->getFaceDir()) - birthPos.z);
+			birthPos.x = -(75.0f * sinf(enemy->getFaceDir()) - birthPos.x);
+			birthPos.z = -(75.0f * cosf(enemy->getFaceDir()) - birthPos.z);
 		}
 		mGroupLeader = chou;
 

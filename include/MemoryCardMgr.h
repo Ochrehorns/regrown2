@@ -66,7 +66,7 @@ struct MemoryCardMgr {
 	virtual void doInit() { }                                              // _10 (weak)
 	virtual bool doCardProc(void*, MemoryCardMgrCommand*) { return true; } // _14 (weak)
 	virtual u32 getHeaderSize() { return 0x2000; }                         // _18 (weak)
-	virtual void doMakeHeader(unsigned char*);                             // _1C
+	virtual void doMakeHeader(u8*);                                        // _1C
 	virtual void doSetCardStat(CARDStat*);                                 // _20
 	virtual bool doCheckCardStat(CARDStat*);                               // _24
 	virtual bool isErrorOccured();                                         // _28
@@ -79,7 +79,7 @@ struct MemoryCardMgr {
 	bool cardMount();
 	bool fileOpen(CARDFileInfo*, ECardSlot, const char*);
 	bool writeHeader(ECardSlot, const char*);
-	void writeCardStatus(ECardSlot, const char*);
+	bool writeCardStatus(ECardSlot, const char*);
 	void setTmpHeap(JKRHeap*);
 	void init();
 	u32 checkStatus();
@@ -88,9 +88,9 @@ struct MemoryCardMgr {
 	void setCommand(int);
 	bool setCommand(MemoryCardMgrCommandBase*);
 	void releaseCurrentCommand();
-	bool write(ECardSlot, const char*, u8*, long, long);
+	bool write(ECardSlot, const char*, u8*, s32, s32);
 	bool checkCardStat(ECardSlot, CARDFileInfo*);
-	bool read(ECardSlot, const char*, u8*, long, long);
+	bool read(ECardSlot, const char*, u8*, s32, s32);
 	void format(ECardSlot);
 	void attach(ECardSlot);
 	void detach(ECardSlot);
@@ -102,13 +102,12 @@ struct MemoryCardMgr {
 	void resetInsideStatusFlag(EInsideStatusFlag);
 
 	MemoryCardMgrCommand mCommands[5]; // _04
-	u32 _A4;                           // _A4
+	u32 mCurrentCommandIdx;            // _A4
 	int mIsCard;                       // _A8
 	OSMutex mOsMutex;                  // _AC
 	OSCond mCond;                      // _C4
 	JKRHeap* mHeap;                    // _C8
 	u8 _D0;                            // _D0
-	u8 _D1[3];                         // _D1
 	EInsideStatusFlag mStatusFlag;     // _D4
 };
 

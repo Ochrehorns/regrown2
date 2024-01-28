@@ -9,6 +9,7 @@
 #include "Controller.h"
 #include "JSystem/J2D/J2DAnmLoader.h"
 #include "og/newScreen/ogUtil.h"
+#include "Dolphin/rand.h"
 #include "LoadResource.h"
 
 namespace kh {
@@ -18,10 +19,9 @@ u64 arrow[6] = { 'Nyaji01', 'Nyaji02', 'Nyaji03', 'Nyaji04', 'Nyaji05', 'Nyaji06
 
 static void _Printf(char* format) { OSReport(format, __FILE__); }
 
-/*
- * --INFO--
- * Address:	8040284C
- * Size:	00008C
+/**
+ * @note Address: 0x8040284C
+ * @note Size: 0x8C
  */
 DispDayEndResultItem::DispDayEndResultItem(Game::Result::TNode* resultNode, int treasures, int pokos, bool payDebt)
 {
@@ -43,10 +43,9 @@ DispDayEndResultItem::DispDayEndResultItem(Game::Result::TNode* resultNode, int 
 	mHasNothing       = false;
 }
 
-/*
- * --INFO--
- * Address:	804028D8
- * Size:	000294
+/**
+ * @note Address: 0x804028D8
+ * @note Size: 0x294
  */
 IncP::IncP()
 {
@@ -106,10 +105,9 @@ IncP::IncP()
 	Game::playData->setPikminCounts_Yesterday();
 }
 
-/*
- * --INFO--
- * Address:	80402B6C
- * Size:	000030
+/**
+ * @note Address: 0x80402B6C
+ * @note Size: 0x30
  */
 DispDayEndResultIncP::DispDayEndResultIncP(const IncP* incP)
 {
@@ -118,10 +116,9 @@ DispDayEndResultIncP::DispDayEndResultIncP(const IncP* incP)
 	_0C         = 0;
 }
 
-/*
- * --INFO--
- * Address:	80402B9C
- * Size:	000050
+/**
+ * @note Address: 0x80402B9C
+ * @note Size: 0x50
  */
 DispDayEndResultMail::DispDayEndResultMail(JKRHeap* heap, MailCategory category)
 {
@@ -134,10 +131,9 @@ DispDayEndResultMail::DispDayEndResultMail(JKRHeap* heap, MailCategory category)
 	mDayCount     = Game::gameSystem->mTimeMgr->mDayCount;
 }
 
-/*
- * --INFO--
- * Address: ........
- * Size:	0000b4
+/**
+ * @note Address: N/A
+ * @note Size: 0xb4
  */
 ObjDayEndResultBase::ObjDayEndResultBase()
 {
@@ -168,10 +164,9 @@ ObjDayEndResultBase::ObjDayEndResultBase()
 	mFlags             = 0;
 }
 
-/*
- * --INFO--
- * Address:	80402BEC
- * Size:	0000FC
+/**
+ * @note Address: 0x80402BEC
+ * @note Size: 0xFC
  */
 void ObjDayEndResultBase::doCreate(JKRArchive* archive)
 {
@@ -188,10 +183,9 @@ void ObjDayEndResultBase::doCreate(JKRArchive* archive)
 	mNextBtnFadePane->set_init_alpha(0);
 }
 
-/*
- * --INFO--
- * Address:	80402CE8
- * Size:	000098
+/**
+ * @note Address: 0x80402CE8
+ * @note Size: 0x98
  */
 bool ObjDayEndResultBase::doStart(const ::Screen::StartSceneArg* sceneArg)
 {
@@ -210,10 +204,9 @@ bool ObjDayEndResultBase::doStart(const ::Screen::StartSceneArg* sceneArg)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80402D80
- * Size:	000044
+/**
+ * @note Address: 0x80402D80
+ * @note Size: 0x44
  */
 void ObjDayEndResultBase::doUpdateFinish()
 {
@@ -222,10 +215,9 @@ void ObjDayEndResultBase::doUpdateFinish()
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_REGI_RECEIPT, 0);
 }
 
-/*
- * --INFO--
- * Address:	80402DC4
- * Size:	0000F4
+/**
+ * @note Address: 0x80402DC4
+ * @note Size: 0xF4
  */
 bool ObjDayEndResultBase::doUpdateFadein()
 {
@@ -233,17 +225,16 @@ bool ObjDayEndResultBase::doUpdateFadein()
 	mMainAnimTrans1->mCurrentFrame = mMainAnimTimer1;
 	mScreenMain->search('NitemW')->animationTransform();
 
-	mMainAnimTimer1 += msVal._08;
+	mMainAnimTimer1 += msVal.mAnimRate;
 
 	mScreenStars->search('Nall')->setAlpha((mMainAnimTimer1 - mFadeinMinFrame) / (mFadeinMaxFrame - mFadeinMinFrame) * 255.0f);
 
 	return (u8)(mMainAnimTimer1 >= mFadeinMaxFrame);
 }
 
-/*
- * --INFO--
- * Address:	80402EB8
- * Size:	000010
+/**
+ * @note Address: 0x80402EB8
+ * @note Size: 0x10
  */
 void ObjDayEndResultBase::doUpdateFadeinFinish()
 {
@@ -251,10 +242,9 @@ void ObjDayEndResultBase::doUpdateFadeinFinish()
 	_95 = 0;
 }
 
-/*
- * --INFO--
- * Address:	80402EC8
- * Size:	0000FC
+/**
+ * @note Address: 0x80402EC8
+ * @note Size: 0xFC
  */
 bool ObjDayEndResultBase::doUpdateFadeout()
 {
@@ -262,17 +252,16 @@ bool ObjDayEndResultBase::doUpdateFadeout()
 	mMainAnimTrans1->mCurrentFrame = mMainAnimTimer1;
 	mScreenMain->search('NitemW')->animationTransform();
 
-	mMainAnimTimer1 += msVal._08;
+	mMainAnimTimer1 += msVal.mAnimRate;
 
 	mScreenStars->search('Nall')->setAlpha((1.0f - (mMainAnimTimer1 - mFadeoutMinFrame) / (mFadeoutMaxFrame - mFadeoutMinFrame)) * 255.0f);
 
 	return (u8)(mMainAnimTimer1 >= mFadeoutMaxFrame);
 }
 
-/*
- * --INFO--
- * Address:	80402FC4
- * Size:	000118
+/**
+ * @note Address: 0x80402FC4
+ * @note Size: 0x118
  */
 void ObjDayEndResultBase::doDraw(Graphics& gfx)
 {
@@ -288,10 +277,9 @@ void ObjDayEndResultBase::doDraw(Graphics& gfx)
 	mScreenMain->setXY(msVal._18, 0.0f);
 }
 
-/*
- * --INFO--
- * Address:	804030DC
- * Size:	000280
+/**
+ * @note Address: 0x804030DC
+ * @note Size: 0x280
  */
 void ObjDayEndResultBase::updateCommon()
 {
@@ -346,10 +334,9 @@ void ObjDayEndResultBase::updateCommon()
 	mScreenTitle->update();
 }
 
-/*
- * --INFO--
- * Address:	8040335C
- * Size:	000098
+/**
+ * @note Address: 0x8040335C
+ * @note Size: 0x98
  */
 void ObjDayEndResultBase::setFadeinFrm()
 {
@@ -364,10 +351,9 @@ void ObjDayEndResultBase::setFadeinFrm()
 	mMainAnimTimer1 = mFadeinMinFrame;
 }
 
-/*
- * --INFO--
- * Address:	804033F4
- * Size:	000098
+/**
+ * @note Address: 0x804033F4
+ * @note Size: 0x98
  */
 void ObjDayEndResultBase::setFadeoutFrm()
 {
@@ -382,10 +368,9 @@ void ObjDayEndResultBase::setFadeoutFrm()
 	mMainAnimTimer1 = mFadeoutMinFrame;
 }
 
-/*
- * --INFO--
- * Address:	8040348C
- * Size:	000144
+/**
+ * @note Address: 0x8040348C
+ * @note Size: 0x144
  */
 ObjDayEndResultItem::ObjDayEndResultItem()
 {
@@ -417,10 +402,9 @@ ObjDayEndResultItem::ObjDayEndResultItem()
 	mScrollUpDelay          = 0;
 }
 
-/*
- * --INFO--
- * Address:	8040367C
- * Size:	0007AC
+/**
+ * @note Address: 0x8040367C
+ * @note Size: 0x7AC
  */
 void ObjDayEndResultItem::doCreate(JKRArchive* archive)
 {
@@ -529,10 +513,9 @@ void ObjDayEndResultItem::doCreate(JKRArchive* archive)
 	dispResult->mItem.mHasNothing = true;
 }
 
-/*
- * --INFO--
- * Address:	80403E28
- * Size:	000108
+/**
+ * @note Address: 0x80403E28
+ * @note Size: 0x108
  */
 bool ObjDayEndResultItem::doStart(const ::Screen::StartSceneArg* sceneArg)
 {
@@ -559,10 +542,9 @@ bool ObjDayEndResultItem::doStart(const ::Screen::StartSceneArg* sceneArg)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80403F30
- * Size:	00011C
+/**
+ * @note Address: 0x80403F30
+ * @note Size: 0x11C
  */
 bool ObjDayEndResultItem::doUpdateFadein()
 {
@@ -570,7 +552,7 @@ bool ObjDayEndResultItem::doUpdateFadein()
 	mMainAnimTrans1->mCurrentFrame = mMainAnimTimer1;
 	mScreenMain->search('NitemW')->animationTransform();
 
-	mMainAnimTimer1 += ObjDayEndResultBase::msVal._08;
+	mMainAnimTimer1 += ObjDayEndResultBase::msVal.mAnimRate;
 
 	mScreenStars->search('Nall')->setAlpha((mMainAnimTimer1 - mFadeinMinFrame) / (mFadeinMaxFrame - mFadeinMinFrame) * 255.0f);
 
@@ -585,10 +567,9 @@ bool ObjDayEndResultItem::doUpdateFadein()
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	8040404C
- * Size:	0002CC
+/**
+ * @note Address: 0x8040404C
+ * @note Size: 0x2CC
  */
 bool ObjDayEndResultItem::doUpdate()
 {
@@ -623,7 +604,7 @@ bool ObjDayEndResultItem::doUpdate()
 
 		if (mStatus == ITEMSTATUS_Normal) {
 			DispDayEndResultIncP* dispIncP = static_cast<DispDayEndResultIncP*>(getDispMember());
-			::Screen::SetSceneArg setArg(SCENE_DAY_END_RESULT_INC_P, dispIncP, 0, 1);
+			::Screen::SetSceneArg setArg(SCENE_DAY_END_RESULT_INC_P, dispIncP);
 
 			if (getOwner()->setScene(setArg)) {
 				SArgDayEndResultIncP argIncP(1);
@@ -656,10 +637,9 @@ bool ObjDayEndResultItem::doUpdate()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80404318
- * Size:	000124
+/**
+ * @note Address: 0x80404318
+ * @note Size: 0x124
  */
 bool ObjDayEndResultItem::doUpdateFadeout()
 {
@@ -667,7 +647,7 @@ bool ObjDayEndResultItem::doUpdateFadeout()
 	mMainAnimTrans1->mCurrentFrame = mMainAnimTimer1;
 	mScreenMain->search('NitemW')->animationTransform();
 
-	mMainAnimTimer1 += ObjDayEndResultBase::msVal._08;
+	mMainAnimTimer1 += ObjDayEndResultBase::msVal.mAnimRate;
 
 	mScreenStars->search('Nall')->setAlpha((1.0f - (mMainAnimTimer1 - mFadeoutMinFrame) / (mFadeoutMaxFrame - mFadeoutMinFrame)) * 255.0f);
 
@@ -682,10 +662,9 @@ bool ObjDayEndResultItem::doUpdateFadeout()
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	8040443C
- * Size:	0006C4
+/**
+ * @note Address: 0x8040443C
+ * @note Size: 0x6C4
  */
 void ObjDayEndResultItem::doDraw(Graphics& gfx)
 {
@@ -738,14 +717,13 @@ void ObjDayEndResultItem::doDraw(Graphics& gfx)
 	{
 		int pokos = cNode->mTotalPokos;
 		int isOdd = i % 2;
-		f32 check = (f32)i * mItemRowHeight + mCurrentScrollYPos;
+		f32 check = i * mItemRowHeight + mCurrentScrollYPos;
 		if (check < -mItemRowHeight || mGXScissorBottomY < check) {
 			panes[isOdd]->add(0.0f, offs);
 		} else {
-			int isEven = !(i % 2);
-			panes[isEven]->hide();
+			panes[!isOdd]->hide();
 			panes[isOdd]->show();
-			panes[isEven]->add(0.0f, offs);
+			panes[isOdd]->add(0.0f, offs);
 
 			setTex(mScreenMain, icons[isOdd], cNode->mTexture->mTexInfo);
 			if (!cNode->mMesgTag) {
@@ -761,9 +739,8 @@ void ObjDayEndResultItem::doDraw(Graphics& gfx)
 	}
 
 	for (i; i < 6; i++) {
-		int isOdd  = i % 2;
-		int isEven = !(i % 2);
-		panes[isEven]->hide();
+		int isOdd = i % 2;
+		panes[!isOdd]->hide();
 		panes[isOdd]->show();
 		panes[isOdd]->add(0.0f, offs);
 		mScreenMain->search(icons[isOdd])->hide();
@@ -1243,10 +1220,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80404B00
- * Size:	0001D4
+/**
+ * @note Address: 0x80404B00
+ * @note Size: 0x1D4
  */
 void ObjDayEndResultItem::statusNormal()
 {
@@ -1302,10 +1278,9 @@ void ObjDayEndResultItem::statusNormal()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80404CD4
- * Size:	0000F4
+/**
+ * @note Address: 0x80404CD4
+ * @note Size: 0xF4
  */
 void ObjDayEndResultItem::statusScrollUp()
 {
@@ -1319,10 +1294,9 @@ void ObjDayEndResultItem::statusScrollUp()
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_REGI_ROLL, 0);
 }
 
-/*
- * --INFO--
- * Address:	80404DC8
- * Size:	0000F4
+/**
+ * @note Address: 0x80404DC8
+ * @note Size: 0xF4
  */
 void ObjDayEndResultItem::statusScrollDown()
 {
@@ -1336,10 +1310,9 @@ void ObjDayEndResultItem::statusScrollDown()
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_REGI_ROLL, 0);
 }
 
-/*
- * --INFO--
- * Address:	80404EBC
- * Size:	0001D4
+/**
+ * @note Address: 0x80404EBC
+ * @note Size: 0x1D4
  */
 void ObjDayEndResultItem::statusForceScroll()
 {
@@ -1373,10 +1346,9 @@ void ObjDayEndResultItem::statusForceScroll()
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_REGI_ROLL, 0);
 }
 
-/*
- * --INFO--
- * Address:	80405090
- * Size:	00001C
+/**
+ * @note Address: 0x80405090
+ * @note Size: 0x1C
  */
 void ObjDayEndResultItem::statusDrumRoll()
 {
@@ -1384,10 +1356,9 @@ void ObjDayEndResultItem::statusDrumRoll()
 	mStatus          = ITEMSTATUS_TotalValue;
 }
 
-/*
- * --INFO--
- * Address:	804050AC
- * Size:	0000C8
+/**
+ * @note Address: 0x804050AC
+ * @note Size: 0xC8
  */
 void ObjDayEndResultItem::statusTotalValue()
 {
@@ -1408,10 +1379,9 @@ void ObjDayEndResultItem::statusTotalValue()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80405174
- * Size:	0003C8
+/**
+ * @note Address: 0x80405174
+ * @note Size: 0x3C8
  */
 void ObjDayEndResultItem::updateCommon()
 {
@@ -1436,10 +1406,9 @@ void ObjDayEndResultItem::updateCommon()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8040553C
- * Size:	00019C
+/**
+ * @note Address: 0x8040553C
+ * @note Size: 0x19C
  */
 ObjDayEndResultIncP::ObjDayEndResultIncP()
 {
@@ -1479,10 +1448,9 @@ ObjDayEndResultIncP::ObjDayEndResultIncP()
 	mArrowAngles[5]       = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	804056D8
- * Size:	001374
+/**
+ * @note Address: 0x804056D8
+ * @note Size: 0x1374
  */
 void ObjDayEndResultIncP::doCreate(JKRArchive* arc)
 {
@@ -1700,10 +1668,9 @@ void ObjDayEndResultIncP::doCreate(JKRArchive* arc)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80406A4C
- * Size:	00017C
+/**
+ * @note Address: 0x80406A4C
+ * @note Size: 0x17C
  */
 bool ObjDayEndResultIncP::doUpdateFadein()
 {
@@ -1711,7 +1678,7 @@ bool ObjDayEndResultIncP::doUpdateFadein()
 	mMainAnimTrans1->mCurrentFrame = mMainAnimTimer1;
 	mScreenMain->search('NitemW')->animationTransform();
 
-	mMainAnimTimer1 += ObjDayEndResultBase::msVal._08;
+	mMainAnimTimer1 += ObjDayEndResultBase::msVal.mAnimRate;
 
 	mScreenStars->search('Nall')->setAlpha((mMainAnimTimer1 - mFadeinMinFrame) / (mFadeinMaxFrame - mFadeinMinFrame) * 255.0f);
 
@@ -1725,10 +1692,9 @@ bool ObjDayEndResultIncP::doUpdateFadein()
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	80406BC8
- * Size:	00047C
+/**
+ * @note Address: 0x80406BC8
+ * @note Size: 0x47C
  */
 bool ObjDayEndResultIncP::doUpdate()
 {
@@ -1766,14 +1732,14 @@ bool ObjDayEndResultIncP::doUpdate()
 
 		if (mStatus == INCPSTATUS_Normal || mStatus == INCPSTATUS_DecP) {
 			if (getGamePad()->mButton.mButtonDown & Controller::PRESS_A) {
-				::Screen::SetSceneArg setArg(SCENE_DAY_END_RESULT_MAIL, getDispMember(), 0, 1);
+				::Screen::SetSceneArg setArg(SCENE_DAY_END_RESULT_MAIL, getDispMember());
 				if (getOwner()->setScene(setArg)) {
 					SArgDayEndResultMail argMail(1);
 					getOwner()->startScene(&argMail);
 					mFlags &= ~0x10;
 				}
 			} else if (getGamePad()->mButton.mButtonDown & Controller::PRESS_B) {
-				::Screen::SetSceneArg setArg(SCENE_DAY_END_RESULT_ITEM, getDispMember(), 0, 1);
+				::Screen::SetSceneArg setArg(SCENE_DAY_END_RESULT_ITEM, getDispMember());
 				if (getOwner()->setScene(setArg)) {
 					SArgDayEndResultItem argItem(0);
 					getOwner()->startScene(&argItem);
@@ -1822,10 +1788,9 @@ bool ObjDayEndResultIncP::doUpdate()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80407044
- * Size:	000184
+/**
+ * @note Address: 0x80407044
+ * @note Size: 0x184
  */
 bool ObjDayEndResultIncP::doUpdateFadeout()
 {
@@ -1833,7 +1798,7 @@ bool ObjDayEndResultIncP::doUpdateFadeout()
 	mMainAnimTrans1->mCurrentFrame = mMainAnimTimer1;
 	mScreenMain->search('NitemW')->animationTransform();
 
-	mMainAnimTimer1 += ObjDayEndResultBase::msVal._08;
+	mMainAnimTimer1 += ObjDayEndResultBase::msVal.mAnimRate;
 
 	mScreenStars->search('Nall')->setAlpha((1.0f - (mMainAnimTimer1 - mFadeoutMinFrame) / (mFadeoutMaxFrame - mFadeoutMinFrame)) * 255.0f);
 
@@ -1846,10 +1811,9 @@ bool ObjDayEndResultIncP::doUpdateFadeout()
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	804071C8
- * Size:	000148
+/**
+ * @note Address: 0x804071C8
+ * @note Size: 0x148
  */
 void ObjDayEndResultIncP::doDraw(Graphics& gfx)
 {
@@ -1859,10 +1823,9 @@ void ObjDayEndResultIncP::doDraw(Graphics& gfx)
 	mScreenMain->draw(gfx, gfx.mOrthoGraph);
 }
 
-/*
- * --INFO--
- * Address:	80407310
- * Size:	000050
+/**
+ * @note Address: 0x80407310
+ * @note Size: 0x50
  */
 void ObjDayEndResultIncP::statusNormal()
 {
@@ -1872,10 +1835,9 @@ void ObjDayEndResultIncP::statusNormal()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80407360
- * Size:	000100
+/**
+ * @note Address: 0x80407360
+ * @note Size: 0x100
  */
 void ObjDayEndResultIncP::statusFadeout()
 {
@@ -1904,10 +1866,9 @@ void ObjDayEndResultIncP::statusFadeout()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80407460
- * Size:	000050
+/**
+ * @note Address: 0x80407460
+ * @note Size: 0x50
  */
 void ObjDayEndResultIncP::statusDecP()
 {
@@ -1917,10 +1878,9 @@ void ObjDayEndResultIncP::statusDecP()
 	}
 }
 
-/*
- * --INFO--
- * Address:	804074B0
- * Size:	000064
+/**
+ * @note Address: 0x804074B0
+ * @note Size: 0x64
  */
 void ObjDayEndResultIncP::statusFadein()
 {
@@ -1939,10 +1899,9 @@ void ObjDayEndResultIncP::statusFadein()
 	mStatus = INCPSTATUS_Normal;
 }
 
-/*
- * --INFO--
- * Address:	80407514
- * Size:	000140
+/**
+ * @note Address: 0x80407514
+ * @note Size: 0x140
  */
 void ObjDayEndResultIncP::statusSlot()
 {
@@ -1971,10 +1930,9 @@ void ObjDayEndResultIncP::statusSlot()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80407654
- * Size:	00019C
+/**
+ * @note Address: 0x80407654
+ * @note Size: 0x19C
  */
 void ObjDayEndResultIncP::statusDecPSlot()
 {
@@ -2011,17 +1969,14 @@ void ObjDayEndResultIncP::statusDecPSlot()
 	}
 }
 static const int someDumbUnusedArray[0x40] = { 0 }; // not actually unused according to pikhacker
-/*
- * --INFO--
- * Address:	804077F0
- * Size:	000088
+/**
+ * @note Address: 0x804077F0
+ * @note Size: 0x88
  */
 void ObjDayEndResultIncP::callIncPSE(int id)
 {
 	u32 soundID;
-
-	u32 test = id & ~1;
-	if (((u32)(id & 1) ^ test) - test) {
+	if (id % 2) {
 		u32 count2 = *mPikiCountersList[id - 1]->mCountPtr;
 		u32 count1 = *mPikiCountersList[id]->mCountPtr;
 		if (count2 < count1) {
@@ -2036,56 +1991,11 @@ void ObjDayEndResultIncP::callIncPSE(int id)
 	}
 
 	PSSystem::spSysIF->playSystemSe(soundID, 0);
-	/*
-stwu     r1, -0x10(r1)
-mflr     r0
-srwi     r5, r4, 0x1f
-stw      r0, 0x14(r1)
-clrlwi   r0, r4, 0x1f
-xor      r0, r0, r5
-subf.    r0, r5, r0
-beq      lbl_80407858
-lwz      r3, 0xac(r3)
-slwi     r0, r4, 2
-add      r4, r3, r0
-lwzx     r3, r3, r0
-lwz      r4, -4(r4)
-lwz      r3, 0x20(r3)
-lwz      r4, 0x20(r4)
-lwz      r3, 0(r3)
-lwz      r0, 0(r4)
-cmplw    r0, r3
-bge      lbl_80407844
-li       r4, 0x1828
-b        lbl_8040785C
-
-lbl_80407844:
-ble      lbl_80407850
-li       r4, 0x182a
-b        lbl_8040785C
-
-lbl_80407850:
-li       r4, 0x1806
-b        lbl_8040785C
-
-lbl_80407858:
-li       r4, 0x1806
-
-lbl_8040785C:
-lwz      r3, spSysIF__8PSSystem@sda21(r13)
-li       r5, 0
-bl       playSystemSe__Q28PSSystem5SysIFFUlUl
-lwz      r0, 0x14(r1)
-mtlr     r0
-addi     r1, r1, 0x10
-blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	80407878
- * Size:	00004C
+/**
+ * @note Address: 0x80407878
+ * @note Size: 0x4C
  */
 void ObjDayEndResultIncP::callDecPSE(int id)
 {
@@ -2099,10 +2009,9 @@ void ObjDayEndResultIncP::callDecPSE(int id)
 	sys->playSystemSe(soundID, 0);
 }
 
-/*
- * --INFO--
- * Address:	804078C4
- * Size:	000188
+/**
+ * @note Address: 0x804078C4
+ * @note Size: 0x188
  */
 void ObjDayEndResultIncP::effectCommon()
 {
@@ -2134,10 +2043,9 @@ void ObjDayEndResultIncP::effectCommon()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80407A4C
- * Size:	00036C
+/**
+ * @note Address: 0x80407A4C
+ * @note Size: 0x36C
  */
 void ObjDayEndResultIncP::updateCommon()
 {
@@ -2153,10 +2061,9 @@ void ObjDayEndResultIncP::updateCommon()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80407DB8
- * Size:	0008B4
+/**
+ * @note Address: 0x80407DB8
+ * @note Size: 0x8B4
  */
 void ObjDayEndResultMail::doCreate(JKRArchive* arc)
 {
@@ -2223,7 +2130,7 @@ void ObjDayEndResultMail::doCreate(JKRArchive* arc)
 		mMailIconAnms = new MailIconAnm[20];
 
 		for (int i = 0; i < 20; i++) {
-			u8 id = scene->mMailFlags[i];
+			s8 id = scene->mMailFlags[i];
 			if (id == -1)
 				break;
 			if (id == -2) {
@@ -2867,10 +2774,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8040867C
- * Size:	000170
+/**
+ * @note Address: 0x8040867C
+ * @note Size: 0x170
  */
 bool ObjDayEndResultMail::doStart(const ::Screen::StartSceneArg* arg)
 {
@@ -2896,10 +2802,9 @@ bool ObjDayEndResultMail::doStart(const ::Screen::StartSceneArg* arg)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	804087EC
- * Size:	0001B8
+/**
+ * @note Address: 0x804087EC
+ * @note Size: 0x1B8
  */
 bool ObjDayEndResultMail::doUpdateFadein()
 {
@@ -2908,7 +2813,7 @@ bool ObjDayEndResultMail::doUpdateFadein()
 	mMainAnimTrans1->mCurrentFrame = mMainAnimTimer1;
 	mScreenMain->search('NitemW')->animationTransform();
 
-	mMainAnimTimer1 += msVal._08;
+	mMainAnimTimer1 += msVal.mAnimRate;
 
 	mScreenStars->search('Nall')->setAlpha((mMainAnimTimer1 - mFadeinMinFrame) / (mFadeinMaxFrame - mFadeinMinFrame) * 255.0f);
 
@@ -2925,10 +2830,9 @@ bool ObjDayEndResultMail::doUpdateFadein()
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	804089A4
- * Size:	000280
+/**
+ * @note Address: 0x804089A4
+ * @note Size: 0x280
  */
 bool ObjDayEndResultMail::doUpdate()
 {
@@ -2964,13 +2868,13 @@ bool ObjDayEndResultMail::doUpdate()
 			statusFadeoutToLeft();
 			break;
 		case MAILSTATUS_FadeinFromLeft:
-			statusFadeoutToLeft();
+			statusFadeinFromLeft();
 			break;
 		case MAILSTATUS_FadeoutToRight:
-			statusFadeoutToLeft();
+			statusFadeoutToRight();
 			break;
 		case MAILSTATUS_FadeinFromRight:
-			statusFadeoutToLeft();
+			statusFadeinFromRight();
 			break;
 		case MAILSTATUS_WaitOpen:
 			statusWaitOpen();
@@ -2997,10 +2901,9 @@ bool ObjDayEndResultMail::doUpdate()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80408C24
- * Size:	0001B4
+/**
+ * @note Address: 0x80408C24
+ * @note Size: 0x1B4
  */
 bool ObjDayEndResultMail::doUpdateFadeout()
 {
@@ -3008,7 +2911,7 @@ bool ObjDayEndResultMail::doUpdateFadeout()
 	mMainAnimTrans1->mCurrentFrame = mMainAnimTimer1;
 	mScreenMain->search('NitemW')->animationTransform();
 
-	mMainAnimTimer1 += msVal._08;
+	mMainAnimTimer1 += msVal.mAnimRate;
 
 	mScreenStars->search('Nall')->setAlpha((1.0f - ((mMainAnimTimer1 - mFadeoutMinFrame) / (mFadeoutMaxFrame - mFadeoutMinFrame)))
 	                                       * 255.0f);
@@ -3026,10 +2929,9 @@ bool ObjDayEndResultMail::doUpdateFadeout()
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	80408DD8
- * Size:	000214
+/**
+ * @note Address: 0x80408DD8
+ * @note Size: 0x214
  */
 void ObjDayEndResultMail::statusNormal()
 {
@@ -3038,7 +2940,7 @@ void ObjDayEndResultMail::statusNormal()
 		mSaveMgr->start();
 	} else if (getGamePad()->mButton.mButtonDown & Controller::PRESS_B) {
 		DispDayEndResultIncP* dispIncP = static_cast<DispDayEndResultIncP*>(getDispMember());
-		::Screen::SetSceneArg setArg(SCENE_DAY_END_RESULT_INC_P, dispIncP, 0, 1);
+		::Screen::SetSceneArg setArg(SCENE_DAY_END_RESULT_INC_P, dispIncP);
 		if (getOwner()->setScene(setArg)) {
 			SArgDayEndResultIncP argIncP(0);
 			getOwner()->startScene(&argIncP);
@@ -3065,10 +2967,9 @@ void ObjDayEndResultMail::statusNormal()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80408FEC
- * Size:	0000A8
+/**
+ * @note Address: 0x80408FEC
+ * @note Size: 0xA8
  */
 void ObjDayEndResultMail::statusFadeoutToLeft()
 {
@@ -3090,10 +2991,9 @@ void ObjDayEndResultMail::statusFadeoutToLeft()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80409094
- * Size:	000038
+/**
+ * @note Address: 0x80409094
+ * @note Size: 0x38
  */
 void ObjDayEndResultMail::statusFadeinFromLeft()
 {
@@ -3105,10 +3005,9 @@ void ObjDayEndResultMail::statusFadeinFromLeft()
 	}
 }
 
-/*
- * --INFO--
- * Address:	804090CC
- * Size:	0000B8
+/**
+ * @note Address: 0x804090CC
+ * @note Size: 0xB8
  */
 void ObjDayEndResultMail::statusFadeoutToRight()
 {
@@ -3130,10 +3029,9 @@ void ObjDayEndResultMail::statusFadeoutToRight()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80409184
- * Size:	000038
+/**
+ * @note Address: 0x80409184
+ * @note Size: 0x38
  */
 void ObjDayEndResultMail::statusFadeinFromRight()
 {
@@ -3145,10 +3043,9 @@ void ObjDayEndResultMail::statusFadeinFromRight()
 	}
 }
 
-/*
- * --INFO--
- * Address:	804091BC
- * Size:	00012C
+/**
+ * @note Address: 0x804091BC
+ * @note Size: 0x12C
  */
 void ObjDayEndResultMail::statusWaitOpen()
 {
@@ -3188,10 +3085,9 @@ void ObjDayEndResultMail::statusWaitOpen()
 	mStatus = MAILSTATUS_OpenW;
 }
 
-/*
- * --INFO--
- * Address:	804092E8
- * Size:	0000D4
+/**
+ * @note Address: 0x804092E8
+ * @note Size: 0xD4
  */
 void ObjDayEndResultMail::statusOpenW()
 {
@@ -3213,10 +3109,9 @@ void ObjDayEndResultMail::statusOpenW()
 	changeAlpha();
 }
 
-/*
- * --INFO--
- * Address:	804093BC
- * Size:	0000CC
+/**
+ * @note Address: 0x804093BC
+ * @note Size: 0xCC
  */
 void ObjDayEndResultMail::statusOpenH()
 {
@@ -3237,32 +3132,28 @@ void ObjDayEndResultMail::statusOpenH()
 	changeAlpha();
 }
 
-/*
- * --INFO--
- * Address:	80409488
- * Size:	000480
+/**
+ * @note Address: 0x80409488
+ * @note Size: 0x480
  */
 void ObjDayEndResultMail::changeMail()
 {
 	SceneDayEndResultMail* scene = static_cast<SceneDayEndResultMail*>(getOwner());
 	mCharacterIconTimer          = 0;
 	setTex(mScreenMain, 'Pset_p', mMailIconAnms[mMaxDay - mCurrentDay].mTIMG[0]);
-	mScreenMain->search(scene->mTableData[mMaxDay - mCurrentDay]->mMessageID);
+	u64 mesg = scene->mTableData[scene->mMailFlags[mMaxDay - mCurrentDay]]->mMessageID;
+	mScreenMain->search('Ttext')->setMsgID(mesg);
 
-	if (mMaxDay == mCurrentDay) {
-		mMessage->mMinX = 1.0f;
-		mMessage->mMinY = 1.0f;
-		mMessage->mMaxX = 1.0f;
-		mMessage->mMaxY = 1.0f;
-		mScreenMain->search('Pset_p');
-		mScreenMain->search('Picon_b');
+	if (mCurrentDay == mMaxDay) {
+		mMessage->setBounds(1.0f, 1.0f, 1.0f, 1.0f);
+		JUtility::TColor color(255, 255, 255, 255);
+		static_cast<J2DPicture*>(mScreenMain->search('Pset_p'))->setCornerColor(color);
+		static_cast<J2DPicture*>(mScreenMain->search('Picon_b'))->setCornerColor(color);
 	} else {
-		mMessage->mMinX = msVal._2C;
-		mMessage->mMinY = msVal._30;
-		mMessage->mMaxX = msVal._34;
-		mMessage->mMaxY = msVal._38;
-		mScreenMain->search('Pset_p');
-		mScreenMain->search('Picon_b');
+		mMessage->setBounds(msVal._2C, msVal._30, msVal._34, msVal._38);
+		JUtility::TColor color(msVal._2C * 255.0f, msVal._30 * 255.0f, msVal._34 * 255.0f, msVal._38 * 255.0f);
+		static_cast<J2DPicture*>(mScreenMain->search('Pset_p'))->setCornerColor(color);
+		static_cast<J2DPicture*>(mScreenMain->search('Picon_b'))->setCornerColor(color);
 	}
 	/*
 stwu     r1, -0x80(r1)
@@ -3560,17 +3451,15 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80409908
- * Size:	000064
+/**
+ * @note Address: 0x80409908
+ * @note Size: 0x64
  */
 void ObjDayEndResultMail::changeAlpha() { mScreenCharacter->search('NitemW')->setAlpha(255 - mAlpha); }
 
-/*
- * --INFO--
- * Address:	8040996C
- * Size:	0001C4
+/**
+ * @note Address: 0x8040996C
+ * @note Size: 0x1C4
  */
 void ObjDayEndResultMail::doDraw(Graphics& gfx)
 {
@@ -3589,10 +3478,9 @@ void ObjDayEndResultMail::doDraw(Graphics& gfx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80409B30
- * Size:	000288
+/**
+ * @note Address: 0x80409B30
+ * @note Size: 0x288
  */
 void ObjDayEndResultMail::updateCommon()
 {
@@ -3600,16 +3488,17 @@ void ObjDayEndResultMail::updateCommon()
 	mScreenMain->animation();
 }
 
-/*
- * --INFO--
- * Address:	80409DB8
- * Size:	0003BC
+inline u64 J2DPane::getTagName() const { return mTag; }
+
+/**
+ * @note Address: 0x80409DB8
+ * @note Size: 0x3BC
  */
 void ObjDayEndResultMail::setCallBackMessage(P2DScreen::Mgr* mgr, J2DPane* pane)
 {
 	if (pane->getTypeID() == 19 && pane->getUserInfo()) {
 		og::Screen::CallBack_Message* mesg = new og::Screen::CallBack_Message;
-		u64 tag                            = pane->mTag; // getTagName() ?
+		u64 tag                            = pane->getTagName();
 		mgr->addCallBack(tag, mesg);
 		static_cast<J2DTextBox*>(pane)->setString("");
 		if (tag == 'Ttext') {
@@ -3623,295 +3512,17 @@ void ObjDayEndResultMail::setCallBackMessage(P2DScreen::Mgr* mgr, J2DPane* pane)
 		setCallBackMessage(mgr, iter.getObject());
 		++iter;
 	}
-	/*
-stwu     r1, -0x40(r1)
-mflr     r0
-stw      r0, 0x44(r1)
-stmw     r23, 0x1c(r1)
-mr       r26, r5
-mr       r31, r3
-mr       r30, r4
-mr       r3, r26
-lwz      r12, 0(r26)
-lwz      r12, 0xc(r12)
-mtctr    r12
-bctrl
-clrlwi   r0, r3, 0x10
-cmplwi   r0, 0x13
-bne      lbl_80409E74
-lwz      r0, 0x18(r26)
-li       r3, 0
-lwz      r4, 0x1c(r26)
-xor      r0, r0, r3
-xor      r3, r4, r3
-or.      r0, r3, r0
-beq      lbl_80409E74
-li       r3, 0x48
-bl       __nw__FUl
-or.      r24, r3, r3
-beq      lbl_80409E28
-bl       __ct__Q32og6Screen16CallBack_MessageFv
-mr       r24, r3
-
-lbl_80409E28:
-lwz      r25, 0x10(r26)
-mr       r3, r30
-lwz      r27, 0x14(r26)
-mr       r7, r24
-mr       r5, r25
-mr       r6, r27
-bl       addCallBack__Q29P2DScreen3MgrFUxPQ29P2DScreen4Node
-mr       r3, r26
-addi     r4, r2, lbl_80520100@sda21
-crclr    6
-bl       setString__10J2DTextBoxFPCce
-lis      r3, 0x74657874@ha
-li       r0, 0x54
-addi     r3, r3, 0x74657874@l
-xor      r3, r27, r3
-xor      r0, r25, r0
-or.      r0, r3, r0
-bne      lbl_80409E74
-stw      r24, 0xd4(r31)
-
-lbl_80409E74:
-lwz      r29, 0xdc(r26)
-cmplwi   r29, 0
-beq      lbl_8040A158
-addi     r29, r29, -12
-b        lbl_8040A158
-
-lbl_80409E88:
-lwz      r24, 0xc(r29)
-mr       r3, r24
-lwz      r12, 0(r24)
-lwz      r12, 0xc(r12)
-mtctr    r12
-bctrl
-clrlwi   r0, r3, 0x10
-cmplwi   r0, 0x13
-bne      lbl_80409F2C
-lwz      r0, 0x18(r24)
-li       r3, 0
-lwz      r4, 0x1c(r24)
-xor      r0, r0, r3
-xor      r3, r4, r3
-or.      r0, r3, r0
-beq      lbl_80409F2C
-li       r3, 0x48
-bl       __nw__FUl
-or.      r25, r3, r3
-beq      lbl_80409EE0
-bl       __ct__Q32og6Screen16CallBack_MessageFv
-mr       r25, r3
-
-lbl_80409EE0:
-lwz      r26, 0x10(r24)
-mr       r3, r30
-lwz      r27, 0x14(r24)
-mr       r7, r25
-mr       r5, r26
-mr       r6, r27
-bl       addCallBack__Q29P2DScreen3MgrFUxPQ29P2DScreen4Node
-mr       r3, r24
-addi     r4, r2, lbl_80520100@sda21
-crclr    6
-bl       setString__10J2DTextBoxFPCce
-lis      r3, 0x74657874@ha
-li       r0, 0x54
-addi     r3, r3, 0x74657874@l
-xor      r3, r27, r3
-xor      r0, r26, r0
-or.      r0, r3, r0
-bne      lbl_80409F2C
-stw      r25, 0xd4(r31)
-
-lbl_80409F2C:
-addi     r3, r24, 0xdc
-bl       getFirstLink__10JSUPtrListCFv
-cmplwi   r3, 0
-beq      lbl_80409F40
-addi     r3, r3, -12
-
-lbl_80409F40:
-mr       r28, r3
-b        lbl_8040A140
-
-lbl_80409F48:
-mr       r3, r28
-bl       "getObject__17JSUTree<7J2DPane>CFv"
-lwz      r12, 0(r3)
-mr       r27, r3
-lwz      r12, 0xc(r12)
-mtctr    r12
-bctrl
-clrlwi   r0, r3, 0x10
-cmplwi   r0, 0x13
-bne      lbl_80409FF0
-lwz      r0, 0x18(r27)
-li       r3, 0
-lwz      r4, 0x1c(r27)
-xor      r0, r0, r3
-xor      r3, r4, r3
-or.      r0, r3, r0
-beq      lbl_80409FF0
-li       r3, 0x48
-bl       __nw__FUl
-or.      r24, r3, r3
-beq      lbl_80409FA4
-bl       __ct__Q32og6Screen16CallBack_MessageFv
-mr       r24, r3
-
-lbl_80409FA4:
-lwz      r25, 0x10(r27)
-mr       r3, r30
-lwz      r26, 0x14(r27)
-mr       r7, r24
-mr       r5, r25
-mr       r6, r26
-bl       addCallBack__Q29P2DScreen3MgrFUxPQ29P2DScreen4Node
-mr       r3, r27
-addi     r4, r2, lbl_80520100@sda21
-crclr    6
-bl       setString__10J2DTextBoxFPCce
-lis      r3, 0x74657874@ha
-li       r0, 0x54
-addi     r3, r3, 0x74657874@l
-xor      r3, r26, r3
-xor      r0, r25, r0
-or.      r0, r3, r0
-bne      lbl_80409FF0
-stw      r24, 0xd4(r31)
-
-lbl_80409FF0:
-addi     r26, r27, 0xdc
-mr       r3, r26
-bl       "getFirstChild__17JSUTree<7J2DPane>CFv"
-stw      r3, 0xc(r1)
-b        lbl_8040A11C
-
-lbl_8040A004:
-addi     r3, r1, 0xc
-bl       "getObject__25JSUTreeIterator<7J2DPane>CFv"
-lwz      r12, 0(r3)
-mr       r27, r3
-lwz      r12, 0xc(r12)
-mtctr    r12
-bctrl
-clrlwi   r0, r3, 0x10
-cmplwi   r0, 0x13
-bne      lbl_8040A0B4
-mr       r3, r27
-bl       getUserInfo__7J2DPaneCFv
-li       r0, 0
-xor      r4, r4, r0
-xor      r0, r3, r0
-or.      r0, r4, r0
-beq      lbl_8040A0B4
-li       r3, 0x48
-bl       __nw__FUl
-or.      r23, r3, r3
-beq      lbl_8040A060
-bl       __ct__Q32og6Screen16CallBack_MessageFv
-mr       r23, r3
-
-lbl_8040A060:
-mr       r3, r27
-bl       getTagName__7J2DPaneCFv
-mr       r25, r3
-mr       r24, r4
-mr       r3, r30
-mr       r7, r23
-mr       r6, r24
-mr       r5, r25
-bl       addCallBack__Q29P2DScreen3MgrFUxPQ29P2DScreen4Node
-mr       r3, r27
-addi     r4, r2, lbl_80520100@sda21
-crclr    6
-bl       setString__10J2DTextBoxFPCce
-lis      r3, 0x74657874@ha
-li       r0, 0x54
-addi     r3, r3, 0x74657874@l
-xor      r3, r24, r3
-xor      r0, r25, r0
-or.      r0, r3, r0
-bne      lbl_8040A0B4
-stw      r23, 0xd4(r31)
-
-lbl_8040A0B4:
-mr       r3, r27
-bl       getPaneTree__7J2DPaneFv
-mr       r27, r3
-bl       "getFirstChild__17JSUTree<7J2DPane>CFv"
-mr       r4, r3
-addi     r3, r1, 8
-bl       "__ct__25JSUTreeIterator<7J2DPane>FP17JSUTree<7J2DPane>"
-b        lbl_8040A0F4
-
-lbl_8040A0D4:
-addi     r3, r1, 8
-bl       "getObject__25JSUTreeIterator<7J2DPane>CFv"
-mr       r5, r3
-mr       r3, r31
-mr       r4, r30
-bl
-setCallBackMessage__Q32kh6Screen19ObjDayEndResultMailFPQ29P2DScreen3MgrP7J2DPane
-addi     r3, r1, 8
-bl       "__pp__25JSUTreeIterator<7J2DPane>Fv"
-
-lbl_8040A0F4:
-mr       r3, r27
-bl       "getEndChild__17JSUTree<7J2DPane>CFv"
-mr       r4, r3
-addi     r3, r1, 8
-bl       "__ne__25JSUTreeIterator<7J2DPane>CFPC17JSUTree<7J2DPane>"
-clrlwi.  r0, r3, 0x18
-bne      lbl_8040A0D4
-lwz      r3, 0xc(r1)
-bl       "getNextChild__17JSUTree<7J2DPane>CFv"
-stw      r3, 0xc(r1)
-
-lbl_8040A11C:
-mr       r3, r26
-bl       "getEndChild__17JSUTree<7J2DPane>CFv"
-lwz      r0, 0xc(r1)
-cmplw    r0, r3
-bne      lbl_8040A004
-lwz      r28, 0x18(r28)
-cmplwi   r28, 0
-beq      lbl_8040A140
-addi     r28, r28, -12
-
-lbl_8040A140:
-cmplwi   r28, 0
-bne      lbl_80409F48
-lwz      r29, 0x18(r29)
-cmplwi   r29, 0
-beq      lbl_8040A158
-addi     r29, r29, -12
-
-lbl_8040A158:
-cmplwi   r29, 0
-bne      lbl_80409E88
-lmw      r23, 0x1c(r1)
-lwz      r0, 0x44(r1)
-mtlr     r0
-addi     r1, r1, 0x40
-blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	8040A174
- * Size:	000024
+/**
+ * @note Address: 0x8040A174
+ * @note Size: 0x24
  */
 void ObjDayEndResultMail::setCallBackMessage(P2DScreen::Mgr* mgr) { setCallBackMessage(mgr, mgr); }
 
-/*
- * --INFO--
- * Address:	8040A198
- * Size:	00005C
+/**
+ * @note Address: 0x8040A198
+ * @note Size: 0x5C
  */
 bool ObjDayEndResultMail::skipped() const
 {
@@ -3919,10 +3530,9 @@ bool ObjDayEndResultMail::skipped() const
 	return scene->mMailFlags[mMaxDay - mCurrentDay] == -2;
 }
 
-/*
- * --INFO--
- * Address:	8040A1F4
- * Size:	000068
+/**
+ * @note Address: 0x8040A1F4
+ * @note Size: 0x68
  */
 ObjDayEndResultTitl::ObjDayEndResultTitl()
 {
@@ -3935,10 +3545,9 @@ ObjDayEndResultTitl::ObjDayEndResultTitl()
 	mAlpha         = 0;
 }
 
-/*
- * --INFO--
- * Address:	8040A25C
- * Size:	0001BC
+/**
+ * @note Address: 0x8040A25C
+ * @note Size: 0x1BC
  */
 void ObjDayEndResultTitl::doCreate(JKRArchive* arc)
 {
@@ -3952,202 +3561,78 @@ void ObjDayEndResultTitl::doCreate(JKRArchive* arc)
 	mScreenMain->setAnimation(mMainAnimSRT);
 	setInfAlpha(mScreenMain);
 
-	J2DBlend info = J2DBlend(1, 7, 6, 0);
-	u64 tags[4]   = { 'nuki_tex', 'efect_00', 'efect_01', 0 };
+	J2DBlendInfo info(1, 7, 6, 0);
+	u64 tags[4] = { 'nuki_tex', 'efect_00', 'efect_01', 0 };
 	mScreenMain->setBlendInfo(info, tags);
-	/*
-stwu     r1, -0x50(r1)
-mflr     r0
-lis      r5, lbl_80498830@ha
-stw      r0, 0x54(r1)
-stw      r31, 0x4c(r1)
-mr       r31, r4
-stw      r30, 0x48(r1)
-addi     r30, r5, lbl_80498830@l
-stw      r29, 0x44(r1)
-mr       r29, r3
-li       r3, 0x148
-bl       __nw__FUl
-or.      r0, r3, r3
-beq      lbl_8040A29C
-bl       __ct__Q29P2DScreen10Mgr_tuningFv
-mr       r0, r3
-
-lbl_8040A29C:
-stw      r0, 0x38(r29)
-mr       r6, r31
-addi     r4, r30, 0x3b8
-lis      r5, 0x104
-lwz      r3, 0x38(r29)
-bl       set__9J2DScreenFPCcUlP10JKRArchive
-mr       r4, r31
-addi     r3, r30, 0x3d0
-bl       getGlbResource__13JKRFileLoaderFPCcP13JKRFileLoader
-bl       load__20J2DAnmLoaderDataBaseFPCv
-stw      r3, 0x3c(r29)
-mr       r4, r31
-addi     r3, r30, 0x3e8
-bl       getGlbResource__13JKRFileLoaderFPCcP13JKRFileLoader
-bl       load__20J2DAnmLoaderDataBaseFPCv
-stw      r3, 0x40(r29)
-lwz      r3, 0x38(r29)
-lwz      r4, 0x3c(r29)
-lwz      r12, 0(r3)
-lwz      r12, 0x60(r12)
-mtctr    r12
-bctrl
-lwz      r3, 0x38(r29)
-lwz      r4, 0x40(r29)
-lwz      r12, 0(r3)
-lwz      r12, 0x6c(r12)
-mtctr    r12
-bctrl
-lwz      r3, 0x38(r29)
-bl       setInfAlpha__Q22kh6ScreenFP7J2DPane
-li       r5, 1
-li       r4, 7
-li       r3, 6
-li       r0, 0
-stb      r5, 0x14(r1)
-addi     r31, r1, 0x18
-lfd      f3, 0x398(r30)
-stb      r4, 0x15(r1)
-lfd      f2, 0x3a0(r30)
-stb      r3, 0x16(r1)
-lfd      f1, 0x3a8(r30)
-stb      r0, 0x17(r1)
-lfd      f0, 0x3b0(r30)
-lwz      r0, 0x14(r1)
-stfd     f3, 0x18(r1)
-lwz      r30, 0x38(r29)
-stw      r0, 0x10(r1)
-lbz      r5, 0x10(r1)
-lbz      r4, 0x11(r1)
-lbz      r3, 0x12(r1)
-lbz      r0, 0x13(r1)
-stfd     f2, 0x20(r1)
-stfd     f1, 0x28(r1)
-stfd     f0, 0x30(r1)
-stb      r5, 8(r1)
-stb      r4, 9(r1)
-stb      r3, 0xa(r1)
-stb      r0, 0xb(r1)
-
-lbl_8040A384:
-lwz      r5, 0(r31)
-li       r3, 0
-lwz      r6, 4(r31)
-xor      r0, r5, r3
-xor      r3, r6, r3
-or.      r0, r3, r0
-beq      lbl_8040A3FC
-lwz      r12, 0(r30)
-mr       r3, r30
-lwz      r12, 0x3c(r12)
-mtctr    r12
-addi     r31, r31, 8
-bctrl
-cmplwi   r3, 0
-beq      lbl_8040A384
-lwz      r12, 0(r3)
-lwz      r0, 8(r1)
-lwz      r12, 0x13c(r12)
-stw      r0, 0xc(r1)
-mtctr    r12
-bctrl
-lbz      r4, 0xc(r1)
-lbz      r0, 0xd(r1)
-stb      r4, 0x7c(r3)
-lbz      r4, 0xe(r1)
-stb      r0, 0x7d(r3)
-lbz      r0, 0xf(r1)
-stb      r4, 0x7e(r3)
-stb      r0, 0x7f(r3)
-b        lbl_8040A384
-
-lbl_8040A3FC:
-lwz      r0, 0x54(r1)
-lwz      r31, 0x4c(r1)
-lwz      r30, 0x48(r1)
-lwz      r29, 0x44(r1)
-mtlr     r0
-addi     r1, r1, 0x50
-blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	8040A418
- * Size:	000078
+/**
+ * @note Address: 0x8040A418
+ * @note Size: 0x78
  */
 bool ObjDayEndResultTitl::doUpdateFadein()
 {
 	updateCommon();
 	mScreenMain->setAlpha(mAlpha);
 
-	if (mAlpha > 255 - msVal._04) {
+	if (mAlpha > 255 - msVal.mAlphaChangeRate) {
 		mAlpha = 255;
 		return true;
 	} else {
-		mAlpha += msVal._04;
+		mAlpha += msVal.mAlphaChangeRate;
 		return false;
 	}
 }
 
-/*
- * --INFO--
- * Address:	8040A490
- * Size:	000064
+/**
+ * @note Address: 0x8040A490
+ * @note Size: 0x64
  */
 bool ObjDayEndResultTitl::doUpdate()
 {
 	updateCommon();
-	if (++mTimer >= msVal._00 || getGamePad()->mButton.mButtonDown & Controller::PRESS_A) {
+	if (++mTimer >= msVal.mActiveMaxFrames || getGamePad()->getButtonDown() & Controller::PRESS_A) {
 		return true;
 	} else {
 		return false;
 	}
 }
 
-/*
- * --INFO--
- * Address:	8040A4F4
- * Size:	000074
+/**
+ * @note Address: 0x8040A4F4
+ * @note Size: 0x74
  */
 bool ObjDayEndResultTitl::doUpdateFadeout()
 {
 	updateCommon();
 	mScreenMain->setAlpha(mAlpha);
 
-	if (mAlpha < msVal._04) {
+	if (mAlpha < msVal.mAlphaChangeRate) {
 		mAlpha = 0;
 		return true;
 	} else {
-		mAlpha -= msVal._04;
+		mAlpha -= msVal.mAlphaChangeRate;
 		return false;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8040A568
- * Size:	0000CC
+/**
+ * @note Address: 0x8040A568
+ * @note Size: 0xCC
  */
 void ObjDayEndResultTitl::doUpdateFadeoutFinish()
 {
-	::Screen::SetSceneArg arg(SCENE_DAY_END_RESULT_ITEM, getDispMember(), 0, 1);
+	::Screen::SetSceneArg arg(SCENE_DAY_END_RESULT_ITEM, getDispMember());
 	SArgDayEndResultItem sarg(1);
 	if (getOwner()->setScene(arg)) {
 		getOwner()->startScene(&sarg);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8040A634
- * Size:	000144
+/**
+ * @note Address: 0x8040A634
+ * @note Size: 0x144
  */
 void ObjDayEndResultTitl::doDraw(Graphics& gfx)
 {
@@ -4165,10 +3650,9 @@ void ObjDayEndResultTitl::doDraw(Graphics& gfx)
 	mScreenMain->draw(gfx, gfx.mOrthoGraph);
 }
 
-/*
- * --INFO--
- * Address:	8040A778
- * Size:	0000E0
+/**
+ * @note Address: 0x8040A778
+ * @note Size: 0xE0
  */
 void ObjDayEndResultTitl::updateCommon()
 {
@@ -4187,10 +3671,9 @@ void ObjDayEndResultTitl::updateCommon()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8040A858
- * Size:	000048
+/**
+ * @note Address: 0x8040A858
+ * @note Size: 0x48
  */
 SceneDayEndResultMail::SceneDayEndResultMail()
 {
@@ -4198,10 +3681,9 @@ SceneDayEndResultMail::SceneDayEndResultMail()
 	mIconArchive = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8040A8A0
- * Size:	00058C
+/**
+ * @note Address: 0x8040A8A0
+ * @note Size: 0x58C
  */
 void SceneDayEndResultMail::doUserCallBackFunc(Resource::MgrCommand* mgr)
 {
@@ -4233,6 +3715,15 @@ void SceneDayEndResultMail::doUserCallBackFunc(Resource::MgrCommand* mgr)
 	if (!getDispMember()->isID(OWNER_KH, MEMBER_DAY_END_RESULT)) {
 		JUT_PANICLINE(2690, "disp member err");
 	}
+	// Im just throwing stuff in here for the sake of sdata2/rodata
+	JUT_PANICLINE(2690, "error");
+
+	for (int i = 0; i < entries; i++) {
+		if (randFloat() < 0.5f) {
+			break;
+		}
+	}
+
 	DispDayEndResult* dispResult = static_cast<DispDayEndResult*>(getDispMember());
 
 	og::newScreen::makeLanguageResName(mName, "result_mail.szs");
@@ -4659,65 +4150,3 @@ ObjDayEndResultTitl::StaticValues ObjDayEndResultTitl::msVal;
 
 } // namespace Screen
 } // namespace kh
-
-// /*
-//  * --INFO--
-//  * Address:	8040B300
-//  * Size:	0000CC
-//  */
-// void __sinit_khDayEndResult_cpp()
-// {
-// 	/*
-// 	lis      r3, msVal__Q32kh6Screen19ObjDayEndResultBase@ha
-// 	lfs      f12, lbl_80520154@sda21(r2)
-// 	addi     r11, r3, msVal__Q32kh6Screen19ObjDayEndResultBase@l
-// 	lfs      f9, lbl_805200FC@sda21(r2)
-// 	lfs      f10, lbl_805200B0@sda21(r2)
-// 	li       r7, 0x5a
-// 	lfs      f7, lbl_805200A8@sda21(r2)
-// 	li       r10, 8
-// 	lfs      f11, lbl_80520158@sda21(r2)
-// 	li       r9, 3
-// 	lfs      f8, lbl_8052015C@sda21(r2)
-// 	li       r8, 0x1e
-// 	lfs      f6, lbl_80520160@sda21(r2)
-// 	li       r6, 0xa0
-// 	lfs      f5, lbl_80520164@sda21(r2)
-// 	li       r5, 0x20
-// 	lfs      f4, lbl_80520168@sda21(r2)
-// 	li       r4, 0x14
-// 	lfs      f3, lbl_8052016C@sda21(r2)
-// 	li       r0, 0x10
-// 	lfs      f2, lbl_80520170@sda21(r2)
-// 	addi     r3, r13, msVal__Q32kh6Screen19ObjDayEndResultTitl@sda21
-// 	lfs      f1, lbl_80520174@sda21(r2)
-// 	lfs      f0, lbl_80520178@sda21(r2)
-// 	stfs     f12, 0(r11)
-// 	stfs     f11, 4(r11)
-// 	stfs     f10, 8(r11)
-// 	stfs     f10, 0xc(r11)
-// 	stfs     f9, 0x10(r11)
-// 	stw      r10, 0x24(r11)
-// 	stw      r9, 0x28(r11)
-// 	stb      r8, 0x4c(r11)
-// 	stb      r7, 0x4d(r11)
-// 	stb      r6, 0x4e(r11)
-// 	stb      r5, 0x4f(r11)
-// 	stb      r4, 0x50(r11)
-// 	stfs     f8, 0x14(r11)
-// 	stfs     f7, 0x18(r11)
-// 	stfs     f7, 0x1c(r11)
-// 	stfs     f6, 0x20(r11)
-// 	stfs     f5, 0x2c(r11)
-// 	stfs     f4, 0x30(r11)
-// 	stfs     f3, 0x34(r11)
-// 	stfs     f2, 0x38(r11)
-// 	stfs     f1, 0x40(r11)
-// 	stfs     f0, 0x48(r11)
-// 	stfs     f9, 0x3c(r11)
-// 	stfs     f9, 0x44(r11)
-// 	stw      r7, msVal__Q32kh6Screen19ObjDayEndResultTitl@sda21(r13)
-// 	stb      r0, 4(r3)
-// 	blr
-// 	*/
-// }

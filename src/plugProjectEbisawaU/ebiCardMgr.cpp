@@ -2,16 +2,16 @@
 #include "System.h"
 #include "MemoryCardMgr.h"
 #include "Game/MemoryCard/Mgr.h"
+#include "P2Macros.h"
 
 namespace ebi {
 namespace CardError {
 
 static const char unusedCardMgrName[] = "ebiCardMgr";
 
-/*
- * --INFO--
- * Address:	803D1104
- * Size:	000A2C
+/**
+ * @note Address: 0x803D1104
+ * @note Size: 0xA2C
  */
 void FSMStateMachine::init(TMgr* mgr)
 {
@@ -46,41 +46,39 @@ void FSMStateMachine::init(TMgr* mgr)
 	registerState(new FSMState_WN1_NowCreateNewFile);
 }
 
-/*
- * --INFO--
- * Address:	803D1B30
- * Size:	00002C
+/**
+ * @note Address: 0x803D1B30
+ * @note Size: 0x2C
  */
 void FSMState::init(TMgr* mgr, Game::StateArg* arg) { do_init(mgr, arg); }
 
-/*
- * --INFO--
- * Address:	803D1B60
- * Size:	00002C
+/**
+ * @note Address: 0x803D1B60
+ * @note Size: 0x2C
  */
 void FSMState::exec(TMgr* mgr) { do_exec(mgr); }
 
-/*
- * --INFO--
- * Address:	803D1B90
- * Size:	000084
+/**
+ * @note Address: 0x803D1B90
+ * @note Size: 0x84
  */
 void FSMState_Warning::do_init(TMgr* mgr, Game::StateArg*)
 {
-	mIsClosed     = false;
-	mCanClose     = false;
+	mIsClosed = false;
+	mCanClose = false;
+
 	u32 rate      = 0.0f / sys->mDeltaTime;
 	mgr->mCounter = rate;
 	mgr->_29C     = rate;
-	mDoCheckCard  = false;
-	mgr->mCanExit = true;
+
+	mDoCheckCard          = false;
+	mgr->mScreen.mCanExit = true;
 	do_open(mgr);
 }
 
-/*
- * --INFO--
- * Address:	803D1C14
- * Size:	0000A4
+/**
+ * @note Address: 0x803D1C14
+ * @note Size: 0xA4
  */
 void FSMState_Warning::do_exec(TMgr* mgr)
 {
@@ -89,31 +87,29 @@ void FSMState_Warning::do_exec(TMgr* mgr)
 	}
 
 	if (!mgr->mCounter && mCanClose && !mIsClosed) {
-		mgr->close();
+		mgr->mScreen.close();
 		mIsClosed = true;
 	}
 
-	if (mgr->TMemoryCard::isFinish()) {
+	if (mgr->mScreen.isFinish()) {
 		do_transit(mgr);
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D1CB8
- * Size:	00003C
+/**
+ * @note Address: 0x803D1CB8
+ * @note Size: 0x3C
  */
 void FSMState_Question::do_init(TMgr* mgr, Game::StateArg*)
 {
-	mDoCheckCard  = false;
-	mgr->mCanExit = true;
+	mDoCheckCard          = false;
+	mgr->mScreen.mCanExit = true;
 	do_open(mgr);
 }
 
-/*
- * --INFO--
- * Address:	803D1CF4
- * Size:	000098
+/**
+ * @note Address: 0x803D1CF4
+ * @note Size: 0x98
  */
 void FSMState_Question::do_exec(TMgr* mgr)
 {
@@ -121,8 +117,8 @@ void FSMState_Question::do_exec(TMgr* mgr)
 		mgr->checkAndTransitNoCard_();
 	}
 
-	if (mgr->TMemoryCard::isFinish()) {
-		if (mgr->mCurrSel == 1) {
+	if (mgr->mScreen.isFinish()) {
+		if (mgr->mScreen.mSelectionIdx == 1) {
 			do_transitYes(mgr);
 		} else {
 			do_transitNo(mgr);
@@ -130,46 +126,45 @@ void FSMState_Question::do_exec(TMgr* mgr)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D1D8C
- * Size:	000074
+/**
+ * @note Address: 0x803D1D8C
+ * @note Size: 0x74
  */
 void FSMState_CardRequest::do_init(TMgr* mgr, Game::StateArg*)
 {
-	mgr->mCanExit = false;
-	mState        = 0;
+	mgr->mScreen.mCanExit = false;
+	mState                = 0;
+
 	u32 rate      = 3.0f / sys->mDeltaTime;
 	mgr->mCounter = rate;
 	mgr->_29C     = rate;
+
 	do_open(mgr);
 }
 
-/*
- * --INFO--
- * Address:	803D1E00
- * Size:	000350
+/**
+ * @note Address: 0x803D1E00
+ * @note Size: 0x350
  */
 void FSMState_CardRequest::do_exec(TMgr* mgr)
 {
-	bool check = (!sys->mCardMgr->mIsCard) && (sys->mCardMgr->checkStatus() != 11);
+	bool check = sys->mCardMgr->isCardInvalid();
 
-	if (check && (int)static_cast<Game::MemoryCard::Mgr*>(sys->mCardMgr)->getCardStatus() == 0) {
+	if (check && (int)sys->mCardMgr->getCardStatus() == 0) {
 		check = true;
 	} else {
 		check = false;
 	}
 
 	if (check) {
-		mCardStatus = static_cast<Game::MemoryCard::Mgr*>(sys->mCardMgr)->getCardStatus();
-		mgr->close();
+		mCardStatus = sys->mCardMgr->getCardStatus();
+		mgr->mScreen.close();
 	}
 
 	switch (mState) // todo: enums for both of these switches
 	{
 	case 0:
-		bool check2 = (!sys->mCardMgr->mIsCard) && (sys->mCardMgr->checkStatus() != 11);
-		if (check2) {
+		if (sys->mCardMgr->isCardInvalid()) {
 			if (do_cardRequest()) {
 				mState = 1;
 			} else {
@@ -178,67 +173,70 @@ void FSMState_CardRequest::do_exec(TMgr* mgr)
 		}
 		break;
 	case 1:
-		bool check3 = (!sys->mCardMgr->mIsCard) && (sys->mCardMgr->checkStatus() != 11);
-		if (check3) {
-			mCardStatus = (int)static_cast<Game::MemoryCard::Mgr*>(sys->mCardMgr)->getCardStatus();
-			if (mCardStatus != 2) {
-				static_cast<Game::MemoryCard::Mgr*>(sys->mCardMgr)->getCardStatus();
+		if (sys->mCardMgr->isCardInvalid()) {
+			mCardStatus = (int)sys->mCardMgr->getCardStatus();
+			if (mCardStatus != CARDERROR_NoCard) {
+				sys->mCardMgr->getCardStatus();
 			}
+
 			mState = 2;
 		}
 		break;
 	case 2:
 		if (!mgr->mCounter) {
-			mgr->close();
+			mgr->mScreen.close();
 		}
-		if (mgr->TMemoryCard::isFinish()) {
-			mgr->mCanExit = true;
-			switch (mCardStatus) {
-			case Game::MemoryCard::Mgr::MCS_IOError:
-				do_transitCardReady(mgr);
-				break;
-			case Game::MemoryCard::Mgr::MCS_Ready:
-				do_transitCardNoCard(mgr);
-				break;
-			case Game::MemoryCard::Mgr::MCS_Broken:
-				do_transitCardIOError(mgr);
-				break;
-			case Game::MemoryCard::Mgr::MCS_Encoding:
-				do_transitCardWrongDevice(mgr);
-				break;
-			case Game::MemoryCard::Mgr::MCS_NoFileSpace:
-				do_transitCardWrongSector(mgr);
-				break;
-			case Game::MemoryCard::Mgr::MCS_WrongDevice:
-				do_transitCardBroken(mgr);
-				break;
-			case Game::MemoryCard::Mgr::MCS_WrongSector:
-				do_transitCardEncoding(mgr);
-				break;
-			case Game::MemoryCard::Mgr::MCS_NoFileEntry:
-				do_transitCardNoFileSpace(mgr);
-				break;
-			case Game::MemoryCard::Mgr::MCS_FileOpenError:
-				do_transitCardNoFileEntry(mgr);
-				break;
-			case Game::MemoryCard::Mgr::MCS_NoCard:
-				do_transitCardFileOpenError(mgr);
-				break;
-			case Game::MemoryCard::Mgr::MCS_PlayerDataBroken:
-				do_transitCardSerialNoError(mgr);
-				break;
-			default:
-				JUT_PANICLINE(266, "P2Assert");
-				break;
-			}
+
+		if (!mgr->mScreen.isFinish()) {
+			break;
+		}
+
+		mgr->mScreen.mCanExit = true;
+
+		switch (mCardStatus) {
+		case Game::MemoryCard::Mgr::MCS_IOError:
+			do_transitCardReady(mgr);
+			break;
+		case Game::MemoryCard::Mgr::MCS_Ready:
+			do_transitCardNoCard(mgr);
+			break;
+		case Game::MemoryCard::Mgr::MCS_Broken:
+			do_transitCardIOError(mgr);
+			break;
+		case Game::MemoryCard::Mgr::MCS_Encoding:
+			do_transitCardWrongDevice(mgr);
+			break;
+		case Game::MemoryCard::Mgr::MCS_NoFileSpace:
+			do_transitCardWrongSector(mgr);
+			break;
+		case Game::MemoryCard::Mgr::MCS_WrongDevice:
+			do_transitCardBroken(mgr);
+			break;
+		case Game::MemoryCard::Mgr::MCS_WrongSector:
+			do_transitCardEncoding(mgr);
+			break;
+		case Game::MemoryCard::Mgr::MCS_NoFileEntry:
+			do_transitCardNoFileSpace(mgr);
+			break;
+		case Game::MemoryCard::Mgr::MCS_FileOpenError:
+			do_transitCardNoFileEntry(mgr);
+			break;
+		case Game::MemoryCard::Mgr::MCS_NoCard:
+			do_transitCardFileOpenError(mgr);
+			break;
+		case Game::MemoryCard::Mgr::MCS_PlayerDataBroken:
+			do_transitCardSerialNoError(mgr);
+			break;
+		default:
+			JUT_PANICLINE(266, "P2Assert");
+			break;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D2150
- * Size:	000064
+/**
+ * @note Address: 0x803D2150
+ * @note Size: 0x64
  */
 void FSMState_CardRequest::do_transitCardNoCard(TMgr* mgr)
 {
@@ -249,34 +247,9 @@ void FSMState_CardRequest::do_transitCardNoCard(TMgr* mgr)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D21B4
- * Size:	000030
- */
-// void Game::FSMState<ebi::CardError::TMgr>::transit(ebi::CardError::TMgr*, int, Game::StateArg*)
-//{
-/*
-.loc_0x0:
-  stwu      r1, -0x10(r1)
-  mflr      r0
-  stw       r0, 0x14(r1)
-  lwz       r3, 0x8(r3)
-  lwz       r12, 0x0(r3)
-  lwz       r12, 0x14(r12)
-  mtctr     r12
-  bctrl
-  lwz       r0, 0x14(r1)
-  mtlr      r0
-  addi      r1, r1, 0x10
-  blr
-*/
-//}
-
-/*
- * --INFO--
- * Address:	803D21E4
- * Size:	000064
+/**
+ * @note Address: 0x803D21E4
+ * @note Size: 0x64
  */
 void FSMState_CardRequest::do_transitCardIOError(TMgr* mgr)
 {
@@ -287,10 +260,9 @@ void FSMState_CardRequest::do_transitCardIOError(TMgr* mgr)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D2248
- * Size:	000064
+/**
+ * @note Address: 0x803D2248
+ * @note Size: 0x64
  */
 void FSMState_CardRequest::do_transitCardWrongDevice(TMgr* mgr)
 {
@@ -301,10 +273,9 @@ void FSMState_CardRequest::do_transitCardWrongDevice(TMgr* mgr)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D22AC
- * Size:	000064
+/**
+ * @note Address: 0x803D22AC
+ * @note Size: 0x64
  */
 void FSMState_CardRequest::do_transitCardWrongSector(TMgr* mgr)
 {
@@ -315,10 +286,9 @@ void FSMState_CardRequest::do_transitCardWrongSector(TMgr* mgr)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D2310
- * Size:	000064
+/**
+ * @note Address: 0x803D2310
+ * @note Size: 0x64
  */
 void FSMState_CardRequest::do_transitCardBroken(TMgr* mgr)
 {
@@ -329,10 +299,9 @@ void FSMState_CardRequest::do_transitCardBroken(TMgr* mgr)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D2374
- * Size:	000064
+/**
+ * @note Address: 0x803D2374
+ * @note Size: 0x64
  */
 void FSMState_CardRequest::do_transitCardEncoding(TMgr* mgr)
 {
@@ -343,10 +312,9 @@ void FSMState_CardRequest::do_transitCardEncoding(TMgr* mgr)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D23D8
- * Size:	000064
+/**
+ * @note Address: 0x803D23D8
+ * @note Size: 0x64
  */
 void FSMState_CardRequest::do_transitCardNoFileSpace(TMgr* mgr)
 {
@@ -357,10 +325,9 @@ void FSMState_CardRequest::do_transitCardNoFileSpace(TMgr* mgr)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D243C
- * Size:	000064
+/**
+ * @note Address: 0x803D243C
+ * @note Size: 0x64
  */
 void FSMState_CardRequest::do_transitCardNoFileEntry(TMgr* mgr)
 {
@@ -371,10 +338,9 @@ void FSMState_CardRequest::do_transitCardNoFileEntry(TMgr* mgr)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D24A0
- * Size:	000064
+/**
+ * @note Address: 0x803D24A0
+ * @note Size: 0x64
  */
 void FSMState_CardRequest::do_transitCardFileOpenError(TMgr* mgr)
 {
@@ -385,10 +351,9 @@ void FSMState_CardRequest::do_transitCardFileOpenError(TMgr* mgr)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D2504
- * Size:	000068
+/**
+ * @note Address: 0x803D2504
+ * @note Size: 0x68
  */
 void FSMState_CardRequest::do_transitCardSerialNoError(TMgr* mgr)
 {
@@ -399,10 +364,9 @@ void FSMState_CardRequest::do_transitCardSerialNoError(TMgr* mgr)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D256C
- * Size:	000034
+/**
+ * @note Address: 0x803D256C
+ * @note Size: 0x34
  */
 void FSMState_NoCard::do_init(TMgr* mgr, Game::StateArg*)
 {
@@ -410,20 +374,19 @@ void FSMState_NoCard::do_init(TMgr* mgr, Game::StateArg*)
 	do_open(mgr);
 }
 
-/*
- * --INFO--
- * Address:	803D25A0
- * Size:	0000B0
+/**
+ * @note Address: 0x803D25A0
+ * @note Size: 0xB0
  */
 void FSMState_NoCard::do_exec(TMgr* mgr)
 {
-	u8 stat = static_cast<Game::MemoryCard::Mgr*>(sys->mCardMgr)->getCardStatus() != 0;
+	u8 stat = sys->mCardMgr->isCardNotReady();
 	if (stat) {
-		mgr->close();
+		mgr->mScreen.close();
 		mIsClosed = true;
 	}
 
-	if (mgr->TMemoryCard::isFinish()) {
+	if (mgr->mScreen.isFinish()) {
 		if (mIsClosed) {
 			do_transitOnCard(mgr);
 		} else {
@@ -432,10 +395,9 @@ void FSMState_NoCard::do_exec(TMgr* mgr)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D2650
- * Size:	000094
+/**
+ * @note Address: 0x803D2650
+ * @note Size: 0x94
  */
 TMgr::TMgr()
     : mCounter(0)
@@ -449,17 +411,15 @@ TMgr::TMgr()
 
 namespace Screen {
 
-/*
- * --INFO--
- * Address:	803D2718
- * Size:	000460
+/**
+ * @note Address: 0x803D2718
+ * @note Size: 0x460
  */
 TMemoryCard::~TMemoryCard() { }
 
-/*
- * --INFO--
- * Address:	803D2B78
- * Size:	0004C8
+/**
+ * @note Address: 0x803D2B78
+ * @note Size: 0x4C8
  */
 TMemoryCard::TMemoryCard()
     : mState(0)
@@ -479,16 +439,14 @@ TMemoryCard::TMemoryCard()
 
 namespace CardError {
 
-/*
- * --INFO--
- * Address:	803D3040
- * Size:	000378
+/**
+ * @note Address: 0x803D3040
+ * @note Size: 0x378
  */
 void TMgr::startSeq(enumStart id)
 {
-	mEndStat   = 0;
-	bool check = (int)id >= 0 && (int)id < 17;
-	P2ASSERTLINE(412, check);
+	mEndStat = 0;
+	P2ASSERTBOUNDSLINE(412, 0, id, 17);
 	switch (id) {
 	case Start_NoCard:
 		mIsBroken = 0;
@@ -561,21 +519,19 @@ void TMgr::startSeq(enumStart id)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D33B8
- * Size:	000050
+/**
+ * @note Address: 0x803D33B8
+ * @note Size: 0x50
  */
 void TMgr::forceQuitSeq()
 {
 	mStateMachine.start(this, CARDERROR_Standby, nullptr);
-	killScreen();
+	mScreen.killScreen();
 }
 
-/*
- * --INFO--
- * Address:	803D3408
- * Size:	000044
+/**
+ * @note Address: 0x803D3408
+ * @note Size: 0x44
  */
 void TMgr::goEnd_(enumEnd end)
 {
@@ -583,22 +539,20 @@ void TMgr::goEnd_(enumEnd end)
 	mStateMachine.transit(this, CARDERROR_EmptyScreen, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	803D344C
- * Size:	0000E0
+/**
+ * @note Address: 0x803D344C
+ * @note Size: 0xE0
  */
 void TMgr::checkAndTransitNoCard_()
 {
-	bool otherCheck;
-	bool check = (!sys->mCardMgr->mIsCard) && (sys->mCardMgr->checkStatus() != 11);
-	if (check && (int)sys->mCardMgr->getCardStatus() == 0) {
-		otherCheck = true;
+	bool check = sys->mCardMgr->isCardInvalid();
+	if (check && (int)sys->mCardMgr->isCardReady()) {
+		check = true;
 	} else {
-		otherCheck = false;
+		check = false;
 	}
 
-	if (otherCheck) {
+	if (check) {
 		if (mIsBroken == 0) {
 			mStateMachine.transit(this, CARDERROR_NoCard, nullptr);
 		} else if (mIsBroken == 1) {
@@ -607,38 +561,37 @@ void TMgr::checkAndTransitNoCard_()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D352C
- * Size:	00006C
+/**
+ * @note Address: 0x803D352C
+ * @note Size: 0x6C
  */
 void TMgr::update()
 {
 	mStateMachine.exec(this);
-	if (getStateID() != CARDERROR_Standby) {
-		TMemoryCard::update();
-		if (mCounter) {
-			mCounter--;
-		}
+	if (getStateID() == CARDERROR_Standby) {
+		return;
+	}
+
+	mScreen.update();
+	if (mCounter) {
+		mCounter--;
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D3598
- * Size:	00003C
+/**
+ * @note Address: 0x803D3598
+ * @note Size: 0x3C
  */
 void TMgr::draw()
 {
 	if (getStateID() != CARDERROR_Standby) {
-		TMemoryCard::draw();
+		mScreen.draw();
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D35D4
- * Size:	000050
+/**
+ * @note Address: 0x803D35D4
+ * @note Size: 0x50
  */
 bool TMgr::isGetEnd()
 {
@@ -649,30 +602,27 @@ bool TMgr::isGetEnd()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
 bool TMgr::isFinish()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000004
+/**
+ * @note Address: N/A
+ * @note Size: 0x4
  */
-void TMgr::showInfo(long, long, long, long)
+void TMgr::showInfo(s32, s32, s32, s32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	803D3624
- * Size:	000058
+/**
+ * @note Address: 0x803D3624
+ * @note Size: 0x58
  */
 int TMgr::getStateID()
 {

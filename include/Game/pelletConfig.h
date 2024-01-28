@@ -6,13 +6,15 @@
 #include "TagParm.h"
 #include "types.h"
 
-#define PC_INDIRECTSTATE_NO  0x0
-#define PC_INDIRECTSTATE_USE 0x1
-#define PC_INDIRECTSTATE_YES 0x2
-
 namespace Game {
 
 struct PelletConfig : public CNode {
+
+	enum IndirectType {
+		Indirect_No  = 0,
+		Indirect_Use = 1,
+		Indirect_Yes = 2,
+	};
 	struct TParms : public TagParameters { // _18
 		TParms();
 		virtual ~TParms() { }
@@ -46,18 +48,21 @@ struct PelletConfig : public CNode {
 		PrimTagParm<f32> mDepthC;         // _1E4
 		PrimTagParm<f32> mDepthD;         // _1F4
 		PrimTagParm<Vector3f> mOffset;    // _204
-		PrimTagParm<u64> mMessage;
-		PrimTagParm<u16> mCode;
-		PrimTagParm<u16> mDictionary;
-		s16 mIndex;
-
-		u8 mIndirectState;
-	}; // struct TParms
+		PrimTagParm<u64> mMessage;        // _21C
+		PrimTagParm<u16> mCode;           // _234
+		PrimTagParm<u16> mDictionary;     // _248
+		s16 mIndex;                       // _25C
+		u8 mIndirectState;                // _25A
+	};                                    // struct TParms
 
 	PelletConfig();
 	virtual ~PelletConfig() { }
 
-	TParms mParams; // _04
+	inline int getPokoValue() const { return mParams.mMoney.mData; }
+
+	// _00     = VTBL
+	// _00-_18 = CNode
+	TParms mParams; // _18
 };
 
 struct PelletConfigList : public CNode {

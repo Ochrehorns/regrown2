@@ -29,10 +29,10 @@ struct FSMState : public Game::FSMState<TMgr> {
 		mName = name;
 	}
 
-	virtual void init(TMgr* mgr, Game::StateArg* arg) { do_init(mgr, arg); } // _08 (weak)
-	virtual void exec(TMgr* mgr) { do_exec(mgr); }                           // _0C (weak)
-	virtual void do_init(TMgr*, Game::StateArg*) { }                         // _20 (weak)
-	virtual void do_exec(TMgr*) { }                                          // _24 (weak)
+	virtual void init(TMgr* mgr, Game::StateArg* settings); // _08
+	virtual void exec(TMgr* mgr);                           // _0C
+	virtual void do_init(TMgr*, Game::StateArg*) { }        // _20 (weak)
+	virtual void do_exec(TMgr*) { }                         // _24 (weak)
 
 	// _00     = VTBL
 	// _00-_0C = Game::FSMState
@@ -110,6 +110,9 @@ struct TMgr {
 		mOmakeCardE.mInput = control;
 		mOmakeGame.setController(control);
 	}
+
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
 
 	Controller* mController;              // _000
 	u8 _004[4];                           // _004

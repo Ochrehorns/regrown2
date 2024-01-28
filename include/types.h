@@ -7,6 +7,7 @@
 // r13 is 8051C680
 
 typedef int BOOL;
+typedef unsigned int uint;
 
 typedef signed char s8;
 typedef signed short s16;
@@ -14,9 +15,7 @@ typedef signed long s32;
 typedef signed long long s64;
 typedef unsigned char u8;
 typedef unsigned short u16;
-typedef unsigned int uint;
 typedef unsigned long u32;
-typedef unsigned long size_t;
 typedef unsigned long long u64;
 
 typedef volatile u8 vu8;
@@ -30,13 +29,16 @@ typedef volatile s64 vs64;
 
 typedef float f32;
 typedef double f64;
+typedef long double f128;
 typedef volatile f32 vf32;
 typedef volatile f64 vf64;
+typedef volatile f128 vf128;
 
+typedef u32 size_t;
 typedef u32 unknown;
 
 #ifndef __cplusplus
-typedef unsigned short wchar_t;
+typedef u16 wchar_t;
 #endif
 
 // Basic defines to allow newer-like C++ code to be written
@@ -72,6 +74,7 @@ typedef unsigned short wchar_t;
 // Align object to num bytes (num should be power of two)
 #define ATTRIBUTE_ALIGN(num) __attribute__((aligned(num)))
 
+// Checks if a flag is set in a bitfield
 #define IS_FLAG_SET(flags, bitsFromLSB) (((flags) >> (bitsFromLSB)&1))
 
 // For functions that return 0 on a success and -1 on failure
@@ -89,13 +92,20 @@ typedef unsigned short wchar_t;
 // Get the minimum of two values
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-// number of bytes in a kilobyte
+// Rounds a float to a u8
+#define ROUND_F32_TO_U8(a) a >= 0.0f ? a + 0.5f : a - 0.5f
+
+// Number of bytes in a kilobyte
 #define KILOBYTE_BYTECOUNT 1024
 
 #ifdef __MWERKS__
-#define WEAKFUNC __declspec(weak)
+#define WEAKFUNC        __declspec(weak)
+#define DECL_SECT(name) __declspec(section name)
+#define ASM             asm
 #else
-#define WEAKFUNC ;
+#define WEAKFUNC
+#define DECL_SECT(name)
+#define ASM
 #endif
 
-#endif
+#endif // _TYPES_H

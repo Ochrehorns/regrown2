@@ -58,7 +58,7 @@ struct PlayChallengeGameData {
 		}
 
 		BitFlag<u16> mFlags;      // _00
-		Highscore mHighscores[2]; // _04
+		Highscore mHighscores[2]; // _04, 0 = 1Player, 1 = 2Player
 	};
 
 	PlayChallengeGameData();
@@ -70,7 +70,7 @@ struct PlayChallengeGameData {
 
 	int mCourseCount;      // _00
 	CourseState* mCourses; // _04
-	u8 mFlags;             // _08
+	BitFlag<u8> mFlags;    // _08
 };
 
 struct PlayCommonData {
@@ -116,7 +116,7 @@ struct PlayCommonData {
 	bool challenge_checkJustKunsho(int);
 	void challenge_setKunsho(int);
 
-	u8 _00;                               // _00
+	BitFlag<u8> mChallengeFlags;          // _00
 	Highscore** mHiScoreClear;            // _04 (for repay debt)
 	Highscore** mHiScoreComplete;         // _08 (for all treasures)
 	PlayChallengeGameData mChallengeData; // _0C
@@ -158,9 +158,9 @@ struct Mgr : public PlayCommonData {
 	u8 mSoundMode;       // _38, TODO: Replace with Soundmode enum
 	u8 mMusicVol;        // _39
 	u8 mSeVol;           // _3A
-	u8 mRumble;          // _3B
-	u8 mRubyFont;        // _3C, japanese version leftover, mini font in cutscenes
-	u8 mDeflicker;       // _3D
+	u8 mIsRumble;        // _3B
+	u8 mIsRubyFont;      // _3C, japanese version leftover, mini font in cutscenes
+	u8 mUseDeflicker;    // _3D
 	u8 mRegion;          // _3E
 	char _3F;            // _3F
 	BitFlag<u16> mFlags; // _40

@@ -1,36 +1,36 @@
 #include "Dolphin/db.h"
 #include "PowerPC_EABI_Support/MetroTRK/trk.h"
 #include "Dolphin/AmcExi2Stubs.h"
+#include "PowerPC_EABI_Support/MetroTRK/custconn/CircleBuffer.h"
 
-static char gRecvCB[0x20];
-static char gRecvBuf[0x500];
+#define GDEV_BUF_SIZE (0x500)
+
+static CircleBuffer gRecvCB;
+static u8 gRecvBuf[GDEV_BUF_SIZE];
 static BOOL gIsInitialized;
 
-/*
- * --INFO--
- * Address:	800C14C0
- * Size:	000088
+/**
+ * @note Address: 0x800C14C0
+ * @note Size: 0x88
  */
-BOOL gdev_cc_initialize(vu8** inputPendingPtrRef, AmcEXICallback monitorCallback)
+int gdev_cc_initialize(void* inputPendingPtrRef, AmcEXICallback monitorCallback)
 {
 	MWTRACE(1, "CALLING EXI2_Init\n");
 	DBInitComm(inputPendingPtrRef, monitorCallback);
 	MWTRACE(1, "DONE CALLING EXI2_Init\n");
-	CircleBufferInitialize(&gRecvCB, &gRecvBuf, 0x500);
-	return FALSE;
+	CircleBufferInitialize(&gRecvCB, gRecvBuf, GDEV_BUF_SIZE);
+	return 0;
 }
 
-/*
- * --INFO--
- * Address:	800C14B8
- * Size:	000008
+/**
+ * @note Address: 0x800C14B8
+ * @note Size: 0x8
  */
-BOOL gdev_cc_shutdown() { return FALSE; }
+int gdev_cc_shutdown() { return 0; }
 
-/*
- * --INFO--
- * Address:	800C1494
- * Size:	000024
+/**
+ * @note Address: 0x800C1494
+ * @note Size: 0x24
  */
 int gdev_cc_open()
 {
@@ -39,24 +39,22 @@ int gdev_cc_open()
 	}
 
 	gIsInitialized = TRUE;
-	return FALSE;
+	return 0;
 }
 
-/*
- * --INFO--
- * Address:	800C148C
- * Size:	000008
+/**
+ * @note Address: 0x800C148C
+ * @note Size: 0x8
  */
-BOOL gdev_cc_close() { return FALSE; }
+int gdev_cc_close() { return 0; }
 
-/*
- * --INFO--
- * Address:	800C1398
- * Size:	0000F4
+/**
+ * @note Address: 0x800C1398
+ * @note Size: 0xF4
  */
-u32 gdev_cc_read(int arg0, u32 arg1)
+int gdev_cc_read(u8* data, int size)
 {
-	u8 buff[0x500];
+	u8 buff[GDEV_BUF_SIZE];
 	int p1;
 	u32 retval;
 	int p2;
@@ -66,10 +64,10 @@ u32 gdev_cc_read(int arg0, u32 arg1)
 		return -0x2711;
 	}
 
-	MWTRACE(1, "Expected packet size : 0x%08x (%ld)\n", arg1, arg1);
+	MWTRACE(1, "Expected packet size : 0x%08x (%ld)\n", size, size);
 
-	p1 = arg1;
-	p2 = arg1;
+	p1 = size;
+	p2 = size;
 	while ((u32)CBGetBytesAvailableForRead(&gRecvCB) < p2) {
 		retval = 0;
 		poll   = DBQueryData();
@@ -82,7 +80,7 @@ u32 gdev_cc_read(int arg0, u32 arg1)
 	}
 
 	if (retval == 0) {
-		CircleBufferReadBytes(&gRecvCB, arg0, p1);
+		CircleBufferReadBytes(&gRecvCB, data, p1);
 	} else {
 		MWTRACE(8, "cc_read : error reading bytes from EXI2 %ld\n", retval);
 	}
@@ -90,18 +88,17 @@ u32 gdev_cc_read(int arg0, u32 arg1)
 	return retval;
 }
 
-/*
- * --INFO--
- * Address:	800C12D8
- * Size:	0000C0
+/**
+ * @note Address: 0x800C12D8
+ * @note Size: 0xC0
  */
-int gdev_cc_write(int bytes, int length)
+int gdev_cc_write(const u8* bytes, int length)
 {
 	int exi2Len;
 	int n_copy;
 	u32 hexCopy;
 
-	hexCopy = bytes;
+	hexCopy = (u32)bytes;
 	n_copy  = length;
 
 	if (gIsInitialized == FALSE) {
@@ -124,37 +121,34 @@ int gdev_cc_write(int bytes, int length)
 	return 0;
 }
 
-/*
- * --INFO--
- * Address:	800C12B4
- * Size:	000024
+/**
+ * @note Address: 0x800C12B4
+ * @note Size: 0x24
  */
-BOOL gdev_cc_pre_continue()
+int gdev_cc_pre_continue()
 {
 	DBClose();
-	return FALSE;
+	return 0;
 }
 
-/*
- * --INFO--
- * Address:	800C1290
- * Size:	000024
+/**
+ * @note Address: 0x800C1290
+ * @note Size: 0x24
  */
-BOOL gdev_cc_post_stop()
+int gdev_cc_post_stop()
 {
 	DBOpen();
-	return FALSE;
+	return 0;
 }
 
-/*
- * --INFO--
- * Address:	800C1220
- * Size:	000070
+/**
+ * @note Address: 0x800C1220
+ * @note Size: 0x70
  */
 int gdev_cc_peek()
 {
 	int poll;
-	u8 buff[0x500];
+	u8 buff[GDEV_BUF_SIZE];
 
 	poll = DBQueryData();
 	if (poll <= 0) {
@@ -162,7 +156,7 @@ int gdev_cc_peek()
 	}
 
 	if (DBRead(buff, poll) == 0) {
-		CircleBufferWriteBytes(gRecvCB, buff, poll);
+		CircleBufferWriteBytes(&gRecvCB, buff, poll);
 	} else {
 		return -0x2719;
 	}
@@ -170,13 +164,12 @@ int gdev_cc_peek()
 	return poll;
 }
 
-/*
- * --INFO--
- * Address:	800C11FC
- * Size:	000024
+/**
+ * @note Address: 0x800C11FC
+ * @note Size: 0x24
  */
-BOOL gdev_cc_initinterrupts()
+int gdev_cc_initinterrupts()
 {
 	DBInitInterrupts();
-	return FALSE;
+	return 0;
 }

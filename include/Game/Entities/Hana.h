@@ -23,7 +23,7 @@ struct Obj : public ChappyBase::Obj {
 	virtual bool isWakeup();                                                                 // _2FC
 	virtual void flickStatePikmin();                                                         // _308
 	virtual void flickAttackBomb();                                                          // _30C
-	virtual void eatAttackPikmin();                                                          // _310
+	virtual int eatAttackPikmin();                                                           // _310
 	virtual void resetUnderGround();                                                         // _314
 	virtual void setUnderGround();                                                           // _318
 	virtual void createEffect() { }                                                          // _31C (weak)
@@ -52,7 +52,7 @@ struct Mgr : public EnemyMgrBase {
 
 	//////////////// VTABLE
 	// virtual ~Mgr() { }                                  // _58 (weak)
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual void doAlloc();                            // _A8
 	virtual void loadModelData();                      // _C8

@@ -2,7 +2,7 @@
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/stdio_api.h"
 #include "ctype.h"
 #include "errno.h"
-#include "limits.h"
+#include "stl/limits.h"
 
 enum scan_states {
 	start          = 0x01,
@@ -19,19 +19,18 @@ enum scan_states {
 #define fetch()                 (count++, (*ReadProc)(ReadProcArg, 0, __GetAChar))
 #define unfetch(c)              (*ReadProc)(ReadProcArg, c, __UngetAChar)
 
-/*
- * --INFO--
- * Address:	800CBEE0
- * Size:	000378
+/**
+ * @note Address: 0x800CBEE0
+ * @note Size: 0x378
  */
-unsigned long __strtoul(int base, int max_width, int (*ReadProc)(void*, int, int), void* ReadProcArg, int* chars_scanned, int* negative,
-                        int* overflow)
+u32 __strtoul(int base, int max_width, int (*ReadProc)(void*, int, int), void* ReadProcArg, int* chars_scanned, int* negative,
+              int* overflow)
 {
-	int scan_state          = start;
-	int count               = 0;
-	int spaces              = 0;
-	unsigned long value     = 0;
-	unsigned long value_max = 0;
+	int scan_state = start;
+	int count      = 0;
+	int spaces     = 0;
+	u32 value      = 0;
+	u32 value_max  = 0;
 	int c;
 
 	*negative = *overflow = 0;
@@ -156,20 +155,19 @@ unsigned long __strtoul(int base, int max_width, int (*ReadProc)(void*, int, int
 	return value;
 }
 
-/*
- * --INFO--
- * Address:	800CBAD4
- * Size:	00040C
+/**
+ * @note Address: 0x800CBAD4
+ * @note Size: 0x40C
  */
-unsigned long long __strtoull(int base, int max_width, int (*ReadProc)(void*, int, int), void* ReadProcArg, int* chars_scanned,
-                              int* negative, int* overflow)
+u64 __strtoull(int base, int max_width, int (*ReadProc)(void*, int, int), void* ReadProcArg, int* chars_scanned, int* negative,
+               int* overflow)
 {
-	int scan_state               = start;
-	int count                    = 0;
-	int spaces                   = 0;
-	unsigned long long value     = 0;
-	unsigned long long value_max = 0;
-	unsigned long long ullmax    = ULLONG_MAX;
+	int scan_state = start;
+	int count      = 0;
+	int spaces     = 0;
+	u64 value      = 0;
+	u64 value_max  = 0;
+	u64 ullmax     = ULLONG_MAX;
 	int c;
 
 	*negative = *overflow = 0;
@@ -293,14 +291,16 @@ unsigned long long __strtoull(int base, int max_width, int (*ReadProc)(void*, in
 	return value;
 }
 
-/*
- * --INFO--
- * Address:	800CBA28
- * Size:	0000AC
+/**
+ * @brief STRing TO Unsigned Long. Converts any numbers (of base `base`) at start of input string `str` to u32 and returns.
+ * Any remaining string part goes in `end`.
+ *
+ * @note Address: 0x800CBA28
+ * @note Size: 0xAC
  */
-unsigned long strtoul(const char* str, char** end, int base)
+u32 strtoul(const char* str, char** end, int base)
 {
-	unsigned long value;
+	u32 value;
 	int count, negative, overflow;
 
 	__InStrCtrl isc;
@@ -323,25 +323,26 @@ unsigned long strtoul(const char* str, char** end, int base)
 	return value;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000B4
+/**
+ * @note Address: N/A
+ * @note Size: 0xB4
  */
 void strtoull(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800CB938
- * Size:	0000F0
+/**
+ * @brief STRing TO Long. Converts any numbers (of base `base`) at start of input string `str` to s32 and returns.
+ * Any remaining string part goes in `end`.
+ *
+ * @note Address: 0x800CB938
+ * @note Size: 0xF0
  */
-long strtol(const char* str, char** end, int base)
+s32 strtol(const char* str, char** end, int base)
 {
-	unsigned long uvalue;
-	long svalue;
+	u32 uvalue;
+	s32 svalue;
 	int count, negative, overflow;
 
 	__InStrCtrl isc;
@@ -358,36 +359,33 @@ long strtol(const char* str, char** end, int base)
 		svalue = (negative ? -LONG_MIN : LONG_MAX);
 		errno  = ERANGE;
 	} else {
-		svalue = (negative ? (long)-uvalue : (long)uvalue);
+		svalue = (negative ? (s32)-uvalue : (s32)uvalue);
 	}
 
 	return svalue;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000124
+/**
+ * @note Address: N/A
+ * @note Size: 0x124
  */
 void strtoll(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000C0
+/**
+ * @note Address: N/A
+ * @note Size: 0xC0
  */
 int atoi(const char* str)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000C0
+/**
+ * @note Address: N/A
+ * @note Size: 0xC0
  */
 void atol(void)
 {

@@ -51,7 +51,7 @@ struct ToeHamonA {
 	void create(Vector3f*);
 	void kill();
 
-	ContextChasePos mContext;
+	ContextChasePos mContext[1];
 };
 
 struct ToeHamonB {
@@ -59,16 +59,16 @@ struct ToeHamonB {
 	void create(Vector3f*);
 	void kill();
 
-	ContextChasePos mContext;
+	ContextChasePos mContext[1];
 };
 
 struct ToeKourin {
 
-	void create(Vector3f*, long);
+	void create(Vector3f*, s32);
 	void kill();
 
-	ContextChasePos mContext;
-	long mPikiKind;
+	ContextChasePos mContext[1];
+	s32 mPikiKind;
 };
 
 struct ToeMoeBC {
@@ -100,7 +100,7 @@ struct ToeTanekira {
 	void create(Vector3f*);
 	void kill();
 
-	ContextChasePos mContext;
+	ContextChasePos mContext[1];
 };
 
 struct ToeWater {

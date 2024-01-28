@@ -18,7 +18,7 @@ struct DispMemberAnaDemo;
 
 namespace newScreen {
 struct AnaDemo : public ::Screen::SceneBase {
-	AnaDemo(long);
+	AnaDemo(s32);
 
 	virtual const char* getResName() const { return "res_ana_demo.szs"; } // _1C (weak)
 	virtual SceneType getSceneType() { return mSceneType; }               // _08 (weak)
@@ -83,7 +83,7 @@ struct ObjAnaDemo : public ::Screen::ObjBase {
 	virtual void doDraw(Graphics&);                       // _68
 
 	void setBlinkMenu();
-	inline void commonUpdate();
+	void commonUpdate();
 
 	// unused/inined
 	inline void setWindowMsg(u64, u64, u64);

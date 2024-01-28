@@ -6,10 +6,9 @@
 #include "Screen/Enums.h"
 #include "System.h"
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E4
+/**
+ * @note Address: N/A
+ * @note Size: 0xE4
  */
 static void _Print(char* format, ...)
 {
@@ -23,22 +22,20 @@ static void _Print(char* format, ...)
 namespace og {
 namespace newScreen {
 
-/*
- * --INFO--
- * Address:	8031BE60
- * Size:	00003C
+/**
+ * @note Address: 0x8031BE60
+ * @note Size: 0x3C
  */
 Floor::Floor() { }
 
-/*
- * --INFO--
- * Address:	8031BE9C
- * Size:	00013C
+/**
+ * @note Address: 0x8031BE9C
+ * @note Size: 0x13C
  */
 void Floor::doUserCallBackFunc(Resource::MgrCommand*)
 {
 	if (mDispMember->isID(OWNER_OGA, MEMBER_FLOOR)) {
-		const char* path = (sys->mRegion == System::LANG_JAPANESE) ? "res_floor_name_jpn.szs" : "res_floor_name_eng_pal.szs";
+		const char* path = (sys->mRegion == System::LANG_Japanese) ? "res_floor_name_jpn.szs" : "res_floor_name_eng_pal.szs";
 		og::newScreen::makeLanguageResName(mName, path);
 		LoadResource::Arg loadArg(mName);
 		LoadResource::Node* resourceNode = gLoadResourceMgr->mountArchive(loadArg);
@@ -63,10 +60,9 @@ void Floor::doUserCallBackFunc(Resource::MgrCommand*)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8031BFD8
- * Size:	000004
+/**
+ * @note Address: 0x8031BFD8
+ * @note Size: 0x4
  */
 void Floor::doCreateObj(JKRArchive*) { }
 

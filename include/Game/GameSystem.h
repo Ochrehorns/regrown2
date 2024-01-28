@@ -14,22 +14,20 @@ struct Viewport;
 namespace Game {
 
 enum GameSystemMode {
-	GSM_STORY_MODE = 0,
-	GSM_VERSUS_MODE,
-	GSM_ONE_PLAYER_CHALLENGE,
-	GSM_TWO_PLAYER_CHALLENGE,
-	GSM_PIKLOPEDIA,
+	GSM_STORY_MODE           = 0,
+	GSM_VERSUS_MODE          = 1,
+	GSM_ONE_PLAYER_CHALLENGE = 2,
+	GSM_TWO_PLAYER_CHALLENGE = 3,
+	GSM_PIKLOPEDIA           = 4,
 };
 
 enum GameSystemFlags {
-	GAMESYS_Unk1              = 0x1,
-	GAMESYS_IsPlaying         = 0x2,
-	GAMESYS_Unk3              = 0x4,
-	GAMESYS_Unk4              = 0x8,
-	GAMESYS_Unk5              = 0x10,
-	GAMESYS_IsGameWorldActive = 0x20,
-	GAMESYS_Unk7              = 0x40,
-	GAMESYS_Unk8              = 0x80,
+	GAMESYS_IsSoundFXActive     = 0x1,  // set when sound effects are enabled
+	GAMESYS_IsPlaying           = 0x2,  // set when the game is running
+	GAMESYS_DisableCollision    = 0x4,  // disables collision detection
+	GAMESYS_DisablePause        = 0x8,  // disables pausing
+	GAMESYS_DisableDeathCounter = 0x10, // disables the pikmin death counter, used to make left behind pikis not increase it in the cutscene
+	GAMESYS_IsGameWorldActive   = 0x20, // set when the game world is active
 };
 
 struct GameSystem : public NodeObjectMgr<GenericObjectMgr> {
@@ -55,13 +53,13 @@ struct GameSystem : public NodeObjectMgr<GenericObjectMgr> {
 
 	void addObjectMgr_reuse(TObjectNode<GenericObjectMgr>*);
 	void addObjectMgr(GenericObjectMgr*);
-	s32 calcFrameDist(int);
+	int calcFrameDist(int);
 	void detachAllMgr();
 	TObjectNode<GenericObjectMgr>* detachObjectMgr_reuse(GenericObjectMgr*);
 	void detachObjectMgr(GenericObjectMgr*);
 	GameLightMgr* getLightMgr();
 	void init();
-	bool isZukanMode();
+	bool isZukanMode() { return mMode == GSM_PIKLOPEDIA; }
 	bool paused_soft();
 	bool paused();
 	void setDrawBuffer(int);
@@ -74,23 +72,25 @@ struct GameSystem : public NodeObjectMgr<GenericObjectMgr> {
 	inline bool isVersusMode() { return mMode == GSM_VERSUS_MODE; }
 	inline bool isMultiplayerMode() { return (mMode == GSM_VERSUS_MODE || mMode == GSM_TWO_PLAYER_CHALLENGE); }
 	inline bool isChallengeMode() { return (mMode == GSM_ONE_PLAYER_CHALLENGE || mMode == GSM_TWO_PLAYER_CHALLENGE); }
-	inline bool isPiklopedia() { return mMode == GSM_PIKLOPEDIA; }
+	inline bool isTwoPlayerMode() { return mMode == GSM_TWO_PLAYER_CHALLENGE; }
 
-	inline void setFlag(u32 flag) { mFlags |= flag; }
-
-	inline void resetFlag(u32 flag) { mFlags &= ~flag; }
-
-	inline bool isFlag(u32 flag) { return mFlags & flag; }
+	inline void setFlag(u32 flag) { mFlags.typeView |= flag; }
+	inline void resetFlag(u32 flag) { mFlags.typeView &= ~flag; }
+	inline bool isFlag(u32 flag) { return mFlags.typeView & flag; }
 
 	inline BaseGameSection* getSection() { return mSection; }
 
-	u8 mFlags;                 // _3C /* bitfield */
+	inline JUTTexture* getXfbTexture() { return mXfbTexture; }
+
+	// _00     = VTBL
+	// _00-_3C = NodeObjectMgr
+	BitFlag<u8> mFlags;        // _3C
 	TimeMgr* mTimeMgr;         // _40
 	GameSystemMode mMode;      // _44
 	u8 mIsInCave;              // _48
 	u8 _49;                    // _49
 	bool mIsFrozen;            // _4A
-	u8 mIsPaused;              // _4B
+	u8 mIsPaused;              // _4B, not a bool
 	bool mIsPausedSoft;        // _4C
 	bool mIsMoviePause;        // _4D
 	u32 mFrameTimer;           // _50
@@ -99,23 +99,20 @@ struct GameSystem : public NodeObjectMgr<GenericObjectMgr> {
 };
 
 struct OptimiseController : public JKRDisposer, public Parameters {
-	OptimiseController()
-	    : Parameters(nullptr, "Dynamics")
-	    , mC000(this, 'c000', "ピクミン首", true, false, true)
-	    ,                                                                 // pikmin neck
-	    mC001(this, 'c001', "コリジョンバッファ有効", false, false, true) // collision buffer enabled
-	{
-	}
+	OptimiseController();
 
-	virtual ~OptimiseController() { mInstance = nullptr; } // _08
+	virtual ~OptimiseController(); // _08
 
 	static void globalInstance();
 	static void deleteInstance();
 
-	Parm<bool> mC000;
-	Parm<bool> mC001;
-
 	static OptimiseController* mInstance;
+
+	// _00     = VTBL
+	// _00-_18 = JKRDisposer
+	// _18-_24 = Parameters
+	Parm<bool> mPikminNeck;             // _24, c000, 'pikmin neck'
+	Parm<bool> mCollisionBufferEnabled; // _40, c001, 'collision buffer enabled'
 };
 
 extern GameSystem* gameSystem;

@@ -17,10 +17,9 @@ void OnyonSpot::initAnimators(Sys::MatTexAnimation* texanim, Sys::MatTevRegAnima
 	mAnim1.start(texanim);
 }
 
-/*
- * --INFO--
- * Address:	802055A4
- * Size:	000024
+/**
+ * @note Address: 0x802055A4
+ * @note Size: 0x24
  */
 void OnyonSpot::getLODSphere(Sys::Sphere& sphere)
 {
@@ -30,10 +29,9 @@ void OnyonSpot::getLODSphere(Sys::Sphere& sphere)
 	sphere.mRadius     = 10.0f;
 }
 
-/*
- * --INFO--
- * Address:	802055C8
- * Size:	000054
+/**
+ * @note Address: 0x802055C8
+ * @note Size: 0x54
  */
 void OnyonSpot::getLODCylinder(Sys::Cylinder& cyl)
 {
@@ -46,10 +44,9 @@ void OnyonSpot::getLODCylinder(Sys::Cylinder& cyl)
 	cyl.mAxis = Vector3f(0.0f, 1.0f, 0.0f);
 }
 
-/*
- * --INFO--
- * Address:	8020561C
- * Size:	000050
+/**
+ * @note Address: 0x8020561C
+ * @note Size: 0x50
  */
 void OnyonSpot::changeMaterial()
 {
@@ -59,15 +56,14 @@ void OnyonSpot::changeMaterial()
 	mAnim2.animate(0.0f);
 }
 
-/*
- * --INFO--
- * Address:	8020566C
- * Size:	0001A4
+/**
+ * @note Address: 0x8020566C
+ * @note Size: 0x1A4
  */
 void OnyonSpotData::loadResources()
 {
 	allocModelData(1);
-	JKRArchive* arc = JKRArchive::mount("user/Kando/effect/modeleffect.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	JKRArchive* arc = JKRMountArchive("user/Kando/effect/modeleffect.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 	P2ASSERTLINE(92, arc);
 
 	void* file = JKRFileLoader::getGlbResource("onyonspot.bmd", nullptr);
@@ -76,28 +72,27 @@ void OnyonSpotData::loadResources()
 	J3DModelData* model = J3DModelLoaderDataBase::load(file, 0x21020000);
 	*mModelData         = model;
 	mTexAnimCount       = 1;
-	mTexanims           = new Sys::MatTexAnimation[mTexAnimCount];
+	mTexAnims           = new Sys::MatTexAnimation[mTexAnimCount];
 
 	mTevAnimCount = ONYON_TYPE_MAX;
-	mTevanims     = new Sys::MatTevRegAnimation[mTevAnimCount];
+	mTevAnims     = new Sys::MatTevRegAnimation[mTevAnimCount];
 
 	file = JKRFileLoader::getGlbResource("onyonspot.btk", nullptr);
-	mTexanims[0].attachResource(file, *mModelData);
+	mTexAnims[0].attachResource(file, *mModelData);
 
 	file = JKRFileLoader::getGlbResource("onyonspot_blue.brk", nullptr);
-	mTevanims[ONYON_TYPE_BLUE].attachResource(file, *mModelData);
+	mTevAnims[ONYON_TYPE_BLUE].attachResource(file, *mModelData);
 
 	file = JKRFileLoader::getGlbResource("onyonspot_red.brk", nullptr);
-	mTevanims[ONYON_TYPE_RED].attachResource(file, *mModelData);
+	mTevAnims[ONYON_TYPE_RED].attachResource(file, *mModelData);
 
 	file = JKRFileLoader::getGlbResource("onyonspot_yellow.brk", nullptr);
-	mTevanims[ONYON_TYPE_YELLOW].attachResource(file, *mModelData);
+	mTevAnims[ONYON_TYPE_YELLOW].attachResource(file, *mModelData);
 }
 
-/*
- * --INFO--
- * Address:	80205810
- * Size:	000180
+/**
+ * @note Address: 0x80205810
+ * @note Size: 0x180
  */
 ModelEffect* OnyonSpotData::onCreate(ModelEffectCreateArg* arg)
 {
@@ -115,7 +110,7 @@ ModelEffect* OnyonSpotData::onCreate(ModelEffectCreateArg* arg)
 	mtx.makeT(onyonarg->mOrig);
 	PSMTXCopy(mtx.mMatrix.mtxView, spot->mMtx.mMatrix.mtxView);
 
-	spot->initAnimators(mTexanims, &mTevanims[type]);
+	spot->initAnimators(mTexAnims, &mTevAnims[type]);
 
 	return spot;
 }

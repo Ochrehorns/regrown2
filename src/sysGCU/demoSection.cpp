@@ -29,10 +29,9 @@ static LogoLocation sLogoLocate[] = {
 };
 } // namespace
 
-/*
- * --INFO--
- * Address:	8044CBB8
- * Size:	000054
+/**
+ * @note Address: 0x8044CBB8
+ * @note Size: 0x54
  */
 Section::Section(JKRHeap* heap)
     : Game::BaseHIOSection(heap)
@@ -40,17 +39,15 @@ Section::Section(JKRHeap* heap)
 {
 }
 
-/*
- * --INFO--
- * Address:	8044CC0C
- * Size:	000088
+/**
+ * @note Address: 0x8044CC0C
+ * @note Size: 0x88
  */
 Section::~Section() { }
 
-/*
- * --INFO--
- * Address:	8044CC94
- * Size:	0001A0
+/**
+ * @note Address: 0x8044CC94
+ * @note Size: 0x1A0
  */
 void Section::init()
 {
@@ -78,14 +75,13 @@ void Section::init()
 	JUTProcBar::sManager->setVisible(false);
 	JUTProcBar::sManager->setVisibleHeapBar(false);
 	if (sMovieIndex == -1) {
-		sMovieIndex = 8 * randFloat();
+		sMovieIndex = randInt(8);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8044CE34
- * Size:	0000E8
+/**
+ * @note Address: 0x8044CE34
+ * @note Size: 0xE8
  */
 void Section::doDraw(Graphics& gfx)
 {
@@ -97,10 +93,9 @@ void Section::doDraw(Graphics& gfx)
 	pic.draw(location.x, location.y, pic.mBounds.f.x - pic.mBounds.i.x, pic.mBounds.f.y - pic.mBounds.i.y, false, false, false);
 }
 
-/*
- * --INFO--
- * Address:	8044CF1C
- * Size:	0000AC
+/**
+ * @note Address: 0x8044CF1C
+ * @note Size: 0xAC
  */
 bool Section::doUpdate()
 {
@@ -122,10 +117,9 @@ bool Section::doUpdate()
 	return mIsMainActive;
 }
 
-/*
- * --INFO--
- * Address:	8044CFC8
- * Size:	0000B0
+/**
+ * @note Address: 0x8044CFC8
+ * @note Size: 0xB0
  */
 void Section::doExit()
 {
@@ -140,10 +134,9 @@ void Section::doExit()
 	mMoviePlayer.stop();
 }
 
-/*
- * --INFO--
- * Address:	8044D078
- * Size:	0000A4
+/**
+ * @note Address: 0x8044D078
+ * @note Size: 0xA4
  */
 void Section::doLoadingStart()
 {
@@ -153,24 +146,22 @@ void Section::doLoadingStart()
 	sys->dvdLoadUseCallBack(&mThreadCommand, delegate);
 }
 
-/*
- * --INFO--
- * Address:	8044D11C
- * Size:	000038
+/**
+ * @note Address: 0x8044D11C
+ * @note Size: 0x38
  */
 bool Section::doLoading() { return sys->dvdLoadSyncNoBlock(&mThreadCommand) == 0; }
 
-/*
- * --INFO--
- * Address:	8044D154
- * Size:	0000C8
+/**
+ * @note Address: 0x8044D154
+ * @note Size: 0xC8
  */
 void Section::loadResource()
 {
-	JKRArchive* arc = JKRArchive::mount("/user/yamashita/arc/demoMovieLogo_us.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	JKRArchive* arc = JKRMountArchive("/user/yamashita/arc/demoMovieLogo_us.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 	P2ASSERTLINE(428, arc);
 
-	ResTIMG* timg = static_cast<ResTIMG*>(JKRFileLoader::getGlbResource("/data/timg/pikmin2_logo.bti"));
+	ResTIMG* timg = JKRGetImageResource("/data/timg/pikmin2_logo.bti");
 	P2ASSERTLINE(433, timg);
 
 	mLogoTexture = new JUTTexture(timg);

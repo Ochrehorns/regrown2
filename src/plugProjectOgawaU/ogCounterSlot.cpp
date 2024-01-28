@@ -3,16 +3,15 @@
 #include "og/Sound.h"
 #include "og/Screen/ogScreen.h"
 #include "Dolphin/rand.h"
-#include "Dolphin/math.h"
+#include "math.h"
 #include "trig.h"
 
 namespace og {
 namespace Screen {
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000084
+/**
+ * @note Address: N/A
+ * @note Size: 0x84
  */
 CallBack_CounterSlot::CallBack_CounterSlot(char** p1, u16 p2, u16 p3, JKRArchive* archive)
     : CallBack_CounterRV(p1, p2, p3, archive)
@@ -31,20 +30,18 @@ CallBack_CounterSlot::CallBack_CounterSlot(char** p1, u16 p2, u16 p3, JKRArchive
 	_C8             = PSSE_UNSET;
 }
 
-/*
- * --INFO--
- * Address:	8032A754
- * Size:	000030
+/**
+ * @note Address: 0x8032A754
+ * @note Size: 0x30
  */
 void CallBack_CounterSlot::init(J2DScreen* screen, u64 tag1, u64 tag2, u64 tag3, u32* data, bool flag)
 {
 	CallBack_CounterRV::init(screen, tag1, tag2, tag3, data, flag);
 }
 
-/*
- * --INFO--
- * Address:	8032A784
- * Size:	000010
+/**
+ * @note Address: 0x8032A784
+ * @note Size: 0x10
  */
 void CallBack_CounterSlot::setPuyoParam(f32 parm1, f32 parm2, f32 parm3)
 {
@@ -53,14 +50,13 @@ void CallBack_CounterSlot::setPuyoParam(f32 parm1, f32 parm2, f32 parm3)
 	mPuyoParm3 = parm3;
 }
 
-/*
- * --INFO--
- * Address:	8032A794
- * Size:	000270
+/**
+ * @note Address: 0x8032A794
+ * @note Size: 0x270
  */
 void CallBack_CounterSlot::update()
 {
-	int goal = mCurrCounters;
+	int goal = mCurrentCounters;
 	if (goal > mCounterLimit) {
 		goal = mCounterLimit;
 	}
@@ -78,7 +74,7 @@ void CallBack_CounterSlot::update()
 		if (mTimer >= mUpdateInterval) {
 			mTimer = 0.0f;
 			_B0++;
-			if ((int)_B0 >= (int)mCurrCounters) {
+			if ((int)_B0 >= (int)mCurrentCounters) {
 				if ((int)_B0 >= (int)mCounterLimit) {
 					_A8 = false;
 					_AB = true;
@@ -99,10 +95,9 @@ void CallBack_CounterSlot::update()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8032AA04
- * Size:	000094
+/**
+ * @note Address: 0x8032AA04
+ * @note Size: 0x94
  */
 void CallBack_CounterSlot::slot_up(int k)
 {
@@ -116,10 +111,9 @@ void CallBack_CounterSlot::slot_up(int k)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8032AA98
- * Size:	0000C0
+/**
+ * @note Address: 0x8032AA98
+ * @note Size: 0xC0
  */
 void CallBack_CounterSlot::startSlot(f32 calc)
 {
@@ -143,10 +137,9 @@ void CallBack_CounterSlot::startSlot(f32 calc)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8032AB58
- * Size:	000554
+/**
+ * @note Address: 0x8032AB58
+ * @note Size: 0x554
  */
 void CallBack_CounterSlot::setValue(bool flag1, bool flag2)
 {
@@ -154,11 +147,11 @@ void CallBack_CounterSlot::setValue(bool flag1, bool flag2)
 		mInitialDisplayValue = 0;
 		mCurrDisplayValue    = 0;
 	}
-	mCurrCounters = CalcKeta(mInitialDisplayValue);
+	mCurrentCounters = CalcKeta(mInitialDisplayValue);
 
-	int counts = mCurrCounters;
-	if (counts < _30) {
-		counts = _30;
+	int counts = mCurrentCounters;
+	if (counts < mMaxCounterLimit) {
+		counts = mMaxCounterLimit;
 	}
 
 	for (int i = 0; i < mCounterLimit; i++) {
@@ -166,12 +159,10 @@ void CallBack_CounterSlot::setValue(bool flag1, bool flag2)
 		u16 sujiVal = (mInitialDisplayValue / power) % 10;
 		if (mIsBlind) {
 			mCounters[i]->setSuji(mImgResources, 10);
+		} else if (_89) {
+			mCounters[i]->setSuji(mImgResources, (u16)(randFloat() * 9.0f));
 		} else {
-			if (_89) {
-				mCounters[i]->setSuji(mImgResources, (u16)(randFloat() * 9.0f));
-			} else {
-				mCounters[i]->setSuji(mImgResources, sujiVal);
-			}
+			mCounters[i]->setSuji(mImgResources, sujiVal);
 		}
 		J2DPicture* keta = mCounters[i]->mPicture;
 		if (keta) {
@@ -179,7 +170,7 @@ void CallBack_CounterSlot::setValue(bool flag1, bool flag2)
 				if (_AC) {
 					keta->mIsVisible = true;
 				}
-				if (i + 1 > mCurrCounters) {
+				if (i + 1 > mCurrentCounters) {
 					if (mIsBlind) {
 						keta->setAlpha(255);
 					} else {
@@ -221,9 +212,7 @@ void CallBack_CounterSlot::setValue(bool flag1, bool flag2)
 	mPic1->setOffset(xVal, mPanePosition.y);
 	mPic1->calcMtx();
 
-	f32 ang                = mPic1->mAngleX;
-	f32 newx               = mPic1->mAngleY;
-	f32 newy               = mPic1->mAngleZ;
+	Vector3f angle(mPic1->mAngleY, mPic1->mAngleX, mPic1->mAngleZ);
 	JUtility::TColor white = mPic1->getWhite();
 	JUtility::TColor black = mPic1->getBlack();
 	JGeometry::TBox2f* box = mPic1->getBounds();
@@ -248,9 +237,9 @@ void CallBack_CounterSlot::setValue(bool flag1, bool flag2)
 				cPane->updateScale(temp, mPaneScale.y);
 			}
 
-			cPane->mAngleX = newx;
-			cPane->mAngleY = newy;
-			cPane->mAngleZ = ang;
+			cPane->mAngleX = angle.x;
+			cPane->mAngleY = angle.y;
+			cPane->mAngleZ = angle.z;
 			cPane->calcMtx();
 			cPane->setWhite(white);
 			cPane->setBlack(black);
@@ -644,10 +633,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8032B0AC
- * Size:	0001D0
+/**
+ * @note Address: 0x8032B0AC
+ * @note Size: 0x1D0
  */
 CallBack_CounterSlot* setCallBack_CounterSlot(P2DScreen::Mgr* mgr, u64 tag, u32* data, u16 digit, bool flag1, bool flag2, JKRArchive* arc)
 {
@@ -674,17 +662,15 @@ CallBack_CounterSlot* setCallBack_CounterSlot(P2DScreen::Mgr* mgr, u64 tag, u32*
 	return slot;
 }
 
-/*
- * --INFO--
- * Address:	8032B27C
- * Size:	000090
+/**
+ * @note Address: 0x8032B27C
+ * @note Size: 0x90
  */
 CallBack_CounterSlot::~CallBack_CounterSlot() { }
 
-/*
- * --INFO--
- * Address:	8032B30C
- * Size:	000034
+/**
+ * @note Address: 0x8032B30C
+ * @note Size: 0x34
  */
 void CallBack_CounterSlot::setValue() { setValue(false, false); }
 } // namespace Screen

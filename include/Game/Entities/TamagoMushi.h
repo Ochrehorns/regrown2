@@ -15,35 +15,111 @@
 
 namespace Game {
 namespace TamagoMushi {
-struct FSM;
+struct FSM : public EnemyStateMachine {
+	virtual void init(EnemyBase* enemy); // _08
+
+	// _00		= VTBL
+	// _00-_1C	= EnemyStateMachine
+};
+
+struct Parms : public EnemyParmsBase {
+	struct ProperParms : public Parameters {
+		inline ProperParms()
+		    : Parameters(nullptr, "EnemyParmsBase")
+		    , mSurvivalTime(this, 'fp01', "生存時間", 300.0f, 0.0, 2000.0f)    // 'survival time'
+		    , mAppearanceRange(this, 'fp02', "出現範囲", 80.0f, 0.0f, 200.0f)  // 'appearance range'
+		    , mHoneyRate(this, 'fp03', "蜜レート", 1.0f, 0.0f, 1.0f)           // 'honey rate'
+		    , mMinimumWalkTime(this, 'ip01', "歩き時間最小", 60, 0, 300)       // 'minimum walking time'
+		    , mMaximumWalkTime(this, 'ip02', "歩き時間最大", 100, 0, 600)      // 'maximum walking time'
+		    , mMinimumAppearanceTime(this, 'ip03', "出現時間最小", 10, 0, 100) // 'minimum appearance time'
+		    , mMaximumAppearanceTime(this, 'ip04', "出現時間最大", 50, 0, 200) // 'maximum appearance time'
+		{
+		}
+
+		Parm<f32> mSurvivalTime;          // _804
+		Parm<f32> mAppearanceRange;       // _82C
+		Parm<f32> mHoneyRate;             // _854
+		Parm<int> mMinimumWalkTime;       // _87C
+		Parm<int> mMaximumWalkTime;       // _8A4
+		Parm<int> mMinimumAppearanceTime; // _8CC
+		Parm<int> mMaximumAppearanceTime; // _8F4
+	};
+
+	Parms()
+	{
+		mDisableWanderRotation        = 0;
+		mEnableSpeedAdjustment        = 0;
+		_922                          = 0;
+		_923                          = 0;
+		_924                          = 40.0f;
+		mRotationStep                 = 0.3f;
+		mWalkSpeedAdjustmentTimeLimit = 10.0f;
+		mWalkSpeedReductionFactor     = 0.2f;
+		_934                          = 50.0f;
+		_938                          = 80.0f;
+		_93C                          = 80.0f;
+		_940                          = 0.0f;
+		_944                          = 30.0f;
+		_948                          = 150.0f;
+	}
+
+	virtual void read(Stream& stream) // _08 (weak)
+	{
+		CreatureParms::read(stream);
+		mGeneral.read(stream);
+		mProperParms.read(stream);
+	}
+
+	// _00-_7F8	= EnemyParmsBase
+	ProperParms mProperParms;          // _7F8
+	u8 mDisableWanderRotation;         // _920
+	u8 mEnableSpeedAdjustment;         // _921
+	u8 _922;                           // _922
+	u8 _923;                           // _923
+	f32 _924;                          // _924
+	f32 mRotationStep;                 // _928
+	f32 mWalkSpeedAdjustmentTimeLimit; // _92C
+	f32 mWalkSpeedReductionFactor;     // _930
+	f32 _934;                          // _934
+	f32 _938;                          // _938
+	f32 _93C;                          // _93C
+	f32 _940;                          // _940
+	f32 _944;                          // _944
+	f32 _948;                          // _948
+};
 
 struct Obj : public EnemyBase {
 	Obj();
 
 	//////////////// VTABLE
-	virtual void onInit(CreatureInitArg* settings);                             // _30
-	virtual void doDirectDraw(Graphics& gfx);                                   // _50
-	virtual bool isLivingThing();                                               // _D4 (weak)
-	virtual void bounceCallback(Sys::Triangle* tri);                            // _E8
-	virtual void collisionCallback(CollEvent& event);                           // _EC
-	virtual void getShadowParam(ShadowParam& settings);                         // _134
-	virtual bool needShadow();                                                  // _138
-	virtual ~Obj() { }                                                          // _1BC (weak)
-	virtual void birth(Vector3f&, f32);                                         // _1C0
-	virtual void setInitialSetting(EnemyInitialParamBase* params);              // _1C4 (weak)
-	virtual void doUpdate();                                                    // _1CC
-	virtual void doAnimationCullingOff();                                       // _1DC
-	virtual void doDebugDraw(Graphics& gfx);                                    // _1EC
-	virtual void setParameters();                                               // _228
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID();                         // _258 (weak)
-	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part);  // _278
-	virtual bool pressCallBack(Creature*, f32, CollPart*);                      // _27C
-	virtual bool hipdropCallBack(Creature* source, f32 damage, CollPart* part); // _284
-	virtual bool earthquakeCallBack(Creature* source, f32 bounceFactor);        // _28C
-	virtual bool bombCallBack(Creature*, Vector3f&, f32);                       // _294
-	virtual void startCarcassMotion();                                          // _2C4
-	virtual f32 getDownSmokeScale();                                            // _2EC (weak)
-	virtual void setFSM(FSM* fsm);                                              // _2F8 (weak)
+	virtual void onInit(CreatureInitArg* settings);                               // _30
+	virtual void doDirectDraw(Graphics& gfx);                                     // _50
+	virtual void bounceCallback(Sys::Triangle* tri);                              // _E8
+	virtual void collisionCallback(CollEvent& event);                             // _EC
+	virtual void getShadowParam(ShadowParam& settings);                           // _134
+	virtual bool needShadow();                                                    // _138
+	virtual ~Obj() { }                                                            // _1BC (weak)
+	virtual void birth(Vector3f&, f32);                                           // _1C0
+	virtual void doUpdate();                                                      // _1CC
+	virtual void doAnimationCullingOff();                                         // _1DC
+	virtual void doDebugDraw(Graphics& gfx);                                      // _1EC
+	virtual void setParameters();                                                 // _228
+	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part);    // _278
+	virtual bool pressCallBack(Creature* source, f32 damage, CollPart* part);     // _27C
+	virtual bool hipdropCallBack(Creature* source, f32 damage, CollPart* part);   // _284
+	virtual bool earthquakeCallBack(Creature* source, f32 bounceFactor);          // _28C
+	virtual bool bombCallBack(Creature* source, Vector3f& direction, f32 damage); // _294
+	virtual void startCarcassMotion();                                            // _2C4
+	virtual void setFSM(FSM* fsm)                                                 // _2F8 (weak)
+	{
+		mFsm = fsm;
+		mFsm->init(this);
+		mCurrentLifecycleState = nullptr;
+	}
+	virtual void setInitialSetting(EnemyInitialParamBase* params) { }                               // _1C4 (weak)
+	virtual bool isLivingThing() { return !C_PARMS->_922; }                                         // _D4 (weak)
+	virtual f32 getDownSmokeScale() { return 0.35f; }                                               // _2EC (weak)
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() { return EnemyTypeID::EnemyID_TamagoMushi; } // _258 (weak)
 	//////////////// VTABLE END
 
 	void genItem();
@@ -64,22 +140,25 @@ struct Obj : public EnemyBase {
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
-	u8 _2BC[0x8];           // _2BC, unknown
-	f32 _2C4;               // _2C4
-	f32 _2C8;               // _2C8
-	f32 _2CC;               // _2CC
-	u8 _2D0[0x10];          // _2D0, unknown
-	Vector3f mGoalPosition; // _2E0
-	u8 _2EC[0x4];           // _2EC, unknown
-	u8 _2F0;                // _2F0
-	Obj* mLeader;           // _2F4
-	SysShape::Joint* _2F8;  // _2F8
-	f32 _2FC;               // _2FC
-	u8 _300;                // _300, unknown
-	u8 _301[0x3];           // _301, unknown/padding
-	u8 _304[0x4];           // _304, unknown
-	FSM* mFsm;              // _308
-	                        // _30C = PelletView
+	int _2BC;                          // _2BC
+	int _2C0;                          // _2C0
+	f32 mRandomTurnFactor;             // _2C4
+	f32 mRandomSpeedFactor;            // _2C8
+	f32 _2CC;                          // _2CC
+	f32 mMoveRotationTimer;            // _2D0
+	f32 mWalkSpeedAdjustmentTimer;     // _2D4
+	f32 mWalkSpeedAdjustmentTimeLimit; // _2D8
+	bool mWalkSpeedAdjustmentEnabled;  // _2DC
+	Vector3f mGoalPosition;            // _2E0
+	f32 mPreviousFaceDir;              // _2EC
+	bool _2F0;                         // _2F0
+	Obj* mLeader;                      // _2F4
+	SysShape::Joint* mKoshiJoint;      // _2F8
+	f32 mMoveRotationOffset;           // _2FC
+	bool _300;                         // _300
+	int _304;                          // _304, unknown
+	FSM* mFsm;                         // _308
+	                                   // _30C = PelletView
 };
 
 struct Mgr : public EnemyMgrBase {
@@ -134,70 +213,14 @@ struct Mgr : public EnemyMgrBase {
 	Obj* mObj;                                           // _48, likely an array of Objs
 };
 
-struct Parms : public EnemyParmsBase {
-	struct ProperParms : public Parameters {
-		inline ProperParms()
-		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mFp01(this, 'fp01', "生存時間", 300.0f, 0.0, 2000.0f)
-		    , mFp02(this, 'fp02', "出現範囲", 80.0f, 0.0f, 200.0f)
-		    , mFp03(this, 'fp03', "蜜レート", 1.0f, 0.0f, 1.0f)
-		    , mIp01(this, 'ip01', "歩き時間最小", 60, 0, 300)
-		    , mIp02(this, 'ip02', "歩き時間最大", 100, 0, 600)
-		    , mIp03(this, 'ip03', "出現時間最小", 10, 0, 100)
-		    , mIp04(this, 'ip04', "出現時間最大", 50, 0, 200)
-		{
-		}
-
-		Parm<f32> mFp01; // _804
-		Parm<f32> mFp02; // _82C
-		Parm<f32> mFp03; // _854
-		Parm<int> mIp01; // _87C
-		Parm<int> mIp02; // _8A4
-		Parm<int> mIp03; // _8CC
-		Parm<int> mIp04; // _8F4
-	};
-
-	Parms()
-	{
-		_920 = 0;
-		_921 = 0;
-		_922 = 0;
-		_923 = 0;
-		_924 = 40.0f;
-		_928 = 0.3f;
-		_92C = 10.0f;
-		_930 = 0.2f;
-		_934 = 50.0f;
-		_938 = 80.0f;
-		_93C = 80.0f;
-		_940 = 0.0f;
-		_944 = 30.0f;
-		_948 = 150.0f;
-	}
-
-	virtual void read(Stream& stream) // _08 (weak)
-	{
-		CreatureParms::read(stream);
-		mGeneral.read(stream);
-		mProperParms.read(stream);
-	}
-
-	// _00-_7F8	= EnemyParmsBase
-	ProperParms mProperParms; // _7F8
-	u8 _920;                  // _920
-	u8 _921;                  // _921
-	u8 _922;                  // _922
-	u8 _923;                  // _923
-	f32 _924;                 // _924
-	f32 _928;                 // _928
-	f32 _92C;                 // _92C
-	f32 _930;                 // _930
-	f32 _934;                 // _934
-	f32 _938;                 // _938
-	f32 _93C;                 // _93C
-	f32 _940;                 // _940
-	f32 _944;                 // _944
-	f32 _948;                 // _948
+enum AnimID {
+	TAMAGOANIM_Dead   = 0,
+	TAMAGOANIM_Dive   = 1,
+	TAMAGOANIM_Move   = 2,
+	TAMAGOANIM_Appear = 3, // 'set'
+	TAMAGOANIM_Wait   = 4,
+	TAMAGOANIM_Carry  = 5,
+	TAMAGOANIM_AnimCount, // 6
 };
 
 struct ProperAnimator : public EnemyAnimatorBase {
@@ -223,13 +246,6 @@ enum StateID {
 	TAMAGOMUSHI_Count,
 };
 
-struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
-
-	// _00		= VTBL
-	// _00-_1C	= EnemyStateMachine
-};
-
 struct State : public EnemyFSMState {
 	inline State(int stateID)
 	    : EnemyFSMState(stateID)
@@ -243,8 +259,8 @@ struct State : public EnemyFSMState {
 struct StateAppear : public State {
 	StateAppear(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -258,8 +274,8 @@ struct StateAppear : public State {
 struct StateDead : public State {
 	StateDead(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -268,8 +284,8 @@ struct StateDead : public State {
 struct StateHide : public State {
 	StateHide(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -278,8 +294,8 @@ struct StateHide : public State {
 struct StateTurn : public State {
 	StateTurn(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -288,8 +304,8 @@ struct StateTurn : public State {
 struct StateWait : public State {
 	StateWait(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -298,8 +314,8 @@ struct StateWait : public State {
 struct StateWalk : public State {
 	StateWalk(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

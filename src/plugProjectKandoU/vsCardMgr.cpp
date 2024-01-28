@@ -18,10 +18,9 @@ namespace VsGame {
 
 static const int unusedVsCardArray[] = { 0, 0, 0 };
 static const char unusedVsCardName[] = "vsCardMgr";
-/*
- * --INFO--
- * Address:	........
- * Size:	000040
+/**
+ * @note Address: N/A
+ * @note Size: 0x40
  */
 CardSelector::CardSelector()
 {
@@ -31,10 +30,9 @@ CardSelector::CardSelector()
 	mValues[RESET_BEDAMA] = 30;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000064
+/**
+ * @note Address: N/A
+ * @note Size: 0x64
  */
 int VsGame::CardSelector::getTotalWeight()
 {
@@ -45,10 +43,9 @@ int VsGame::CardSelector::getTotalWeight()
 	return sum;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000274
+/**
+ * @note Address: N/A
+ * @note Size: 0x274
  */
 int VsGame::CardSelector::selectCard()
 {
@@ -70,10 +67,9 @@ int VsGame::CardSelector::selectCard()
 	return (int)(randFloat() * CARD_ID_COUNT);
 }
 
-/*
- * --INFO--
- * Address:	8023550C
- * Size:	000148
+/**
+ * @note Address: 0x8023550C
+ * @note Size: 0x148
  */
 VsGame::CardMgr::CardMgr(Game::VsGameSection* section, Game::VsGame::TekiMgr* tekiMgr)
 {
@@ -90,7 +86,7 @@ VsGame::CardMgr::CardMgr(Game::VsGameSection* section, Game::VsGame::TekiMgr* te
 	initDraw();
 
 	JUtility::TColor color(0xFF, 0xFF, 0xFF, 0xFF);
-	mLightObj = new LightObj("test", GX_LIGHT0, TYPE_2, color);
+	mLightObj = new LightObj("test", GX_LIGHT0, TYPE_Spot, color);
 
 	mLightObj->mElevation     = Vector3f(0.0f, 0.0f, -1.0f);
 	mLightObj->mPosition      = Vector3f(555.0f, -250.0f, 4500.0f);
@@ -99,10 +95,9 @@ VsGame::CardMgr::CardMgr(Game::VsGameSection* section, Game::VsGame::TekiMgr* te
 	mLightObj->mRefBrightness = 0.98f;
 }
 
-/*
- * --INFO--
- * Address:	80235654
- * Size:	000058
+/**
+ * @note Address: 0x80235654
+ * @note Size: 0x58
  */
 VsGame::CardMgr::SlotMachine::SlotMachine()
 {
@@ -114,10 +109,9 @@ VsGame::CardMgr::SlotMachine::SlotMachine()
 	_6C           = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000020
+/**
+ * @note Address: N/A
+ * @note Size: 0x20
  */
 void VsGame::CardMgr::clear()
 {
@@ -136,7 +130,7 @@ const char* tex_names[] = {
 
 void VsGame::CardMgr::loadResource()
 {
-	JKRArchive* arch = JKRArchive::mount("user/Kando/vstex/arc.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	JKRArchive* arch = JKRMountArchive("user/Kando/vstex/arc.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 
 	JUT_ASSERTLINE(258, arch, "vstex/arc.szs not found !\n");
 
@@ -169,10 +163,9 @@ void VsGame::CardMgr::loadResource()
 	mHighlightTexture = new JUTTexture(highlight);
 }
 
-/*
- * --INFO--
- * Address:	80235964
- * Size:	000048
+/**
+ * @note Address: 0x80235964
+ * @note Size: 0x48
  */
 void VsGame::CardMgr::update()
 {
@@ -182,20 +175,18 @@ void VsGame::CardMgr::update()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000040
+/**
+ * @note Address: N/A
+ * @note Size: 0x40
  */
 Vector3f VsGame::CardMgr::getSlotOrigin(int playerIdx)
 {
 	return (playerIdx == 0) ? Vector3f(515.0f, 115.0f, 0.0f) : Vector3f(515.0f, 315.0f, 0.0f);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
 inline Vector2f VsGame::CardMgr::getLampPos(int user, int cherries)
 {
@@ -211,10 +202,9 @@ inline Vector2f VsGame::CardMgr::getLampPos(int user, int cherries)
 	return lampOrigin;
 }
 
-/*
- * --INFO--
- * Address:	802359AC
- * Size:	0000A4
+/**
+ * @note Address: 0x802359AC
+ * @note Size: 0xA4
  */
 void VsGame::CardMgr::draw(Graphics& gfx)
 {
@@ -230,24 +220,21 @@ void VsGame::CardMgr::draw(Graphics& gfx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
 Vector2f VsGame::CardMgr::getPlayerCard(int user) { return (user == 0) ? Vector2f(515.0f, 115.0f) : Vector2f(515.0f, 315.0f); }
 
-/*
- * --INFO--
- * Address:	80235A50
- * Size:	000030
+/**
+ * @note Address: 0x80235A50
+ * @note Size: 0x30
  */
 void VsGame::CardMgr::stopSlot(int idx) { mSlotMachines[idx].startStop(); }
 
-/*
- * --INFO--
- * Address:	80235A80
- * Size:	000D8C
+/**
+ * @note Address: 0x80235A80
+ * @note Size: 0xD8C
  */
 bool VsGame::CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 {
@@ -323,7 +310,7 @@ bool VsGame::CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 		CI_LOOP(IPiki)
 		{
 			Piki* piki = *IPiki;
-			if (piki->getKind() == 1 - user && piki->isAlive() && (int)piki->getHappa() != Flower) {
+			if (piki->getKind() == 1 - user && piki->isAlive() && piki->getHappa() != Flower) {
 				piki->changeHappa(Flower);
 				Vector3f vec = piki->mLeafStemOffset;
 				efx::TPkGlow2 particle;
@@ -373,13 +360,13 @@ bool VsGame::CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 		if (onyon) {
 			onyonPos = onyon->getPosition();
 
-			float faceDir = onyon->getFaceDir();
+			f32 faceDir = onyon->getFaceDir();
 
-			float radius = randFloat() * 150.0f + 50.0f;
-			float angle  = randFloat() * TAU;
-			float height = 0.0f;
+			f32 radius = randFloat() * 150.0f + 50.0f;
+			f32 angle  = randFloat() * TAU;
+			f32 height = 0.0f;
 
-			Vector3f spawnOffset = Vector3f(radius * pikmin2_sinf(angle), height, radius * pikmin2_cosf(angle));
+			Vector3f spawnOffset = Vector3f(radius * sinf(angle), height, radius * cosf(angle));
 
 			onyonPos += spawnOffset;
 		}
@@ -389,8 +376,8 @@ bool VsGame::CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 	case TEKI_ROCK:
 	case TEKI_BOMBOTAKRA: {
 
-		float radiusVariance = 90.0f;
-		float enemyHeight    = 0.0f;
+		f32 radiusVariance = 90.0f;
+		f32 enemyHeight    = 0.0f;
 		int num;
 		if (slotID == TEKI_ROCK) {
 			num = 8;
@@ -407,13 +394,13 @@ bool VsGame::CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 			if (navi) {
 				spawnNaviPos = navi->getPosition();
 
-				float faceDir = navi->getFaceDir();
-				float radius  = randFloat() * 150.0f * radiusVariance;
+				f32 faceDir = navi->getFaceDir();
+				f32 radius  = randFloat() * 150.0f * radiusVariance;
 
-				float angle  = randFloat() * TAU;
-				float height = enemyHeight;
+				f32 angle  = randFloat() * TAU;
+				f32 height = enemyHeight;
 
-				Vector3f spawnOffset = Vector3f(radius * pikmin2_sinf(angle), height, radius * pikmin2_cosf(angle));
+				Vector3f spawnOffset = Vector3f(radius * sinf(angle), height, radius * cosf(angle));
 
 				spawnNaviPos += spawnOffset;
 			}
@@ -430,15 +417,15 @@ bool VsGame::CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 
 			onyonPos = onyon->getPosition();
 
-			float faceDir = onyon->getFaceDir();
+			f32 faceDir = onyon->getFaceDir();
 
-			float radius = randFloat() * 150.0f + 50.0f;
-			float angle  = randFloat() * TAU;
-			float height = 0.0f;
+			f32 radius = randFloat() * 150.0f + 50.0f;
+			f32 angle  = randFloat() * TAU;
+			f32 height = 0.0f;
 
 			angle = faceDir;
 
-			Vector3f spawnOffset = Vector3f(radius * pikmin2_sinf(angle), height, radius * pikmin2_cosf(angle));
+			Vector3f spawnOffset = Vector3f(radius * sinf(angle), height, radius * cosf(angle));
 
 			onyonPos += spawnOffset;
 		}
@@ -466,10 +453,9 @@ bool VsGame::CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 	return used;
 }
 
-/*
- * --INFO--
- * Address:	8023680C
- * Size:	0001BC
+/**
+ * @note Address: 0x8023680C
+ * @note Size: 0x1BC
  */
 void VsGame::CardMgr::gotPlayerCard(int user)
 {
@@ -482,7 +468,7 @@ void VsGame::CardMgr::gotPlayerCard(int user)
 		JUtility::TColor color1(0xff, 0x96, 0x64, 0xff);
 		JUtility::TColor color2(0xff, 0x46, 0x46, 0xff);
 
-		efx2d::ArgScaleColorColor spraysetArg(&panePos, 0.4f, color1, color2);
+		efx2d::ArgScaleColorColor spraysetArg(panePos, 0.4f, color1, color2);
 		efx2d::T2DSprayset_forVS vsSpraySet;
 
 		vsSpraySet.create(&spraysetArg);
@@ -491,20 +477,18 @@ void VsGame::CardMgr::gotPlayerCard(int user)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00004C
+/**
+ * @note Address: N/A
+ * @note Size: 0x4C
  */
 void VsGame::CardMgr::clearPlayerCard()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	802369C8
- * Size:	000058
+/**
+ * @note Address: 0x802369C8
+ * @note Size: 0x58
  */
 void VsGame::CardMgr::SlotMachine::clear()
 {
@@ -525,10 +509,9 @@ void VsGame::CardMgr::SlotMachine::clear()
 	_51            = 0;
 }
 
-/*
- * --INFO--
- * Address:	80236A20
- * Size:	0005F0
+/**
+ * @note Address: 0x80236A20
+ * @note Size: 0x5F0
  */
 void VsGame::CardMgr::SlotMachine::start()
 {
@@ -620,10 +603,10 @@ void VsGame::CardMgr::SlotMachine::start()
 		return;
 	}
 }
-/*
- * --INFO--
- * Address:	80237010
- * Size:	000050
+
+/**
+ * @note Address: 0x80237010
+ * @note Size: 0x50
  */
 void VsGame::CardMgr::SlotMachine::startStop()
 {
@@ -633,20 +616,18 @@ void VsGame::CardMgr::SlotMachine::startStop()
 	mSpinTimer = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000B4
+/**
+ * @note Address: N/A
+ * @note Size: 0xB4
  */
 bool VsGame::CardMgr::SlotMachine::equalTo(int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00004C
+/**
+ * @note Address: N/A
+ * @note Size: 0x4C
  */
 
 inline int CardMgr::SlotMachine::getNextCard(int card) { return (CARD_ID_COUNT + card + 1) % CARD_ID_COUNT; }
@@ -657,13 +638,13 @@ bool CardMgr::SlotMachine::goodPlace()
 {
 	int nextCardBottom = getNextCard(mSelectedSlot);
 
-	float distanceToBottom = FABS(nextCardBottom - mSpinProgress);
+	f32 distanceToBottom = FABS(nextCardBottom - mSpinProgress);
 
 	int nextCardTop = nextCardBottom + CARD_ID_COUNT;
 
-	float distanceToTop = FABS(nextCardTop - mSpinProgress);
+	f32 distanceToTop = FABS(nextCardTop - mSpinProgress);
 
-	float distance = distanceToBottom;
+	f32 distance = distanceToBottom;
 	if (distanceToTop < distanceToBottom) {
 		distance = distanceToTop;
 	}
@@ -672,15 +653,14 @@ bool CardMgr::SlotMachine::goodPlace()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80237060
- * Size:	0007B8
+/**
+ * @note Address: 0x80237060
+ * @note Size: 0x7B8
  */
 void VsGame::CardMgr::SlotMachine::update()
 {
 	updateAppear();
-	float deltaTime = sys->mDeltaTime;
+	f32 deltaTime = sys->mDeltaTime;
 	switch (mSpinState) { // await spin stop
 	case SPIN_WAIT_START:
 		mSpinAccel = -TAU;
@@ -730,12 +710,10 @@ void VsGame::CardMgr::SlotMachine::update()
 				mSpinState = SPIN_DECELERATE_END;
 				_2C        = 0.0f;
 			}
-		} else {
-			if (mSpinSpeed > -0.44f * PI) {
-				mSpinAccel = 0.0f;
-				mSpinState = SPIN_DECELERATE_END;
-				_2C        = 0.0f;
-			}
+		} else if (mSpinSpeed > -0.44f * PI) {
+			mSpinAccel = 0.0f;
+			mSpinState = SPIN_DECELERATE_END;
+			_2C        = 0.0f;
 		}
 		break;
 	case SPIN_DECELERATE_END:                                              // on decelerate end
@@ -820,7 +798,7 @@ void VsGame::CardMgr::SlotMachine::update()
 	mSpinSpeed += mSpinAccel * deltaTime;
 	int previousValue = mSelectedSlot;
 	mPrevCardIndex    = mSelectedSlot;
-	float loopValue   = TAU / CARD_ID_COUNT;
+	f32 loopValue     = TAU / CARD_ID_COUNT;
 	mSpinProgress     = roundAng(mSpinAngle + loopValue) / loopValue;
 	mCurrCardIndex    = (int)mSpinProgress;
 	if (mSpinState != 10 && mSpinState != 0) {
@@ -831,10 +809,10 @@ void VsGame::CardMgr::SlotMachine::update()
 		}
 	}
 }
-/*
- * --INFO--
- * Address:	80237818
- * Size:	000150
+
+/**
+ * @note Address: 0x80237818
+ * @note Size: 0x150
  */
 void VsGame::CardMgr::SlotMachine::updateAppear()
 {
@@ -881,17 +859,16 @@ void VsGame::CardMgr::SlotMachine::updateAppear()
 		break;
 	}
 }
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
 JUTTexture* VsGame::CardMgr::getTexture(eCardType card) { return mSlotTextures[card]; }
 
-/*
- * --INFO--
- * Address:	80237968
- * Size:	000354
+/**
+ * @note Address: 0x80237968
+ * @note Size: 0x354
  */
 
 void VsGame::CardMgr::initDraw()
@@ -901,58 +878,55 @@ void VsGame::CardMgr::initDraw()
 	_F8        = countA * countB * 2;
 	_FC        = new Vector3f[_F8];
 	_100       = new Vector3f[_F8];
-	float phi  = TAU / countA;
-	float s    = pikmin2_sinf(phi / 2.0f);
-	float x, y, z;
+	f32 phi    = TAU / countA;
+	f32 s      = sinf(phi / 2.0f);
+	f32 x, y, z;
 
 	x = 20.0f;
 
 	for (int i = 0; i < countA * countB; i++) {
-		float theta = i * TAU / countA / countB;
+		f32 theta = i * TAU / countA / countB;
 
-		z = x / s * pikmin2_cosf(theta);
-		y = x / s * pikmin2_sinf(theta);
+		z = x / s * cosf(theta);
+		y = x / s * sinf(theta);
 
 		_FC[2 * i]  = Vector3f(-x, y, z);
-		_100[2 * i] = Vector3f(0.0f, pikmin2_sinf(theta), pikmin2_cosf(theta));
+		_100[2 * i] = Vector3f(0.0f, sinf(theta), cosf(theta));
 
 		_FC[2 * i + 1]  = Vector3f(x, y, z);
-		_100[2 * i + 1] = Vector3f(0.0f, pikmin2_sinf(theta), pikmin2_cosf(theta));
+		_100[2 * i + 1] = Vector3f(0.0f, sinf(theta), cosf(theta));
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000020
+/**
+ * @note Address: N/A
+ * @note Size: 0x20
  */
 void VsGame::CardMgr::vert(int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000020
+/**
+ * @note Address: N/A
+ * @note Size: 0x20
  */
 void VsGame::CardMgr::norm(int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80237CBC
- * Size:	000E4C
+/**
+ * @note Address: 0x80237CBC
+ * @note Size: 0xE4C
  */
 void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& machine)
 {
 
-	float spinAngle = machine.mSpinAngle;
-	Vector3f pos    = place;
+	f32 spinAngle = machine.mSpinAngle;
+	Vector3f pos  = place;
 	gfx.initPrimDraw(0);
-	gfx._084 = Color4(250, 250, 250, 255);
+	gfx.mDrawColor = Color4(250, 250, 250, 255);
 	GXSetLineWidth(40, GX_TO_ZERO);
 	gfx.mOrthoGraph.setPort();
 	Matrixf* matrix = (Matrixf*)&gfx.mOrthoGraph.mPosMtx;
@@ -966,7 +940,7 @@ void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& mach
 	GXSetNumTevStages(1);
 	GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
 	GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
-	GXSetTevAlphaIn(GX_TEVSTAGE0, GX_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_ZERO);
+	GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
 	GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
 	GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
 	GXSetNumChans(1);
@@ -999,7 +973,7 @@ void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& mach
 		mSlotTextures[i]->load(GX_TEXMAP0);
 		for (int j = 0; j < vectorsPerCard / 4; j++) {
 			GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, 0x4);
-			float id     = i * vectorsPerCard;
+			f32 id       = i * vectorsPerCard;
 			Vector3f vec = _FC[4 * i];
 			GXPosition3f32(vec.x, vec.y, vec.z);
 			vec = _100[4 * i];
@@ -1074,7 +1048,7 @@ void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& mach
 		GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX1, GX_POS_XYZ, GX_F32, 0);
 		GXSetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_TEXC, GX_CC_C0, GX_CC_CPREV);
 		GXSetTevColorOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
-		GXSetTevAlphaIn(GX_TEVSTAGE1, GX_ZERO, GX_ZERO, GX_ZERO, GX_CA_APREV);
+		GXSetTevAlphaIn(GX_TEVSTAGE1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
 		GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
 		GXSetTevColor(GX_TEVREG1, (JUtility::TColor)0x00000000);
 
@@ -1088,31 +1062,32 @@ void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& mach
 		machine._6C += sys->mDeltaTime / 2;
 
 		// this bunch seems good
-		float pos = machine._44;
-		float neg = -machine._44;
+		f32 pos = machine._44;
+		f32 neg = -machine._44;
 
 		GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, 0x4);
 
+		f32 z = 0.0f;
 		// --------------------------
-		GXPosition3f32(neg, neg, 0.0f);
-		GXPosition2f32(0.0f, 0.0f);
-		GXPosition3f32(1.0f, 0.0f, 0.0f);
-		GXPosition2f32(machine._68, 0.0f);
+		GXPosition3f32(neg, neg, z);
+		GXPosition2f32(z, z);
+		GXPosition3f32(1.0f, z, z);
+		GXPosition2f32(machine._68, z);
 
-		GXPosition3f32(pos, neg, 0.0f);
-		GXPosition2f32(0.0f, 0.0f);
-		GXPosition3f32(1.0f, 1.0f, 0.0f);
-		GXPosition2f32(machine._68 + 1.0f, 0.0f);
+		GXPosition3f32(pos, neg, z);
+		GXPosition2f32(z, z);
+		GXPosition3f32(1.0f, 1.0f, z);
+		GXPosition2f32(machine._68 + 1.0f, z);
 
-		GXPosition3f32(neg, pos, 0.0f);
-		GXPosition2f32(0.0f, 0.0f);
-		GXPosition3f32(1.0f, 0.0f, 1.0f);
-		GXPosition2f32(machine._68, 0.0f);
+		GXPosition3f32(neg, pos, z);
+		GXPosition2f32(z, z);
+		GXPosition3f32(1.0f, z, 1.0f);
+		GXPosition2f32(machine._68, z);
 
-		GXPosition3f32(pos, pos, 0.0f);
-		GXPosition2f32(0.0f, 0.0f);
+		GXPosition3f32(pos, pos, z);
+		GXPosition2f32(z, z);
 		GXPosition3f32(1.0f, 1.0f, 1.0f);
-		GXPosition2f32(machine._68 + 1.0f, 0.0f);
+		GXPosition2f32(machine._68 + 1.0f, z);
 		// --------------------------
 
 		GXSetNumTevStages(1);
@@ -1131,7 +1106,7 @@ void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& mach
 		}
 	} // end "if (machine._38 != 0 && machine._51)"
 
-	float machineY;
+	f32 machineY;
 
 	if (machine.mPlayerIndex == 0) {
 		machineY = 115.0f;
@@ -1142,12 +1117,9 @@ void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& mach
 	for (int i = 0; i < 4; i++) { }
 }
 
-void LightObj::update() { }
-
-/*
- * --INFO--
- * Address:	80238B0C
- * Size:	000028
+/**
+ * @note Address: 0x80238B0C
+ * @note Size: 0x28
  */
 void VsGame::CardMgr::SlotMachine::startZoomIn()
 {
@@ -1158,10 +1130,9 @@ void VsGame::CardMgr::SlotMachine::startZoomIn()
 	_50 = 0;
 }
 
-/*
- * --INFO--
- * Address:	80238B34
- * Size:	000020
+/**
+ * @note Address: 0x80238B34
+ * @note Size: 0x20
  */
 void VsGame::CardMgr::SlotMachine::startZoomUse()
 {
@@ -1171,10 +1142,9 @@ void VsGame::CardMgr::SlotMachine::startZoomUse()
 	_48 = 30.0f;
 }
 
-/*
- * --INFO--
- * Address:	80238B54
- * Size:	0001F0
+/**
+ * @note Address: 0x80238B54
+ * @note Size: 0x1F0
  */
 void VsGame::CardMgr::SlotMachine::updateZoomIn()
 {
@@ -1192,15 +1162,15 @@ void VsGame::CardMgr::SlotMachine::updateZoomIn()
 			_3C -= 1.0f;
 		}
 
-		_44 = pikmin2_sinf(_3C * TAU) * 5.0f + 30.0f;
-		_48 = pikmin2_sinf(_3C * TAU * 2.0f) * 5.0f + 30.0f;
-		_40 = pikmin2_cosf(_3C * TAU) * 10.0f * DEG2RAD * PI;
+		_44 = sinf(_3C * TAU) * 5.0f + 30.0f;
+		_48 = sinf(_3C * TAU * 2.0f) * 5.0f + 30.0f;
+		_40 = cosf(_3C * TAU) * 10.0f * DEG2RAD * PI;
 	}
 }
-/*
- * --INFO--
- * Address:	80238D44
- * Size:	000128
+
+/**
+ * @note Address: 0x80238D44
+ * @note Size: 0x128
  */
 void VsGame::CardMgr::SlotMachine::updateZoomUse()
 {
@@ -1209,16 +1179,15 @@ void VsGame::CardMgr::SlotMachine::updateZoomUse()
 		_3C -= 1.0f;
 	}
 
-	_44 = pikmin2_sinf(_3C * TAU) * 5.0f + 30.0f;
+	_44 = sinf(_3C * TAU) * 5.0f + 30.0f;
 	_48 = -(_3C * 30.0f - 30.0f);
-	_40 = (pikmin2_cosf(_3C * TAU) * 5.0f + 5.0f) * 360.0f * DEG2RAD * PI;
+	_40 = (cosf(_3C * TAU) * 5.0f + 5.0f) * 360.0f * DEG2RAD * PI;
 }
 } // namespace VsGame
 } // namespace Game
 
-/*
- * --INFO--
- * Address:	80238E6C
- * Size:	000008
+/**
+ * @note Address: 0x80238E6C
+ * @note Size: 0x8
  */
-void efx2d::TBase::setGroup(unsigned char a1) { _05 = a1; }
+void efx2d::TBase::setGroup(u8 a1) { _05 = a1; }

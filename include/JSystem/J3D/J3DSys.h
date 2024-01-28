@@ -55,6 +55,8 @@ struct J3DSys {
 	void setMatPacket(J3DMatPacket* pPacket) { mMatPacket = pPacket; }
 	void setMaterialMode(u32 mode) { mMaterialMode = mode; }
 
+	J3DMatPacket* getMatPacket() { return mMatPacket; }
+
 	void setTexture(J3DTexture* pTex) { mTexture = pTex; }
 	J3DTexture* getTexture() { return mTexture; }
 
@@ -93,10 +95,12 @@ struct J3DSys {
 
 	J3DModel* getModel() { return mModel; }
 
+	static Vec* getScale() { return &mCurrentS; }
+
 	static Mtx mCurrentMtx;
-	static JGeometry::TVec3f mCurrentS;
-	static JGeometry::TVec3f mParentS;
-	static u16 sTexCoordScaleTable[8][4];
+	static Vec mCurrentS;
+	static Vec mParentS;
+	static J3DTexCoordScaleInfo sTexCoordScaleTable[8];
 
 	Mtx mViewMtx;                   // _000
 	J3DMtxCalc* mMtxCalc;           // _030
@@ -119,6 +123,12 @@ struct J3DSys {
 	void* mVtxNorm;                 // _110
 	GXColor* mVtxColor;             // _114
 	Vec* mNBTScale;                 // _118
+};
+
+enum J3DSysFlag {
+	J3DSysFlag_SkinPosCpu = 0x00000004,
+	J3DSysFlag_SkinNrmCpu = 0x00000008,
+	J3DSysFlag_PostTexMtx = 0x40000000,
 };
 
 extern J3DSys j3dSys;

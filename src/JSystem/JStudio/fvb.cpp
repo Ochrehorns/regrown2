@@ -1,7 +1,6 @@
 #include "JSystem/JStudio/fvb/fvb.h"
-#include "JSystem/JStudio/functionvalue.h"
+#include "JSystem/JStudio/fvb/functionvalue.h"
 #include "JSystem/JStudio/object.h"
-#include "types.h"
 
 /*
     Generated from dpostproc
@@ -129,12 +128,12 @@
         .4byte 0
 */
 
-namespace JStudio::fvb {
+namespace JStudio {
+namespace fvb {
 
-/*
- * --INFO--
- * Address:	8000BB48
- * Size:	00021C
+/**
+ * @note Address: 0x8000BB48
+ * @note Size: 0x21C
  */
 void TObject::prepare(const JStudio::fvb::data::TParse_TBlock& block, JStudio::fvb::TControl* control)
 {
@@ -189,7 +188,7 @@ void TObject::prepare(const JStudio::fvb::data::TParse_TBlock& block, JStudio::f
 			}
 		case 0x12:
 			if (attr) {
-				float* fdata = (float*)data.content;
+				f32* fdata = (f32*)data.content;
 
 				attr->range_set(*fdata, fdata[1]);
 				m = data.next;
@@ -204,8 +203,8 @@ void TObject::prepare(const JStudio::fvb::data::TParse_TBlock& block, JStudio::f
 			}
 		case 0x15:
 			if (attr) {
-				attr->mBegin = *(TFunctionValue::TEOutside*)data.content;
-				attr->mEnd   = *(TFunctionValue::TEOutside*)(data.content + 1);
+				// attr->mBegin = (TFunctionValue::TEOutside)(data.content[0]);
+				// attr->mEnd   = (TFunctionValue::TEOutside)(data.content[1]);
 			}
 		case 0x16:
 			if (attr) {
@@ -371,10 +370,9 @@ void TObject::prepare(const JStudio::fvb::data::TParse_TBlock& block, JStudio::f
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BD64
- * Size:	00000C
+/**
+ * @note Address: 0x8000BD64
+ * @note Size: 0xC
  */
 void getCompositeData_raw_(const void*)
 {
@@ -386,10 +384,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BD70
- * Size:	00000C
+/**
+ * @note Address: 0x8000BD70
+ * @note Size: 0xC
  */
 void getCompositeData_index_(const void*)
 {
@@ -400,10 +397,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BD7C
- * Size:	00000C
+/**
+ * @note Address: 0x8000BD7C
+ * @note Size: 0xC
  */
 void getCompositeData_parameter_(const void*)
 {
@@ -415,10 +411,9 @@ void getCompositeData_parameter_(const void*)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BD88
- * Size:	00000C
+/**
+ * @note Address: 0x8000BD88
+ * @note Size: 0xC
  */
 void getCompositeData_add_(const void*)
 {
@@ -429,10 +424,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BD94
- * Size:	00000C
+/**
+ * @note Address: 0x8000BD94
+ * @note Size: 0xC
  */
 void getCompositeData_subtract_(const void*)
 {
@@ -443,10 +437,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BDA0
- * Size:	00000C
+/**
+ * @note Address: 0x8000BDA0
+ * @note Size: 0xC
  */
 void getCompositeData_multiply_(const void*)
 {
@@ -457,10 +450,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BDAC
- * Size:	00000C
+/**
+ * @note Address: 0x8000BDAC
+ * @note Size: 0xC
  */
 void getCompositeData_divide_(const void*)
 {
@@ -471,10 +463,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BDB8
- * Size:	00006C
+/**
+ * @note Address: 0x8000BDB8
+ * @note Size: 0x6C
  */
 
 void TObject_composite::prepare_data_(const JStudio::fvb::data::TParse_TParagraph::TData&, JStudio::fvb::TControl*)
@@ -511,10 +502,9 @@ void TObject_composite::prepare_data_(const JStudio::fvb::data::TParse_TParagrap
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BE24
- * Size:	000010
+/**
+ * @note Address: 0x8000BE24
+ * @note Size: 0x10
  */
 void TObject_constant::prepare_data_(const JStudio::fvb::data::TParse_TParagraph::TData&, JStudio::fvb::TControl*)
 {
@@ -527,10 +517,9 @@ void TObject_constant::prepare_data_(const JStudio::fvb::data::TParse_TParagraph
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BE34
- * Size:	000018
+/**
+ * @note Address: 0x8000BE34
+ * @note Size: 0x18
  */
 void TObject_transition::prepare_data_(const JStudio::fvb::data::TParse_TParagraph::TData&, JStudio::fvb::TControl*)
 {
@@ -545,10 +534,9 @@ void TObject_transition::prepare_data_(const JStudio::fvb::data::TParse_TParagra
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BE4C
- * Size:	000020
+/**
+ * @note Address: 0x8000BE4C
+ * @note Size: 0x20
  */
 void TObject_list::prepare_data_(const JStudio::fvb::data::TParse_TParagraph::TData&, JStudio::fvb::TControl*)
 {
@@ -565,10 +553,9 @@ void TObject_list::prepare_data_(const JStudio::fvb::data::TParse_TParagraph::TD
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BE6C
- * Size:	000030
+/**
+ * @note Address: 0x8000BE6C
+ * @note Size: 0x30
  */
 void TObject_list_parameter::prepare_data_(const JStudio::fvb::data::TParse_TParagraph::TData&, JStudio::fvb::TControl*)
 {
@@ -589,10 +576,9 @@ void TObject_list_parameter::prepare_data_(const JStudio::fvb::data::TParse_TPar
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BE9C
- * Size:	000038
+/**
+ * @note Address: 0x8000BE9C
+ * @note Size: 0x38
  */
 void TObject_hermite::prepare_data_(const JStudio::fvb::data::TParse_TParagraph::TData&, JStudio::fvb::TControl*)
 {
@@ -615,10 +601,9 @@ void TObject_hermite::prepare_data_(const JStudio::fvb::data::TParse_TParagraph:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BED4
- * Size:	000030
+/**
+ * @note Address: 0x8000BED4
+ * @note Size: 0x30
  */
 TControl::TControl()
 {
@@ -638,10 +623,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BF04
- * Size:	00006C
+/**
+ * @note Address: 0x8000BF04
+ * @note Size: 0x6C
  */
 TControl::~TControl()
 {
@@ -680,10 +664,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000BF70
- * Size:	000094
+/**
+ * @note Address: 0x8000BF70
+ * @note Size: 0x94
  */
 TObject* TControl::getObject(void const*, u32)
 {
@@ -729,10 +712,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C004
- * Size:	00009C
+/**
+ * @note Address: 0x8000C004
+ * @note Size: 0x9C
  */
 void find_if(JGadget::TNodeLinkList::iterator, JGadget::TNodeLinkList::iterator, JStudio::object::TPRObject_ID_equal)
 {
@@ -786,12 +768,11 @@ void find_if(JGadget::TNodeLinkList::iterator, JGadget::TNodeLinkList::iterator,
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C0A0
- * Size:	00007C
+/**
+ * @note Address: 0x8000C0A0
+ * @note Size: 0x7C
  */
-TObject* TControl::getObject_index(unsigned long)
+TObject* TControl::getObject_index(u32)
 {
 	/*
 stwu     r1, -0x10(r1)
@@ -840,10 +821,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C11C
- * Size:	000048
+/**
+ * @note Address: 0x8000C11C
+ * @note Size: 0x48
  */
 TFactory::~TFactory()
 {
@@ -871,10 +851,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C164
- * Size:	000308
+/**
+ * @note Address: 0x8000C164
+ * @note Size: 0x308
  */
 TObject* TFactory::create(const JStudio::fvb::data::TParse_TBlock&)
 {
@@ -1119,10 +1098,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C46C
- * Size:	00003C
+/**
+ * @note Address: 0x8000C46C
+ * @note Size: 0x3C
  */
 void TFactory::destroy(JStudio::fvb::TObject*)
 {
@@ -1147,10 +1125,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C4A8
- * Size:	000020
+/**
+ * @note Address: 0x8000C4A8
+ * @note Size: 0x20
  */
 TParse::TParse(JStudio::fvb::TControl*)
 {
@@ -1166,10 +1143,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C4C8
- * Size:	000060
+/**
+ * @note Address: 0x8000C4C8
+ * @note Size: 0x60
  */
 TParse::~TParse()
 {
@@ -1203,12 +1179,11 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C528
- * Size:	000098
+/**
+ * @note Address: 0x8000C528
+ * @note Size: 0x98
  */
-bool TParse::parseHeader_next(const void**, unsigned long*, unsigned long)
+bool TParse::parseHeader_next(const void**, u32*, u32)
 {
 	/*
 stwu     r1, -0x10(r1)
@@ -1260,12 +1235,11 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C5C0
- * Size:	000118
+/**
+ * @note Address: 0x8000C5C0
+ * @note Size: 0x118
  */
-bool TParse::parseBlock_next(const void**, unsigned long*, unsigned long)
+bool TParse::parseBlock_next(const void**, u32*, u32)
 {
 	/*
 stwu     r1, -0x40(r1)
@@ -1355,10 +1329,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C6D8
- * Size:	00008C
+/**
+ * @note Address: 0x8000C6D8
+ * @note Size: 0x8C
  */
 TObject_hermite::~TObject_hermite()
 {
@@ -1407,10 +1380,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C764
- * Size:	00008C
+/**
+ * @note Address: 0x8000C764
+ * @note Size: 0x8C
  */
 TObject_list_parameter::~TObject_list_parameter()
 {
@@ -1459,10 +1431,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C7F0
- * Size:	00008C
+/**
+ * @note Address: 0x8000C7F0
+ * @note Size: 0x8C
  */
 TObject_list::~TObject_list()
 {
@@ -1511,10 +1482,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C87C
- * Size:	00008C
+/**
+ * @note Address: 0x8000C87C
+ * @note Size: 0x8C
  */
 TObject_transition::~TObject_transition()
 {
@@ -1563,10 +1533,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C908
- * Size:	00008C
+/**
+ * @note Address: 0x8000C908
+ * @note Size: 0x8C
  */
 TObject_constant::~TObject_constant()
 {
@@ -1615,10 +1584,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8000C994
- * Size:	0000A8
+/**
+ * @note Address: 0x8000C994
+ * @note Size: 0xA8
  */
 TObject_composite::~TObject_composite()
 {
@@ -1675,4 +1643,5 @@ addi     r1, r1, 0x10
 blr
 	*/
 }
-} // namespace JStudio::fvb
+} // namespace fvb
+} // namespace JStudio

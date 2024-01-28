@@ -86,12 +86,19 @@ struct ArgScale : public Arg {
 	f32 mScale; // _10
 };
 
-struct ArgScaleTime : public Arg {
+enum ChouType {
+	CHOU_Yellow = 0,
+	CHOU_Red    = 1,
+	CHOU_Purple = 2,
+};
+
+struct ArgScaleTime : public Arg
+{
 	ArgScaleTime(Vector3f position, f32 scale, f32 time)
 	    : Arg(position)
 	{
 		mScale = scale;
-		mTime  = time;
+		mTime = time;
 	}
 	/**
 	 * @reifiedAddress{80107C44}
@@ -107,9 +114,10 @@ struct ArgScaleTime : public Arg {
 };
 
 struct ArgChou : public Arg {
-	ArgChou(Vector3f position)
-	    : Arg(position)
+	ArgChou()
+	    : Arg()
 	{
+		mType = CHOU_Yellow;
 	}
 
 	virtual const char* getName() // _08 (weak)
@@ -117,7 +125,7 @@ struct ArgChou : public Arg {
 		return "ArgChou";
 	}
 
-	int mType; // _10
+	ChouType mType; // _10
 };
 
 struct ArgCursor : public Arg {
@@ -157,7 +165,7 @@ struct ArgDenkiHiba : public Arg {
 	// _00-_10 = Arg
 	Vector3f mOwnerPos;  // _10
 	Vector3f mTargetPos; // _1C
-	int _28;             // _28
+	int mType;           // _28
 };
 
 struct ArgDir : public Arg {
@@ -177,17 +185,22 @@ struct ArgDir : public Arg {
 };
 
 struct ArgDopingSmoke : public Arg {
-	ArgDopingSmoke(Vector3f position)
+	ArgDopingSmoke(Vector3f& position, Vector3f& dopepos, u16 type)
 	    : Arg(position)
 	{
+		mDopePos  = dopepos;
+		mDopeType = type;
 	}
 
 	virtual const char* getName() // _08 (weak)
 	{
 		return "ArgDopingSmoke";
 	}
-	Vector3f mDopePos;
-	u16 mDopeType;
+
+	// _00     = VTBL
+	// _00-_10 = Arg
+	Vector3f mDopePos; // _10
+	u16 mDopeType;     // _1C
 };
 
 struct ArgGasuHiba : public Arg {
@@ -209,6 +222,11 @@ struct ArgImoEat : public Arg {
 	{
 	}
 
+	ArgImoEat(Game::EnemyBase* enemy)
+	    : Arg(enemy)
+	{
+	}
+
 	virtual const char* getName() // _08 (weak)
 	{
 		return "ArgImoEat";
@@ -223,18 +241,27 @@ struct ArgKchYodare : public Arg {
 	{
 	}
 
+	ArgKchYodare(Vector3f position, f32 y)
+	    : Arg(position)
+	{
+		mGroundYPos = y;
+	}
+
 	virtual const char* getName() // _08 (weak)
 	{
 		return "ArgKchYodare";
 	}
-	f32 mScale;
+
+	// _00     = VTBL
+	// _00-_10 = Arg
+	f32 mGroundYPos; // _10
 };
 
 struct ArgKouhai : public Arg {
 	ArgKouhai(Vector3f position, int type)
 	    : Arg(position)
 	{
-		_10 = type;
+		mSize = type;
 	}
 
 	virtual const char* getName() // _08 (weak)
@@ -244,11 +271,11 @@ struct ArgKouhai : public Arg {
 
 	// _00     = VTBL
 	// _00-_10 = Arg
-	int _10; // _10
+	int mSize; // _10
 };
 
 struct ArgPelType : public Arg {
-	ArgPelType(int type, Vector3f position)
+	ArgPelType(int type, Vector3f& position)
 	    : Arg(position)
 	{
 		mType = type;
@@ -289,9 +316,10 @@ struct ArgPosPos : public Arg {
 };
 
 struct ArgPrmColor : public Arg {
-	ArgPrmColor(Vector3f position)
+	ArgPrmColor(Vector3f& position)
 	    : Arg(position)
 	{
+		mColor = Color4(255, 255, 255, 255);
 	}
 
 	virtual const char* getName() // _08 (weak)

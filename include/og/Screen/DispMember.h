@@ -90,7 +90,7 @@ struct DispMemberDayEndCount : public DispMemberBase {
 	}
 
 	virtual u32 getSize() { return sizeof(DispMemberDayEndCount); } // _08 (weak)
-	virtual u32 getOwnerID() { return OWNER_OGA; }                  // _0C (weak)
+	virtual u32 getOwnerID() { return OWNER_MRMR; }                 // _0C (weak)
 	virtual u64 getMemberID() { return MEMBER_DAY_END_COUNT; }      // _10 (weak)
 
 	// _00     = VTBL
@@ -109,7 +109,7 @@ struct DispMemberHurryUp : public DispMemberBase {
 	}
 
 	virtual u32 getSize() { return sizeof(DispMemberHurryUp); } // _08 (weak)
-	virtual u32 getOwnerID() { return OWNER_OGA; }              // _0C (weak)
+	virtual u32 getOwnerID() { return OWNER_MRMR; }             // _0C (weak)
 	virtual u64 getMemberID() { return MEMBER_HURRY_UP; }       // _10 (weak)
 
 	// _00     = VTBL
@@ -128,7 +128,7 @@ struct DispMemberCave : public DispMemberBase {
 		mTreasureDist      = 900.0f;
 		mDrawSensor        = false;
 		mRadarState        = 1;
-		_5F                = false;
+		mAppearRadar       = false;
 		mIsBitterUnlocked  = false;
 		mIsSpicyUnlocked   = false;
 		mRadarEnabled      = false;
@@ -148,8 +148,8 @@ struct DispMemberCave : public DispMemberBase {
 	int mRadarState;         // _58
 	u8 mDrawSensor;          // _5C
 	u8 mPayDebt;             // _5D
-	u8 mIsFinalFloor;        // _5E
-	u8 _5F;                  // _5F
+	bool mIsFinalFloor;      // _5E
+	u8 mAppearRadar;         // _5F
 	bool mRadarEnabled;      // _60
 	bool mAllTreasureGotten; // _61
 	bool mIsBitterUnlocked;  // _62, have made first bitter spray from berries
@@ -166,7 +166,6 @@ struct DispMemberCaveMore : public DispMemberAnaDemo {
 		mCaveOtakaraNum = 4;
 		mCaveOtakaraMax = 4;
 		mPikis          = 10;
-		mCaveID         = '2p_c';
 	}
 
 	virtual u32 getSize() { return sizeof(DispMemberCaveMore); } // _08 (weak)
@@ -481,6 +480,18 @@ struct DispMemberSMenuCont : public DispMemberBase {
 
 // size 0x28
 struct DispMemberSMenuItem : public DispMemberBase {
+	DispMemberSMenuItem()
+	{
+		mSpicySprayCount  = 111;
+		mSpicyBerryCount  = 22;
+		mBitterSprayCount = 333;
+		mBitterBerryCount = 44;
+		for (int i = 0; i < 12; i++) {
+			mExplorationKitInventory[i] = 0;
+		}
+		mIsBitterUnlocked = false;
+		mIsSpicyUnlocked  = false;
+	}
 
 	virtual u32 getSize() { return sizeof(DispMemberSMenuItem); } // _08 (weak)
 	virtual u32 getOwnerID() { return OWNER_OGA; }                // _0C (weak)
@@ -499,6 +510,18 @@ struct DispMemberSMenuItem : public DispMemberBase {
 
 // size 0x4C
 struct DispMemberSMenuMap : public DispMemberBase {
+	DispMemberSMenuMap()
+	{
+		mInCave          = false;
+		mActiveNavi      = false;
+		mCourseIndex     = 0;
+		mCurrentCave     = 't_01';
+		mUnlockedReds    = true;
+		mUnlockedYellows = true;
+		mUnlockedBlues   = true;
+		mUnlockedWhites  = true;
+		mUnlockedPurples = true;
+	}
 
 	virtual u32 getSize() { return sizeof(DispMemberSMenuMap); } // _08 (weak)
 	virtual u32 getOwnerID() { return OWNER_OGA; }               // _0C (weak)
@@ -520,6 +543,12 @@ struct DispMemberSMenuMap : public DispMemberBase {
 
 // size 0x14
 struct DispMemberSMenuPause : public DispMemberBase {
+	DispMemberSMenuPause()
+	{
+		mDebtRemaining = 1234;
+		mPokoCount     = 2469;
+		mExitStatus    = 1;
+	}
 
 	virtual u32 getSize() { return sizeof(DispMemberSMenuPause); } // _08 (weak)
 	virtual u32 getOwnerID() { return OWNER_OGA; }                 // _0C (weak)
@@ -573,7 +602,11 @@ struct DispMemberSMenuPauseVS : public DispMemberBase {
 
 // size 0xC4
 struct DispMemberSMenuAll : public DispMemberBase {
-	DispMemberSMenuAll();
+	DispMemberSMenuAll()
+	{
+		mOpenMode = 0;
+		mIsDay1   = false;
+	}
 
 	enum OpenType {
 		Open_StoryMode, // start on map
@@ -584,6 +617,15 @@ struct DispMemberSMenuAll : public DispMemberBase {
 	virtual u32 getSize() { return sizeof(DispMemberSMenuAll); } // _08 (weak)
 	virtual u32 getOwnerID() { return OWNER_OGA; }               // _0C (weak)
 	virtual u64 getMemberID() { return MEMBER_START_MENU_ALL; }  // _10 (weak)
+	virtual void doSetSubMemberAll()
+	{
+		setSubMember(&mSMenuPause);
+		setSubMember(&mSMenuPauseDoukutu);
+		setSubMember(&mSMenuItem);
+		setSubMember(&mSMenuMap);
+		setSubMember(&mSMenuVS);
+		setSubMember(&mSMenuCont);
+	} // _14 (weak)
 
 	// _00     = VTBL
 	// _00-_08 = DispMemberBase

@@ -5,10 +5,9 @@ namespace SnakeCrow {
 
 static const char snakeCrowMgrName[] = "246-SnakeCrowMgr";
 
-/*
- * --INFO--
- * Address:	80292B9C
- * Size:	000050
+/**
+ * @note Address: 0x80292B9C
+ * @note Size: 0x50
  */
 Mgr::Mgr(int objLimit, u8 modelType)
     : EnemyMgrBase(objLimit, modelType)
@@ -16,39 +15,35 @@ Mgr::Mgr(int objLimit, u8 modelType)
 	mName = "ヘビガラスマネージャ"; // snake crow manager
 }
 
-/*
- * --INFO--
- * Address:	80292BEC
- * Size:	000048
+/**
+ * @note Address: 0x80292BEC
+ * @note Size: 0x48
  */
 void Mgr::doAlloc() { init(new Parms); }
 
-/*
- * --INFO--
- * Address:	80292DC4
- * Size:	000060
+/**
+ * @note Address: 0x80292DC4
+ * @note Size: 0x60
  */
 void Mgr::createObj(int count) { mObj = new Obj[count]; }
 
-/*
- * --INFO--
- * Address:	80292EE0
- * Size:	000010
+/**
+ * @note Address: 0x80292EE0
+ * @note Size: 0x10
  */
 EnemyBase* Mgr::getEnemy(int index) { return &mObj[index]; }
 
-/*
- * --INFO--
- * Address:	80292EF0
- * Size:	000068
+/**
+ * @note Address: 0x80292EF0
+ * @note Size: 0x68
  */
 void Mgr::loadModelData()
 {
 	EnemyMgrBase::loadModelData();
 	J3DShape* shape;
 	for (u16 j = 0; j < mModelData->getShapeNum(); j++) {
-		shape         = mModelData->mShapeTable.mItems[j];
-		shape->mFlags = (shape->mFlags & (~0xF000)) | 0x2000;
+		shape = mModelData->mShapeTable.mItems[j];
+		shape->setTexMtxLoadType(0x2000);
 	}
 }
 

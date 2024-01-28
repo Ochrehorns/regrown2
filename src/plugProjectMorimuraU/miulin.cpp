@@ -11,17 +11,15 @@
 namespace Game {
 namespace Miulin {
 
-/*
- * --INFO--
- * Address:	80364454
- * Size:	000020
+/**
+ * @note Address: 0x80364454
+ * @note Size: 0x20
  */
 void Obj::setParameters() { EnemyBase::setParameters(); }
 
-/*
- * --INFO--
- * Address:	80364474
- * Size:	0000B0
+/**
+ * @note Address: 0x80364474
+ * @note Size: 0xB0
  */
 void Obj::birth(Vector3f& position, f32 faceDirection)
 {
@@ -37,27 +35,25 @@ void Obj::birth(Vector3f& position, f32 faceDirection)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80364524
- * Size:	0000B4
+/**
+ * @note Address: 0x80364524
+ * @note Size: 0xB4
  */
 void Obj::onInit(CreatureInitArg* initArg)
 {
 	EnemyBase::onInit(initArg);
 	mKoshiJoint = mModel->getJoint("jnt_koshi");
 	P2ASSERTLINE(74, mKoshiJoint);
-	_2D0 = 0;
-	_2D4 = mHomePosition;
-	_2E0 = 0;
-	_2E4 = false;
+	_2D0         = 0;
+	_2D4         = mHomePosition;
+	_2E0         = 0;
+	mIsSearching = false;
 	mFsm->start(this, MIULIN_Wait, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	803645D8
- * Size:	000140
+/**
+ * @note Address: 0x803645D8
+ * @note Size: 0x140
  */
 Obj::Obj()
 {
@@ -66,10 +62,9 @@ Obj::Obj()
 	setFSM(new FSM);
 }
 
-/*
- * --INFO--
- * Address:	80364764
- * Size:	000080
+/**
+ * @note Address: 0x80364764
+ * @note Size: 0x80
  */
 void Obj::doUpdate()
 {
@@ -81,38 +76,34 @@ void Obj::doUpdate()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803647E4
- * Size:	000004
+/**
+ * @note Address: 0x803647E4
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	803647E8
- * Size:	000020
+/**
+ * @note Address: 0x803647E8
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	80364808
- * Size:	000088
+/**
+ * @note Address: 0x80364808
+ * @note Size: 0x88
  */
 void Obj::getShadowParam(ShadowParam& param)
 {
-	mKoshiJoint->getWorldMatrix()->getBasis(3, param.mPosition);
+	mKoshiJoint->getWorldMatrix()->getColumn(3, param.mPosition);
 	param.mPosition.y               = mPosition.y + 2.0f;
 	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
 	param.mBoundingSphere.mRadius   = 20.0f;
 	param.mSize                     = 25.0f;
 }
 
-/*
- * --INFO--
- * Address:	80364890
- * Size:	000040
+/**
+ * @note Address: 0x80364890
+ * @note Size: 0x40
  */
 void Obj::doSimulation(f32 simSpeed)
 {
@@ -124,10 +115,9 @@ void Obj::doSimulation(f32 simSpeed)
 	EnemyBase::doSimulation(simSpeed);
 }
 
-/*
- * --INFO--
- * Address:	803648D0
- * Size:	00002C
+/**
+ * @note Address: 0x803648D0
+ * @note Size: 0x2C
  */
 void Obj::wallCallback(MoveInfo const& moveInfo)
 {
@@ -136,20 +126,15 @@ void Obj::wallCallback(MoveInfo const& moveInfo)
 	mGoalPosition   = mHomePosition;
 }
 
-/*
- * --INFO--
- * Address:	803648FC
- * Size:	000028
+/**
+ * @note Address: 0x803648FC
+ * @note Size: 0x28
  */
-void Obj::startCarcassMotion()
-{
-	startMotion(6, nullptr); // probably needs enum/define
-}
+void Obj::startCarcassMotion() { startMotion(MIULINANIM_Carry, nullptr); }
 
-/*
- * --INFO--
- * Address:	80364924
- * Size:	00006C
+/**
+ * @note Address: 0x80364924
+ * @note Size: 0x6C
  */
 void Obj::initWalkSmokeEffect()
 {
@@ -158,30 +143,24 @@ void Obj::initWalkSmokeEffect()
 	mWalkSmokeMgr.setup(1, mModel, "jnt_footL", 5.0f);
 }
 
-/*
- * --INFO--
- * Address:	80364990
- * Size:	000008
+/**
+ * @note Address: 0x80364990
+ * @note Size: 0x8
  */
 Game::WalkSmokeEffect::Mgr* Obj::getWalkSmokeEffectMgr() { return &mWalkSmokeMgr; }
 
-/*
- * --INFO--
- * Address:	80364998
- * Size:	000534
+/**
+ * @note Address: 0x80364998
+ * @note Size: 0x534
  */
 bool Obj::isAttackStart()
 {
-	f32 atkRadius    = SQUARE(C_PARMS->mGeneral.mAttackRadius.mValue);
-	f32 minAtkRange  = SQUARE(C_PROPERPARMS.mFp08.mValue);
-	f32 contAtkAngle = PI * (DEG2RAD * (C_PROPERPARMS.mFp03.mValue));
+	f32 atkRadius    = SQUARE(C_GENERALPARMS.mAttackRadius.mValue);
+	f32 minAtkRange  = SQUARE(C_PROPERPARMS.mMinAttackRange.mValue);
+	f32 contAtkAngle = PI * (DEG2RAD * (C_PROPERPARMS.mContinuousPressAngle.mValue));
 
 	if (mTargetCreature) {
-		Vector3f targetPos = mTargetCreature->getPosition();
-		Vector3f pos       = getPosition();
-
-		f32 angleDist = angDist(angXZ(targetPos.x, targetPos.z, pos), getFaceDir());
-		if (FABS(angleDist) <= contAtkAngle) {
+		if (FABS(getAngDist(mTargetCreature)) <= contAtkAngle) {
 			Vector3f pos       = Vector3f(mPosition.x, 0.0f, mPosition.z);
 			Vector3f targetPos = Vector3f(mTargetCreature->getPosition().x, 0.0f, mTargetCreature->getPosition().z);
 
@@ -197,17 +176,9 @@ bool Obj::isAttackStart()
 	CI_LOOP(iter)
 	{
 		Piki* piki = *iter;
-		bool check = false;
-		if (piki->isPikmin() && piki->isAlive() && !piki->isStickToMouth()) {
-			check = true;
-		}
 
-		if (check) {
-			Vector3f pikiPos = piki->getPosition();
-			Vector3f pos     = getPosition();
-
-			f32 angleDist = angDist(angXZ(pikiPos.x, pikiPos.z, pos), getFaceDir());
-			if (FABS(angleDist) <= contAtkAngle) {
+		if (piki->isSearchable()) {
+			if (FABS(getAngDist(piki)) <= contAtkAngle) {
 				Vector3f pos       = Vector3f(mPosition.x, 0.0f, mPosition.z);
 				Vector3f targetPos = Vector3f(piki->getPosition().x, 0.0f, piki->getPosition().z);
 
@@ -584,14 +555,13 @@ lbl_80364E80:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80364ECC
- * Size:	0004A4
+/**
+ * @note Address: 0x80364ECC
+ * @note Size: 0x4A4
  */
 bool Obj::isFindTarget()
 {
-	f32 searchAngle = PI * (DEG2RAD * C_PARMS->mGeneral.mSearchAngle.mValue);
+	f32 searchAngle = PI * (DEG2RAD * C_GENERALPARMS.mSearchAngle.mValue);
 	mTargetCreature = nullptr;
 
 	if (isNowCaution()) {
@@ -600,11 +570,11 @@ bool Obj::isFindTarget()
 		return false;
 	}
 
-	f32 searchDist = C_PARMS->mGeneral.mSearchDistance.mValue;
+	f32 searchDist = C_GENERALPARMS.mSearchDistance.mValue;
 	searchDist *= searchDist;
 
-	mTargetCreature = EnemyFunc::getNearestNavi(this, C_PARMS->mGeneral.mSearchAngle.mValue, C_PARMS->mGeneral.mSearchDistance.mValue,
-	                                            &searchDist, nullptr);
+	mTargetCreature
+	    = EnemyFunc::getNearestNavi(this, C_GENERALPARMS.mSearchAngle.mValue, C_GENERALPARMS.mSearchDistance.mValue, &searchDist, nullptr);
 
 	Iterator<Piki> iter(pikiMgr);
 
@@ -614,17 +584,13 @@ bool Obj::isFindTarget()
 	CI_LOOP(iter)
 	{
 		Piki* piki = *iter;
-		bool check = false;
-		if (piki->isPikmin() && piki->isAlive() && !piki->isStickToMouth()) {
-			check = true;
-		}
 
-		if (check && !piki->isStickTo()) {
-			Vector3f pikiPos = piki->getPosition();
-			Vector3f pos     = getPosition();
+		if (piki->isSearchable() && !piki->isStickTo()) {
+			// Vector3f pikiPos = piki->getPosition();
+			// Vector3f pos     = getPosition();
 
-			f32 angleDist = angDist(angXZ(pikiPos.x, pikiPos.z, pos), getFaceDir());
-			if (FABS(angleDist) <= searchAngle) {
+			// f32 angleDist = angDist(angXZ(pikiPos.x, pikiPos.z, pos), getFaceDir());
+			if (FABS(getAngDist(piki)) <= searchAngle) {
 				Vector3f pos       = Vector3f(mPosition.x, 0.0f, mPosition.z);
 				Vector3f targetPos = Vector3f(piki->getPosition().x, 0.0f, piki->getPosition().z);
 
@@ -639,7 +605,7 @@ bool Obj::isFindTarget()
 
 	if (mTargetCreature) {
 		mGoalPosition = mTargetCreature->getPosition();
-		_2E4          = true;
+		mIsSearching  = false;
 		return true;
 	}
 
@@ -974,17 +940,15 @@ lbl_8036532C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80365370
- * Size:	00003C
+/**
+ * @note Address: 0x80365370
+ * @note Size: 0x3C
  */
-bool Obj::isOutOfTerritory() { return sqrDistanceXZ(mHomePosition, mPosition) > SQUARE(C_PARMS->mGeneral.mTerritoryRadius.mValue); }
+bool Obj::isOutOfTerritory() { return sqrDistanceXZ(mHomePosition, mPosition) > SQUARE(C_GENERALPARMS.mTerritoryRadius.mValue); }
 
-/*
- * --INFO--
- * Address:	803653AC
- * Size:	000088
+/**
+ * @note Address: 0x803653AC
+ * @note Size: 0x88
  */
 bool Obj::isProhibitedSearch()
 {
@@ -992,12 +956,12 @@ bool Obj::isProhibitedSearch()
 		return true;
 	}
 
-	if (_2E4) {
-		f32 radius = C_PARMS->mGeneral.mTerritoryRadius.mValue;
+	if (mIsSearching) {
+		f32 radius = C_GENERALPARMS.mTerritoryRadius.mValue;
 		radius *= 0.7f;
 
-		if (mToFlick > 0.0f) {
-			mToFlick = 0.0f;
+		if (mFlickTimer > 0.0f) {
+			mFlickTimer = 0.0f;
 			return false;
 		}
 
@@ -1009,21 +973,19 @@ bool Obj::isProhibitedSearch()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80365434
- * Size:	0000AC
+/**
+ * @note Address: 0x80365434
+ * @note Size: 0xAC
  */
 bool Obj::isStartWalk()
 {
-	f32 viewAngle = C_PARMS->mGeneral.mViewAngle.mValue;
-	if (mToFlick > 0.0f) {
-		viewAngle = 180.0f;
-		mToFlick  = 0.0f;
+	f32 viewAngle = C_GENERALPARMS.mViewAngle.mValue;
+	if (mFlickTimer > 0.0f) {
+		viewAngle   = 180.0f;
+		mFlickTimer = 0.0f;
 	}
 
-	mTargetCreature
-	    = EnemyFunc::getNearestPikminOrNavi(this, viewAngle, C_PARMS->mGeneral.mSearchDistance.mValue, nullptr, nullptr, nullptr);
+	mTargetCreature = EnemyFunc::getNearestPikminOrNavi(this, viewAngle, C_GENERALPARMS.mSearchDistance.mValue, nullptr, nullptr, nullptr);
 
 	if (mTargetCreature) {
 		mGoalPosition = mTargetCreature->getPosition();
@@ -1033,22 +995,20 @@ bool Obj::isStartWalk()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803654E0
- * Size:	00002C
+/**
+ * @note Address: 0x803654E0
+ * @note Size: 0x2C
  */
 void Obj::setReturnState()
 {
 	mTargetCreature = nullptr;
-	_2E4            = true;
+	mIsSearching    = true;
 	mGoalPosition   = mHomePosition;
 }
 
-/*
- * --INFO--
- * Address:	8036550C
- * Size:	000270
+/**
+ * @note Address: 0x8036550C
+ * @note Size: 0x270
  */
 void Obj::walkFunc()
 {
@@ -1057,28 +1017,16 @@ void Obj::walkFunc()
 	f32 dashSpeedMultiplier = 1.0f;
 	f32 dashAnimScale       = 1.0f;
 
-	if (mTargetCreature) {
-		Vector3f targetPos = mTargetCreature->getPosition();
-		Vector3f pos       = getPosition();
-
-		f32 angleDist = angDist(angXZ(targetPos.x, targetPos.z, pos), getFaceDir());
-
-		if (FABS(angleDist) < PI * (DEG2RAD * C_PROPERPARMS.mFp07.mValue)) {
-			dashSpeedMultiplier = C_PROPERPARMS.mFp04.mValue;
-			dashAnimScale       = C_PROPERPARMS.mFp05.mValue;
-			setEmotionExcitement();
-		}
+	if (mTargetCreature && FABS(getAngDist(mTargetCreature)) < PI * (DEG2RAD * C_PROPERPARMS.mDashableAngle.mValue)) {
+		dashSpeedMultiplier = C_PROPERPARMS.mDashSpeedMultiplier.mValue;
+		dashAnimScale       = C_PROPERPARMS.mDashAnimationScale.mValue;
+		setEmotionExcitement();
 	} else {
 		setEmotionCaution();
 	}
 
-	f32 dashSpeed = dashSpeedMultiplier * C_PARMS->mGeneral.mMoveSpeed.mValue;
+	setTargetVelocity(dashSpeedMultiplier);
 
-	f32 x = (f32)sin(getFaceDir());
-	f32 y = getTargetVelocity().y;
-	f32 z = (f32)cos(getFaceDir());
-
-	mTargetVelocity = Vector3f(dashSpeed * x, y, dashSpeed * z);
 	setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed * dashAnimScale);
 
 	_2E0++;
@@ -1261,10 +1209,9 @@ lbl_80365748:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8036577C
- * Size:	00017C
+/**
+ * @note Address: 0x8036577C
+ * @note Size: 0x17C
  */
 f32 Obj::turnFunc(f32 factor)
 {
@@ -1274,273 +1221,58 @@ f32 Obj::turnFunc(f32 factor)
 		targetPos = mTargetCreature->getPosition();
 	}
 
-	f32 turnSpeed  = factor * C_PARMS->mGeneral.mRotationalSpeed.mValue;
-	f32 turnFactor = factor * C_PARMS->mGeneral.mRotationalAccel.mValue;
-
-	Vector3f pos = getPosition();
-
-	f32 angleDist = angDist(_angXZ(targetPos.x, targetPos.z, pos.x, pos.z), getFaceDir());
-
-	f32 turnDist  = angleDist * turnFactor;
-	f32 turnLimit = PI * (DEG2RAD * turnSpeed);
-
-	if (FABS(turnDist) > turnLimit) {
-		turnDist = (turnDist > 0.0f) ? turnLimit : -turnLimit;
-	}
-
-	mFaceDir    = roundAng(turnDist + getFaceDir());
-	mRotation.y = mFaceDir;
+	f32 angleDist = turnToTarget2(targetPos, factor * C_GENERALPARMS.mTurnSpeed(), factor * C_GENERALPARMS.mMaxTurnAngle());
 
 	return FABS(angleDist);
-	/*
-	stwu     r1, -0x70(r1)
-	mflr     r0
-	stw      r0, 0x74(r1)
-	stfd     f31, 0x60(r1)
-	psq_st   f31, 104(r1), 0, qr0
-	stfd     f30, 0x50(r1)
-	psq_st   f30, 88(r1), 0, qr0
-	stfd     f29, 0x40(r1)
-	psq_st   f29, 72(r1), 0, qr0
-	stfd     f28, 0x30(r1)
-	psq_st   f28, 56(r1), 0, qr0
-	stw      r31, 0x2c(r1)
-	mr       r31, r3
-	fmr      f30, f1
-	lwz      r4, 0x230(r3)
-	lfs      f31, 0x2bc(r3)
-	cmplwi   r4, 0
-	lfs      f28, 0x2c4(r3)
-	beq      lbl_803657E4
-	lwz      r12, 0(r4)
-	addi     r3, r1, 0x14
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f31, 0x14(r1)
-	lfs      f28, 0x1c(r1)
-
-lbl_803657E4:
-	lwz      r5, 0xc0(r31)
-	mr       r4, r31
-	lwz      r12, 0(r31)
-	addi     r3, r1, 8
-	lfs      f1, 0x334(r5)
-	lfs      f0, 0x30c(r5)
-	lwz      r12, 8(r12)
-	fmuls    f29, f30, f1
-	fmuls    f30, f30, f0
-	mtctr    r12
-	bctrl
-	lfs      f1, 8(r1)
-	lis      r3, atanTable___5JMath@ha
-	lfs      f0, 0x10(r1)
-	addi     r3, r3, atanTable___5JMath@l
-	fsubs    f1, f31, f1
-	fsubs    f2, f28, f0
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	bl       roundAng__Ff
-	lwz      r12, 0(r31)
-	fmr      f31, f1
-	mr       r3, r31
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fmr      f2, f1
-	fmr      f1, f31
-	bl       angDist__Fff
-	fmr      f31, f1
-	lfs      f0, lbl_8051E830@sda21(r2)
-	lfs      f1, lbl_8051E82C@sda21(r2)
-	fmuls    f0, f0, f29
-	fmuls    f29, f31, f30
-	fmuls    f1, f1, f0
-	fabs     f0, f29
-	frsp     f0, f0
-	fcmpo    cr0, f0, f1
-	ble      lbl_80365894
-	lfs      f0, lbl_8051E818@sda21(r2)
-	fcmpo    cr0, f29, f0
-	ble      lbl_80365890
-	fmr      f29, f1
-	b        lbl_80365894
-
-lbl_80365890:
-	fneg     f29, f1
-
-lbl_80365894:
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fadds    f1, f29, f1
-	bl       roundAng__Ff
-	stfs     f1, 0x1fc(r31)
-	fabs     f1, f31
-	lfs      f0, 0x1fc(r31)
-	frsp     f1, f1
-	stfs     f0, 0x1a8(r31)
-	psq_l    f31, 104(r1), 0, qr0
-	lfd      f31, 0x60(r1)
-	psq_l    f30, 88(r1), 0, qr0
-	lfd      f30, 0x50(r1)
-	psq_l    f29, 72(r1), 0, qr0
-	lfd      f29, 0x40(r1)
-	psq_l    f28, 56(r1), 0, qr0
-	lfd      f28, 0x30(r1)
-	lwz      r0, 0x74(r1)
-	lwz      r31, 0x2c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x70
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	803658F8
- * Size:	000050
+/**
+ * @note Address: 0x803658F8
+ * @note Size: 0x50
  */
-bool Obj::isReachToGoal(f32 radius)
+bool Obj::isReachToGoal(f32 distance)
 {
-	if (_2E4) {
-		radius = C_PARMS->mGeneral.mHomeRadius.mValue;
+	if (mIsSearching) {
+		distance = C_GENERALPARMS.mHomeRadius.mValue;
 	}
 
-	if (sqrDistanceXZ(mPosition, mGoalPosition) < SQUARE(radius)) {
+	if (sqrDistanceXZ(mPosition, mGoalPosition) < SQUARE(distance)) {
 		return true;
 	}
 
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80365948
- * Size:	00015C
+// sigh
+static void fixData(f32& p1, f32& p2, f32& p3)
+{
+	p1 = RAND_MAX;
+	p2 = -325.9493f;
+	p3 = 325.9493f;
+}
+
+/**
+ * @note Address: 0x80365948
+ * @note Size: 0x15C
  */
 void Obj::setNextGoal()
 {
-	if (_2E4) {
+	if (mIsSearching) {
 		mGoalPosition = mHomePosition;
 		return;
 	}
 
-	f32 radius    = C_PARMS->mGeneral.mTerritoryRadius.mValue;
+	f32 radius    = C_GENERALPARMS.mTerritoryRadius.mValue;
 	mGoalPosition = mHomePosition;
 
-	// this TAU needs to load in after the consts in the sin/cos functions ._.
-	// some vector-generating inline maybe? who knows.
 	f32 angle = TAU * randFloat();
-
-	mGoalPosition.x += radius * pikmin2_sinf(angle);
-	mGoalPosition.z += radius * pikmin2_cosf(angle);
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stfd     f31, 0x30(r1)
-	psq_st   f31, 56(r1), 0, qr0
-	stw      r31, 0x2c(r1)
-	mr       r31, r3
-	lbz      r0, 0x2e4(r3)
-	cmplwi   r0, 0
-	beq      lbl_8036598C
-	lfs      f0, 0x198(r31)
-	stfs     f0, 0x2bc(r31)
-	lfs      f0, 0x19c(r31)
-	stfs     f0, 0x2c0(r31)
-	lfs      f0, 0x1a0(r31)
-	stfs     f0, 0x2c4(r31)
-	b        lbl_80365A88
-
-lbl_8036598C:
-	lwz      r3, 0xc0(r31)
-	lfs      f0, 0x198(r31)
-	lfs      f31, 0x35c(r3)
-	stfs     f0, 0x2bc(r31)
-	lfs      f0, 0x19c(r31)
-	stfs     f0, 0x2c0(r31)
-	lfs      f0, 0x1a0(r31)
-	stfs     f0, 0x2c4(r31)
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0xc(r1)
-	lfd      f3, lbl_8051E858@sda21(r2)
-	stw      r0, 8(r1)
-	lfs      f2, lbl_8051E844@sda21(r2)
-	lfd      f0, 8(r1)
-	lfs      f1, lbl_8051E850@sda21(r2)
-	fsubs    f3, f0, f3
-	lfs      f0, lbl_8051E818@sda21(r2)
-	fdivs    f2, f3, f2
-	fmuls    f3, f1, f2
-	fcmpo    cr0, f3, f0
-	bge      lbl_80365A14
-	lfs      f0, lbl_8051E848@sda21(r2)
-	lis      r3, sincosTable___5JMath@ha
-	addi     r3, r3, sincosTable___5JMath@l
-	fmuls    f0, f3, f0
-	fctiwz   f0, f0
-	stfd     f0, 0x10(r1)
-	lwz      r0, 0x14(r1)
-	rlwinm   r0, r0, 3, 0x12, 0x1c
-	lfsx     f0, r3, r0
-	fneg     f2, f0
-	b        lbl_80365A38
-
-lbl_80365A14:
-	lfs      f0, lbl_8051E84C@sda21(r2)
-	lis      r3, sincosTable___5JMath@ha
-	addi     r3, r3, sincosTable___5JMath@l
-	fmuls    f0, f3, f0
-	fctiwz   f0, f0
-	stfd     f0, 0x18(r1)
-	lwz      r0, 0x1c(r1)
-	rlwinm   r0, r0, 3, 0x12, 0x1c
-	lfsx     f2, r3, r0
-
-lbl_80365A38:
-	lfs      f1, 0x2bc(r31)
-	lfs      f0, lbl_8051E818@sda21(r2)
-	fmadds   f1, f31, f2, f1
-	fcmpo    cr0, f3, f0
-	stfs     f1, 0x2bc(r31)
-	bge      lbl_80365A54
-	fneg     f3, f3
-
-lbl_80365A54:
-	lfs      f1, lbl_8051E84C@sda21(r2)
-	lis      r3, sincosTable___5JMath@ha
-	addi     r3, r3, sincosTable___5JMath@l
-	lfs      f0, 0x2c4(r31)
-	fmuls    f1, f3, f1
-	fctiwz   f1, f1
-	stfd     f1, 0x20(r1)
-	lwz      r0, 0x24(r1)
-	rlwinm   r0, r0, 3, 0x12, 0x1c
-	add      r3, r3, r0
-	lfs      f1, 4(r3)
-	fmadds   f0, f31, f1, f0
-	stfs     f0, 0x2c4(r31)
-
-lbl_80365A88:
-	psq_l    f31, 56(r1), 0, qr0
-	lwz      r0, 0x44(r1)
-	lfd      f31, 0x30(r1)
-	lwz      r31, 0x2c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
+	mGoalPosition.x += radius * sinf(angle);
+	mGoalPosition.z += radius * cosf(angle);
 }
 
-/*
- * --INFO--
- * Address:	80365AA4
- * Size:	0002E0
+/**
+ * @note Address: 0x80365AA4
+ * @note Size: 0x2E0
  */
 bool Obj::nextTargetTurnCheck()
 {
@@ -1549,7 +1281,7 @@ bool Obj::nextTargetTurnCheck()
 	}
 
 	// SHOULD match when turnFunc matches, but turnFunc might need tweaking to make sure this matches.
-	if (turnFunc(0.1f) < PI * (DEG2RAD * *C_PROPERPARMS.mFp06())) {
+	if (turnFunc(0.1f) < PI * (DEG2RAD * C_PROPERPARMS.mMaxTurnAngle())) {
 		return false;
 	}
 
@@ -1762,15 +1494,14 @@ lbl_80365D4C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80365D84
- * Size:	0000D0
+/**
+ * @note Address: 0x80365D84
+ * @note Size: 0xD0
  */
 bool Obj::isNowCaution()
 {
 	bool doBecomeAlert;
-	f32 privateRad = C_PARMS->mGeneral.mPrivateRadius.mValue;
+	f32 privateRad = C_GENERALPARMS.mPrivateRadius.mValue;
 	if (EnemyFunc::isThereOlimar(this, privateRad, nullptr)) {
 		doBecomeAlert = true;
 	} else if (EnemyFunc::isTherePikmin(this, privateRad, nullptr)) {
@@ -1780,7 +1511,7 @@ bool Obj::isNowCaution()
 	}
 
 	if (!doBecomeAlert) {
-		doBecomeAlert = mHealth < C_PARMS->mGeneral.mLifeBeforeAlert.mValue;
+		doBecomeAlert = mHealth < C_GENERALPARMS.mLifeBeforeAlert.mValue;
 	}
 
 	if (doBecomeAlert) {
@@ -1788,20 +1519,18 @@ bool Obj::isNowCaution()
 		return true;
 	}
 
-	return mAlertTimer < C_PARMS->mGeneral.mAlertDuration.mValue;
+	return mAlertTimer < C_GENERALPARMS.mAlertDuration.mValue;
 }
 
-/*
- * --INFO--
- * Address:	80365E54
- * Size:	000028
+/**
+ * @note Address: 0x80365E54
+ * @note Size: 0x28
  */
 void Obj::landEffect() { EnemyBase::createBounceEffect(mPosition, 0.9f); }
 
-/*
- * --INFO--
- * Address:	80365E7C
- * Size:	000144
+/**
+ * @note Address: 0x80365E7C
+ * @note Size: 0x144
  */
 void Obj::attackEffect(Vector3f& effectPos)
 {

@@ -7,23 +7,21 @@
 
 namespace Game {
 namespace Bomb {
-/*
- * --INFO--
- * Address:	8034A21C
- * Size:	000020
+/**
+ * @note Address: 0x8034A21C
+ * @note Size: 0x20
  */
 void Obj::setParameters() { EnemyBase::setParameters(); }
 
-/*
- * --INFO--
- * Address:	8034A23C
- * Size:	0000EC
+/**
+ * @note Address: 0x8034A23C
+ * @note Size: 0xEC
  */
 void Obj::onStartCapture()
 {
 	mFsm->start(this, BOMB_Wait, nullptr);
 	if (mCaptureMatrix) {
-		Vector3f position = mCaptureMatrix->getBasis(3);
+		Vector3f position = mCaptureMatrix->getColumn(3);
 		onSetPosition(position);
 		mCurrentVelocity = Vector3f(0.0f);
 		mTargetVelocity  = Vector3f(0.0f);
@@ -38,10 +36,9 @@ void Obj::onStartCapture()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8034A328
- * Size:	000048
+/**
+ * @note Address: 0x8034A328
+ * @note Size: 0x48
  */
 void Obj::onEndCapture()
 {
@@ -51,17 +48,15 @@ void Obj::onEndCapture()
 	mCaptureMatrix = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8034A370
- * Size:	000020
+/**
+ * @note Address: 0x8034A370
+ * @note Size: 0x20
  */
 void Obj::birth(Vector3f& position, f32 p1) { EnemyBase::birth(position, p1); }
 
-/*
- * --INFO--
- * Address:	8034A390
- * Size:	000168
+/**
+ * @note Address: 0x8034A390
+ * @note Size: 0x168
  */
 void Obj::onInit(CreatureInitArg* initArg)
 {
@@ -91,18 +86,17 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mCurAnim->mIsPlaying = false;
 	doAnimationUpdateAnimator();
 
-	mObjMatrix.makeSRT(mScale, mRotation, mPosition);
+	mBaseTrMatrix.makeSRT(mScale, mRotation, mPosition);
 
-	PSMTXCopy(mObjMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
+	PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
 	mModel->mJ3dModel->calc();
 
 	mEfxLight->mMtx = mModel->getJoint("core1")->getWorldMatrix();
 }
 
-/*
- * --INFO--
- * Address:	8034A4F8
- * Size:	0001DC
+/**
+ * @note Address: 0x8034A4F8
+ * @note Size: 0x1DC
  */
 Obj::Obj()
 {
@@ -119,10 +113,9 @@ Obj::Obj()
 	mEfxLight = new efx::TBombrockLight;
 }
 
-/*
- * --INFO--
- * Address:	8034A720
- * Size:	0000D4
+/**
+ * @note Address: 0x8034A720
+ * @note Size: 0xD4
  */
 void Obj::doUpdate()
 {
@@ -144,24 +137,21 @@ void Obj::doUpdate()
 	mFsm->exec(this);
 }
 
-/*
- * --INFO--
- * Address:	8034A7F4
- * Size:	000004
+/**
+ * @note Address: 0x8034A7F4
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	8034A7F8
- * Size:	000004
+/**
+ * @note Address: 0x8034A7F8
+ * @note Size: 0x4
  */
 void Obj::doDebugDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	8034A7FC
- * Size:	00002C
+/**
+ * @note Address: 0x8034A7FC
+ * @note Size: 0x2C
  */
 void Obj::doEntry()
 {
@@ -170,43 +160,46 @@ void Obj::doEntry()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8034A828
- * Size:	0001F4
+/**
+ * @note Address: 0x8034A828
+ * @note Size: 0x1F4
  */
 void Obj::doAnimationCullingOff()
 {
-	mCurAnim->mIsPlaying = 0;
+	mCurAnim->mIsPlaying = false;
 	doAnimationUpdateAnimator();
-	bool check;
-	Vector3f vec = mObjMatrix.getBasis(3);
+	bool check   = true;
+	Vector3f vec = mBaseTrMatrix.getColumn(3);
 	if (mCaptureMatrix) {
-		check             = false;
-		Vector3f checkVec = mCaptureMatrix->getBasis(3);
+		Vector3f checkVec = mCaptureMatrix->getColumn(3);
 		if (vec.x != checkVec.x || vec.y != checkVec.y || vec.z != checkVec.z) {
 			check = true;
-			PSMTXCopy(mCaptureMatrix->mMatrix.mtxView, mObjMatrix.mMatrix.mtxView);
+			PSMTXCopy(mCaptureMatrix->mMatrix.mtxView, mBaseTrMatrix.mMatrix.mtxView);
 		}
 	} else {
 		check = false;
-		if (mPosition.x != vec.x || mPosition.y != vec.y || mPosition.z != vec.z) {
+		if (isStickToMouth() || isEvent(0, EB_Bittered) || mPosition.x != vec.x || mPosition.y != vec.y || mPosition.z != vec.z) {
 			check = true;
-			mObjMatrix.makeSRT(mScale, mRotation, mPosition);
+			mBaseTrMatrix.makeSRT(mScale, mRotation, mPosition);
 		}
 	}
 
 	if (check || !isStopMotion()) {
-		PSMTXCopy(mObjMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
+		PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
 		mModel->mJ3dModel->calc();
 		mCollTree->update();
 	}
+
+	if (!isStickTo() && !isStopMotion() && !_2C8 && mHealth < 4.0f) { // why 4
+		_2C8 = 1;
+		efx::Arg fxArg(mPosition);
+		mEfxLight->create(&fxArg);
+	}
 }
 
-/*
- * --INFO--
- * Address:	8034AA1C
- * Size:	00004C
+/**
+ * @note Address: 0x8034AA1C
+ * @note Size: 0x4C
  */
 void Obj::doAnimationCullingOn()
 {
@@ -217,111 +210,27 @@ void Obj::doAnimationCullingOn()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8034AA68
- * Size:	000134
+/**
+ * @note Address: 0x8034AA68
+ * @note Size: 0x134
  */
 void Obj::doSimulation(f32 simSpeed)
 {
-	if (isStickTo()) { }
-	/*
-	stwu     r1, -0x50(r1)
-	mflr     r0
-	stw      r0, 0x54(r1)
-	stfd     f31, 0x40(r1)
-	psq_st   f31, 72(r1), 0, qr0
-	stw      r31, 0x3c(r1)
-	mr       r31, r3
-	fmr      f31, f1
-	bl       isStickTo__Q24Game8CreatureFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8034AB44
-	lfs      f4, 0x1fc(r31)
-	lfs      f0, lbl_8051E330@sda21(r2)
-	fmr      f1, f4
-	fcmpo    cr0, f4, f0
-	bge      lbl_8034AAAC
-	fneg     f1, f4
-
-lbl_8034AAAC:
-	lfs      f2, lbl_8051E348@sda21(r2)
-	lis      r3, sincosTable___5JMath@ha
-	lfs      f0, lbl_8051E330@sda21(r2)
-	addi     r4, r3, sincosTable___5JMath@l
-	fmuls    f1, f1, f2
-	fcmpo    cr0, f4, f0
-	fctiwz   f0, f1
-	stfd     f0, 0x18(r1)
-	lwz      r0, 0x1c(r1)
-	rlwinm   r0, r0, 3, 0x12, 0x1c
-	add      r3, r4, r0
-	lfs      f3, 4(r3)
-	bge      lbl_8034AB04
-	lfs      f0, lbl_8051E34C@sda21(r2)
-	fmuls    f0, f4, f0
-	fctiwz   f0, f0
-	stfd     f0, 0x20(r1)
-	lwz      r0, 0x24(r1)
-	rlwinm   r0, r0, 3, 0x12, 0x1c
-	lfsx     f0, r4, r0
-	fneg     f1, f0
-	b        lbl_8034AB1C
-
-lbl_8034AB04:
-	fmuls    f0, f4, f2
-	fctiwz   f0, f0
-	stfd     f0, 0x28(r1)
-	lwz      r0, 0x2c(r1)
-	rlwinm   r0, r0, 3, 0x12, 0x1c
-	lfsx     f1, r4, r0
-
-lbl_8034AB1C:
-	lfs      f0, lbl_8051E330@sda21(r2)
-	mr       r3, r31
-	stfs     f1, 8(r1)
-	addi     r4, r1, 8
-	stfs     f0, 0xc(r1)
-	stfs     f3, 0x10(r1)
-	bl       "updateStick__Q24Game8CreatureFR10Vector3<f>"
-	mr       r3, r31
-	bl       updateCell__Q24Game8CreatureFv
-	b        lbl_8034AB80
-
-lbl_8034AB44:
-	lwz      r4, 0xb8(r31)
-	cmplwi   r4, 0
-	beq      lbl_8034AB74
-	lfs      f2, 0x2c(r4)
-	mr       r3, r31
-	lfs      f1, 0x1c(r4)
-	lfs      f0, 0xc(r4)
-	stfs     f0, 0x18c(r31)
-	stfs     f1, 0x190(r31)
-	stfs     f2, 0x194(r31)
-	bl       updateSpheres__Q24Game9EnemyBaseFv
-	b        lbl_8034AB80
-
-lbl_8034AB74:
-	fmr      f1, f31
-	mr       r3, r31
-	bl       doSimulation__Q24Game9EnemyBaseFf
-
-lbl_8034AB80:
-	psq_l    f31, 72(r1), 0, qr0
-	lwz      r0, 0x54(r1)
-	lfd      f31, 0x40(r1)
-	lwz      r31, 0x3c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x50
-	blr
-	*/
+	if (isStickTo()) {
+		Vector3f dir = Vector3f(sinf(mFaceDir), 0.0f, cosf(mFaceDir));
+		updateStick(dir);
+		updateCell();
+	} else if (mCaptureMatrix) {
+		mPosition = mCaptureMatrix->getColumn(3);
+		updateSpheres();
+	} else {
+		EnemyBase::doSimulation(simSpeed);
+	}
 }
 
-/*
- * --INFO--
- * Address:	8034AB9C
- * Size:	000050
+/**
+ * @note Address: 0x8034AB9C
+ * @note Size: 0x50
  */
 void Obj::getShadowParam(ShadowParam& param)
 {
@@ -333,17 +242,15 @@ void Obj::getShadowParam(ShadowParam& param)
 	param.mSize                     = 10.0f;
 }
 
-/*
- * --INFO--
- * Address:	8034ABEC
- * Size:	000048
+/**
+ * @note Address: 0x8034ABEC
+ * @note Size: 0x48
  */
 bool Obj::needShadow() { return (!EnemyBase::needShadow()) ? false : mCaptureMatrix == nullptr; }
 
-/*
- * --INFO--
- * Address:	8034AC34
- * Size:	000080
+/**
+ * @note Address: 0x8034AC34
+ * @note Size: 0x80
  */
 void Obj::doFinishStoneState()
 {
@@ -356,10 +263,9 @@ void Obj::doFinishStoneState()
 	mTargetVelocity = Vector3f(0.0f);
 }
 
-/*
- * --INFO--
- * Address:	8034ACB4
- * Size:	000048
+/**
+ * @note Address: 0x8034ACB4
+ * @note Size: 0x48
  */
 void Obj::doStartStoneState()
 {
@@ -368,10 +274,9 @@ void Obj::doStartStoneState()
 	_2C8 = 0;
 }
 
-/*
- * --INFO--
- * Address:	8034ACFC
- * Size:	000084
+/**
+ * @note Address: 0x8034ACFC
+ * @note Size: 0x84
  */
 void Obj::onKill(CreatureKillArg* killArg)
 {
@@ -383,24 +288,21 @@ void Obj::onKill(CreatureKillArg* killArg)
 	EnemyBase::onKill(killArg);
 }
 
-/*
- * --INFO--
- * Address:	8034AD80
- * Size:	000030
+/**
+ * @note Address: 0x8034AD80
+ * @note Size: 0x30
  */
 void Obj::doStartMovie() { mEfxLight->startDemoDrawOff(); }
 
-/*
- * --INFO--
- * Address:	8034ADB0
- * Size:	000030
+/**
+ * @note Address: 0x8034ADB0
+ * @note Size: 0x30
  */
 void Obj::doEndMovie() { mEfxLight->endDemoDrawOn(); }
 
-/*
- * --INFO--
- * Address:	8034ADE0
- * Size:	000074
+/**
+ * @note Address: 0x8034ADE0
+ * @note Size: 0x74
  */
 bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* collpart)
 {
@@ -419,124 +321,41 @@ bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* collpart)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8034AE54
- * Size:	000160
+/**
+ * @note Address: 0x8034AE54
+ * @note Size: 0x160
  */
-bool Obj::bombCallBack(Creature* creature, Vector3f& vec, f32 damage)
+bool Obj::bombCallBack(Creature* creature, Vector3f& direction, f32 damage)
 {
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stw      r31, 0x2c(r1)
-	mr       r31, r4
-	stw      r30, 0x28(r1)
-	mr       r30, r3
-	lwz      r0, 0xb8(r3)
-	cmplwi   r0, 0
-	bne      lbl_8034AF98
-	lwz      r0, 0x1e0(r30)
-	rlwinm.  r0, r0, 0, 0x16, 0x16
-	bne      lbl_8034AF98
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x7c(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8034AF98
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x258(r12)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 0x24
-	bne      lbl_8034AF68
-	mr       r3, r30
-	bl       getStateID__Q24Game9EnemyBaseFv
-	cmpwi    r3, 0
-	bne      lbl_8034AF88
-	lwz      r0, 0x2c0(r30)
-	cmpwi    r0, 0
-	bne      lbl_8034AF88
-	mr       r4, r31
-	addi     r3, r1, 8
-	lwz      r12, 0(r31)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f1, 0x10(r1)
-	lis      r0, 0x4330
-	lfs      f0, 0x194(r30)
-	lwz      r3, 0xc0(r30)
-	fsubs    f2, f1, f0
-	lfs      f1, 8(r1)
-	lfs      f0, 0x18c(r30)
-	lfs      f4, 0x5b4(r3)
-	fsubs    f1, f1, f0
-	lwz      r3, 0x894(r3)
-	fmuls    f0, f2, f2
-	stw      r0, 0x18(r1)
-	fmuls    f4, f4, f4
-	xoris    r0, r3, 0x8000
-	fmadds   f0, f1, f1, f0
-	stw      r0, 0x1c(r1)
-	lfs      f3, lbl_8051E354@sda21(r2)
-	lfd      f1, lbl_8051E360@sda21(r2)
-	fdivs    f2, f0, f4
-	lfd      f0, 0x18(r1)
-	fsubs    f2, f3, f2
-	fsubs    f0, f0, f1
-	fmuls    f0, f2, f0
-	fctiwz   f0, f0
-	stfd     f0, 0x20(r1)
-	lwz      r3, 0x24(r1)
-	addi     r0, r3, 1
-	stw      r0, 0x2c0(r30)
-	b        lbl_8034AF88
+	if (!mCaptureMatrix && !isEvent(0, EB_Bittered) && creature->isTeki()) {
+		if (static_cast<EnemyBase*>(creature)->getEnemyTypeID() == EnemyTypeID::EnemyID_Bomb) {
+			if (getStateID() == BOMB_Wait && _2C0 == 0) {
+				Vector3f creaturePos = creature->getPosition();
+				f32 rad              = C_GENERALPARMS.mAttackRadius.mValue;
+				rad *= rad;
+				f32 factor = (1.0f - (sqrDistanceXZ(creaturePos, mPosition) / rad)) * (f32)C_PROPERPARMS.mTriggerLimit();
+				_2C0       = (int)factor + 1;
+			}
+		} else {
+			damageCallBack(creature, 0.0f, nullptr);
+		}
 
-lbl_8034AF68:
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	li       r5, 0
-	lfs      f1, lbl_8051E330@sda21(r2)
-	lwz      r12, 0x278(r12)
-	mtctr    r12
-	bctrl
+		mFlickTimer = 0.0f;
+		return true;
+	}
 
-lbl_8034AF88:
-	lfs      f0, lbl_8051E330@sda21(r2)
-	li       r3, 1
-	stfs     f0, 0x20c(r30)
-	b        lbl_8034AF9C
-
-lbl_8034AF98:
-	li       r3, 0
-
-lbl_8034AF9C:
-	lwz      r0, 0x34(r1)
-	lwz      r31, 0x2c(r1)
-	lwz      r30, 0x28(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
+	return false;
 }
 
-/*
- * --INFO--
- * Address:	8034AFB4
- * Size:	000008
+/**
+ * @note Address: 0x8034AFB4
+ * @note Size: 0x8
  */
 bool Obj::pressCallBack(Creature*, f32, CollPart*) { return false; }
 
-/*
- * --INFO--
- * Address:	8034AFBC
- * Size:	000078
+/**
+ * @note Address: 0x8034AFBC
+ * @note Size: 0x78
  */
 void Obj::bounceCallback(Sys::Triangle* triangle)
 {
@@ -551,10 +370,9 @@ void Obj::bounceCallback(Sys::Triangle* triangle)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8034B034
- * Size:	00009C
+/**
+ * @note Address: 0x8034B034
+ * @note Size: 0x9C
  */
 void Obj::collisionCallback(CollEvent& collEvent)
 {
@@ -566,10 +384,9 @@ void Obj::collisionCallback(CollEvent& collEvent)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8034B0D0
- * Size:	000060
+/**
+ * @note Address: 0x8034B0D0
+ * @note Size: 0x60
  */
 void Obj::forceBomb()
 {
@@ -579,27 +396,24 @@ void Obj::forceBomb()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000048
+/**
+ * @note Address: N/A
+ * @note Size: 0x48
  */
 bool Obj::isBombStart()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8034B130
- * Size:	000028
+/**
+ * @note Address: 0x8034B130
+ * @note Size: 0x28
  */
 void Obj::bombEffInWater() { EnemyBase::createSplashDownEffect(mPosition, 1.3f); }
 
-/*
- * --INFO--
- * Address:	8034B158
- * Size:	00005C
+/**
+ * @note Address: 0x8034B158
+ * @note Size: 0x5C
  */
 bool Obj::canEat()
 {
@@ -610,15 +424,14 @@ bool Obj::canEat()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8034B1B4
- * Size:	0000D8
+/**
+ * @note Address: 0x8034B1B4
+ * @note Size: 0xD8
  */
 bool Obj::isAnimStart()
 {
 	bool check;
-	if (isBirthTypeDropGroup() || !(mToFlick >= C_PROPERPARMS.mDamageLimit.mValue)) {
+	if (isBirthTypeDropGroup() || !(mFlickTimer >= C_PROPERPARMS.mDamageLimit.mValue)) {
 		if (!_2BC || !mBounceTriangle) {
 			if (!_2C0) {
 				check = false;
@@ -645,21 +458,6 @@ bool Obj::isAnimStart()
 		goto yes;
 	}
 	return false;
-}
-
-/*
- * --INFO--
- * Address:	8034B36C
- * Size:	000048
- */
-bool Obj::isUnderground()
-{
-	bool result = false;
-	if (!isEvent(0, EB_Bittered) && !isStopMotion()) {
-		result = true;
-	}
-
-	return result;
 }
 
 } // namespace Bomb

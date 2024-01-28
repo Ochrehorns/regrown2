@@ -1,104 +1,141 @@
-#include "types.h"
-
-/*
-    Generated from dpostproc
-
-    .section .ctors, "wa"  # 0x80472F00 - 0x804732C0
-    .4byte __sinit_mapMgrTraceMove_cpp
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804BEF00
-    lbl_804BEF00:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-
-    .section .sdata, "wa"  # 0x80514680 - 0x80514D80
-    .global mTraceMoveOptLevel__Q24Game6MapMgr
-    mTraceMoveOptLevel__Q24Game6MapMgr:
-        .4byte 0x01000000
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global lbl_80515BB0
-    lbl_80515BB0:
-        .skip 0x4
-    .global lbl_80515BB4
-    lbl_80515BB4:
-        .skip 0x4
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80519D60
-    lbl_80519D60:
-        .4byte 0x00000000
-    .global lbl_80519D64
-    lbl_80519D64:
-        .float 0.5
-    .global lbl_80519D68
-    lbl_80519D68:
-        .float 1.0
-        .4byte 0x00000000
-*/
-
 #include "Game/MapMgr.h"
+#include "Sys/TriangleTable.h"
+#include "Sys/Cylinder.h"
+#include "Game/TDispTriangle.h"
+#include "nans.h"
 
 namespace Game {
 
-/*
- * --INFO--
- * Address:	8020508C
- * Size:	000114
+u8 MapMgr::mTraceMoveOptLevel = 1;
+
+/**
+ * @note Address: 0x8020508C
+ * @note Size: 0x114
  * TODO: 57%
  */
-void ShapeMapMgr::traceMove(Game::MoveInfo& info, float stepLength)
+Sys::TriIndexList* ShapeMapMgr::traceMove(Game::MoveInfo& info, f32 stepLength)
 {
-	_14++;
+	Sys::TriIndexList* triList;
+	mTotalTraceCount++;
+	f32 len    = stepLength;
+	int steps  = 1;
+	f32 radius = info.mMoveSphere->mRadius;
+	f32 length = info.mVelocity->length();
 
-	s32 steps  = 1;
-	f32 length = _sqrtf(info.mVelocity->sqrMagnitude());
-
-	for (; steps <= 8;) {
-		if (stepLength * length > info._00->mRadius) {
+	do {
+		if (len * length > radius) {
 			steps *= 2;
-			stepLength *= 0.5f;
+			len *= 0.5f;
+			continue;
 		}
-	}
+
+		break;
+	} while (steps <= 8);
 
 	for (int i = 0; i < steps; i++) {
-		MapMgr::traceMove(info.mMapCollision, info, stepLength);
+		triList = MapMgr::traceMove(mMapCollision, info, len);
 	}
 
-	_18 += steps;
+	mTotalStepCount += steps;
+
+	return triList;
 }
 
-/*
- * --INFO--
- * Address:	802051A0
- * Size:	000020
+/**
+ * @note Address: 0x802051A0
+ * @note Size: 0x20
  */
-void MapMgr::traceMove(MapCollision& c, Game::MoveInfo& m, float sl) { traceMove_test1203_cylinder(c, m, sl); }
+Sys::TriIndexList* MapMgr::traceMove(MapCollision& coll, Game::MoveInfo& info, f32 p1)
+{
+	return traceMove_test1203_cylinder(coll, info, p1);
+}
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	00030C
+// /**
+//  * @note Address: N/A
+//  * @note Size: 0x30C
 //  */
-// void MapMgr::traceMove_test1030_1(MapCollision&, Game::MoveInfo&, float)
+// void MapMgr::traceMove_test1030_1(MapCollision&, Game::MoveInfo&, f32)
 // {
 // 	// UNUSED FUNCTION
 // }
 
-/*
- * --INFO--
- * Address:	802051C0
- * Size:	0003BC
+/**
+ * @note Address: 0x802051C0
+ * @note Size: 0x3BC
  */
-void MapMgr::traceMove_test1203_cylinder(MapCollision& a2, Game::MoveInfo& a3, float a4)
+Sys::TriIndexList* MapMgr::traceMove_test1203_cylinder(MapCollision& coll, Game::MoveInfo& info, f32 deltaTime)
 {
+	Sys::Sphere* sphere         = info.mMoveSphere;            // r26
+	Vector3f* vel               = info.mVelocity;              // r25
+	Sys::VertexTable* vertTable = coll.mDivider->mVertexTable; // r24
 	if (MapMgr::traceMoveDebug) {
-		Vector3f v;
-		getMinY(v);
+		getMinY(sphere->mPosition);
 	}
+
+	Vector3f spherePos = sphere->mPosition;
+	sphere->mPosition += (*vel) * deltaTime;
+	Sys::TriIndexList* triList   = coll.mDivider->findTriLists(*sphere); // r23
+	Sys::TriangleTable* triTable = coll.mDivider->mTriangleTable;        // r19
+
+	Vector3f intersectPoint;
+	Vector3f unused;
+
+	for (triList; triList; triList = static_cast<Sys::TriIndexList*>(triList->mNext)) {
+		mTotalTriCount += triList->mCount;
+
+		for (int i = 0; i < triList->mCount; i++) {
+			int idx            = triList->mObjects[i];     // r21
+			Sys::Triangle* tri = &triTable->mObjects[idx]; // r29
+			if (mTraceMoveOptLevel >= 1) {
+				if (!tri->fastIntersect(*sphere)) {
+					mMissedIntersectionCount++;
+					continue;
+				}
+			}
+
+			if (traceMoveDebug) {
+				Sys::Triangle::debug = true;
+			}
+
+			Sys::Triangle::SphereSweep sweep;
+			sweep.mStartPos = spherePos;
+
+			sweep.mSweepType = Sys::Triangle::SphereSweep::ST_SphereInsidePlane;
+			if (info.mUseIntersectionAlgo) {
+				sweep.mSweepType = Sys::Triangle::SphereSweep::ST_SphereIntersectPlane;
+			}
+
+			bool intersectCheck;
+			if (info.mIntersectType != Game::MoveInfo::IT_Triangle) {
+				Sys::Cylinder cylinder(sphere->mPosition, info.mDirection, info.mDistance, sphere->mRadius);
+				f32 overlap;
+				intersectCheck = cylinder.intersect(*tri, overlap);
+			} else {
+				intersectCheck = tri->intersect(*vertTable, sweep);
+			}
+
+			if (intersectCheck) {
+				if (info.mTriangleArray) {
+					info.mTriangleArray->store(*tri, *vertTable, idx);
+				}
+
+				if (info.mIntersectCallback) {
+					info.mIntersectCallback->invoke(intersectPoint, unused);
+				}
+
+				if (intersectPoint.y >= info.mBounceThreshold) {
+					info.mBounceTriangle = tri;
+					info.mPosition       = intersectPoint;
+				} else if (FABS(intersectPoint.y) <= info.mWallThreshold) {
+					info.mWallTriangle    = tri;
+					info.mReflectPosition = intersectPoint;
+				}
+			}
+			Sys::Triangle::debug = false;
+		}
+	}
+
+	return triList;
 	/*
 	stwu     r1, -0xe0(r1)
 	mflr     r0
@@ -375,45 +412,4 @@ lbl_8020553C:
 	*/
 }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	000464
-//  */
-// void MapMgr::traceMove_test(MapCollision&, Game::MoveInfo&, float)
-// {
-// 	// UNUSED FUNCTION
-// }
-
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	000464
-//  */
-// void MapMgr::traceMove_original(MapCollision&, Game::MoveInfo&, float)
-// {
-// 	// UNUSED FUNCTION
-// }
-
 } // namespace Game
-
-// /*
-//  * --INFO--
-//  * Address:	8020557C
-//  * Size:	000028
-//  */
-// void __sinit_mapMgrTraceMove_cpp()
-// {
-// 	/*
-// 	lis      r4, __float_nan@ha
-// 	li       r0, -1
-// 	lfs      f0, __float_nan@l(r4)
-// 	lis      r3, lbl_804BEF00@ha
-// 	stw      r0, lbl_80515BB0@sda21(r13)
-// 	stfsu    f0, lbl_804BEF00@l(r3)
-// 	stfs     f0, lbl_80515BB4@sda21(r13)
-// 	stfs     f0, 4(r3)
-// 	stfs     f0, 8(r3)
-// 	blr
-// 	*/
-// }

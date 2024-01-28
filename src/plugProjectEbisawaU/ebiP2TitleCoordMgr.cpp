@@ -4,33 +4,30 @@
 namespace ebi {
 namespace title {
 
-/*
- * --INFO--
- * Address:	803E396C
- * Size:	0001A4
+/**
+ * @note Address: 0x803E396C
+ * @note Size: 0x1A4
  */
 TCoordMgr::TCoordMgr()
     : CNode("TCoordMgr")
 {
-	for (int i = 0; i < TITLE_PIKI_COUNT; i++) {
+	for (int i = 0; i < TITLE_PIKI_COLOR_COUNT; i++) {
 		mPikiCounts[i] = 0;
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000090
+/**
+ * @note Address: N/A
+ * @note Size: 0x90
  */
-void TCoordMgr::getDestPos(long)
+void TCoordMgr::getDestPos(s32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	803E3B10
- * Size:	000118
+/**
+ * @note Address: 0x803E3B10
+ * @note Size: 0x118
  */
 void TCoordMgr::copyCoordinate(Vector2f* coord)
 {
@@ -60,10 +57,9 @@ void TCoordMgr::copyCoordinate(Vector2f* coord)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803E3C28
- * Size:	00007C
+/**
+ * @note Address: 0x803E3C28
+ * @note Size: 0x7C
  */
 void TCoordMgr::readCoordinate(JKRArchive* arc, char* path)
 {
@@ -77,14 +73,13 @@ void TCoordMgr::readCoordinate(JKRArchive* arc, char* path)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803E3CA4
- * Size:	000144
+/**
+ * @note Address: 0x803E3CA4
+ * @note Size: 0x144
  */
 void TCoordMgr::readCoordinate(Stream& stream)
 {
-	for (int i = 0; i < TITLE_PIKI_COUNT; i++) {
+	for (int i = 0; i < TITLE_PIKI_COLOR_COUNT; i++) {
 		mPikiCounts[i] = stream.readInt();
 		int offs       = 0;
 		switch (i) {

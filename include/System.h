@@ -7,6 +7,7 @@
 #include "JSystem/JKernel/JKRHeap.h"
 #include "node.h"
 #include "BitFlag.h"
+#include "types.h"
 
 struct Graphics;
 struct OSContext;
@@ -15,29 +16,43 @@ struct HeapStatus;
 
 void Pikmin2DefaultMemoryErrorRoutine(void*, u32, s32);
 void kando_panic_f(bool, const char*, s32, const char*, ...);
-extern void preUserCallback(unsigned short, OSContext*, unsigned long, unsigned long);
-
-// const char* cMapFileName = "/pikmin2UP.map";
-
-//_GXRenderModeObj* renderMode;
+extern void preUserCallback(u16, OSContext*, u32, u32);
 
 struct HeapInfo : public Node, public JKRDisposer {
+	inline HeapInfo(char* name) { mName = name; }
+
 	virtual ~HeapInfo(); // _20 (weak)
 
 	void search(HeapInfo*);
 
+	void dump(int, bool);
+	void getTotalUsedSize();
+	void dumpNode(int);
+	void search(char*, bool);
+	void isInvalidUsedSize();
+	void isValidUsedSize();
+	void getUsedSize(bool);
+
 	// _00-_24 = Node
 	// _20     = VTBL (Node)
 	// _24-_3C = JKRDisposer
-	u32 _3C;         // _3C, unknown
+	u32 _3C;         // _3C
 	int _40;         // _40
-	u32 _44;         // _44, unknown
+	u32 _44;         // _44
 	HeapStatus* _48; // _48
 	HeapStatus* _4C; // _4C
 };
 
 struct HeapStatus {
 	HeapStatus();
+
+	void start(char*, JKRHeap*);
+	void end(char*);
+	void setCurrentHeapInfoParent();
+	void searchHeapInfo(char*);
+	void searchHeapInfo(HeapInfo*);
+	void dump(bool);
+	void dumpNode();
 
 	HeapInfo mHeapInfo; // _00
 	u8 _50;             // _50, unknown
@@ -53,11 +68,36 @@ struct Mgr;
 }
 } // namespace Game
 
-struct System : public OSMutex {
-	enum ERenderMode { RENDERMODE_NULL = 0, NTSC_Progressive };
+#define SINGLE_FRAME_LENGTH (1.0f / 60.0f) // 0.016666668f
 
-#define SINGLE_FRAME_LENGTH (1.0f / 60.0f)
-	enum LanguageID { LANG_ENGLISH = 0, LANG_FRENCH, LANG_GERMAN, LANG_HOL_UNUSED, LANG_ITALIAN, LANG_JAPANESE, LANG_SPANISH };
+struct System : public OSMutex {
+	/**
+	 * @brief Enumeration representing different render modes.
+	 */
+	enum ERenderMode {
+		RM_NTSC_Standard = 0,
+		RM_NTSC_Progressive,
+		RM_PAL_Standard,
+		RM_PAL_60Hz,
+	};
+
+	/**
+	 * @brief Enumeration representing different language IDs.
+	 */
+	enum LanguageID {
+		LANG_English = 0,
+		LANG_French,
+		LANG_German,
+		LANG_Unused, // Hol?
+		LANG_Italian,
+		LANG_Japanese,
+		LANG_Spanish,
+	};
+
+	enum Flags {
+		SF_LoadResident = 1 << 0,
+	};
+
 	struct FragmentationChecker {
 		FragmentationChecker(char*, bool);
 		~FragmentationChecker();
@@ -88,7 +128,7 @@ struct System : public OSMutex {
 	void construct();
 	void constructWithDvdAccessFirst();
 	void constructWithDvdAccessSecond();
-	void createRomFont(struct JKRHeap*);
+	void createRomFont(struct JKRHeap* heap);
 	void destroyRomFont();
 	void loadResourceFirst();
 	void loadResourceSecond();
@@ -97,10 +137,10 @@ struct System : public OSMutex {
 	void clearOptionBlockSaveFlag();
 	void setOptionBlockSaveFlag();
 	Game::CommonSaveData::Mgr* getPlayCommonData();
-	void dvdLoadUseCallBack(struct DvdThreadCommand*, struct IDelegate*);
+	void dvdLoadUseCallBack(struct DvdThreadCommand* cmd, struct IDelegate* delegate);
 	void deleteThreads();
-	struct JFWDisplay* setCurrentDisplay(struct JFWDisplay*);
-	u32 clearCurrentDisplay(struct JFWDisplay*);
+	struct JFWDisplay* setCurrentDisplay(struct JFWDisplay* currentDisplay);
+	struct JFWDisplay* clearCurrentDisplay(struct JFWDisplay* display);
 	bool beginFrame();
 	void endFrame();
 	void beginRender();
@@ -149,7 +189,14 @@ struct System : public OSMutex {
 	static ERenderMode mRenderMode;
 	static GXVerifyArg sVerifyArg;
 
-	inline f32 getFrameLength() const { return mDeltaTime; }
+	inline f32 getDeltaTime() const { return mDeltaTime; }
+	inline f32 getFrameRate(f32 timeScale) const { return getDeltaTime() / timeScale; }
+	inline void updateTimer(f32& timer, f32 timeScale) const { timer += timeScale * mDeltaTime; }
+	inline Graphics* getGfx() { return mGfx; }
+
+	inline void setFlag(u32 flag) { mFlags.typeView |= flag; }
+	inline void resetFlag(u32 flag) { mFlags.typeView &= ~flag; }
+	inline bool isFlag(u32 flag) const { return mFlags.typeView & flag; }
 
 	// _00-_18 = OSMutex
 	JKRHeap* mBackupHeap;                 // _18
@@ -157,7 +204,7 @@ struct System : public OSMutex {
 	u32 mCpuLockCount;                    // _20
 	Graphics* mGfx;                       // _24
 	SysTimers* mTimers;                   // _28
-	u32 _2C;                              // _2C
+	u32 mRenderModeStatus;                // _2C
 	u32 _30;                              // _30
 	u32 _34;                              // _34
 	JKRHeap* mSysHeap;                    // _38
@@ -171,10 +218,10 @@ struct System : public OSMutex {
 	struct JKRTask* mTask;                // _58
 	Game::MemoryCard::Mgr* mCardMgr;      // _5C
 	Game::CommonSaveData::Mgr* mPlayData; // _60
-	f32 mFpsFactor;                       // _64
+	f32 mFrameRate;                       // _64
 	DvdThreadCommand mThreadCommand;      // _68
 	LanguageID mRegion;                   // _D4
-	BitFlag<u32> mFlags;                  // _D8 (1 = loadResident)
+	BitFlag<u32> mFlags;                  // _D8
 	struct JUTRomFont* mRomFont;          // _DC
 };
 

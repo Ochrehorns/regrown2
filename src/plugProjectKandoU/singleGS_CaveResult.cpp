@@ -3,27 +3,14 @@
 #include "Game/GameSystem.h"
 #include "Game/MapMgr.h"
 #include "Game/ResultTexMgr.h"
-#include "Game/StateMachine.h"
-#include "Game/gamePlayData.h"
-#include "Game/gameStages.h"
 #include "Game/generalEnemyMgr.h"
-#include "Game/mapParts.h"
 #include "Game/Entities/PelletItem.h"
 #include "Game/Entities/PelletOtakara.h"
 #include "Game/Entities/PelletCarcass.h"
-#include "Graphics.h"
-#include "IDelegate.h"
-#include "JSystem/JKernel/JKRHeap.h"
-#include "JSystem/JUtility/JUTException.h"
-#include "JSystem/JUtility/JUTGamePad.h"
-#include "JSystem/JUtility/JUTTexture.h"
-#include "PSGame/SceneInfo.h"
-#include "PSGame/PikScene.h"
+#include "P2Macros.h"
 #include "PSM/Global.h"
-#include "PSSystem/PSGame.h"
 #include "Screen/Game2DMgr.h"
 #include "System.h"
-#include "types.h"
 #include "TParticle2dMgr.h"
 #include "Game/SingleGame.h"
 #include "kh/khCaveResult.h"
@@ -33,28 +20,26 @@
 namespace Game {
 namespace SingleGame {
 
-static const char someCaveResultArray[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static const char caveResultName[]      = "SingleGS_CaveResult";
+static const u32 padding[]    = { 0, 0, 0 };
+static const char className[] = "SingleGS_CaveResult";
 
-/*
- * --INFO--
- * Address:	8021AC20
- * Size:	0000F8
+/**
+ * @note Address: 0x8021AC20
+ * @note Size: 0xF8
  * __ct
  */
 CaveResultState::CaveResultState()
     : State(SGS_CaveResult)
 {
-	_1C = new Controller(JUTGamePad::PORT_0);
-	_7C = new Delegate<CaveResultState>(this, &loadResource);
-	_F4 = nullptr;
-	_F0 = nullptr;
+	mController   = new Controller(JUTGamePad::PORT_0);
+	mLoadCallback = new Delegate<CaveResultState>(this, &loadResource);
+	mBackupHeap   = nullptr;
+	mMainHeap     = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8021AD18
- * Size:	000124
+/**
+ * @note Address: 0x8021AD18
+ * @note Size: 0x124
  */
 void CaveResultState::init(SingleGameSection* section, StateArg* arg)
 {
@@ -64,66 +49,58 @@ void CaveResultState::init(SingleGameSection* section, StateArg* arg)
 	gameSystem->setPause(true, "caver-init", 3);
 
 	Screen::gGame2DMgr->mScreenMgr->reset();
-	Screen::gGame2DMgr->setGamePad(_1C);
+	Screen::gGame2DMgr->setGamePad(mController);
 	mSection = section;
 
 	P2ASSERTLINE(284, arg);
-	_10 = static_cast<CaveResultArg*>(arg)->_00;
+	mGameState = static_cast<CaveResultArg*>(arg)->_00;
 
-	_70 = nullptr;
+	mResultTextures = nullptr;
 	section->refreshHIO();
 	accountEarnings(section, playData->mCaveCropMemory, true);
 
-	_12 = 0;
-	_74 = nullptr;
+	mStatus        = 0;
+	mResultTexHeap = nullptr;
 	PSMCancelToPauseOffMainBgm();
 }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	00007C
-//  */
-// void CaveResultState::initNext(SingleGameSection* section)
-// {
-// 	// UNUSED
-// }
+/**
+ * @note Address: N/A
+ * @note Size: 0x7C
+ */
+void CaveResultState::initNext(SingleGameSection* section)
+{
+	// UNUSED FUNCTION
+}
 
-/*
- * --INFO--
- * Address:	8021AE3C
- * Size:	000240
+/**
+ * @note Address: 0x8021AE3C
+ * @note Size: 0x240
  */
 void CaveResultState::loadResource()
 {
 	ResultTexMgr::Arg arg;
-	arg.mHeap              = _F0;
+	arg.mHeap              = mMainHeap;
 	arg.mOtakaraConfigList = PelletOtakara::mgr->mConfigList;
 	arg.mItemConfigList    = PelletItem::mgr->mConfigList;
-	_74                    = arg.mHeap;
-	_70                    = new ResultTexMgr::Mgr();
-	_70->create(arg);
 
-	JUTTexture* texture = new JUTTexture(System::getRenderModeObj()->fbWidth, System::getRenderModeObj()->efbHeight, GX_TF_RGB565);
-	texture->_32        = 0;
-	texture->_33        = 0;
+	mResultTexHeap  = arg.mHeap;
+	mResultTextures = new ResultTexMgr::Mgr;
+	mResultTextures->create(arg);
+
+	JUTTexture* texture = new JUTTexture(sys->getRenderModeObj()->fbWidth, sys->getRenderModeObj()->efbHeight, GX_TF_RGB565);
+	texture->mMinFilter = 0;
+	texture->mMagFilter = 0;
 	mSection->_168      = texture;
 
 	createResultNodes();
 
 	PSGame::SceneInfo sceneInfo;
-	sceneInfo.mGameType = 9;
-	sceneInfo._07       = 0;
-
-	static_cast<PSGame::PikSceneMgr*>(PSSystem::getSceneMgr())->newAndSetCurrentScene(sceneInfo);
-
-	PSSystem::SceneMgr* mgr1 = PSSystem::getSceneMgr();
-	mgr1->checkScene();
-	mgr1->mScenes->mChild->scene1stLoadSync();
-
-	PSSystem::SceneMgr* mgr2 = PSSystem::getSceneMgr();
-	PSSystem::checkSceneMgr(mgr2);
-	mgr2->getChildScene()->startMainSeq();
+	sceneInfo.mSceneType = PSGame::SceneInfo::CAVE_RESULTS;
+	sceneInfo.mCameras   = 0;
+	PSMSetSceneInfo(sceneInfo);
+	PSMGetSceneMgr()->mScenes->getChildScene()->scene1stLoadSync();
+	PSMGetSceneMgrCheck()->getChildScene()->startMainSeq();
 
 	/*
 	stwu     r1, -0x60(r1)
@@ -291,67 +268,63 @@ lbl_8021B048:
 	*/
 }
 
-// /*
-//  * --INFO--
-//  * Address:	........
-//  * Size:	000134
-//  */
-// unknown CaveResultState::open2D(Game::SingleGameSection*)
-// {
-// 	// UNUSED FUNCTION
-// }
+/**
+ * @note Address: N/A
+ * @note Size: 0x134
+ */
+void CaveResultState::open2D(Game::SingleGameSection* section)
+{
+	mStartTimer            = 1.0f;
+	mStatus                = 2;
+	section->mDisplayWiper = section->mWipeInFader;
+	section->mWipeInFader->start(mStartTimer);
+	playData->clearCurrentCave();
+	PlayData* data            = playData;
+	data->mLoadType           = STORYSAVE_Overworld;
+	data->mBeforeSaveDelegate = nullptr;
 
-/*
- * --INFO--
- * Address:	8021B07C
- * Size:	0002E8
+	CourseInfo* courseInfo = section->getCurrentCourseInfo();
+	P2ASSERTLINE(381, courseInfo);
+	int otakaraNum = playData->getOtakaraNum_Course_CaveID(courseInfo->mCourseIndex, section->mCaveID);
+	int otakaraMax = playData->getOtakaraMax_Course_CaveID(courseInfo->mCourseIndex, section->mCaveID);
+	kh::Screen::DispCaveResult disp(&mResultNodes, DeathMgr::get_cave(7), otakaraNum, otakaraMax, playData->mPokoCount,
+	                                playData->isStoryFlag(STORY_DebtPaid), mMainHeap, (mIsCaveComplete && otakaraNum >= otakaraMax));
+	DeathMgr::account_cave();
+	BirthMgr::account_cave();
+	JUT_ASSERTLINE(408, Screen::gGame2DMgr->open_CaveResult(disp), "cannot open caveresult\n");
+}
+
+/**
+ * @note Address: 0x8021B07C
+ * @note Size: 0x2E8
  */
 void CaveResultState::exec(SingleGameSection* section)
 {
-	switch (_12) {
+	switch (mStatus) {
 	case 0:
 		section->clearHeap();
-		_F4 = JKRHeap::sCurrentHeap;
-		_F0 = JKRExpHeap::create(_F4->getFreeSize(), _F4, true);
-		_F0->becomeCurrentHeap();
-		_12 = 1;
-		sys->dvdLoadUseCallBack(&_80, _7C);
+		mBackupHeap = JKRHeap::sCurrentHeap;
+		mMainHeap   = JKRExpHeap::create(mBackupHeap->getFreeSize(), mBackupHeap, true);
+		mMainHeap->becomeCurrentHeap();
+		mStatus = 1;
+		sys->dvdLoadUseCallBack(&mDvdThread, mLoadCallback);
 		return;
 	case 1:
-		if (_80.mMode != 2) {
-			return;
+		if (mDvdThread.mMode == 2) {
+			open2D(section);
 		}
-		_18                    = 1.0f;
-		_12                    = 2;
-		section->mDisplayWiper = section->mWipeInFader;
-		section->mWipeInFader->start(_18);
-		playData->clearCurrentCave();
-		PlayData* data = playData;
-		data->_19      = 2;
-		data->_1C      = 0;
-
-		CourseInfo* courseInfo = section->getCurrentCourseInfo();
-		P2ASSERTLINE(381, courseInfo != nullptr);
-		s8 otakaraNum = playData->getOtakaraNum_Course_CaveID(courseInfo->mCourseIndex, section->mCaveID);
-		s8 otakaraMax = playData->getOtakaraMax_Course_CaveID(courseInfo->mCourseIndex, section->mCaveID);
-		kh::Screen::DispCaveResult disp(&_20, DeathMgr::get_cave(7), otakaraNum, otakaraMax, playData->mPokoCount,
-		                                playData->isStoryFlag(STORY_DebtPaid), _F0, (_F8 != 0 && otakaraMax <= otakaraNum));
-		DeathMgr::account_cave();
-		BirthMgr::account_cave();
-		JUT_ASSERTLINE(408, Screen::gGame2DMgr->open_CaveResult(disp), "cannot open caveresult\n");
 		return;
-
 	case 2:
-		_18 -= sys->mDeltaTime;
-		if (_18 < 0.0f) {
-			_12 = 3;
+		mStartTimer -= sys->mDeltaTime;
+		if (mStartTimer < 0.0f) {
+			mStatus = 3;
 		}
 		break;
 
 	case 3:
 		switch (Screen::gGame2DMgr->check_CaveResult()) {
 		case 1:
-			LoadArg arg(_10, false, true, false);
+			LoadArg arg(mGameState, false, true, false);
 			section->loadMainMapSituation();
 			transit(section, SGS_Load, &arg);
 			return;
@@ -359,9 +332,9 @@ void CaveResultState::exec(SingleGameSection* section)
 		break;
 
 	case 4:
-		_18 -= sys->mDeltaTime;
-		if (_18 < 0.0f) {
-			LoadArg arg(_10, false, false, false);
+		mStartTimer -= sys->mDeltaTime;
+		if (mStartTimer < 0.0f) {
+			LoadArg arg(mGameState, false, false, false);
 			section->loadMainMapSituation();
 			transit(section, SGS_Load, &arg);
 			return;
@@ -371,220 +344,16 @@ void CaveResultState::exec(SingleGameSection* section)
 
 	Screen::gGame2DMgr->update();
 	particle2dMgr->update();
-	/*
-	stwu     r1, -0x80(r1)
-	mflr     r0
-	stw      r0, 0x84(r1)
-	stmw     r25, 0x64(r1)
-	mr       r29, r3
-	lis      r3, lbl_804825B0@ha
-	mr       r30, r4
-	addi     r31, r3, lbl_804825B0@l
-	lhz      r0, 0x12(r29)
-	cmpwi    r0, 2
-	beq      lbl_8021B24C
-	bge      lbl_8021B0BC
-	cmpwi    r0, 0
-	beq      lbl_8021B0CC
-	bge      lbl_8021B11C
-	b        lbl_8021B340
-
-lbl_8021B0BC:
-	cmpwi    r0, 4
-	beq      lbl_8021B2D8
-	bge      lbl_8021B340
-	b        lbl_8021B27C
-
-lbl_8021B0CC:
-	mr       r3, r30
-	bl       clearHeap__Q24Game15BaseGameSectionFv
-	lwz      r0, sCurrentHeap__7JKRHeap@sda21(r13)
-	stw      r0, 0xf4(r29)
-	lwz      r26, 0xf4(r29)
-	mr       r3, r26
-	bl       getFreeSize__7JKRHeapFv
-	mr       r4, r26
-	li       r5, 1
-	bl       create__10JKRExpHeapFUlP7JKRHeapb
-	stw      r3, 0xf0(r29)
-	lwz      r3, 0xf0(r29)
-	bl       becomeCurrentHeap__7JKRHeapFv
-	li       r0, 1
-	addi     r4, r29, 0x80
-	sth      r0, 0x12(r29)
-	lwz      r3, sys@sda21(r13)
-	lwz      r5, 0x7c(r29)
-	bl       dvdLoadUseCallBack__6SystemFP16DvdThreadCommandP9IDelegate
-	b        lbl_8021B350
-
-lbl_8021B11C:
-	lwz      r0, 0x98(r29)
-	cmpwi    r0, 2
-	bne      lbl_8021B350
-	lfs      f0, lbl_8051A048@sda21(r2)
-	li       r0, 2
-	stfs     f0, 0x18(r29)
-	sth      r0, 0x12(r29)
-	lwz      r0, 0xd4(r30)
-	stw      r0, 0x18(r30)
-	lwz      r3, 0xd4(r30)
-	lfs      f1, 0x18(r29)
-	bl       start__8WipeBaseFf
-	lwz      r3, playData__4Game@sda21(r13)
-	bl       clearCurrentCave__Q24Game8PlayDataFv
-	lwz      r5, playData__4Game@sda21(r13)
-	li       r4, 2
-	li       r0, 0
-	mr       r3, r30
-	stb      r4, 0x19(r5)
-	stw      r0, 0x1c(r5)
-	lwz      r12, 0(r30)
-	lwz      r12, 0x7c(r12)
-	mtctr    r12
-	bctrl
-	or.      r28, r3, r3
-	bne      lbl_8021B198
-	addi     r3, r31, 0x2c
-	addi     r5, r31, 0x44
-	li       r4, 0x17d
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8021B198:
-	lwz      r3, playData__4Game@sda21(r13)
-	addi     r5, r30, 0x230
-	lwz      r4, 0x48(r28)
-	bl       getOtakaraNum_Course_CaveID__Q24Game8PlayDataFiR4ID32
-	mr       r27, r3
-	lwz      r3, playData__4Game@sda21(r13)
-	lwz      r4, 0x48(r28)
-	addi     r5, r30, 0x230
-	bl       getOtakaraMax_Course_CaveID__Q24Game8PlayDataFiR4ID32
-	lbz      r0, 0xf8(r29)
-	mr       r28, r3
-	li       r30, 0
-	cmplwi   r0, 0
-	beq      lbl_8021B1DC
-	cmpw     r27, r28
-	blt      lbl_8021B1DC
-	li       r30, 1
-
-lbl_8021B1DC:
-	lwz      r25, playData__4Game@sda21(r13)
-	li       r3, 7
-	lbz      r0, 0x2f(r25)
-	clrlwi   r26, r0, 0x1f
-	bl       get_cave__Q24Game8DeathMgrFi
-	stw      r30, 8(r1)
-	mr       r5, r3
-	mr       r6, r27
-	mr       r7, r28
-	lwz      r8, 0xe8(r25)
-	mr       r9, r26
-	lwz      r10, 0xf0(r29)
-	addi     r3, r1, 0x20
-	addi     r4, r29, 0x20
-	bl
-__ct__Q32kh6Screen14DispCaveResultFPQ34Game6Result5TNodeUlUlUlUlbP7JKRHeapb bl
-account_cave__Q24Game8DeathMgrFv bl       account_cave__Q24Game8BirthMgrFv lwz
-r3, gGame2DMgr__6Screen@sda21(r13) addi     r4, r1, 0x20 bl
-open_CaveResult__Q26Screen9Game2DMgrFRQ32kh6Screen14DispCaveResult clrlwi.  r0,
-r3, 0x18 bne      lbl_8021B350 addi     r3, r31, 0x2c addi     r5, r31, 0x8c li
-r4, 0x198 crclr    6 bl       panic_f__12JUTExceptionFPCciPCce b lbl_8021B350
-
-lbl_8021B24C:
-	lwz      r3, sys@sda21(r13)
-	lfs      f2, 0x18(r29)
-	lfs      f1, 0x54(r3)
-	lfs      f0, lbl_8051A04C@sda21(r2)
-	fsubs    f1, f2, f1
-	stfs     f1, 0x18(r29)
-	lfs      f1, 0x18(r29)
-	fcmpo    cr0, f1, f0
-	bge      lbl_8021B340
-	li       r0, 3
-	sth      r0, 0x12(r29)
-	b        lbl_8021B340
-
-lbl_8021B27C:
-	lwz      r3, gGame2DMgr__6Screen@sda21(r13)
-	bl       check_CaveResult__Q26Screen9Game2DMgrCFv
-	cmpwi    r3, 1
-	beq      lbl_8021B290
-	b        lbl_8021B340
-
-lbl_8021B290:
-	lhz      r5, 0x10(r29)
-	li       r4, 0
-	li       r0, 1
-	mr       r3, r30
-	stb      r4, 0x18(r1)
-	stb      r0, 0x19(r1)
-	stb      r4, 0x1a(r1)
-	sth      r5, 0x1c(r1)
-	bl       loadMainMapSituation__Q24Game17SingleGameSectionFv
-	mr       r3, r29
-	mr       r4, r30
-	lwz      r12, 0(r29)
-	addi     r6, r1, 0x18
-	li       r5, 2
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_8021B350
-
-lbl_8021B2D8:
-	lwz      r3, sys@sda21(r13)
-	lfs      f2, 0x18(r29)
-	lfs      f1, 0x54(r3)
-	lfs      f0, lbl_8051A04C@sda21(r2)
-	fsubs    f1, f2, f1
-	stfs     f1, 0x18(r29)
-	lfs      f1, 0x18(r29)
-	fcmpo    cr0, f1, f0
-	bge      lbl_8021B340
-	lhz      r4, 0x10(r29)
-	li       r0, 0
-	mr       r3, r30
-	stb      r0, 0x10(r1)
-	stb      r0, 0x11(r1)
-	stb      r0, 0x12(r1)
-	sth      r4, 0x14(r1)
-	bl       loadMainMapSituation__Q24Game17SingleGameSectionFv
-	mr       r3, r29
-	mr       r4, r30
-	lwz      r12, 0(r29)
-	addi     r6, r1, 0x10
-	li       r5, 2
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_8021B350
-
-lbl_8021B340:
-	lwz      r3, gGame2DMgr__6Screen@sda21(r13)
-	bl       update__Q26Screen9Game2DMgrFv
-	lwz      r3, particle2dMgr@sda21(r13)
-	bl       update__14TParticle2dMgrFv
-
-lbl_8021B350:
-	lmw      r25, 0x64(r1)
-	lwz      r0, 0x84(r1)
-	mtlr     r0
-	addi     r1, r1, 0x80
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	8021B364
- * Size:	0000C0
+/**
+ * @note Address: 0x8021B364
+ * @note Size: 0xC0
  */
 void CaveResultState::draw(SingleGameSection* section, Graphics& gfx)
 {
 	gfx.mOrthoGraph.setPort();
-	if (1 < _12) {
+	if (1 < mStatus) {
 		gfx.mPerspGraph.setPort();
 		particle2dMgr->draw(1, 0);
 		section->draw_Ogawa2D(gfx);
@@ -593,42 +362,102 @@ void CaveResultState::draw(SingleGameSection* section, Graphics& gfx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8021B424
- * Size:	0000C4
+/**
+ * @note Address: 0x8021B424
+ * @note Size: 0xC4
  */
 void CaveResultState::cleanup(SingleGameSection* section)
 {
-	PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
-	PSSystem::checkSceneMgr(mgr);
-	mgr->deleteCurrentScene();
+	PSMGetSceneMgrCheck()->deleteCurrentScene();
+
 	playData->mCaveCropMemory->clear();
 	_14            = 0;
 	mSection->_168 = nullptr;
-	_F0->freeAll();
-	_F0->destroy();
-	_F0 = nullptr;
-	_F4->becomeCurrentHeap();
+	mMainHeap->freeAll();
+	mMainHeap->destroy();
+	mMainHeap = nullptr;
+	mBackupHeap->becomeCurrentHeap();
 }
 
-/*
- * --INFO--
- * Address:	8021B4E8
- * Size:	00040C
+/**
+ * @note Address: 0x8021B4E8
+ * @note Size: 0x40C
  */
 void CaveResultState::createResultNodes()
 {
-	_F8 = 0;
-	sys->startChangeCurrentHeap(_74);
+	mIsCaveComplete = 0;
+	sys->startChangeCurrentHeap(mResultTexHeap);
 	PelletCropMemory* cropMem = playData->mCaveCropMemory->createClone();
-	if (static_cast<SingleGameSection*>(mSection)->_274) {
+	if (mSection->mDoTrackCarcass) {
 		PelletCarcass::Mgr* carcassMgr = PelletCarcass::mgr;
-		KindCounter* counter           = &playData->mCaveCropMemory->_14;
-		for (int i = 0; i < counter->mNumKinds; i++) {
-			u8* count = (*counter)(i);
+		KindCounter& counter           = playData->mCaveCropMemory->mCarcass;
+		for (int i = 0; i < counter.getNumKinds(); i++) {
+			if (counter(i) && carcassMgr->getPelletConfig(i)) {
+				counter(i) = 0;
+			}
 		}
 	}
+
+	playData->mMainCropMemory->addTo(playData->mCaveCropMemory);
+	playData->mCaveCropMemory->clear();
+
+	PelletItem::Mgr* itemMgr = PelletItem::mgr;
+	KindCounter& counter     = cropMem->mItem;
+	for (int i = 0; i < counter.getNumKinds(); i++) {
+		if (counter(i) || mSection->mItemCounter(i)) {
+			int money;
+			mIsCaveComplete      = true;
+			PelletConfig* config = itemMgr->getPelletConfig(i);
+			int id               = PelletList::Mgr::getOffsetFromDictionaryNo(config->mParams.mDictionary.mData - 1);
+			u64 tag              = Result::TNode::convertByMorimun(id);
+			Result::TNode* node  = new Result::TNode;
+			money                = config->mParams.mMoney.mData;
+			node->setTNode(tag, mResultTextures->getItemTexture(i), counter(i), money * counter(i), money, mSection->mItemCounter(i));
+			mResultNodes.add(node);
+		}
+	}
+
+	PelletOtakara::Mgr* otaMgr = PelletOtakara::mgr;
+	KindCounter& counter2      = cropMem->mOtakara;
+	for (int i = 0; i < counter2.getNumKinds(); i++) {
+		if (counter2(i) || mSection->mOtakaraCounter(i)) {
+			mIsCaveComplete      = true;
+			PelletConfig* config = otaMgr->getPelletConfig(i);
+			int id               = PelletList::Mgr::getOffsetFromDictionaryNo(config->mParams.mDictionary.mData - 1);
+			u64 tag              = Result::TNode::convertByMorimun(id);
+			Result::TNode* node  = new Result::TNode;
+			int money            = config->mParams.mMoney.mData;
+			node->setTNode(tag, mResultTextures->getOtakaraTexture(i), counter2(i), money * counter2(i), money,
+			               mSection->mOtakaraCounter(i));
+			mResultNodes.add(node);
+		}
+	}
+
+	PelletCarcass::Mgr* carcassMgr = PelletCarcass::mgr;
+	int money;
+	KindCounter& counter3 = cropMem->mCarcass;
+	int value             = 0;
+	int num               = 0;
+	for (int i = 0; i < counter3.mNumKinds; i++) {
+		if (counter3(i)) {
+			PelletConfig* config = carcassMgr->getPelletConfig(i);
+			num += counter3(i);
+			money          = config->mParams.mMoney.mData;
+			int counterVal = counter3(i);
+			value += counterVal * money;
+		}
+	}
+	if (num > 0) {
+		Result::TNode* node = new Result::TNode;
+		bool track          = mSection->mDoTrackCarcass;
+		JUTTexture* tex     = mResultTextures->getCarcassTexture();
+		node->setTNode(0, tex, num, value, -1, track);
+		mResultNodes.add(node);
+	}
+
+	sys->endChangeCurrentHeap();
+	mSection->clearCaveOtakaraEarningsAndDrops();
+
 	/*
 	stwu     r1, -0x40(r1)
 	mflr     r0
@@ -929,5 +758,6 @@ lbl_8021B8D0:
 	blr
 	*/
 }
+
 } // namespace SingleGame
 } // namespace Game

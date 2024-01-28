@@ -1,15 +1,15 @@
 #include "Game/CameraMgr.h"
 #include "Game/Navi.h"
 #include "Game/Stickers.h"
+#include "Game/MapMgr.h"
 #include "PSSystem/PSSystemIF.h"
 #include "nans.h"
 
 namespace Game {
 
-/*
- * --INFO--
- * Address:	8023F3F0
- * Size:	000138
+/**
+ * @note Address: 0x8023F3F0
+ * @note Size: 0x138
  */
 PlayCamera::PlayCamera(Navi* target)
 {
@@ -22,7 +22,7 @@ PlayCamera::PlayCamera(Navi* target)
 
 	mGoalTargetDistance = 100.0f;
 	mCurrTargetDistance = 100.0f;
-	mCameraAngleGoal    = 0.0f;
+	mCameraAngleTarget  = 0.0f;
 	mCameraAngleCurrent = 0.0f;
 	mGoalVerticalAngle  = 0.0f;
 	mCurrVerticalAngle  = 0.0f;
@@ -57,24 +57,21 @@ PlayCamera::PlayCamera(Navi* target)
 	mName           = "PlayCamera";
 }
 
-/*
- * --INFO--
- * Address:	8023F528
- * Size:	000008
+/**
+ * @note Address: 0x8023F528
+ * @note Size: 0x8
  */
 void PlayCamera::setCameraParms(CameraParms* parms) { mCameraParms = parms; }
 
-/*
- * --INFO--
- * Address:	8023F530
- * Size:	000008
+/**
+ * @note Address: 0x8023F530
+ * @note Size: 0x8
  */
 void PlayCamera::setVibrationParms(VibrationParms* parms) { mVibrationParms = parms; }
 
-/*
- * --INFO--
- * Address:	8023F538
- * Size:	00016C
+/**
+ * @note Address: 0x8023F538
+ * @note Size: 0x16C
  */
 void PlayCamera::init()
 {
@@ -91,7 +88,7 @@ void PlayCamera::init()
 
 	f32 angle = mTargetObj->getFaceDir() + PI;
 	clampAngle(angle);
-	mCameraAngleGoal    = angle;
+	mCameraAngleTarget  = angle;
 	mCameraAngleCurrent = angle;
 	mCurrVerticalAngle  = mGoalVerticalAngle;
 	mViewAngle          = mGoalFOV;
@@ -101,22 +98,20 @@ void PlayCamera::init()
 	updateMatrix();
 }
 
-/*
- * --INFO--
- * Address:	8023F6A4
- * Size:	000034
+/**
+ * @note Address: 0x8023F6A4
+ * @note Size: 0x34
  */
 void PlayCamera::setCameraAngle(f32 angle)
 {
-	mCameraAngleGoal    = angle;
+	mCameraAngleTarget  = angle;
 	mCameraAngleCurrent = angle;
 	updateMatrix();
 }
 
-/*
- * --INFO--
- * Address:	8023F6D8
- * Size:	00005C
+/**
+ * @note Address: 0x8023F6D8
+ * @note Size: 0x5C
  */
 void PlayCamera::getCameraData(CameraData& data)
 {
@@ -131,10 +126,9 @@ void PlayCamera::getCameraData(CameraData& data)
 	data.mSelAngle       = mCameraSelAngle;
 }
 
-/*
- * --INFO--
- * Address:	8023F734
- * Size:	00005C
+/**
+ * @note Address: 0x8023F734
+ * @note Size: 0x5C
  */
 void PlayCamera::setCameraData(CameraData& data)
 {
@@ -149,10 +143,9 @@ void PlayCamera::setCameraData(CameraData& data)
 	mCameraSelAngle     = data.mSelAngle;
 }
 
-/*
- * --INFO--
- * Address:	8023F790
- * Size:	000080
+/**
+ * @note Address: 0x8023F790
+ * @note Size: 0x80
  */
 void PlayCamera::changePlayerMode(bool updateDir)
 {
@@ -162,16 +155,15 @@ void PlayCamera::changePlayerMode(bool updateDir)
 	if (updateDir) {
 		setTargetThetaToWhistle();
 	} else {
-		mCameraAngleGoal = mCameraAngleCurrent;
+		mCameraAngleTarget = mCameraAngleCurrent;
 	}
 	updateMatrix();
 	setProjection();
 }
 
-/*
- * --INFO--
- * Address:	8023F810
- * Size:	00004C
+/**
+ * @note Address: 0x8023F810
+ * @note Size: 0x4C
  * Returns true if the conditions to use the holding R camera are met
  */
 bool PlayCamera::isSpecialCamera()
@@ -182,12 +174,11 @@ bool PlayCamera::isSpecialCamera()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8023F85C
- * Size:	0000E8
+/**
+ * @note Address: 0x8023F85C
+ * @note Size: 0xE8
  */
-bool PlayCamera::doUpdate()
+void PlayCamera::doUpdate()
 {
 	u32 state = updateCameraMode();
 	if (state & 0x10) {
@@ -214,13 +205,13 @@ bool PlayCamera::doUpdate()
 			updateVibration(i);
 		}
 	}
-	return isModCameraFinished();
+	isModCameraFinished();
+	return;
 }
 
-/*
- * --INFO--
- * Address:	8023F944
- * Size:	0000E0
+/**
+ * @note Address: 0x8023F944
+ * @note Size: 0xE0
  */
 void PlayCamera::updateMatrix()
 {
@@ -237,10 +228,9 @@ void PlayCamera::updateMatrix()
 	PSMTXConcat(mLookMatrix.mMatrix.mtxView, mtx5, mLookMatrix.mMatrix.mtxView);
 }
 
-/*
- * --INFO--
- * Address:	8023FA24
- * Size:	00007C
+/**
+ * @note Address: 0x8023FA24
+ * @note Size: 0x7C
  */
 void PlayCamera::noUpdate()
 {
@@ -250,10 +240,9 @@ void PlayCamera::noUpdate()
 	updatePlanes();
 }
 
-/*
- * --INFO--
- * Address:	8023FAA0
- * Size:	000044
+/**
+ * @note Address: 0x8023FAA0
+ * @note Size: 0x44
  */
 bool PlayCamera::isVibration()
 {
@@ -264,10 +253,9 @@ bool PlayCamera::isVibration()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8023FAE4
- * Size:	000208
+/**
+ * @note Address: 0x8023FAE4
+ * @note Size: 0x208
  */
 void PlayCamera::startVibration(int type, f32 strength)
 {
@@ -323,10 +311,9 @@ void PlayCamera::startVibration(int type, f32 strength)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8023FCEC
- * Size:	0000D0
+/**
+ * @note Address: 0x8023FCEC
+ * @note Size: 0xD0
  */
 void PlayCamera::startDemoCamera(int type)
 {
@@ -354,17 +341,15 @@ void PlayCamera::startDemoCamera(int type)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8023FDBC
- * Size:	000020
+/**
+ * @note Address: 0x8023FDBC
+ * @note Size: 0x20
  */
 void PlayCamera::finishDemoCamera() { setTargetParms(); }
 
-/*
- * --INFO--
- * Address:	8023FDDC
- * Size:	0000EC
+/**
+ * @note Address: 0x8023FDDC
+ * @note Size: 0xEC
  */
 u32 PlayCamera::updateCameraMode()
 {
@@ -409,10 +394,9 @@ u32 PlayCamera::updateCameraMode()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	8023FEC8
- * Size:	000080
+/**
+ * @note Address: 0x8023FEC8
+ * @note Size: 0x80
  */
 void PlayCamera::startZoomCamera()
 {
@@ -427,10 +411,9 @@ void PlayCamera::startZoomCamera()
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_CAMERAVIEW_ROTATE, 0);
 }
 
-/*
- * --INFO--
- * Address:	8023FF48
- * Size:	000084
+/**
+ * @note Address: 0x8023FF48
+ * @note Size: 0x84
  */
 void PlayCamera::startGameCamera(int flag)
 {
@@ -448,10 +431,9 @@ void PlayCamera::startGameCamera(int flag)
 	setTargetParms();
 }
 
-/*
- * --INFO--
- * Address:	8023FFCC
- * Size:	0002F8
+/**
+ * @note Address: 0x8023FFCC
+ * @note Size: 0x2F8
  */
 void PlayCamera::setTargetParms()
 {
@@ -530,29 +512,26 @@ void PlayCamera::setTargetParms()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802402C4
- * Size:	000070
+/**
+ * @note Address: 0x802402C4
+ * @note Size: 0x70
  */
 void PlayCamera::setTargetThetaToWhistle()
 {
 	Vector3f pos         = mTargetObj->getPosition();
 	NaviWhistle* whistle = mTargetObj->mWhistle;
-	mCameraAngleGoal     = JMath::atanTable_.atan2_(pos.x - whistle->mPosition.x, pos.z - whistle->mPosition.z);
+	mCameraAngleTarget   = JMath::atanTable_.atan2_(pos.x - whistle->mPosition.x, pos.z - whistle->mPosition.z);
 }
 
-/*
- * --INFO--
- * Address:	80240334
- * Size:	000010
+/**
+ * @note Address: 0x80240334
+ * @note Size: 0x10
  */
 void PlayCamera::setFollowTime() { mFollowTime = mCameraParms->mRotFollowTime; }
 
-/*
- * --INFO--
- * Address:	80240344
- * Size:	000068
+/**
+ * @note Address: 0x80240344
+ * @note Size: 0x68
  */
 void PlayCamera::setSmoothThetaSpeed()
 {
@@ -564,10 +543,9 @@ void PlayCamera::setSmoothThetaSpeed()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802403AC
- * Size:	0000E0
+/**
+ * @note Address: 0x802403AC
+ * @note Size: 0xE0
  */
 void PlayCamera::changeTargetTheta()
 {
@@ -575,17 +553,16 @@ void PlayCamera::changeTargetTheta()
 		mFollowTime -= sys->mDeltaTime;
 		setTargetThetaToWhistle();
 	} else {
-		f32 angle = mCameraAngleGoal - mSmoothMoveSpeed;
+		f32 angle = mCameraAngleTarget - mSmoothMoveSpeed;
 		clampAngle(angle);
-		mCameraAngleGoal = angle;
+		mCameraAngleTarget = angle;
 	}
 	mSmoothMoveSpeed *= mCameraParms->mRotDampRate.mValue;
 }
 
-/*
- * --INFO--
- * Address:	8024048C
- * Size:	000384
+/**
+ * @note Address: 0x8024048C
+ * @note Size: 0x384
  */
 void PlayCamera::changeTargetAtPosition()
 {
@@ -617,10 +594,9 @@ void PlayCamera::changeTargetAtPosition()
 	mGoalPosition.y += mYOffset;
 }
 
-/*
- * --INFO--
- * Address:	80240810
- * Size:	000164
+/**
+ * @note Address: 0x80240810
+ * @note Size: 0x164
  */
 void PlayCamera::updateParms(int flag)
 {
@@ -637,20 +613,8 @@ void PlayCamera::updateParms(int flag)
 	}
 	mLookAtPosition = (mLookAtPosition * invrate) + (mGoalPosition * rate);
 
-	CameraParms* parms = mCameraParms;
-	f32 anglein        = mCameraAngleGoal;
-	f32 angleout       = mCameraAngleCurrent;
-	if (anglein >= angleout) {
-		if (TAU - (anglein - angleout) < (anglein - angleout)) {
-			anglein -= TAU;
-		}
-	} else {
-		if (TAU - (angleout - anglein) < (angleout - anglein)) {
-			anglein += TAU;
-		}
-	}
+	adjustAngle(mCameraAngleCurrent, mCameraAngleTarget);
 
-	mCameraAngleCurrent += parms->mRotSpeed.mValue * (anglein - angleout);
 	f32 angle = mCameraAngleCurrent;
 	clampAngle(angle);
 	mCameraAngleCurrent = angle;
@@ -757,10 +721,9 @@ lbl_8024096C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80240974
- * Size:	00012C
+/**
+ * @note Address: 0x80240974
+ * @note Size: 0x12C
  */
 void PlayCamera::updateVibration(int id)
 {
@@ -786,13 +749,12 @@ void PlayCamera::updateVibration(int id)
 	}
 
 	f32 angle             = mVibrateAngle[id];
-	mVibrateRollAngle[id] = (test2 * mVibrateScaleParm[id]) * mVibrateAzimuthParm[id] * pikmin2_sinf(angle);
+	mVibrateRollAngle[id] = (test2 * mVibrateScaleParm[id]) * mVibrateAzimuthParm[id] * sinf(angle);
 }
 
-/*
- * --INFO--
- * Address:	80240AA0
- * Size:	000074
+/**
+ * @note Address: 0x80240AA0
+ * @note Size: 0x74
  */
 void PlayCamera::otherVibFinished(int id)
 {
@@ -803,147 +765,84 @@ void PlayCamera::otherVibFinished(int id)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80240B14
- * Size:	000174
+/**
+ * @note Address: 0x80240B14
+ * @note Size: 0x174
  */
 bool PlayCamera::isModCameraFinished()
 {
 	if (mChangePlayerState == 1) {
-		// no thanks
+		f32 anglein  = mCameraAngleTarget;
+		f32 angleout = mCameraAngleCurrent;
+		if (anglein >= angleout) {
+			if (TAU - (anglein - angleout) < (anglein - angleout)) {
+				anglein -= TAU;
+			}
+		} else if (TAU - (angleout - anglein) < (angleout - anglein)) {
+			anglein += TAU;
+		}
+
+		f32 anglediff = anglein - angleout;
+		if (absVal(anglediff) < 0.1f && absVal(mGoalTargetDistance - mCurrTargetDistance) < 10.0f
+		    && absVal(mGoalVerticalAngle - mCurrVerticalAngle) < 0.1f && absVal(mGoalFOV - mViewAngle) < 1.0f) {
+			if (mGoalPosition.distance(mLookAtPosition) < 50.0f) {
+				mChangePlayerState = 0;
+				return true;
+			}
+		}
 	}
 	return false;
-	/*
-	lwz      r0, 0x19c(r3)
-	cmpwi    r0, 1
-	bne      lbl_80240C80
-	lfs      f3, 0x1b4(r3)
-	lfs      f4, 0x1b0(r3)
-	fcmpo    cr0, f3, f4
-	cror     2, 1, 2
-	bne      lbl_80240B50
-	fsubs    f2, f3, f4
-	lfs      f1, lbl_8051A678@sda21(r2)
-	fsubs    f0, f1, f2
-	fcmpo    cr0, f0, f2
-	bge      lbl_80240B68
-	fsubs    f3, f3, f1
-	b        lbl_80240B68
-
-lbl_80240B50:
-	fsubs    f2, f4, f3
-	lfs      f1, lbl_8051A678@sda21(r2)
-	fsubs    f0, f1, f2
-	fcmpo    cr0, f0, f2
-	bge      lbl_80240B68
-	fadds    f3, f3, f1
-
-lbl_80240B68:
-	fsubs    f1, f3, f4
-	lfs      f0, lbl_8051A664@sda21(r2)
-	fcmpo    cr0, f1, f0
-	ble      lbl_80240B7C
-	b        lbl_80240B80
-
-lbl_80240B7C:
-	fneg     f1, f1
-
-lbl_80240B80:
-	lfs      f0, lbl_8051A68C@sda21(r2)
-	fcmpo    cr0, f1, f0
-	bge      lbl_80240C80
-	lfs      f2, 0x1ac(r3)
-	lfs      f1, 0x1a8(r3)
-	lfs      f0, lbl_8051A664@sda21(r2)
-	fsubs    f1, f2, f1
-	fcmpo    cr0, f1, f0
-	ble      lbl_80240BA8
-	b        lbl_80240BAC
-
-lbl_80240BA8:
-	fneg     f1, f1
-
-lbl_80240BAC:
-	lfs      f0, lbl_8051A680@sda21(r2)
-	fcmpo    cr0, f1, f0
-	bge      lbl_80240C80
-	lfs      f2, 0x1bc(r3)
-	lfs      f1, 0x1b8(r3)
-	lfs      f0, lbl_8051A664@sda21(r2)
-	fsubs    f1, f2, f1
-	fcmpo    cr0, f1, f0
-	ble      lbl_80240BD4
-	b        lbl_80240BD8
-
-lbl_80240BD4:
-	fneg     f1, f1
-
-lbl_80240BD8:
-	lfs      f0, lbl_8051A68C@sda21(r2)
-	fcmpo    cr0, f1, f0
-	bge      lbl_80240C80
-	lfs      f2, 0x1c0(r3)
-	lfs      f1, 0x28(r3)
-	lfs      f0, lbl_8051A664@sda21(r2)
-	fsubs    f1, f2, f1
-	fcmpo    cr0, f1, f0
-	ble      lbl_80240C00
-	b        lbl_80240C04
-
-lbl_80240C00:
-	fneg     f1, f1
-
-lbl_80240C04:
-	lfs      f0, lbl_8051A66C@sda21(r2)
-	fcmpo    cr0, f1, f0
-	bge      lbl_80240C80
-	lfs      f1, 0x1e8(r3)
-	lfs      f0, 0x184(r3)
-	lfs      f3, 0x1e4(r3)
-	fsubs    f4, f1, f0
-	lfs      f2, 0x180(r3)
-	lfs      f1, 0x1ec(r3)
-	lfs      f0, 0x188(r3)
-	fsubs    f3, f3, f2
-	fmuls    f4, f4, f4
-	fsubs    f2, f1, f0
-	lfs      f0, lbl_8051A664@sda21(r2)
-	fmadds   f1, f3, f3, f4
-	fmuls    f2, f2, f2
-	fadds    f1, f2, f1
-	fcmpo    cr0, f1, f0
-	ble      lbl_80240C60
-	ble      lbl_80240C64
-	frsqrte  f0, f1
-	fmuls    f1, f0, f1
-	b        lbl_80240C64
-
-lbl_80240C60:
-	fmr      f1, f0
-
-lbl_80240C64:
-	lfs      f0, lbl_8051A6A4@sda21(r2)
-	fcmpo    cr0, f1, f0
-	bge      lbl_80240C80
-	li       r0, 0
-	stw      r0, 0x19c(r3)
-	li       r3, 1
-	blr
-
-lbl_80240C80:
-	li       r3, 0
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	80240C88
- * Size:	000158
+/**
+ * @note Address: 0x80240C88
+ * @note Size: 0x158
  */
-void PlayCamera::setCollisionCameraTargetPhi(int)
+void PlayCamera::setCollisionCameraTargetPhi(int flag)
 {
+	if (flag & 0x20) {
+		mGoalVerticalAngle = getCollisionCameraTargetPhi(mCameraParms->mZoomAngle(), mCameraParms->mZoomDist());
+		return;
+	}
+
+	if (mCameraSelAngle) {
+		return;
+	}
+
+	if (_249) {
+		f32 phi;
+		switch (mCameraZoomLevel) {
+		case 0:
+			phi = getCollisionCameraTargetPhi(mCameraParms->mNearLowAngle(), mCameraParms->mCollRadius());
+			break;
+		case 1:
+			phi = getCollisionCameraTargetPhi(mCameraParms->mMidLowAngle(), mCameraParms->mCollRadius());
+			break;
+		case 2:
+			phi = getCollisionCameraTargetPhi(mCameraParms->mFarLowAngle(), mCameraParms->mCollRadius());
+			break;
+		default:
+			phi = getCollisionCameraTargetPhi(mCameraParms->mZoomAngle(), mCameraParms->mCollRadius());
+			break;
+		}
+
+		f32 vertAngle;
+		f32 interpSpeed = mCameraParms->mCollInterpSpeed();
+		if (absVal(mGoalVerticalAngle - phi) < interpSpeed) {
+			vertAngle = phi;
+		} else if (mGoalVerticalAngle < phi) {
+			vertAngle = mGoalVerticalAngle + interpSpeed;
+		} else {
+			vertAngle = mGoalVerticalAngle - interpSpeed;
+		}
+
+		mGoalVerticalAngle = vertAngle;
+		return;
+	}
+
+	if (absVal(mCurrVerticalAngle - mGoalVerticalAngle) < 0.1f) {
+		_249 = 1;
+	}
 	/*
 	stwu     r1, -0x10(r1)
 	mflr     r0
@@ -1066,13 +965,51 @@ lbl_80240DCC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80240DE0
- * Size:	000384
+/**
+ * @note Address: 0x80240DE0
+ * @note Size: 0x384
  */
-void PlayCamera::getCollisionCameraTargetPhi(f32, f32)
+f32 PlayCamera::getCollisionCameraTargetPhi(f32 angle, f32 dist)
 {
+	dist /= 15.0f; // f19
+	angle *= TORADIANS(1.0f);
+
+	f32 cosTheta = cosf(mCameraAngleTarget); // f22
+	f32 sinTheta = sinf(mCameraAngleTarget); // f26
+	f32 sinPhi   = sinf(angle);              // f24
+	f32 cosPhi   = cosf(angle);              // f23
+
+	for (int i = 1; i <= 15; i++) {
+		f32 rad       = dist * (f32)i;
+		f32 scaledSin = rad * cosPhi;                             // f6
+		f32 scaledCos = rad * sinPhi;                             // f1
+		f32 val       = (f32)i * mCameraParms->mCollCorrHeight(); // f20
+		f32 y;
+		Vector3f pos(sinTheta * scaledSin + mGoalPosition.x, mGoalPosition.y + scaledCos, cosTheta * scaledSin + mGoalPosition.z);
+		CurrTriInfo info;
+		info.mPosition        = pos;
+		info.mUpdateOnNewMaxY = 0;
+		mapMgr->getCurrTri(info);
+
+		if (gameSystem && gameSystem->mIsInCave) {
+			if (info.mTriangle) {
+				val = val + info.mMaxY;
+			} else {
+				val = pos.y + mCameraParms->mNoCollHeight();
+			}
+		} else {
+			val = val + info.mMinY;
+		}
+
+		if (val > pos.y) {
+			f32 anglediff = JMAAtan2Radian(val - mGoalPosition.y, rad);
+			if (anglediff > angle) {
+				angle = anglediff;
+			}
+		}
+	}
+
+	return angle;
 	/*
 	stwu     r1, -0x160(r1)
 	mflr     r0

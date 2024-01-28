@@ -9,49 +9,6 @@
 struct Controller;
 
 namespace ebi {
-struct TScreenProgre {
-	enum enumState { UNKNOWN };
-
-	TScreenProgre();
-
-	virtual void setArchive(JKRArchive*); // _08
-
-	void loadResource();
-	void startScreen(long, u32);
-	bool fadeout(u32);
-	bool isFinish();
-	void startState(enumState, u32);
-	void update();
-	void draw();
-	void setDecide();
-
-	// unused/inlined:
-	void killScreen();
-
-	// _00 = VTBL
-	Controller* mController; // _04
-	u8 mSelect;
-	bool mSelected;
-	u32 mCounter1;
-	u32 mCounter1Max;
-	u32 mCounter2;
-	u32 mCounter2Max;
-	int mState;
-	int mState2;
-	P2DScreen::Mgr_tuning* mScreenObj;
-	J2DPane* mPaneMg00;
-	J2DPane* mPaneMg01;
-	J2DPane* mPaneMg02;
-	J2DPane* mPaneWin00;
-	J2DPane* mPaneYes;
-	J2DPane* mPaneNo;
-	J2DPane* mPane_il00;
-	J2DPane* mPane_ir00;
-	J2DPane* mPane_il01;
-	J2DPane* mPane_ir01;
-	E2DCallBack_BlinkFontColor mBlinkFont[2];
-	TYesNoCursor mCursor[2];
-};
 
 namespace Screen {
 enum UpdateState { TSB_US_Finish = 0, TSB_US_Open = 1, TSB_US_Wait = 2, TSB_US_Close = 3 };
@@ -128,23 +85,23 @@ struct TScreenBase : public TScreenBaseInterface {
 	{
 	}
 
-	virtual void setArchive(JKRArchive*);   // _08
-	virtual bool openScreen(ArgOpen*);      // _0C
-	virtual bool closeScreen(ArgClose*);    // _10
-	virtual void killScreen();              // _14
-	virtual void update();                  // _18
-	virtual void draw();                    // _1C
-	virtual u8 isFinishScreen();            // _20
-	virtual void doSetArchive(JKRArchive*); // _24
-	virtual void doOpenScreen(ArgOpen*);    // _28
-	virtual void doCloseScreen(ArgClose*);  // _2C
-	virtual void doKillScreen();            // _30 (weak)
-	virtual void doInitWaitState();         // _34 (weak)
-	virtual bool doUpdateStateOpen();       // _38 (weak)
-	virtual bool doUpdateStateWait();       // _3C
-	virtual bool doUpdateStateClose();      // _40
-	virtual void doDraw();                  // _44
-	virtual char* getName();                // _48 (weak) [not actually weak?]
+	virtual void setArchive(JKRArchive*);              // _08
+	virtual bool openScreen(ArgOpen*);                 // _0C
+	virtual bool closeScreen(ArgClose*);               // _10
+	virtual void killScreen();                         // _14
+	virtual void update();                             // _18
+	virtual void draw();                               // _1C
+	virtual u8 isFinishScreen();                       // _20
+	virtual void doSetArchive(JKRArchive*) { }         // _24 (weak)
+	virtual void doOpenScreen(ArgOpen*) { }            // _28 (weak)
+	virtual void doCloseScreen(ArgClose*) { }          // _2C (weak)
+	virtual void doKillScreen() { }                    // _30 (weak)
+	virtual void doInitWaitState() { }                 // _34 (weak)
+	virtual bool doUpdateStateOpen() { return true; }  // _38 (weak)
+	virtual bool doUpdateStateWait() { return true; }  // _3C (weak)
+	virtual bool doUpdateStateClose() { return true; } // _40 (weak) (weak)
+	virtual void doDraw() { }                          // _44 (weak)
+	virtual char* getName() { return "NoNameScreen"; } // _48 (weak)
 
 	u8 isOpenScreen();
 	u8 isWaitScreen();

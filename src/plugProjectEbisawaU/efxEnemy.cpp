@@ -28,18 +28,17 @@ namespace efx {
 
 static void _Print(char* format, ...) { OSReport(format, __FILE__); }
 
-/*
- * --INFO--
- * Address:	803B2D84
- * Size:	000124
+/**
+ * @note Address: 0x803B2D84
+ * @note Size: 0x124
  */
 bool TChibiHit::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(23, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSimple4::create(arg)) {
-		volatile f32 test[3];
+		vf32 test[3];
 		test[0] = scale;
 		mEmitters[0]->setScale(scale);
 		test[1] = scale;
@@ -52,14 +51,13 @@ bool TChibiHit::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B2EA8
- * Size:	0000E0
+/**
+ * @note Address: 0x803B2EA8
+ * @note Size: 0xE0
  */
 bool TChouDown::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgChou", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgChou", static_cast<ArgChou*>(arg)->getName()) == 0;
 	P2ASSERTLINE(43, nameCheck);
 	int type = static_cast<ArgChou*>(arg)->mType;
 
@@ -77,10 +75,9 @@ bool TChouDown::create(Arg* arg)
 	return (u8)TSync::create(arg);
 }
 
-/*
- * --INFO--
- * Address:	803B2F88
- * Size:	000044
+/**
+ * @note Address: 0x803B2F88
+ * @note Size: 0x44
  */
 void TUmiHamon::setGlobalScale(f32 scale)
 {
@@ -91,14 +88,13 @@ void TUmiHamon::setGlobalScale(f32 scale)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B2FCC
- * Size:	000100
+/**
+ * @note Address: 0x803B2FCC
+ * @note Size: 0x100
  */
 bool TUmiFlick::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(80, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSimple3::create(arg)) {
@@ -110,87 +106,25 @@ bool TUmiFlick::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B30CC
- * Size:	0000D0
+/**
+ * @note Address: 0x803B30CC
+ * @note Size: 0xD0
  */
 bool TUmiAttack::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(97, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
-	if (TSimple1::create(arg)) { // supposed to inherit TSimpleMtx1?
+	if (TSimpleMtx1::create(arg)) { // supposed to inherit TSimpleMtx1?
 		mEmitters[0]->setScale(scale);
 		return true;
 	}
 	return false;
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stfd     f31, 0x20(r1)
-	psq_st   f31, 40(r1), 0, qr0
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	mr       r30, r4
-	mr       r29, r3
-	mr       r3, r30
-	lis      r4, lbl_80495898@ha
-	lwz      r12, 0(r30)
-	addi     r31, r4, lbl_80495898@l
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	addi     r3, r31, 0x10
-	bl       strcmp
-	cntlzw   r0, r3
-	rlwinm.  r0, r0, 0x1b, 0x18, 0x1f
-	bne      lbl_803B313C
-	addi     r3, r31, 0
-	addi     r5, r31, 0x1c
-	li       r4, 0x61
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803B313C:
-	lfs      f31, 0x10(r30)
-	mr       r3, r29
-	mr       r4, r30
-	bl       create__Q23efx11TSimpleMtx1FPQ23efx3Arg
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_803B3174
-	lwz      r4, 8(r29)
-	li       r3, 1
-	stfs     f31, 0x98(r4)
-	stfs     f31, 0x9c(r4)
-	stfs     f31, 0xa0(r4)
-	stfs     f31, 0xb0(r4)
-	stfs     f31, 0xb4(r4)
-	b        lbl_803B3178
-
-lbl_803B3174:
-	li       r3, 0
-
-lbl_803B3178:
-	psq_l    f31, 40(r1), 0, qr0
-	lwz      r0, 0x34(r1)
-	lfd      f31, 0x20(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	803B319C
- * Size:	000024
+/**
+ * @note Address: 0x803B319C
+ * @note Size: 0x24
  */
 void TUmiEat::setGlobalScale(f32 scale)
 {
@@ -199,10 +133,9 @@ void TUmiEat::setGlobalScale(f32 scale)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B31C0
- * Size:	000024
+/**
+ * @note Address: 0x803B31C0
+ * @note Size: 0x24
  */
 void TUmiDeadawa::setGlobalScale(f32 scale)
 {
@@ -211,14 +144,13 @@ void TUmiDeadawa::setGlobalScale(f32 scale)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B31E4
- * Size:	0000D0
+/**
+ * @note Address: 0x803B31E4
+ * @note Size: 0xD0
  */
 bool TUmiDeadmelt::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(134, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSimple1::create(arg)) {
@@ -228,14 +160,13 @@ bool TUmiDeadmelt::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B32B4
- * Size:	0000E8
+/**
+ * @note Address: 0x803B32B4
+ * @note Size: 0xE8
  */
 bool TJgmAttack::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(153, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSyncGroup2<TChasePos>::create(arg)) {
@@ -247,14 +178,13 @@ bool TJgmAttack::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B339C
- * Size:	000100
+/**
+ * @note Address: 0x803B339C
+ * @note Size: 0x100
  */
 bool TJgmAttackW::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(169, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSyncGroup3<TChasePosYRot>::create(arg)) {
@@ -266,14 +196,13 @@ bool TJgmAttackW::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B349C
- * Size:	0000D0
+/**
+ * @note Address: 0x803B349C
+ * @note Size: 0xD0
  */
 bool TJgmBack::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(185, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSync::create(arg)) {
@@ -283,14 +212,13 @@ bool TJgmBack::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B356C
- * Size:	0000E8
+/**
+ * @note Address: 0x803B356C
+ * @note Size: 0xE8
  */
 bool TJgmBackW::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(199, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSyncGroup2<TChasePosYRot>::create(arg)) {
@@ -302,14 +230,13 @@ bool TJgmBackW::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B3654
- * Size:	0000C0
+/**
+ * @note Address: 0x803B3654
+ * @note Size: 0xC0
  */
 bool TImoEat::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgImoEat", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgImoEat", static_cast<ArgImoEat*>(arg)->getName()) == 0;
 	P2ASSERTLINE(217, nameCheck);
 	ArgImoEat* sarg = static_cast<ArgImoEat*>(arg);
 
@@ -324,10 +251,9 @@ bool TImoEat::create(Arg* arg)
 	return TSync::create(sarg);
 }
 
-/*
- * --INFO--
- * Address:	803B3714
- * Size:	000074
+/**
+ * @note Address: 0x803B3714
+ * @note Size: 0x74
  */
 bool TUjinkoHd_Imo::create(Arg* arg)
 {
@@ -340,10 +266,9 @@ bool TUjinkoHd_Imo::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B3788
- * Size:	000074
+/**
+ * @note Address: 0x803B3788
+ * @note Size: 0x74
  */
 bool TUjinkoAp_Imo::create(Arg* arg)
 {
@@ -356,14 +281,13 @@ bool TUjinkoAp_Imo::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B37FC
- * Size:	0000D0
+/**
+ * @note Address: 0x803B37FC
+ * @note Size: 0xD0
  */
 bool TImoSmoke::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(263, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSync::create(arg)) {
@@ -373,14 +297,13 @@ bool TImoSmoke::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B38CC
- * Size:	0000D0
+/**
+ * @note Address: 0x803B38CC
+ * @note Size: 0xD0
  */
 bool TOtaPartsoff::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(279, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSimple1::create(arg)) {
@@ -390,10 +313,9 @@ bool TOtaPartsoff::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B399C
- * Size:	000040
+/**
+ * @note Address: 0x803B399C
+ * @note Size: 0x40
  */
 void TNewkurageSui::setGlobalTranslation(Vector3f& pos)
 {
@@ -406,10 +328,9 @@ void TNewkurageSui::setGlobalTranslation(Vector3f& pos)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B39DC
- * Size:	000034
+/**
+ * @note Address: 0x803B39DC
+ * @note Size: 0x34
  */
 void TNewkurageHire::setLifeTime(s16 time)
 {
@@ -419,10 +340,9 @@ void TNewkurageHire::setLifeTime(s16 time)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B3A10
- * Size:	000040
+/**
+ * @note Address: 0x803B3A10
+ * @note Size: 0x40
  */
 void TKurageSui::setGlobalTranslation(Vector3f& pos)
 {
@@ -435,10 +355,9 @@ void TKurageSui::setGlobalTranslation(Vector3f& pos)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B3A50
- * Size:	000034
+/**
+ * @note Address: 0x803B3A50
+ * @note Size: 0x34
  */
 void TKurageHire::setLifeTime(s16 time)
 {
@@ -448,10 +367,9 @@ void TKurageHire::setLifeTime(s16 time)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B3A84
- * Size:	000024
+/**
+ * @note Address: 0x803B3A84
+ * @note Size: 0x24
  */
 void TQuriGlow::setGlobalScale(f32 scale)
 {
@@ -460,83 +378,77 @@ void TQuriGlow::setGlobalScale(f32 scale)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B3AA8
- * Size:	0000A4
+/**
+ * @note Address: 0x803B3AA8
+ * @note Size: 0xA4
  */
 bool THebiAphd_base::create(Arg* arg)
 {
 	P2ASSERTLINE(358, arg != nullptr);
 	if (TSimple4::create(arg)) {
 		for (int i = 0; i < 4; i++) {
-			mEmitters[i]->_24 = _1C;
+			mEmitters[i]->mMaxFrame = _1C;
 		}
 		return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B3B4C
- * Size:	000034
+/**
+ * @note Address: 0x803B3B4C
+ * @note Size: 0x34
  */
 void TKechappyTest::setGlobalAlpha(u8 alpha)
 {
 	for (int i = 0; i < 3; i++) {
 		if (mItems[i].mEmitter) {
-			mItems[i].mEmitter->mColor1.a = alpha;
+			mItems[i].mEmitter->mGlobalPrmClr.a = alpha;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B3B80
- * Size:	000024
+/**
+ * @note Address: 0x803B3B80
+ * @note Size: 0x24
  */
 void TKechappyTest::setGlobalParticleScale(f32 scale)
 {
 	for (int i = 1; i < 3; i++) {
 		if (mItems[i].mEmitter) {
-			mItems[i].mEmitter->_B4 = scale;
+			mItems[i].mEmitter->mGlobalPScl.y = scale;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B3BA4
- * Size:	000024
+/**
+ * @note Address: 0x803B3BA4
+ * @note Size: 0x24
  */
 void TKechappyTest::setAwayFromCenterSpeed(f32 speed)
 {
 	for (int i = 1; i < 3; i++) {
 		if (mItems[i].mEmitter) {
-			mItems[i].mEmitter->_34 = speed;
+			mItems[i].mEmitter->mAwayFromCenterSpeed = speed;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B3BC8
- * Size:	000024
+/**
+ * @note Address: 0x803B3BC8
+ * @note Size: 0x24
  */
 void TKechappyTest::setSpread(f32 spread)
 {
 	for (int i = 1; i < 3; i++) {
 		if (mItems[i].mEmitter) {
-			mItems[i].mEmitter->_40 = spread;
+			mItems[i].mEmitter->mSpread = spread;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B3BEC
- * Size:	00004C
+/**
+ * @note Address: 0x803B3BEC
+ * @note Size: 0x4C
  */
 void TKechappyTest::setGlobalDynamicsScale(Vector3f& scale)
 {
@@ -547,14 +459,12 @@ void TKechappyTest::setGlobalDynamicsScale(Vector3f& scale)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B3C38
- * Size:	0000DC
+/**
+ * @note Address: 0x803B3C38
+ * @note Size: 0xDC
  */
 void TYakiBody::setRateLOD(int id)
 {
-	JPABaseEmitter* emit;
 	f32 lods[4][3] = {
 		{ 0.2f, 0.2f, 0.2f },
 		{ 1.0f, 1.0f, 1.0f },
@@ -564,7 +474,7 @@ void TYakiBody::setRateLOD(int id)
 
 	for (int i = 0; i < 4; i++) {
 		if (mItems[i].mEmitter)
-			mItems[i].mEmitter->_28 = lods[i][id];
+			mItems[i].mEmitter->setRate(lods[i][id]);
 	}
 	/*
 	stwu     r1, -0x50(r1)
@@ -633,14 +543,13 @@ lbl_803B3D08:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803B3D14
- * Size:	0000D0
+/**
+ * @note Address: 0x803B3D14
+ * @note Size: 0xD0
  */
 bool TPanApp::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(456, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSimple1::create(arg)) {
@@ -650,14 +559,13 @@ bool TPanApp::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B3DE4
- * Size:	0000D0
+/**
+ * @note Address: 0x803B3DE4
+ * @note Size: 0xD0
  */
 bool TPanHide::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(473, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSync::create(arg)) {
@@ -667,14 +575,13 @@ bool TPanHide::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B3EB4
- * Size:	0000D0
+/**
+ * @note Address: 0x803B3EB4
+ * @note Size: 0xD0
  */
 bool TPanSmoke::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(489, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSync::create(arg)) {
@@ -684,14 +591,13 @@ bool TPanSmoke::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B3F84
- * Size:	0000D0
+/**
+ * @note Address: 0x803B3F84
+ * @note Size: 0xD0
  */
 bool TBabaFly_ver01::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(506, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSync::create(arg)) {
@@ -701,32 +607,30 @@ bool TBabaFly_ver01::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B4054
- * Size:	000184
+/**
+ * @note Address: 0x803B4054
+ * @note Size: 0x184
  */
 bool TBabaHe::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgRotY", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgRotY", static_cast<ArgRotY*>(arg)->getName()) == 0;
 	P2ASSERTLINE(521, nameCheck);
 	ArgRotY* sarg = static_cast<ArgRotY*>(arg);
-	Mtx mtx;
-	f32 x = arg->mPosition.x;
-	f32 y = arg->mPosition.y;
-	f32 z = arg->mPosition.z;
-	PSMTXRotRad(mtx, 'y', sarg->mFaceDir);
-	mtx[0][3] = x;
-	mtx[1][3] = y;
-	mtx[2][3] = z;
+	Matrixf mtx;
+	Vector3f pos = arg->mPosition;
+	PSMTXRotRad(mtx.mMatrix.mtxView, 'y', sarg->mFaceDir);
+	mtx.setTranslation(pos);
 
 	if (TSimple2::create(arg)) {
 		for (int i = 0; i < 2; i++) {
-			JPASetRMtxTVecfromMtx(mtx, mEmitters[i]->mMatrix, &mEmitters[i]->mPosition);
+			mEmitters[i]->setGlobalRTMatrix(mtx.mMatrix.mtxView);
 		}
-		mEmitters[0]->mPosition.x = (mtx[0][2] * -35.0f) + x;
-		mEmitters[0]->mPosition.y = (mtx[1][2] * -35.0f) + y;
-		mEmitters[0]->mPosition.z = (mtx[2][2] * -35.0f) + z;
+		Vector3f trs;
+		mtx.getTranslation(trs);
+		trs *= -35.0f;
+		trs += pos;
+		volatile Vector3f dumb = trs;
+		trs.setTVec(mEmitters[0]->mGlobalTrs);
 		return true;
 	}
 	return false;
@@ -839,14 +743,13 @@ lbl_803B41A4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803B41D8
- * Size:	0000E8
+/**
+ * @note Address: 0x803B41D8
+ * @note Size: 0xE8
  */
 bool TKoganeHit::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(546, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSimple2::create(arg)) {
@@ -858,14 +761,13 @@ bool TKoganeHit::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B42C0
- * Size:	0000E8
+/**
+ * @note Address: 0x803B42C0
+ * @note Size: 0xE8
  */
 bool TKoganeDive::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(562, nameCheck);
 	f32 scale = static_cast<ArgScale*>(arg)->mScale;
 	if (TSimple2::create(arg)) {
@@ -877,17 +779,15 @@ bool TKoganeDive::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803B43A8
- * Size:	000004
+/**
+ * @note Address: 0x803B43A8
+ * @note Size: 0x4
  */
 void TParticleCallBack_TankFire::init(JPABaseEmitter*, JPABaseParticle*) { }
 
-/*
- * --INFO--
- * Address:	803B43AC
- * Size:	000144
+/**
+ * @note Address: 0x803B43AC
+ * @note Size: 0x144
  */
 void TParticleCallBack_TankFire::execute(JPABaseEmitter* emit, JPABaseParticle* particle)
 {
@@ -895,7 +795,8 @@ void TParticleCallBack_TankFire::execute(JPABaseEmitter* emit, JPABaseParticle* 
 	f32 y = particle->getCalcCurrentPositionY(emit);
 	f32 x = particle->getCalcCurrentPositionX(emit);
 	Vector3f tgt(x, y, z);
-	if (tgt.distance(emit->mPosition) < _04) {
+
+	if (tgt.distance(emit->mGlobalTrs) > _04) {
 		particle->mFlags |= 2;
 
 		TTankFireHit* hit = mEfxHit;
@@ -998,10 +899,9 @@ lbl_803B44C4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803B44F0
- * Size:	000090
+/**
+ * @note Address: 0x803B44F0
+ * @note Size: 0x90
  */
 bool TTankFireABC::create(Arg* arg)
 {
@@ -1016,10 +916,9 @@ bool TTankFireABC::create(Arg* arg)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803B4580
- * Size:	000044
+/**
+ * @note Address: 0x803B4580
+ * @note Size: 0x44
  */
 bool TTankFireIND::create(Arg* arg)
 {
@@ -1029,10 +928,9 @@ bool TTankFireIND::create(Arg* arg)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803B45C4
- * Size:	000084
+/**
+ * @note Address: 0x803B45C4
+ * @note Size: 0x84
  */
 bool TTankFire::create(Arg* arg)
 {
@@ -1043,14 +941,13 @@ bool TTankFire::create(Arg* arg)
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803B4648
- * Size:	000098
+/**
+ * @note Address: 0x803B4648
+ * @note Size: 0x98
  */
 bool TTankWat::create(Arg* arg)
 {
-	// mParticleCallBack.mEfxHit = &mEfxHit; // something sus here
+	mParticleCallBack.mEfxHit = (TTankFireHit*)&mEfxHit;
 	mParticleCallBack.mEfxHit->create(nullptr);
 	mParticleCallBack._04 = 1000.0f;
 	if (TSyncGroup4<TChaseMtx>::create(arg)) {
@@ -1059,57 +956,26 @@ bool TTankWat::create(Arg* arg)
 		}
 	}
 	return true;
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	li       r4, 0
-	stw      r30, 8(r1)
-	mr       r30, r3
-	addi     r0, r30, 0x60
-	stw      r0, 0x5c(r3)
-	lwz      r3, 0x5c(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f0, lbl_8051F644@sda21(r2)
-	mr       r3, r30
-	mr       r4, r31
-	stfs     f0, 0x58(r30)
-	bl       "create__Q23efx29TSyncGroup4<Q23efx9TChaseMtx>FPQ23efx3Arg"
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_803B46C4
-	lwz      r3, 0xc(r30)
-	addi     r0, r30, 0x54
-	stw      r0, 0xf0(r3)
-	lwz      r3, 0x20(r30)
-	stw      r0, 0xf0(r3)
-	lwz      r3, 0x34(r30)
-	stw      r0, 0xf0(r3)
-	lwz      r3, 0x48(r30)
-	stw      r0, 0xf0(r3)
-
-lbl_803B46C4:
-	lwz      r0, 0x14(r1)
-	li       r3, 1
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	803B46E0
- * Size:	000168
+/**
+ * @note Address: 0x803B46E0
+ * @note Size: 0x168
  */
 void TDnkmsThunderA::doExecuteEmitterOperation(JPABaseEmitter* emit)
 {
+	P2ASSERTLINE(644, mPosition);
+	P2ASSERTLINE(645, mPartnerPosition);
+
+	Vector3f pos1 = *mPosition;
+	Vector3f pos2 = *mPartnerPosition;
+	Mtx mtx;
+	makeMtxZAxisAlongPosPos(mtx, pos1, pos2);
+	JPASetRMtxTVecfromMtx(mtx, emit->mGlobalRot, &emit->mGlobalTrs);
+
+	f32 z = (*mPosition).distance(*mPartnerPosition);
+	volatile Vector3f test(z);
+	emit->setScaleMain(emit->mLocalScl.x, emit->mLocalScl.y, z / 120.0f);
 	/*
 	stwu     r1, -0x70(r1)
 	mflr     r0
@@ -1212,13 +1078,25 @@ lbl_803B4800:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803B4848
- * Size:	000168
+/**
+ * @note Address: 0x803B4848
+ * @note Size: 0x168
  */
-void TDnkmsThunderB::doExecuteEmitterOperation(JPABaseEmitter*)
+void TDnkmsThunderB::doExecuteEmitterOperation(JPABaseEmitter* emit)
 {
+	P2ASSERTLINE(666, mPosition);
+	P2ASSERTLINE(667, mPartnerPosition);
+
+	Vector3f pos1 = *mPosition;
+	Vector3f pos2 = *mPartnerPosition;
+	Mtx mtx;
+	makeMtxZAxisAlongPosPos(mtx, pos1, pos2);
+	JPASetRMtxTVecfromMtx(mtx, emit->mGlobalRot, &emit->mGlobalTrs);
+
+	f32 z = (*mPosition).distance(*mPartnerPosition);
+	volatile Vector3f test(z);
+	emit->setScaleMain(emit->mLocalScl.x, emit->mLocalScl.y, z / 120.0f);
+
 	/*
 	stwu     r1, -0x70(r1)
 	mflr     r0
@@ -1321,10 +1199,9 @@ lbl_803B4968:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803B49B0
- * Size:	0000DC
+/**
+ * @note Address: 0x803B49B0
+ * @note Size: 0xDC
  */
 void THibaFire::setRateLOD(int id)
 {
@@ -1337,7 +1214,7 @@ void THibaFire::setRateLOD(int id)
 
 	for (int i = 0; i < 4; i++) {
 		if (mItems[i].mEmitter)
-			mItems[i].mEmitter->_28 = lods[i][id];
+			mItems[i].mEmitter->mRate = lods[i][id];
 	}
 	/*
 	stwu     r1, -0x50(r1)
@@ -1406,87 +1283,28 @@ lbl_803B4A80:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803B4A8C
- * Size:	0000C0
+/**
+ * @note Address: 0x803B4A8C
+ * @note Size: 0xC0
  */
 bool TGasuHiba::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgGasuHiba", arg->getName()) == 0;
 	P2ASSERTLINE(714, nameCheck);
-
-	if (static_cast<ArgGasuHiba*>(arg)->mIsUnderground) {
+	ArgGasuHiba* gasarg = static_cast<ArgGasuHiba*>(arg);
+	if (gasarg->mIsUnderground) {
 		mItems[0].mEffectID = PID_GasuHiba_3;
 		mItems[1].mEffectID = PID_GasuHiba_4;
 	} else {
 		mItems[0].mEffectID = PID_GasuHiba_1;
 		mItems[1].mEffectID = PID_GasuHiba_2;
 	}
-
-	return TSyncGroup2<TForever>::create(arg);
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	mr       r30, r4
-	lis      r4, lbl_80495898@ha
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	mr       r3, r30
-	addi     r31, r4, lbl_80495898@l
-	lwz      r12, 0(r30)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	addi     r3, r31, 0x94
-	bl       strcmp
-	cntlzw   r0, r3
-	rlwinm.  r0, r0, 0x1b, 0x18, 0x1f
-	bne      lbl_803B4AF4
-	addi     r3, r31, 0
-	addi     r5, r31, 0x1c
-	li       r4, 0x2ca
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803B4AF4:
-	lbz      r0, 0x10(r30)
-	mr       r4, r30
-	cmplwi   r0, 0
-	beq      lbl_803B4B18
-	li       r3, 0x2b4
-	li       r0, 0x2b5
-	sth      r3, 0x10(r29)
-	sth      r0, 0x20(r29)
-	b        lbl_803B4B28
-
-lbl_803B4B18:
-	li       r3, 0x74
-	li       r0, 0x75
-	sth      r3, 0x10(r29)
-	sth      r0, 0x20(r29)
-
-lbl_803B4B28:
-	mr       r3, r29
-	bl       "create__Q23efx28TSyncGroup2<Q23efx8TForever>FPQ23efx3Arg"
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	return TSyncGroup2<TForever>::create(gasarg);
 }
 
-/*
- * --INFO--
- * Address:	803B4B4C
- * Size:	000078
+/**
+ * @note Address: 0x803B4B4C
+ * @note Size: 0x78
  */
 void TGasuHiba::setRateLOD(int id)
 {
@@ -1497,7 +1315,7 @@ void TGasuHiba::setRateLOD(int id)
 
 	for (int i = 0; i < 2; i++) {
 		if (mItems[i].mEmitter)
-			mItems[i].mEmitter->_28 = lods[i][id];
+			mItems[i].mEmitter->mRate = lods[i][id];
 	}
 	/*
 	stwu     r1, -0x20(r1)
@@ -1537,13 +1355,51 @@ lbl_803B4BBC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803B4BC4
- * Size:	000218
+/**
+ * @note Address: 0x803B4BC4
+ * @note Size: 0x218
  */
-bool TDenkiHiba::create(Arg*)
+bool TDenkiHiba::create(Arg* arg)
 {
+	bool nameCheck = strcmp("ArgDenkiHiba", arg->getName()) == 0;
+	P2ASSERTLINE(751, nameCheck);
+	ArgDenkiHiba* denarg = static_cast<ArgDenkiHiba*>(arg);
+
+	Vector3f pos1 = denarg->mOwnerPos;
+	Vector3f pos2 = denarg->mTargetPos;
+
+	bool made = TSyncGroup3<TForever>::create(denarg);
+	if (made) {
+		Mtx mtx;
+		makeMtxZAxisAlongPosPos(mtx, pos1, pos2);
+		for (int i = 0; i < 3; i++) {
+			TForever* efx = &mItems[i];
+			if (efx) {
+				JPABaseEmitter* emit = efx->mEmitter;
+				JPASetRMtxTVecfromMtx(mtx, emit->mGlobalRot, &emit->mLocalTrs);
+				if (denarg->mType == 1) {
+					emit->setGlobalPrmColor(255, 0, 0);
+					emit->setGlobalEnvColor(255, 0, 0);
+				} else if (denarg->mType == 2) {
+					emit->setGlobalPrmColor(0, 0, 255);
+					emit->setGlobalEnvColor(0, 0, 255);
+				}
+			}
+		}
+		f32 dist = pos1.distance(pos2);
+		dist /= 120.0f;
+		mItems[0].mEmitter->setScaleMain(1.0f, 1.0f, dist);
+		mItems[1].mEmitter->setScaleMain(1.0f, dist, 1.0);
+
+		JGeometry::TVec3f* vec = &mItems[2].mEmitter->mLocalScl;
+		volatile JGeometry::TVec3f vec2(*vec);
+		vec->x = vec->x;
+		vec->y = vec->y * dist;
+		vec->z = vec->z;
+		return true;
+	}
+	return false;
+
 	/*
 	stwu     r1, -0x80(r1)
 	mflr     r0
@@ -1698,23 +1554,36 @@ lbl_803B4DC8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000B4
+/**
+ * @note Address: N/A
+ * @note Size: 0xB4
  */
 void TDenkiHiba::setRateLOD(int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	803B4DDC
- * Size:	000128
+/**
+ * @note Address: 0x803B4DDC
+ * @note Size: 0x128
  */
-bool TDenkiHibaMgr::create(Arg*)
+bool TDenkiHibaMgr::create(Arg* arg)
 {
+	bool nameCheck = strcmp("ArgDenkiHiba", arg->getName()) == 0;
+	P2ASSERTLINE(832, nameCheck);
+	ArgDenkiHiba* denarg = static_cast<ArgDenkiHiba*>(arg);
+
+	mOwnerPosition          = denarg->mOwnerPos;
+	mTargetCreaturePosition = denarg->mTargetPos;
+
+	Arg arg2(mOwnerPosition);
+	Arg arg3(mTargetCreaturePosition);
+
+	mPolesigns[0].create(&arg2);
+	mPolesigns[1].create(&arg3);
+
+	return true;
+
 	/*
 	stwu     r1, -0x40(r1)
 	mflr     r0
@@ -1795,125 +1664,39 @@ lbl_803B4E44:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803B4F04
- * Size:	000178
+/**
+ * @note Address: 0x803B4F04
+ * @note Size: 0x178
  */
-void TDenkiHibaMgr::createHiba(int)
+bool TDenkiHibaMgr::createHiba(int type)
 {
-	/*
-	stwu     r1, -0x80(r1)
-	mflr     r0
-	lis      r6, __vt__Q23efx3Arg@ha
-	stw      r0, 0x84(r1)
-	addi     r6, r6, __vt__Q23efx3Arg@l
-	stw      r31, 0x7c(r1)
-	mr       r31, r3
-	lwz      r12, 0xac(r3)
-	lis      r3, "zero__10Vector3<f>"@ha
-	lwz      r11, 0xb0(r31)
-	addi     r5, r3, "zero__10Vector3<f>"@l
-	lwz      r10, 0xb4(r31)
-	lis      r3, __vt__Q23efx12ArgDenkiHiba@ha
-	lwz      r9, 0xa0(r31)
-	addi     r0, r3, __vt__Q23efx12ArgDenkiHiba@l
-	lwz      r8, 0xa4(r31)
-	addi     r3, r31, 4
-	lwz      r7, 0xa8(r31)
-	stw      r12, 8(r1)
-	lfs      f8, 0(r5)
-	stw      r11, 0xc(r1)
-	lfs      f7, 4(r5)
-	stw      r10, 0x10(r1)
-	lfs      f6, 8(r5)
-	stw      r9, 0x14(r1)
-	lfs      f2, 8(r1)
-	stw      r8, 0x18(r1)
-	lfs      f5, 0x14(r1)
-	stw      r7, 0x1c(r1)
-	lfs      f4, 0x18(r1)
-	stw      r6, 0x40(r1)
-	lfs      f3, 0x1c(r1)
-	lfs      f1, 0xc(r1)
-	lfs      f0, 0x10(r1)
-	stw      r4, 0x68(r1)
-	addi     r4, r1, 0x40
-	stfs     f8, 0x44(r1)
-	stfs     f7, 0x48(r1)
-	stfs     f6, 0x4c(r1)
-	stw      r0, 0x40(r1)
-	stfs     f5, 0x50(r1)
-	stfs     f4, 0x54(r1)
-	stfs     f3, 0x58(r1)
-	stfs     f2, 0x5c(r1)
-	stfs     f1, 0x60(r1)
-	stfs     f0, 0x64(r1)
-	lwz      r12, 4(r31)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lis      r4, __vt__Q23efx3Arg@ha
-	addi     r3, r31, 0x38
-	addi     r0, r4, __vt__Q23efx3Arg@l
-	addi     r4, r1, 0x30
-	stw      r0, 0x30(r1)
-	lfs      f0, 0xa0(r31)
-	stfs     f0, 0x34(r1)
-	lfs      f0, 0xa4(r31)
-	stfs     f0, 0x38(r1)
-	lfs      f0, 0xa8(r31)
-	stfs     f0, 0x3c(r1)
-	stw      r0, 0x20(r1)
-	lfs      f0, 0xac(r31)
-	stfs     f0, 0x24(r1)
-	lfs      f0, 0xb0(r31)
-	stfs     f0, 0x28(r1)
-	lfs      f0, 0xb4(r31)
-	stfs     f0, 0x2c(r1)
-	lwz      r12, 0x38(r31)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	addi     r3, r31, 0x5c
-	addi     r4, r1, 0x20
-	lwz      r12, 0x5c(r31)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	addi     r3, r31, 0x80
-	lwz      r12, 0x80(r31)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	addi     r3, r31, 0x90
-	lwz      r12, 0x90(r31)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x84(r1)
-	li       r3, 1
-	lwz      r31, 0x7c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x80
-	blr
-	*/
+	ArgDenkiHiba arg(mOwnerPosition, mTargetCreaturePosition);
+	arg.mType = type;
+	mHiba.create(&arg);
+
+	Arg arg2(mOwnerPosition);
+	Arg arg3(mTargetCreaturePosition);
+
+	mPoles[0].create(&arg2);
+	mPoles[1].create(&arg3);
+
+	mPolesigns[0].fade();
+	mPolesigns[1].fade();
+	return true;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000174
+/**
+ * @note Address: N/A
+ * @note Size: 0x174
  */
 void TDenkiHibaMgr::createHiba()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	803B507C
- * Size:	00008C
+/**
+ * @note Address: 0x803B507C
+ * @note Size: 0x8C
  */
 void TDenkiHibaMgr::forceKill()
 {
@@ -1924,10 +1707,9 @@ void TDenkiHibaMgr::forceKill()
 	mPolesigns[1].forceKill();
 }
 
-/*
- * --INFO--
- * Address:	803B5108
- * Size:	00008C
+/**
+ * @note Address: 0x803B5108
+ * @note Size: 0x8C
  */
 void TDenkiHibaMgr::fade()
 {
@@ -1938,13 +1720,22 @@ void TDenkiHibaMgr::fade()
 	mPolesigns[1].fade();
 }
 
-/*
- * --INFO--
- * Address:	803B5194
- * Size:	0000B4
+/**
+ * @note Address: 0x803B5194
+ * @note Size: 0xB4
  */
-void TDenkiHibaMgr::setRateLOD(int)
+void TDenkiHibaMgr::setRateLOD(int id)
 {
+	f32 lods[3][3] = {
+		{ 1.0f, 1.0f, 1.0f },
+		{ 1.0f, 1.0f, 1.0f },
+		{ 0.15f, 0.07f, 0.02f },
+	};
+
+	for (int i = 0; i < 3; i++) {
+		if (mHiba.mItems[i].mEmitter)
+			mHiba.mItems[i].mEmitter->mRate = lods[i][id];
+	}
 	/*
 	stwu     r1, -0x40(r1)
 	lis      r5, lbl_80495960@ha

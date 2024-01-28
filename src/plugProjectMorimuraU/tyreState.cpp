@@ -3,10 +3,9 @@
 
 namespace Game {
 namespace Tyre {
-/*
- * --INFO--
- * Address:	803AB864
- * Size:	0000C0
+/**
+ * @note Address: 0x803AB864
+ * @note Size: 0xC0
  */
 void Tyre::FSM::init(EnemyBase* enemy)
 {
@@ -17,10 +16,9 @@ void Tyre::FSM::init(EnemyBase* enemy)
 	registerState(new StateDead(TYRE_Dead));
 }
 
-/*
- * --INFO--
- * Address:	803AB924
- * Size:	00003C
+/**
+ * @note Address: 0x803AB924
+ * @note Size: 0x3C
  */
 StateMove::StateMove(int stateID)
     : State(stateID)
@@ -28,43 +26,42 @@ StateMove::StateMove(int stateID)
 	mName = "move";
 }
 
-/*
- * --INFO--
- * Address:	803AB960
- * Size:	000048
+/**
+ * @note Address: 0x803AB960
+ * @note Size: 0x48
  */
 void Tyre::StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->startMotion(0, nullptr);
+	enemy->startMotion(TYREANIM_Move, nullptr);
 
-	Obj* tyre = static_cast<Obj*>(enemy);
+	Obj* tyre = OBJ(enemy);
 	tyre->collisionStOff();
 	tyre->createSmokeEffect();
 }
 
-/*
- * --INFO--
- * Address:	803AB9A8
- * Size:	0000BC
+/**
+ * @note Address: 0x803AB9A8
+ * @note Size: 0xBC
  */
 void Tyre::StateMove::exec(EnemyBase* enemy)
 {
-	Obj* tyre    = static_cast<Obj*>(enemy);
-	f32 p1       = tyre->_30C;
-	Parms* parms = static_cast<Parms*>(tyre->mParms);
-	p1 *= parms->mProperParms.mTyreRotationSpeed.mValue;
+	Obj* tyre    = OBJ(enemy);
+	Parms* parms = CG_PARMS(tyre);
+
+	f32 rotationSpeed = tyre->mSingleRotationRatio;
+	rotationSpeed *= parms->mProperParms.mTyreRotationSpeed.mValue;
 
 	if (parms->mDoUseGlobalJointMgr != 0) {
-		f32 p2     = 0.2f * FABS(p1 - tyre->_2C4);
-		tyre->_2C4 = p2;
-		p2 += tyre->_2C0;
-		if (p2 > TAU) {
-			p2 -= TAU;
+		f32 rotation          = 0.2f * FABS(rotationSpeed - tyre->mRotationOffset);
+		tyre->mRotationOffset = rotation;
+		rotation += tyre->mCurrentRotation;
+		if (rotation > TAU) {
+			rotation -= TAU;
 		}
-		tyre->_2C0 = p2;
+		tyre->mCurrentRotation = rotation;
 	} else {
-		p1 *= EnemyAnimatorBase::defaultAnimSpeed;
-		tyre->mAnimator->mSpeed = p1;
+		rotationSpeed *= EnemyAnimatorBase::defaultAnimSpeed;
+		tyre->mAnimator->mSpeed = rotationSpeed;
 	}
 
 	if ((tyre->mHealth <= 0.0f) && tyre->isEvent(0, EB_Invulnerable)) {
@@ -72,17 +69,15 @@ void Tyre::StateMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803ABA64
- * Size:	000024
+/**
+ * @note Address: 0x803ABA64
+ * @note Size: 0x24
  */
-void Tyre::StateMove::cleanup(EnemyBase* enemy) { static_cast<Obj*>(enemy)->fadeSmokeEffect(); }
+void Tyre::StateMove::cleanup(EnemyBase* enemy) { OBJ(enemy)->fadeSmokeEffect(); }
 
-/*
- * --INFO--
- * Address:	803ABA88
- * Size:	00003C
+/**
+ * @note Address: 0x803ABA88
+ * @note Size: 0x3C
  */
 StateLand::StateLand(int stateID)
     : State(stateID)
@@ -90,25 +85,23 @@ StateLand::StateLand(int stateID)
 	mName = "land";
 }
 
-/*
- * --INFO--
- * Address:	803ABAC4
- * Size:	000048
+/**
+ * @note Address: 0x803ABAC4
+ * @note Size: 0x48
  */
 void Tyre::StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->startMotion(0, nullptr);
+	enemy->startMotion(TYREANIM_Move, nullptr);
 	shadowMgr->setForceVisible(enemy, true);
 }
 
-/*
- * --INFO--
- * Address:	803ABB0C
- * Size:	0000B4
+/**
+ * @note Address: 0x803ABB0C
+ * @note Size: 0xB4
  */
 void Tyre::StateLand::exec(EnemyBase* enemy)
 {
-	Obj* tyre = static_cast<Obj*>(enemy);
+	Obj* tyre = OBJ(enemy);
 	if (tyre->mBounceTriangle) {
 		tyre->flick();
 		Vector3f position = tyre->getPosition();
@@ -118,10 +111,9 @@ void Tyre::StateLand::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803ABBC0
- * Size:	00003C
+/**
+ * @note Address: 0x803ABBC0
+ * @note Size: 0x3C
  */
 StateFreeze::StateFreeze(int stateID)
     : State(stateID)
@@ -129,33 +121,31 @@ StateFreeze::StateFreeze(int stateID)
 	mName = "freeze";
 }
 
-/*
- * --INFO--
- * Address:	803ABBFC
- * Size:	000074
+/**
+ * @note Address: 0x803ABBFC
+ * @note Size: 0x74
  */
 void Tyre::StateFreeze::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* tyre = static_cast<Obj*>(enemy);
+	Obj* tyre = OBJ(enemy);
 	tyre->stopMotion();
-	_10                    = 0;
+	mFrozenTimer           = 0;
 	tyre->mCurrentVelocity = Vector3f(0.0f);
 	tyre->mTargetVelocity  = Vector3f(0.0f);
 	tyre->enableEvent(0, EB_Constrained);
 	tyre->collisionStOn();
 }
 
-/*
- * --INFO--
- * Address:	803ABC70
- * Size:	0000B4
+/**
+ * @note Address: 0x803ABC70
+ * @note Size: 0xB4
  */
 void Tyre::StateFreeze::exec(EnemyBase* enemy)
 {
-	Obj* tyre              = static_cast<Obj*>(enemy);
+	Obj* tyre              = OBJ(enemy);
 	tyre->mCurrentVelocity = Vector3f(0.0f);
 	tyre->mTargetVelocity  = Vector3f(0.0f);
-	_10++;
+	mFrozenTimer++;
 	if ((tyre->mHealth <= 0.0f) && tyre->isEvent(0, EB_Invulnerable)) {
 		transit(tyre, TYRE_Dead, nullptr);
 	}
@@ -170,10 +160,9 @@ void Tyre::StateFreeze::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803ABD24
- * Size:	00003C
+/**
+ * @note Address: 0x803ABD24
+ * @note Size: 0x3C
  */
 Tyre::StateDead::StateDead(int stateID)
     : State(stateID)
@@ -181,23 +170,21 @@ Tyre::StateDead::StateDead(int stateID)
 	mName = "dead";
 }
 
-/*
- * --INFO--
- * Address:	803ABD60
- * Size:	000048
+/**
+ * @note Address: 0x803ABD60
+ * @note Size: 0x48
  */
 void Tyre::StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->startMotion(1, nullptr);
-	Obj* tyre = static_cast<Obj*>(enemy);
+	enemy->startMotion(TYREANIM_GetOff, nullptr);
+	Obj* tyre = OBJ(enemy);
 	tyre->deathProcedure();
 	tyre->deadEffect();
 }
 
-/*
- * --INFO--
- * Address:	803ABDA8
- * Size:	000044
+/**
+ * @note Address: 0x803ABDA8
+ * @note Size: 0x44
  */
 void Tyre::StateDead::exec(EnemyBase* enemy)
 {

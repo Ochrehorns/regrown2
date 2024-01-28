@@ -76,9 +76,9 @@ enum DemoFlags {
 	DEMO_Pikmin_In_Danger_Water  = 51,
 	DEMO_Pikmin_In_Danger_Poison = 52,
 	DEMO_UNK_53                  = 53,
-	DEMO_UNK_54                  = 54, // cave screen?
-	DEMO_UNK_55                  = 55, // cave screen?
-	DEMO_UNK_56                  = 56, // cave screen?
+	DEMO_RADAR_ENABLED           = 54, // these arent even for cutscenes, they're specifically for hud stuff
+	DEMO_SPICY_ENABLED           = 55,
+	DEMO_BITTER_ENABLED          = 56,
 };
 
 // What to load into after file select, i.e. where did we last save?
@@ -120,7 +120,7 @@ struct KindCounter {
 
 	void alloc(int);
 	void clear();
-	u8* operator()(int);
+	u8& operator()(int);
 	bool completeAll();
 	int getEarnKinds();
 
@@ -131,14 +131,7 @@ struct KindCounter {
 	void copyFrom(KindCounter&);
 	inline void addTo(KindCounter&);
 
-	inline int calcCollectedNum()
-	{
-		int ret = 0;
-		for (int i = 0; i < mNumKinds; i++) {
-			ret += *operator()(i);
-		}
-		return ret;
-	}
+	inline int getNumKinds() const { return mNumKinds; }
 
 	u16 mNumKinds; // _00
 	u8* mKinds;    // _04
@@ -150,23 +143,23 @@ struct KindCounter {
 struct OlimarData {
 	enum ItemIndex {
 		ODII_FIRST_EXPLORATION_KIT_ITEM = 0,
-		ODII_BruteKnuckles              = ODII_FIRST_EXPLORATION_KIT_ITEM,
-		ODII_DreamMaterial,
-		ODII_AmplifiedAmplifier,
-		ODII_ProfessionalNoisemaker,
-		ODII_StellarOrb,
-		ODII_JusticeAlloy,
-		ODII_ForgedCourage,
-		ODII_RepugnantAppendage,
-		ODII_PrototypeDetector,
-		ODII_FiveManNapsack,
-		ODII_SphericalAtlas,
-		ODII_GeographicProjection,
-		ODII_LAST_EXPLORATION_KIT_ITEM = ODII_GeographicProjection,
-		ODII_FIRST_NON_EXPLORATION_KIT_ITEM,
-		ODII_TheKey                        = ODII_FIRST_NON_EXPLORATION_KIT_ITEM,
-		ODII_LAST_NON_EXPLORATION_KIT_ITEM = ODII_TheKey,
-		ODII_COUNT
+		ODII_BruteKnuckles              = ODII_FIRST_EXPLORATION_KIT_ITEM,        // 0
+		ODII_DreamMaterial,                                                       // 1
+		ODII_AmplifiedAmplifier,                                                  // 2
+		ODII_ProfessionalNoisemaker,                                              // 3
+		ODII_StellarOrb,                                                          // 4
+		ODII_JusticeAlloy,                                                        // 5
+		ODII_ForgedCourage,                                                       // 6
+		ODII_RepugnantAppendage,                                                  // 7
+		ODII_PrototypeDetector,                                                   // 8
+		ODII_FiveManNapsack,                                                      // 9
+		ODII_SphericalAtlas,                                                      // 10
+		ODII_GeographicProjection,                                                // 11
+		ODII_LAST_EXPLORATION_KIT_ITEM = ODII_GeographicProjection,               // 11
+		ODII_FIRST_NON_EXPLORATION_KIT_ITEM,                                      // 12
+		ODII_TheKey                        = ODII_FIRST_NON_EXPLORATION_KIT_ITEM, // 12
+		ODII_LAST_NON_EXPLORATION_KIT_ITEM = ODII_TheKey,                         // 12
+		ODII_COUNT                                                                // 13
 	};
 
 	OlimarData();
@@ -177,6 +170,39 @@ struct OlimarData {
 
 	void write(Stream&);
 	void read(Stream&);
+
+	/**
+	 * Returns the map type based on the given collection flags.
+	 *
+	 * @param hasPrototypeDetector A boolean indicating whether the Prototype Detector item has been collected.
+	 * @param hasNapsack A boolean indicating whether the Five-Man Napsack item has been collected.
+	 * @return An integer representing the map type:
+	 * 		0 = None
+	 * 		1 = Prototype Detector
+	 * 		2 = Napsack
+	 * 		3 = Both
+	 */
+	static inline int getDetectorFlags(bool hasPrototypeDetector, bool hasNapsack)
+	{
+		int mapType;
+		bool flag = false;
+		if (hasPrototypeDetector && hasNapsack) {
+			flag = true;
+		}
+
+		if (flag) {
+			mapType = 3;
+		} else if (hasPrototypeDetector) {
+			mapType = 1;
+		} else {
+			mapType = 0;
+			if (hasNapsack) {
+				mapType = 2;
+			}
+		}
+
+		return mapType;
+	}
 
 	u8 mFlags[2]; // _00
 };
@@ -197,6 +223,10 @@ struct PelletCropMemory {
 	// Unused/inlined:
 	void obtainPellet(Pellet*);
 	int calcNumKinds();
+
+	KindCounter& getOtakara() { return mOtakara; }
+	KindCounter& getItem() { return mItem; }
+	KindCounter& getCarcass() { return mCarcass; }
 
 	// _00	= VTBL
 	KindCounter mOtakara; // _04
@@ -244,7 +274,7 @@ struct PlayData : public CNode {
 			int caves = info->getCaveNum();
 			if (caves > 0) {
 				mCaveCount        = caves;
-				mOtakaraCountsOld = new char[caves];
+				mOtakaraCountsOld = new u8[caves];
 				_08               = new int[caves];
 				if (mCaveCount > 0) {
 					for (int j = 0; j < mCaveCount; j++) {
@@ -270,7 +300,7 @@ struct PlayData : public CNode {
 		// Pointer to array indexed by cave index.
 		// This is also returned by getOtakaraNum_Course_CaveID,
 		// so I guess it's both for some reason.
-		char* mOtakaraCountsOld; // _04
+		u8* mOtakaraCountsOld; // _04
 
 		// Pointer to array indexed by cave index.
 		int* _08; // _08
@@ -281,6 +311,12 @@ struct PlayData : public CNode {
 
 		void write(Stream&);
 		void read(Stream&);
+
+		inline void init()
+		{
+			mNonLoops.reset();
+			mLoops.reset();
+		}
 
 		BitFlags mNonLoops; // _00
 		BitFlags mLoops;    // _08
@@ -425,10 +461,18 @@ struct PlayData : public CNode {
 		mBeforeSaveDelegate = delegate;
 	}
 
+	inline int getPokoCount() const { return mPokoCount; }
+	inline int getCavePokoCount() const { return mCavePokoCount; }
+
+	inline void addPokos(int pokos) { mPokoCount += pokos; }
+
+	// _00     = VTBL
+	// _00-_18 = CNode
 	bool _18;                               // _18
 	u8 mLoadType;                           // _19, see SaveFlags enum
 	void* mBeforeSaveDelegate;              // _1C
 	u8 mDeadNaviID;                         // _20
+	u8 mDeadNaviID2;                        // _21
 	f32 mNaviLifeMax[2];                    // _24
 	u8 mHasContainerFlags;                  // _2C
 	u8 mHasBootContainerFlags;              // _2D
@@ -473,8 +517,8 @@ struct PlayData : public CNode {
 	// Previous day's Poko count.
 	int mPokoCountOld; // _FC
 
-	int mPikminYesterday[6]; // _100
-	int mPikminToday[6];     // _118
+	int mPikminYesterday[StoredPikiCount + 1]; // _100
+	int mPikminToday[StoredPikiCount + 1];     // _118
 
 	static u32 mVersion;
 	static int sCurrPlayDataSize;

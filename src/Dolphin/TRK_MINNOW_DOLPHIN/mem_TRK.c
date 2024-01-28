@@ -4,13 +4,12 @@
 #define WRITE_BYTE(dst, add)          WRITE(dst, add, 8, 32)
 #define WRITE_WORD(dst, add)          WRITE(dst, add, 32, 8)
 
-__declspec(section ".init") void* TRK_memcpy(void* dst, const void* src, size_t n);
-__declspec(section ".init") void* TRK_memset(void* dst, int val, size_t n);
+DECL_SECT(".init") void* TRK_memcpy(void* dst, const void* src, size_t n);
+DECL_SECT(".init") void* TRK_memset(void* dst, int val, size_t n);
 
-/*
- * --INFO--
- * Address:	800BDDF0
- * Size:	0000B8
+/**
+ * @note Address: 0x800BDDF0
+ * @note Size: 0xB8
  */
 #pragma dont_inline on
 void TRK_fill_mem(void* dst, int val, size_t n)
@@ -66,7 +65,7 @@ void TRK_fill_mem(void* dst, int val, size_t n)
 
 	return;
 }
-#pragma dont_inline off
+#pragma dont_inline reset
 
 void* TRK_memcpy(void* dst, const void* src, size_t n)
 {

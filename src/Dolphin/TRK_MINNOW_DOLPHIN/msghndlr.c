@@ -1,1471 +1,633 @@
-#include "types.h"
+#include "PowerPC_EABI_Support/MetroTRK/trk.h"
+#include "Dolphin/print.h"
+static BOOL IsTRKConnected;
+static u32 g_CurrentSequence;
 
-/*
- * --INFO--
- * Address:	800BD54C
- * Size:	0000A8
+/**
+ * @note Address: 0x800BD54C
+ * @note Size: 0xA8
  */
-void OutputData(void)
+void OutputData(void* data, int length)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x20(r1)
-	  mflr      r0
-	  lis       r6, 0x8048
-	  lis       r5, 0x8048
-	  stw       r0, 0x24(r1)
-	  stmw      r27, 0xC(r1)
-	  mr        r27, r4
-	  mr        r31, r3
-	  subi      r29, r6, 0x6514
-	  subi      r30, r5, 0x650C
-	  li        r28, 0
-	  b         .loc_0x78
+	// u8 byte;
+	int i;
+	u8* datapointer = data;
 
-	.loc_0x30:
-	  lbz       r5, 0x0(r31)
-	  mr        r4, r29
-	  li        r3, 0x8
-	  crclr     6, 0x6
-	  bl        0x3FBC
-	  rlwinm    r0,r28,28,0,3
-	  rlwinm    r3,r28,1,31,31
-	  sub       r0, r0, r3
-	  rlwinm    r0,r0,4,0,31
-	  add       r0, r0, r3
-	  cmpwi     r0, 0xF
-	  bne-      .loc_0x70
-	  mr        r4, r30
-	  li        r3, 0x8
-	  crclr     6, 0x6
-	  bl        0x3F90
+	for (i = 0; i < length; i++) {
+		MWTRACE(8, "%02x ", datapointer[i]);
+		if (i % 16 == 15) {
+			MWTRACE(8, "\n");
+		}
+	}
 
-	.loc_0x70:
-	  addi      r28, r28, 0x1
-	  addi      r31, r31, 0x1
-
-	.loc_0x78:
-	  cmpw      r28, r27
-	  blt+      .loc_0x30
-	  lis       r4, 0x8048
-	  li        r3, 0x8
-	  subi      r4, r4, 0x650C
-	  crclr     6, 0x6
-	  bl        0x3F6C
-	  lmw       r27, 0xC(r1)
-	  lwz       r0, 0x24(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x20
-	  blr
-	*/
+	MWTRACE(8, "\n");
 }
 
-/*
- * --INFO--
- * Address:	800BD53C
- * Size:	000010
+/**
+ * @note Address: 0x800BD53C
+ * @note Size: 0x10
  */
-void GetTRKConnected(void)
-{
-	/*
-	.loc_0x0:
-	  lis       r3, 0x804F
-	  addi      r3, r3, 0x4278
-	  lwz       r3, 0x0(r3)
-	  blr
-	*/
-}
+int GetTRKConnected(void) { return IsTRKConnected; }
 
-/*
- * --INFO--
- * Address:	800BD530
- * Size:	00000C
+/**
+ * @note Address: 0x800BD530
+ * @note Size: 0xC
  */
-void SetTRKConnected(void)
-{
-	/*
-	.loc_0x0:
-	  lis       r4, 0x804F
-	  stw       r3, 0x4278(r4)
-	  blr
-	*/
-}
+void SetTRKConnected(int isConnected) { IsTRKConnected = isConnected; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000098
+/**
+ * @note Address: N/A
+ * @note Size: 0x98
  */
 void TRKMessageIntoReply(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000064
+/**
+ * @note Address: N/A
+ * @note Size: 0x64
  */
-void TRKSendACK(void)
+DSError TRKSendACK(MessageBuffer* buffer)
 {
-	// UNUSED FUNCTION
+	DSError err;
+	MWTRACE(1, "SendACK : Calling MessageSend\n");
+	err = TRKMessageSend(buffer);
+	MWTRACE(1, "MessageSend err : %ld\n", err);
+	return err;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000064
+/**
+ * @note Address: N/A
+ * @note Size: 0x64
  */
-void TRKStandardACK(void)
+DSError TRKStandardACK(MessageBuffer* buffer, MessageCommandID commandID, DSReplyError replyError)
 {
-	// UNUSED FUNCTION
+	CommandReply reply;
+
+	memset(&reply, 0, sizeof(CommandReply));
+	reply.commandID.b  = commandID;
+	reply._00          = 0x40;
+	reply.replyError.b = replyError;
+	TRKWriteUARTN(&reply, sizeof(CommandReply));
+	return DS_NoError;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void TRKDoError(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000054
+/**
+ * @note Address: N/A
+ * @note Size: 0x54
  */
 void TRKDoUnsupported(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800BD4CC
- * Size:	000064
+/**
+ * @note Address: 0x800BD4CC
+ * @note Size: 0x64
  */
-void TRKDoConnect(void)
+DSError TRKDoConnect(MessageBuffer* buffer)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x50(r1)
-	  mflr      r0
-	  lis       r3, 0x804F
-	  li        r5, 0x40
-	  stw       r0, 0x54(r1)
-	  addi      r4, r3, 0x4278
-	  li        r0, 0x1
-	  addi      r3, r1, 0x8
-	  stw       r0, 0x0(r4)
-	  li        r4, 0
-	  bl        -0xB8440
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0
-	  stb       r3, 0xC(r1)
-	  addi      r3, r1, 0x8
-	  li        r4, 0x40
-	  stw       r5, 0x8(r1)
-	  stb       r0, 0x10(r1)
-	  bl        0x30C0
-	  lwz       r0, 0x54(r1)
-	  li        r3, 0
-	  mtlr      r0
-	  addi      r1, r1, 0x50
-	  blr
-	*/
+	IsTRKConnected = TRUE;
+	return TRKStandardACK(buffer, 0x80, DSREPLY_NoError);
 }
 
-/*
- * --INFO--
- * Address:	800BD454
- * Size:	000078
+/**
+ * @note Address: 0x800BD454
+ * @note Size: 0x78
  */
-void TRKDoDisconnect(void)
+DSError TRKDoDisconnect(MessageBuffer* buffer)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x60(r1)
-	  mflr      r0
-	  lis       r3, 0x804F
-	  li        r5, 0x40
-	  stw       r0, 0x64(r1)
-	  addi      r4, r3, 0x4278
-	  li        r0, 0
-	  addi      r3, r1, 0x14
-	  stw       r0, 0x0(r4)
-	  li        r4, 0
-	  bl        -0xB83C8
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0
-	  stb       r3, 0x18(r1)
-	  addi      r3, r1, 0x14
-	  li        r4, 0x40
-	  stw       r5, 0x14(r1)
-	  stb       r0, 0x1C(r1)
-	  bl        0x3138
-	  addi      r3, r1, 0x8
-	  li        r4, 0x1
-	  bl        -0x2000
-	  addi      r3, r1, 0x8
-	  bl        -0x1FF0
-	  lwz       r0, 0x64(r1)
-	  li        r3, 0
-	  mtlr      r0
-	  addi      r1, r1, 0x60
-	  blr
-	*/
+	TRKEvent event;
+
+	IsTRKConnected = FALSE;
+	TRKStandardACK(buffer, 0x80, DSREPLY_NoError);
+	TRKConstructEvent(&event, 1);
+	TRKPostEvent(&event);
+	return DS_NoError;
 }
 
-/*
- * --INFO--
- * Address:	800BD3FC
- * Size:	000058
+/**
+ * @note Address: 0x800BD3FC
+ * @note Size: 0x58
  */
-void TRKDoReset(void)
+DSError TRKDoReset(MessageBuffer* buffer)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x50(r1)
-	  mflr      r0
-	  li        r4, 0
-	  li        r5, 0x40
-	  stw       r0, 0x54(r1)
-	  addi      r3, r1, 0x8
-	  bl        -0xB8360
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0
-	  stb       r3, 0xC(r1)
-	  addi      r3, r1, 0x8
-	  li        r4, 0x40
-	  stw       r5, 0x8(r1)
-	  stb       r0, 0x10(r1)
-	  bl        0x31A0
-	  bl        -0xB83B4
-	  lwz       r0, 0x54(r1)
-	  li        r3, 0
-	  mtlr      r0
-	  addi      r1, r1, 0x50
-	  blr
-	*/
+	TRKStandardACK(buffer, 0x80, DSREPLY_NoError);
+	__TRK_reset();
+	return DS_NoError;
 }
 
-/*
- * --INFO--
- * Address:	800BD3A4
- * Size:	000058
+/**
+ * @note Address: 0x800BD3A4
+ * @note Size: 0x58
  */
-void TRKDoOverride(void)
+DSError TRKDoOverride(MessageBuffer* buffer)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x50(r1)
-	  mflr      r0
-	  li        r4, 0
-	  li        r5, 0x40
-	  stw       r0, 0x54(r1)
-	  addi      r3, r1, 0x8
-	  bl        -0xB8308
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0
-	  stb       r3, 0xC(r1)
-	  addi      r3, r1, 0x8
-	  li        r4, 0x40
-	  stw       r5, 0x8(r1)
-	  stb       r0, 0x10(r1)
-	  bl        0x31F8
-	  bl        0x2E84
-	  lwz       r0, 0x54(r1)
-	  li        r3, 0
-	  mtlr      r0
-	  addi      r1, r1, 0x50
-	  blr
-	*/
+	TRKStandardACK(buffer, 0x80, DSREPLY_NoError);
+	__TRK_copy_vectors();
+	return DS_NoError;
 }
 
-/*
- * --INFO--
- * Address:	800BD39C
- * Size:	000008
+/**
+ * @note Address: 0x800BD39C
+ * @note Size: 0x8
  */
-u32 TRKDoVersions(void) { return 0x0; }
+DSError TRKDoVersions(MessageBuffer*) { return DS_NoError; }
 
-/*
- * --INFO--
- * Address:	800BD394
- * Size:	000008
+/**
+ * @note Address: 0x800BD394
+ * @note Size: 0x8
  */
-u32 TRKDoSupportMask(void) { return 0x0; }
+DSError TRKDoSupportMask(MessageBuffer*) { return DS_NoError; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void TRKDoCPUType(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800BD150
- * Size:	000244
+/**
+ * @note Address: 0x800BD150
+ * @note Size: 0x244
  */
-void TRKDoReadMemory(void)
+DSError TRKDoReadMemory(MessageBuffer* buffer)
 {
-	/*
-	.loc_0x0:
-	  rlwinm    r11,r1,0,27,31
-	  mr        r12, r1
-	  subfic    r11, r11, -0x940
-	  stwux     r1, r1, r11
-	  mflr      r0
-	  stw       r0, 0x4(r12)
-	  stmw      r26, -0x18(r12)
-	  mr        r31, r3
-	  lis       r3, 0x8048
-	  subi      r29, r3, 0x66F0
-	  addi      r4, r29, 0x1B0
-	  li        r3, 0x1
-	  lwz       r26, 0x20(r31)
-	  lhz       r27, 0x1C(r31)
-	  lbz       r30, 0x18(r31)
-	  mr        r6, r26
-	  lbz       r5, 0x14(r31)
-	  mr        r7, r27
-	  mr        r8, r30
-	  crclr     6, 0x6
-	  bl        0x43A8
-	  rlwinm.   r0,r30,0,30,30
-	  beq-      .loc_0x98
-	  addi      r3, r1, 0x64
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB8104
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0x12
-	  stb       r3, 0x68(r1)
-	  addi      r3, r1, 0x64
-	  li        r4, 0x40
-	  stw       r5, 0x64(r1)
-	  stb       r0, 0x6C(r1)
-	  bl        0x33FC
-	  li        r3, 0
-	  b         .loc_0x22C
+	u8 buf[0x820] __attribute__((aligned(32)));
+	size_t tempLength;
+	int result;
+	int replyErr;
+	int options;
+	size_t length;
+	u32 start;
 
-	.loc_0x98:
-	  rlwinm.   r28,r30,0,25,25
-	  stw       r27, 0x20(r1)
-	  beq-      .loc_0xC0
-	  mr        r4, r26
-	  addi      r3, r1, 0x100
-	  addi      r5, r1, 0x20
-	  li        r6, 0x1
-	  bl        0x1080
-	  mr        r30, r3
-	  b         .loc_0xE0
+	start   = *(u32*)(buffer->data + 16);
+	length  = *(u16*)(buffer->data + 12);
+	options = buffer->data[8];
 
-	.loc_0xC0:
-	  rlwinm    r0,r30,29,31,31
-	  mr        r4, r26
-	  addi      r3, r1, 0x100
-	  addi      r5, r1, 0x20
-	  xori      r6, r0, 0x1
-	  li        r7, 0x1
-	  bl        0x241C
-	  mr        r30, r3
+	MWTRACE(1, "ReadMemory (0x%02x) : 0x%08x 0x%08x 0x%08x\n", buffer->data[4], start, length, options);
 
-	.loc_0xE0:
-	  mr        r3, r31
-	  li        r4, 0
-	  bl        -0x137C
-	  cmpwi     r30, 0
-	  bne-      .loc_0x168
-	  addi      r3, r1, 0xA4
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB819C
-	  lwz       r4, 0x20(r1)
-	  li        r0, 0x80
-	  stb       r30, 0xAC(r1)
-	  mr        r3, r31
-	  addi      r4, r4, 0x40
-	  li        r5, 0x40
-	  stw       r4, 0xA4(r1)
-	  addi      r4, r1, 0xA4
-	  stb       r0, 0xA8(r1)
-	  bl        -0x1490
-	  cmpwi     r28, 0
-	  beq-      .loc_0x154
-	  rlwinm    r0,r26,0,27,31
-	  addi      r4, r1, 0x100
-	  lwz       r5, 0x20(r1)
-	  mr        r3, r31
-	  add       r4, r4, r0
-	  bl        -0x14B0
-	  mr        r30, r3
-	  b         .loc_0x168
+	if (options & DSMSGMEMORY_Extended) {
+		return TRKStandardACK(buffer, DSMSG_ReplyACK, DSREPLY_UnsupportedOptionError);
+	}
 
-	.loc_0x154:
-	  lwz       r5, 0x20(r1)
-	  mr        r3, r31
-	  addi      r4, r1, 0x100
-	  bl        -0x14C8
-	  mr        r30, r3
+	tempLength = length;
 
-	.loc_0x168:
-	  cmpwi     r30, 0
-	  beq-      .loc_0x1F8
-	  subi      r0, r30, 0x700
-	  cmplwi    r0, 0x6
-	  bgt-      .loc_0x1BC
-	  lis       r3, 0x804A
-	  rlwinm    r0,r0,2,0,29
-	  addi      r3, r3, 0x6894
-	  lwzx      r0, r3, r0
-	  mtctr     r0
-	  bctr
-	  li        r28, 0x15
-	  b         .loc_0x1C0
-	  li        r28, 0x13
-	  b         .loc_0x1C0
-	  li        r28, 0x21
-	  b         .loc_0x1C0
-	  li        r28, 0x22
-	  b         .loc_0x1C0
-	  li        r28, 0x20
-	  b         .loc_0x1C0
+	if (options & DSMSGMEMORY_Space_data) {
+		result = TRKTargetAccessARAM(buf, start, &tempLength, TRUE);
+	} else {
+		result = TRKTargetAccessMemory(buf, start, &tempLength, options & DSMSGMEMORY_Userview ? 0 : 1, TRUE);
+	}
 
-	.loc_0x1BC:
-	  li        r28, 0x3
+	TRKResetBuffer(buffer, 0);
 
-	.loc_0x1C0:
-	  addi      r3, r1, 0x24
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB8268
-	  li        r3, 0x80
-	  li        r0, 0x40
-	  stb       r3, 0x28(r1)
-	  addi      r3, r1, 0x24
-	  li        r4, 0x40
-	  stw       r0, 0x24(r1)
-	  stb       r28, 0x2C(r1)
-	  bl        0x329C
-	  li        r3, 0
-	  b         .loc_0x22C
+	if (result == DS_NoError) {
+		CommandReply reply;
+		memset(&reply, 0, sizeof(CommandReply));
+		reply.replyError.b = result;
+		reply._00          = tempLength + 0x40;
+		reply.commandID.b  = DSMSG_ReplyACK;
+		TRKAppendBuffer(buffer, &reply, sizeof(CommandReply));
 
-	.loc_0x1F8:
-	  addi      r4, r29, 0x60
-	  li        r3, 0x1
-	  crclr     6, 0x6
-	  bl        0x41F4
-	  mr        r3, r31
-	  bl        -0x1B14
-	  addi      r4, r29, 0x80
-	  mr        r29, r3
-	  li        r3, 0x1
-	  mr        r5, r29
-	  crclr     6, 0x6
-	  bl        0x41D4
-	  mr        r3, r29
+		if (options & 0x40) {
+			result = TRKAppendBuffer(buffer, buf + (start & 0x1F), tempLength);
+		} else {
+			result = TRKAppendBuffer(buffer, buf, tempLength);
+		}
+	}
 
-	.loc_0x22C:
-	  lwz       r10, 0x0(r1)
-	  lmw       r26, -0x18(r10)
-	  lwz       r0, 0x4(r10)
-	  mtlr      r0
-	  mr        r1, r10
-	  blr
-	*/
+	if (result) {
+		switch (result) {
+		case DS_CWDSException:
+			replyErr = DSREPLY_CWDSException;
+			break;
+		case DS_InvalidMemory:
+			replyErr = DSREPLY_InvalidMemoryRange;
+			break;
+		case DS_InvalidProcessID:
+			replyErr = DSREPLY_InvalidProcessID;
+			break;
+		case DS_InvalidThreadID:
+			replyErr = DSREPLY_InvalidThreadID;
+			break;
+		case DS_OSError:
+			replyErr = DSREPLY_OSError;
+			break;
+		default:
+			replyErr = DSREPLY_CWDSError;
+			break;
+		}
+		return TRKStandardACK(buffer, DSMSG_ReplyACK, replyErr);
+	}
+
+	return TRKSendACK(buffer);
 }
 
-/*
- * --INFO--
- * Address:	800BCF14
- * Size:	00023C
+/**
+ * @note Address: 0x800BCF14
+ * @note Size: 0x23C
  */
-void TRKDoWriteMemory(void)
+DSError TRKDoWriteMemory(MessageBuffer* b)
 {
-	/*
-	.loc_0x0:
-	  rlwinm    r11,r1,0,27,31
-	  mr        r12, r1
-	  subfic    r11, r11, -0x940
-	  stwux     r1, r1, r11
-	  mflr      r0
-	  stw       r0, 0x4(r12)
-	  stmw      r27, -0x14(r12)
-	  mr        r27, r3
-	  lis       r3, 0x8048
-	  subi      r31, r3, 0x66F0
-	  addi      r4, r31, 0x180
-	  li        r3, 0x1
-	  lwz       r28, 0x20(r27)
-	  lhz       r29, 0x1C(r27)
-	  lbz       r30, 0x18(r27)
-	  mr        r6, r28
-	  lbz       r5, 0x14(r27)
-	  mr        r7, r29
-	  mr        r8, r30
-	  crclr     6, 0x6
-	  bl        0x45E4
-	  rlwinm.   r0,r30,0,30,30
-	  beq-      .loc_0x98
-	  addi      r3, r1, 0x64
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB7EC8
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0x12
-	  stb       r3, 0x68(r1)
-	  addi      r3, r1, 0x64
-	  li        r4, 0x40
-	  stw       r5, 0x64(r1)
-	  stb       r0, 0x6C(r1)
-	  bl        0x3638
-	  li        r3, 0
-	  b         .loc_0x224
+	u8 buf[0x820] __attribute__((aligned(32)));
+	size_t tempLength;
+	int options;
+	int result;
+	int replyErr;
+	size_t length;
+	u32 start;
 
-	.loc_0x98:
-	  stw       r29, 0x20(r1)
-	  mr        r3, r27
-	  li        r4, 0x40
-	  bl        -0x112C
-	  rlwinm.   r0,r30,0,25,25
-	  beq-      .loc_0xE4
-	  rlwinm    r0,r28,0,27,31
-	  addi      r4, r1, 0x100
-	  lwz       r5, 0x20(r1)
-	  mr        r3, r27
-	  add       r4, r4, r0
-	  bl        -0x127C
-	  mr        r4, r28
-	  addi      r3, r1, 0x100
-	  addi      r5, r1, 0x20
-	  li        r6, 0
-	  bl        0x1298
-	  mr        r30, r3
-	  b         .loc_0x114
+	start   = *(u32*)(&b->data[16]);
+	length  = *(u16*)(&b->data[12]);
+	options = b->data[8];
 
-	.loc_0xE4:
-	  lwz       r5, 0x20(r1)
-	  mr        r3, r27
-	  addi      r4, r1, 0x100
-	  bl        -0x12A8
-	  rlwinm    r0,r30,29,31,31
-	  mr        r4, r28
-	  addi      r3, r1, 0x100
-	  addi      r5, r1, 0x20
-	  xori      r6, r0, 0x1
-	  li        r7, 0
-	  bl        0x2624
-	  mr        r30, r3
+	MWTRACE(1, "WriteMemory (0x%02x) : 0x%08x 0x%08x 0x%08x\n", (uint)b->data[0x4], start, length, options);
 
-	.loc_0x114:
-	  mr        r3, r27
-	  li        r4, 0
-	  bl        -0x1174
-	  cmpwi     r30, 0
-	  bne-      .loc_0x160
-	  addi      r3, r1, 0xA4
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB7F94
-	  li        r3, 0x40
-	  li        r0, 0x80
-	  stw       r3, 0xA4(r1)
-	  mr        r3, r27
-	  addi      r4, r1, 0xA4
-	  li        r5, 0x40
-	  stb       r0, 0xA8(r1)
-	  stb       r30, 0xAC(r1)
-	  bl        -0x1284
-	  mr        r30, r3
+	if (options & DSMSGMEMORY_Extended) {
+		return TRKStandardACK(b, DSMSG_ReplyACK, DSMSG_ReadRegisters);
+	}
 
-	.loc_0x160:
-	  cmpwi     r30, 0
-	  beq-      .loc_0x1F0
-	  subi      r0, r30, 0x700
-	  cmplwi    r0, 0x6
-	  bgt-      .loc_0x1B4
-	  lis       r3, 0x804A
-	  rlwinm    r0,r0,2,0,29
-	  addi      r3, r3, 0x6878
-	  lwzx      r0, r3, r0
-	  mtctr     r0
-	  bctr
-	  li        r30, 0x15
-	  b         .loc_0x1B8
-	  li        r30, 0x13
-	  b         .loc_0x1B8
-	  li        r30, 0x21
-	  b         .loc_0x1B8
-	  li        r30, 0x22
-	  b         .loc_0x1B8
-	  li        r30, 0x20
-	  b         .loc_0x1B8
+	tempLength = length;
 
-	.loc_0x1B4:
-	  li        r30, 0x3
+	TRKSetBufferPosition(b, DSMSGMEMORY_Space_data);
+	if (options & DSMSGMEMORY_Space_data) {
+		TRKReadBuffer(b, buf + (start & 0x1f), tempLength);
+		result = TRKTargetAccessARAM(buf, start, &tempLength, FALSE);
+	} else {
+		TRKReadBuffer(b, buf, tempLength);
+		result = TRKTargetAccessMemory(buf, start, &tempLength, options & DSMSGMEMORY_Userview ? 0 : 1, FALSE);
+	}
 
-	.loc_0x1B8:
-	  addi      r3, r1, 0x24
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB8024
-	  li        r3, 0x80
-	  li        r0, 0x40
-	  stb       r3, 0x28(r1)
-	  addi      r3, r1, 0x24
-	  li        r4, 0x40
-	  stw       r0, 0x24(r1)
-	  stb       r30, 0x2C(r1)
-	  bl        0x34E0
-	  li        r3, 0
-	  b         .loc_0x224
+	TRKResetBuffer(b, 0);
 
-	.loc_0x1F0:
-	  addi      r4, r31, 0x60
-	  li        r3, 0x1
-	  crclr     6, 0x6
-	  bl        0x4438
-	  mr        r3, r27
-	  bl        -0x18D0
-	  addi      r4, r31, 0x80
-	  mr        r31, r3
-	  li        r3, 0x1
-	  mr        r5, r31
-	  crclr     6, 0x6
-	  bl        0x4418
-	  mr        r3, r31
+	if (result == DS_NoError) {
+		CommandReply reply;
+		memset(&reply, 0, sizeof(CommandReply));
+		reply._00          = 0x40;
+		reply.commandID.b  = DSMSG_ReplyACK;
+		reply.replyError.b = result;
+		result             = TRKAppendBuffer(b, &reply, sizeof(CommandReply));
+	}
 
-	.loc_0x224:
-	  lwz       r10, 0x0(r1)
-	  lmw       r27, -0x14(r10)
-	  lwz       r0, 0x4(r10)
-	  mtlr      r0
-	  mr        r1, r10
-	  blr
-	*/
+	if (result != DS_NoError) {
+		switch (result) {
+		case DS_CWDSException:
+			replyErr = DSREPLY_CWDSException;
+			break;
+		case DS_InvalidMemory:
+			replyErr = DSREPLY_InvalidMemoryRange;
+			break;
+		case DS_InvalidProcessID:
+			replyErr = DSREPLY_InvalidProcessID;
+			break;
+		case DS_InvalidThreadID:
+			replyErr = DSREPLY_InvalidThreadID;
+			break;
+		case DS_OSError:
+			replyErr = DSREPLY_OSError;
+			break;
+		default:
+			replyErr = DSREPLY_CWDSError;
+			break;
+		}
+		return TRKStandardACK(b, DSMSG_ReplyACK, replyErr);
+	}
+
+	return TRKSendACK(b);
 }
 
-/*
- * --INFO--
- * Address:	800BCC34
- * Size:	0002E0
+/**
+ * @note Address: 0x800BCC34
+ * @note Size: 0x2E0
  */
-void TRKDoReadRegisters(void)
+DSError TRKDoReadRegisters(MessageBuffer* b)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0xE0(r1)
-	  mflr      r0
-	  lis       r5, 0x8048
-	  stw       r0, 0xE4(r1)
-	  stw       r31, 0xDC(r1)
-	  subi      r31, r5, 0x66F0
-	  stw       r30, 0xD8(r1)
-	  stw       r29, 0xD4(r1)
-	  mr        r29, r3
-	  lhz       r4, 0x1C(r3)
-	  lhz       r0, 0x20(r3)
-	  cmplw     r4, r0
-	  ble-      .loc_0x70
-	  addi      r3, r1, 0x4C
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB7BC0
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0x14
-	  stb       r3, 0x50(r1)
-	  addi      r3, r1, 0x4C
-	  li        r4, 0x40
-	  stw       r5, 0x4C(r1)
-	  stb       r0, 0x54(r1)
-	  bl        0x3940
-	  li        r3, 0
-	  b         .loc_0x2C4
+	int error;
+	u8 options;
+	u16 firstRegister;
+	u16 lastRegister;
+	size_t registersLength;
+	CommandReply local_50;
 
-	.loc_0x70:
-	  li        r4, 0x80
-	  li        r0, 0x468
-	  stb       r4, 0x90(r1)
-	  li        r4, 0
-	  stw       r0, 0x8C(r1)
-	  bl        -0xDFC
-	  lwz       r5, 0x8(r29)
-	  addi      r4, r31, 0x98
-	  li        r3, 0x4
-	  crclr     6, 0x6
-	  bl        0x487C
-	  mr        r3, r29
-	  addi      r4, r1, 0x8C
-	  li        r5, 0x40
-	  bl        -0x10E4
-	  lwz       r5, 0x8(r29)
-	  addi      r4, r31, 0x98
-	  li        r3, 0x4
-	  crclr     6, 0x6
-	  bl        0x4858
-	  mr        r5, r29
-	  addi      r6, r1, 0x8
-	  li        r3, 0
-	  li        r4, 0x24
-	  li        r7, 0x1
-	  bl        0x27FC
-	  mr        r30, r3
-	  addi      r4, r31, 0xC0
-	  li        r3, 0x4
-	  mr        r5, r30
-	  crclr     6, 0x6
-	  bl        0x4828
-	  lwz       r5, 0x8(r29)
-	  addi      r4, r31, 0x98
-	  li        r3, 0x4
-	  crclr     6, 0x6
-	  bl        0x4814
-	  cmpwi     r30, 0
-	  bne-      .loc_0x128
-	  mr        r5, r29
-	  addi      r6, r1, 0x8
-	  li        r3, 0
-	  li        r4, 0x21
-	  li        r7, 0x1
-	  bl        0x22A4
-	  mr        r30, r3
+	options       = b->data[8];
+	firstRegister = *(u16*)(b->data + 12);
+	lastRegister  = *(u16*)(b->data + 16);
 
-	.loc_0x128:
-	  mr        r5, r30
-	  addi      r4, r31, 0xF8
-	  li        r3, 0x4
-	  crclr     6, 0x6
-	  bl        0x47DC
-	  lwz       r5, 0x8(r29)
-	  addi      r4, r31, 0x98
-	  li        r3, 0x4
-	  crclr     6, 0x6
-	  bl        0x47C8
-	  cmpwi     r30, 0
-	  bne-      .loc_0x174
-	  mr        r5, r29
-	  addi      r6, r1, 0x8
-	  li        r3, 0
-	  li        r4, 0x60
-	  li        r7, 0x1
-	  bl        0x20E8
-	  mr        r30, r3
+	if (firstRegister > lastRegister) {
+		return TRKStandardACK(b, DSMSG_ReplyACK, DSREPLY_InvalidRegisterRange);
+	}
 
-	.loc_0x174:
-	  mr        r5, r30
-	  addi      r4, r31, 0x120
-	  li        r3, 0x4
-	  crclr     6, 0x6
-	  bl        0x4790
-	  lwz       r5, 0x8(r29)
-	  addi      r4, r31, 0x98
-	  li        r3, 0x4
-	  crclr     6, 0x6
-	  bl        0x477C
-	  cmpwi     r30, 0
-	  bne-      .loc_0x1C0
-	  mr        r5, r29
-	  addi      r6, r1, 0x8
-	  li        r3, 0
-	  li        r4, 0x1F
-	  li        r7, 0x1
-	  bl        0x1C64
-	  mr        r30, r3
+	local_50.commandID.b = DSMSG_ReplyACK;
+	local_50._00         = 0x468;
 
-	.loc_0x1C0:
-	  mr        r5, r30
-	  addi      r4, r31, 0x150
-	  li        r3, 0x4
-	  crclr     6, 0x6
-	  bl        0x4744
-	  lwz       r5, 0x8(r29)
-	  addi      r4, r31, 0x98
-	  li        r3, 0x4
-	  crclr     6, 0x6
-	  bl        0x4730
-	  cmpwi     r30, 0
-	  beq-      .loc_0x290
-	  cmpwi     r30, 0x704
-	  beq-      .loc_0x23C
-	  bge-      .loc_0x214
-	  cmpwi     r30, 0x702
-	  beq-      .loc_0x234
-	  bge-      .loc_0x224
-	  cmpwi     r30, 0x701
-	  bge-      .loc_0x22C
-	  b         .loc_0x254
+	TRKResetBuffer(b, 0);
+	MWTRACE(4, "DoReadRegisters : Buffer length 0x%08x\n", b->length);
 
-	.loc_0x214:
-	  cmpwi     r30, 0x706
-	  beq-      .loc_0x24C
-	  bge-      .loc_0x254
-	  b         .loc_0x244
+	TRKAppendBuffer_ui8(b, (u8*)&local_50, sizeof(CommandReply));
+	MWTRACE(4, "DoReadRegisters : Buffer length 0x%08x\n", b->length);
 
-	.loc_0x224:
-	  li        r30, 0x12
-	  b         .loc_0x258
+	error = TRKTargetAccessDefault(0, 36, b, &registersLength, TRUE);
+	MWTRACE(4, "DoReadRegisters : Error reading  default regs 0x%08x\n", error);
+	MWTRACE(4, "DoReadRegisters : Buffer length 0x%08x\n", b->length);
 
-	.loc_0x22C:
-	  li        r30, 0x14
-	  b         .loc_0x258
+	if (error == DS_NoError) {
+		error = TRKTargetAccessFP(0, 33, b, &registersLength, TRUE);
+	}
+	MWTRACE(4, "DoReadRegisters : Error FP regs 0x%08x\n", error);
+	MWTRACE(4, "DoReadRegisters : Buffer length 0x%08x\n", b->length);
+	if (error == DS_NoError) {
+		error = TRKTargetAccessExtended1(0, 0x60, b, &registersLength, TRUE);
+	}
+	MWTRACE(4, "DoReadRegisters : Error extended1 regs 0x%08x\n", error);
+	MWTRACE(4, "DoReadRegisters : Buffer length 0x%08x\n", b->length);
+	if (error == DS_NoError) {
+		error = TRKTargetAccessExtended2(0, 31, b, &registersLength, TRUE);
+	}
+	MWTRACE(4, "DoReadRegisters : Error extended2 regs 0x%08x\n", error);
+	MWTRACE(4, "DoReadRegisters : Buffer length 0x%08x\n", b->length);
 
-	.loc_0x234:
-	  li        r30, 0x15
-	  b         .loc_0x258
+	// Check if there was an error, and respond accordingly
+	if (error != DS_NoError) {
+		int replyError;
+		switch (error) {
+		case DS_UnsupportedError:
+			replyError = DSREPLY_UnsupportedOptionError;
+			break;
+		case DS_InvalidRegister:
+			replyError = DSREPLY_InvalidRegisterRange;
+			break;
+		case DS_CWDSException:
+			replyError = DSREPLY_CWDSException;
+			break;
+		case DS_InvalidProcessID:
+			replyError = DSREPLY_InvalidProcessID;
+			break;
+		case DS_InvalidThreadID:
+			replyError = DSREPLY_InvalidThreadID;
+			break;
+		case DS_OSError:
+			replyError = DSREPLY_OSError;
+			break;
+		default:
+			replyError = DSREPLY_CWDSError;
+		}
 
-	.loc_0x23C:
-	  li        r30, 0x21
-	  b         .loc_0x258
-
-	.loc_0x244:
-	  li        r30, 0x22
-	  b         .loc_0x258
-
-	.loc_0x24C:
-	  li        r30, 0x20
-	  b         .loc_0x258
-
-	.loc_0x254:
-	  li        r30, 0x3
-
-	.loc_0x258:
-	  addi      r3, r1, 0xC
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB7DE4
-	  li        r3, 0x80
-	  li        r0, 0x40
-	  stb       r3, 0x10(r1)
-	  addi      r3, r1, 0xC
-	  li        r4, 0x40
-	  stw       r0, 0xC(r1)
-	  stb       r30, 0x14(r1)
-	  bl        0x3720
-	  li        r3, 0
-	  b         .loc_0x2C4
-
-	.loc_0x290:
-	  addi      r4, r31, 0x60
-	  li        r3, 0x1
-	  crclr     6, 0x6
-	  bl        0x4678
-	  mr        r3, r29
-	  bl        -0x1690
-	  addi      r4, r31, 0x80
-	  mr        r31, r3
-	  li        r3, 0x1
-	  mr        r5, r31
-	  crclr     6, 0x6
-	  bl        0x4658
-	  mr        r3, r31
-
-	.loc_0x2C4:
-	  lwz       r0, 0xE4(r1)
-	  lwz       r31, 0xDC(r1)
-	  lwz       r30, 0xD8(r1)
-	  lwz       r29, 0xD4(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0xE0
-	  blr
-	*/
+		return TRKStandardACK(b, DSMSG_ReplyACK, replyError);
+	} else {
+		// No error, send ack
+		return TRKSendACK(b);
+	}
 }
 
-/*
- * --INFO--
- * Address:	800BC9A4
- * Size:	000290
+/**
+ * @note Address: 0x800BC9A4
+ * @note Size: 0x290
  */
-void TRKDoWriteRegisters(void)
+DSError TRKDoWriteRegisters(MessageBuffer* b)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0xE0(r1)
-	  mflr      r0
-	  li        r4, 0
-	  stw       r0, 0xE4(r1)
-	  stw       r31, 0xDC(r1)
-	  stw       r30, 0xD8(r1)
-	  stw       r29, 0xD4(r1)
-	  stw       r28, 0xD0(r1)
-	  mr        r28, r3
-	  lbz       r31, 0x18(r3)
-	  lhz       r30, 0x1C(r3)
-	  lhz       r29, 0x20(r3)
-	  bl        -0xB48
-	  cmplw     r30, r29
-	  ble-      .loc_0x78
-	  addi      r3, r1, 0x4C
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB7938
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0x14
-	  stb       r3, 0x50(r1)
-	  addi      r3, r1, 0x4C
-	  li        r4, 0x40
-	  stw       r5, 0x4C(r1)
-	  stb       r0, 0x54(r1)
-	  bl        0x3BC8
-	  li        r3, 0
-	  b         .loc_0x270
+	int error;
+	int replyError;
+	u8 options;
+	u16 firstRegister;
+	u16 lastRegister;
+	size_t registersLength;
 
-	.loc_0x78:
-	  mr        r3, r28
-	  li        r4, 0x40
-	  bl        -0xB98
-	  cmpwi     r31, 0x2
-	  beq-      .loc_0xEC
-	  bge-      .loc_0xA0
-	  cmpwi     r31, 0
-	  beq-      .loc_0xAC
-	  bge-      .loc_0xCC
-	  b         .loc_0x12C
+	options       = b->data[8];
+	firstRegister = *(u16*)(b->data + 12);
+	lastRegister  = *(u16*)(b->data + 16);
 
-	.loc_0xA0:
-	  cmpwi     r31, 0x4
-	  bge-      .loc_0x12C
-	  b         .loc_0x10C
+	TRKSetBufferPosition(b, 0);
 
-	.loc_0xAC:
-	  mr        r3, r30
-	  mr        r4, r29
-	  mr        r5, r28
-	  addi      r6, r1, 0x8
-	  li        r7, 0
-	  bl        0x2AA0
-	  mr        r31, r3
-	  b         .loc_0x130
+	if (firstRegister > lastRegister) {
+		return TRKStandardACK(b, DSMSG_ReplyACK, DSREPLY_InvalidRegisterRange);
+	}
 
-	.loc_0xCC:
-	  mr        r3, r30
-	  mr        r4, r29
-	  mr        r5, r28
-	  addi      r6, r1, 0x8
-	  li        r7, 0
-	  bl        0x2574
-	  mr        r31, r3
-	  b         .loc_0x130
+	TRKSetBufferPosition(b, 0x40);
 
-	.loc_0xEC:
-	  mr        r3, r30
-	  mr        r4, r29
-	  mr        r5, r28
-	  addi      r6, r1, 0x8
-	  li        r7, 0
-	  bl        0x23E4
-	  mr        r31, r3
-	  b         .loc_0x130
+	switch (options) {
+	case DSREG_Default:
+		error = TRKTargetAccessDefault(firstRegister, lastRegister, b, &registersLength, FALSE);
+		break;
+	case DSREG_FP:
+		error = TRKTargetAccessFP(firstRegister, lastRegister, b, &registersLength, FALSE);
+		break;
+	case DSREG_Extended1:
+		error = TRKTargetAccessExtended1(firstRegister, lastRegister, b, &registersLength, FALSE);
+		break;
+	case DSREG_Extended2:
+		error = TRKTargetAccessExtended2(firstRegister, lastRegister, b, &registersLength, FALSE);
+		break;
+	default:
+		// invalid option
+		error = DS_UnsupportedError;
+		break;
+	}
 
-	.loc_0x10C:
-	  mr        r3, r30
-	  mr        r4, r29
-	  mr        r5, r28
-	  addi      r6, r1, 0x8
-	  li        r7, 0
-	  bl        0x1F8C
-	  mr        r31, r3
-	  b         .loc_0x130
+	TRKResetBuffer(b, 0);
 
-	.loc_0x12C:
-	  li        r31, 0x703
+	if (error == DS_NoError) {
+		CommandReply local_50;
+		memset(&local_50, 0, sizeof(CommandReply));
+		local_50._00          = 0x40;
+		local_50.commandID.b  = DSMSG_ReplyACK;
+		local_50.replyError.b = error;
+		error                 = TRKAppendBuffer(b, (u8*)&local_50, sizeof(CommandReply));
+	}
 
-	.loc_0x130:
-	  mr        r3, r28
-	  li        r4, 0
-	  bl        -0xC20
-	  cmpwi     r31, 0
-	  bne-      .loc_0x17C
-	  addi      r3, r1, 0x8C
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB7A40
-	  li        r3, 0x40
-	  li        r0, 0x80
-	  stw       r3, 0x8C(r1)
-	  mr        r3, r28
-	  addi      r4, r1, 0x8C
-	  li        r5, 0x40
-	  stb       r0, 0x90(r1)
-	  stb       r31, 0x94(r1)
-	  bl        -0xD30
-	  mr        r31, r3
+	// Check if there was an error, and respond accordingly
+	if (error != DS_NoError) {
+		switch (error) {
+		case DS_UnsupportedError:
+			replyError = DSREPLY_UnsupportedOptionError;
+			break;
+		case DS_InvalidRegister:
+			replyError = DSREPLY_InvalidRegisterRange;
+			break;
+		case DS_MessageBufferReadError:
+			replyError = DSREPLY_PacketSizeError;
+			break;
+		case DS_CWDSException:
+			replyError = DSREPLY_CWDSException;
+			break;
+		case DS_InvalidProcessID:
+			replyError = DSREPLY_InvalidProcessID;
+			break;
+		case DS_InvalidThreadID:
+			replyError = DSREPLY_InvalidThreadID;
+			break;
+		case DS_OSError:
+			replyError = DSREPLY_OSError;
+			break;
+		default:
+			replyError = DSREPLY_CWDSError;
+		}
 
-	.loc_0x17C:
-	  cmpwi     r31, 0
-	  beq-      .loc_0x234
-	  cmpwi     r31, 0x703
-	  beq-      .loc_0x1C0
-	  bge-      .loc_0x1A8
-	  cmpwi     r31, 0x701
-	  beq-      .loc_0x1C8
-	  bge-      .loc_0x1D8
-	  cmpwi     r31, 0x302
-	  beq-      .loc_0x1D0
-	  b         .loc_0x1F8
-
-	.loc_0x1A8:
-	  cmpwi     r31, 0x706
-	  beq-      .loc_0x1F0
-	  bge-      .loc_0x1F8
-	  cmpwi     r31, 0x705
-	  bge-      .loc_0x1E8
-	  b         .loc_0x1E0
-
-	.loc_0x1C0:
-	  li        r31, 0x12
-	  b         .loc_0x1FC
-
-	.loc_0x1C8:
-	  li        r31, 0x14
-	  b         .loc_0x1FC
-
-	.loc_0x1D0:
-	  li        r31, 0x2
-	  b         .loc_0x1FC
-
-	.loc_0x1D8:
-	  li        r31, 0x15
-	  b         .loc_0x1FC
-
-	.loc_0x1E0:
-	  li        r31, 0x21
-	  b         .loc_0x1FC
-
-	.loc_0x1E8:
-	  li        r31, 0x22
-	  b         .loc_0x1FC
-
-	.loc_0x1F0:
-	  li        r31, 0x20
-	  b         .loc_0x1FC
-
-	.loc_0x1F8:
-	  li        r31, 0x3
-
-	.loc_0x1FC:
-	  addi      r3, r1, 0xC
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB7AF8
-	  li        r3, 0x80
-	  li        r0, 0x40
-	  stb       r3, 0x10(r1)
-	  addi      r3, r1, 0xC
-	  li        r4, 0x40
-	  stw       r0, 0xC(r1)
-	  stb       r31, 0x14(r1)
-	  bl        0x3A0C
-	  li        r3, 0
-	  b         .loc_0x270
-
-	.loc_0x234:
-	  lis       r4, 0x8048
-	  li        r3, 0x1
-	  subi      r4, r4, 0x6690
-	  crclr     6, 0x6
-	  bl        0x4960
-	  mr        r3, r28
-	  bl        -0x13A8
-	  mr        r31, r3
-	  lis       r4, 0x8048
-	  li        r3, 0x1
-	  subi      r4, r4, 0x6670
-	  mr        r5, r31
-	  crclr     6, 0x6
-	  bl        0x493C
-	  mr        r3, r31
-
-	.loc_0x270:
-	  lwz       r0, 0xE4(r1)
-	  lwz       r31, 0xDC(r1)
-	  lwz       r30, 0xD8(r1)
-	  lwz       r29, 0xD4(r1)
-	  lwz       r28, 0xD0(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0xE0
-	  blr
-	*/
+		return TRKStandardACK(b, DSMSG_ReplyACK, replyError);
+	} else {
+		// No error, send ack
+		return TRKSendACK(b);
+	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000250
+/**
+ * @note Address: N/A
+ * @note Size: 0x250
  */
 void TRKDoFlushCache(void)
 {
+	MWTRACE(1, "DoFlushCache unimplemented!!!\n");
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800BC8F4
- * Size:	0000B0
+/**
+ * @note Address: 0x800BC8F4
+ * @note Size: 0xB0
  */
-void TRKDoContinue(void)
+DSError TRKDoContinue(MessageBuffer*)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x90(r1)
-	  mflr      r0
-	  lis       r4, 0x8048
-	  li        r3, 0x1
-	  stw       r0, 0x94(r1)
-	  subi      r4, r4, 0x66BC
-	  crclr     6, 0x6
-	  bl        0x4C38
-	  bl        0x1A6C
-	  cmpwi     r3, 0
-	  bne-      .loc_0x68
-	  addi      r3, r1, 0x48
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB7878
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0x16
-	  stb       r3, 0x4C(r1)
-	  addi      r3, r1, 0x48
-	  li        r4, 0x40
-	  stw       r5, 0x48(r1)
-	  stb       r0, 0x50(r1)
-	  bl        0x3C88
-	  li        r3, 0
-	  b         .loc_0xA0
+	MWTRACE(1, "DoContinue\n");
+	if (!TRKTargetStopped()) {
+		u8 arr[0x40];
+		memset(arr, 0, 0x40);
 
-	.loc_0x68:
-	  addi      r3, r1, 0x8
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB78B4
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0
-	  stb       r3, 0xC(r1)
-	  addi      r3, r1, 0x8
-	  li        r4, 0x40
-	  stw       r5, 0x8(r1)
-	  stb       r0, 0x10(r1)
-	  bl        0x3C4C
-	  bl        0x402C
+		arr[4]     = 0x80;
+		*(u32*)arr = 0x40;
+		arr[8]     = 0x16;
 
-	.loc_0xA0:
-	  lwz       r0, 0x94(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x90
-	  blr
-	*/
+		TRKWriteUARTN(arr, 0x40);
+		return DS_NoError;
+	} else {
+		u8 arr[0x40];
+		memset(arr, 0, 0x40);
+
+		arr[4]     = 0x80;
+		*(u32*)arr = 0x40;
+		arr[8]     = 0x00;
+
+		TRKWriteUARTN(arr, 0x40);
+		return TRKTargetContinue();
+	}
 }
 
-/*
- * --INFO--
- * Address:	800BC6D4
- * Size:	000220
+/**
+ * @note Address: 0x800BC6D4
+ * @note Size: 0x220
  */
-void TRKDoStep(void)
+
+DSError TRKDoStep(MessageBuffer* b)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x160(r1)
-	  mflr      r0
-	  li        r4, 0
-	  stw       r0, 0x164(r1)
-	  stmw      r27, 0x14C(r1)
-	  mr        r27, r3
-	  bl        -0x860
-	  lbz       r31, 0x18(r27)
-	  lwz       r29, 0x20(r27)
-	  cmpwi     r31, 0x10
-	  lwz       r28, 0x24(r27)
-	  beq-      .loc_0x58
-	  bge-      .loc_0x4C
-	  cmpwi     r31, 0x1
-	  beq-      .loc_0xA0
-	  bge-      .loc_0xF0
-	  cmpwi     r31, 0
-	  bge-      .loc_0x58
-	  b         .loc_0xF0
+	DSError result;
+	u8 options;
+	u8 count;
+	u32 rangeStart;
+	u32 rangeEnd;
+	u32 pc;
+	TRKSetBufferPosition(b, 0);
 
-	.loc_0x4C:
-	  cmpwi     r31, 0x12
-	  bge-      .loc_0xF0
-	  b         .loc_0xA0
+	options    = *(u8*)&b->data[8];
+	rangeStart = *(u32*)&b->data[16];
+	rangeEnd   = *(u32*)&b->data[20];
 
-	.loc_0x58:
-	  lbz       r30, 0x1C(r27)
-	  cmplwi    r30, 0x1
-	  bge-      .loc_0x12C
-	  addi      r3, r1, 0x108
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB7690
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0x11
-	  stb       r3, 0x10C(r1)
-	  addi      r3, r1, 0x108
-	  li        r4, 0x40
-	  stw       r5, 0x108(r1)
-	  stb       r0, 0x110(r1)
-	  bl        0x3E70
-	  li        r3, 0
-	  b         .loc_0x20C
+	switch (options) {
+	case DSSTEP_IntoCount:
+	case DSSTEP_OverCount:
+		count = b->data[12];
+		if (count >= 1) {
+			break;
+		}
+		return TRKStandardACK(b, DSMSG_ReplyACK, DSREPLY_ParameterError);
+	case DSSTEP_IntoRange:
+	case DSSTEP_OverRange:
+		pc = TRKTargetGetPC();
+		if (pc >= rangeStart && pc <= rangeEnd) {
+			break;
+		}
+		return TRKStandardACK(b, DSMSG_ReplyACK, DSREPLY_ParameterError);
+	default:
+		return TRKStandardACK(b, DSMSG_ReplyACK, DSREPLY_UnsupportedOptionError);
+	}
 
-	.loc_0xA0:
-	  bl        0x1E1C
-	  cmplw     r3, r29
-	  blt-      .loc_0xB4
-	  cmplw     r3, r28
-	  ble-      .loc_0x12C
+	if (!TRKTargetStopped()) {
+		return TRKStandardACK(b, DSMSG_ReplyACK, DSREPLY_NotStopped);
+	} else {
+		result = TRKStandardACK(b, DSMSG_ReplyACK, DSREPLY_NoError);
+		switch (options) {
+		case DSSTEP_IntoCount:
+		case DSSTEP_OverCount:
+			result = TRKTargetSingleStep(count, (options == DSSTEP_OverCount));
+			break;
+		case DSSTEP_IntoRange:
+		case DSSTEP_OverRange:
+			result = TRKTargetStepOutOfRange(rangeStart, rangeEnd, (options == DSSTEP_OverRange));
+			break;
+		}
 
-	.loc_0xB4:
-	  addi      r3, r1, 0xC8
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB76E0
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0x11
-	  stb       r3, 0xCC(r1)
-	  addi      r3, r1, 0xC8
-	  li        r4, 0x40
-	  stw       r5, 0xC8(r1)
-	  stb       r0, 0xD0(r1)
-	  bl        0x3E20
-	  li        r3, 0
-	  b         .loc_0x20C
-
-	.loc_0xF0:
-	  addi      r3, r1, 0x88
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB771C
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0x12
-	  stb       r3, 0x8C(r1)
-	  addi      r3, r1, 0x88
-	  li        r4, 0x40
-	  stw       r5, 0x88(r1)
-	  stb       r0, 0x90(r1)
-	  bl        0x3DE4
-	  li        r3, 0
-	  b         .loc_0x20C
-
-	.loc_0x12C:
-	  bl        0x1B80
-	  cmpwi     r3, 0
-	  bne-      .loc_0x174
-	  addi      r3, r1, 0x48
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB7764
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0x16
-	  stb       r3, 0x4C(r1)
-	  addi      r3, r1, 0x48
-	  li        r4, 0x40
-	  stw       r5, 0x48(r1)
-	  stb       r0, 0x50(r1)
-	  bl        0x3D9C
-	  li        r3, 0
-	  b         .loc_0x20C
-
-	.loc_0x174:
-	  addi      r3, r1, 0x8
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB77A0
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0
-	  stb       r3, 0xC(r1)
-	  addi      r3, r1, 0x8
-	  li        r4, 0x40
-	  stw       r5, 0x8(r1)
-	  stb       r0, 0x10(r1)
-	  bl        0x3D60
-	  cmpwi     r31, 0x10
-	  li        r3, 0
-	  beq-      .loc_0x1DC
-	  bge-      .loc_0x1D0
-	  cmpwi     r31, 0x1
-	  beq-      .loc_0x1F4
-	  bge-      .loc_0x20C
-	  cmpwi     r31, 0
-	  bge-      .loc_0x1DC
-	  b         .loc_0x20C
-
-	.loc_0x1D0:
-	  cmpwi     r31, 0x12
-	  bge-      .loc_0x20C
-	  b         .loc_0x1F4
-
-	.loc_0x1DC:
-	  subfic    r0, r31, 0x10
-	  mr        r3, r30
-	  cntlzw    r0, r0
-	  rlwinm    r4,r0,27,5,31
-	  bl        0x1D98
-	  b         .loc_0x20C
-
-	.loc_0x1F4:
-	  subfic    r0, r31, 0x11
-	  mr        r3, r29
-	  cntlzw    r0, r0
-	  mr        r4, r28
-	  rlwinm    r5,r0,27,5,31
-	  bl        0x1CC4
-
-	.loc_0x20C:
-	  lmw       r27, 0x14C(r1)
-	  lwz       r0, 0x164(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x160
-	  blr
-	*/
+		return result;
+	}
 }
 
-/*
- * --INFO--
- * Address:	800BC62C
- * Size:	0000A8
+/**
+ * @note Address: 0x800BC62C
+ * @note Size: 0xA8
  */
-void TRKDoStop(void)
+DSError TRKDoStop(MessageBuffer* b)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x50(r1)
-	  mflr      r0
-	  stw       r0, 0x54(r1)
-	  stw       r31, 0x4C(r1)
-	  bl        0x1D1C
-	  cmpwi     r3, 0x704
-	  beq-      .loc_0x44
-	  bge-      .loc_0x2C
-	  cmpwi     r3, 0
-	  beq-      .loc_0x3C
-	  b         .loc_0x5C
+	MessageCommandID c;
 
-	.loc_0x2C:
-	  cmpwi     r3, 0x706
-	  beq-      .loc_0x54
-	  bge-      .loc_0x5C
-	  b         .loc_0x4C
+	switch (TRKTargetStop()) {
+	case DS_NoError:
+		c = DSMSG_Ping;
+		break;
+	case DS_InvalidProcessID:
+		c = '!';
+		break;
+	case DS_InvalidThreadID:
+		c = '\"';
+		break;
+	case DS_OSError:
+		c = ' ';
+		break;
+	default:
+		c = DSMSG_Connect;
+		break;
+	}
 
-	.loc_0x3C:
-	  li        r31, 0
-	  b         .loc_0x60
+	TRKStandardACK(b, DSMSG_ReplyACK, c);
 
-	.loc_0x44:
-	  li        r31, 0x21
-	  b         .loc_0x60
-
-	.loc_0x4C:
-	  li        r31, 0x22
-	  b         .loc_0x60
-
-	.loc_0x54:
-	  li        r31, 0x20
-	  b         .loc_0x60
-
-	.loc_0x5C:
-	  li        r31, 0x1
-
-	.loc_0x60:
-	  addi      r3, r1, 0x8
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB75E4
-	  li        r3, 0x80
-	  li        r0, 0x40
-	  stb       r3, 0xC(r1)
-	  addi      r3, r1, 0x8
-	  li        r4, 0x40
-	  stw       r0, 0x8(r1)
-	  stb       r31, 0x10(r1)
-	  bl        0x3F20
-	  lwz       r0, 0x54(r1)
-	  li        r3, 0
-	  lwz       r31, 0x4C(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x50
-	  blr
-	*/
+	return DS_NoError;
 }
 
-/*
- * --INFO--
- * Address:	800BC584
- * Size:	0000A8
+/**
+ * @note Address: 0x800BC584
+ * @note Size: 0xA8
  */
-void TRKDoSetOption(void)
+DSError TRKDoSetOption(MessageBuffer* message)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x50(r1)
-	  mflr      r0
-	  lis       r4, 0x8048
-	  stw       r0, 0x54(r1)
-	  stw       r31, 0x4C(r1)
-	  subi      r31, r4, 0x66F0
-	  stw       r30, 0x48(r1)
-	  lbz       r0, 0x18(r3)
-	  lbz       r30, 0x1C(r3)
-	  cmplwi    r0, 0x1
-	  bne-      .loc_0x58
-	  addi      r3, r31, 0
-	  bl        -0x230
-	  cmplwi    r30, 0
-	  beq-      .loc_0x48
-	  addi      r3, r31, 0x20
-	  bl        -0x240
-	  b         .loc_0x50
+	u8 enable = message->data[0xc];
 
-	.loc_0x48:
-	  addi      r3, r31, 0x28
-	  bl        -0x24C
+	if (message->data[0x8] == '\1') {
+		usr_puts_serial("\nMetroTRK Option : SerialIO - ");
+		if (enable) {
+			usr_puts_serial("Enable\n");
+		} else {
+			usr_puts_serial("Disable\n");
+		}
+		SetUseSerialIO(enable);
+	}
 
-	.loc_0x50:
-	  mr        r3, r30
-	  bl        0x4428
+	TRKStandardACK(message, DSMSG_ReplyACK, DS_NoError);
 
-	.loc_0x58:
-	  addi      r3, r1, 0x8
-	  li        r4, 0
-	  li        r5, 0x40
-	  bl        -0xB7534
-	  li        r3, 0x80
-	  li        r5, 0x40
-	  li        r0, 0
-	  stb       r3, 0xC(r1)
-	  addi      r3, r1, 0x8
-	  li        r4, 0x40
-	  stw       r5, 0x8(r1)
-	  stb       r0, 0x10(r1)
-	  bl        0x3FCC
-	  lwz       r0, 0x54(r1)
-	  li        r3, 0
-	  lwz       r31, 0x4C(r1)
-	  lwz       r30, 0x48(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x50
-	  blr
-	*/
+	return 0;
 }

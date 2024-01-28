@@ -36,12 +36,11 @@ static const char unusedItemHoleName[] = "itemHole";
 
 Mgr* mgr;
 
-/*
- * --INFO--
- * Address:	801D1738
- * Size:	000134
+/**
+ * @note Address: 0x801D1738
+ * @note Size: 0x134
  */
-void ItemHole::FSM::init(Game::CFSMItem*)
+void FSM::init(Game::CFSMItem*)
 {
 	create(HOLE_StateCount);
 	registerState(new NormalState());
@@ -49,49 +48,44 @@ void ItemHole::FSM::init(Game::CFSMItem*)
 	registerState(new CloseState());
 }
 
-/*
- * --INFO--
- * Address:	801D186C
- * Size:	00003C
+/**
+ * @note Address: 0x801D186C
+ * @note Size: 0x3C
  */
-void ItemHole::NormalState::init(Game::CFSMItem* item, Game::StateArg* arg)
+void NormalState::init(Game::CFSMItem* item, Game::StateArg* arg)
 {
 	static_cast<Item*>(item)->mBuryDepth = 0.0f;
 	item->setAlive(true);
 }
 
-/*
- * --INFO--
- * Address:	801D18A8
- * Size:	000004
+/**
+ * @note Address: 0x801D18A8
+ * @note Size: 0x4
  */
-void ItemHole::NormalState::exec(Game::CFSMItem*) { }
+void NormalState::exec(Game::CFSMItem*) { }
 
-/*
- * --INFO--
- * Address:	801D18AC
- * Size:	000004
+/**
+ * @note Address: 0x801D18AC
+ * @note Size: 0x4
  */
-void ItemHole::NormalState::cleanup(Game::CFSMItem*) { }
+void NormalState::cleanup(Game::CFSMItem*) { }
 
-/*
- * --INFO--
- * Address:	801D18B0
- * Size:	00005C
+/**
+ * @note Address: 0x801D18B0
+ * @note Size: 0x5C
  */
-void ItemHole::AppearState::init(Game::CFSMItem* item, Game::StateArg* arg)
+void AppearState::init(Game::CFSMItem* item, Game::StateArg* arg)
 {
 	item->setAlive(true);
 	static_cast<Item*>(item)->mBuryDepth = 25.0f;
 	_10                                  = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	801D190C
- * Size:	000118
+/**
+ * @note Address: 0x801D190C
+ * @note Size: 0x118
  */
-void ItemHole::AppearState::exec(Game::CFSMItem* item)
+void AppearState::exec(Game::CFSMItem* item)
 {
 	_10 += sys->mDeltaTime;
 	f32 buriedFrac = 1.0f - (_10 * 0.8333333f);
@@ -105,45 +99,40 @@ void ItemHole::AppearState::exec(Game::CFSMItem* item)
 	static_cast<Item*>(item)->mBuryDepth = buriedFrac * 25.0f;
 }
 
-/*
- * --INFO--
- * Address:	801D1A54
- * Size:	000004
+/**
+ * @note Address: 0x801D1A54
+ * @note Size: 0x4
  */
-void ItemHole::AppearState::cleanup(Game::CFSMItem*) { }
+void AppearState::cleanup(Game::CFSMItem*) { }
 
-/*
- * --INFO--
- * Address:	801D1A58
- * Size:	00003C
+/**
+ * @note Address: 0x801D1A58
+ * @note Size: 0x3C
  */
-void ItemHole::CloseState::init(Game::CFSMItem* item, Game::StateArg* arg)
+void CloseState::init(Game::CFSMItem* item, Game::StateArg* arg)
 {
 	static_cast<Item*>(item)->mBuryDepth = 25.0f;
 	item->setAlive(false);
 }
 
-/*
- * --INFO--
- * Address:	801D1A94
- * Size:	000014
+/**
+ * @note Address: 0x801D1A94
+ * @note Size: 0x14
  * exec__Q34Game8ItemHole10CloseStateFPQ24Game8CFSMItem
  */
-void ItemHole::CloseState::exec(Game::CFSMItem* item) { item->mLod.resetFlag(AILOD_IsVisible | AILOD_IsVisVP0 | AILOD_IsVisVP1); }
+void CloseState::exec(Game::CFSMItem* item) { item->mLod.resetFlag(AILOD_IsVisible | AILOD_IsVisVP0 | AILOD_IsVisVP1); }
 
-/*
- * --INFO--
- * Address:	801D1AA8
- * Size:	000004
+/**
+ * @note Address: 0x801D1AA8
+ * @note Size: 0x4
  */
-void ItemHole::CloseState::cleanup(Game::CFSMItem*) { }
+void CloseState::cleanup(Game::CFSMItem*) { }
 
-/*
- * --INFO--
- * Address:	801D1AAC
- * Size:	00025C
+/**
+ * @note Address: 0x801D1AAC
+ * @note Size: 0x25C
  */
-void ItemHole::Item::movieUserCommand(u32 command, MoviePlayer* player)
+void Item::movieUserCommand(u32 command, MoviePlayer* player)
 {
 	switch (command) {
 	case 100:
@@ -164,7 +153,7 @@ void ItemHole::Item::movieUserCommand(u32 command, MoviePlayer* player)
 			iterator.next();
 		}
 		if (!player->isFlag(MVP_IsFinished)) {
-			mStateMachine->transit(this, Hole_Appear, nullptr);
+			mFsm->transit(this, Hole_Appear, nullptr);
 
 		} else {
 			if (mBuryDepth != 0.0f) {
@@ -173,19 +162,18 @@ void ItemHole::Item::movieUserCommand(u32 command, MoviePlayer* player)
 			efx::Arg arg(Vector3f::zero);
 			arg.mPosition = mPosition;
 			mEfxWarpZone->create(&arg);
-			mStateMachine->transit(this, Hole_Normal, nullptr);
+			mFsm->transit(this, Hole_Normal, nullptr);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	801D1D08
- * Size:	000108
+/**
+ * @note Address: 0x801D1D08
+ * @note Size: 0x108
  */
-bool ItemHole::Item::interactGotKey(Game::InteractGotKey& interaction)
+bool Item::interactGotKey(Game::InteractGotKey& interaction)
 {
-	if (getStateID() == Hole_Close && gameSystem->mFlags & 0x20) {
+	if (getStateID() == Hole_Close && gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
 		MoviePlayArg arg("g2F_appear_hole", nullptr, nullptr, 0);
 		arg.mOrigin                = getPosition();
 		arg.mAngle                 = getFaceDir();
@@ -198,37 +186,43 @@ bool ItemHole::Item::interactGotKey(Game::InteractGotKey& interaction)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801D1E18
- * Size:	0000C0
+/**
+ * @note Address: N/A
+ * @note Size: 0x68
  */
-void ItemHole::Item::onInit(Game::CreatureInitArg* arg)
+Item::Item(int objTypeID)
+    : CFSMItem(objTypeID)
+{
+}
+
+/**
+ * @note Address: 0x801D1E18
+ * @note Size: 0xC0
+ */
+void Item::onInit(Game::CreatureInitArg* arg)
 {
 	mNodeItemMgr->setup(this);
 	setAlive(true);
 	if (arg) {
-		mStateMachine->start(this, static_cast<InitArg*>(arg)->mInitialState, nullptr);
+		mFsm->start(this, static_cast<InitArg*>(arg)->mInitialState, nullptr);
 	} else {
-		mStateMachine->start(this, Hole_Normal, nullptr);
+		mFsm->start(this, Hole_Normal, nullptr);
 	}
 	mBarrel  = nullptr;
 	mFaceDir = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	801D1F50
- * Size:	000050
+/**
+ * @note Address: 0x801D1F50
+ * @note Size: 0x50
  */
-void ItemHole::Item::changeMaterial() { mModel->jointVisible(false, mModel->getJoint("flag")->mJointIndex); }
+void Item::changeMaterial() { mModel->jointVisible(false, mModel->getJoint("flag")->mJointIndex); }
 
-/*
- * --INFO--
- * Address:	801D1FA0
- * Size:	0001DC
+/**
+ * @note Address: 0x801D1FA0
+ * @note Size: 0x1DC
  */
-void ItemHole::Item::onSetPosition()
+void Item::onSetPosition()
 {
 	if (mapMgr) {
 		mPosition.y = mapMgr->getMinY(mPosition);
@@ -238,7 +232,7 @@ void ItemHole::Item::onSetPosition()
 	mBoundingSphere.mRadius   = 50.0f;
 	mEfxWarpZone              = new efx::WarpZone();
 	makeTrMatrix();
-	PSMTXCopy(mObjMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
+	PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
 	mModel->mJ3dModel->calc();
 	Matrixf* worldMatrix = mModel->mJoints[0].getWorldMatrix();
 
@@ -264,13 +258,12 @@ void ItemHole::Item::onSetPosition()
 	mSidePlatInstance->setCollision(true);
 }
 
-/*
- * --INFO--
- * Address:	801D217C
- * Size:	000314
+/**
+ * @note Address: 0x801D217C
+ * @note Size: 0x314
  * initDependency__Q34Game8ItemHole4ItemFv
  */
-void ItemHole::Item::initDependency()
+void Item::initDependency()
 {
 	bool result;
 	Iterator<BaseItem> iter(ItemBarrel::mgr);
@@ -296,50 +289,45 @@ void ItemHole::Item::initDependency()
 	mBarrel = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	801D2490
- * Size:	000068
+/**
+ * @note Address: 0x801D2490
+ * @note Size: 0x68
  */
-void ItemHole::Item::makeTrMatrix()
+void Item::makeTrMatrix()
 {
 	Vector3f rot(0.0f, mFaceDir, 0.0f);
 	Vector3f translation = mPosition;
 	translation.y -= mBuryDepth;
-	mObjMatrix.makeTR(translation, rot);
+	mBaseTrMatrix.makeTR(translation, rot);
 }
 
-/*
- * --INFO--
- * Address:	801D24F8
- * Size:	000030
+/**
+ * @note Address: 0x801D24F8
+ * @note Size: 0x30
  */
-bool ItemHole::Item::canRide() { return static_cast<State*>(getCurrState())->canRide(); }
+bool Item::canRide() { return static_cast<State*>(getCurrState())->canRide(); }
 
-/*
- * --INFO--
- * Address:	801D2530
- * Size:	000014
+/**
+ * @note Address: 0x801D2530
+ * @note Size: 0x14
  */
-void ItemHole::Item::do_setLODParm(Game::AILODParm& parm)
+void Item::do_setLODParm(Game::AILODParm& parm)
 {
 	parm.mFar   = 0.075f;
 	parm.mClose = 0.0425f;
 }
 
-/*
- * --INFO--
- * Address:	801D2544
- * Size:	000008
+/**
+ * @note Address: 0x801D2544
+ * @note Size: 0x8
  */
-bool ItemHole::Item::sound_culling() { return false; }
+bool Item::sound_culling() { return false; }
 
-/*
- * --INFO--
- * Address:	801D254C
- * Size:	0000E4
+/**
+ * @note Address: 0x801D254C
+ * @note Size: 0xE4
  */
-void ItemHole::Item::doAI()
+void Item::doAI()
 {
 	mEfxWarpZone->setRateLOD(mLod.isFlag(AILOD_IsMid | AILOD_IsFar), true);
 	CFSMItem::doAI();
@@ -357,92 +345,39 @@ void ItemHole::Item::doAI()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801D2630
- * Size:	0000BC
+/**
+ * @note Address: 0x801D2630
+ * @note Size: 0xBC
  */
-void ItemHole::Item::doDirectDraw(Graphics& gfx)
+void Item::doDirectDraw(Graphics& gfx)
 {
 	Matrixf v1;
 	gfx.initPrimDraw(nullptr);
-	PSMTXCopy(mObjMatrix.mMatrix.mtxView, v1.mMatrix.mtxView);
+	PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, v1.mMatrix.mtxView);
 
-	// WHAT.
-	Vector2f translation(v1.mMatrix.structView.tx, v1.mMatrix.structView.ty);
+	Vector3f translation = v1.getTranslation();
 	translation.y += 10.0f;
-	v1.setTranslationXY(translation);
+	v1.setTranslation(translation);
 
 	GXSetLineWidth(40, GX_TO_ZERO);
 	gfx.drawAxis(50.0f, &v1);
 	gfx.initPrimDraw(nullptr);
 	Vector3f infoPos(mPosition.x, mPosition.y + 40.0f, mPosition.z);
-	// infoPos.y += 40.0f;
+
 	drawLODInfo(gfx, infoPos);
-	/*
-	stwu     r1, -0x50(r1)
-	mflr     r0
-	stw      r0, 0x54(r1)
-	stw      r31, 0x4c(r1)
-	mr       r31, r4
-	li       r4, 0
-	stw      r30, 0x48(r1)
-	mr       r30, r3
-	mr       r3, r31
-	bl       initPrimDraw__8GraphicsFP7Matrixf
-	addi     r3, r30, 0x138
-	addi     r4, r1, 0x14
-	bl       PSMTXCopy
-	lfs      f1, 0x30(r1)
-	li       r3, 0x28
-	lfs      f0, lbl_8051966C@sda21(r2)
-	li       r4, 0
-	fadds    f1, f1, f0
-	lfs      f0, 0x20(r1)
-	stfs     f0, 0x20(r1)
-	stfs     f1, 0x30(r1)
-	bl       GXSetLineWidth
-	lfs      f1, lbl_80519658@sda21(r2)
-	mr       r3, r31
-	addi     r4, r1, 0x14
-	bl       drawAxis__8GraphicsFfP7Matrixf
-	mr       r3, r31
-	li       r4, 0
-	bl       initPrimDraw__8GraphicsFP7Matrixf
-	lfs      f2, lbl_80519660@sda21(r2)
-	mr       r3, r30
-	lfs      f1, 0x1a0(r30)
-	mr       r4, r31
-	lfs      f3, 0x1a4(r30)
-	addi     r5, r1, 8
-	lfs      f0, 0x19c(r30)
-	fadds    f1, f2, f1
-	stfs     f0, 8(r1)
-	stfs     f1, 0xc(r1)
-	stfs     f3, 0x10(r1)
-	bl       "drawLODInfo__Q24Game8CreatureFR8GraphicsR10Vector3<f>"
-	lwz      r0, 0x54(r1)
-	lwz      r31, 0x4c(r1)
-	lwz      r30, 0x48(r1)
-	mtlr     r0
-	addi     r1, r1, 0x50
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801D26EC
- * Size:	000058
+/**
+ * @note Address: 0x801D26EC
+ * @note Size: 0x58
  */
-CItemFSM* ItemHole::Item::createFSM() { return new FSM(); }
+CItemFSM* Item::createFSM() { return new FSM(); }
 
-/*
- * --INFO--
- * Address:	801D2744
- * Size:	00007C
+/**
+ * @note Address: 0x801D2744
+ * @note Size: 0x7C
  */
-ItemHole::Mgr::Mgr()
+Mgr::Mgr()
     : TNodeItemMgr()
 {
 	mItemName = "Hole";
@@ -450,12 +385,11 @@ ItemHole::Mgr::Mgr()
 	mObjectPathComponent = "user/Kando/objects/dungeon_hole";
 }
 
-/*
- * --INFO--
- * Address:	801D27C0
- * Size:	000100
+/**
+ * @note Address: 0x801D27C0
+ * @note Size: 0x100
  */
-void ItemHole::Mgr::onLoadResources()
+void Mgr::onLoadResources()
 {
 	loadArchive("arc.szs");
 	loadBmd("dungeon_hole.bmd", 0, 0x20000);
@@ -472,12 +406,11 @@ void ItemHole::Mgr::onLoadResources()
 	closeTextArc(archive);
 }
 
-/*
- * --INFO--
- * Address:	801D28C0
- * Size:	0000BC
+/**
+ * @note Address: 0x801D28C0
+ * @note Size: 0xBC
  */
-void ItemHole::Mgr::setup(Game::BaseItem* item)
+void Mgr::setup(Game::BaseItem* item)
 {
 	item->mModel = new SysShape::Model(getModelData(0), 0x20000, 2);
 	item->mModel->mJ3dModel->calc();
@@ -486,12 +419,11 @@ void ItemHole::Mgr::setup(Game::BaseItem* item)
 	item->mModel->mJ3dModel->lock();
 }
 
-/*
- * --INFO--
- * Address:	801D297C
- * Size:	000054
+/**
+ * @note Address: 0x801D297C
+ * @note Size: 0x54
  */
-BaseItem* ItemHole::Mgr::generatorBirth(Vector3f& position, Vector3f& p2, Game::GenItemParm* parm)
+BaseItem* Mgr::generatorBirth(Vector3f& position, Vector3f& p2, Game::GenItemParm* parm)
 {
 	BaseItem* item = birth();
 	item->init(nullptr);

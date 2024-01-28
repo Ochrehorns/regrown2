@@ -10,10 +10,9 @@
 namespace Game {
 namespace Armor {
 
-/*
- * --INFO--
- * Address:	8027D69C
- * Size:	000140
+/**
+ * @note Address: 0x8027D69C
+ * @note Size: 0x140
  */
 Obj::Obj()
 {
@@ -22,17 +21,15 @@ Obj::Obj()
 	createEffect();
 }
 
-/*
- * --INFO--
- * Address:	8027D7DC
- * Size:	000004
+/**
+ * @note Address: 0x8027D7DC
+ * @note Size: 0x4
  */
 void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-/*
- * --INFO--
- * Address:	8027D7E0
- * Size:	000098
+/**
+ * @note Address: 0x8027D7E0
+ * @note Size: 0x98
  */
 void Obj::onInit(CreatureInitArg* initArg)
 {
@@ -47,10 +44,9 @@ void Obj::onInit(CreatureInitArg* initArg)
 	doAnimationCullingOff();
 }
 
-/*
- * --INFO--
- * Address:	8027D878
- * Size:	000048
+/**
+ * @note Address: 0x8027D878
+ * @note Size: 0x48
  */
 void Obj::doUpdate()
 {
@@ -58,24 +54,21 @@ void Obj::doUpdate()
 	mMouthSlots.update();
 }
 
-/*
- * --INFO--
- * Address:	8027D8C0
- * Size:	000004
+/**
+ * @note Address: 0x8027D8C0
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	8027D8C4
- * Size:	000020
+/**
+ * @note Address: 0x8027D8C4
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	8027D8E4
- * Size:	00004C
+/**
+ * @note Address: 0x8027D8E4
+ * @note Size: 0x4C
  */
 void Obj::setFSM(FSM* fsm)
 {
@@ -84,10 +77,9 @@ void Obj::setFSM(FSM* fsm)
 	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8027D930
- * Size:	0000EC
+/**
+ * @note Address: 0x8027D930
+ * @note Size: 0xEC
  */
 
 void Obj::getShadowParam(ShadowParam& param)
@@ -111,10 +103,9 @@ void Obj::getShadowParam(ShadowParam& param)
 	param.mSize                     = 25.0f;
 }
 
-/*
- * --INFO--
- * Address:	8027DA1C
- * Size:	000094
+/**
+ * @note Address: 0x8027DA1C
+ * @note Size: 0x94
  */
 bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* collpart)
 {
@@ -129,24 +120,22 @@ bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* collpart)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8027DAB0
- * Size:	000068
+/**
+ * @note Address: 0x8027DAB0
+ * @note Size: 0x68
  */
 bool Obj::hipdropCallBack(Creature* creature, f32 damage, CollPart* collpart)
 {
-	bool isTakeDamage = damageCallBack(creature, static_cast<Parms*>(mParms)->mGeneral.mPurplePikiStunDamage, collpart);
+	bool isTakeDamage = damageCallBack(creature, C_GENERALPARMS.mPurplePikiStunDamage, collpart);
 	if (!(isEvent(0, EB_Bittered)) && isTakeDamage) {
 		enableEvent(0, EB_SquashOnDamageAnim);
 	}
 	return !isTakeDamage;
 }
 
-/*
- * --INFO--
- * Address:	8027DB18
- * Size:	000260
+/**
+ * @note Address: 0x8027DB18
+ * @note Size: 0x260
  */
 void Obj::doStartStoneState()
 {
@@ -159,48 +148,43 @@ void Obj::doStartStoneState()
 	{
 		Creature* stuck = *iter;
 		if (stuck->isStickToMouth()) {
-			InteractFlick flick(this, 0.0f, 0.0f, -1000.0f);
+			InteractFlick flick(this, 0.0f, 0.0f, FLICK_BACKWARD_ANGLE);
 			stuck->stimulate(flick);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027DD78
- * Size:	000034
+/**
+ * @note Address: 0x8027DD78
+ * @note Size: 0x34
  */
 void Obj::doFinishStoneState()
 {
 	EnemyBase::doFinishStoneState();
-	mToFlick = 0.0f;
+	mFlickTimer = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	8027DDAC
- * Size:	000028
+/**
+ * @note Address: 0x8027DDAC
+ * @note Size: 0x28
  */
-void Obj::startCarcassMotion() { startMotion(9, nullptr); }
+void Obj::startCarcassMotion() { startMotion(ARMORANIM_Carry, nullptr); }
 
-/*
- * --INFO--
- * Address:	8027DDD4
- * Size:	000020
+/**
+ * @note Address: 0x8027DDD4
+ * @note Size: 0x20
  */
 void Obj::doStartMovie() { effectDrawOff(); }
 
-/*
- * --INFO--
- * Address:	8027DDF4
- * Size:	000020
+/**
+ * @note Address: 0x8027DDF4
+ * @note Size: 0x20
  */
 void Obj::doEndMovie() { effectDrawOn(); }
 
-/*
- * --INFO--
- * Address:	8027DE14
- * Size:	00008C
+/**
+ * @note Address: 0x8027DE14
+ * @note Size: 0x8C
  */
 void Obj::initMouthSlots()
 {
@@ -212,10 +196,9 @@ void Obj::initMouthSlots()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027DEA0
- * Size:	000030
+/**
+ * @note Address: 0x8027DEA0
+ * @note Size: 0x30
  */
 void Obj::lifeIncrement()
 {
@@ -226,10 +209,9 @@ void Obj::lifeIncrement()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027DED0
- * Size:	0003EC
+/**
+ * @note Address: 0x8027DED0
+ * @note Size: 0x3EC
  */
 void Obj::attackPikmin()
 {
@@ -262,10 +244,9 @@ void Obj::attackPikmin()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027E2BC
- * Size:	00008C
+/**
+ * @note Address: 0x8027E2BC
+ * @note Size: 0x8C
  */
 int Obj::getSlotPikiNum()
 {
@@ -282,53 +263,49 @@ int Obj::getSlotPikiNum()
 	return count;
 }
 
-/*
- * --INFO--
- * Address:	8027E350
- * Size:	00002C
+/**
+ * @note Address: 0x8027E350
+ * @note Size: 0x2C
  */
 void Obj::killSlotPiki() { Game::EnemyFunc::swallowPikmin(this, CG_PROPERPARMS(this).mPoisonDamage.mValue, nullptr); }
 
-/*
- * --INFO--
- * Address:	8027E37C
- * Size:	000020
+/**
+ * @note Address: 0x8027E37C
+ * @note Size: 0x20
  */
 void Obj::resetBridgeSearch()
 {
-	_2C0    = 1;
-	mBridge = nullptr;
-	_2DC    = 0.0f;
-	_2E0    = 0.0f;
+	mNeedsBridgeSearch    = true;
+	mBridge               = nullptr;
+	mBridgePositionOffset = 0.0f;
+	mBridgeWidth          = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	8027E39C
- * Size:	000048
+/**
+ * @note Address: 0x8027E39C
+ * @note Size: 0x48
  */
 void Obj::setBridgeSearch()
 {
-	if (_2C0) {
-		_2C0 = 0;
+	if (mNeedsBridgeSearch) {
+		mNeedsBridgeSearch = false;
 		setNearestBridge();
 		setCullingCheck();
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027E3E4
- * Size:	0002C0
+/**
+ * @note Address: 0x8027E3E4
+ * @note Size: 0x2C0
  */
 void Obj::setNearestBridge()
 {
-	mBridge = nullptr;
-	_2DC    = 0.0f;
-	_2E0    = 0.0f;
+	mBridge               = nullptr;
+	mBridgePositionOffset = 0.0f;
+	mBridgeWidth          = 0.0f;
 
 	if (ItemBridge::mgr) {
-		f32 dist = SQUARE(C_PARMS->mGeneral.mTerritoryRadius.mValue);
+		f32 dist = SQUARE(C_GENERALPARMS.mTerritoryRadius.mValue);
 
 		Iterator<BaseItem> iter(ItemBridge::mgr);
 
@@ -346,22 +323,20 @@ void Obj::setNearestBridge()
 	}
 
 	if (mBridge) {
-		f32 grabDist = mBridge->getStageWidth() - 50.0f;
-		_2DC         = randWeightFloat(grabDist) - 0.5f * grabDist;
+		f32 grabDist          = mBridge->getStageWidth() - 50.0f;
+		mBridgePositionOffset = randWeightFloat(grabDist) - 0.5f * grabDist;
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027E6A4
- * Size:	000004
+/**
+ * @note Address: 0x8027E6A4
+ * @note Size: 0x4
  */
 void Obj::setCullingCheck() { }
 
-/*
- * --INFO--
- * Address:	8027E6A8
- * Size:	0001B4
+/**
+ * @note Address: 0x8027E6A8
+ * @note Size: 0x1B4
  */
 int Obj::checkBreakOrMove()
 {
@@ -380,9 +355,9 @@ int Obj::checkBreakOrMove()
 		f32 width     = 50.0f + halfWidth;
 
 		if (dotX < 0.0f) {
-			_2E0 = width;
+			mBridgeWidth = width;
 		} else {
-			_2E0 = -width;
+			mBridgeWidth = -width;
 		}
 
 		if (absVal(dotX) > halfWidth) {
@@ -401,10 +376,9 @@ int Obj::checkBreakOrMove()
 	return ARMOR_MoveCentre;
 }
 
-/*
- * --INFO--
- * Address:	8027E85C
- * Size:	000028
+/**
+ * @note Address: 0x8027E85C
+ * @note Size: 0x28
  */
 bool Obj::isBreakBridge()
 {
@@ -415,10 +389,9 @@ bool Obj::isBreakBridge()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8027E884
- * Size:	0002A8
+/**
+ * @note Address: 0x8027E884
+ * @note Size: 0x2A8
  */
 bool Obj::moveBridgeSide()
 {
@@ -427,14 +400,14 @@ bool Obj::moveBridgeSide()
 	Vector3f xVec     = mBridge->getBridgeXVec();
 	Vector3f zVec     = mBridge->getBridgeZVec();
 
-	xVec *= _2E0;
+	xVec *= mBridgeWidth;
 	zVec *= -50.0f;
 
 	startPos += xVec;
 	startPos += zVec;
 
 	if (sqrDistanceXZ(mPosition, startPos) < 250.0f) {
-		f32 speed    = 0.75f * C_PARMS->mGeneral.mMoveSpeed.mValue;
+		f32 speed    = 0.75f * C_GENERALPARMS.mMoveSpeed.mValue;
 		f32 sinTheta = sin(getFaceDir());
 		f32 y        = getTargetVelocity().y;
 		f32 cosTheta = cos(getFaceDir());
@@ -448,7 +421,7 @@ bool Obj::moveBridgeSide()
 	} else {
 		changeFaceDir(startPos);
 
-		f32 speed    = C_PARMS->mGeneral.mMoveSpeed.mValue;
+		f32 speed    = C_GENERALPARMS.mMoveSpeed.mValue;
 		f32 sinTheta = sin(getFaceDir());
 		f32 y        = getTargetVelocity().y;
 		f32 cosTheta = cos(getFaceDir());
@@ -641,21 +614,20 @@ lbl_8027EAF8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8027EB2C
- * Size:	000288
+/**
+ * @note Address: 0x8027EB2C
+ * @note Size: 0x288
  */
 bool Obj::moveBridgeCentre()
 {
 	Vector3f startPos = mBridge->getStartPos();
 	Vector3f xVec     = mBridge->getBridgeXVec();
 
-	xVec *= 0.7f * _2DC;
+	xVec *= 0.7f * mBridgePositionOffset;
 	startPos += xVec;
 
 	if (sqrDistanceXZ(mPosition, startPos) < 250.0f) {
-		f32 speed    = 0.75f * C_PARMS->mGeneral.mMoveSpeed.mValue;
+		f32 speed    = 0.75f * C_GENERALPARMS.mMoveSpeed.mValue;
 		f32 sinTheta = sin(getFaceDir());
 		f32 y        = getTargetVelocity().y;
 		f32 cosTheta = cos(getFaceDir());
@@ -669,7 +641,7 @@ bool Obj::moveBridgeCentre()
 	} else {
 		changeFaceDir(startPos);
 
-		f32 speed    = C_PARMS->mGeneral.mMoveSpeed.mValue;
+		f32 speed    = C_GENERALPARMS.mMoveSpeed.mValue;
 		f32 sinTheta = sin(getFaceDir());
 		f32 y        = getTargetVelocity().y;
 		f32 cosTheta = cos(getFaceDir());
@@ -854,10 +826,9 @@ lbl_8027ED80:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8027EDB4
- * Size:	00031C
+/**
+ * @note Address: 0x8027EDB4
+ * @note Size: 0x31C
  */
 bool Obj::moveBridgeTop()
 {
@@ -865,7 +836,7 @@ bool Obj::moveBridgeTop()
 	Vector3f stagePos = mBridge->getStagePos(stageID);
 	Vector3f xVec     = mBridge->getBridgeXVec();
 
-	xVec *= _2DC;
+	xVec *= mBridgePositionOffset;
 	stagePos += xVec;
 
 	if (stageID > 0) {
@@ -886,7 +857,7 @@ bool Obj::moveBridgeTop()
 		return true;
 
 	} else if (dist < 750.0f) {
-		f32 speed    = C_PARMS->mGeneral.mMoveSpeed.mValue;
+		f32 speed    = C_GENERALPARMS.mMoveSpeed.mValue;
 		f32 sinTheta = sin(getFaceDir());
 		f32 y        = getTargetVelocity().y;
 		f32 cosTheta = cos(getFaceDir());
@@ -898,7 +869,7 @@ bool Obj::moveBridgeTop()
 		return true;
 
 	} else {
-		f32 speed    = C_PARMS->mGeneral.mMoveSpeed.mValue;
+		f32 speed    = C_GENERALPARMS.mMoveSpeed.mValue;
 		f32 sinTheta = sin(getFaceDir());
 		f32 y        = getTargetVelocity().y;
 		f32 cosTheta = cos(getFaceDir());
@@ -1126,10 +1097,9 @@ lbl_8027F090:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8027F0D0
- * Size:	00005C
+/**
+ * @note Address: 0x8027F0D0
+ * @note Size: 0x5C
  */
 void Obj::breakTargetBridge()
 {
@@ -1137,31 +1107,27 @@ void Obj::breakTargetBridge()
 	mBridge->stimulate(interactBridge);
 }
 
-/*
- * --INFO--
- * Address:	8027F12C
- * Size:	0000B0
+/**
+ * @note Address: 0x8027F12C
+ * @note Size: 0xB0
  */
 void Obj::createEffect() { mEfxYoroiAttack = new efx::TYoroiAttack; }
 
-/*
- * --INFO--
- * Address:	8027F1DC
- * Size:	000040
+/**
+ * @note Address: 0x8027F1DC
+ * @note Size: 0x40
  */
 void Obj::setupEffect() { mEfxYoroiAttack->mMtx = mModel->getJoint("kamujnt")->getWorldMatrix(); }
 
-/*
- * --INFO--
- * Address:	8027F21C
- * Size:	000034
+/**
+ * @note Address: 0x8027F21C
+ * @note Size: 0x34
  */
 void Obj::createAttackEffect() { mEfxYoroiAttack->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	8027F250
- * Size:	00008C
+/**
+ * @note Address: 0x8027F250
+ * @note Size: 0x8C
  */
 void Obj::createAppearEffect()
 {
@@ -1171,10 +1137,9 @@ void Obj::createAppearEffect()
 	appearFX.create(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8027F2DC
- * Size:	00008C
+/**
+ * @note Address: 0x8027F2DC
+ * @note Size: 0x8C
  */
 void Obj::createDisAppearEffect()
 {
@@ -1184,32 +1149,29 @@ void Obj::createDisAppearEffect()
 	disappearFX.create(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8027F368
- * Size:	000090
+/**
+ * @note Address: 0x8027F368
+ * @note Size: 0x90
  */
 void Obj::createBridgeEffect()
 {
 	Matrixf* mat = mModel->getJoint("kamujnt")->getWorldMatrix();
-	Vector3f pos = mat->getBasis(3);
+	Vector3f pos = mat->getColumn(3);
 	efx::Arg fxArg(pos);
 	efx::TYoroiEat eatFX;
 
 	eatFX.create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	8027F3F8
- * Size:	000030
+/**
+ * @note Address: 0x8027F3F8
+ * @note Size: 0x30
  */
 void Obj::effectDrawOn() { mEfxYoroiAttack->endDemoDrawOn(); }
 
-/*
- * --INFO--
- * Address:	8027F428
- * Size:	000030
+/**
+ * @note Address: 0x8027F428
+ * @note Size: 0x30
  */
 void Obj::effectDrawOff() { mEfxYoroiAttack->startDemoDrawOff(); }
 

@@ -4,12 +4,11 @@
 namespace og {
 namespace newScreen {
 
-/*
- * --INFO--
- * Address:	8031EA58
- * Size:	000080
+/**
+ * @note Address: 0x8031EA58
+ * @note Size: 0x80
  */
-AnaDemo::AnaDemo(long sceneType)
+AnaDemo::AnaDemo(s32 sceneType)
 {
 	if (sceneType == SCENE_CAVE_IN_MENU || sceneType == SCENE_KANKETU_MENU || sceneType == SCENE_CAVE_MORE_MENU) {
 		mSceneType = (SceneType)sceneType;
@@ -18,17 +17,15 @@ AnaDemo::AnaDemo(long sceneType)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8031EAD8
- * Size:	000004
+/**
+ * @note Address: 0x8031EAD8
+ * @note Size: 0x4
  */
 void AnaDemo::doUserCallBackFunc(Resource::MgrCommand*) { }
 
-/*
- * --INFO--
- * Address:	8031EADC
- * Size:	000078
+/**
+ * @note Address: 0x8031EADC
+ * @note Size: 0x78
  */
 void AnaDemo::doCreateObj(JKRArchive* archive)
 {

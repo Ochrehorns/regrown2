@@ -8,10 +8,9 @@
 namespace Game {
 namespace Sarai {
 
-/*
- * --INFO--
- * Address:	802708A0
- * Size:	0003D0
+/**
+ * @note Address: 0x802708A0
+ * @note Size: 0x3D0
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -29,10 +28,9 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateFallMeck);
 }
 
-/*
- * --INFO--
- * Address:	80270C70
- * Size:	000070
+/**
+ * @note Address: 0x80270C70
+ * @note Size: 0x70
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -42,13 +40,12 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mTargetVelocity = Vector3f(0.0f);
 	sarai->disableEvent(0, EB_Untargetable);
 	sarai->flickStickTarget();
-	sarai->startMotion(10, nullptr);
+	sarai->startMotion(SARAIANIM_Dead, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80270CE0
- * Size:	000044
+/**
+ * @note Address: 0x80270CE0
+ * @note Size: 0x44
  */
 void StateDead::exec(EnemyBase* enemy)
 {
@@ -57,17 +54,15 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80270D24
- * Size:	000004
+/**
+ * @note Address: 0x80270D24
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	80270D28
- * Size:	000068
+/**
+ * @note Address: 0x80270D28
+ * @note Size: 0x68
  */
 void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -76,14 +71,13 @@ void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mTargetVelocity = Vector3f(0.0f);
 	sarai->disableEvent(0, EB_Untargetable);
 	sarai->setEmotionExcitement();
-	sarai->startMotion(6, nullptr);
+	sarai->startMotion(SARAIANIM_Fall, nullptr);
 	sarai->flickStickTarget();
 }
 
-/*
- * --INFO--
- * Address:	80270D90
- * Size:	0001B8
+/**
+ * @note Address: 0x80270D90
+ * @note Size: 0x1B8
  */
 void StateFall::exec(EnemyBase* enemy)
 {
@@ -121,17 +115,15 @@ void StateFall::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80270F48
- * Size:	000024
+/**
+ * @note Address: 0x80270F48
+ * @note Size: 0x24
  */
 void StateFall::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	80270F6C
- * Size:	000068
+/**
+ * @note Address: 0x80270F6C
+ * @note Size: 0x68
  */
 void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -140,19 +132,18 @@ void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mTargetVelocity = Vector3f(0.0f);
 	sarai->disableEvent(0, EB_Untargetable);
 	sarai->setEmotionExcitement();
-	sarai->startMotion(7, nullptr);
+	sarai->startMotion(SARAIANIM_Damage, nullptr);
 	sarai->flickStickTarget();
 }
 
-/*
- * --INFO--
- * Address:	80270FD4
- * Size:	000108
+/**
+ * @note Address: 0x80270FD4
+ * @note Size: 0x108
  */
 void StateDamage::exec(EnemyBase* enemy)
 {
 	Obj* sarai = OBJ(enemy);
-	if (sarai->mHealth <= 0.0f || sarai->_2C0 > CG_PROPERPARMS(sarai).mFp23.mValue || sarai->getStickPikminNum() == 0) {
+	if (sarai->mHealth <= 0.0f || sarai->_2C0 > CG_PROPERPARMS(sarai).mStrugglingTime.mValue || sarai->getStickPikminNum() == 0) {
 		sarai->finishMotion();
 	}
 
@@ -167,36 +158,33 @@ void StateDamage::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802710DC
- * Size:	000024
+/**
+ * @note Address: 0x802710DC
+ * @note Size: 0x24
  */
 void StateDamage::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	80271100
- * Size:	00004C
+/**
+ * @note Address: 0x80271100
+ * @note Size: 0x4C
  */
 void StateTakeOff::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->enableEvent(0, EB_Untargetable);
 	enemy->setEmotionExcitement();
-	enemy->startMotion(8, nullptr);
+	enemy->startMotion(SARAIANIM_TakeOff, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8027114C
- * Size:	000108
+/**
+ * @note Address: 0x8027114C
+ * @note Size: 0x108
  */
 void StateTakeOff::exec(EnemyBase* enemy)
 {
 	Obj* sarai = OBJ(enemy);
 	f32 val    = sarai->setHeightVelocity();
 
-	if (sarai->mHealth <= 0.0f || val > CG_PROPERPARMS(sarai).mFp03.mValue) {
+	if (sarai->mHealth <= 0.0f || val > CG_PROPERPARMS(sarai).mStateTransitionHeight.mValue) {
 		sarai->finishMotion();
 	}
 
@@ -216,30 +204,27 @@ void StateTakeOff::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80271254
- * Size:	000024
+/**
+ * @note Address: 0x80271254
+ * @note Size: 0x24
  */
 void StateTakeOff::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	80271278
- * Size:	000058
+/**
+ * @note Address: 0x80271278
+ * @note Size: 0x58
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->enableEvent(0, EB_Untargetable);
 	enemy->enableEvent(0, EB_NoInterrupt);
 	enemy->setEmotionExcitement();
-	enemy->startMotion(5, nullptr);
+	enemy->startMotion(SARAIANIM_Flick, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802712D0
- * Size:	000118
+/**
+ * @note Address: 0x802712D0
+ * @note Size: 0x118
  */
 void StateFlick::exec(EnemyBase* enemy)
 {
@@ -248,10 +233,9 @@ void StateFlick::exec(EnemyBase* enemy)
 
 	if (sarai->mCurAnim->mIsPlaying) {
 		if (sarai->mCurAnim->mType == KEYEVENT_2) {
-			EnemyFunc::flickStickPikmin(sarai, CG_PARMS(sarai)->mGeneral.mShakeRateMaybe.mValue,
-			                            CG_PARMS(sarai)->mGeneral.mShakeKnockback.mValue, CG_PARMS(sarai)->mGeneral.mShakeDamage.mValue,
-			                            -1000.0f, nullptr);
-			sarai->mToFlick = 0.0f;
+			EnemyFunc::flickStickPikmin(sarai, CG_GENERALPARMS(sarai).mShakeChance.mValue, CG_GENERALPARMS(sarai).mShakeKnockback.mValue,
+			                            CG_GENERALPARMS(sarai).mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
+			sarai->mFlickTimer = 0.0f;
 
 		} else if (sarai->mCurAnim->mType == KEYEVENT_END) {
 			if (sarai->mHealth <= 0.0f) {
@@ -269,10 +253,9 @@ void StateFlick::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802713E8
- * Size:	000030
+/**
+ * @note Address: 0x802713E8
+ * @note Size: 0x30
  */
 void StateFlick::cleanup(EnemyBase* enemy)
 {
@@ -280,10 +263,9 @@ void StateFlick::cleanup(EnemyBase* enemy)
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	80271418
- * Size:	0000B0
+/**
+ * @note Address: 0x80271418
+ * @note Size: 0xB0
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -294,16 +276,15 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->enableEvent(0, EB_Untargetable);
 
 	if (randWeightFloat(1.0f) < 0.5f) {
-		sarai->startMotion(0, nullptr);
+		sarai->startMotion(SARAIANIM_Wait, nullptr);
 	} else {
-		sarai->startMotion(1, nullptr);
+		sarai->startMotion(SARAIANIM_Move, nullptr);
 	}
 }
 
-/*
- * --INFO--
- * Address:	802714C8
- * Size:	000160
+/**
+ * @note Address: 0x802714C8
+ * @note Size: 0x160
  */
 void StateWait::exec(EnemyBase* enemy)
 {
@@ -311,11 +292,11 @@ void StateWait::exec(EnemyBase* enemy)
 	f32 val    = sarai->setHeightVelocity();
 
 	FakePiki* target = sarai->getAttackableTarget();
-	if (target || sarai->_2C0 > CG_PROPERPARMS(sarai).mFp06.mValue) {
+	if (target || sarai->_2C0 > CG_PROPERPARMS(sarai).mWaitTime.mValue) {
 		sarai->finishMotion();
 	}
 
-	if (val > CG_PROPERPARMS(sarai).mFp03.mValue || sarai->_2C0 > 3.0f) {
+	if (val > CG_PROPERPARMS(sarai).mStateTransitionHeight.mValue || sarai->_2C0 > 3.0f) {
 		int nextState = sarai->getNextStateOnHeight();
 		if (nextState >= 0) {
 			transit(sarai, nextState, nullptr);
@@ -336,17 +317,15 @@ void StateWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80271628
- * Size:	000004
+/**
+ * @note Address: 0x80271628
+ * @note Size: 0x4
  */
 void StateWait::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8027162C
- * Size:	00005C
+/**
+ * @note Address: 0x8027162C
+ * @note Size: 0x5C
  */
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -355,13 +334,12 @@ void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->setRandTarget();
 	sarai->mTargetCreature = nullptr;
 	sarai->enableEvent(0, EB_Untargetable);
-	sarai->startMotion(1, nullptr);
+	sarai->startMotion(SARAIANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80271688
- * Size:	000208
+/**
+ * @note Address: 0x80271688
+ * @note Size: 0x208
  */
 void StateMove::exec(EnemyBase* enemy)
 {
@@ -377,11 +355,11 @@ void StateMove::exec(EnemyBase* enemy)
 		sarai->mTargetVelocity = Vector3f(0.0f);
 		sarai->finishMotion();
 	} else {
-		EnemyFunc::walkToTarget(sarai, targetPos, CG_PROPERPARMS(sarai).mFp04.mValue, CG_PARMS(sarai)->mGeneral.mRotationalAccel.mValue,
-		                        CG_PARMS(sarai)->mGeneral.mRotationalSpeed.mValue);
+		EnemyFunc::walkToTarget(sarai, targetPos, CG_PROPERPARMS(sarai).mNormalMovementSpeed.mValue,
+		                        CG_GENERALPARMS(sarai).mTurnSpeed.mValue, CG_GENERALPARMS(sarai).mMaxTurnAngle.mValue);
 	}
 
-	if (height > CG_PROPERPARMS(sarai).mFp03.mValue || sarai->_2C0 > 3.0f) {
+	if (height > CG_PROPERPARMS(sarai).mStateTransitionHeight.mValue || sarai->_2C0 > 3.0f) {
 		int nextState = sarai->getNextStateOnHeight();
 		if (nextState >= 0) {
 			transit(sarai, nextState, nullptr);
@@ -402,17 +380,15 @@ void StateMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80271890
- * Size:	000004
+/**
+ * @note Address: 0x80271890
+ * @note Size: 0x4
  */
 void StateMove::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	80271894
- * Size:	000078
+/**
+ * @note Address: 0x80271894
+ * @note Size: 0x78
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -423,13 +399,12 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->enableEvent(0, EB_NoInterrupt);
 	sarai->enableEvent(0, EB_Untargetable);
 	sarai->setEmotionExcitement();
-	sarai->startMotion(2, nullptr);
+	sarai->startMotion(SARAIANIM_Attack, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8027190C
- * Size:	000614
+/**
+ * @note Address: 0x8027190C
+ * @note Size: 0x614
  */
 void StateAttack::exec(EnemyBase* enemy)
 {
@@ -439,9 +414,74 @@ void StateAttack::exec(EnemyBase* enemy)
 		f32 frame = sarai->getMotionFrame();
 		if (frame <= 10.0f) {
 			sarai->setHeightVelocity();
-			Vector3f pos = sarai->getPosition();
+			sarai->changeFaceDir2(target);
+		} else if (frame <= 30.0f) {
+			if (sarai->mBounceTriangle) {
+				sarai->_2C0 = 30.0f;
+			}
 
-			// atan2 nonsense.
+			if (sarai->_2C0 < 30.0f) {
+				f32 targetHeight = target->getPosition().y + 17.5f; // f28
+				f32 saraiHeight  = sarai->getPosition().y;          // f29
+
+				Vector3f vel = sarai->getVelocity(); // 0x80
+				f32 factor   = ((targetHeight - saraiHeight) / sys->mDeltaTime) * CG_PROPERPARMS(sarai).mHuntDescentFactor();
+
+				f32 vertSpeed;
+				if (factor < -2500.0f) {
+					vertSpeed = -2500.0f;
+				} else if (factor > 1000.0f) {
+					vertSpeed = 1000.0f;
+				} else {
+					vertSpeed = factor;
+				}
+				vel.y = vertSpeed;
+				sarai->setVelocity(vel);
+				if (frame > 16.0f) {
+					sarai->catchTarget();
+				}
+				sarai->changeFaceDir2(target);
+			}
+		} else {
+			sarai->setHeightVelocity();
+			f32 decayRate          = CG_PROPERPARMS(sarai).mPostHuntDecayRate();
+			sarai->mTargetVelocity = sarai->mTargetVelocity * decayRate;
+		}
+	} else {
+		transit(sarai, SARAI_Move, nullptr);
+	}
+
+	if (sarai->mCurAnim->mIsPlaying) {
+		if (sarai->mCurAnim->mType == KEYEVENT_2) {
+			if (sarai->mTargetCreature) {
+				Vector3f targetPos = sarai->mTargetCreature->getPosition(); // f28, f29, f30
+				Vector3f saraiPos  = sarai->getPosition();                  // f1, f0, f2
+
+				Vector3f sep = targetPos - saraiPos; // 0x74
+				Vector3f dir = sep;
+				dir.normalise();
+				dir *= 25.0f;
+				sep -= dir;
+				sep.y = 0.0f;
+				sep *= (0.06666667f / sys->mDeltaTime);
+				sarai->setVelocity(sep);
+				sarai->mTargetVelocity = sep;
+			}
+		} else if (sarai->mCurAnim->mType == KEYEVENT_3) {
+			sarai->disableEvent(0, EB_NoInterrupt);
+
+		} else if (sarai->mCurAnim->mType == KEYEVENT_4) {
+			if (sarai->getCatchTargetNum() == 0) {
+				transit(sarai, SARAI_Fail, nullptr);
+			}
+
+		} else if (sarai->mCurAnim->mType == KEYEVENT_END) {
+			if (sarai->getCatchTargetNum() != 0) {
+				transit(sarai, SARAI_CatchFly, nullptr);
+				return;
+			}
+
+			transit(sarai, SARAI_Move, nullptr);
 		}
 	}
 	/*
@@ -879,10 +919,9 @@ lbl_80271EE4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80271F20
- * Size:	000044
+/**
+ * @note Address: 0x80271F20
+ * @note Size: 0x44
  */
 void StateAttack::cleanup(EnemyBase* enemy)
 {
@@ -892,23 +931,21 @@ void StateAttack::cleanup(EnemyBase* enemy)
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	80271F64
- * Size:	000058
+/**
+ * @note Address: 0x80271F64
+ * @note Size: 0x58
  */
 void StateFail::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->enableEvent(0, EB_Untargetable);
 	enemy->disableEvent(0, EB_Cullable);
 	enemy->setEmotionExcitement();
-	enemy->startMotion(9, nullptr);
+	enemy->startMotion(SARAIANIM_Fail, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80271FBC
- * Size:	0000D8
+/**
+ * @note Address: 0x80271FBC
+ * @note Size: 0xD8
  */
 void StateFail::exec(EnemyBase* enemy)
 {
@@ -916,9 +953,10 @@ void StateFail::exec(EnemyBase* enemy)
 	sarai->setHeightVelocity();
 
 	// regswaps here
-	f32 decayRate          = CG_PROPERPARMS(sarai).mFp32.mValue;
-	Vector3f vel           = sarai->mTargetVelocity;
-	sarai->mTargetVelocity = vel * decayRate;
+	f32 decayRate = CG_PROPERPARMS(sarai).mPostHuntDecayRate();
+	// Vector3f vel = sarai->getTargetVelocity();
+	// Vector3f vel           = sarai->mTargetVelocity * CG_PROPERPARMS(sarai).mFp32();
+	sarai->mTargetVelocity = sarai->mTargetVelocity * decayRate;
 
 	if (sarai->mCurAnim->mIsPlaying && sarai->mCurAnim->mType == KEYEVENT_END) {
 		if (sarai->getCatchTargetNum()) {
@@ -990,10 +1028,9 @@ lbl_8027207C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80272094
- * Size:	000030
+/**
+ * @note Address: 0x80272094
+ * @note Size: 0x30
  */
 void StateFail::cleanup(EnemyBase* enemy)
 {
@@ -1001,10 +1038,9 @@ void StateFail::cleanup(EnemyBase* enemy)
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	802720C4
- * Size:	000064
+/**
+ * @note Address: 0x802720C4
+ * @note Size: 0x64
  */
 void StateCatchFly::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -1014,13 +1050,12 @@ void StateCatchFly::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mTargetCreature = nullptr;
 	sarai->enableEvent(0, EB_Untargetable);
 	sarai->setEmotionExcitement();
-	sarai->startMotion(3, nullptr);
+	sarai->startMotion(SARAIANIM_CatchFly, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80272128
- * Size:	0001C0
+/**
+ * @note Address: 0x80272128
+ * @note Size: 0x1C0
  */
 void StateCatchFly::exec(EnemyBase* enemy)
 {
@@ -1034,8 +1069,8 @@ void StateCatchFly::exec(EnemyBase* enemy)
 		sarai->mTargetVelocity = Vector3f(0.0f);
 		sarai->finishMotion();
 	} else {
-		EnemyFunc::walkToTarget(sarai, targetPos, CG_PROPERPARMS(sarai).mFp05.mValue, CG_PARMS(sarai)->mGeneral.mRotationalAccel.mValue,
-		                        CG_PARMS(sarai)->mGeneral.mRotationalSpeed.mValue);
+		EnemyFunc::walkToTarget(sarai, targetPos, CG_PROPERPARMS(sarai).mGrabMovementSpeed.mValue, CG_GENERALPARMS(sarai).mTurnSpeed.mValue,
+		                        CG_GENERALPARMS(sarai).mMaxTurnAngle.mValue);
 	}
 
 	if (!sarai->getCatchTargetNum()) {
@@ -1043,7 +1078,7 @@ void StateCatchFly::exec(EnemyBase* enemy)
 		return;
 	}
 
-	if (height > CG_PROPERPARMS(sarai).mFp03.mValue || sarai->_2C0 > 3.0f) {
+	if (height > CG_PROPERPARMS(sarai).mStateTransitionHeight.mValue || sarai->_2C0 > 3.0f) {
 		int nextState = sarai->getNextStateOnHeight();
 		if (nextState >= 0) {
 			transit(sarai, nextState, nullptr);
@@ -1058,17 +1093,15 @@ void StateCatchFly::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802722E8
- * Size:	000024
+/**
+ * @note Address: 0x802722E8
+ * @note Size: 0x24
  */
 void StateCatchFly::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	8027230C
- * Size:	000070
+/**
+ * @note Address: 0x8027230C
+ * @note Size: 0x70
  */
 void StateFallMeck::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -1077,13 +1110,12 @@ void StateFallMeck::init(EnemyBase* enemy, StateArg* stateArg)
 	enemy->mTargetCreature = nullptr;
 	enemy->mTargetVelocity = Vector3f(0.0f);
 	enemy->setEmotionExcitement();
-	enemy->startMotion(4, nullptr);
+	enemy->startMotion(SARAIANIM_FallMeck, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8027237C
- * Size:	0000BC
+/**
+ * @note Address: 0x8027237C
+ * @note Size: 0xBC
  */
 void StateFallMeck::exec(EnemyBase* enemy)
 {
@@ -1106,10 +1138,9 @@ void StateFallMeck::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80272438
- * Size:	000054
+/**
+ * @note Address: 0x80272438
+ * @note Size: 0x54
  */
 void StateFallMeck::cleanup(EnemyBase* enemy)
 {

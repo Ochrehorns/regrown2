@@ -5,10 +5,9 @@
 namespace Game {
 namespace Cave {
 
-/*
- * --INFO--
- * Address:	8024BAAC
- * Size:	000200
+/**
+ * @note Address: 0x8024BAAC
+ * @note Size: 0x200
  */
 MapUnitGenerator::MapUnitGenerator(MapUnitInterface* interface, int interfaceCount, FloorInfo* floorInfo, bool isFinalFloor,
                                    EditMapUnit* editInfo)
@@ -52,10 +51,9 @@ MapUnitGenerator::MapUnitGenerator(MapUnitInterface* interface, int interfaceCou
 	createCaveLevel();
 }
 
-/*
- * --INFO--
- * Address:	8024BCD0
- * Size:	0000AC
+/**
+ * @note Address: 0x8024BCD0
+ * @note Size: 0xAC
  */
 void MapUnitGenerator::createEditMapInfo(EditMapUnit* editInfo)
 {
@@ -72,10 +70,9 @@ void MapUnitGenerator::createEditMapInfo(EditMapUnit* editInfo)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024BD7C
- * Size:	00024C
+/**
+ * @note Address: 0x8024BD7C
+ * @note Size: 0x24C
  */
 void MapUnitGenerator::createMemList(MapUnitInterface* interface, int interfaceCount)
 {
@@ -134,10 +131,9 @@ void MapUnitGenerator::createMemList(MapUnitInterface* interface, int interfaceC
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024BFC8
- * Size:	000078
+/**
+ * @note Address: 0x8024BFC8
+ * @note Size: 0x78
  */
 bool Cave::MapUnitGenerator::isCreateList(Game::MapUnitInterface* interface)
 {
@@ -157,7 +153,7 @@ bool Cave::MapUnitGenerator::isCreateList(Game::MapUnitInterface* interface)
 	if (spawn) {
 		FOREACH_NODE(BaseGen, spawn->mChild, currSpawn)
 		{
-			if (currSpawn->mSpawnType == BaseGen::Start) {
+			if (currSpawn->mSpawnType == BaseGen::CGT_Start) {
 				return true;
 			}
 		}
@@ -165,10 +161,9 @@ bool Cave::MapUnitGenerator::isCreateList(Game::MapUnitInterface* interface)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8024C040
- * Size:	0000CC
+/**
+ * @note Address: 0x8024C040
+ * @note Size: 0xCC
  */
 void MapUnitGenerator::memMapListSorting()
 {
@@ -197,10 +192,9 @@ void MapUnitGenerator::memMapListSorting()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024C10C
- * Size:	00014C
+/**
+ * @note Address: 0x8024C10C
+ * @note Size: 0x14C
  */
 void MapUnitGenerator::createMapPartsList()
 {
@@ -217,7 +211,7 @@ void MapUnitGenerator::createMapPartsList()
 		}
 
 		for (int childCount = currMapKind->getChildCount(), j = 0; j < childCount; j++) {
-			int randIdx = (childCount * randFloat());
+			int randIdx = (randInt(childCount));
 
 			if (CNode* randNode = static_cast<MapNode*>(currMapKind->getChildAt(randIdx))) {
 				randNode->del();
@@ -227,10 +221,9 @@ void MapUnitGenerator::createMapPartsList()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024C258
- * Size:	0000B4
+/**
+ * @note Address: 0x8024C258
+ * @note Size: 0xB4
  */
 void MapUnitGenerator::createEnemyList()
 {
@@ -244,10 +237,9 @@ void MapUnitGenerator::createEnemyList()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024C30C
- * Size:	0000EC
+/**
+ * @note Address: 0x8024C30C
+ * @note Size: 0xEC
  */
 void MapUnitGenerator::createCapEnemyList()
 {
@@ -268,14 +260,14 @@ void MapUnitGenerator::createCapEnemyList()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024C3F8
- * Size:	000030
+/**
+ * @note Address: 0x8024C3F8
+ * @note Size: 0x30
  */
 bool MapUnitGenerator::isPomGroup(TekiInfo* tekiInfo)
 {
 	EnemyTypeID::EEnemyTypeID id = tekiInfo->mEnemyID;
+
 	if ((id == EnemyTypeID::EnemyID_Pom) ||       // candypop base type
 	    (id == EnemyTypeID::EnemyID_BluePom) ||   // blue candypop
 	    (id == EnemyTypeID::EnemyID_RedPom) ||    // red candypop
@@ -289,10 +281,9 @@ bool MapUnitGenerator::isPomGroup(TekiInfo* tekiInfo)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8024C428
- * Size:	0000B4
+/**
+ * @note Address: 0x8024C428
+ * @note Size: 0xB4
  */
 void MapUnitGenerator::createGateList()
 {
@@ -304,10 +295,9 @@ void MapUnitGenerator::createGateList()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024C4DC
- * Size:	0000B4
+/**
+ * @note Address: 0x8024C4DC
+ * @note Size: 0xB4
  */
 void MapUnitGenerator::createItemList()
 {
@@ -319,15 +309,14 @@ void MapUnitGenerator::createItemList()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024C590
- * Size:	00002C
+/**
+ * @note Address: 0x8024C590
+ * @note Size: 0x2C
  */
 void MapUnitGenerator::createCaveLevel()
 {
 	mRandItemType = 0;
-	if (gameSystem && gameSystem->mMode == GSM_STORY_MODE) {
+	if (gameSystem && gameSystem->isStoryMode()) {
 		mRandItemType = 4;
 	}
 }

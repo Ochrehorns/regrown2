@@ -4,23 +4,22 @@
 namespace Game {
 namespace Queen {
 
-/*
- * --INFO--
- * Address:	8028EB68
- * Size:	0001AC
+/**
+ * @note Address: 0x8028EB68
+ * @note Size: 0x1AC
  */
 void QueenShadowNode::makeShadowSRT()
 {
-	Matrixf* mat1C = _1C;
+	Matrixf* mat1C = mMainMtx;
 	Matrixf* mat   = _24->getWorldMatrix();
 	PSMTXConcat(mat->mMatrix.mtxView, _28.mMatrix.mtxView, mat1C->mMatrix.mtxView);
 
 	Vector3f matVecs[4];
-	Matrixf* matCopy = _1C;
-	matCopy->getBasis(0, matVecs[0]);
-	matCopy->getBasis(1, matVecs[1]);
-	matCopy->getBasis(2, matVecs[2]);
-	matCopy->getBasis(3, matVecs[3]);
+	Matrixf* matCopy = mMainMtx;
+	matCopy->getColumn(0, matVecs[0]);
+	matCopy->getColumn(1, matVecs[1]);
+	matCopy->getColumn(2, matVecs[2]);
+	matCopy->getColumn(3, matVecs[3]);
 
 	f32 length   = matVecs[2].length();
 	matVecs[0].x = length;
@@ -37,16 +36,15 @@ void QueenShadowNode::makeShadowSRT()
 
 	matVecs[3].y = mapMgr->getMinY(matVecs[3]) + 1.5f;
 
-	_1C->setBasis(0, matVecs[0]);
-	_1C->setBasis(1, matVecs[1]);
-	_1C->setBasis(2, matVecs[2]);
-	_1C->setBasis(3, matVecs[3]);
+	mMainMtx->setColumn(0, matVecs[0]);
+	mMainMtx->setColumn(1, matVecs[1]);
+	mMainMtx->setColumn(2, matVecs[2]);
+	mMainMtx->setColumn(3, matVecs[3]);
 }
 
-/*
- * --INFO--
- * Address:	8028ED14
- * Size:	0000B4
+/**
+ * @note Address: 0x8028ED14
+ * @note Size: 0xB4
  */
 QueenShadowMgr::QueenShadowMgr(Obj* obj)
 {
@@ -59,10 +57,9 @@ QueenShadowMgr::QueenShadowMgr(Obj* obj)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028EDC8
- * Size:	0002A4
+/**
+ * @note Address: 0x8028EDC8
+ * @note Size: 0x2A4
  */
 void QueenShadowMgr::init()
 {
@@ -194,10 +191,9 @@ void QueenShadowMgr::init()
 	PSMTXCopy(mat.mMatrix.mtxView, body4->_28.mMatrix.mtxView);
 }
 
-/*
- * --INFO--
- * Address:	8028F06C
- * Size:	00005C
+/**
+ * @note Address: 0x8028F06C
+ * @note Size: 0x5C
  */
 void QueenShadowMgr::update()
 {

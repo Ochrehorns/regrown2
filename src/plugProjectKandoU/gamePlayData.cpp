@@ -5,34 +5,24 @@
 #include "Game/gameGeneratorCache.h"
 #include "Game/gamePlayData.h"
 #include "Game/gameStages.h"
-#include "JSystem/JUtility/JUTException.h"
-#include "System.h"
-#include "types.h"
 #include "Game/Entities/PelletOtakara.h"
 #include "Game/Entities/PelletItem.h"
 #include "Game/gameStat.h"
+#include "Game/enemyInfo.h"
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E4
+/**
+ * @note Address: N/A
+ * @note Size: 0xE4
  */
 void _Print(char* name, ...) { OSReport("PlayData"); }
-
-namespace {
-float repay_levs[10] = {
-	10.0f, 20.0f, 30.0f, 40.0f, 50.0f, 60.0f, 70.0f, 80.0f, 90.0f, 100.0f,
-};
-} // namespace
 
 namespace Game {
 
 PlayData* playData;
 
-/*
- * --INFO--
- * Address:	801E5354
- * Size:	000010
+/**
+ * @note Address: 0x801E5354
+ * @note Size: 0x10
  */
 KindCounter::KindCounter()
     : mNumKinds(0)
@@ -40,10 +30,9 @@ KindCounter::KindCounter()
 {
 }
 
-/*
- * --INFO--
- * Address:	801E5364
- * Size:	000074
+/**
+ * @note Address: 0x801E5364
+ * @note Size: 0x74
  */
 void KindCounter::alloc(int numKinds)
 {
@@ -53,10 +42,9 @@ void KindCounter::alloc(int numKinds)
 	clear();
 }
 
-/*
- * --INFO--
- * Address:	801E53D8
- * Size:	000028
+/**
+ * @note Address: 0x801E53D8
+ * @note Size: 0x28
  */
 void KindCounter::clear()
 {
@@ -65,10 +53,9 @@ void KindCounter::clear()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000088
+/**
+ * @note Address: N/A
+ * @note Size: 0x88
  */
 void KindCounter::copyFrom(KindCounter& other)
 {
@@ -78,10 +65,9 @@ void KindCounter::copyFrom(KindCounter& other)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000090
+/**
+ * @note Address: N/A
+ * @note Size: 0x90
  */
 void KindCounter::addTo(KindCounter& other)
 {
@@ -91,26 +77,24 @@ void KindCounter::addTo(KindCounter& other)
 	}
 }
 
-/*
+/**
  * cl_
- * --INFO--
- * Address:	801E5400
- * Size:	000078
+ * @note Address: 0x801E5400
+ * @note Size: 0x78
  */
-u8* KindCounter::operator()(int index)
+u8& KindCounter::operator()(int index)
 {
 	bool isValidIndex = false;
 	if (0 <= index && index < mNumKinds) {
 		isValidIndex = true;
 	}
 	P2ASSERTLINE(330, isValidIndex);
-	return &mKinds[index];
+	return mKinds[index];
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00018C
+/**
+ * @note Address: N/A
+ * @note Size: 0x18C
  */
 PelletCropMemory::PelletCropMemory(int num1, int num2, int num3)
 {
@@ -119,10 +103,9 @@ PelletCropMemory::PelletCropMemory(int num1, int num2, int num3)
 	mCarcass.alloc(num3);
 }
 
-/*
- * --INFO--
- * Address:	801E5478
- * Size:	000280
+/**
+ * @note Address: 0x801E5478
+ * @note Size: 0x280
  */
 PelletCropMemory* PelletCropMemory::createClone()
 {
@@ -333,10 +316,9 @@ lbl_801E56D4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E56F8
- * Size:	000148
+/**
+ * @note Address: 0x801E56F8
+ * @note Size: 0x148
  */
 void PelletCropMemory::addTo(PelletCropMemory* add)
 {
@@ -345,10 +327,9 @@ void PelletCropMemory::addTo(PelletCropMemory* add)
 	mCarcass.addTo(add->mCarcass);
 }
 
-/*
- * --INFO--
- * Address:	801E5840
- * Size:	000070
+/**
+ * @note Address: 0x801E5840
+ * @note Size: 0x70
  */
 void PelletCropMemory::clear()
 {
@@ -357,65 +338,60 @@ void PelletCropMemory::clear()
 	mCarcass.clear();
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000288
+/**
+ * @note Address: N/A
+ * @note Size: 0x288
  */
 void PelletCropMemory::obtainPellet(Pellet*) { }
 
-/*
- * --INFO--
- * Address:	801E58B0
- * Size:	000048
+/**
+ * @note Address: 0x801E58B0
+ * @note Size: 0x48
  */
 int PelletCropMemory::calcEarnKinds() { return mOtakara.getEarnKinds() + mItem.getEarnKinds(); }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
  */
 int PelletCropMemory::calcNumKinds() { }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000198
+/**
+ * @note Address: N/A
+ * @note Size: 0x198
  */
 PelletFirstMemory::PelletFirstMemory(int p1, int p2, int p3)
     : PelletCropMemory(p1, p2, p3)
 {
 }
 
-/*
- * --INFO--
- * Address:	801E58F8
- * Size:	0002C8
+/**
+ * @note Address: 0x801E58F8
+ * @note Size: 0x2C8
  */
 bool PelletFirstMemory::firstCarryPellet(Pellet* pellet)
 {
 	if (pellet->getKind() == PELTYPE_TREASURE) {
 		int id = pellet->getConfigIndex();
 
-		if (!(*mOtakara(id) & 2)) {
-			*mOtakara(id) |= 2;
+		if (!(mOtakara(id) & 2)) {
+			mOtakara(id) |= 2;
 			pellet->getConfigName();
 			return true;
 		}
 
 	} else if (pellet->getKind() == PELTYPE_UPGRADE) {
 		int id = pellet->getConfigIndex();
-		if (!(*mItem(id) & 2)) {
-			*mItem(id) |= 2;
+		if (!(mItem(id) & 2)) {
+			mItem(id) |= 2;
 			pellet->getConfigName();
 			return true;
 		}
 
 	} else if (pellet->getKind() == PELTYPE_CARCASS) {
 		int id = pellet->getConfigIndex();
-		if (!(*mCarcass(id) & 2)) {
-			*mCarcass(id) |= 2;
+		if (!(mCarcass(id) & 2)) {
+			mCarcass(id) |= 2;
 			pellet->getConfigName();
 			return true;
 		}
@@ -424,19 +400,18 @@ bool PelletFirstMemory::firstCarryPellet(Pellet* pellet)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801E5BC0
- * Size:	000154
+/**
+ * @note Address: 0x801E5BC0
+ * @note Size: 0x154
  */
 void PelletFirstMemory::obtainPellet(BasePelletMgr* mgr, int id)
 {
 	if (mgr->getMgrID() == PELTYPE_TREASURE) {
-		*mOtakara(id) |= 2;
+		mOtakara(id) |= 2;
 		mgr->getPelletConfig(id);
 
 	} else if (mgr->getMgrID() == PELTYPE_UPGRADE) {
-		*mItem(id) |= 2;
+		mItem(id) |= 2;
 		mgr->getPelletConfig(id);
 
 	} else {
@@ -444,19 +419,18 @@ void PelletFirstMemory::obtainPellet(BasePelletMgr* mgr, int id)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801E5D14
- * Size:	000154
+/**
+ * @note Address: 0x801E5D14
+ * @note Size: 0x154
  */
 void PelletFirstMemory::losePellet(Game::BasePelletMgr* mgr, int id)
 {
 	if (mgr->getMgrID() == PELTYPE_TREASURE) {
-		*mOtakara(id) &= ~0x2;
+		mOtakara(id) &= ~0x2;
 		mgr->getPelletConfig(id);
 
 	} else if (mgr->getMgrID() == PELTYPE_UPGRADE) {
-		*mItem(id) &= ~0x2;
+		mItem(id) &= ~0x2;
 		mgr->getPelletConfig(id);
 
 	} else {
@@ -464,10 +438,9 @@ void PelletFirstMemory::losePellet(Game::BasePelletMgr* mgr, int id)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801E5E68
- * Size:	00004C
+/**
+ * @note Address: 0x801E5E68
+ * @note Size: 0x4C
  */
 bool PlayData::isCompletePelletTrigger()
 {
@@ -479,22 +452,20 @@ bool PlayData::isCompletePelletTrigger()
 	return false;
 }
 
-/*
+/**
  * completeAll__Q24Game16PelletCropMemoryFv
- * --INFO--
- * Address:	801E5EB4
- * Size:	000058
+ * @note Address: 0x801E5EB4
+ * @note Size: 0x58
  */
 bool PelletCropMemory::completeAll()
 {
 	return (!mOtakara.completeAll()) ? false : mItem.completeAll() > 0; // sure.
 }
 
-/*
+/**
  * completeAll__Q24Game11KindCounterFv
- * --INFO--
- * Address:	801E5F0C
- * Size:	00003C
+ * @note Address: 0x801E5F0C
+ * @note Size: 0x3C
  */
 bool KindCounter::completeAll()
 {
@@ -505,10 +476,9 @@ bool KindCounter::completeAll()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	801E5F48
- * Size:	00003C
+/**
+ * @note Address: 0x801E5F48
+ * @note Size: 0x3C
  */
 int KindCounter::getEarnKinds()
 {
@@ -521,10 +491,9 @@ int KindCounter::getEarnKinds()
 	return earnedKinds;
 }
 
-/*
- * --INFO--
- * Address:	801E5F84
- * Size:	00003C
+/**
+ * @note Address: 0x801E5F84
+ * @note Size: 0x3C
  */
 OlimarData::OlimarData()
 {
@@ -533,10 +502,9 @@ OlimarData::OlimarData()
 	clear();
 }
 
-/*
- * --INFO--
- * Address:	801E5FC0
- * Size:	000010
+/**
+ * @note Address: 0x801E5FC0
+ * @note Size: 0x10
  */
 void OlimarData::clear()
 {
@@ -544,26 +512,23 @@ void OlimarData::clear()
 	mFlags[1] = 0;
 }
 
-/*
- * --INFO--
- * Address:	801E5FD0
- * Size:	000098
+/**
+ * @note Address: 0x801E5FD0
+ * @note Size: 0x98
  * Matches!
  */
 bool OlimarData::hasItem(int index)
 {
-	bool isValidIndex = index >= ODII_BruteKnuckles && index < ODII_LAST_NON_EXPLORATION_KIT_ITEM;
-	P2ASSERTLINE(588, isValidIndex);
+	P2ASSERTBOUNDSLINE(588, ODII_BruteKnuckles, index, ODII_LAST_NON_EXPLORATION_KIT_ITEM);
 	int data_idx = (index >> 3);
 	int rot      = (data_idx << 3);
 	int bits     = 1 << (index - rot);
 	return (mFlags[1 - data_idx] & bits) != false;
 }
 
-/*
- * --INFO--
- * Address:	801E6068
- * Size:	0000CC
+/**
+ * @note Address: 0x801E6068
+ * @note Size: 0xCC
  * Matches!
  */
 void OlimarData::getItem(int item)
@@ -586,10 +551,9 @@ void OlimarData::getItem(int item)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801E6134
- * Size:	000084
+/**
+ * @note Address: 0x801E6134
+ * @note Size: 0x84
  */
 void PlayData::construct()
 {
@@ -599,10 +563,9 @@ void PlayData::construct()
 	sys->heapStatusEnd("playData");
 }
 
-/*
- * --INFO--
- * Address:	801E61B8
- * Size:	000854
+/**
+ * @note Address: 0x801E61B8
+ * @note Size: 0x854
  */
 PlayData::PlayData()
     : mDeadNaviID()
@@ -611,9 +574,9 @@ PlayData::PlayData()
 	mDebtProgressFlags[0] = 0;
 	mDebtProgressFlags[1] = 0;
 
-	_1C = 0;
+	mBeforeSaveDelegate = nullptr;
 
-	int stageCount             = stageList->mCourseCount;
+	int stageCount             = stageList->getCourseCount();
 	mBitfieldPerCourse         = new u8[stageCount];
 	mGroundOtakaraCollected    = new u8[stageCount];
 	mGroundOtakaraCollectedOld = new u8[stageCount];
@@ -632,15 +595,14 @@ PlayData::PlayData()
 		gen->mLoops.create(info->mLoopGenInfo.mCount, nullptr);
 	}
 
-	mTekiStatMgr.allocate(104);
+	mTekiStatMgr.allocate(EnemyTypeID::EnemyID_COUNT); // uses EnemyTypeID::EnemyID_COUNT rather than gEnemyInfoNum
 
 	mCaveOtakara    = new CaveOtakara[stageCount];
 	mCaveOtakaraOld = new CaveOtakara[stageCount];
 
 	for (int i = 0; i < stageCount; i++) {
-		CourseInfo* info;
 		CaveOtakara* thisOtakara = &mCaveOtakara[i];
-		info                     = stageList->getCourseInfo(i);
+		CourseInfo* info         = stageList->getCourseInfo(i);
 		thisOtakara->updateCounts(i, info);
 
 		CaveOtakara* oldOtakara = &mCaveOtakaraOld[i];
@@ -663,644 +625,17 @@ PlayData::PlayData()
 	generatorCache = new GeneratorCache;
 	sys->heapStatusEnd("generatorCache");
 	reset();
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	lis      r4, lbl_80480E40@ha
-	stw      r0, 0x34(r1)
-	stmw     r24, 0x10(r1)
-	mr       r31, r3
-	addi     r26, r4, lbl_80480E40@l
-	bl       __ct__5CNodeFv
-	lis      r3, __vt__Q24Game8PlayData@ha
-	li       r0, 0
-	addi     r4, r3, __vt__Q24Game8PlayData@l
-	addi     r3, r31, 0x30
-	stw      r4, 0(r31)
-	stb      r0, 0x20(r31)
-	stb      r0, 0x2f(r31)
-	bl       __ct__8BitFlagsFv
-	addi     r3, r31, 0x38
-	bl       __ct__8BitFlagsFv
-	addi     r3, r31, 0x40
-	bl       __ct__Q34Game8TekiStat3MgrFv
-	lis      r4, __ct__Q24Game10OlimarDataFv@ha
-	addi     r3, r31, 0x48
-	addi     r4, r4, __ct__Q24Game10OlimarDataFv@l
-	li       r5, 0
-	li       r6, 2
-	li       r7, 2
-	bl       __construct_array
-	addi     r3, r31, 0x4c
-	bl       __ct__Q24Game12CaveSaveDataFv
-	li       r0, 0
-	addi     r3, r31, 0xa8
-	stb      r0, 0x84(r31)
-	stb      r0, 0x85(r31)
-	stb      r0, 0x86(r31)
-	stb      r0, 0x87(r31)
-	stb      r0, 0x88(r31)
-	stb      r0, 0x89(r31)
-	stb      r0, 0x8a(r31)
-	stb      r0, 0x8b(r31)
-	stb      r0, 0x8c(r31)
-	stb      r0, 0x8d(r31)
-	stb      r0, 0x8e(r31)
-	stb      r0, 0x8f(r31)
-	stb      r0, 0x90(r31)
-	stb      r0, 0x91(r31)
-	stb      r0, 0x92(r31)
-	stb      r0, 0x93(r31)
-	bl       __ct__Q24Game13PikiContainerFv
-	li       r0, 0
-	stb      r0, 0xf0(r31)
-	stb      r0, 0xf1(r31)
-	stw      r0, 0x1c(r31)
-	lwz      r3, stageList__4Game@sda21(r13)
-	lhz      r28, 0x100(r3)
-	mr       r3, r28
-	bl       __nwa__FUl
-	stw      r3, 0xd8(r31)
-	mr       r3, r28
-	bl       __nwa__FUl
-	stw      r3, 0xdc(r31)
-	mr       r3, r28
-	bl       __nwa__FUl
-	cmpwi    r28, 0
-	stw      r3, 0xf4(r31)
-	li       r3, 0
-	ble      lbl_801E63B4
-	cmpwi    r28, 8
-	addi     r4, r28, -8
-	ble      lbl_801E6388
-	addi     r0, r4, 7
-	srwi     r0, r0, 3
-	mtctr    r0
-	cmpwi    r4, 0
-	ble      lbl_801E6388
-
-lbl_801E62E0:
-	lwz      r4, 0xdc(r31)
-	li       r11, 0
-	addi     r10, r3, 1
-	addi     r9, r3, 2
-	stbx     r11, r4, r3
-	addi     r8, r3, 3
-	addi     r7, r3, 4
-	addi     r6, r3, 5
-	lwz      r4, 0xf4(r31)
-	addi     r5, r3, 6
-	addi     r0, r3, 7
-	stbx     r11, r4, r3
-	addi     r3, r3, 8
-	lwz      r4, 0xdc(r31)
-	stbx     r11, r4, r10
-	lwz      r4, 0xf4(r31)
-	stbx     r11, r4, r10
-	lwz      r4, 0xdc(r31)
-	stbx     r11, r4, r9
-	lwz      r4, 0xf4(r31)
-	stbx     r11, r4, r9
-	lwz      r4, 0xdc(r31)
-	stbx     r11, r4, r8
-	lwz      r4, 0xf4(r31)
-	stbx     r11, r4, r8
-	lwz      r4, 0xdc(r31)
-	stbx     r11, r4, r7
-	lwz      r4, 0xf4(r31)
-	stbx     r11, r4, r7
-	lwz      r4, 0xdc(r31)
-	stbx     r11, r4, r6
-	lwz      r4, 0xf4(r31)
-	stbx     r11, r4, r6
-	lwz      r4, 0xdc(r31)
-	stbx     r11, r4, r5
-	lwz      r4, 0xf4(r31)
-	stbx     r11, r4, r5
-	lwz      r4, 0xdc(r31)
-	stbx     r11, r4, r0
-	lwz      r4, 0xf4(r31)
-	stbx     r11, r4, r0
-	bdnz     lbl_801E62E0
-
-lbl_801E6388:
-	subf     r0, r3, r28
-	li       r5, 0
-	mtctr    r0
-	cmpw     r3, r28
-	bge      lbl_801E63B4
-
-lbl_801E639C:
-	lwz      r4, 0xdc(r31)
-	stbx     r5, r4, r3
-	lwz      r4, 0xf4(r31)
-	stbx     r5, r4, r3
-	addi     r3, r3, 1
-	bdnz     lbl_801E639C
-
-lbl_801E63B4:
-	slwi     r3, r28, 4
-	addi     r3, r3, 0x10
-	bl       __nwa__FUl
-	lis      r4, __ct__Q34Game8PlayData8LimitGenFv@ha
-	mr       r7, r28
-	addi     r4, r4, __ct__Q34Game8PlayData8LimitGenFv@l
-	li       r5, 0
-	li       r6, 0x10
-	bl       __construct_new_array
-	stw      r3, 0xe4(r31)
-	li       r30, 0
-	li       r29, 0
-	b        lbl_801E6430
-
-lbl_801E63E8:
-	lwz      r0, 0xe4(r31)
-	mr       r4, r30
-	lwz      r3, stageList__4Game@sda21(r13)
-	add      r25, r0, r29
-	bl       getCourseInfo__Q24Game6StagesFi
-	mr       r27, r3
-	mr       r3, r25
-	lwz      r0, 0x4c(r27)
-	li       r5, 0
-	clrlwi   r4, r0, 0x10
-	bl       create__8BitFlagsFUsPUc
-	lwz      r0, 0x74(r27)
-	addi     r3, r25, 8
-	li       r5, 0
-	clrlwi   r4, r0, 0x10
-	bl       create__8BitFlagsFUsPUc
-	addi     r29, r29, 0x10
-	addi     r30, r30, 1
-
-lbl_801E6430:
-	cmpw     r30, r28
-	blt      lbl_801E63E8
-	addi     r3, r31, 0x40
-	li       r4, 0x66
-	bl       allocate__Q34Game8TekiStat3MgrFi
-	mulli    r3, r28, 0xc
-	addi     r27, r3, 0x10
-	mr       r3, r27
-	bl       __nwa__FUl
-	lis      r4, __ct__Q34Game8PlayData11CaveOtakaraFv@ha
-	mr       r7, r28
-	addi     r4, r4, __ct__Q34Game8PlayData11CaveOtakaraFv@l
-	li       r5, 0
-	li       r6, 0xc
-	bl       __construct_new_array
-	stw      r3, 0xe0(r31)
-	mr       r3, r27
-	bl       __nwa__FUl
-	lis      r4, __ct__Q34Game8PlayData11CaveOtakaraFv@ha
-	mr       r7, r28
-	addi     r4, r4, __ct__Q34Game8PlayData11CaveOtakaraFv@l
-	li       r5, 0
-	li       r6, 0xc
-	bl       __construct_new_array
-	stw      r3, 0xf8(r31)
-	li       r29, 0
-	li       r27, 0
-	b        lbl_801E659C
-
-lbl_801E64A0:
-	lwz      r0, 0xe0(r31)
-	mr       r4, r29
-	lwz      r3, stageList__4Game@sda21(r13)
-	add      r25, r0, r27
-	bl       getCourseInfo__Q24Game6StagesFi
-	mr       r24, r3
-	bl       getCaveNum__Q24Game10CourseInfoFv
-	or.      r30, r3, r3
-	ble      lbl_801E6520
-	stb      r30, 0(r25)
-	bl       __nwa__FUl
-	stw      r3, 4(r25)
-	slwi     r3, r30, 2
-	bl       __nwa__FUl
-	stw      r3, 8(r25)
-	lbz      r0, 0(r25)
-	cmplwi   r0, 0
-	beq      lbl_801E6520
-	li       r6, 0
-	mr       r7, r6
-	mr       r5, r6
-	mr       r4, r6
-	b        lbl_801E6514
-
-lbl_801E64FC:
-	lwz      r3, 4(r25)
-	stbx     r5, r3, r6
-	addi     r6, r6, 1
-	lwz      r3, 8(r25)
-	stwx     r4, r3, r7
-	addi     r7, r7, 4
-
-lbl_801E6514:
-	lbz      r0, 0(r25)
-	cmpw     r6, r0
-	blt      lbl_801E64FC
-
-lbl_801E6520:
-	lwz      r0, 0xf8(r31)
-	mr       r3, r24
-	add      r24, r0, r27
-	bl       getCaveNum__Q24Game10CourseInfoFv
-	or.      r30, r3, r3
-	ble      lbl_801E6594
-	stb      r30, 0(r24)
-	bl       __nwa__FUl
-	stw      r3, 4(r24)
-	slwi     r3, r30, 2
-	bl       __nwa__FUl
-	stw      r3, 8(r24)
-	lbz      r0, 0(r24)
-	cmplwi   r0, 0
-	beq      lbl_801E6594
-	li       r6, 0
-	mr       r7, r6
-	mr       r5, r6
-	mr       r4, r6
-	b        lbl_801E6588
-
-lbl_801E6570:
-	lwz      r3, 4(r24)
-	stbx     r5, r3, r6
-	addi     r6, r6, 1
-	lwz      r3, 8(r24)
-	stwx     r4, r3, r7
-	addi     r7, r7, 4
-
-lbl_801E6588:
-	lbz      r0, 0(r24)
-	cmpw     r6, r0
-	blt      lbl_801E6570
-
-lbl_801E6594:
-	addi     r27, r27, 0xc
-	addi     r29, r29, 1
-
-lbl_801E659C:
-	cmpw     r29, r28
-	blt      lbl_801E64A0
-	li       r3, 3
-	bl       getCount__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	mr       r27, r3
-	li       r3, 4
-	bl       getCount__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	mr       r28, r3
-	li       r3, 1
-	bl       getCount__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	mr       r29, r3
-	li       r3, 0x1c
-	bl       __nw__FUl
-	or.      r30, r3, r3
-	beq      lbl_801E6708
-	lis      r3, __vt__Q24Game16PelletCropMemory@ha
-	li       r0, 0
-	addi     r3, r3, __vt__Q24Game16PelletCropMemory@l
-	stw      r3, 0(r30)
-	sth      r0, 4(r30)
-	stw      r0, 8(r30)
-	sth      r0, 0xc(r30)
-	stw      r0, 0x10(r30)
-	sth      r0, 0x14(r30)
-	stw      r0, 0x18(r30)
-	lwz      r0, 8(r30)
-	cmplwi   r0, 0
-	beq      lbl_801E6620
-	addi     r3, r26, 0xc
-	addi     r5, r26, 0x20
-	li       r4, 0x12b
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E6620:
-	sth      r27, 4(r30)
-	lhz      r3, 4(r30)
-	bl       __nwa__FUl
-	li       r5, 0
-	stw      r3, 8(r30)
-	mr       r4, r5
-	b        lbl_801E6648
-
-lbl_801E663C:
-	lwz      r3, 8(r30)
-	stbx     r4, r3, r5
-	addi     r5, r5, 1
-
-lbl_801E6648:
-	lhz      r0, 4(r30)
-	cmpw     r5, r0
-	blt      lbl_801E663C
-	lwz      r0, 0x10(r30)
-	cmplwi   r0, 0
-	beq      lbl_801E6674
-	addi     r3, r26, 0xc
-	addi     r5, r26, 0x20
-	li       r4, 0x12b
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E6674:
-	sth      r28, 0xc(r30)
-	lhz      r3, 0xc(r30)
-	bl       __nwa__FUl
-	li       r5, 0
-	stw      r3, 0x10(r30)
-	mr       r4, r5
-	b        lbl_801E669C
-
-lbl_801E6690:
-	lwz      r3, 0x10(r30)
-	stbx     r4, r3, r5
-	addi     r5, r5, 1
-
-lbl_801E669C:
-	lhz      r0, 0xc(r30)
-	cmpw     r5, r0
-	blt      lbl_801E6690
-	lwz      r0, 0x18(r30)
-	cmplwi   r0, 0
-	beq      lbl_801E66C8
-	addi     r3, r26, 0xc
-	addi     r5, r26, 0x20
-	li       r4, 0x12b
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E66C8:
-	sth      r29, 0x14(r30)
-	lhz      r3, 0x14(r30)
-	bl       __nwa__FUl
-	li       r5, 0
-	stw      r3, 0x18(r30)
-	mr       r4, r5
-	b        lbl_801E66F0
-
-lbl_801E66E4:
-	lwz      r3, 0x18(r30)
-	stbx     r4, r3, r5
-	addi     r5, r5, 1
-
-lbl_801E66F0:
-	lhz      r0, 0x14(r30)
-	cmpw     r5, r0
-	blt      lbl_801E66E4
-	lis      r3, __vt__Q24Game17PelletFirstMemory@ha
-	addi     r0, r3, __vt__Q24Game17PelletFirstMemory@l
-	stw      r0, 0(r30)
-
-lbl_801E6708:
-	stw      r30, 0xb0(r31)
-	li       r3, 0x1c
-	bl       __nw__FUl
-	or.      r30, r3, r3
-	beq      lbl_801E6840
-	lis      r3, __vt__Q24Game16PelletCropMemory@ha
-	li       r0, 0
-	addi     r3, r3, __vt__Q24Game16PelletCropMemory@l
-	stw      r3, 0(r30)
-	sth      r0, 4(r30)
-	stw      r0, 8(r30)
-	sth      r0, 0xc(r30)
-	stw      r0, 0x10(r30)
-	sth      r0, 0x14(r30)
-	stw      r0, 0x18(r30)
-	lwz      r0, 8(r30)
-	cmplwi   r0, 0
-	beq      lbl_801E6764
-	addi     r3, r26, 0xc
-	addi     r5, r26, 0x20
-	li       r4, 0x12b
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E6764:
-	sth      r27, 4(r30)
-	lhz      r3, 4(r30)
-	bl       __nwa__FUl
-	li       r5, 0
-	stw      r3, 8(r30)
-	mr       r4, r5
-	b        lbl_801E678C
-
-lbl_801E6780:
-	lwz      r3, 8(r30)
-	stbx     r4, r3, r5
-	addi     r5, r5, 1
-
-lbl_801E678C:
-	lhz      r0, 4(r30)
-	cmpw     r5, r0
-	blt      lbl_801E6780
-	lwz      r0, 0x10(r30)
-	cmplwi   r0, 0
-	beq      lbl_801E67B8
-	addi     r3, r26, 0xc
-	addi     r5, r26, 0x20
-	li       r4, 0x12b
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E67B8:
-	sth      r28, 0xc(r30)
-	lhz      r3, 0xc(r30)
-	bl       __nwa__FUl
-	li       r5, 0
-	stw      r3, 0x10(r30)
-	mr       r4, r5
-	b        lbl_801E67E0
-
-lbl_801E67D4:
-	lwz      r3, 0x10(r30)
-	stbx     r4, r3, r5
-	addi     r5, r5, 1
-
-lbl_801E67E0:
-	lhz      r0, 0xc(r30)
-	cmpw     r5, r0
-	blt      lbl_801E67D4
-	lwz      r0, 0x18(r30)
-	cmplwi   r0, 0
-	beq      lbl_801E680C
-	addi     r3, r26, 0xc
-	addi     r5, r26, 0x20
-	li       r4, 0x12b
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E680C:
-	sth      r29, 0x14(r30)
-	lhz      r3, 0x14(r30)
-	bl       __nwa__FUl
-	li       r5, 0
-	stw      r3, 0x18(r30)
-	mr       r4, r5
-	b        lbl_801E6834
-
-lbl_801E6828:
-	lwz      r3, 0x18(r30)
-	stbx     r4, r3, r5
-	addi     r5, r5, 1
-
-lbl_801E6834:
-	lhz      r0, 0x14(r30)
-	cmpw     r5, r0
-	blt      lbl_801E6828
-
-lbl_801E6840:
-	stw      r30, 0xb4(r31)
-	li       r3, 0x1c
-	bl       __nw__FUl
-	or.      r30, r3, r3
-	beq      lbl_801E6978
-	lis      r3, __vt__Q24Game16PelletCropMemory@ha
-	li       r0, 0
-	addi     r3, r3, __vt__Q24Game16PelletCropMemory@l
-	stw      r3, 0(r30)
-	sth      r0, 4(r30)
-	stw      r0, 8(r30)
-	sth      r0, 0xc(r30)
-	stw      r0, 0x10(r30)
-	sth      r0, 0x14(r30)
-	stw      r0, 0x18(r30)
-	lwz      r0, 8(r30)
-	cmplwi   r0, 0
-	beq      lbl_801E689C
-	addi     r3, r26, 0xc
-	addi     r5, r26, 0x20
-	li       r4, 0x12b
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E689C:
-	sth      r27, 4(r30)
-	lhz      r3, 4(r30)
-	bl       __nwa__FUl
-	li       r5, 0
-	stw      r3, 8(r30)
-	mr       r4, r5
-	b        lbl_801E68C4
-
-lbl_801E68B8:
-	lwz      r3, 8(r30)
-	stbx     r4, r3, r5
-	addi     r5, r5, 1
-
-lbl_801E68C4:
-	lhz      r0, 4(r30)
-	cmpw     r5, r0
-	blt      lbl_801E68B8
-	lwz      r0, 0x10(r30)
-	cmplwi   r0, 0
-	beq      lbl_801E68F0
-	addi     r3, r26, 0xc
-	addi     r5, r26, 0x20
-	li       r4, 0x12b
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E68F0:
-	sth      r28, 0xc(r30)
-	lhz      r3, 0xc(r30)
-	bl       __nwa__FUl
-	li       r5, 0
-	stw      r3, 0x10(r30)
-	mr       r4, r5
-	b        lbl_801E6918
-
-lbl_801E690C:
-	lwz      r3, 0x10(r30)
-	stbx     r4, r3, r5
-	addi     r5, r5, 1
-
-lbl_801E6918:
-	lhz      r0, 0xc(r30)
-	cmpw     r5, r0
-	blt      lbl_801E690C
-	lwz      r0, 0x18(r30)
-	cmplwi   r0, 0
-	beq      lbl_801E6944
-	addi     r3, r26, 0xc
-	addi     r5, r26, 0x20
-	li       r4, 0x12b
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E6944:
-	sth      r29, 0x14(r30)
-	lhz      r3, 0x14(r30)
-	bl       __nwa__FUl
-	li       r5, 0
-	stw      r3, 0x18(r30)
-	mr       r4, r5
-	b        lbl_801E696C
-
-lbl_801E6960:
-	lwz      r3, 0x18(r30)
-	stbx     r4, r3, r5
-	addi     r5, r5, 1
-
-lbl_801E696C:
-	lhz      r0, 0x14(r30)
-	cmpw     r5, r0
-	blt      lbl_801E6960
-
-lbl_801E6978:
-	stw      r30, 0xb8(r31)
-	addi     r3, r31, 0x30
-	li       r4, 0x39
-	li       r5, 0
-	bl       create__8BitFlagsFUsPUc
-	addi     r3, r31, 0x30
-	bl       reset__8BitFlagsFv
-	li       r3, 4
-	bl       getCount__Q34Game10PelletList3MgrFQ34Game10PelletList5cKind
-	clrlwi   r4, r3, 0x10
-	addi     r3, r31, 0x38
-	li       r5, 0
-	bl       create__8BitFlagsFUsPUc
-	addi     r3, r31, 0x38
-	bl       reset__8BitFlagsFv
-	lwz      r3, sys@sda21(r13)
-	addi     r4, r26, 0x38
-	li       r5, 0
-	bl       heapStatusStart__6SystemFPcP7JKRHeap
-	li       r3, 0x140
-	bl       __nw__FUl
-	or.      r0, r3, r3
-	beq      lbl_801E69DC
-	bl       __ct__Q24Game14GeneratorCacheFv
-	mr       r0, r3
-
-lbl_801E69DC:
-	stw      r0, generatorCache__4Game@sda21(r13)
-	addi     r4, r26, 0x38
-	lwz      r3, sys@sda21(r13)
-	bl       heapStatusEnd__6SystemFPc
-	mr       r3, r31
-	bl       reset__Q24Game8PlayDataFv
-	mr       r3, r31
-	lmw      r24, 0x10(r1)
-	lwz      r0, 0x34(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801E6A58
- * Size:	000068
+/**
+ * @note Address: 0x801E6A58
+ * @note Size: 0x68
  */
 PlayData::~PlayData() { playData = nullptr; }
 
-/*
- * --INFO--
- * Address:	801E6AC0
- * Size:	0003D0
+/**
+ * @note Address: 0x801E6AC0
+ * @note Size: 0x3D0
  */
 void PlayData::reset()
 {
@@ -1652,10 +987,9 @@ lbl_801E6DFC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E6E90
- * Size:	0000C8
+/**
+ * @note Address: 0x801E6E90
+ * @note Size: 0xC8
  */
 void PlayData::setDevelopSetting(bool p1, bool p2)
 {
@@ -1678,10 +1012,9 @@ void PlayData::setDevelopSetting(bool p1, bool p2)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801E6F58
- * Size:	0000B4
+/**
+ * @note Address: 0x801E6F58
+ * @note Size: 0xB4
  */
 int PlayData::calcPlayMinutes()
 {
@@ -1699,10 +1032,9 @@ int PlayData::calcPlayMinutes()
 	return (int)(diff / OS_TIMER_CLOCK) / 60;
 }
 
-/*
- * --INFO--
- * Address:	801E700C
- * Size:	000014
+/**
+ * @note Address: 0x801E700C
+ * @note Size: 0x14
  */
 void PlayData::resetContainerFlag()
 {
@@ -1711,18 +1043,13 @@ void PlayData::resetContainerFlag()
 	mHasContainerFlags     = 0;
 }
 
-/*
- * --INFO--
- * Address:	801E7020
- * Size:	000088
+/**
+ * @note Address: 0x801E7020
+ * @note Size: 0x88
  */
 bool PlayData::hasContainer(int pikminColor)
 {
-	bool isValidIndex = false;
-	if (0 <= pikminColor && pikminColor < 5) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1002, isValidIndex);
+	P2ASSERTBOUNDSLINE(1002, FirstPikmin, pikminColor, StoredPikiCount);
 	return mHasContainerFlags & (1 << pikminColor);
 	/*
 	stwu     r1, -0x10(r1)
@@ -1766,10 +1093,9 @@ lbl_801E7074:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E70A8
- * Size:	000030
+/**
+ * @note Address: 0x801E70A8
+ * @note Size: 0x30
  */
 bool PlayData::hasMetPikmin(int pikminColor)
 {
@@ -1779,10 +1105,9 @@ bool PlayData::hasMetPikmin(int pikminColor)
 	return mMeetPikminFlags & (1 << pikminColor);
 }
 
-/*
- * --INFO--
- * Address:	801E70D8
- * Size:	0000A4
+/**
+ * @note Address: 0x801E70D8
+ * @note Size: 0xA4
  */
 bool PlayData::hasBootContainer(int pikminColor)
 {
@@ -1791,7 +1116,7 @@ bool PlayData::hasBootContainer(int pikminColor)
 		return false;
 	} else {
 		isValidIndex = false;
-		if (0 <= pikminColor && pikminColor <= 2) {
+		if (FirstPikmin <= pikminColor && pikminColor <= LastOnyon) {
 			isValidIndex = true;
 		}
 		P2ASSERTLINE(1018, isValidIndex);
@@ -1799,93 +1124,51 @@ bool PlayData::hasBootContainer(int pikminColor)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801E717C
- * Size:	000080
+/**
+ * @note Address: 0x801E717C
+ * @note Size: 0x80
  */
 void PlayData::setContainer(int pikminColor)
 {
 	bool isValidIndex = false;
-	if (0 <= pikminColor && pikminColor < 5) {
+	if (FirstPikmin <= pikminColor && pikminColor < StoredPikiCount) {
 		isValidIndex = true;
 	}
 	P2ASSERTLINE(1024, isValidIndex);
 	mHasContainerFlags |= (1 << pikminColor);
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	li       r0, 0
-	stw      r31, 0xc(r1)
-	or.      r31, r4, r4
-	stw      r30, 8(r1)
-	mr       r30, r3
-	blt      lbl_801E71AC
-	cmpwi    r31, 5
-	bge      lbl_801E71AC
-	li       r0, 1
-
-lbl_801E71AC:
-	clrlwi.  r0, r0, 0x18
-	bne      lbl_801E71D0
-	lis      r3, lbl_80480E4C@ha
-	lis      r5, lbl_80480E60@ha
-	addi     r3, r3, lbl_80480E4C@l
-	li       r4, 0x400
-	addi     r5, r5, lbl_80480E60@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E71D0:
-	li       r0, 1
-	lbz      r3, 0x2c(r30)
-	slw      r0, r0, r31
-	or       r0, r3, r0
-	stb      r0, 0x2c(r30)
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801E71FC
- * Size:	000080
+/**
+ * @note Address: 0x801E71FC
+ * @note Size: 0x80
  */
 void PlayData::setMeetPikmin(int pikminColor)
 {
 	bool isValidIndex = false;
-	if (0 <= pikminColor && pikminColor < 5) {
+	if (FirstPikmin <= pikminColor && pikminColor < StoredPikiCount) {
 		isValidIndex = true;
 	}
 	P2ASSERTLINE(1030, isValidIndex);
 	mMeetPikminFlags |= (1 << pikminColor);
 }
 
-/*
- * --INFO--
- * Address:	801E727C
- * Size:	000080
+/**
+ * @note Address: 0x801E727C
+ * @note Size: 0x80
  */
 void PlayData::setBootContainer(int pikminColor)
 {
 	bool isValidIndex = false;
-	if (0 <= pikminColor && pikminColor <= 2) {
+	if (FirstPikmin <= pikminColor && pikminColor <= LastOnyon) {
 		isValidIndex = true;
 	}
 	P2ASSERTLINE(1036, isValidIndex);
 	mHasBootContainerFlags |= (1 << pikminColor);
 }
 
-/*
- * --INFO--
- * Address:	801E72FC
- * Size:	0000A8
+/**
+ * @note Address: 0x801E72FC
+ * @note Size: 0xA8
  */
 void PlayData::debugSetContainerFlagOn()
 {
@@ -1905,10 +1188,9 @@ void PlayData::debugSetContainerFlagOn()
 	mLoadType = 1;
 }
 
-/*
- * --INFO--
- * Address:	801E73A4
- * Size:	00003C
+/**
+ * @note Address: 0x801E73A4
+ * @note Size: 0x3C
  */
 void PlayData::setDemoFlag(int flag)
 {
@@ -1916,17 +1198,15 @@ void PlayData::setDemoFlag(int flag)
 	mDemoFlags.dump();
 }
 
-/*
- * --INFO--
- * Address:	801E73E0
- * Size:	000028
+/**
+ * @note Address: 0x801E73E0
+ * @note Size: 0x28
  */
 bool PlayData::isDemoFlag(int flag) { return mDemoFlags.isFlag(flag); }
 
-/*
- * --INFO--
- * Address:	801E7408
- * Size:	00003C
+/**
+ * @note Address: 0x801E7408
+ * @note Size: 0x3C
  */
 void PlayData::setFindItemDemoFlag(int flag)
 {
@@ -1934,28 +1214,21 @@ void PlayData::setFindItemDemoFlag(int flag)
 	mFindItemFlags.dump();
 }
 
-/*
- * --INFO--
- * Address:	801E7444
- * Size:	000028
+/**
+ * @note Address: 0x801E7444
+ * @note Size: 0x28
  */
 bool PlayData::isFindItemDemoFlag(int flag) { return mFindItemFlags.isFlag(flag); }
 
-/*
- * --INFO--
- * Address:	801E746C
- * Size:	000008
+/**
+ * @note Address: 0x801E746C
+ * @note Size: 0x8
  */
-void PlayData::setCurrentCourse(int a1)
-{
-	// Generated from stw r4, 0x50(r3)
-	mCaveSaveData.mCourseIdx = a1;
-}
+void PlayData::setCurrentCourse(int id) { mCaveSaveData.mCourseIdx = id; }
 
-/*
- * --INFO--
- * Address:	801E7474
- * Size:	00000C
+/**
+ * @note Address: 0x801E7474
+ * @note Size: 0xC
  */
 void PlayData::clearCurrentCave()
 {
@@ -1963,10 +1236,9 @@ void PlayData::clearCurrentCave()
 	mCaveSaveData.mIsInCave = false;
 }
 
-/*
- * --INFO--
- * Address:	801E7480
- * Size:	00004C
+/**
+ * @note Address: 0x801E7480
+ * @note Size: 0x4C
  */
 void PlayData::setCurrentCave(ID32& caveID, int floor)
 {
@@ -1975,10 +1247,9 @@ void PlayData::setCurrentCave(ID32& caveID, int floor)
 	mCaveSaveData.mIsInCave     = true;
 }
 
-/*
- * --INFO--
- * Address:	801E74CC
- * Size:	000010
+/**
+ * @note Address: 0x801E74CC
+ * @note Size: 0x10
  */
 void PlayData::setCurrentCaveFloor(int floor)
 {
@@ -1986,17 +1257,15 @@ void PlayData::setCurrentCaveFloor(int floor)
 	mCaveSaveData.mIsInCave     = true;
 }
 
-/*
- * --INFO--
- * Address:	801E74DC
- * Size:	000008
+/**
+ * @note Address: 0x801E74DC
+ * @note Size: 0x8
  */
 int PlayData::getCurrentCourseIndex() { return mCaveSaveData.mCourseIdx; }
 
-/*
- * --INFO--
- * Address:	801E74E4
- * Size:	000038
+/**
+ * @note Address: 0x801E74E4
+ * @note Size: 0x38
  */
 CourseInfo* PlayData::getCurrentCourse()
 {
@@ -2006,10 +1275,9 @@ CourseInfo* PlayData::getCurrentCourse()
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	801E751C
- * Size:	000048
+/**
+ * @note Address: 0x801E751C
+ * @note Size: 0x48
  */
 void PlayData::getCurrentCave(ID32& outCaveID, int& outCaveFloor)
 {
@@ -2017,69 +1285,48 @@ void PlayData::getCurrentCave(ID32& outCaveID, int& outCaveFloor)
 	outCaveFloor = mCaveSaveData.mCurrentFloor;
 }
 
-/*
- * --INFO--
- * Address:	801E7564
- * Size:	000030
+/**
+ * @note Address: 0x801E7564
+ * @note Size: 0x30
  */
-bool PlayData::firstCarryPellet(Game::Pellet* pellet)
-{
-	return mZukanStat->firstCarryPellet(pellet);
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0xb0(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
+bool PlayData::firstCarryPellet(Game::Pellet* pellet) { return mZukanStat->firstCarryPellet(pellet); }
 
-/*
- * --INFO--
- * Address:	801E7594
- * Size:	000030
+/**
+ * @note Address: 0x801E7594
+ * @note Size: 0x30
  */
 void PlayData::obtainPellet(BasePelletMgr* mgr, int p2) { mZukanStat->obtainPellet(mgr, p2); }
 
-/*
- * --INFO--
- * Address:	801E75C4
- * Size:	000030
+/**
+ * @note Address: 0x801E75C4
+ * @note Size: 0x30
  */
 void PlayData::losePellet(Game::BasePelletMgr* mgr, int p2) { mZukanStat->losePellet(mgr, p2); }
 
-/*
- * --INFO--
- * Address:	801E75F4
- * Size:	000320
+/**
+ * @note Address: 0x801E75F4
+ * @note Size: 0x320
  */
 void PlayData::obtainPellet_Main(Game::Pellet* pellet)
 {
 	PelletCropMemory* mem = mMainCropMemory;
 	if (pellet->getKind() == PELTYPE_TREASURE) {
 		int id = pellet->getConfigIndex();
-		(*mem->mOtakara(id))++;
+		(mem->mOtakara(id))++;
 		pellet->getConfigName();
-		(*mem->mOtakara(id));
+		(mem->mOtakara(id));
 
 	} else if (pellet->getKind() == PELTYPE_UPGRADE) {
 		int id = pellet->getConfigIndex();
-		(*mem->mItem(id))++;
+		(mem->mItem(id))++;
 		pellet->getConfigName();
-		(*mem->mItem(id));
+		(mem->mItem(id));
 
 	} else if (pellet->getKind() == PELTYPE_CARCASS) {
 		int id = pellet->getConfigIndex();
-		(*mem->mCarcass(id))++;
+		(mem->mCarcass(id))++;
 		pellet->getConfigName();
-		(*mem->mCarcass(id));
+		(mem->mCarcass(id));
 	}
 
 	BasePelletMgr* mgr = 0;
@@ -2095,70 +1342,65 @@ void PlayData::obtainPellet_Main(Game::Pellet* pellet)
 	mPokoCount += pellet->mConfig->mParams.mMoney.mData;
 }
 
-/*
- * --INFO--
- * Address:	801E7914
- * Size:	000284
+/**
+ * @note Address: 0x801E7914
+ * @note Size: 0x284
  */
 void PlayData::obtainPellet_Cave(Game::Pellet* pellet)
 {
 	PelletCropMemory* mem = mCaveCropMemory;
 	if (pellet->getKind() == PELTYPE_TREASURE) {
 		int id = pellet->getConfigIndex();
-		(*mem->mOtakara(id))++;
+		(mem->mOtakara(id))++;
 		pellet->getConfigName();
-		(*mem->mOtakara(id));
+		(mem->mOtakara(id));
 
 	} else if (pellet->getKind() == PELTYPE_UPGRADE) {
 		int id = pellet->getConfigIndex();
-		(*mem->mItem(id))++;
+		(mem->mItem(id))++;
 		pellet->getConfigName();
-		(*mem->mItem(id));
+		(mem->mItem(id));
 
 	} else if (pellet->getKind() == PELTYPE_CARCASS) {
 		int id = pellet->getConfigIndex();
-		(*mem->mCarcass(id))++;
+		(mem->mCarcass(id))++;
 		pellet->getConfigName();
-		(*mem->mCarcass(id));
+		(mem->mCarcass(id));
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000004
+/**
+ * @note Address: N/A
+ * @note Size: 0x4
  */
 void PlayData::confirmCaveCropMemory() { }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000150
+/**
+ * @note Address: N/A
+ * @note Size: 0x150
  */
 // bool PlayData::isPelletEverGot(Pellet*) { }
 
-/*
- * --INFO--
- * Address:	801E7B98
- * Size:	000104
+/**
+ * @note Address: 0x801E7B98
+ * @note Size: 0x104
  */
 bool PlayData::isPelletEverGot(u8 type, u8 id)
 {
 	if (type == PELTYPE_UPGRADE) {
-		int itemID = *mZukanStat->mItem(id);
+		int itemID = mZukanStat->mItem(id);
 		return itemID > 0;
 	}
-	if (type == PELTYPE_TREASURE) { // how tf do i make andc happen?
-		int treasureID = *mZukanStat->mOtakara(id);
+	if (type == PELTYPE_TREASURE) {
+		int treasureID = mZukanStat->mOtakara(id);
 		return treasureID > 0;
 	}
-	JUT_PANICLINE(1406, "otakara or item !\n");
+	JUT_PANICLINE(1406, "otakara or item !");
 }
 
-/*
- * --INFO--
- * Address:	801E7C9C
- * Size:	000128
+/**
+ * @note Address: 0x801E7C9C
+ * @note Size: 0x128
  */
 bool PlayData::isPelletZukanVisible(int id)
 {
@@ -2166,7 +1408,7 @@ bool PlayData::isPelletZukanVisible(int id)
 	PelletConfig* config   = list->getPelletConfig_ByDictionaryNo(id);
 	if (config) {
 		int index = config->mParams.mIndex;
-		if (IS_FLAG(*mZukanStat->mOtakara(index), 2)) {
+		if (IS_FLAG(mZukanStat->mOtakara(index), 2)) {
 			return true;
 		}
 	} else {
@@ -2174,7 +1416,7 @@ bool PlayData::isPelletZukanVisible(int id)
 		config = list->getPelletConfig_ByDictionaryNo(id);
 		if (config) {
 			int index = config->mParams.mIndex;
-			if (IS_FLAG(*mZukanStat->mItem(index), 2)) {
+			if (IS_FLAG(mZukanStat->mItem(index), 2)) {
 				return true;
 			}
 		}
@@ -2182,10 +1424,9 @@ bool PlayData::isPelletZukanVisible(int id)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801E7DC4
- * Size:	000138
+/**
+ * @note Address: 0x801E7DC4
+ * @note Size: 0x138
  */
 bool PlayData::isPelletZukanWhatsNew(int id)
 {
@@ -2193,7 +1434,7 @@ bool PlayData::isPelletZukanWhatsNew(int id)
 	PelletConfig* config   = list->getPelletConfig_ByDictionaryNo(id);
 	if (config) {
 		int index = config->mParams.mIndex;
-		u8 kinds  = *mZukanStat->mOtakara(index);
+		u8 kinds  = mZukanStat->mOtakara(index);
 		if (kinds & 2 && !(kinds & 4)) {
 			return true;
 		}
@@ -2202,7 +1443,7 @@ bool PlayData::isPelletZukanWhatsNew(int id)
 		config = list->getPelletConfig_ByDictionaryNo(id);
 		if (config) {
 			int index = config->mParams.mIndex;
-			u8 kinds  = *mZukanStat->mItem(index);
+			u8 kinds  = mZukanStat->mItem(index);
 			if (kinds & 2 && !(kinds & 4)) {
 				return true;
 			}
@@ -2211,151 +1452,126 @@ bool PlayData::isPelletZukanWhatsNew(int id)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801E7EFC
- * Size:	0001BC
+/**
+ * @note Address: 0x801E7EFC
+ * @note Size: 0x1BC
  */
 bool PlayData::hasPelletZukanWhatsNew()
 {
 	PelletFirstMemory* zukanStat = getZukanStat();
 	for (int i = 0; i < zukanStat->mOtakara.mNumKinds; i++) {
-		u8 kinds = *zukanStat->mOtakara(i);
-		if (kinds && !(IS_FLAG(*zukanStat->mOtakara(i), 4)))
+		u8 kinds = zukanStat->mOtakara(i);
+		if (kinds && !(IS_FLAG(zukanStat->mOtakara(i), 4)))
 			return true;
 	}
 
 	PelletFirstMemory* zukanStat2 = getZukanStat();
 	for (int i = 0; i < zukanStat2->mItem.mNumKinds; i++) {
 
-		u8 kinds = *zukanStat2->mItem(i);
-		if (kinds && !(IS_FLAG(*zukanStat2->mItem(i), 4)))
+		u8 kinds = zukanStat2->mItem(i);
+		if (kinds && !(IS_FLAG(zukanStat2->mItem(i), 4)))
 			return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801E80B8
- * Size:	0001A8
- * Note the assert is an inline
+/**
+ * @note Address: 0x801E80B8
+ * @note Size: 0x1A8
  */
 void PlayData::setPelletZukanOutOfDateAll()
 {
 	PelletFirstMemory* zukanStat = getZukanStat();
 	for (int i = 0; i < zukanStat->mOtakara.mNumKinds; i++) {
-		u8 kinds = *zukanStat->mOtakara(i);
+		u8 kinds = zukanStat->mOtakara(i);
 		if (kinds) {
-			SET_FLAG(*zukanStat->mOtakara(i), 4);
+			SET_FLAG(zukanStat->mOtakara(i), 4);
 		}
 	}
 
 	PelletFirstMemory* zukanStat2 = getZukanStat();
 	for (int i = 0; i < zukanStat2->mItem.mNumKinds; i++) {
-		u8 kinds = *zukanStat2->mItem(i);
+		u8 kinds = zukanStat2->mItem(i);
 		if (kinds) {
-			SET_FLAG(*zukanStat2->mItem(i), 4);
+			SET_FLAG(zukanStat2->mItem(i), 4);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000C4
+/**
+ * @note Address: N/A
+ * @note Size: 0xC4
  */
-int PlayData::getTekiCarcassMoney(int) { }
+int PlayData::getTekiCarcassMoney(int id)
+{
+	// Just here for rodata alignment
+	JUT_ASSERTLINE(300, id > 0, "no tekiname for %d\n", id);
+}
 
-/*
- * --INFO--
- * Address:	801E8260
- * Size:	00007C
+/**
+ * @note Address: 0x801E8260
+ * @note Size: 0x7C
  */
 int PlayData::getGroundOtakaraNum(int id)
 {
-	bool check = (id >= 0 && id < stageList->mCourseCount);
-	P2ASSERTLINE(1543, check);
+	P2ASSERTBOUNDSLINE(1543, 0, id, stageList->getCourseCount());
 	return mGroundOtakaraCollected[id];
 }
 
-/*
- * --INFO--
- * Address:	801E82DC
- * Size:	000078
+/**
+ * @note Address: 0x801E82DC
+ * @note Size: 0x78
  */
 int PlayData::getGroundOtakaraMax(int id)
 {
-	bool check = (id >= 0 && id < stageList->mCourseCount);
-	P2ASSERTLINE(1550, check);
+	P2ASSERTBOUNDSLINE(1550, 0, id, stageList->getCourseCount());
 	CourseInfo* info = stageList->getCourseInfo(id);
 	return info->mGroundOtakaraMax;
 }
 
-/*
- * --INFO--
- * Address:	801E8354
- * Size:	000084
+/**
+ * @note Address: 0x801E8354
+ * @note Size: 0x84
  */
 void PlayData::incGroundOtakara(int index)
 {
-	bool isValidIndex = false;
-	if (0 <= index && index < stageList->mCourseCount) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1558, isValidIndex);
+	P2ASSERTBOUNDSLINE(1558, 0, index, stageList->getCourseCount());
 	mGroundOtakaraCollected[index]++;
 }
 
-/*
- * --INFO--
- * Address:	801E83D8
- * Size:	000078
+/**
+ * @note Address: 0x801E83D8
+ * @note Size: 0x78
  */
 int PlayData::getDopeCount(int sprayIndex)
 {
-	bool isValidIndex = false;
-	if (0 <= sprayIndex && sprayIndex < 2) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1572, isValidIndex);
+	P2ASSERTBOUNDSLINE(1572, 0, sprayIndex, 2);
 	return mSprayCount[sprayIndex];
 }
 
-/*
- * --INFO--
- * Address:	801E8450
- * Size:	000084
+/**
+ * @note Address: 0x801E8450
+ * @note Size: 0x84
  */
 void PlayData::setDopeCount(int sprayIndex, int sprayCount)
 {
-	bool isValidIndex = false;
-	if (0 <= sprayIndex && sprayIndex < 2) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1578, isValidIndex);
+	P2ASSERTBOUNDSLINE(1578, 0, sprayIndex, 2);
 	mSprayCount[sprayIndex] = sprayCount;
 }
 
-/*
- * --INFO--
- * Address:	801E84D4
- * Size:	000080
+/**
+ * @note Address: 0x801E84D4
+ * @note Size: 0x80
  */
 void PlayData::incDopeCount(int sprayIndex)
 {
-	bool isValidIndex = false;
-	if (0 <= sprayIndex && sprayIndex < 2) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1584, isValidIndex);
+	P2ASSERTBOUNDSLINE(1584, 0, sprayIndex, 2);
 	mSprayCount[sprayIndex]++;
 }
 
-/*
- * --INFO--
- * Address:	801E8554
- * Size:	000084
+/**
+ * @note Address: 0x801E8554
+ * @note Size: 0x84
  */
 bool PlayData::hasDope(int sprayIndex)
 {
@@ -2367,10 +1583,9 @@ bool PlayData::hasDope(int sprayIndex)
 	return (0 < mSprayCount[sprayIndex]);
 }
 
-/*
- * --INFO--
- * Address:	801E85D8
- * Size:	000078
+/**
+ * @note Address: 0x801E85D8
+ * @note Size: 0x78
  */
 int PlayData::getDopeFruitCount(int sprayIndex)
 {
@@ -2382,10 +1597,9 @@ int PlayData::getDopeFruitCount(int sprayIndex)
 	return mBerryCount[sprayIndex];
 }
 
-/*
- * --INFO--
- * Address:	801E8650
- * Size:	0000B4
+/**
+ * @note Address: 0x801E8650
+ * @note Size: 0xB4
  */
 bool PlayData::addDopeFruit(int sprayIndex)
 {
@@ -2405,10 +1619,9 @@ bool PlayData::addDopeFruit(int sprayIndex)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801E8704
- * Size:	0000C4
+/**
+ * @note Address: 0x801E8704
+ * @note Size: 0xC4
  */
 void PlayData::useDope(int sprayIndex)
 {
@@ -2422,10 +1635,9 @@ void PlayData::useDope(int sprayIndex)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801E87C8
- * Size:	0000DC
+/**
+ * @note Address: 0x801E87C8
+ * @note Size: 0xDC
  */
 bool PlayData::isCaveFirstTime(int courseIndex, ID32& caveID)
 {
@@ -2446,17 +1658,15 @@ bool PlayData::isCaveFirstTime(int courseIndex, ID32& caveID)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000CC
+/**
+ * @note Address: N/A
+ * @note Size: 0xCC
  */
 bool PlayData::isCaveFirstReturn(int, ID32&) { }
 
-/*
- * --INFO--
- * Address:	801E88A4
- * Size:	0000BC
+/**
+ * @note Address: 0x801E88A4
+ * @note Size: 0xBC
  */
 void PlayData::setCaveVisit(int courseIndex, ID32& caveID)
 {
@@ -2476,10 +1686,9 @@ void PlayData::setCaveVisit(int courseIndex, ID32& caveID)
 	JUT_PANICLINE(1680, "no cave info : course(%d):[%s]\n", courseIndex, caveID.getStr());
 }
 
-/*
- * --INFO--
- * Address:	801E8960
- * Size:	0000B8
+/**
+ * @note Address: 0x801E8960
+ * @note Size: 0xB8
  */
 void PlayData::incCaveOtakara(int courseIndex, ID32& caveID)
 {
@@ -2503,10 +1712,9 @@ void PlayData::incCaveOtakara(int courseIndex, ID32& caveID)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801E8A18
- * Size:	0000B8
+/**
+ * @note Address: 0x801E8A18
+ * @note Size: 0xB8
  */
 int PlayData::getOtakaraNum_Course_CaveID(int courseIndex, ID32& caveID)
 {
@@ -2518,77 +1726,17 @@ int PlayData::getOtakaraNum_Course_CaveID(int courseIndex, ID32& caveID)
 			if (id >= 0 && id < ota->mCaveCount) {
 				return (u8)ota->mOtakaraCountsOld[id];
 			}
-		} else {
-			goto mistake; // mistake?
+			return -1;
 		}
-		return -1;
 	} else {
 		JUT_PANICLINE(1727, "course index error:%d (getOtakaraNum_*)\n", courseIndex);
 	}
-mistake:
 	return -1;
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r5
-	stw      r30, 0x18(r1)
-	mr       r30, r4
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	lwz      r3, stageList__4Game@sda21(r13)
-	bl       getCourseInfo__Q24Game6StagesFi
-	cmplwi   r3, 0
-	beq      lbl_801E8A90
-	mulli    r0, r30, 0xc
-	lwz      r5, 0xe0(r29)
-	mr       r4, r31
-	add      r31, r5, r0
-	bl       getCaveIndex_FromID__Q24Game10CourseInfoFR4ID32
-	cmpwi    r3, -1
-	beq      lbl_801E8AB0
-	cmpwi    r3, 0
-	blt      lbl_801E8A88
-	lbz      r0, 0(r31)
-	cmpw     r3, r0
-	bge      lbl_801E8A88
-	lwz      r4, 4(r31)
-	lbzx     r3, r4, r3
-	b        lbl_801E8AB4
-
-lbl_801E8A88:
-	li       r3, -1
-	b        lbl_801E8AB4
-
-lbl_801E8A90:
-	lis      r3, lbl_80480E4C@ha
-	lis      r4, lbl_80480ED0@ha
-	addi     r5, r4, lbl_80480ED0@l
-	mr       r6, r30
-	addi     r3, r3, lbl_80480E4C@l
-	li       r4, 0x6bf
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E8AB0:
-	li       r3, -1
-
-lbl_801E8AB4:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801E8AD0
- * Size:	000048
+/**
+ * @note Address: 0x801E8AD0
+ * @note Size: 0x48
  */
 int PlayData::getOtakaraMax_Course_CaveID(int courseIndex, ID32& caveID)
 {
@@ -2600,34 +1748,20 @@ int PlayData::getOtakaraMax_Course_CaveID(int courseIndex, ID32& caveID)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801E8B18
- * Size:	0000D4
+/**
+ * @note Address: 0x801E8B18
+ * @note Size: 0xD4
  */
 void PlayData::initCaveOtakaras()
 {
-	u16 max = stageList->getCourseCount();
-	;
+	int max = stageList->mCourseCount;
+
 	for (int i = 0; i < max; i++) {
 		mCaveOtakara[i].clear();
-		// CaveOtakara* data = mCaveOtakara;
-		// if (data->mCaveCount > 0) {
-		// 	for (int j = 0; j < data->mCaveCount; j++) {
-		// 		data->mOtakaraCountsOld[j] = 0;
-		// 		data->_08[j]               = 0;
-		// 	}
-		// }
 	}
 
 	for (int i = 0; i < max; i++) {
 		mCaveOtakaraOld[i].clear();
-		// if (data->mCaveCount > 0) {
-		// 	for (int j = 0; j < data->mCaveCount; j++) {
-		// 		data->mOtakaraCountsOld[j] = 0;
-		// 		data->_08[j]               = 0;
-		// 	}
-		// }
 	}
 	/*
 	lwz      r4, stageList__4Game@sda21(r13)
@@ -2704,10 +1838,9 @@ lbl_801E8BE0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E8BEC
- * Size:	000060
+/**
+ * @note Address: 0x801E8BEC
+ * @note Size: 0x60
  */
 void PlayData::read_CaveOtakara(Stream& ram)
 {
@@ -2747,10 +1880,9 @@ lbl_801E8C30:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E8C4C
- * Size:	000078
+/**
+ * @note Address: 0x801E8C4C
+ * @note Size: 0x78
  */
 void PlayData::write_CaveOtakara(Stream& ram)
 {
@@ -2798,23 +1930,22 @@ lbl_801E8CA0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E8CC4
- * Size:	0000D8
+/**
+ * @note Address: 0x801E8CC4
+ * @note Size: 0xD8
  */
 void PlayData::CaveOtakara::write(Stream& output)
 {
 	output.textWriteTab(output.mTabCount);
 	output.writeByte(mCaveCount);
-	output.textWriteText("# caveÊï∞\r\n");
+	output.textWriteText("# caveêî\r\n");
 	for (int i = 0; i < mCaveCount; i++) {
 		output.textWriteTab(output.mTabCount);
 		output.writeByte(mOtakaraCountsOld[i]);
-		output.textWriteText("# ÂÄãÊï∞\r\n");
+		output.textWriteText("# å¬êî\r\n");
 		output.textWriteTab(output.mTabCount);
 		output.writeByte(_08[i]);
-		output.textWriteText("# Áä∂ÊÖã\r\n");
+		output.textWriteText("# èÛë‘\r\n");
 	}
 	/*
 	stwu     r1, -0x20(r1)
@@ -2878,16 +2009,15 @@ lbl_801E8D7C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E8D9C
- * Size:	0000C0
+/**
+ * @note Address: 0x801E8D9C
+ * @note Size: 0xC0
  */
 void PlayData::CaveOtakara::read(Stream& input)
 {
 	u8 existingCaveCount = mCaveCount;
 	mCaveCount           = input.readByte();
-	JUT_ASSERTLINE(1797, existingCaveCount == mCaveCount, "„Çª„Éº„Éñ„Åó„Åü„Å®„Åç„Å®Ê¥ûÁ™ü„?ÆÊï∞„Åå„ÅÇ„Å?„Åæ„Åõ„Çì\n");
+	JUT_ASSERTLINE(1797, existingCaveCount == mCaveCount, "ÉZÅ[ÉuÇµÇΩÇ∆Ç´Ç∆ì¥åAÇÃêîÇ™Ç†Ç¢Ç‹ÇπÇÒ\n");
 	for (int i = 0; i < mCaveCount; i++) {
 		mOtakaraCountsOld[i] = input.readByte();
 		_08[i]               = input.readByte();
@@ -2950,39 +2080,25 @@ lbl_801E8E30:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E8E5C
- * Size:	000124
+namespace {
+const f32 repay_levs[10] = {
+	10.0f, 20.0f, 30.0f, 40.0f, 50.0f, 60.0f, 70.0f, 80.0f, 90.0f, 100.0f,
+};
+} // namespace
+
+/**
+ * @note Address: 0x801E8E5C
+ * @note Size: 0x124
  */
 int PlayData::getRepayLevel()
 {
-	f32 prog = (mPokoCount / _aiConstants->mDebt.mData) * 100.0f;
+	f32 level = _aiConstants->mDebt.mData;
+	f32 prog  = (mPokoCount / level) * 100.0f;
 	for (int i = 0; i < 10; i++) {
 		if (repay_levs[i] > prog)
 			return i - 1;
 	}
-	/*if (repay_levs[0] > prog)
-	    return -1;
-	if (repay_levs[1] > prog)
-	    return 0;
-	if (repay_levs[2] > prog)
-	    return 1;
-	if (repay_levs[3] > prog)
-	    return 2;
-	if (repay_levs[4] > prog)
-	    return 3;
-	if (repay_levs[5] > prog)
-	    return 4;
-	if (repay_levs[6] > prog)
-	    return 5;
-	if (repay_levs[7] > prog)
-	    return 6;
-	if (repay_levs[8] > prog)
-	    return 7;
-	if (repay_levs[9] > prog)
-	    return 8;
-	return 9;*/
+	return 9;
 
 	/*
 	stwu     r1, -0x20(r1)
@@ -3083,387 +2199,302 @@ lbl_801E8F78:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E8F80
- * Size:	000044
+/**
+ * @note Address: 0x801E8F80
+ * @note Size: 0x44
  */
-float PlayData::getRepayLevelPercent(int state)
+f32 PlayData::getRepayLevelPercent(int state)
 {
 	if (state >= 0) {
 		return repay_levs[state];
 	} else {
-		return (float)state;
+		return (f32)state;
 	}
 }
 
-/*
- * --INFO--
- * Address:	801E8FC4
- * Size:	000160
+/**
+ * @note Address: 0x801E8FC4
+ * @note Size: 0x160
  */
 bool PlayData::checkRepayLevelFirstClear()
 {
-	int id;
-	f32 prog = (mPokoCount / _aiConstants->mDebt.mData) * 100.0f;
-	for (int i = 0; i < 10; i++) {
-		if (repay_levs[i] > prog)
-			id = i - 1;
+	int id = getRepayLevel();
+
+	if (id > 0 && mDebtProgressFlags[id]) {
+		return true;
 	}
-	/*	if (prog < 10.0f)
-	        id = -1;
-	    else if (prog < 20.0f)
-	        id = 0;
-	    else if (prog < 30.0f)
-	        id = 1;
-	    else if (prog < 40.0f)
-	        id = 2;
-	    else if (prog < 50.0f)
-	        id = 3;
-	    else if (prog < 60.0f)
-	        id = 4;
-	    else if (prog < 70.0f)
-	        id = 5;
-	    else if (prog < 80.0f)
-	        id = 6;
-	    else if (prog < 90.0f)
-	        id = 7;
-	    else if (prog < 100.0f)
-	        id = 8;
-	    else
-	        id = 9;*/
+	return false;
 
-	return (mDebtProgressFlags[id] != 0); // this is actually bitwise stuff
-	                                      /*
-	                                      stwu     r1, -0x20(r1)
-	                                      lis      r6, 0x4330
-	                                      lfd      f3, lbl_805199D8@sda21(r2)
-	                                      lis      r4, "repay_levs__26@unnamed@gamePlayData_cpp@"@ha
-	                                      lwz      r5, _aiConstants__4Game@sda21(r13)
-	                                      lwz      r7, 0xe8(r3)
-	                                      lwz      r0, 0x48(r5)
-	                                      xoris    r5, r7, 0x8000
-	                                      stw      r6, 8(r1)
-	                                      xoris    r0, r0, 0x8000
-	                                      lfs      f4, lbl_805199D4@sda21(r2)
-	                                      stw      r5, 0xc(r1)
-	                                      lfd      f0, 8(r1)
-	                                      stw      r0, 0x14(r1)
-	                                      fsubs    f2, f0, f3
-	                                      lfsu     f0, "repay_levs__26@unnamed@gamePlayData_cpp@"@l(r4)
-	                                      stw      r6, 0x10(r1)
-	                                      lfd      f1, 0x10(r1)
-	                                      fsubs    f1, f1, f3
-	                                      fdivs    f1, f2, f1
-	                                      fmuls    f1, f4, f1
-	                                      fcmpo    cr0, f0, f1
-	                                      ble      lbl_801E9028
-	                                      li       r6, -1
-	                                      b        lbl_801E90E0
-	                                  
-	                                  lbl_801E9028:
-	                                      lfsu     f0, 4(r4)
-	                                      fcmpo    cr0, f0, f1
-	                                      ble      lbl_801E903C
-	                                      li       r6, 0
-	                                      b        lbl_801E90E0
-	                                  
-	                                  lbl_801E903C:
-	                                      lfsu     f0, 4(r4)
-	                                      fcmpo    cr0, f0, f1
-	                                      ble      lbl_801E9050
-	                                      li       r6, 1
-	                                      b        lbl_801E90E0
-	                                  
-	                                  lbl_801E9050:
-	                                      lfsu     f0, 4(r4)
-	                                      fcmpo    cr0, f0, f1
-	                                      ble      lbl_801E9064
-	                                      li       r6, 2
-	                                      b        lbl_801E90E0
-	                                  
-	                                  lbl_801E9064:
-	                                      lfsu     f0, 4(r4)
-	                                      fcmpo    cr0, f0, f1
-	                                      ble      lbl_801E9078
-	                                      li       r6, 3
-	                                      b        lbl_801E90E0
-	                                  
-	                                  lbl_801E9078:
-	                                      lfsu     f0, 4(r4)
-	                                      fcmpo    cr0, f0, f1
-	                                      ble      lbl_801E908C
-	                                      li       r6, 4
-	                                      b        lbl_801E90E0
-	                                  
-	                                  lbl_801E908C:
-	                                      lfsu     f0, 4(r4)
-	                                      fcmpo    cr0, f0, f1
-	                                      ble      lbl_801E90A0
-	                                      li       r6, 5
-	                                      b        lbl_801E90E0
-	                                  
-	                                  lbl_801E90A0:
-	                                      lfsu     f0, 4(r4)
-	                                      fcmpo    cr0, f0, f1
-	                                      ble      lbl_801E90B4
-	                                      li       r6, 6
-	                                      b        lbl_801E90E0
-	                                  
-	                                  lbl_801E90B4:
-	                                      lfsu     f0, 4(r4)
-	                                      fcmpo    cr0, f0, f1
-	                                      ble      lbl_801E90C8
-	                                      li       r6, 7
-	                                      b        lbl_801E90E0
-	                                  
-	                                  lbl_801E90C8:
-	                                      lfs      f0, 4(r4)
-	                                      fcmpo    cr0, f0, f1
-	                                      ble      lbl_801E90DC
-	                                      li       r6, 8
-	                                      b        lbl_801E90E0
-	                                  
-	                                  lbl_801E90DC:
-	                                      li       r6, 9
-	                                  
-	                                  lbl_801E90E0:
-	                                      cmpwi    r6, 0
-	                                      blt      lbl_801E9118
-	                                      srawi    r4, r6, 3
-	                                      li       r5, 1
-	                                      subfic   r0, r4, 1
-	                                      slwi     r4, r4, 3
-	                                      add      r3, r3, r0
-	                                      subf     r4, r4, r6
-	                                      lbz      r0, 0xf0(r3)
-	                                      slw      r3, r5, r4
-	                                      and.     r0, r3, r0
-	                                      bne      lbl_801E9118
-	                                      li       r3, 1
-	                                      b        lbl_801E911C
-	                                  
-	                                  lbl_801E9118:
-	                                      li       r3, 0
-	                                  
-	                                  lbl_801E911C:
-	                                      addi     r1, r1, 0x20
-	                                      blr
-	                                      */
-}
-
-/*
- * --INFO--
- * Address:	801E9124
- * Size:	000174
- */
-void PlayData::experienceRepayLevelFirstClear()
-{
-	int id;
-	f32 prog = (mPokoCount / _aiConstants->mDebt.mData) * 100.0f;
-	for (int i = 0; i < 10; i++) {
-		if (repay_levs[i] > prog)
-			id = i - 1;
-	}
-	/*if (prog < 10.0f)
-	    id = -1;
-	else if (prog < 20.0f)
-	    id = 0;
-	else if (prog < 30.0f)
-	    id = 1;
-	else if (prog < 40.0f)
-	    id = 2;
-	else if (prog < 50.0f)
-	    id = 3;
-	else if (prog < 60.0f)
-	    id = 4;
-	else if (prog < 70.0f)
-	    id = 5;
-	else if (prog < 80.0f)
-	    id = 6;
-	else if (prog < 90.0f)
-	    id = 7;
-	else if (prog < 100.0f)
-	    id = 8;
-	else
-	    id = 9;*/
-
-	mDebtProgressFlags[id] |= 2; // this is actually bitwise stuff
-	                             /*
-	                             stwu     r1, -0x20(r1)
-	                             lis      r6, 0x4330
-	                             lfd      f3, lbl_805199D8@sda21(r2)
-	                             lis      r4, "repay_levs__26@unnamed@gamePlayData_cpp@"@ha
-	                             lwz      r5, _aiConstants__4Game@sda21(r13)
-	                             lwz      r7, 0xe8(r3)
-	                             lwz      r0, 0x48(r5)
-	                             xoris    r5, r7, 0x8000
-	                             stw      r6, 8(r1)
-	                             xoris    r0, r0, 0x8000
-	                             lfs      f4, lbl_805199D4@sda21(r2)
-	                             stw      r5, 0xc(r1)
-	                             lfd      f0, 8(r1)
-	                             stw      r0, 0x14(r1)
-	                             fsubs    f2, f0, f3
-	                             lfsu     f0, "repay_levs__26@unnamed@gamePlayData_cpp@"@l(r4)
-	                             stw      r6, 0x10(r1)
-	                             lfd      f1, 0x10(r1)
-	                             fsubs    f1, f1, f3
-	                             fdivs    f1, f2, f1
-	                             fmuls    f1, f4, f1
-	                             fcmpo    cr0, f0, f1
-	                             ble      lbl_801E9188
-	                             li       r4, -1
-	                             b        lbl_801E9240
-	                         
-	                         lbl_801E9188:
-	                             lfsu     f0, 4(r4)
-	                             fcmpo    cr0, f0, f1
-	                             ble      lbl_801E919C
-	                             li       r4, 0
-	                             b        lbl_801E9240
-	                         
-	                         lbl_801E919C:
-	                             lfsu     f0, 4(r4)
-	                             fcmpo    cr0, f0, f1
-	                             ble      lbl_801E91B0
-	                             li       r4, 1
-	                             b        lbl_801E9240
-	                         
-	                         lbl_801E91B0:
-	                             lfsu     f0, 4(r4)
-	                             fcmpo    cr0, f0, f1
-	                             ble      lbl_801E91C4
-	                             li       r4, 2
-	                             b        lbl_801E9240
-	                         
-	                         lbl_801E91C4:
-	                             lfsu     f0, 4(r4)
-	                             fcmpo    cr0, f0, f1
-	                             ble      lbl_801E91D8
-	                             li       r4, 3
-	                             b        lbl_801E9240
-	                         
-	                         lbl_801E91D8:
-	                             lfsu     f0, 4(r4)
-	                             fcmpo    cr0, f0, f1
-	                             ble      lbl_801E91EC
-	                             li       r4, 4
-	                             b        lbl_801E9240
-	                         
-	                         lbl_801E91EC:
-	                             lfsu     f0, 4(r4)
-	                             fcmpo    cr0, f0, f1
-	                             ble      lbl_801E9200
-	                             li       r4, 5
-	                             b        lbl_801E9240
-	                         
-	                         lbl_801E9200:
-	                             lfsu     f0, 4(r4)
-	                             fcmpo    cr0, f0, f1
-	                             ble      lbl_801E9214
-	                             li       r4, 6
-	                             b        lbl_801E9240
-	                         
-	                         lbl_801E9214:
-	                             lfsu     f0, 4(r4)
-	                             fcmpo    cr0, f0, f1
-	                             ble      lbl_801E9228
-	                             li       r4, 7
-	                             b        lbl_801E9240
-	                         
-	                         lbl_801E9228:
-	                             lfs      f0, 4(r4)
-	                             fcmpo    cr0, f0, f1
-	                             ble      lbl_801E923C
-	                             li       r4, 8
-	                             b        lbl_801E9240
-	                         
-	                         lbl_801E923C:
-	                             li       r4, 9
-	                         
-	                         lbl_801E9240:
-	                             cmpwi    r4, 0
-	                             blt      lbl_801E9290
-	                             addi     r0, r4, 1
-	                             li       r7, 0
-	                             li       r4, 1
-	                             mtctr    r0
-	                             blt      lbl_801E9290
-	                         
-	                         lbl_801E925C:
-	                             cmpwi    r7, 0x10
-	                             bge      lbl_801E9288
-	                             srawi    r5, r7, 3
-	                             subfic   r0, r5, 1
-	                             add      r6, r3, r0
-	                             slwi     r0, r5, 3
-	                             lbz      r5, 0xf0(r6)
-	                             subf     r0, r0, r7
-	                             slw      r0, r4, r0
-	                             or       r0, r5, r0
-	                             stb      r0, 0xf0(r6)
-	                         
-	                         lbl_801E9288:
-	                             addi     r7, r7, 1
-	                             bdnz     lbl_801E925C
-	                         
-	                         lbl_801E9290:
-	                             addi     r1, r1, 0x20
-	                             blr
-	                             */
-}
-
-/*
- * --INFO--
- * Address:	801E9298
- * Size:	000064
- */
-void PlayData::initLimitGens()
-{
-	u16 courseCount = stageList->mCourseCount;
-	for (int i = 0; i < courseCount; i++) {
-		LimitGen* limitGen = &mLimitGen[i]; // probably some inline with this as the parameter
-		limitGen->mNonLoops.reset();
-		limitGen->mLoops.reset();
-	}
 	/*
 	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stmw     r27, 0xc(r1)
-	mr       r27, r3
-	li       r29, 0
-	li       r30, 0
-	lwz      r4, stageList__4Game@sda21(r13)
-	lhz      r31, 0x100(r4)
-	b        lbl_801E92E0
+	lis      r6, 0x4330
+	lfd      f3, lbl_805199D8@sda21(r2)
+	lis      r4, "repay_levs__26@unnamed@gamePlayData_cpp@"@ha
+	lwz      r5, _aiConstants__4Game@sda21(r13)
+	lwz      r7, 0xe8(r3)
+	lwz      r0, 0x48(r5)
+	xoris    r5, r7, 0x8000
+	stw      r6, 8(r1)
+	xoris    r0, r0, 0x8000
+	lfs      f4, lbl_805199D4@sda21(r2)
+	stw      r5, 0xc(r1)
+	lfd      f0, 8(r1)
+	stw      r0, 0x14(r1)
+	fsubs    f2, f0, f3
+	lfsu     f0, "repay_levs__26@unnamed@gamePlayData_cpp@"@l(r4)
+	stw      r6, 0x10(r1)
+	lfd      f1, 0x10(r1)
+	fsubs    f1, f1, f3
+	fdivs    f1, f2, f1
+	fmuls    f1, f4, f1
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E9028
+	li       r6, -1
+	b        lbl_801E90E0
 
-lbl_801E92C0:
-	lwz      r0, 0xe4(r27)
-	add      r28, r0, r30
-	mr       r3, r28
-	bl       reset__8BitFlagsFv
-	addi     r3, r28, 8
-	bl       reset__8BitFlagsFv
-	addi     r30, r30, 0x10
-	addi     r29, r29, 1
+lbl_801E9028:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E903C
+	li       r6, 0
+	b        lbl_801E90E0
 
-lbl_801E92E0:
-	cmpw     r29, r31
-	blt      lbl_801E92C0
-	lmw      r27, 0xc(r1)
-	lwz      r0, 0x24(r1)
-	mtlr     r0
+lbl_801E903C:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E9050
+	li       r6, 1
+	b        lbl_801E90E0
+
+lbl_801E9050:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E9064
+	li       r6, 2
+	b        lbl_801E90E0
+
+lbl_801E9064:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E9078
+	li       r6, 3
+	b        lbl_801E90E0
+
+lbl_801E9078:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E908C
+	li       r6, 4
+	b        lbl_801E90E0
+
+lbl_801E908C:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E90A0
+	li       r6, 5
+	b        lbl_801E90E0
+
+lbl_801E90A0:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E90B4
+	li       r6, 6
+	b        lbl_801E90E0
+
+lbl_801E90B4:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E90C8
+	li       r6, 7
+	b        lbl_801E90E0
+
+lbl_801E90C8:
+	lfs      f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E90DC
+	li       r6, 8
+	b        lbl_801E90E0
+
+lbl_801E90DC:
+	li       r6, 9
+
+lbl_801E90E0:
+	cmpwi    r6, 0
+	blt      lbl_801E9118
+	srawi    r4, r6, 3
+	li       r5, 1
+	subfic   r0, r4, 1
+	slwi     r4, r4, 3
+	add      r3, r3, r0
+	subf     r4, r4, r6
+	lbz      r0, 0xf0(r3)
+	slw      r3, r5, r4
+	and.     r0, r3, r0
+	bne      lbl_801E9118
+	li       r3, 1
+	b        lbl_801E911C
+
+lbl_801E9118:
+	li       r3, 0
+
+lbl_801E911C:
 	addi     r1, r1, 0x20
 	blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E92FC
- * Size:	00006C
+/**
+ * @note Address: 0x801E9124
+ * @note Size: 0x174
+ */
+void PlayData::experienceRepayLevelFirstClear()
+{
+	int id = getRepayLevel();
+
+	if (id > 0)
+		mDebtProgressFlags[id] |= 2;
+
+	/*
+	stwu     r1, -0x20(r1)
+	lis      r6, 0x4330
+	lfd      f3, lbl_805199D8@sda21(r2)
+	lis      r4, "repay_levs__26@unnamed@gamePlayData_cpp@"@ha
+	lwz      r5, _aiConstants__4Game@sda21(r13)
+	lwz      r7, 0xe8(r3)
+	lwz      r0, 0x48(r5)
+	xoris    r5, r7, 0x8000
+	stw      r6, 8(r1)
+	xoris    r0, r0, 0x8000
+	lfs      f4, lbl_805199D4@sda21(r2)
+	stw      r5, 0xc(r1)
+	lfd      f0, 8(r1)
+	stw      r0, 0x14(r1)
+	fsubs    f2, f0, f3
+	lfsu     f0, "repay_levs__26@unnamed@gamePlayData_cpp@"@l(r4)
+	stw      r6, 0x10(r1)
+	lfd      f1, 0x10(r1)
+	fsubs    f1, f1, f3
+	fdivs    f1, f2, f1
+	fmuls    f1, f4, f1
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E9188
+	li       r4, -1
+	b        lbl_801E9240
+
+lbl_801E9188:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E919C
+	li       r4, 0
+	b        lbl_801E9240
+
+lbl_801E919C:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E91B0
+	li       r4, 1
+	b        lbl_801E9240
+
+lbl_801E91B0:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E91C4
+	li       r4, 2
+	b        lbl_801E9240
+
+lbl_801E91C4:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E91D8
+	li       r4, 3
+	b        lbl_801E9240
+
+lbl_801E91D8:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E91EC
+	li       r4, 4
+	b        lbl_801E9240
+
+lbl_801E91EC:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E9200
+	li       r4, 5
+	b        lbl_801E9240
+
+lbl_801E9200:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E9214
+	li       r4, 6
+	b        lbl_801E9240
+
+lbl_801E9214:
+	lfsu     f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E9228
+	li       r4, 7
+	b        lbl_801E9240
+
+lbl_801E9228:
+	lfs      f0, 4(r4)
+	fcmpo    cr0, f0, f1
+	ble      lbl_801E923C
+	li       r4, 8
+	b        lbl_801E9240
+
+lbl_801E923C:
+	li       r4, 9
+
+lbl_801E9240:
+	cmpwi    r4, 0
+	blt      lbl_801E9290
+	addi     r0, r4, 1
+	li       r7, 0
+	li       r4, 1
+	mtctr    r0
+	blt      lbl_801E9290
+
+lbl_801E925C:
+	cmpwi    r7, 0x10
+	bge      lbl_801E9288
+	srawi    r5, r7, 3
+	subfic   r0, r5, 1
+	add      r6, r3, r0
+	slwi     r0, r5, 3
+	lbz      r5, 0xf0(r6)
+	subf     r0, r0, r7
+	slw      r0, r4, r0
+	or       r0, r5, r0
+	stb      r0, 0xf0(r6)
+
+lbl_801E9288:
+	addi     r7, r7, 1
+	bdnz     lbl_801E925C
+
+lbl_801E9290:
+	addi     r1, r1, 0x20
+	blr
+	*/
+}
+
+/**
+ * @note Address: 0x801E9298
+ * @note Size: 0x64
+ */
+void PlayData::initLimitGens()
+{
+	u16 courseCount = stageList->getCourseCount();
+	for (int i = 0; i < courseCount; i++) {
+		LimitGen* gen = &mLimitGen[i];
+		gen->init();
+	}
+}
+
+/**
+ * @note Address: 0x801E92FC
+ * @note Size: 0x6C
  */
 void PlayData::initCourses(bool type)
 {
@@ -3471,203 +2502,62 @@ void PlayData::initCourses(bool type)
 		for (int i = 0; i < stageList->mCourseCount; i++) {
 			mBitfieldPerCourse[i] = 3;
 		}
+		return;
 	} else {
 		for (int i = 0; i < stageList->mCourseCount; i++) {
 			mBitfieldPerCourse[i] = 0;
 		}
 	}
 	mBitfieldPerCourse[0] = 3; // valley of repose always unlocked
-	                           /*
-	                           clrlwi.  r0, r4, 0x18
-	                           beq      lbl_801E9330
-	                           li       r6, 0
-	                           li       r5, 3
-	                           b        lbl_801E931C
-	                       
-	                       lbl_801E9310:
-	                           lwz      r4, 0xd8(r3)
-	                           stbx     r5, r4, r6
-	                           addi     r6, r6, 1
-	                       
-	                       lbl_801E931C:
-	                           lwz      r4, stageList__4Game@sda21(r13)
-	                           lhz      r0, 0x100(r4)
-	                           cmpw     r6, r0
-	                           blt      lbl_801E9310
-	                           blr
-	                       
-	                       lbl_801E9330:
-	                           li       r6, 0
-	                           li       r5, 0
-	                           b        lbl_801E9348
-	                       
-	                       lbl_801E933C:
-	                           lwz      r4, 0xd8(r3)
-	                           stbx     r5, r4, r6
-	                           addi     r6, r6, 1
-	                       
-	                       lbl_801E9348:
-	                           lwz      r4, stageList__4Game@sda21(r13)
-	                           lhz      r0, 0x100(r4)
-	                           cmpw     r6, r0
-	                           blt      lbl_801E933C
-	                           lwz      r3, 0xd8(r3)
-	                           li       r0, 3
-	                           stb      r0, 0(r3)
-	                           blr
-	                           */
 }
 
-/*
- * --INFO--
- * Address:	801E9368
- * Size:	000094
+/**
+ * @note Address: 0x801E9368
+ * @note Size: 0x94
  */
 void PlayData::openCourse(int index)
 {
-	bool isValidIndex = false;
-	if (0 <= index && index < stageList->mCourseCount) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1905, isValidIndex);
+	P2ASSERTBOUNDSLINE(1905, 0, index, stageList->getCourseCount());
 	if (!courseOpen(index)) {
 		mBitfieldPerCourse[index] = PDCF_Open;
 	}
 }
 
-/*
- * --INFO--
- * Address:	801E93FC
- * Size:	000084
+/**
+ * @note Address: 0x801E93FC
+ * @note Size: 0x84
  */
 void PlayData::visitCourse(int index)
 {
-	bool isValidIndex = false;
-	if (0 <= index && index < stageList->mCourseCount) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1918, isValidIndex);
+	P2ASSERTBOUNDSLINE(1918, 0, index, stageList->getCourseCount());
 	mBitfieldPerCourse[index] |= PDCF_Visited;
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	or.      r31, r4, r4
-	li       r4, 0
-	stw      r30, 8(r1)
-	mr       r30, r3
-	blt      lbl_801E9434
-	lwz      r3, stageList__4Game@sda21(r13)
-	lhz      r0, 0x100(r3)
-	cmpw     r31, r0
-	bge      lbl_801E9434
-	li       r4, 1
-
-lbl_801E9434:
-	clrlwi.  r0, r4, 0x18
-	bne      lbl_801E9458
-	lis      r3, lbl_80480E4C@ha
-	lis      r5, lbl_80480E60@ha
-	addi     r3, r3, lbl_80480E4C@l
-	li       r4, 0x77e
-	addi     r5, r5, lbl_80480E60@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E9458:
-	lwz      r3, 0xd8(r30)
-	lbzx     r0, r3, r31
-	ori      r0, r0, 4
-	stbx     r0, r3, r31
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
 bool PlayData::closeCourse(int) { }
 
-/*
- * --INFO--
- * Address:	801E9480
- * Size:	000080
+/**
+ * @note Address: 0x801E9480
+ * @note Size: 0x80
  */
 bool PlayData::courseOpen(int index)
 {
-	bool isValidIndex = false;
-	if (0 <= index && index < stageList->mCourseCount) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1930, isValidIndex);
+	P2ASSERTBOUNDSLINE(1930, 0, index, stageList->getCourseCount());
 	return (mBitfieldPerCourse[index] & PDCF_Open);
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	or.      r31, r4, r4
-	li       r4, 0
-	stw      r30, 8(r1)
-	mr       r30, r3
-	blt      lbl_801E94B8
-	lwz      r3, stageList__4Game@sda21(r13)
-	lhz      r0, 0x100(r3)
-	cmpw     r31, r0
-	bge      lbl_801E94B8
-	li       r4, 1
-
-lbl_801E94B8:
-	clrlwi.  r0, r4, 0x18
-	bne      lbl_801E94DC
-	lis      r3, lbl_80480E4C@ha
-	lis      r5, lbl_80480E60@ha
-	addi     r3, r3, lbl_80480E4C@l
-	li       r4, 0x78a
-	addi     r5, r5, lbl_80480E60@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E94DC:
-	lwz      r3, 0xd8(r30)
-	lbzx     r0, r3, r31
-	lwz      r31, 0xc(r1)
-	clrlwi   r3, r0, 0x1f
-	lwz      r0, 0x14(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801E9500
- * Size:	0000E4
+/**
+ * @note Address: 0x801E9500
+ * @note Size: 0xE4
  */
 bool PlayData::courseJustOpen(int index)
 {
-	bool isValidIndex = false;
-	if (0 <= index && index < stageList->mCourseCount) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1936, isValidIndex);
-
-	isValidIndex = false;
-	if (0 <= index && index < stageList->mCourseCount) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1930, isValidIndex);
-
-	if (!(mBitfieldPerCourse[index] & PDCF_Open)) {
+	P2ASSERTBOUNDSLINE(1936, 0, index, stageList->getCourseCount());
+	bool open = courseOpen(index);
+	if (!open) {
 		return false;
 	} else {
-		mBitfieldPerCourse[index] |= 2;
-		return (mBitfieldPerCourse[index] & PDCF_Unknown2);
+		mBitfieldPerCourse[index] |= PDCF_Unknown2;
+		return (open & PDCF_Unknown2);
 	}
 	/*
 	stwu     r1, -0x10(r1)
@@ -3742,29 +2632,18 @@ lbl_801E95CC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E95E4
- * Size:	0000DC
+/**
+ * @note Address: 0x801E95E4
+ * @note Size: 0xDC
  */
 bool PlayData::courseFirstTime(int index)
 {
-	bool isValidIndex = false;
-	if (0 <= index && index < stageList->mCourseCount) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1955, isValidIndex);
+	P2ASSERTBOUNDSLINE(1955, 0, index, stageList->getCourseCount());
 
-	isValidIndex = false;
-	if (0 <= index && index < stageList->mCourseCount) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1930, isValidIndex);
-
-	if (mBitfieldPerCourse[index] & PDCF_Open) {
-		return (mBitfieldPerCourse[index] & PDCF_Unknown2) != 0;
-	} else {
+	if (!courseOpen(index)) {
 		return false;
+	} else {
+		return (mBitfieldPerCourse[index] & PDCF_Unknown2) >> 5;
 	}
 	/*
 	stwu     r1, -0x10(r1)
@@ -3837,25 +2716,19 @@ lbl_801E96A8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E96C0
- * Size:	000080
+/**
+ * @note Address: 0x801E96C0
+ * @note Size: 0x80
  */
 bool PlayData::courseVisited(int index)
 {
-	bool isValidIndex = false;
-	if (0 <= index && index < stageList->mCourseCount) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1965, isValidIndex);
+	P2ASSERTBOUNDSLINE(1965, 0, index, stageList->getCourseCount());
 	return mBitfieldPerCourse[index] & PDCF_Visited;
 }
 
-/*
- * --INFO--
- * Address:	801E9740
- * Size:	000084
+/**
+ * @note Address: 0x801E9740
+ * @note Size: 0x84
  */
 CaveSaveData::CaveSaveData()
     : mCurrentCaveID()
@@ -3871,10 +2744,9 @@ CaveSaveData::CaveSaveData()
 	mWaterwraithTimer   = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	801E97C4
- * Size:	000068
+/**
+ * @note Address: 0x801E97C4
+ * @note Size: 0x68
  */
 void CaveSaveData::clear()
 {
@@ -3887,339 +2759,97 @@ void CaveSaveData::clear()
 	mWaterwraithTimer   = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	801E982C
- * Size:	000194
+/**
+ * @note Address: 0x801E982C
+ * @note Size: 0x194
  */
 bool PlayData::doneWorldMapEffect()
 {
-	s32 courseCount = stageList->mCourseCount;
+	int courseCount = stageList->mCourseCount;
 	mPokoCountOld   = mPokoCount;
 	for (int i = 0; i < courseCount; i++) {
 		mGroundOtakaraCollectedOld[i] = mGroundOtakaraCollected[i];
 	}
 
 	for (int i = 0; i < courseCount; i++) {
-		CaveOtakara* datanew = (CaveOtakara*)mCaveOtakara->mCaveCount + i;
-		CaveOtakara* data    = (CaveOtakara*)mCaveOtakaraOld->mCaveCount + i;
+		CaveOtakara* datanew = &mCaveOtakara[i];
+		CaveOtakara* data    = &mCaveOtakaraOld[i];
 		data->mCaveCount     = datanew->mCaveCount;
-		// s8 caveCount = data->mCaveCount;
 		for (int j = 0; j < datanew->mCaveCount; j++) {
 			data->mOtakaraCountsOld[j] = datanew->mOtakaraCountsOld[j];
 			data->_08[j]               = datanew->_08[j];
 		}
 	}
-	/*
-	stwu     r1, -0x10(r1)
-	li       r5, 0
-	stw      r31, 0xc(r1)
-	stw      r30, 8(r1)
-	lwz      r4, stageList__4Game@sda21(r13)
-	lwz      r0, 0xe8(r3)
-	lhz      r4, 0x100(r4)
-	cmpwi    r4, 0
-	stw      r0, 0xfc(r3)
-	ble      lbl_801E9940
-	cmpwi    r4, 8
-	addi     r6, r4, -8
-	ble      lbl_801E9918
-	addi     r0, r6, 7
-	srwi     r0, r0, 3
-	mtctr    r0
-	cmpwi    r6, 0
-	ble      lbl_801E9918
-
-lbl_801E9874:
-	lwz      r7, 0xdc(r3)
-	addi     r31, r5, 1
-	lwz      r6, 0xf4(r3)
-	addi     r12, r5, 2
-	lbzx     r0, r7, r5
-	addi     r11, r5, 3
-	addi     r10, r5, 4
-	addi     r9, r5, 5
-	stbx     r0, r6, r5
-	addi     r8, r5, 6
-	addi     r7, r5, 7
-	addi     r5, r5, 8
-	lwz      r30, 0xdc(r3)
-	lwz      r6, 0xf4(r3)
-	lbzx     r0, r30, r31
-	stbx     r0, r6, r31
-	lwz      r31, 0xdc(r3)
-	lwz      r6, 0xf4(r3)
-	lbzx     r0, r31, r12
-	stbx     r0, r6, r12
-	lwz      r12, 0xdc(r3)
-	lwz      r6, 0xf4(r3)
-	lbzx     r0, r12, r11
-	stbx     r0, r6, r11
-	lwz      r11, 0xdc(r3)
-	lwz      r6, 0xf4(r3)
-	lbzx     r0, r11, r10
-	stbx     r0, r6, r10
-	lwz      r10, 0xdc(r3)
-	lwz      r6, 0xf4(r3)
-	lbzx     r0, r10, r9
-	stbx     r0, r6, r9
-	lwz      r9, 0xdc(r3)
-	lwz      r6, 0xf4(r3)
-	lbzx     r0, r9, r8
-	stbx     r0, r6, r8
-	lwz      r8, 0xdc(r3)
-	lwz      r6, 0xf4(r3)
-	lbzx     r0, r8, r7
-	stbx     r0, r6, r7
-	bdnz     lbl_801E9874
-
-lbl_801E9918:
-	subf     r0, r5, r4
-	mtctr    r0
-	cmpw     r5, r4
-	bge      lbl_801E9940
-
-lbl_801E9928:
-	lwz      r7, 0xdc(r3)
-	lwz      r6, 0xf4(r3)
-	lbzx     r0, r7, r5
-	stbx     r0, r6, r5
-	addi     r5, r5, 1
-	bdnz     lbl_801E9928
-
-lbl_801E9940:
-	li       r7, 0
-	mtctr    r4
-	cmpwi    r4, 0
-	ble      lbl_801E99B0
-
-lbl_801E9950:
-	lwz      r0, 0xe0(r3)
-	li       r10, 0
-	lwz      r4, 0xf8(r3)
-	li       r6, 0
-	add      r8, r0, r7
-	lbz      r0, 0(r8)
-	add      r9, r4, r7
-	stb      r0, 0(r9)
-	b        lbl_801E999C
-
-lbl_801E9974:
-	lwz      r5, 4(r8)
-	lwz      r4, 4(r9)
-	lbzx     r0, r5, r10
-	stbx     r0, r4, r10
-	addi     r10, r10, 1
-	lwz      r5, 8(r8)
-	lwz      r4, 8(r9)
-	lwzx     r0, r5, r6
-	stwx     r0, r4, r6
-	addi     r6, r6, 4
-
-lbl_801E999C:
-	lbz      r0, 0(r8)
-	cmpw     r10, r0
-	blt      lbl_801E9974
-	addi     r7, r7, 0xc
-	bdnz     lbl_801E9950
-
-lbl_801E99B0:
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801E99C0
- * Size:	00007C
+/**
+ * @note Address: 0x801E99C0
+ * @note Size: 0x7C
  */
 int PlayData::getGroundOtakaraNum_Old(int index)
 {
-	bool isValidIndex = false;
-	if (0 <= index && index < stageList->mCourseCount) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(2040, isValidIndex);
+	P2ASSERTBOUNDSLINE(2040, 0, index, stageList->getCourseCount());
 	return mGroundOtakaraCollectedOld[index];
 }
 
-/*
- * --INFO--
- * Address:	801E9A3C
- * Size:	0000B8
+/**
+ * @note Address: 0x801E9A3C
+ * @note Size: 0xB8
  */
 int PlayData::getOtakaraNum_Course_CaveID_Old(int courseIndex, ID32& caveID)
 {
 	CourseInfo* info = stageList->getCourseInfo(courseIndex);
 	if (info) {
-		CaveOtakara* ota = mCaveOtakaraOld;
+		CaveOtakara* ota = &mCaveOtakaraOld[courseIndex];
 		int id           = info->getCaveIndex_FromID(caveID);
 		if (id != -1) {
-			if (id >= 0 && id < ota[courseIndex].mCaveCount) {
-				return ota[courseIndex].mOtakaraCountsOld[id];
+			if (id >= 0 && id < ota->mCaveCount) {
+				return ota->mOtakaraCountsOld[id];
 			}
+			return -1;
 		}
-		return -1;
 	} else {
 		JUT_PANICLINE(2057, "course index error:%d (getOtakaraNum_*)\n", courseIndex);
 	}
 	return -1;
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r5
-	stw      r30, 0x18(r1)
-	mr       r30, r4
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	lwz      r3, stageList__4Game@sda21(r13)
-	bl       getCourseInfo__Q24Game6StagesFi
-	cmplwi   r3, 0
-	beq      lbl_801E9AB4
-	mulli    r0, r30, 0xc
-	lwz      r5, 0xf8(r29)
-	mr       r4, r31
-	add      r31, r5, r0
-	bl       getCaveIndex_FromID__Q24Game10CourseInfoFR4ID32
-	cmpwi    r3, -1
-	beq      lbl_801E9AD4
-	cmpwi    r3, 0
-	blt      lbl_801E9AAC
-	lbz      r0, 0(r31)
-	cmpw     r3, r0
-	bge      lbl_801E9AAC
-	lwz      r4, 4(r31)
-	lbzx     r3, r4, r3
-	b        lbl_801E9AD8
-
-lbl_801E9AAC:
-	li       r3, -1
-	b        lbl_801E9AD8
-
-lbl_801E9AB4:
-	lis      r3, lbl_80480E4C@ha
-	lis      r4, lbl_80480ED0@ha
-	addi     r5, r4, lbl_80480ED0@l
-	mr       r6, r30
-	addi     r3, r3, lbl_80480E4C@l
-	li       r4, 0x809
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801E9AD4:
-	li       r3, -1
-
-lbl_801E9AD8:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801E9AF4
- * Size:	000008
+/**
+ * @note Address: 0x801E9AF4
+ * @note Size: 0x8
  */
 int PlayData::getMoney_Old() { return mPokoCountOld; }
 
-/*
- * --INFO--
- * Address:	801E9AFC
- * Size:	0000A4
+/**
+ * @note Address: 0x801E9AFC
+ * @note Size: 0xA4
  */
 bool PlayData::isCaveFirstTime_Old(int courseIndex, ID32& caveID)
 {
 	CourseInfo* info = Game::stageList->getCourseInfo(courseIndex);
 	if (info) {
-		CaveOtakara* otakara = mCaveOtakaraOld;
+		CaveOtakara* otakara = &mCaveOtakaraOld[courseIndex];
 		int caveIndex        = info->getCaveIndex_FromID(caveID);
 		if (caveIndex != -1) {
-			if (0 <= caveIndex && caveIndex < otakara[courseIndex].mCaveCount) {
-				return otakara[courseIndex]._08[caveIndex] == 0;
+			if (0 <= caveIndex && caveIndex < otakara->mCaveCount) {
+				return otakara->_08[caveIndex] == 0;
 			}
 			return false;
 		}
 	}
 	return false;
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r5
-	stw      r30, 0x18(r1)
-	mr       r30, r4
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	lwz      r3, stageList__4Game@sda21(r13)
-	bl       getCourseInfo__Q24Game6StagesFi
-	cmplwi   r3, 0
-	beq      lbl_801E9B80
-	mulli    r0, r30, 0xc
-	lwz      r5, 0xf8(r29)
-	mr       r4, r31
-	add      r31, r5, r0
-	bl       getCaveIndex_FromID__Q24Game10CourseInfoFR4ID32
-	cmpwi    r3, -1
-	beq      lbl_801E9B80
-	cmpwi    r3, 0
-	blt      lbl_801E9B78
-	lbz      r0, 0(r31)
-	cmpw     r3, r0
-	bge      lbl_801E9B78
-	lwz      r4, 8(r31)
-	slwi     r0, r3, 2
-	lwzx     r0, r4, r0
-	cntlzw   r0, r0
-	srwi     r3, r0, 5
-	b        lbl_801E9B84
-
-lbl_801E9B78:
-	li       r3, 0
-	b        lbl_801E9B84
-
-lbl_801E9B80:
-	li       r3, 0
-
-lbl_801E9B84:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801E9BA0
- * Size:	0000D4
+/**
+ * @note Address: 0x801E9BA0
+ * @note Size: 0xD4
  */
 void PlayData::read_CaveOtakara_Old(Stream& ram)
 {
-	int max = stageList->mCourseCount;
+	int max = stageList->getCourseCount();
 	for (int i = 0; i < max; i++) {
-		CaveOtakara ota = mCaveOtakaraOld[i];
-		u8 oldcount     = ota.mCaveCount;
-		ota.mCaveCount  = ram.readByte();
-		JUT_ASSERTLINE(1797, ota.mCaveCount == oldcount, "ÉZÅ[ÉuÇµÇΩÇ∆Ç´Ç∆ì¥åAÇÃêîÇ™Ç†Ç¢Ç‹ÇπÇÒ\n");
-
-		for (int j = 0; j < ota.mCaveCount; j++) {
-			ota.mOtakaraCountsOld[j] = ram.readByte();
-			ota._08[j]               = ram.readByte();
-		}
+		CaveOtakara* ota = &mCaveOtakaraOld[i];
+		ota->read(ram);
 	}
 	/*
 	stwu     r1, -0x30(r1)
@@ -4288,30 +2918,17 @@ lbl_801E9C58:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E9C74
- * Size:	000118
+/**
+ * @note Address: 0x801E9C74
+ * @note Size: 0x118
  */
 void PlayData::write_CaveOtakara_Old(Stream& ram)
 {
 	ram.textBeginGroup("Åñì¥åAèÓïÒ(Old)Åñ");
-	int max = stageList->mCourseCount;
+	int max = stageList->getCourseCount();
 	for (int i = 0; i < max; i++) {
-		CaveOtakara ota = mCaveOtakaraOld[i];
-		ram.textWriteTab(ram.mTabCount);
-		ram.writeByte(ota.mCaveCount);
-		ram.textWriteText("# caveêî\r\n");
-
-		for (int j = 0; j < ota.mCaveCount; j++) {
-			ram.textWriteTab(ram.mTabCount);
-			ram.writeByte(ota.mOtakaraCountsOld[j]);
-			ram.textWriteText("# å¬êî\r\n"); // translates to quantity
-
-			ram.textWriteTab(ram.mTabCount);
-			ram.writeByte(ota._08[j]);
-			ram.textWriteText("# èÛë‘\r\n"); // translates to situation
-		}
+		CaveOtakara* ota = &mCaveOtakaraOld[i];
+		ota->write(ram);
 	}
 	ram.textEndGroup();
 	/*
@@ -4396,40 +3013,29 @@ lbl_801E9D68:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801E9D8C
- * Size:	000078
+/**
+ * @note Address: 0x801E9D8C
+ * @note Size: 0x78
  */
 int PlayData::getPikminCount_Today(int pikminColor)
 {
-	bool isValidIndex = false;
-	if (0 <= pikminColor && pikminColor < 6) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(2114, isValidIndex);
+	P2ASSERTBOUNDSLINE(2114, FirstPikmin, pikminColor, StoredPikiCount + 1);
 	return mPikminToday[pikminColor];
 }
 
-/*
- * --INFO--
- * Address:	801E9E04
- * Size:	000078
+/**
+ * @note Address: 0x801E9E04
+ * @note Size: 0x78
  */
 int PlayData::getPikminCount_Yesterday(int pikminColor)
 {
-	bool isValidIndex = false;
-	if (0 <= pikminColor && pikminColor < 6) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(2121, isValidIndex);
+	P2ASSERTBOUNDSLINE(2121, FirstPikmin, pikminColor, StoredPikiCount + 1);
 	return mPikminYesterday[pikminColor];
 }
 
-/*
- * --INFO--
- * Address:	801E9E7C
- * Size:	000108
+/**
+ * @note Address: 0x801E9E7C
+ * @note Size: 0x108
  */
 void PlayData::setPikminCounts_Today()
 {
@@ -4439,8 +3045,8 @@ void PlayData::setPikminCounts_Today()
 	GameStat::PikiCounter* cont1 = &GameStat::zikatuPikis;
 	GameStat::PikiCounter* cont2 = &GameStat::alivePikis;
 
-	for (int i = 0; i < 6; i++) {
-		if (i == 5) {
+	for (int i = FirstPikmin; i < StoredPikiCount + 1; i++) {
+		if (i == AllPikmin) {
 			int pikiheads = generatorCache->getTotalMePikmins();
 			int pikis     = GameStat::alivePikis;
 			int pikidiff  = pikis - GameStat::zikatuPikis;
@@ -4450,104 +3056,22 @@ void PlayData::setPikminCounts_Today()
 			mPikminToday[i] = pikiheads + pikidiff + pikis3;
 		} else {
 			int pikiheads = generatorCache->getColorMePikmins(i);
-			int pikis     = cont2->mPikiCounts[0] - cont1->mPikiCounts[0];
+			int pikis     = cont2->mPikiCounts[i] - cont1->mPikiCounts[i];
 			if (pikis < 0)
 				pikis = 0;
 			int pikis3      = mPikiContainer.getColorSum(i);
 			mPikminToday[i] = pikiheads + pikis + pikis3;
 		}
-		cont1 = (GameStat::PikiCounter*)cont1->mPikiCounts;
-		cont2 = (GameStat::PikiCounter*)cont2->mPikiCounts;
 	}
-
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stmw     r25, 0x14(r1)
-	mr       r27, r3
-	bl       account_today_adjust__Q24Game8BirthMgrFv
-	bl       account_today__Q24Game8BirthMgrFv
-	lis      r4, zikatuPikis__Q24Game8GameStat@ha
-	lis      r3, alivePikis__Q24Game8GameStat@ha
-	addi     r30, r4, zikatuPikis__Q24Game8GameStat@l
-	mr       r31, r27
-	addi     r29, r3, alivePikis__Q24Game8GameStat@l
-	li       r28, 0
-
-lbl_801E9EB0:
-	cmpwi    r28, 5
-	bne      lbl_801E9F1C
-	lwz      r3, generatorCache__4Game@sda21(r13)
-	bl       getTotalMePikmins__Q24Game14GeneratorCacheFv
-	lis      r4, alivePikis__Q24Game8GameStat@ha
-	mr       r25, r3
-	addi     r3, r4, alivePikis__Q24Game8GameStat@l
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lis      r4, zikatuPikis__Q24Game8GameStat@ha
-	mr       r26, r3
-	addi     r3, r4, zikatuPikis__Q24Game8GameStat@l
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	subf.    r26, r3, r26
-	bge      lbl_801E9F04
-	li       r26, 0
-
-lbl_801E9F04:
-	addi     r3, r27, 0xa8
-	bl       getTotalSum__Q24Game13PikiContainerFv
-	add      r0, r26, r3
-	add      r0, r25, r0
-	stw      r0, 0x118(r31)
-	b        lbl_801E9F58
-
-lbl_801E9F1C:
-	lwz      r3, generatorCache__4Game@sda21(r13)
-	mr       r4, r28
-	bl       getColorMePikmins__Q24Game14GeneratorCacheFi
-	lwz      r4, 4(r30)
-	mr       r26, r3
-	lwz      r0, 4(r29)
-	subf.    r25, r4, r0
-	bge      lbl_801E9F40
-	li       r25, 0
-
-lbl_801E9F40:
-	mr       r4, r28
-	addi     r3, r27, 0xa8
-	bl       getColorSum__Q24Game13PikiContainerFi
-	add      r0, r25, r3
-	add      r0, r26, r0
-	stw      r0, 0x118(r31)
-
-lbl_801E9F58:
-	addi     r28, r28, 1
-	addi     r30, r30, 4
-	cmpwi    r28, 6
-	addi     r29, r29, 4
-	addi     r31, r31, 4
-	blt      lbl_801E9EB0
-	lmw      r25, 0x14(r1)
-	lwz      r0, 0x34(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801E9F84
- * Size:	000034
+/**
+ * @note Address: 0x801E9F84
+ * @note Size: 0x34
  */
 void PlayData::setPikminCounts_Yesterday()
 {
-	for (int i = 0; i < 6; i++) {
+	for (int i = FirstPikmin; i < StoredPikiCount + 1; i++) {
 		mPikminYesterday[i] = mPikminToday[i];
 	}
 }

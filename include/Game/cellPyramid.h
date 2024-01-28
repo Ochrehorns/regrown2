@@ -103,7 +103,7 @@ struct Cell {
 	CellLeg* mLeg;              // _1C
 	Cell* mNextCell;            // _20
 	Cell* mPrevCell;            // _24
-	short mLayerIdx;            // _28
+	s16 mLayerIdx;              // _28
 
 	static CellPyramid* sCurrCellMgr;
 };
@@ -168,7 +168,7 @@ struct CellLayer {
 	u16 mLayerSize; // _04
 	u16 mLayerIdx;  // _06
 	Cell* mCells;   // _08
-	Cell mCell;     // _0C
+	Cell mCurrCell; // _0C
 };
 
 struct CellPyramid : public SweepPrune::World {
@@ -190,14 +190,15 @@ struct CellPyramid : public SweepPrune::World {
 	void drawCell(Graphics&);
 	void dumpCount(int&, int&);
 
+	inline CellLayer* getLayer(int i) { return &mLayers[i]; }
+
 	int mFreeMemory;    // _28
 	int mLayerCount;    // _2C
 	CellLayer* mLayers; // _30
 	f32 mScale;         // _34
 	f32 mInverseScale;  // _38
-	f32 mLeft;          // _3C
-	f32 mRight;         // _40
-	/*
+	Vector2f mBounds;   // _3C
+	/**
 	 * Incremented at the start of every resolve/search pass.
 	 * Passed on to CellObjects to prevent evaluating multiple times per pass.
 	 */
@@ -220,11 +221,11 @@ struct CellIteratorArg {
 	CellIteratorArg(Sys::Sphere& sphere);
 
 	Sys::Sphere mSphere;               // _00
-	CellIteratorCondition* mCondition; // _10, this is a ptr to something with a vtable, and 0x8 of vtable returns a bool ._.
-	int mUseCustomRadius;              // _14, UNUSED but a name is better than nothing
+	CellIteratorCondition* mCondition; // _10
+	int mUseCustomRadius;              // _14, Useless flag,
 	CellPyramid* mCellMgr;             // _18
-	bool mIsSphereCollisionDisabled;   // _1C, if false, will calc overlapping bounding spheres rather than just "in cell or no"
-	u8 _1D;                            // _1D, set to 0 and unused
+	bool mOptimise;                    // _1C, if false, will calc overlapping bounding spheres rather than just "in cell or no"
+	u8 mUnused;                        // _1D, set to 0 and unused
 };
 
 #define CI_LOOP(it) for (it.first(); !it.isDone(); it.next())
@@ -260,5 +261,16 @@ extern CellPyramid* cellMgr;
 extern CellPyramid* platCellMgr;
 extern CellPyramid* mapRoomCellMgr;
 } // namespace Game
+
+struct SweepCallback : public SweepPrune::World::Callback {
+	virtual void invoke(SweepPrune::Object* objA, SweepPrune::Object* objB) // _08
+	{
+		Game::CellObject* cObjA = static_cast<Game::CellObject*>(objA);
+		Game::CellObject* cObjB = static_cast<Game::CellObject*>(objB);
+		cObjA->checkCollision(cObjB);
+	}
+
+	// vt _00
+};
 
 #endif

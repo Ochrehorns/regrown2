@@ -10,46 +10,42 @@ static s32 YearDays[OS_TIME_MONTH_MAX] = { 0, 31, 59, 90, 120, 151, 181, 212, 24
 // End of each month in leap year
 static s32 LeapYearDays[OS_TIME_MONTH_MAX] = { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 };
 
-/*
- * --INFO--
- * Address:	800F2B90
- * Size:	000018
+/**
+ * @note Address: 0x800F2B90
+ * @note Size: 0x18
  */
-asm s64 OSGetTime()
-{
-	// clang-format off
-    nofralloc
+ASM s64 OSGetTime() {
+#ifdef __MWERKS__ // clang-format off
+	nofralloc
 
-    mftbu r3
-    mftb r4
+	mftbu r3
+	mftb r4
 
-    // Check for possible carry from TBL to TBU
-    mftbu r5
-    cmpw r3, r5
-    bne OSGetTime
+	// Check for possible carry from TBL to TBU
+	mftbu r5
+	cmpw r3, r5
+	bne OSGetTime
 
-    blr
-	// clang-format on
+	blr
+#endif // clang-format on
 }
 
-/*
- * --INFO--
- * Address:	800F2BA8
- * Size:	000008
+/**
+ * @note Address: 0x800F2BA8
+ * @note Size: 0x8
  */
-asm u32 OSGetTick() {
-	// clang-format off
-    nofralloc
+ASM u32 OSGetTick() {
+#ifdef __MWERKS__ // clang-format off
+	nofralloc
 
-    mftb r3
-    blr
-	// clang-format on
+	mftb r3
+	blr
+#endif // clang-format on
 }
 
-/*
- * --INFO--
- * Address:	800F2BB0
- * Size:	000064
+/**
+ * @note Address: 0x800F2BB0
+ * @note Size: 0x64
  */
 OSTime __OSGetSystemTime()
 {
@@ -64,17 +60,15 @@ OSTime __OSGetSystemTime()
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000088
+/**
+ * @note Address: N/A
+ * @note Size: 0x88
  */
 static BOOL IsLeapYear(s32 year) { return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0); }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000050
+/**
+ * @note Address: N/A
+ * @note Size: 0x50
  */
 static s32 GetLeapDays(s32 year)
 {
@@ -84,10 +78,9 @@ static s32 GetLeapDays(s32 year)
 	return (year + 3) / 4 - (year - 1) / 100 + (year - 1) / 400;
 }
 
-/*
- * --INFO--
- * Address:	800F2C14
- * Size:	00019C
+/**
+ * @note Address: 0x800F2C14
+ * @note Size: 0x19C
  */
 static void GetDates(s32 days, OSCalendarTime* cal)
 {
@@ -115,10 +108,9 @@ static void GetDates(s32 days, OSCalendarTime* cal)
 }
 
 #pragma dont_inline on
-/*
- * --INFO--
- * Address:	800F2DB0
- * Size:	000204
+/**
+ * @note Address: 0x800F2DB0
+ * @note Size: 0x204
  */
 void OSTicksToCalendarTime(OSTime ticks, OSCalendarTime* cal)
 {

@@ -4,59 +4,55 @@
 
 static CARDMemoryCard sCardWorkArea;
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00000C
+/**
+ * @note Address: N/A
+ * @note Size: 0xC
  */
 // void MemoryCardMgr::setTmpHeap(JKRHeap*)
 //{
 // UNUSED FUNCTION
 //}
 
-/*
- * --INFO--
- * Address:	804405F0
- * Size:	00007C
+/**
+ * @note Address: 0x804405F0
+ * @note Size: 0x7C
  */
 MemoryCardMgr::MemoryCardMgr()
 {
-	_A4         = 0;
-	mIsCard     = 0;
-	mHeap       = 0;
-	_D0         = 0;
-	mStatusFlag = INSIDESTATUS_Unk;
-	mHeap       = JKRHeap::getSystemHeap();
+	mCurrentCommandIdx = 0;
+	mIsCard            = 0;
+	mHeap              = 0;
+	_D0                = 0;
+	mStatusFlag        = INSIDESTATUS_Unk;
+	mHeap              = JKRHeap::getSystemHeap();
 	resetCommandFlagQueue();
 }
 
-/*
- * --INFO--
- * Address:	80440690
- * Size:	000024
+/**
+ * @note Address: 0x80440690
+ * @note Size: 0x24
  */
 void MemoryCardMgr::resetCommandFlagQueue()
 {
-	mCommands[0]._00 = 0;
-	mCommands[1]._00 = 0;
-	mCommands[2]._00 = 0;
-	mCommands[3]._00 = 0;
-	mCommands[4]._00 = 0;
-	_A4              = 0;
-	mIsCard          = 0;
+	mCommands[0]._00   = 0;
+	mCommands[1]._00   = 0;
+	mCommands[2]._00   = 0;
+	mCommands[3]._00   = 0;
+	mCommands[4]._00   = 0;
+	mCurrentCommandIdx = 0;
+	mIsCard            = 0;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00008C
+/**
+ * @note Address: N/A
+ * @note Size: 0x8C
  */
 MemoryCardMgrCommand* MemoryCardMgr::getCurrentCommand()
 {
 	// this is placeholder for what needs to be here. assert is correct.
 	// should get used in cardProc()
 	bool check                = false;
-	MemoryCardMgrCommand* cmd = &mCommands[_A4];
+	MemoryCardMgrCommand* cmd = &mCommands[mCurrentCommandIdx];
 	if (cmd->_00 || (!cmd->_00 && (int)mIsCard == 0)) {
 		check = true;
 	}
@@ -64,10 +60,9 @@ MemoryCardMgrCommand* MemoryCardMgr::getCurrentCommand()
 	return cmd;
 }
 
-/*
- * --INFO--
- * Address:	804406B4
- * Size:	000040
+/**
+ * @note Address: 0x804406B4
+ * @note Size: 0x40
  */
 void MemoryCardMgr::setCommand(int param_1)
 {
@@ -75,10 +70,9 @@ void MemoryCardMgr::setCommand(int param_1)
 	setCommand(&command);
 }
 
-/*
- * --INFO--
- * Address:	804406F4
- * Size:	000138
+/**
+ * @note Address: 0x804406F4
+ * @note Size: 0x138
  */
 bool MemoryCardMgr::setCommand(MemoryCardMgrCommandBase* command)
 {
@@ -100,13 +94,13 @@ bool MemoryCardMgr::setCommand(MemoryCardMgrCommandBase* command)
 	}
 
 	if (check) {
-		u32 j = _A4;
+		u32 j = mCurrentCommandIdx;
 		while (true) {
 			int* dumbPtr = (int*)&((MemoryCardMgrCommand*)(this))[j];
 			if (!dumbPtr[1]) {
 				memcpy((void*)(&dumbPtr[1]), (void*)command, 0x20);
 				mIsCard++;
-				P2ASSERTLINE(254, mIsCard <= 5);
+				P2ASSERTLINE(254, (u32)mIsCard <= 5);
 				break;
 			}
 			j++;
@@ -215,35 +209,33 @@ lbl_80440804:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000A8
+/**
+ * @note Address: N/A
+ * @note Size: 0xA8
  */
 void MemoryCardMgr::releaseCurrentCommand()
 {
 	P2ASSERTLINE(285, (int)mIsCard >= 0);
-	if (++_A4 == 5) {
-		_A4 = 0;
+	if (++mCurrentCommandIdx == 5) {
+		mCurrentCommandIdx = 0;
 	}
 
 	if (isErrorOccured()) {
-		mCommands[0]._00 = 0;
-		mCommands[1]._00 = 0;
-		mCommands[2]._00 = 0;
-		mCommands[3]._00 = 0;
-		mCommands[4]._00 = 0;
-		_A4              = 0;
-		mIsCard          = 0;
+		mCommands[0]._00   = 0;
+		mCommands[1]._00   = 0;
+		mCommands[2]._00   = 0;
+		mCommands[3]._00   = 0;
+		mCommands[4]._00   = 0;
+		mCurrentCommandIdx = 0;
+		mIsCard            = 0;
 	}
 }
 
-/*
- * --INFO--
- * Address:	8044082C
- * Size:	0002A0
+/**
+ * @note Address: 0x8044082C
+ * @note Size: 0x2A0
  */
-bool MemoryCardMgr::cardFormat(MemoryCardMgr::ECardSlot slot)
+bool MemoryCardMgr::cardFormat(ECardSlot slot)
 {
 	bool result = false;
 	if (OSTryLockMutex(&mOsMutex)) {
@@ -261,31 +253,29 @@ bool MemoryCardMgr::cardFormat(MemoryCardMgr::ECardSlot slot)
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	80440ACC
- * Size:	00007C
+/**
+ * @note Address: 0x80440ACC
+ * @note Size: 0x7C
  */
 void MemoryCardMgr::init()
 {
 	CARDInit();
-	mCommands[0]._00 = 0;
-	mCommands[1]._00 = 0;
-	mCommands[2]._00 = 0;
-	mCommands[3]._00 = 0;
-	mCommands[4]._00 = 0;
-	_A4              = 0;
-	mIsCard          = 0;
+	mCommands[0]._00   = 0;
+	mCommands[1]._00   = 0;
+	mCommands[2]._00   = 0;
+	mCommands[3]._00   = 0;
+	mCommands[4]._00   = 0;
+	mCurrentCommandIdx = 0;
+	mIsCard            = 0;
 	setInsideStatusFlag(INSIDESTATUS_Unk);
 	OSInitMutex(&mOsMutex);
 	OSInitCond(&mCond);
 	doInit();
 }
 
-/*
- * --INFO--
- * Address:	80440B4C
- * Size:	000320
+/**
+ * @note Address: 0x80440B4C
+ * @note Size: 0x320
  */
 void MemoryCardMgr::update()
 {
@@ -313,10 +303,9 @@ void MemoryCardMgr::update()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80440E6C
- * Size:	000150
+/**
+ * @note Address: 0x80440E6C
+ * @note Size: 0x150
  */
 bool MemoryCardMgr::cardMount()
 {
@@ -324,10 +313,9 @@ bool MemoryCardMgr::cardMount()
 	return setCommand(&command);
 }
 
-/*
- * --INFO--
- * Address:	80440FBC
- * Size:	000104
+/**
+ * @note Address: 0x80440FBC
+ * @note Size: 0x104
  */
 u32 MemoryCardMgr::checkStatus()
 {
@@ -377,10 +365,9 @@ u32 MemoryCardMgr::checkStatus()
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	804410C0
- * Size:	000250
+/**
+ * @note Address: 0x804410C0
+ * @note Size: 0x250
  */
 void MemoryCardMgr::cardProc(void* data)
 {
@@ -409,8 +396,8 @@ void MemoryCardMgr::cardProc(void* data)
 			doCardProc(data, currCmd);
 		}
 
-		memset(&mCommands[_A4], 205, sizeof(MemoryCardMgrCommand));
-		mCommands[_A4]._00 = 0;
+		memset(&mCommands[mCurrentCommandIdx], 205, sizeof(MemoryCardMgrCommand));
+		mCommands[mCurrentCommandIdx]._00 = 0;
 		mIsCard--;
 		releaseCurrentCommand();
 		OSUnlockMutex(&mOsMutex);
@@ -605,19 +592,17 @@ lbl_80441304:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80441318
- * Size:	000110
+/**
+ * @note Address: 0x80441318
+ * @note Size: 0x110
  */
 bool MemoryCardMgr::isErrorOccured() { return (checkStatus() != 2); }
 
-/*
- * --INFO--
- * Address:	80441428
- * Size:	0001A0
+/**
+ * @note Address: 0x80441428
+ * @note Size: 0x1A0
  */
-bool MemoryCardMgr::fileOpen(CARDFileInfo* fileInfo, MemoryCardMgr::ECardSlot cardSlot, const char* fileName)
+bool MemoryCardMgr::fileOpen(CARDFileInfo* fileInfo, ECardSlot cardSlot, const char* fileName)
 {
 	bool result = false;
 	u32 cardRes = 11;
@@ -768,12 +753,11 @@ bool MemoryCardMgr::fileOpen(CARDFileInfo* fileInfo, MemoryCardMgr::ECardSlot ca
 	*/
 }
 
-/*
- * --INFO--
- * Address:	804415C8
- * Size:	000278
+/**
+ * @note Address: 0x804415C8
+ * @note Size: 0x278
  */
-bool MemoryCardMgr::writeHeader(MemoryCardMgr::ECardSlot cardSlot, const char* fileName)
+bool MemoryCardMgr::writeHeader(ECardSlot cardSlot, const char* fileName)
 {
 	CARDFileInfo fileInfo;
 	bool result = false;
@@ -1027,13 +1011,57 @@ lbl_80441820:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80441848
- * Size:	000254
- */
-void MemoryCardMgr::writeCardStatus(MemoryCardMgr::ECardSlot, const char*)
+inline void checkSlot(MemoryCardMgr::ECardSlot cardSlot)
 {
+	bool check = (cardSlot == 0 || cardSlot == 1);
+	P2ASSERTLINE(536, check);
+}
+
+/**
+ * @note Address: 0x80441848
+ * @note Size: 0x254
+ */
+bool MemoryCardMgr::writeCardStatus(ECardSlot cardSlot, const char* fileName)
+{
+	CARDFileInfo fileInfo;
+	CARDStat cardStat;
+	bool result = 0;
+	bool result2;
+	checkSlot(cardSlot);
+	result2 = false;
+	if (checkStatus() == 2) {
+		u32 cardRes = CARDOpen(cardSlot, (char*)fileName, &fileInfo);
+		switch (cardRes) {
+		case CARD_RESULT_READY:
+			setInsideStatusFlag(INSIDESTATUS_Unk1);
+			result = true;
+			break;
+		case CARD_RESULT_NOCARD:
+			setInsideStatusFlag(INSIDESTATUS_Unk);
+			break;
+		default:
+			setInsideStatusFlag(INSIDESTATUS_Unk3);
+			break;
+		}
+		if (result) {
+			if (!CARDGetStatus(cardSlot, fileInfo.fileNo, &cardStat)) {
+				if (!doCheckCardStat(&cardStat)) {
+					doSetCardStat(&cardStat);
+					setInsideStatusFlag(INSIDESTATUS_Unk11);
+					if (CARDSetStatus(cardSlot, fileInfo.fileNo, &cardStat)) {
+						setInsideStatusFlag(INSIDESTATUS_Unk10);
+					} else {
+						setInsideStatusFlag(INSIDESTATUS_Unk1);
+						result2 = true;
+					}
+				}
+			} else {
+				setInsideStatusFlag(INSIDESTATUS_Unk10);
+			}
+		}
+		CARDClose(&fileInfo);
+		return result2;
+	}
 	/*
 	stwu     r1, -0xb0(r1)
 	mflr     r0
@@ -1235,46 +1263,41 @@ lbl_80441A7C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80441A9C
- * Size:	000204
+/**
+ * @note Address: 0x80441A9C
+ * @note Size: 0x204
  */
-bool MemoryCardMgr::write(MemoryCardMgr::ECardSlot cardSlot, const char* fileName, u8* buffer, s32 length, s32 offset)
+bool MemoryCardMgr::write(ECardSlot cardSlot, const char* fileName, u8* buffer, s32 length, s32 offset)
 {
 	CARDFileInfo fileInfo;
+	checkSlot(cardSlot);
 	bool result = false;
-	bool result2;
-	if (cardSlot == 0) {
-		P2ASSERTLINE(536, false);
-	} else {
-		if (checkStatus() == 2) {
-			u32 cardRes = CARDOpen(cardSlot, (char*)fileName, &fileInfo);
-			switch (cardRes) {
-			case 0:
-				setInsideStatusFlag(INSIDESTATUS_Unk1);
-				result = true;
-				break;
-			case -3:
-				setInsideStatusFlag(INSIDESTATUS_Unk);
-				break;
-			default:
-				setInsideStatusFlag(INSIDESTATUS_Unk3);
-				break;
-			}
+	if (checkStatus() == 2) {
+		u32 cardRes = CARDOpen(cardSlot, (char*)fileName, &fileInfo);
+		switch (cardRes) {
+		case 0:
+			setInsideStatusFlag(INSIDESTATUS_Unk1);
+			result = true;
+			break;
+		case -3:
+			setInsideStatusFlag(INSIDESTATUS_Unk);
+			break;
+		default:
+			setInsideStatusFlag(INSIDESTATUS_Unk3);
+			break;
 		}
-		if (result) {
-			setInsideStatusFlag(INSIDESTATUS_Unk11);
-			if (CARDWrite(&fileInfo, buffer, length, offset)) {
-				setInsideStatusFlag(INSIDESTATUS_Unk10);
-			} else {
-				setInsideStatusFlag(INSIDESTATUS_Unk1);
-				result = true;
-			}
-			CARDClose(&fileInfo);
-		}
-		return result;
 	}
+	if (result) {
+		setInsideStatusFlag(INSIDESTATUS_Unk11);
+		if (CARDWrite(&fileInfo, buffer, length, offset)) {
+			setInsideStatusFlag(INSIDESTATUS_Unk10);
+		} else {
+			setInsideStatusFlag(INSIDESTATUS_Unk1);
+			result = true;
+		}
+		CARDClose(&fileInfo);
+	}
+	return result;
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x50(r1)
@@ -1433,12 +1456,11 @@ bool MemoryCardMgr::write(MemoryCardMgr::ECardSlot cardSlot, const char* fileNam
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80441CA0
- * Size:	0000C4
+/**
+ * @note Address: 0x80441CA0
+ * @note Size: 0xC4
  */
-bool MemoryCardMgr::checkCardStat(MemoryCardMgr::ECardSlot cardSlot, CARDFileInfo* fileInfo)
+bool MemoryCardMgr::checkCardStat(ECardSlot cardSlot, CARDFileInfo* fileInfo)
 {
 	CARDStat stat;
 	bool result = false;
@@ -1460,13 +1482,54 @@ bool MemoryCardMgr::checkCardStat(MemoryCardMgr::ECardSlot cardSlot, CARDFileInf
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	80441D64
- * Size:	000280
+/**
+ * @note Address: 0x80441D64
+ * @note Size: 0x280
  */
-bool MemoryCardMgr::read(MemoryCardMgr::ECardSlot, const char*, u8*, s32, s32)
+bool MemoryCardMgr::read(ECardSlot cardSlot, const char* fileName, u8* buffer, s32 length, s32 offset)
 {
+	CARDFileInfo fileInfo;
+	CARDStat cardStat;
+	bool result   = false;
+	char someChar = '\0';
+	checkSlot(cardSlot);
+	if (checkStatus() == 2) {
+		switch (CARDOpen(cardSlot, (char*)fileName, &fileInfo)) {
+		case CARD_RESULT_READY:
+			setInsideStatusFlag(INSIDESTATUS_Unk1);
+			result = true;
+			break;
+		case CARD_RESULT_NOCARD:
+			setInsideStatusFlag(INSIDESTATUS_Unk);
+			break;
+		default:
+			setInsideStatusFlag(INSIDESTATUS_Unk3);
+			break;
+		}
+		if (result) {
+			result = false;
+			setInsideStatusFlag(INSIDESTATUS_Unk11);
+			if (!CARDGetStatus(cardSlot, fileInfo.fileNo, &cardStat)) {
+				if (doCheckCardStat(&cardStat)) {
+					setInsideStatusFlag(INSIDESTATUS_Unk1);
+				} else {
+					setInsideStatusFlag(INSIDESTATUS_Unk1);
+				}
+			} else {
+				setInsideStatusFlag(INSIDESTATUS_Unk10);
+			}
+			_D0 = someChar;
+			setInsideStatusFlag(INSIDESTATUS_Unk11);
+			if (!CARDRead(&fileInfo, buffer, length, offset) == 0) {
+				setInsideStatusFlag(INSIDESTATUS_Unk10);
+			} else {
+				setInsideStatusFlag(INSIDESTATUS_Unk1);
+				result = true;
+			}
+			CARDClose(&fileInfo);
+		}
+		return result;
+	}
 	/*
 	.loc_0x0:
 	  stwu      r1, -0xB0(r1)
@@ -1662,12 +1725,11 @@ bool MemoryCardMgr::read(MemoryCardMgr::ECardSlot, const char*, u8*, s32, s32)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80441FE4
- * Size:	000088
+/**
+ * @note Address: 0x80441FE4
+ * @note Size: 0x88
  */
-void MemoryCardMgr::format(MemoryCardMgr::ECardSlot cardSlot)
+void MemoryCardMgr::format(ECardSlot cardSlot)
 {
 	CARDMount(cardSlot, &sCardWorkArea, nullptr);
 	setInsideStatusFlag(INSIDESTATUS_Unk11);
@@ -1681,12 +1743,11 @@ void MemoryCardMgr::format(MemoryCardMgr::ECardSlot cardSlot)
 	return;
 }
 
-/*
- * --INFO--
- * Address:	8044206C
- * Size:	000098
+/**
+ * @note Address: 0x8044206C
+ * @note Size: 0x98
  */
-void MemoryCardMgr::attach(MemoryCardMgr::ECardSlot cardSlot)
+void MemoryCardMgr::attach(ECardSlot cardSlot)
 {
 	s32 memSize;
 	s32 sectorSize;
@@ -1701,49 +1762,87 @@ void MemoryCardMgr::attach(MemoryCardMgr::ECardSlot cardSlot)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80442104
- * Size:	00003C
+/**
+ * @note Address: 0x80442104
+ * @note Size: 0x3C
  */
-void MemoryCardMgr::detach(MemoryCardMgr::ECardSlot cardSlot)
+void MemoryCardMgr::detach(ECardSlot cardSlot)
 {
 	CARDUnmount(cardSlot);
 	resetInsideStatusFlag(INSIDESTATUS_Unk);
 }
 
-/*
- * --INFO--
- * Address:	80442140
- * Size:	000168
+/**
+ * @note Address: 0x80442140
+ * @note Size: 0x168
  */
-bool MemoryCardMgr::mount(MemoryCardMgr::ECardSlot cardSlot)
+bool MemoryCardMgr::mount(ECardSlot cardSlot)
 {
 	bool result;
 	CARDMount(cardSlot, &sCardWorkArea, nullptr);
 	switch (cardSlot) {
-	case -5:
+	case CARD_RESULT_FATAL_ERROR:
+	case CARD_RESULT_IOERROR:
 		setInsideStatusFlag(INSIDESTATUS_Unk10);
-		return false;
-	case -128:
-		setInsideStatusFlag(INSIDESTATUS_Unk4);
-		return false;
-	case -13:
-		setInsideStatusFlag(INSIDESTATUS_Unk4);
-		return false;
-	case -6:
-		P2ASSERTLINE(989, false);
+		result = false;
 		break;
-	case 0:
+	case CARD_RESULT_NOCARD:
+		setInsideStatusFlag(INSIDESTATUS_Unk);
+		result = false;
+		break;
+	case CARD_RESULT_BROKEN:
+	case CARD_RESULT_READY:
 		switch (CARDCheck(cardSlot)) {
-		case -5:
-		case -128:
+		case CARD_RESULT_READY:
+			result = true;
+			break;
+		case CARD_RESULT_IOERROR:
 			setInsideStatusFlag(INSIDESTATUS_Unk10);
-			return false;
-		default:
-			P2ASSERTLINE(989, false);
+			result = false;
+			break;
+		case CARD_RESULT_FATAL_ERROR:
+			setInsideStatusFlag(INSIDESTATUS_Unk5);
+			if (result == false) {
+				CARDUnmount(cardSlot);
+			}
+			break;
 		}
+		break;
+	case CARD_RESULT_ENCODING:
+		setInsideStatusFlag(INSIDESTATUS_Unk4);
+		result = false;
+		break;
+	default:
+		P2ASSERTLINE(989, false);
 	}
+	return result;
+	/*switch (cardSlot) {
+	case CARD_RESULT_IOERROR:
+	    setInsideStatusFlag(INSIDESTATUS_Unk10);
+	    return false;
+	case CARD_RESULT_FATAL_ERROR:
+	    setInsideStatusFlag(INSIDESTATUS_Unk4);
+	    return false;
+	case CARD_RESULT_READY:
+	    switch (CARDCheck(cardSlot)) {
+	        case CARD_RESULT_IOERROR:
+	        case CARD_RESULT_FATAL_ERROR:
+	            setInsideStatusFlag(INSIDESTATUS_Unk10);
+	            return false;
+	        case CARD_RESULT_READY:
+	            setInsideStatusFlag(INSIDESTATUS_Unk5);
+	        default:
+	            P2ASSERTLINE(989, false);
+	    }
+	case CARD_RESULT_ENCODING:
+	    setInsideStatusFlag(INSIDESTATUS_Unk4);
+	    return false;
+	case CARD_RESULT_BROKEN:
+	    P2ASSERTLINE(989, false);
+	    break;
+	}
+	CARDUnmount(cardSlot);
+	*/
 	/*
 	stwu     r1, -0x20(r1)
 	mflr     r0
@@ -1864,12 +1963,11 @@ lbl_80442288:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	804422A8
- * Size:	0000FC
+/**
+ * @note Address: 0x804422A8
+ * @note Size: 0xFC
  */
-s32 MemoryCardMgr::checkSpace(MemoryCardMgr::ECardSlot cardSlot, int requiredSpace)
+s32 MemoryCardMgr::checkSpace(ECardSlot cardSlot, int requiredSpace)
 {
 	s32 cardRes;
 	s32 freeBytes;
@@ -1877,13 +1975,13 @@ s32 MemoryCardMgr::checkSpace(MemoryCardMgr::ECardSlot cardSlot, int requiredSpa
 	cardRes = CARDFreeBlocks(cardSlot, &freeBytes, &freeFiles);
 	P2ASSERTLINE(1011, cardRes != -1);
 	switch (cardRes) {
-	case -0x80:
+	case CARD_RESULT_FATAL_ERROR:
 		setInsideStatusFlag(INSIDESTATUS_Unk10);
 		break;
-	case -3:
+	case CARD_RESULT_NOCARD:
 		setInsideStatusFlag(INSIDESTATUS_Unk);
 		break;
-	case -6:
+	case CARD_RESULT_BROKEN:
 		setInsideStatusFlag(INSIDESTATUS_Unk5);
 		break;
 	}
@@ -1977,10 +2075,9 @@ lbl_80442388:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	804423A4
- * Size:	000104
+/**
+ * @note Address: 0x804423A4
+ * @note Size: 0x104
  */
 void MemoryCardMgr::doMakeHeader(u8* param_1)
 {
@@ -2005,10 +2102,9 @@ void MemoryCardMgr::doMakeHeader(u8* param_1)
 	return;
 }
 
-/*
- * --INFO--
- * Address:	804424A8
- * Size:	0000E0
+/**
+ * @note Address: 0x804424A8
+ * @note Size: 0xE0
  */
 bool MemoryCardMgr::doCheckCardStat(CARDStat* cardStat)
 {
@@ -2025,10 +2121,9 @@ bool MemoryCardMgr::doCheckCardStat(CARDStat* cardStat)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80442588
- * Size:	000108
+/**
+ * @note Address: 0x80442588
+ * @note Size: 0x108
  */
 void MemoryCardMgr::doSetCardStat(CARDStat* cardStat)
 {
@@ -2056,10 +2151,9 @@ void MemoryCardMgr::doSetCardStat(CARDStat* cardStat)
 	CARDSetIconSpeed(cardStat, 7, 0);
 }
 
-/*
- * --INFO--
- * Address:	80442690
- * Size:	0000F8
+/**
+ * @note Address: 0x80442690
+ * @note Size: 0xF8
  */
 u32 MemoryCardMgr::calcCheckSum(void* dataptr, u32 key)
 {
@@ -2138,12 +2232,11 @@ lbl_80442780:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80442788
- * Size:	0000B8
+/**
+ * @note Address: 0x80442788
+ * @note Size: 0xB8
  */
-bool MemoryCardMgr::readCardSerialNo(u64* serial, MemoryCardMgr::ECardSlot cardSlot)
+bool MemoryCardMgr::readCardSerialNo(u64* serial, ECardSlot cardSlot)
 {
 	bool result = false;
 	s32 cardRes = CARDGetSerialNo(cardSlot, serial);
@@ -2166,12 +2259,11 @@ bool MemoryCardMgr::readCardSerialNo(u64* serial, MemoryCardMgr::ECardSlot cardS
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	80442840
- * Size:	000014
+/**
+ * @note Address: 0x80442840
+ * @note Size: 0x14
  */
-void MemoryCardMgr::setInsideStatusFlag(MemoryCardMgr::EInsideStatusFlag status)
+void MemoryCardMgr::setInsideStatusFlag(EInsideStatusFlag status)
 {
 	if (mStatusFlag == 10) {
 		return;
@@ -2179,9 +2271,8 @@ void MemoryCardMgr::setInsideStatusFlag(MemoryCardMgr::EInsideStatusFlag status)
 	mStatusFlag = status;
 }
 
-/*
- * --INFO--
- * Address:	80442854
- * Size:	000008
+/**
+ * @note Address: 0x80442854
+ * @note Size: 0x8
  */
-void MemoryCardMgr::resetInsideStatusFlag(MemoryCardMgr::EInsideStatusFlag flag) { mStatusFlag = flag; }
+void MemoryCardMgr::resetInsideStatusFlag(EInsideStatusFlag flag) { mStatusFlag = flag; }

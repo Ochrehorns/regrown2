@@ -13,10 +13,9 @@ static const int someBigTreasureStateArray[3] = { 0, 0, 0 };
 
 static const char debugBigTreasureStateName[] = "246-BigTreasureState";
 
-/*
- * --INFO--
- * Address:	802D72CC
- * Size:	00042C
+/**
+ * @note Address: 0x802D72CC
+ * @note Size: 0x42C
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -35,14 +34,13 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateItemWalk);
 }
 
-/*
- * --INFO--
- * Address:	802D76F8
- * Size:	000080
+/**
+ * @note Address: 0x802D76F8
+ * @note Size: 0x80
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	titan->setAttackMaterialColor(false);
 	titan->forceFinishIKMotion();
 	titan->checkJointScaleOn();
@@ -53,14 +51,13 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	titan->createDeadBombFootEffect();
 }
 
-/*
- * --INFO--
- * Address:	802D7778
- * Size:	000230
+/**
+ * @note Address: 0x802D7778
+ * @note Size: 0x230
  */
 void StateDead::exec(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	f32 frame  = titan->getMotionFrame();
 	if (frame > 280.0f) {
 		titan->subShadowScale();
@@ -102,7 +99,7 @@ void StateDead::exec(EnemyBase* enemy)
 			titan->finishDeadBubbleMouthEffect();
 			Vector3f position = titan->getPosition();
 			cameraMgr->startVibration(21, position, 2);
-			rumbleMgr->startRumble(12, position, 2);
+			rumbleMgr->startRumble(12, position, RUMBLEID_Both);
 
 		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_11) {
 			titan->createDeadBombLegEffect(3);
@@ -120,21 +117,19 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802D79A8
- * Size:	000004
+/**
+ * @note Address: 0x802D79A8
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802D79AC
- * Size:	000080
+/**
+ * @note Address: 0x802D79AC
+ * @note Size: 0x80
  */
 void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* titan         = static_cast<Obj*>(enemy);
+	Obj* titan         = OBJ(enemy);
 	titan->mNextState  = BIGTREASURE_NULL;
 	titan->mStateTimer = 0.0f;
 	titan->setAttackMaterialColor(false);
@@ -145,17 +140,16 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	titan->stopMotion();
 }
 
-/*
- * --INFO--
- * Address:	802D7A2C
- * Size:	0000FC
+/**
+ * @note Address: 0x802D7A2C
+ * @note Size: 0xFC
  */
 void StateStay::exec(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	if (titan->mStateTimer < 0.01f) {
 		bool isTarget;
-		f32 detectRadius = static_cast<Parms*>(titan->mParms)->mGeneral.mPrivateRadius.mValue;
+		f32 detectRadius = CG_GENERALPARMS(titan).mPrivateRadius.mValue;
 		if (EnemyFunc::isThereOlimar(titan, detectRadius, nullptr)) {
 			isTarget = true;
 		} else if (EnemyFunc::isTherePikmin(titan, detectRadius, nullptr)) {
@@ -179,21 +173,19 @@ void StateStay::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802D7B28
- * Size:	000004
+/**
+ * @note Address: 0x802D7B28
+ * @note Size: 0x4
  */
 void StateStay::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802D7B2C
- * Size:	0000AC
+/**
+ * @note Address: 0x802D7B2C
+ * @note Size: 0xAC
  */
 void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* titan        = static_cast<Obj*>(enemy);
+	Obj* titan        = OBJ(enemy);
 	titan->mNextState = BIGTREASURE_NULL;
 	titan->setAttackMaterialColor(false);
 	titan->mTargetVelocity = Vector3f(0.0f);
@@ -203,25 +195,24 @@ void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 	titan->startMotion();
 	titan->createAppearBodyEffect();
 	titan->createAppearLegEffect(1);
-	Parms* parms = static_cast<Parms*>(titan->mParms);
-	EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeRateMaybe.mValue, parms->mGeneral.mShakeKnockback.mValue,
+	Parms* parms = CG_PARMS(titan);
+	EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeChance.mValue, parms->mGeneral.mShakeKnockback.mValue,
 	                            parms->mGeneral.mShakeDamage.mValue, -1000.0, nullptr);
 	titan->setBossAppearBGM();
 }
 
-/*
- * --INFO--
- * Address:	802D7BD8
- * Size:	000324
+/**
+ * @note Address: 0x802D7BD8
+ * @note Size: 0x324
  */
 void StateLand::exec(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	if (titan->mCurAnim->mIsPlaying) {
 		if ((u32)titan->mCurAnim->mType == KEYEVENT_2) {
 			titan->createOnGroundEffect(1, titan->mWaterBox);
-			Parms* parms = static_cast<Parms*>(titan->mParms);
-			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeRateMaybe.mValue, parms->mGeneral.mShakeKnockback.mValue,
+			Parms* parms = CG_PARMS(titan);
+			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeChance.mValue, parms->mGeneral.mShakeKnockback.mValue,
 			                            parms->mGeneral.mShakeDamage.mValue, -1000.0, nullptr);
 
 		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_3) {
@@ -229,8 +220,8 @@ void StateLand::exec(EnemyBase* enemy)
 
 		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_4) {
 			titan->createOnGroundEffect(2, titan->mWaterBox);
-			Parms* parms = static_cast<Parms*>(titan->mParms);
-			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeRateMaybe.mValue, parms->mGeneral.mShakeKnockback.mValue,
+			Parms* parms = CG_PARMS(titan);
+			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeChance.mValue, parms->mGeneral.mShakeKnockback.mValue,
 			                            parms->mGeneral.mShakeDamage.mValue, -1000.0, nullptr);
 
 		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_5) {
@@ -238,8 +229,8 @@ void StateLand::exec(EnemyBase* enemy)
 
 		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_6) {
 			titan->createOnGroundEffect(0, titan->mWaterBox);
-			Parms* parms = static_cast<Parms*>(titan->mParms);
-			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeRateMaybe.mValue, parms->mGeneral.mShakeKnockback.mValue,
+			Parms* parms = CG_PARMS(titan);
+			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeChance.mValue, parms->mGeneral.mShakeKnockback.mValue,
 			                            parms->mGeneral.mShakeDamage.mValue, -1000.0, nullptr);
 
 		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_7) {
@@ -247,21 +238,21 @@ void StateLand::exec(EnemyBase* enemy)
 
 		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_8) {
 			titan->createOnGroundEffect(3, titan->mWaterBox);
-			Parms* parms = static_cast<Parms*>(titan->mParms);
-			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeRateMaybe.mValue, parms->mGeneral.mShakeKnockback.mValue,
+			Parms* parms = CG_PARMS(titan);
+			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeChance.mValue, parms->mGeneral.mShakeKnockback.mValue,
 			                            parms->mGeneral.mShakeDamage.mValue, -1000.0, nullptr);
 
-		} else if ((u32)titan->mCurAnim->mType == 9) {
+		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_9) {
 			Vector3f position = titan->getPosition();
 			cameraMgr->startVibration(2, position, 2);
-			rumbleMgr->startRumble(5, position, 2);
-			Parms* parms = static_cast<Parms*>(titan->mParms);
-			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeRateMaybe.mValue, parms->mGeneral.mShakeKnockback.mValue,
+			rumbleMgr->startRumble(5, position, RUMBLEID_Both);
+			Parms* parms = CG_PARMS(titan);
+			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeChance.mValue, parms->mGeneral.mShakeKnockback.mValue,
 			                            parms->mGeneral.mShakeDamage.mValue, -1000.0, nullptr);
 
-		} else if ((u32)titan->mCurAnim->mType == 10) {
+		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_10) {
 			if (!titan->isCapturedTreasure()) {
-				titan->startMotion(1, nullptr);
+				titan->startMotion(BIGTREASUREANIM_Appear2, nullptr);
 			}
 
 		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_END) {
@@ -282,26 +273,24 @@ void StateLand::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802D7EFC
- * Size:	000030
+/**
+ * @note Address: 0x802D7EFC
+ * @note Size: 0x30
  */
 void StateLand::cleanup(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	titan->disableEvent(0, EB_BitterImmune);
 	titan->startProgramedIK();
 }
 
-/*
- * --INFO--
- * Address:	802D7F2C
- * Size:	0000A0
+/**
+ * @note Address: 0x802D7F2C
+ * @note Size: 0xA0
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* titan         = static_cast<Obj*>(enemy);
+	Obj* titan         = OBJ(enemy);
 	titan->mNextState  = BIGTREASURE_NULL;
 	titan->mStateTimer = randWeightFloat(5.0f);
 	titan->setAttackMaterialColor(false);
@@ -313,14 +302,13 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	titan->startBlendMotion();
 }
 
-/*
- * --INFO--
- * Address:	802D7FCC
- * Size:	000140
+/**
+ * @note Address: 0x802D7FCC
+ * @note Size: 0x140
  */
 void StateWait::exec(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	titan->mStateTimer += sys->mDeltaTime;
 
 	if (titan->mHealth <= 0.0f) {
@@ -345,25 +333,23 @@ void StateWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802D810C
- * Size:	000024
+/**
+ * @note Address: 0x802D810C
+ * @note Size: 0x24
  */
 void StateWait::cleanup(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	titan->finishBlendMotion();
 }
 
-/*
- * --INFO--
- * Address:	802D8130
- * Size:	0000A0
+/**
+ * @note Address: 0x802D8130
+ * @note Size: 0xA0
  */
 void StateItemWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* titan         = static_cast<Obj*>(enemy);
+	Obj* titan         = OBJ(enemy);
 	titan->mNextState  = BIGTREASURE_NULL;
 	titan->mStateTimer = randWeightFloat(5.0f);
 	titan->setAttackMaterialColor(false);
@@ -375,14 +361,13 @@ void StateItemWait::init(EnemyBase* enemy, StateArg* stateArg)
 	titan->startBlendMotion();
 }
 
-/*
- * --INFO--
- * Address:	802D81D0
- * Size:	000124
+/**
+ * @note Address: 0x802D81D0
+ * @note Size: 0x124
  */
 void StateItemWait::exec(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	if (!titan->isCapturedTreasure()) {
 		transit(titan, BIGTREASURE_DropItem, nullptr);
 		return;
@@ -408,25 +393,23 @@ void StateItemWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802D82F4
- * Size:	000024
+/**
+ * @note Address: 0x802D82F4
+ * @note Size: 0x24
  */
 void StateItemWait::cleanup(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	titan->finishBlendMotion();
 }
 
-/*
- * --INFO--
- * Address:	802D8318
- * Size:	000074
+/**
+ * @note Address: 0x802D8318
+ * @note Size: 0x74
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* titan         = static_cast<Obj*>(enemy);
+	Obj* titan         = OBJ(enemy);
 	titan->mNextState  = BIGTREASURE_NULL;
 	titan->mStateTimer = 0.0f;
 	titan->setAttackMaterialColor(false);
@@ -438,24 +421,23 @@ void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	titan->startBlendMotion();
 }
 
-/*
- * --INFO--
- * Address:	802D838C
- * Size:	0000DC
+/**
+ * @note Address: 0x802D838C
+ * @note Size: 0xDC
  */
 void StateFlick::exec(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 
 	if (titan->mCurAnim->mIsPlaying) {
 		if ((u32)titan->mCurAnim->mType == KEYEVENT_END_BLEND) {
 			titan->endBlendAnimation();
 
 		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_2) {
-			Parms* parms = static_cast<Parms*>(titan->mParms);
-			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeRateMaybe.mValue, parms->mGeneral.mShakeKnockback.mValue,
+			Parms* parms = CG_PARMS(titan);
+			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeChance.mValue, parms->mGeneral.mShakeKnockback.mValue,
 			                            parms->mGeneral.mShakeDamage.mValue, -1000.0, nullptr);
-			titan->mToFlick = 0.0f;
+			titan->mFlickTimer = 0.0f;
 			titan->startBossFlickBGM();
 
 		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_END) {
@@ -469,25 +451,23 @@ void StateFlick::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802D8468
- * Size:	000024
+/**
+ * @note Address: 0x802D8468
+ * @note Size: 0x24
  */
 void StateFlick::cleanup(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	titan->finishBlendMotion();
 }
 
-/*
- * --INFO--
- * Address:	802D848C
- * Size:	000098
+/**
+ * @note Address: 0x802D848C
+ * @note Size: 0x98
  */
 void StatePreAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* titan         = static_cast<Obj*>(enemy);
+	Obj* titan         = OBJ(enemy);
 	titan->mNextState  = BIGTREASURE_NULL;
 	titan->mStateTimer = 0.0f;
 	titan->resetAttackLimitTimer();
@@ -503,14 +483,13 @@ void StatePreAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	titan->startBossChargeBGM();
 }
 
-/*
- * --INFO--
- * Address:	802D8524
- * Size:	00019C
+/**
+ * @note Address: 0x802D8524
+ * @note Size: 0x19C
  */
 void StatePreAttack::exec(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	if (!titan->isCapturedTreasure()) {
 		transit(titan, BIGTREASURE_DropItem, nullptr);
 		return;
@@ -534,10 +513,10 @@ void StatePreAttack::exec(EnemyBase* enemy)
 
 		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_2) {
 			titan->setAttackMaterialColor(true);
-			Parms* parms = static_cast<Parms*>(titan->mParms);
-			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeRateMaybe.mValue, parms->mGeneral.mShakeKnockback.mValue,
+			Parms* parms = CG_PARMS(titan);
+			EnemyFunc::flickStickPikmin(titan, parms->mGeneral.mShakeChance.mValue, parms->mGeneral.mShakeKnockback.mValue,
 			                            parms->mGeneral.mShakeDamage.mValue, -1000.0, nullptr);
-			titan->mToFlick = 0.0f;
+			titan->mFlickTimer = 0.0f;
 
 		} else if ((u32)titan->mCurAnim->mType == KEYEVENT_3) {
 			int fireIdx = titan->getFireAttackAnimIndex();
@@ -551,25 +530,23 @@ void StatePreAttack::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802D86C0
- * Size:	000024
+/**
+ * @note Address: 0x802D86C0
+ * @note Size: 0x24
  */
 void StatePreAttack::cleanup(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	titan->finishBlendMotion();
 }
 
-/*
- * --INFO--
- * Address:	802D86E4
- * Size:	000078
+/**
+ * @note Address: 0x802D86E4
+ * @note Size: 0x78
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* titan         = static_cast<Obj*>(enemy);
+	Obj* titan         = OBJ(enemy);
 	titan->mNextState  = BIGTREASURE_NULL;
 	titan->mStateTimer = 0.0f;
 
@@ -582,14 +559,13 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	titan->startBossAttackBGM();
 }
 
-/*
- * --INFO--
- * Address:	802D875C
- * Size:	000148
+/**
+ * @note Address: 0x802D875C
+ * @note Size: 0x148
  */
 void StateAttack::exec(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	if (!titan->isCapturedTreasure()) {
 		transit(titan, BIGTREASURE_DropItem, nullptr);
 		return;
@@ -621,27 +597,25 @@ void StateAttack::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802D88A4
- * Size:	000040
+/**
+ * @note Address: 0x802D88A4
+ * @note Size: 0x40
  */
 void StateAttack::cleanup(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	titan->finishBlendMotion();
 	titan->finishAttack();
 	titan->finishBossAttackBGM();
 }
 
-/*
- * --INFO--
- * Address:	802D88E4
- * Size:	000080
+/**
+ * @note Address: 0x802D88E4
+ * @note Size: 0x80
  */
 void StatePutItem::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* titan         = static_cast<Obj*>(enemy);
+	Obj* titan         = OBJ(enemy);
 	titan->mNextState  = BIGTREASURE_NULL;
 	titan->mStateTimer = 0.0f;
 	titan->setAttackMaterialColor(false);
@@ -654,14 +628,13 @@ void StatePutItem::init(EnemyBase* enemy, StateArg* stateArg)
 	titan->startBlendMotion();
 }
 
-/*
- * --INFO--
- * Address:	802D8964
- * Size:	000128
+/**
+ * @note Address: 0x802D8964
+ * @note Size: 0x128
  */
 void StatePutItem::exec(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	if (!titan->isCapturedTreasure()) {
 		transit(titan, BIGTREASURE_DropItem, nullptr);
 		return;
@@ -685,25 +658,23 @@ void StatePutItem::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802D8A8C
- * Size:	000024
+/**
+ * @note Address: 0x802D8A8C
+ * @note Size: 0x24
  */
 void StatePutItem::cleanup(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	titan->finishBlendMotion();
 }
 
-/*
- * --INFO--
- * Address:	802D8AB0
- * Size:	000074
+/**
+ * @note Address: 0x802D8AB0
+ * @note Size: 0x74
  */
 void StateDropItem::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* titan         = static_cast<Obj*>(enemy);
+	Obj* titan         = OBJ(enemy);
 	titan->mNextState  = BIGTREASURE_NULL;
 	titan->mStateTimer = 0.0f;
 	titan->setAttackMaterialColor(false);
@@ -714,14 +685,13 @@ void StateDropItem::init(EnemyBase* enemy, StateArg* stateArg)
 	titan->startBlendMotion();
 }
 
-/*
- * --INFO--
- * Address:	802D8B24
- * Size:	0000EC
+/**
+ * @note Address: 0x802D8B24
+ * @note Size: 0xEC
  */
 void StateDropItem::exec(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	if (titan->mCurAnim->mIsPlaying) {
 		if ((u32)titan->mCurAnim->mType == KEYEVENT_END_BLEND) {
 			titan->endBlendAnimation();
@@ -738,25 +708,23 @@ void StateDropItem::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802D8C10
- * Size:	000024
+/**
+ * @note Address: 0x802D8C10
+ * @note Size: 0x24
  */
 void StateDropItem::cleanup(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	titan->finishBlendMotion();
 }
 
-/*
- * --INFO--
- * Address:	802D8C34
- * Size:	0000A8
+/**
+ * @note Address: 0x802D8C34
+ * @note Size: 0xA8
  */
 void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* titan         = static_cast<Obj*>(enemy);
+	Obj* titan         = OBJ(enemy);
 	titan->mNextState  = BIGTREASURE_NULL;
 	titan->mStateTimer = randWeightFloat(10.0f);
 	titan->setAttackMaterialColor(false);
@@ -769,14 +737,13 @@ void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 	titan->getTargetPosition();
 }
 
-/*
- * --INFO--
- * Address:	802D8CDC
- * Size:	000144
+/**
+ * @note Address: 0x802D8CDC
+ * @note Size: 0x144
  */
 void StateWalk::exec(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	titan->getTargetPosition();
 
 	if (titan->mHealth <= 0.0f) {
@@ -809,21 +776,19 @@ void StateWalk::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802D8E20
- * Size:	000004
+/**
+ * @note Address: 0x802D8E20
+ * @note Size: 0x4
  */
 void StateWalk::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802D8E24
- * Size:	0000A8
+/**
+ * @note Address: 0x802D8E24
+ * @note Size: 0xA8
  */
 void StateItemWalk::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* titan         = static_cast<Obj*>(enemy);
+	Obj* titan         = OBJ(enemy);
 	titan->mNextState  = BIGTREASURE_NULL;
 	titan->mStateTimer = randWeightFloat(10.0f);
 	titan->setAttackMaterialColor(false);
@@ -836,14 +801,13 @@ void StateItemWalk::init(EnemyBase* enemy, StateArg* stateArg)
 	titan->getTargetPosition();
 }
 
-/*
- * --INFO--
- * Address:	802D8ECC
- * Size:	0001EC
+/**
+ * @note Address: 0x802D8ECC
+ * @note Size: 0x1EC
  */
 void StateItemWalk::exec(EnemyBase* enemy)
 {
-	Obj* titan = static_cast<Obj*>(enemy);
+	Obj* titan = OBJ(enemy);
 	titan->getTargetPosition();
 
 	if (titan->mHealth <= 0.0f) {
@@ -895,10 +859,9 @@ void StateItemWalk::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802D90B8
- * Size:	000004
+/**
+ * @note Address: 0x802D90B8
+ * @note Size: 0x4
  */
 void StateItemWalk::cleanup(EnemyBase* enemy) { }
 

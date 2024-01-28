@@ -1,9 +1,9 @@
 #include "ObjectTypes.h"
 
 // clang-format off
-ObjTypeInfo infos[] = { 
+ObjTypeInfo infos[] = {
 	// Protagonists
-	{ OBJTYPE_Piki, "piki" }, 
+	{ OBJTYPE_Piki, "piki" },
 	{ OBJTYPE_Navi, "navi" },
 	{ OBJTYPE_Teki, "teki" },
 
@@ -35,10 +35,9 @@ ObjTypeInfo infos[] = {
 
 namespace Game {
 namespace ObjType {
-/*
- * --INFO--
- * Address:	8017D3F8
- * Size:	000054
+/**
+ * @note Address: 0x8017D3F8
+ * @note Size: 0x54
  */
 char* getName(u16 type)
 {

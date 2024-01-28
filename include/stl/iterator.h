@@ -1,10 +1,9 @@
 #ifndef _STD_ITERATOR_H
 #define _STD_ITERATOR_H
 
-#include "types.h"
-
+#ifdef __cplusplus
 namespace std {
-typedef long ptrdiff_t;
+typedef s32 ptrdiff_t;
 
 struct input_iterator_tag {
 };
@@ -36,5 +35,6 @@ struct iterator {
 	typedef Reference reference;
 };
 } // namespace std
+#endif
 
 #endif

@@ -9,10 +9,9 @@
 namespace Game {
 namespace Baby {
 
-/*
- * --INFO--
- * Address:	8028D470
- * Size:	000140
+/**
+ * @note Address: 0x8028D470
+ * @note Size: 0x140
  */
 Obj::Obj()
 {
@@ -22,17 +21,15 @@ Obj::Obj()
 	createEffect();
 }
 
-/*
- * --INFO--
- * Address:	8028D5B0
- * Size:	000004
+/**
+ * @note Address: 0x8028D5B0
+ * @note Size: 0x4
  */
 void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-/*
- * --INFO--
- * Address:	8028D5B4
- * Size:	0000B8
+/**
+ * @note Address: 0x8028D5B4
+ * @note Size: 0xB8
  */
 void Obj::onInit(CreatureInitArg* arg)
 {
@@ -42,7 +39,7 @@ void Obj::onInit(CreatureInitArg* arg)
 	setupEffect();
 	resetRandTargetPosition();
 
-	if (gameSystem && gameSystem->mMode == GSM_PIKLOPEDIA) {
+	if (gameSystem && gameSystem->isZukanMode()) {
 		mFsm->start(this, BABY_Move, nullptr);
 		resetZukanAnimationFrame();
 	} else {
@@ -50,10 +47,9 @@ void Obj::onInit(CreatureInitArg* arg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028D66C
- * Size:	000048
+/**
+ * @note Address: 0x8028D66C
+ * @note Size: 0x48
  */
 void Obj::doUpdate()
 {
@@ -61,24 +57,21 @@ void Obj::doUpdate()
 	mMouthSlots.update();
 }
 
-/*
- * --INFO--
- * Address:	8028D6B4
- * Size:	000004
+/**
+ * @note Address: 0x8028D6B4
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	8028D6B8
- * Size:	000020
+/**
+ * @note Address: 0x8028D6B8
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	8028D6D8
- * Size:	00004C
+/**
+ * @note Address: 0x8028D6D8
+ * @note Size: 0x4C
  */
 void Obj::setFSM(FSM* fsm)
 {
@@ -87,10 +80,9 @@ void Obj::setFSM(FSM* fsm)
 	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8028D724
- * Size:	000068
+/**
+ * @note Address: 0x8028D724
+ * @note Size: 0x68
  */
 void Obj::getShadowParam(ShadowParam& param)
 {
@@ -104,28 +96,27 @@ void Obj::getShadowParam(ShadowParam& param)
 	} else {
 		param.mBoundingSphere.mRadius = 10.0f;
 	}
+
 	param.mSize = 10.0f;
 }
 
-/*
- * --INFO--
- * Address:	8028D78C
- * Size:	000074
+/**
+ * @note Address: 0x8028D78C
+ * @note Size: 0x74
  */
 bool Obj::pressCallBack(Creature* obj, f32 damage, CollPart* part)
 {
 	if (obj && !isEvent(0, EB_Bittered) && getStateID() > 2) {
 		mFsm->transit(this, BABY_Press, nullptr);
 		return true;
-	} else {
-		return false;
 	}
+
+	return false;
 }
 
-/*
- * --INFO--
- * Address:	8028D800
- * Size:	000074
+/**
+ * @note Address: 0x8028D800
+ * @note Size: 0x74
  */
 bool Obj::hipdropCallBack(Creature* obj, f32 damage, CollPart* part)
 {
@@ -138,17 +129,15 @@ bool Obj::hipdropCallBack(Creature* obj, f32 damage, CollPart* part)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028D874
- * Size:	000020
+/**
+ * @note Address: 0x8028D874
+ * @note Size: 0x20
  */
 void Obj::doStartStoneState() { EnemyBase::doStartStoneState(); }
 
-/*
- * --INFO--
- * Address:	8028D894
- * Size:	00005C
+/**
+ * @note Address: 0x8028D894
+ * @note Size: 0x5C
  */
 void Obj::doFinishStoneState()
 {
@@ -158,10 +147,9 @@ void Obj::doFinishStoneState()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028D8F0
- * Size:	000034
+/**
+ * @note Address: 0x8028D8F0
+ * @note Size: 0x34
  */
 void Obj::doStartWaitingBirthTypeDrop()
 {
@@ -169,10 +157,9 @@ void Obj::doStartWaitingBirthTypeDrop()
 	effectDrawOff();
 }
 
-/*
- * --INFO--
- * Address:	8028D924
- * Size:	000034
+/**
+ * @note Address: 0x8028D924
+ * @note Size: 0x34
  */
 void Obj::doFinishWaitingBirthTypeDrop()
 {
@@ -180,24 +167,21 @@ void Obj::doFinishWaitingBirthTypeDrop()
 	effectDrawOn();
 }
 
-/*
- * --INFO--
- * Address:	8028D958
- * Size:	000020
+/**
+ * @note Address: 0x8028D958
+ * @note Size: 0x20
  */
 void Obj::doStartMovie() { effectDrawOff(); }
 
-/*
- * --INFO--
- * Address:	8028D978
- * Size:	000020
+/**
+ * @note Address: 0x8028D978
+ * @note Size: 0x20
  */
 void Obj::doEndMovie() { effectDrawOn(); }
 
-/*
- * --INFO--
- * Address:	8028D998
- * Size:	00008C
+/**
+ * @note Address: 0x8028D998
+ * @note Size: 0x8C
  */
 void Obj::initMouthSlots()
 {
@@ -209,10 +193,9 @@ void Obj::initMouthSlots()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028DA24
- * Size:	00008C
+/**
+ * @note Address: 0x8028DA24
+ * @note Size: 0x8C
  */
 int Obj::getSlotPikiNum()
 {
@@ -228,24 +211,21 @@ int Obj::getSlotPikiNum()
 	return slotnum;
 }
 
-/*
- * --INFO--
- * Address:	8028DAB0
- * Size:	000008
+/**
+ * @note Address: 0x8028DAB0
+ * @note Size: 0x8
  */
 MouthSlots* Obj::getMouthSlots() { return &mMouthSlots; }
 
-/*
- * --INFO--
- * Address:	8028DAB8
- * Size:	00001C
+/**
+ * @note Address: 0x8028DAB8
+ * @note Size: 0x1C
  */
 void Obj::resetRandTargetPosition() { mTargetPos = mPosition; }
 
-/*
- * --INFO--
- * Address:	8028DAD4
- * Size:	000074
+/**
+ * @note Address: 0x8028DAD4
+ * @note Size: 0x74
  */
 void Obj::resetZukanAnimationFrame()
 {
@@ -253,39 +233,37 @@ void Obj::resetZukanAnimationFrame()
 	setMotionFrame(randWeightFloat(frame));
 }
 
-/*
- * --INFO--
- * Address:	8028DB48
- * Size:	00020C
+/**
+ * @note Address: 0x8028DB48
+ * @note Size: 0x20C
  */
 void Obj::moveNoTarget()
 {
-	if (gameSystem && gameSystem->mMode == GSM_PIKLOPEDIA) {
+	if (gameSystem && gameSystem->isZukanMode()) {
 		if (sqrDistanceXZ(mPosition, mTargetPos) < 500.0f) {
 			f32 randomAngle = randWeightFloat(100.0f) + 50.0f;
 			f32 angleToHome = JMath::atanTable_.atan2_(mPosition.x - mHomePosition.x, mPosition.z - mHomePosition.z);
 			angleToHome     = randWeightFloat(PI) + angleToHome + HALF_PI;
 
-			mTargetPos.x = randomAngle * pikmin2_sinf(angleToHome) + mHomePosition.x;
+			mTargetPos.x = randomAngle * sinf(angleToHome) + mHomePosition.x;
 			mTargetPos.y = mHomePosition.y;
-			mTargetPos.z = randomAngle * pikmin2_cosf(angleToHome) + mHomePosition.z;
+			mTargetPos.z = randomAngle * cosf(angleToHome) + mHomePosition.z;
 		}
-		Parms* parms = static_cast<Parms*>(mParms);
-		EnemyFunc::walkToTarget(this, mTargetPos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mRotationalAccel.mValue,
-		                        parms->mGeneral.mRotationalSpeed.mValue);
+		Parms* parms = C_PARMS;
+		EnemyFunc::walkToTarget(this, mTargetPos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
+		                        parms->mGeneral.mMaxTurnAngle.mValue);
 	} else {
 		mTargetVelocity = Vector3f(0.0f);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028DD54
- * Size:	0000F4
+/**
+ * @note Address: 0x8028DD54
+ * @note Size: 0xF4
  */
 void Obj::createHoney()
 {
-	Parms* parms = static_cast<Parms*>(mParms);
+	Parms* parms = C_PARMS;
 	if (randWeightFloat(1.0f) < parms->mProperParms.mNectarChance.mValue) {
 		ItemHoney::InitArg arg(false, false);
 
@@ -299,38 +277,33 @@ void Obj::createHoney()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028DE48
- * Size:	0000B4
+/**
+ * @note Address: 0x8028DE48
+ * @note Size: 0xB4
  */
 void Obj::createEffect() { mEfxBabyBorn = new efx::TBabyBorn(&mPosition); }
 
-/*
- * --INFO--
- * Address:	8028DEFC
- * Size:	000004
+/**
+ * @note Address: 0x8028DEFC
+ * @note Size: 0x4
  */
 void Obj::setupEffect() { }
 
-/*
- * --INFO--
- * Address:	8028DF00
- * Size:	000034
+/**
+ * @note Address: 0x8028DF00
+ * @note Size: 0x34
  */
 void Obj::createBornEffect() { mEfxBabyBorn->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	8028DF34
- * Size:	000030
+/**
+ * @note Address: 0x8028DF34
+ * @note Size: 0x30
  */
 void Obj::effectDrawOn() { mEfxBabyBorn->endDemoDrawOn(); }
 
-/*
- * --INFO--
- * Address:	8028DF64
- * Size:	000030
+/**
+ * @note Address: 0x8028DF64
+ * @note Size: 0x30
  */
 void Obj::effectDrawOff() { mEfxBabyBorn->startDemoDrawOff(); }
 

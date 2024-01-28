@@ -19,617 +19,17 @@
 #include "JSystem/J3D/J3DTexMtx.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/Entities/ItemOnyon.h"
+#include "Game/mapParts.h"
 #include "Game/EnemyFunc.h"
+#include "Game/PikiMgr.h"
+#include "Dolphin/rand.h"
+#include "PS.h"
 #include "nans.h"
 
-/*
-    Generated from dpostproc
-
-    .section .ctors, "wa"  # 0x80472F00 - 0x804732C0
-    .4byte __sinit_blackMan_cpp
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_80495670
-    lbl_80495670:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x626C6163
-        .4byte 0x6B4D616E
-        .4byte 0x00000000
-    .global lbl_80495688
-    lbl_80495688:
-        .4byte 0x626C6163
-        .4byte 0x6B4D616E
-        .4byte 0x2E637070
-        .4byte 0x00000000
-    .global lbl_80495698
-    lbl_80495698:
-        .asciz "P2Assert"
-        .skip 3
-    .global lbl_804956A4
-    lbl_804956A4:
-        .asciz "handLend"
-        .skip 3
-    .global lbl_804956B0
-    lbl_804956B0:
-        .asciz "handRend"
-        .skip 3
-    .global lbl_804956BC
-    lbl_804956BC:
-        .asciz "PSMainSide_ObjSound.h"
-        .skip 2
-        .asciz "kage_mat"
-        .skip 3
-        .asciz "PSGame.h"
-        .skip 3
-        .asciz "PSScene.h"
-        .skip 2
-        .asciz "x20_blackman"
-        .skip 3
-    .global lbl_80495708
-    lbl_80495708:
-        .asciz "failed traceRoutePoint\n"
-        .asciz "no handle pathFinder\n"
-        .skip 2
-        .4byte lbl_8051F454
-        .4byte lbl_8051F45C
-        .4byte lbl_8051F464
-        .4byte lbl_8051F46C
-        .4byte lbl_804956A4
-        .4byte lbl_804956B0
-        .4byte lbl_8051F444
-        .4byte lbl_8051F44C
-        .4byte lbl_8051F500
-        .4byte lbl_8051F508
-        .4byte lbl_8051F510
-        .4byte lbl_8051F518
-        .4byte lbl_8051F520
-        .4byte lbl_8051F528
-        .4byte lbl_8051F530
-        .4byte lbl_8051F538
-    .global lbl_80495778
-    lbl_80495778:
-        .asciz "shoulderL"
-        .skip 2
-    .global lbl_80495784
-    lbl_80495784:
-        .asciz "shoulderR"
-        .skip 2
-        .4byte lbl_80495778
-        .4byte lbl_80495784
-        .4byte lbl_8051F540
-        .4byte lbl_8051F548
-        .asciz "get sound scene at\ninvalid timming\n"
-    .global lbl_804957C4
-    lbl_804957C4:
-        .asciz "ArgPrmColor"
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804E5D00
-    lbl_804E5D00:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-    .global __vt__Q23efx10TKageBend1
-    __vt__Q23efx10TKageBend1:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx11TSimpleMtx2FPQ23efx3Arg
-        .4byte forceKill__Q23efx8TSimple2Fv
-        .4byte fade__Q23efx8TSimple2Fv
-    .global __vt__Q23efx11ArgPrmColor
-    __vt__Q23efx11ArgPrmColor:
-        .4byte 0
-        .4byte 0
-        .4byte getName__Q23efx11ArgPrmColorFv
-    .global __vt__Q23efx10TKageFlick
-    __vt__Q23efx10TKageFlick:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx5TSyncFPQ23efx3Arg
-        .4byte forceKill__Q23efx5TSyncFv
-        .4byte fade__Q23efx5TSyncFv
-        .4byte 0
-        .4byte 0
-        .4byte "@4@__dt__Q23efx10TKageFlickFv"
-        .4byte "@4@execute__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte "@4@executeAfter__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte execute__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte executeAfter__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte doExecuteEmitterOperation__Q23efx9TChasePosFP14JPABaseEmitter
-        .4byte doExecuteAfter__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte startDemoDrawOff__Q23efx5TSyncFv
-        .4byte endDemoDrawOn__Q23efx5TSyncFv
-        .4byte __dt__Q23efx10TKageFlickFv
-    .global __vt__Q23efx11TKageTyreup
-    __vt__Q23efx11TKageTyreup:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx5TSyncFPQ23efx3Arg
-        .4byte forceKill__Q23efx5TSyncFv
-        .4byte fade__Q23efx5TSyncFv
-        .4byte 0
-        .4byte 0
-        .4byte "@4@__dt__Q23efx11TKageTyreupFv"
-        .4byte "@4@execute__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte "@4@executeAfter__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte execute__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte executeAfter__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte
-   doExecuteEmitterOperation__Q23efx13TChasePosYRotFP14JPABaseEmitter .4byte
-   doExecuteAfter__Q23efx5TSyncFP14JPABaseEmitter .4byte
-   startDemoDrawOff__Q23efx5TSyncFv .4byte endDemoDrawOn__Q23efx5TSyncFv .4byte
-   __dt__Q23efx11TKageTyreupFv .global __vt__Q23efx10TKageDead1
-    __vt__Q23efx10TKageDead1:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx5TSyncFPQ23efx3Arg
-        .4byte forceKill__Q23efx5TSyncFv
-        .4byte fade__Q23efx5TSyncFv
-        .4byte 0
-        .4byte 0
-        .4byte "@4@__dt__Q23efx10TKageDead1Fv"
-        .4byte "@4@execute__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte "@4@executeAfter__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte execute__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte executeAfter__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte doExecuteEmitterOperation__Q23efx9TChaseMtxFP14JPABaseEmitter
-        .4byte doExecuteAfter__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte startDemoDrawOff__Q23efx5TSyncFv
-        .4byte endDemoDrawOn__Q23efx5TSyncFv
-        .4byte __dt__Q23efx10TKageDead1Fv
-    .global __vt__Q23efx8TKageRun
-    __vt__Q23efx8TKageRun:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx5TSyncFPQ23efx3Arg
-        .4byte forceKill__Q23efx5TSyncFv
-        .4byte fade__Q23efx5TSyncFv
-        .4byte 0
-        .4byte 0
-        .4byte "@4@__dt__Q23efx8TKageRunFv"
-        .4byte "@4@execute__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte "@4@executeAfter__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte execute__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte executeAfter__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte
-   doExecuteEmitterOperation__Q23efx13TChasePosYRotFP14JPABaseEmitter .4byte
-   doExecuteAfter__Q23efx5TSyncFP14JPABaseEmitter .4byte
-   startDemoDrawOff__Q23efx5TSyncFv .4byte endDemoDrawOn__Q23efx5TSyncFv .4byte
-   __dt__Q23efx8TKageRunFv .global __vt__Q23efx9TKageMove
-    __vt__Q23efx9TKageMove:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx5TSyncFPQ23efx3Arg
-        .4byte forceKill__Q23efx5TSyncFv
-        .4byte fade__Q23efx5TSyncFv
-        .4byte 0
-        .4byte 0
-        .4byte "@4@__dt__Q23efx9TKageMoveFv"
-        .4byte "@4@execute__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte "@4@executeAfter__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte execute__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte executeAfter__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte
-   doExecuteEmitterOperation__Q23efx13TChasePosYRotFP14JPABaseEmitter .4byte
-   doExecuteAfter__Q23efx5TSyncFP14JPABaseEmitter .4byte
-   startDemoDrawOff__Q23efx5TSyncFv .4byte endDemoDrawOn__Q23efx5TSyncFv .4byte
-   __dt__Q23efx9TKageMoveFv .global __vt__Q34Game8BlackMan3Obj
-    __vt__Q34Game8BlackMan3Obj:
-        .4byte 0
-        .4byte 0
-        .4byte getPosition__Q24Game9EnemyBaseFv
-        .4byte checkCollision__Q24Game8CreatureFPQ24Game10CellObject
-        .4byte getBoundingSphere__Q24Game9EnemyBaseFRQ23Sys6Sphere
-        .4byte collisionUpdatable__Q24Game8CreatureFv
-        .4byte isPiki__Q24Game8CreatureFv
-        .4byte isNavi__Q24Game8CreatureFv
-        .4byte deferPikiCollision__Q24Game10CellObjectFv
-        .4byte getTypeName__Q24Game8CreatureFv
-        .4byte getObjType__Q24Game8CreatureFv
-        .4byte constructor__Q24Game9EnemyBaseFv
-        .4byte onInit__Q34Game8BlackMan3ObjFPQ24Game15CreatureInitArg
-        .4byte onKill__Q34Game8BlackMan3ObjFPQ24Game15CreatureKillArg
-        .4byte onInitPost__Q24Game9EnemyBaseFPQ24Game15CreatureInitArg
-        .4byte doAnimation__Q24Game9EnemyBaseFv
-        .4byte doEntry__Q34Game8BlackMan3ObjFv
-        .4byte doSetView__Q24Game9EnemyBaseFi
-        .4byte doViewCalc__Q24Game9EnemyBaseFv
-        .4byte doSimulation__Q34Game8BlackMan3ObjFf
-        .4byte doDirectDraw__Q34Game8BlackMan3ObjFR8Graphics
-        .4byte getBodyRadius__Q24Game9EnemyBaseFv
-        .4byte getCellRadius__Q24Game9EnemyBaseFv
-        .4byte "initPosition__Q24Game8CreatureFR10Vector3<f>"
-        .4byte "onInitPosition__Q24Game8CreatureFR10Vector3<f>"
-        .4byte getFaceDir__Q24Game9EnemyBaseFv
-        .4byte "setVelocity__Q24Game9EnemyBaseFR10Vector3<f>"
-        .4byte getVelocity__Q24Game9EnemyBaseFv
-        .4byte "onSetPosition__Q24Game9EnemyBaseFR10Vector3<f>"
-        .4byte "onSetPositionPost__Q24Game9EnemyBaseFR10Vector3<f>"
-        .4byte updateTrMatrix__Q24Game9EnemyBaseFv
-        .4byte isTeki__Q24Game9EnemyBaseFv
-        .4byte isPellet__Q24Game8CreatureFv
-        .4byte inWaterCallback__Q24Game9EnemyBaseFPQ24Game8WaterBox
-        .4byte outWaterCallback__Q24Game9EnemyBaseFv
-        .4byte inWater__Q24Game9EnemyBaseFv
-        .4byte getFlockMgr__Q24Game8CreatureFv
-        .4byte onStartCapture__Q24Game8CreatureFv
-        .4byte onUpdateCapture__Q24Game8CreatureFR7Matrixf
-        .4byte onEndCapture__Q24Game8CreatureFv
-        .4byte isAtari__Q24Game8CreatureFv
-        .4byte setAtari__Q24Game8CreatureFb
-        .4byte isAlive__Q24Game8CreatureFv
-        .4byte setAlive__Q24Game8CreatureFb
-        .4byte isCollisionFlick__Q24Game8CreatureFv
-        .4byte setCollisionFlick__Q24Game8CreatureFb
-        .4byte isMovieActor__Q24Game8CreatureFv
-        .4byte isMovieExtra__Q24Game8CreatureFv
-        .4byte isMovieMotion__Q24Game8CreatureFv
-        .4byte setMovieMotion__Q24Game8CreatureFb
-        .4byte isBuried__Q24Game8CreatureFv
-        .4byte isFlying__Q24Game9EnemyBaseFv
-        .4byte isUnderground__Q34Game8BlackMan3ObjFv
-        .4byte isLivingThing__Q24Game8CreatureFv
-        .4byte isDebugCollision__Q24Game8CreatureFv
-        .4byte setDebugCollision__Q24Game8CreatureFb
-        .4byte doSave__Q24Game8CreatureFR6Stream
-        .4byte doLoad__Q24Game8CreatureFR6Stream
-        .4byte bounceCallback__Q24Game8CreatureFPQ23Sys8Triangle
-        .4byte collisionCallback__Q34Game8BlackMan3ObjFRQ24Game9CollEvent
-        .4byte platCallback__Q24Game8CreatureFRQ24Game9PlatEvent
-        .4byte getJAIObject__Q24Game9EnemyBaseFv
-        .4byte getPSCreature__Q24Game9EnemyBaseFv
-        .4byte getSound_AILOD__Q24Game8CreatureFv
-        .4byte getSound_PosPtr__Q24Game9EnemyBaseFv
-        .4byte sound_culling__Q24Game9EnemyBaseFv
-        .4byte getSound_CurrAnimFrame__Q24Game9EnemyBaseFv
-        .4byte getSound_CurrAnimSpeed__Q24Game9EnemyBaseFv
-        .4byte on_movie_begin__Q24Game8CreatureFb
-        .4byte on_movie_end__Q24Game8CreatureFb
-        .4byte movieStartAnimation__Q24Game8CreatureFUl
-        .4byte movieStartDemoAnimation__Q24Game8CreatureFPQ28SysShape8AnimInfo
-        .4byte movieSetAnimationLastFrame__Q24Game8CreatureFv
-        .4byte "movieSetTranslation__Q24Game8CreatureFR10Vector3<f>f"
-        .4byte movieSetFaceDir__Q24Game8CreatureFf
-        .4byte "movieGotoPosition__Q24Game8CreatureFR10Vector3<f>"
-        .4byte movieUserCommand__Q24Game8CreatureFUlPQ24Game11MoviePlayer
-        .4byte getShadowParam__Q34Game8BlackMan3ObjFRQ24Game11ShadowParam
-        .4byte needShadow__Q24Game9EnemyBaseFv
-        .4byte getLifeGaugeParam__Q24Game9EnemyBaseFRQ24Game14LifeGaugeParam
-        .4byte getLODSphere__Q24Game9EnemyBaseFRQ23Sys6Sphere
-        .4byte getLODCylinder__Q24Game8CreatureFRQ23Sys8Cylinder
-        .4byte startPick__Q24Game8CreatureFv
-        .4byte endPick__Q24Game8CreatureFb
-        .4byte getMabiki__Q24Game8CreatureFv
-        .4byte getFootmarks__Q24Game8CreatureFv
-        .4byte onStickStart__Q24Game9EnemyBaseFPQ24Game8Creature
-        .4byte onStickEnd__Q24Game9EnemyBaseFPQ24Game8Creature
-        .4byte onStickStartSelf__Q24Game8CreatureFPQ24Game8Creature
-        .4byte onStickEndSelf__Q24Game8CreatureFPQ24Game8Creature
-        .4byte isSlotFree__Q24Game8CreatureFs
-        .4byte getFreeStickSlot__Q24Game8CreatureFv
-        .4byte "getNearFreeStickSlot__Q24Game8CreatureFR10Vector3<f>"
-        .4byte getRandomFreeStickSlot__Q24Game8CreatureFv
-        .4byte onSlotStickStart__Q24Game8CreatureFPQ24Game8Creatures
-        .4byte onSlotStickEnd__Q24Game8CreatureFPQ24Game8Creatures
-        .4byte "calcStickSlotGlobal__Q24Game8CreatureFsR10Vector3<f>"
-        .4byte "getVelocityAt__Q24Game9EnemyBaseFR10Vector3<f>R10Vector3<f>"
-        .4byte "getAngularEffect__Q24Game8CreatureFR10Vector3<f>R10Vector3<f>"
-        .4byte "applyImpulse__Q24Game8CreatureFR10Vector3<f>R10Vector3<f>"
-        .4byte ignoreAtari__Q24Game8CreatureFPQ24Game8Creature
-        .4byte getSuckPos__Q24Game8CreatureFv
-        .4byte getGoalPos__Q24Game8CreatureFv
-        .4byte isSuckReady__Q24Game8CreatureFv
-        .4byte isSuckArriveWait__Q24Game8CreatureFv
-        .4byte stimulate__Q24Game9EnemyBaseFRQ24Game11Interaction
-        .4byte getCreatureName__Q24Game9EnemyBaseFv
-        .4byte getCreatureID__Q24Game9EnemyBaseFv
-        .4byte 0
-        .4byte 0
-        .4byte "@376@onKeyEvent__Q24Game9EnemyBaseFRCQ28SysShape8KeyEvent"
-        .4byte __dt__Q34Game8BlackMan3ObjFv
-        .4byte "birth__Q34Game8BlackMan3ObjFR10Vector3<f>f"
-        .4byte
-   setInitialSetting__Q34Game8BlackMan3ObjFPQ24Game21EnemyInitialParamBase
-        .4byte update__Q24Game9EnemyBaseFv
-        .4byte doUpdate__Q34Game8BlackMan3ObjFv
-        .4byte doUpdateCommon__Q24Game9EnemyBaseFv
-        .4byte doUpdateCarcass__Q24Game9EnemyBaseFv
-        .4byte doAnimationUpdateAnimator__Q24Game9EnemyBaseFv
-        .4byte doAnimationCullingOff__Q34Game8BlackMan3ObjFv
-        .4byte doAnimationCullingOn__Q24Game9EnemyBaseFv
-        .4byte doAnimationStick__Q24Game9EnemyBaseFv
-        .4byte doSimulationCarcass__Q24Game9EnemyBaseFf
-        .4byte doDebugDraw__Q34Game8BlackMan3ObjFR8Graphics
-        .4byte doSimpleDraw__Q24Game9EnemyBaseFP8Viewport
-        .4byte doSimulationGround__Q24Game9EnemyBaseFf
-        .4byte doSimulationFlying__Q24Game9EnemyBaseFf
-        .4byte doSimulationStick__Q24Game9EnemyBaseFf
-        .4byte changeMaterial__Q34Game8BlackMan3ObjFv
-        .4byte "getCommonEffectPos__Q24Game9EnemyBaseFR10Vector3<f>"
-        .4byte getFitEffectPos__Q24Game9EnemyBaseFv
-        .4byte viewGetShape__Q24Game9EnemyBaseFv
-        .4byte view_start_carrymotion__Q24Game9EnemyBaseFv
-        .4byte view_finish_carrymotion__Q24Game9EnemyBaseFv
-        .4byte viewStartPreCarryMotion__Q24Game9EnemyBaseFv
-        .4byte viewStartCarryMotion__Q24Game9EnemyBaseFv
-        .4byte viewOnPelletKilled__Q24Game9EnemyBaseFv
-        .4byte getOffsetForMapCollision__Q24Game9EnemyBaseFv
-        .4byte setParameters__Q34Game8BlackMan3ObjFv
-        .4byte initMouthSlots__Q24Game9EnemyBaseFv
-        .4byte initWalkSmokeEffect__Q34Game8BlackMan3ObjFv
-        .4byte getWalkSmokeEffectMgr__Q34Game8BlackMan3ObjFv
-        .4byte onKeyEvent__Q24Game9EnemyBaseFRCQ28SysShape8KeyEvent
-        .4byte injure__Q24Game9EnemyBaseFv
-        .4byte setCollEvent__Q24Game9EnemyBaseFRQ24Game9CollEvent
-        .4byte "getEfxHamonPos__Q24Game9EnemyBaseFP10Vector3<f>"
-        .4byte createInstanceEfxHamon__Q24Game9EnemyBaseFv
-        .4byte updateEfxHamon__Q34Game8BlackMan3ObjFv
-        .4byte createEfxHamon__Q34Game8BlackMan3ObjFv
-        .4byte fadeEfxHamon__Q24Game9EnemyBaseFv
-        .4byte getEnemyTypeID__Q34Game8BlackMan3ObjFv
-        .4byte getMouthSlots__Q24Game9EnemyBaseFv
-        .4byte
-   doGetLifeGaugeParam__Q34Game8BlackMan3ObjFRQ24Game14LifeGaugeParam .4byte
-   throwupItem__Q24Game9EnemyBaseFv .4byte
-   "getThrowupItemPosition__Q24Game9EnemyBaseFP10Vector3<f>" .4byte
-   "getThrowupItemVelocity__Q24Game9EnemyBaseFP10Vector3<f>" .4byte
-   throwupItemInDeathProcedure__Q34Game8BlackMan3ObjFv .4byte
-   setLODSphere__Q24Game9EnemyBaseFRQ23Sys6Sphere .4byte
-   damageCallBack__Q34Game8BlackMan3ObjFPQ24Game8CreaturefP8CollPart .4byte
-   pressCallBack__Q24Game9EnemyBaseFPQ24Game8CreaturefP8CollPart .4byte
-   flyCollisionCallBack__Q24Game9EnemyBaseFPQ24Game8CreaturefP8CollPart .4byte
-   hipdropCallBack__Q34Game8BlackMan3ObjFPQ24Game8CreaturefP8CollPart .4byte
-   dropCallBack__Q24Game9EnemyBaseFPQ24Game8Creature .4byte
-   earthquakeCallBack__Q34Game8BlackMan3ObjFPQ24Game8Creaturef .4byte
-   farmCallBack__Q24Game9EnemyBaseFPQ24Game8Creaturef .4byte
-   "bombCallBack__Q34Game8BlackMan3ObjFPQ24Game8CreatureR10Vector3<f>f" .4byte
-   eatWhitePikminCallBack__Q24Game9EnemyBaseFPQ24Game8Creaturef .4byte
-   dopeCallBack__Q24Game9EnemyBaseFPQ24Game8Creaturei .4byte
-   doDopeCallBack__Q24Game9EnemyBaseFPQ24Game8Creaturei .4byte
-   doStartStoneState__Q34Game8BlackMan3ObjFv .4byte
-   doFinishStoneState__Q34Game8BlackMan3ObjFv .4byte
-   getDamageCoeStoneState__Q24Game9EnemyBaseFv .4byte
-   doStartEarthquakeState__Q24Game9EnemyBaseFf .4byte
-   doFinishEarthquakeState__Q24Game9EnemyBaseFv .4byte
-   doStartEarthquakeFitState__Q24Game9EnemyBaseFv .4byte
-   doFinishEarthquakeFitState__Q24Game9EnemyBaseFv .4byte
-   lifeRecover__Q24Game9EnemyBaseFv .4byte
-   startCarcassMotion__Q24Game9EnemyBaseFv .4byte
-   setCarcassArg__Q24Game9EnemyBaseFRQ24Game13PelletViewArg .4byte
-   getCarcassArgHeight__Q24Game9EnemyBaseFv .4byte
-   doBecomeCarcass__Q24Game9EnemyBaseFv .4byte
-   startWaitingBirthTypeDrop__Q24Game9EnemyBaseFv .4byte
-   finishWaitingBirthTypeDrop__Q24Game9EnemyBaseFv .4byte
-   isFinishableWaitingBirthTypeDrop__Q24Game9EnemyBaseFv .4byte
-   doStartWaitingBirthTypeDrop__Q24Game9EnemyBaseFv .4byte
-   doFinishWaitingBirthTypeDrop__Q24Game9EnemyBaseFv .4byte
-   wallCallback__Q24Game9EnemyBaseFRCQ24Game8MoveInfo .4byte
-   getDownSmokeScale__Q24Game9EnemyBaseFv .4byte
-   doStartMovie__Q24Game9EnemyBaseFv .4byte doEndMovie__Q24Game9EnemyBaseFv
-        .4byte setFSM__Q34Game8BlackMan3ObjFPQ34Game8BlackMan3FSM
-        .4byte 0
-        .4byte 0
-        .4byte viewGetBaseScale__Q24Game10PelletViewFv
-        .4byte "@940@12@viewGetShape__Q24Game9EnemyBaseFv"
-        .4byte viewGetCollTreeJointIndex__Q24Game10PelletViewFv
-        .4byte viewGetCollTreeOffset__Q24Game10PelletViewFv
-        .4byte "@940@12@view_start_carrymotion__Q24Game9EnemyBaseFv"
-        .4byte "@940@12@view_finish_carrymotion__Q24Game9EnemyBaseFv"
-        .4byte "@940@12@viewStartPreCarryMotion__Q24Game9EnemyBaseFv"
-        .4byte "@940@12@viewStartCarryMotion__Q24Game9EnemyBaseFv"
-        .4byte "@940@12@viewOnPelletKilled__Q24Game9EnemyBaseFv"
-        .4byte "viewEntryShape__Q24Game10PelletViewFR7MatrixfR10Vector3<f>"
-        .4byte 0
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global lbl_80516058
-    lbl_80516058:
-        .skip 0x4
-    .global lbl_8051605C
-    lbl_8051605C:
-        .skip 0x4
-    .global curB__Q24Game8BlackMan
-    curB__Q24Game8BlackMan:
-        .skip 0x8
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_8051F438
-    lbl_8051F438:
-        .4byte 0x00000000
-    .global lbl_8051F43C
-    lbl_8051F43C:
-        .4byte 0x63686573
-        .4byte 0x74000000
-    .global lbl_8051F444
-    lbl_8051F444:
-        .asciz "footL"
-        .skip 2
-    .global lbl_8051F44C
-    lbl_8051F44C:
-        .asciz "footR"
-        .skip 2
-    .global lbl_8051F454
-    lbl_8051F454:
-        .asciz "tyreFL"
-        .skip 1
-    .global lbl_8051F45C
-    lbl_8051F45C:
-        .asciz "TyreFR"
-        .skip 1
-    .global lbl_8051F464
-    lbl_8051F464:
-        .asciz "TyreBL"
-        .skip 1
-    .global lbl_8051F46C
-    lbl_8051F46C:
-        .asciz "tyreBR"
-        .skip 1
-    .global lbl_8051F474
-    lbl_8051F474:
-        .asciz "waist"
-        .skip 2
-    .global lbl_8051F47C
-    lbl_8051F47C:
-        .float 10.0
-    .global lbl_8051F480
-    lbl_8051F480:
-        .float 1.0
-    .global lbl_8051F484
-    lbl_8051F484:
-        .4byte 0x437F0000
-    .global lbl_8051F488
-    lbl_8051F488:
-        .4byte 0x461C4000
-    .global lbl_8051F48C
-    lbl_8051F48C:
-        .4byte 0xBF800000
-    .global lbl_8051F490
-    lbl_8051F490:
-        .4byte 0x43300000
-        .4byte 0x00000000
-    .global lbl_8051F498
-    lbl_8051F498:
-        .4byte 0x3C23D70A
-    .global lbl_8051F49C
-    lbl_8051F49C:
-        .4byte 0xC47A0000
-    .global lbl_8051F4A0
-    lbl_8051F4A0:
-        .float 0.1
-    .global lbl_8051F4A4
-    lbl_8051F4A4:
-        .4byte 0x41F00000
-    .global lbl_8051F4A8
-    lbl_8051F4A8:
-        .4byte 0x40000000
-    .global lbl_8051F4AC
-    lbl_8051F4AC:
-        .4byte 0x42480000
-    .global lbl_8051F4B0
-    lbl_8051F4B0:
-        .4byte 0x40A00000
-    .global lbl_8051F4B4
-    lbl_8051F4B4:
-        .4byte 0x491C4000
-    .global lbl_8051F4B8
-    lbl_8051F4B8:
-        .4byte 0x481C4000
-    .global lbl_8051F4BC
-    lbl_8051F4BC:
-        .4byte 0x3E4CCCCD
-    .global lbl_8051F4C0
-    lbl_8051F4C0:
-        .4byte 0x42C80000
-    .global lbl_8051F4C4
-    lbl_8051F4C4:
-        .float 138.23009
-    .global lbl_8051F4C8
-    lbl_8051F4C8:
-        .float 0.25
-        .4byte 0x00000000
-    .global lbl_8051F4D0
-    lbl_8051F4D0:
-        .4byte 0x00000000
-        .4byte 0x00000000
-    .global lbl_8051F4D8
-    lbl_8051F4D8:
-        .float 0.05
-    .global lbl_8051F4DC
-    lbl_8051F4DC:
-        .float 0.5
-    .global lbl_8051F4E0
-    lbl_8051F4E0:
-        .float 1.4
-        .4byte 0x00000000
-    .global lbl_8051F4E8
-    lbl_8051F4E8:
-        .4byte 0x43300000
-        .4byte 0x80000000
-    .global lbl_8051F4F0
-    lbl_8051F4F0:
-        .float -325.9493
-    .global lbl_8051F4F4
-    lbl_8051F4F4:
-        .float 325.9493
-    .global lbl_8051F4F8
-    lbl_8051F4F8:
-        .float 32768.0
-    .global lbl_8051F4FC
-    lbl_8051F4FC:
-        .float 1000000.0
-    .global lbl_8051F500
-    lbl_8051F500:
-        .asciz "handL"
-        .skip 2
-    .global lbl_8051F508
-    lbl_8051F508:
-        .asciz "handR"
-        .skip 2
-    .global lbl_8051F510
-    lbl_8051F510:
-        .asciz "legBL"
-        .skip 2
-    .global lbl_8051F518
-    lbl_8051F518:
-        .asciz "legBR"
-        .skip 2
-    .global lbl_8051F520
-    lbl_8051F520:
-        .asciz "armBL"
-        .skip 2
-    .global lbl_8051F528
-    lbl_8051F528:
-        .asciz "armBR"
-        .skip 2
-    .global lbl_8051F530
-    lbl_8051F530:
-        .asciz "legTL"
-        .skip 2
-    .global lbl_8051F538
-    lbl_8051F538:
-        .asciz "legTR"
-        .skip 2
-    .global lbl_8051F540
-    lbl_8051F540:
-        .asciz "clouchL"
-    .global lbl_8051F548
-    lbl_8051F548:
-        .asciz "clouchR"
-    .global lbl_8051F550
-    lbl_8051F550:
-        .4byte 0x41700000
-    .global lbl_8051F554
-    lbl_8051F554:
-        .4byte lbl_8051F454
-    .global lbl_8051F558
-    lbl_8051F558:
-        .4byte lbl_8051F45C
-    .global lbl_8051F55C
-    lbl_8051F55C:
-        .4byte 0x3F4CCCCD
-    .global lbl_8051F560
-    lbl_8051F560:
-        .4byte 0x68656164
-        .4byte 0x00000000
-*/
-
 namespace Game {
-
 namespace BlackMan {
 
-static Obj* curB;
+Obj* curB;
 
 enum JointID {
 	lHand = 0,
@@ -638,10 +38,12 @@ enum JointID {
 	rFoot = 3,
 };
 
-/*
- * --INFO--
- * Address:	803A5DB0
- * Size:	00003C
+static const int unusedArray[]     = { 0, 0, 0 };
+static const char unusedBlackMan[] = "blackMan";
+
+/**
+ * @note Address: 0x803A5DB0
+ * @note Size: 0x3C
  */
 bool lHandCallBack(J3DJoint*, int p2)
 {
@@ -651,10 +53,9 @@ bool lHandCallBack(J3DJoint*, int p2)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803A5DEC
- * Size:	00003C
+/**
+ * @note Address: 0x803A5DEC
+ * @note Size: 0x3C
  */
 bool rHandCallBack(J3DJoint*, int p2)
 {
@@ -664,10 +65,9 @@ bool rHandCallBack(J3DJoint*, int p2)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803A5E28
- * Size:	00003C
+/**
+ * @note Address: 0x803A5E28
+ * @note Size: 0x3C
  */
 bool lFootCallBack(J3DJoint*, int p2)
 {
@@ -677,10 +77,9 @@ bool lFootCallBack(J3DJoint*, int p2)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803A5E64
- * Size:	00003C
+/**
+ * @note Address: 0x803A5E64
+ * @note Size: 0x3C
  */
 bool rFootCallBack(J3DJoint*, int p2)
 {
@@ -690,10 +89,9 @@ bool rFootCallBack(J3DJoint*, int p2)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803A5EA0
- * Size:	000038
+/**
+ * @note Address: 0x803A5EA0
+ * @note Size: 0x38
  */
 bool bodyCallBack(J3DJoint*, int p2)
 {
@@ -703,10 +101,9 @@ bool bodyCallBack(J3DJoint*, int p2)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803A5ED8
- * Size:	0000F0
+/**
+ * @note Address: 0x803A5ED8
+ * @note Size: 0xF0
  */
 void Obj::setParameters()
 {
@@ -733,21 +130,15 @@ void Obj::setParameters()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A5FC8
- * Size:	000020
+/**
+ * @note Address: 0x803A5FC8
+ * @note Size: 0x20
  */
 void Obj::birth(Vector3f& position, f32 faceDirection) { EnemyBase::birth(position, faceDirection); }
 
-const int unusedArray[] = { 0, 0, 0 };
-
-const char* unusedBlackMan = "blackMan";
-
-/*
- * --INFO--
- * Address:	803A5FE8
- * Size:	0006B4
+/**
+ * @note Address: 0x803A5FE8
+ * @note Size: 0x6B4
  */
 void Obj::onInit(CreatureInitArg* arg)
 {
@@ -755,11 +146,11 @@ void Obj::onInit(CreatureInitArg* arg)
 	disableEvent(0, EB_Cullable);
 	disableEvent(0, EB_LeaveCarcass);
 	disableEvent(0, EB_DeathEffectEnabled);
-	_2E0 = C_PARMS->_A10;
+	mEscapePhase = C_PARMS->_A10;
 
-	if (gameSystem->mSection && gameSystem->mSection->getCaveID() == 'y_01' && gameSystem && gameSystem->mMode != GSM_PIKLOPEDIA) {
+	if (gameSystem->mSection && gameSystem->mSection->getCaveID() == 'y_01' && gameSystem && !gameSystem->isZukanMode()) {
 		mFSM->start(this, WRAITH_Walk, nullptr);
-		_2E0 = 2;
+		mEscapePhase = 2;
 	} else {
 		EnemyMgrBase* tyreMgr = generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_Tyre);
 		if (tyreMgr) {
@@ -779,18 +170,18 @@ void Obj::onInit(CreatureInitArg* arg)
 
 	mPostFlickState = -1;
 
-	mNextRoutePos   = mPosition;
-	mHomePosition   = mNextRoutePos;
-	mTargetPosition = mHomePosition;
-	_348            = 0;
-	_34C            = 0;
-	_35C            = nullptr;
-	_2E4            = 0;
-	_2E8            = 0;
-	_334            = 0;
-	mFreezeTimer    = 0;
-	_374            = 0.0f;
-	curB            = nullptr;
+	mNextRoutePos           = mPosition;
+	mHomePosition           = mNextRoutePos;
+	mTargetPosition         = mHomePosition;
+	mPathFindingHandle      = 0;
+	mFoundPath              = 0;
+	mPath                   = nullptr;
+	_2E4                    = 0;
+	mRouteFindTimer         = 0;
+	mRouteFindCooldownTimer = 0;
+	mFreezeTimer            = 0;
+	mEscapeMoveSpeed        = 0.0f;
+	curB                    = nullptr;
 
 	P2ASSERTLINE(209, mModel);
 
@@ -807,24 +198,20 @@ void Obj::onInit(CreatureInitArg* arg)
 	if (mTyre) {
 
 		SysShape::Model* tyreModel = mTyre->mModel;
-		u16 jointIdx               = tyreModel->getJointIndex("tyreFL");
-		mLeftHandMtx               = tyreModel->getMatrix(jointIdx);
+		mLeftHandMtx               = tyreModel->getMatrix(tyreModel->getJointIndex("tyreFL"));
 
 		modelData->mJointTree.mJoints[mLeftHandJointIndex]->mFunction = lHandCallBack;
 
 		tyreModel                                                      = mTyre->mModel;
-		jointIdx                                                       = tyreModel->getJointIndex("TyreFR");
-		mRightHandMtx                                                  = tyreModel->getMatrix(jointIdx);
+		mRightHandMtx                                                  = tyreModel->getMatrix(tyreModel->getJointIndex("TyreFR"));
 		modelData->mJointTree.mJoints[mRightHandJointIndex]->mFunction = rHandCallBack;
 
 		tyreModel                                                     = mTyre->mModel;
-		jointIdx                                                      = tyreModel->getJointIndex("TyreBL");
-		mLeftFootMtx                                                  = tyreModel->getMatrix(jointIdx);
+		mLeftFootMtx                                                  = tyreModel->getMatrix(tyreModel->getJointIndex("TyreBL"));
 		modelData->mJointTree.mJoints[mLeftFootJointIndex]->mFunction = lFootCallBack;
 
 		tyreModel                                                      = mTyre->mModel;
-		jointIdx                                                       = tyreModel->getJointIndex("tyreBR");
-		mRightFootMtx                                                  = tyreModel->getMatrix(jointIdx);
+		mRightFootMtx                                                  = tyreModel->getMatrix(tyreModel->getJointIndex("tyreBR"));
 		modelData->mJointTree.mJoints[mRightFootJointIndex]->mFunction = rFootCallBack;
 
 		mModel->hidePackets();
@@ -840,10 +227,10 @@ void Obj::onInit(CreatureInitArg* arg)
 	}
 
 	WPSearchArg wpSearch(mPosition, nullptr, 0, 10.0f);
-	s16 wpIndex = mapMgr->mRouteMgr->getNearestWayPoint(wpSearch)->mIndex;
-	_344        = wpIndex;
-	_342        = wpIndex;
-	_340        = wpIndex;
+	s16 wpIndex            = mapMgr->mRouteMgr->getNearestWayPoint(wpSearch)->mIndex;
+	mNextWaypointIndex     = wpIndex;
+	mPreviousWaypointIndex = wpIndex;
+	mCurrentWaypointIndex  = wpIndex;
 
 	mNextRoutePos   = mPosition;
 	mHomePosition   = mNextRoutePos;
@@ -857,8 +244,8 @@ void Obj::onInit(CreatureInitArg* arg)
 
 	mTargetColor = Color4(0xb5, 0xc0, 0xae, 0xff); // Transparent Color
 	_388         = Color4(0xff, 0x20, 0x16, 0xff);
-	_38C         = Color4(0x30, 0x3f, 0x57, 0x00);
-	mUsingColor  = mTargetColor;
+	mFadeColor   = Color4(0x30, 0x3f, 0x57, 0x00);
+	mActiveColor = mTargetColor;
 
 	modelData = mModel->mJ3dModel->mModelData;
 
@@ -869,39 +256,38 @@ void Obj::onInit(CreatureInitArg* arg)
 
 	_37C = modelData->mMaterialTable.mMaterials[kageMatIdx];
 
-	if (gameSystem && gameSystem->mMode == GSM_PIKLOPEDIA) {
-		_33C = 0.0f;
+	if (gameSystem && gameSystem->isZukanMode()) {
+		mWraithFallTimer = 0.0f;
 	}
 
 	mEfxDead->mMtx = mModel->mJoints[mChestJointIndex].getWorldMatrix();
 }
 
-/*
- * --INFO--
- * Address:	803A669C
- * Size:	000560
+/**
+ * @note Address: 0x803A669C
+ * @note Size: 0x560
  */
 Obj::Obj()
     : mPostFlickState(-1)
     , _2E4(0)
-    , _2E8(0)
-    , _2EC(0)
-    , _2F0(0)
-    , _2F4(0)
-    , _334(0)
-    , _338(false)
-    , _33C(10.0f)
-    , _340(-1)
-    , _342(-1)
-    , _344(-1)
-    , _348(0)
-    , _34C(0)
+    , mRouteFindTimer(0)
+    , mStepTimer(0)
+    , mStepPhase(0)
+    , mEscapeTimer(0)
+    , mRouteFindCooldownTimer(0)
+    , mIsSameWaypoint(false)
+    , mWraithFallTimer(10.0f)
+    , mCurrentWaypointIndex(-1)
+    , mPreviousWaypointIndex(-1)
+    , mNextWaypointIndex(-1)
+    , mPathFindingHandle(0)
+    , mFoundPath(0)
 {
 	mMatLoopAnimator = nullptr;
-	_35C             = nullptr;
+	mPath            = nullptr;
 	mFSM             = nullptr;
 	mTyre            = nullptr;
-	_378             = 1.0f;
+	mFadeTimer       = 1.0f;
 	_37C             = nullptr;
 	mEfxMove         = nullptr;
 	mEfxRun          = nullptr;
@@ -910,392 +296,24 @@ Obj::Obj()
 	_3A8             = 0;
 	_3A9             = 0;
 	_3AA             = 0;
-	_3AB             = 0;
+	mIsMoviePlaying  = 0;
 
 	mAnimator        = new ProperAnimator;
 	mMatLoopAnimator = new Sys::MatLoopAnimator;
 
 	setFSM(new FSM);
 
-	mEfxMove       = new efx::TKageMove(&mPosition, &mFaceDir);
-	mEfxRun        = new efx::TKageRun(&mPosition, &mFaceDir);
+	mEfxMove       = new efx::TKageMove(&mChestJointPosition, &mFaceDir);
+	mEfxRun        = new efx::TKageRun(&mChestJointPosition, &mFaceDir);
 	mEfxDead       = new efx::TKageDead1;
-	mEfxTyreup     = new efx::TKageTyreup(&_328, &mFaceDir);
+	mEfxTyreup     = new efx::TKageTyreup(&mLandPosition, &mFaceDir);
 	mEfxFrontFlick = new efx::TKageFlick(&mHandPositions[0]);
 	mEfxBackFlick  = new efx::TKageFlick(&mHandPositions[1]);
-
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	extsh.   r0, r4
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	stw      r30, 8(r1)
-	beq      lbl_803A66DC
-	addi     r0, r31, 0x3ac
-	lis      r3, __vt__Q24Game10PelletView@ha
-	stw      r0, 0x17c(r31)
-	addi     r3, r3, __vt__Q24Game10PelletView@l
-	li       r0, 0
-	stw      r3, 0x3ac(r31)
-	stw      r0, 0x3b0(r31)
-	stw      r0, 0x3b4(r31)
-
-lbl_803A66DC:
-	mr       r3, r31
-	li       r4, 0
-	bl       __ct__Q24Game9EnemyBaseFv
-	lis      r4, __vt__Q34Game8BlackMan3Obj@ha
-	addi     r9, r31, 0x3ac
-	addi     r5, r4, __vt__Q34Game8BlackMan3Obj@l
-	lis      r3, "__ct__10Vector3<f>Fv"@ha
-	stw      r5, 0(r31)
-	addi     r0, r5, 0x1b0
-	addi     r10, r5, 0x2fc
-	addi     r4, r3, "__ct__10Vector3<f>Fv"@l
-	stw      r0, 0x178(r31)
-	li       r8, -1
-	li       r0, 0
-	addi     r3, r31, 0x310
-	lwz      r7, 0x17c(r31)
-	li       r5, 0
-	li       r6, 0xc
-	stw      r10, 0(r7)
-	li       r7, 2
-	lwz      r10, 0x17c(r31)
-	subf     r9, r10, r9
-	stw      r9, 0xc(r10)
-	stw      r8, 0x2dc(r31)
-	stw      r0, 0x2e4(r31)
-	stw      r0, 0x2e8(r31)
-	stw      r0, 0x2ec(r31)
-	stw      r0, 0x2f0(r31)
-	stw      r0, 0x2f4(r31)
-	bl       __construct_array
-	li       r4, 0
-	lfs      f0, lbl_8051F47C@sda21(r2)
-	stw      r4, 0x334(r31)
-	li       r0, -1
-	addi     r3, r31, 0x350
-	stb      r4, 0x338(r31)
-	stfs     f0, 0x33c(r31)
-	sth      r0, 0x340(r31)
-	sth      r0, 0x342(r31)
-	sth      r0, 0x344(r31)
-	stw      r4, 0x348(r31)
-	stb      r4, 0x34c(r31)
-	bl       __ct__Q34Game15WalkSmokeEffect3MgrFv
-	li       r0, 0
-	lfs      f0, lbl_8051F480@sda21(r2)
-	stw      r0, 0x358(r31)
-	li       r3, 0x2c
-	stw      r0, 0x35c(r31)
-	stw      r0, 0x360(r31)
-	stw      r0, 0x364(r31)
-	stfs     f0, 0x378(r31)
-	stw      r0, 0x37c(r31)
-	stw      r0, 0x390(r31)
-	stw      r0, 0x394(r31)
-	stw      r0, 0x398(r31)
-	stw      r0, 0x39c(r31)
-	stb      r0, 0x3a8(r31)
-	stb      r0, 0x3a9(r31)
-	stb      r0, 0x3aa(r31)
-	stb      r0, 0x3ab(r31)
-	bl       __nw__FUl
-	or.      r30, r3, r3
-	beq      lbl_803A6818
-	bl       __ct__Q24Game17EnemyAnimatorBaseFv
-	lis      r3, __vt__Q34Game8BlackMan14ProperAnimator@ha
-	lis      r4, __vt__Q28SysShape12BaseAnimator@ha
-	addi     r0, r3, __vt__Q34Game8BlackMan14ProperAnimator@l
-	lis      r3, __vt__Q28SysShape8Animator@ha
-	stw      r0, 0(r30)
-	addi     r4, r4, __vt__Q28SysShape12BaseAnimator@l
-	addi     r3, r3, __vt__Q28SysShape8Animator@l
-	li       r0, 0
-	stw      r4, 0x10(r30)
-	stw      r3, 0x10(r30)
-	stb      r0, 0x28(r30)
-	stw      r0, 0x1c(r30)
-	stw      r0, 0x14(r30)
-	stb      r0, 0x28(r30)
-	stw      r0, 0x20(r30)
-
-lbl_803A6818:
-	stw      r30, 0x184(r31)
-	li       r3, 0xc
-	bl       __nw__FUl
-	or.      r30, r3, r3
-	beq      lbl_803A683C
-	bl       __ct__Q23Sys15MatBaseAnimatorFv
-	lis      r3, __vt__Q23Sys15MatLoopAnimator@ha
-	addi     r0, r3, __vt__Q23Sys15MatLoopAnimator@l
-	stw      r0, 0(r30)
-
-lbl_803A683C:
-	stw      r30, 0x358(r31)
-	li       r3, 0x1c
-	bl       __nw__FUl
-	or.      r4, r3, r3
-	beq      lbl_803A6870
-	lis      r5, __vt__Q24Game17EnemyStateMachine@ha
-	lis      r3, __vt__Q34Game8BlackMan3FSM@ha
-	addi     r0, r5, __vt__Q24Game17EnemyStateMachine@l
-	li       r5, -1
-	stw      r0, 0(r4)
-	addi     r0, r3, __vt__Q34Game8BlackMan3FSM@l
-	stw      r5, 0x18(r4)
-	stw      r0, 0(r4)
-
-lbl_803A6870:
-	lwz      r12, 0(r31)
-	mr       r3, r31
-	lwz      r12, 0x2f8(r12)
-	mtctr    r12
-	bctrl
-	li       r3, 0x18
-	bl       __nw__FUl
-	cmplwi   r3, 0
-	beq      lbl_803A6914
-	lis      r4, __vt__Q23efx5TBase@ha
-	lis      r5, __vt__18JPAEmitterCallBack@ha
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx5TSync@ha
-	stw      r0, 0(r3)
-	addi     r0, r5, __vt__18JPAEmitterCallBack@l
-	addi     r5, r4, __vt__Q23efx5TSync@l
-	lis      r4, __vt__Q23efx13TChasePosYRot@ha
-	stw      r0, 4(r3)
-	addi     r9, r4, __vt__Q23efx13TChasePosYRot@l
-	lis      r4, __vt__Q23efx9TKageMove@ha
-	addi     r0, r5, 0x14
-	stw      r5, 0(r3)
-	addi     r4, r4, __vt__Q23efx9TKageMove@l
-	li       r11, 0
-	li       r10, 0x2b2
-	stw      r0, 4(r3)
-	addi     r8, r9, 0x14
-	addi     r7, r31, 0x304
-	addi     r6, r31, 0x1fc
-	stw      r11, 8(r3)
-	li       r5, 0x299
-	addi     r0, r4, 0x14
-	sth      r10, 0xc(r3)
-	stb      r11, 0xe(r3)
-	stw      r9, 0(r3)
-	stw      r8, 4(r3)
-	stw      r7, 0x10(r3)
-	stw      r6, 0x14(r3)
-	sth      r5, 0xc(r3)
-	stw      r4, 0(r3)
-	stw      r0, 4(r3)
-
-lbl_803A6914:
-	stw      r3, 0x390(r31)
-	li       r3, 0x18
-	bl       __nw__FUl
-	cmplwi   r3, 0
-	beq      lbl_803A69A8
-	lis      r4, __vt__Q23efx5TBase@ha
-	lis      r5, __vt__18JPAEmitterCallBack@ha
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx5TSync@ha
-	stw      r0, 0(r3)
-	addi     r0, r5, __vt__18JPAEmitterCallBack@l
-	addi     r5, r4, __vt__Q23efx5TSync@l
-	lis      r4, __vt__Q23efx13TChasePosYRot@ha
-	stw      r0, 4(r3)
-	addi     r9, r4, __vt__Q23efx13TChasePosYRot@l
-	lis      r4, __vt__Q23efx8TKageRun@ha
-	addi     r0, r5, 0x14
-	stw      r5, 0(r3)
-	addi     r4, r4, __vt__Q23efx8TKageRun@l
-	li       r11, 0
-	li       r10, 0x2b2
-	stw      r0, 4(r3)
-	addi     r8, r9, 0x14
-	addi     r7, r31, 0x304
-	addi     r6, r31, 0x1fc
-	stw      r11, 8(r3)
-	li       r5, 0x29c
-	addi     r0, r4, 0x14
-	sth      r10, 0xc(r3)
-	stb      r11, 0xe(r3)
-	stw      r9, 0(r3)
-	stw      r8, 4(r3)
-	stw      r7, 0x10(r3)
-	stw      r6, 0x14(r3)
-	sth      r5, 0xc(r3)
-	stw      r4, 0(r3)
-	stw      r0, 4(r3)
-
-lbl_803A69A8:
-	stw      r3, 0x394(r31)
-	li       r3, 0x14
-	bl       __nw__FUl
-	cmplwi   r3, 0
-	beq      lbl_803A6A30
-	lis      r4, __vt__Q23efx5TBase@ha
-	lis      r5, __vt__18JPAEmitterCallBack@ha
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx5TSync@ha
-	stw      r0, 0(r3)
-	addi     r0, r5, __vt__18JPAEmitterCallBack@l
-	addi     r5, r4, __vt__Q23efx5TSync@l
-	lis      r4, __vt__Q23efx9TChaseMtx@ha
-	stw      r0, 4(r3)
-	addi     r7, r4, __vt__Q23efx9TChaseMtx@l
-	lis      r4, __vt__Q23efx10TKageDead1@ha
-	addi     r0, r5, 0x14
-	stw      r5, 0(r3)
-	addi     r4, r4, __vt__Q23efx10TKageDead1@l
-	li       r9, 0
-	li       r8, 0x2b2
-	stw      r0, 4(r3)
-	addi     r6, r7, 0x14
-	li       r5, 0x297
-	addi     r0, r4, 0x14
-	stw      r9, 8(r3)
-	sth      r8, 0xc(r3)
-	stb      r9, 0xe(r3)
-	stw      r7, 0(r3)
-	stw      r6, 4(r3)
-	stw      r9, 0x10(r3)
-	sth      r5, 0xc(r3)
-	stw      r4, 0(r3)
-	stw      r0, 4(r3)
-
-lbl_803A6A30:
-	stw      r3, 0x39c(r31)
-	li       r3, 0x18
-	bl       __nw__FUl
-	cmplwi   r3, 0
-	beq      lbl_803A6AC4
-	lis      r4, __vt__Q23efx5TBase@ha
-	lis      r5, __vt__18JPAEmitterCallBack@ha
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx5TSync@ha
-	stw      r0, 0(r3)
-	addi     r0, r5, __vt__18JPAEmitterCallBack@l
-	addi     r5, r4, __vt__Q23efx5TSync@l
-	lis      r4, __vt__Q23efx13TChasePosYRot@ha
-	stw      r0, 4(r3)
-	addi     r9, r4, __vt__Q23efx13TChasePosYRot@l
-	lis      r4, __vt__Q23efx11TKageTyreup@ha
-	addi     r0, r5, 0x14
-	stw      r5, 0(r3)
-	addi     r4, r4, __vt__Q23efx11TKageTyreup@l
-	li       r11, 0
-	li       r10, 0x2b2
-	stw      r0, 4(r3)
-	addi     r8, r9, 0x14
-	addi     r7, r31, 0x328
-	addi     r6, r31, 0x1fc
-	stw      r11, 8(r3)
-	li       r5, 0x2a1
-	addi     r0, r4, 0x14
-	sth      r10, 0xc(r3)
-	stb      r11, 0xe(r3)
-	stw      r9, 0(r3)
-	stw      r8, 4(r3)
-	stw      r7, 0x10(r3)
-	stw      r6, 0x14(r3)
-	sth      r5, 0xc(r3)
-	stw      r4, 0(r3)
-	stw      r0, 4(r3)
-
-lbl_803A6AC4:
-	stw      r3, 0x398(r31)
-	li       r3, 0x14
-	bl       __nw__FUl
-	cmplwi   r3, 0
-	beq      lbl_803A6B50
-	lis      r4, __vt__Q23efx5TBase@ha
-	lis      r5, __vt__18JPAEmitterCallBack@ha
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx5TSync@ha
-	stw      r0, 0(r3)
-	addi     r0, r5, __vt__18JPAEmitterCallBack@l
-	addi     r5, r4, __vt__Q23efx5TSync@l
-	lis      r4, __vt__Q23efx9TChasePos@ha
-	stw      r0, 4(r3)
-	addi     r8, r4, __vt__Q23efx9TChasePos@l
-	lis      r4, __vt__Q23efx10TKageFlick@ha
-	addi     r0, r5, 0x14
-	stw      r5, 0(r3)
-	addi     r4, r4, __vt__Q23efx10TKageFlick@l
-	li       r10, 0
-	li       r9, 0x2b2
-	stw      r0, 4(r3)
-	addi     r7, r8, 0x14
-	addi     r6, r31, 0x310
-	li       r5, 0x2ae
-	stw      r10, 8(r3)
-	addi     r0, r4, 0x14
-	sth      r9, 0xc(r3)
-	stb      r10, 0xe(r3)
-	stw      r8, 0(r3)
-	stw      r7, 4(r3)
-	stw      r6, 0x10(r3)
-	sth      r5, 0xc(r3)
-	stw      r4, 0(r3)
-	stw      r0, 4(r3)
-
-lbl_803A6B50:
-	stw      r3, 0x3a0(r31)
-	li       r3, 0x14
-	bl       __nw__FUl
-	cmplwi   r3, 0
-	beq      lbl_803A6BDC
-	lis      r4, __vt__Q23efx5TBase@ha
-	lis      r5, __vt__18JPAEmitterCallBack@ha
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx5TSync@ha
-	stw      r0, 0(r3)
-	addi     r0, r5, __vt__18JPAEmitterCallBack@l
-	addi     r5, r4, __vt__Q23efx5TSync@l
-	lis      r4, __vt__Q23efx9TChasePos@ha
-	stw      r0, 4(r3)
-	addi     r8, r4, __vt__Q23efx9TChasePos@l
-	lis      r4, __vt__Q23efx10TKageFlick@ha
-	addi     r0, r5, 0x14
-	stw      r5, 0(r3)
-	addi     r4, r4, __vt__Q23efx10TKageFlick@l
-	li       r10, 0
-	li       r9, 0x2b2
-	stw      r0, 4(r3)
-	addi     r7, r8, 0x14
-	addi     r6, r31, 0x31c
-	li       r5, 0x2ae
-	stw      r10, 8(r3)
-	addi     r0, r4, 0x14
-	sth      r9, 0xc(r3)
-	stb      r10, 0xe(r3)
-	stw      r8, 0(r3)
-	stw      r7, 4(r3)
-	stw      r6, 0x10(r3)
-	sth      r5, 0xc(r3)
-	stw      r4, 0(r3)
-	stw      r0, 4(r3)
-
-lbl_803A6BDC:
-	stw      r3, 0x3a4(r31)
-	mr       r3, r31
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	803A6C48
- * Size:	0006C4
+/**
+ * @note Address: 0x803A6C48
+ * @note Size: 0x6C4
  */
 void BlackMan::Obj::doUpdate()
 {
@@ -1303,105 +321,102 @@ void BlackMan::Obj::doUpdate()
 	isStopMotion();
 	isFinishMotion();
 	mFSM->exec(this);
-	if (_378 < 1.0f) {
-		_378 += C_PARMS->_A3C;
-		if (_378 > 1.0f) {
-			_378 = 1.0f;
+	if (mFadeTimer < 1.0f) {
+		mFadeTimer += C_PARMS->mFadeRate;
+		if (mFadeTimer > 1.0f) {
+			mFadeTimer = 1.0f;
+		}
+
+		f32 inverseFade = 1.0f - mFadeTimer;
+
+		CollPart* kosi = mCollTree->getCollPart('kosi');
+		if (kosi->mSpecialID == 'st__' || getStateID() == WRAITH_Dead) {
+			mFadeColor.a = mFadeTimer * 0xff;
+		} else {
+			mFadeColor.a   = mFadeColor.a * inverseFade;
+			mActiveColor.r = mActiveColor.r * inverseFade + mTargetColor.r * mFadeTimer;
+			mActiveColor.g = mActiveColor.g * inverseFade + mTargetColor.g * mFadeTimer;
+			mActiveColor.b = mActiveColor.b * inverseFade + mTargetColor.b * mFadeTimer;
 		}
 	}
 
-	f32 someVal = 1.0f - _378;
-
-	CollPart* kosi = mCollTree->getCollPart('kosi');
-	if (kosi->mSpecialID == 'st__' || getStateID() == WRAITH_Dead) {
-		_38C.a = _378 * 0xff;
-	} else {
-		_38C.a        = someVal * _38C.a;
-		mUsingColor.r = mUsingColor.r * someVal + mTargetColor.r * _378;
-		mUsingColor.g = mUsingColor.g * someVal + mTargetColor.g * _378;
-		mUsingColor.b = mUsingColor.b * someVal + mTargetColor.b * _378;
-	}
-
-	_33C -= sys->mDeltaTime;
+	mWraithFallTimer -= sys->mDeltaTime;
 	if (isEvent(0, EB_HardConstrained) && getStateID() == WRAITH_Fall) {
-		f32 unkFallTimer = -C_PARMS->_A4C;
-		if (!mTyre || _33C < unkFallTimer) {
+		f32 fallTimer = -C_PARMS->_A4C;
+		if (!mTyre || mWraithFallTimer < fallTimer) {
 			hardConstraintOff();
 			mModel->showPackets();
 			mSoundObj->startSound(PSSE_EN_TIRE_FALL, 0);
 		} else {
 			f32 someTimer = C_PARMS->_A58;
-			if (!_3A9 && _33C < someTimer) {
-				if (gameSystem && gameSystem->mMode == GSM_PIKLOPEDIA) {
+			if (!_3A9 && mWraithFallTimer < someTimer) {
+				if (gameSystem && gameSystem->isZukanMode()) {
 					_3A9                   = true;
 					mTyre->mIsShadowActive = true;
 				}
+
 				Navi* activeNavi = naviMgr->getActiveNavi();
 				if (!_3A9 && activeNavi && activeNavi->isAlive()) {
 
-					// some fuckery is going on here
-					Vector3f ourPos = getPosition();
-					ourPos          = mPosition;
+					// regswaps here
+					Vector3f pos     = Vector3f(mPosition.x, 0.0f, mPosition.z);
+					Vector3f naviPos = Vector3f(activeNavi->getPosition().x, 0.0f, activeNavi->getPosition().z);
 
-					Vector3f naviPos = activeNavi->getPosition();
-					f32 sqrDist      = sqrDistanceXZ(ourPos, naviPos);
+					f32 sqrDist = sqrDistanceXZ(naviPos, pos);
 					if (isFinalFloor()) {
-						f32 fallRadius = C_PARMS->_A54;
+						f32 fallRadius = C_PARMS->mFallRadius;
 						if (sqrDist < SQUARE(fallRadius)) {
 							_3A9 = true;
 						}
-					} else if (sqrDist < SQUARE(1000.0f)) {
+					} else if (sqrDist > 10000.0f) {
 						_3A9 = true;
 					}
+
 					if (_3A9) {
 						mTyre->mIsShadowActive = true;
 					}
 				}
+
 				if (!_3A9) {
-					_33C = someTimer;
+					mWraithFallTimer = someTimer;
 				}
 			}
 		}
-	}
 
-	if (mTyre && mTyre->isEvent(0, EB_HardConstrained) && _33C < 0.0f) {
-		if (gameSystem && gameSystem->mMode != GSM_PIKLOPEDIA && gameSystem->mSection && gameSystem->mSection->getCaveID() == 'y_04') {
-			PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
-			PSSystem::checkSceneMgr(mgr);
-			PSM::Scene_Game* scene     = static_cast<PSM::Scene_Game*>(mgr->getChildScene());
-			PSSystem::SeqBase* seqBase = PSSystem::getSeqFromScene(scene, 0);
-			P2ASSERTLINE(489, seqBase);
-			seqBase->stopSeq(5);
-			if (!isFinalFloor() && !playData->isDemoFlag(DEMO_Waterwraith_Appears) && moviePlayer) {
+		if (mTyre && mTyre->isEvent(0, EB_HardConstrained) && mWraithFallTimer < 0.0f) {
+			if (gameSystem && !gameSystem->isZukanMode() && gameSystem->mSection && gameSystem->mSection->getCaveID() == 'y_04') {
+				PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
+				PSSystem::checkSceneMgr(mgr);
+				mgr->checkScene();
+				PSSystem::SeqBase* seqBase = PSSystem::getSeqData(mgr, 0);
+				P2ASSERTLINE(489, seqBase);
+				seqBase->stopSeq(5);
+				if (!isFinalFloor() && !playData->isDemoFlag(DEMO_Waterwraith_Appears) && moviePlayer) {
 
-				Vector3f origin = mPosition;
+					MoviePlayArg wraithMovieArg("x20_blackman", nullptr, nullptr, 0);
+					Vector3f origin        = getPosition();
+					origin.y               = mapMgr->getMinY(mPosition);
+					wraithMovieArg.mOrigin = origin;
+					wraithMovieArg.mAngle  = getFaceDir();
 
-				MoviePlayArg wraithMovieArg("x20_blackman", nullptr, nullptr, 0);
+					moviePlayer->mTargetObject = this;
 
-				// this is not right
-				f32 faceDir            = getFaceDir();
-				origin.y               = mapMgr->getMinY(origin);
-				wraithMovieArg.mOrigin = origin;
-				wraithMovieArg.mAngle  = faceDir;
-
-				moviePlayer->mTargetObject = this;
-
-				moviePlayer->play(wraithMovieArg);
-				mTyre->movie_begin(false);
-				playData->setDemoFlag(DEMO_Waterwraith_Appears);
-				_3AB = true;
-				_3AA = true;
+					moviePlayer->play(wraithMovieArg);
+					mTyre->movie_begin(false);
+					playData->setDemoFlag(DEMO_Waterwraith_Appears);
+					mIsMoviePlaying = true;
+					_3AA            = true;
+				}
 			}
+			if (!mIsMoviePlaying) {
+				mTyre->mSoundObj->startSound(PSSE_EN_TIRE_FALL, 0);
+			}
+			mTyre->hardConstraintOff();
+			mTyre->mModel->showPackets();
 		}
-		if (!_3AB) {
-			mTyre->mSoundObj->startSound(PSSE_EN_TIRE_FALL, 0);
-		}
-		mTyre->hardConstraintOff();
-		mTyre->mModel->showPackets();
-
-		if (_3A9 && _33C < -1.0f && mTyre) {
-			mTyre->scaleUpShadow();
-		}
+	}
+	if (_3A9 && mWraithFallTimer < -1.0f && mTyre) {
+		mTyre->scaleUpShadow();
 	}
 
 	/*
@@ -1883,24 +898,21 @@ lbl_803A72D0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803A730C
- * Size:	000004
+/**
+ * @note Address: 0x803A730C
+ * @note Size: 0x4
  */
 void BlackMan::Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	803A7310
- * Size:	000020
+/**
+ * @note Address: 0x803A7310
+ * @note Size: 0x20
  */
 void BlackMan::Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	803A7330
- * Size:	000174
+/**
+ * @note Address: 0x803A7330
+ * @note Size: 0x174
  */
 void BlackMan::Obj::doSimulation(f32 speed)
 {
@@ -1908,10 +920,10 @@ void BlackMan::Obj::doSimulation(f32 speed)
 		mTyre->mWraithPosition = mPosition;
 	}
 
-	_2E8--;
+	mRouteFindTimer--;
 
-	if (_2E8 < 0) {
-		_2E8 = 0;
+	if (mRouteFindTimer < 0) {
+		mRouteFindTimer = 0;
 	}
 
 	EnemyBase::doSimulation(speed);
@@ -1934,28 +946,27 @@ void BlackMan::Obj::doSimulation(f32 speed)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A74A4
- * Size:	000238
+/**
+ * @note Address: 0x803A74A4
+ * @note Size: 0x238
  */
 void BlackMan::Obj::doAnimationCullingOff()
 {
 	Color4 efxColor(0xff, 0xff, 0xff, 0xff);
 
-	if (_2F0 && mTyre) {
-		efxColor.r = mUsingColor.r;
-		efxColor.g = mUsingColor.g;
-		efxColor.b = mUsingColor.b;
+	if (mStepPhase && mTyre) {
+		efxColor.r = mActiveColor.r;
+		efxColor.g = mActiveColor.g;
+		efxColor.b = mActiveColor.b;
 	}
 
 	mEfxMove->setGlobalPrmColor(efxColor);
 	mEfxRun->setGlobalPrmColor(efxColor);
 	mEfxDead->setGlobalPrmColor(efxColor);
 
-	mChestJointPosition = mModel->mJoints[mChestJointIndex].getWorldMatrix()->getPosition();
-	mHandPositions[0]   = mModel->mJoints[mLeftHandJointIndex].getWorldMatrix()->getPosition();
-	mHandPositions[1]   = mModel->mJoints[mRightHandJointIndex].getWorldMatrix()->getPosition();
+	mChestJointPosition = mModel->mJoints[mChestJointIndex].getWorldMatrix()->getTranslation();
+	mHandPositions[0]   = mModel->mJoints[mLeftHandJointIndex].getWorldMatrix()->getTranslation();
+	mHandPositions[1]   = mModel->mJoints[mRightHandJointIndex].getWorldMatrix()->getTranslation();
 
 	if (mTyre) {
 		if (getStateID() != WRAITH_Fall && C_PARMS->_A14) {
@@ -1968,7 +979,7 @@ void BlackMan::Obj::doAnimationCullingOff()
 
 	curB = nullptr;
 
-	if (!gameSystem || !gameSystem->isPiklopedia()) {
+	if (!gameSystem || !gameSystem->isZukanMode()) {
 		PSM::EnemyMidBoss* midBossSound = static_cast<PSM::EnemyMidBoss*>(mSoundObj);
 		PSM::checkMidBoss(midBossSound);
 
@@ -1982,10 +993,9 @@ void BlackMan::Obj::doAnimationCullingOff()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A76DC
- * Size:	00003C
+/**
+ * @note Address: 0x803A76DC
+ * @note Size: 0x3C
  */
 void BlackMan::Obj::onKill(Game::CreatureKillArg* arg)
 {
@@ -1994,10 +1004,9 @@ void BlackMan::Obj::onKill(Game::CreatureKillArg* arg)
 	fadeFlickEffect();
 }
 
-/*
- * --INFO--
- * Address:	803A7718
- * Size:	0000DC
+/**
+ * @note Address: 0x803A7718
+ * @note Size: 0xDC
  */
 void BlackMan::Obj::doStartStoneState()
 {
@@ -2008,7 +1017,7 @@ void BlackMan::Obj::doStartStoneState()
 	}
 
 	if (mTyre) {
-		mTyre->_30C = 0.0f; // roll speed maybe?
+		mTyre->mSingleRotationRatio = 0.0f; // roll speed maybe?
 	}
 
 	// since we are now a stone, pikmin can stick to us
@@ -2020,10 +1029,9 @@ void BlackMan::Obj::doStartStoneState()
 	fadeFlickEffect();
 }
 
-/*
- * --INFO--
- * Address:	803A77F4
- * Size:	0000BC
+/**
+ * @note Address: 0x803A77F4
+ * @note Size: 0xBC
  */
 void BlackMan::Obj::doFinishStoneState()
 {
@@ -2040,10 +1048,9 @@ void BlackMan::Obj::doFinishStoneState()
 	fadeTraceEffect();
 }
 
-/*
- * --INFO--
- * Address:	803A78B0
- * Size:	000058
+/**
+ * @note Address: 0x803A78B0
+ * @note Size: 0x58
  */
 bool BlackMan::Obj::isUnderground()
 {
@@ -2057,10 +1064,9 @@ bool BlackMan::Obj::isUnderground()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803A7908
- * Size:	0000A4
+/**
+ * @note Address: 0x803A7908
+ * @note Size: 0xA4
  */
 void BlackMan::Obj::doGetLifeGaugeParam(Game::LifeGaugeParam& param)
 {
@@ -2069,17 +1075,16 @@ void BlackMan::Obj::doGetLifeGaugeParam(Game::LifeGaugeParam& param)
 	if (isOnTyres()) {
 		Matrixf* waistJoint = (Matrixf*)mModel->mJ3dModel->mMtxBuffer->mWorldMatrices[mWaistJointIndex];
 
-		Vector3f lifeGaugePosition = waistJoint->getPosition();
-		lifeGaugePosition.y        = mPosition.y + C_PARMS->mGeneral.mLifeMeterHeight.mValue;
+		Vector3f lifeGaugePosition = waistJoint->getTranslation();
+		lifeGaugePosition.y        = mPosition.y + C_GENERALPARMS.mLifeMeterHeight.mValue;
 
 		param.mPosition = lifeGaugePosition;
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A79AC
- * Size:	0001B8
+/**
+ * @note Address: 0x803A79AC
+ * @note Size: 0x1B8
  */
 void BlackMan::Obj::collisionCallback(Game::CollEvent& collEvent)
 {
@@ -2090,9 +1095,8 @@ void BlackMan::Obj::collisionCallback(Game::CollEvent& collEvent)
 
 		Piki* piki = static_cast<Piki*>(collCreature);
 
-		if ((int)piki->mPikiKind != Purple) {
-			f32 knockback = C_PARMS->mGeneral.mShakeKnockback;
-			InteractFlick flick(this, C_PARMS->mGeneral.mShakeKnockback, -1000.0f, 0.0f);
+		if (piki->getKind() != Purple) {
+			InteractFlick flick(this, C_GENERALPARMS.mShakeKnockback(), 0.0f, FLICK_BACKWARD_ANGLE);
 			piki->stimulate(flick);
 			mSoundObj->startSound(PSSE_EN_KAGE_REJECT, 0);
 		} else if (stateID == WRAITH_Walk || stateID == WRAITH_Tired) {
@@ -2109,138 +1113,14 @@ void BlackMan::Obj::collisionCallback(Game::CollEvent& collEvent)
 		}
 	}
 
-	if (_2E0 != 2) {
+	if (mEscapePhase != 2) {
 		EnemyBase::collisionCallback(collEvent);
 	}
-
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stw      r31, 0x3c(r1)
-	stw      r30, 0x38(r1)
-	stw      r29, 0x34(r1)
-	mr       r29, r4
-	stw      r28, 0x30(r1)
-	mr       r28, r3
-	lwz      r30, 0(r4)
-	bl       getStateID__Q24Game9EnemyBaseFv
-	mr       r31, r3
-	cmpwi    r31, 3
-	beq      lbl_803A7AE4
-	cmpwi    r31, 2
-	beq      lbl_803A7AE4
-	lwz      r0, 0x1e0(r28)
-	rlwinm.  r0, r0, 0, 0x16, 0x16
-	bne      lbl_803A7AE4
-	cmplwi   r30, 0
-	beq      lbl_803A7AE4
-	mr       r3, r30
-	lwz      r12, 0(r30)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_803A7AE4
-	mr       r4, r30
-	addi     r3, r1, 8
-	lwz      r12, 0(r30)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lbz      r0, 0x2b8(r30)
-	mr       r4, r30
-	cmpwi    r0, 3
-	beq      lbl_803A7AB4
-	lwz      r5, 0xc0(r28)
-	lis      r4, __vt__Q24Game11Interaction@ha
-	lis      r3, __vt__Q24Game13InteractFlick@ha
-	lfs      f1, lbl_8051F438@sda21(r2)
-	lfs      f2, 0x4c4(r5)
-	addi     r4, r4, __vt__Q24Game11Interaction@l
-	lfs      f0, lbl_8051F49C@sda21(r2)
-	addi     r0, r3, __vt__Q24Game13InteractFlick@l
-	stw      r4, 0x14(r1)
-	mr       r3, r30
-	addi     r4, r1, 0x14
-	stw      r28, 0x18(r1)
-	stw      r0, 0x14(r1)
-	stfs     f2, 0x1c(r1)
-	stfs     f1, 0x20(r1)
-	stfs     f0, 0x24(r1)
-	lwz      r12, 0(r30)
-	lwz      r12, 0x1a4(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x28c(r28)
-	li       r4, 0x5977
-	li       r5, 0
-	lwz      r12, 0x28(r3)
-	lwz      r12, 0x88(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_803A7AE4
-
-lbl_803A7AB4:
-	cmpwi    r31, 0
-	beq      lbl_803A7AC4
-	cmpwi    r31, 8
-	bne      lbl_803A7AE4
-
-lbl_803A7AC4:
-	lwz      r3, 0x364(r28)
-	cmplwi   r3, 0
-	beq      lbl_803A7AE4
-	lwz      r12, 0(r3)
-	lfs      f1, lbl_8051F438@sda21(r2)
-	lwz      r12, 0x28c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_803A7AE4:
-	mr       r3, r30
-	lwz      r12, 0(r30)
-	lwz      r12, 0x7c(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_803A7B2C
-	mr       r3, r30
-	lwz      r12, 0(r30)
-	lwz      r12, 0x258(r12)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 0x62
-	bne      lbl_803A7B2C
-	lfs      f0, lbl_8051F438@sda21(r2)
-	stfs     f0, 0x11c(r28)
-	stfs     f0, 0x120(r28)
-	stfs     f0, 0x124(r28)
-
-lbl_803A7B2C:
-	lwz      r0, 0x2e0(r28)
-	cmpwi    r0, 2
-	beq      lbl_803A7B44
-	mr       r3, r28
-	mr       r4, r29
-	bl       collisionCallback__Q24Game9EnemyBaseFRQ24Game9CollEvent
-
-lbl_803A7B44:
-	lwz      r0, 0x44(r1)
-	lwz      r31, 0x3c(r1)
-	lwz      r30, 0x38(r1)
-	lwz      r29, 0x34(r1)
-	lwz      r28, 0x30(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	803A7B64
- * Size:	00016C
+/**
+ * @note Address: 0x803A7B64
+ * @note Size: 0x16C
  */
 bool BlackMan::Obj::damageCallBack(Game::Creature* creature, f32 damage, CollPart* part)
 {
@@ -2248,14 +1128,14 @@ bool BlackMan::Obj::damageCallBack(Game::Creature* creature, f32 damage, CollPar
 	if (stateID == WRAITH_Tired && creature->isPiki()) {
 		Piki* piki = static_cast<Piki*>(creature);
 
-		if ((int)piki->mPikiKind == Purple && !piki->mBounceTriangle) {
+		if (piki->getKind() == Purple && !piki->mBounceTriangle) {
 			mFreezeTimer = 0;
 			mFSM->transit(this, WRAITH_Freeze, nullptr);
 			return EnemyBase::damageCallBack(creature, damage, part);
 		}
 	}
 	if (stateID == WRAITH_Freeze || stateID == WRAITH_Bend || isEvent(0, EB_Bittered)) {
-		if (isEvent(0, EB_Bittered)) { // ???????
+		if (isEvent(0, EB_Bittered)) { // wraith doesn't take damage while bittered
 			return false;
 		}
 		if (mTyre) {
@@ -2267,10 +1147,9 @@ bool BlackMan::Obj::damageCallBack(Game::Creature* creature, f32 damage, CollPar
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803A7CD0
- * Size:	000134
+/**
+ * @note Address: 0x803A7CD0
+ * @note Size: 0x134
  */
 bool BlackMan::Obj::hipdropCallBack(Game::Creature* creature, f32 damage, CollPart* part)
 {
@@ -2299,10 +1178,9 @@ bool BlackMan::Obj::hipdropCallBack(Game::Creature* creature, f32 damage, CollPa
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803A7E04
- * Size:	0000DC
+/**
+ * @note Address: 0x803A7E04
+ * @note Size: 0xDC
  */
 bool BlackMan::Obj::earthquakeCallBack(Game::Creature* creature, f32 bounceFactor)
 {
@@ -2313,16 +1191,15 @@ bool BlackMan::Obj::earthquakeCallBack(Game::Creature* creature, f32 bounceFacto
 
 	if (C_PARMS->_A12 && (getStateID() == WRAITH_Walk || getStateID() == WRAITH_Tired)) {
 		mFreezeTimer = 0;
-		_2F4         = 0;
+		mEscapeTimer = 0;
 		mFSM->transit(this, WRAITH_Freeze, nullptr);
 	}
 	return EnemyBase::earthquakeCallBack(creature, bounceFactor);
 }
 
-/*
- * --INFO--
- * Address:	803A7EE0
- * Size:	000068
+/**
+ * @note Address: 0x803A7EE0
+ * @note Size: 0x68
  */
 void BlackMan::Obj::doEntry()
 {
@@ -2335,10 +1212,9 @@ void BlackMan::Obj::doEntry()
 	gameSystem->setDrawBuffer(0);
 }
 
-/*
- * --INFO--
- * Address:	803A7F48
- * Size:	00031C
+/**
+ * @note Address: 0x803A7F48
+ * @note Size: 0x31C
  */
 void BlackMan::Obj::changeMaterial()
 {
@@ -2357,31 +1233,29 @@ void BlackMan::Obj::changeMaterial()
 	copyMatrix[3][2] = 0.0f;
 	copyMatrix[3][3] = 1.0f;
 
-	J3DModel* j3dModel      = mModel->getJ3DModel();
-	J3DModelData* modelData = j3dModel->mModelData;
+	J3DModel* j3dModel      = mModel->mJ3dModel;
+	J3DModelData* modelData = j3dModel->getModelData();
 
-	_37C->mTevBlock->setTevKColor(0, mUsingColor);
+	_37C->mTevBlock->setTevKColor(0, mActiveColor);
 
-	_37C->mTevBlock->setTevKColor(3, _38C);
+	_37C->mTevBlock->setTevKColor(3, mFadeColor);
 
 	j3dModel->calcMaterial();
 
 	mMatLoopAnimator->animate(30.0f);
 
-	J3DTexMtx* texMtx = modelData->mMaterialTable.mMaterials[0]->mTexGenBlock->getTexMtx(0);
+	J3DTexMtxInfo* texInfo = &modelData->mMaterialTable.mMaterials[0]->mTexGenBlock->getTexMtx(0)->getTexMtxInfo();
 
-	copyMtx44(texMtx->_24, copyMatrix);
-	texMtx->_24[3][0] = texMtx->_24[3][1] = texMtx->_24[3][2] = 0.0f;
-	texMtx->_24[3][3]                                         = 1.0f;
+	for (int x = 0; x < 3; x++) {
+		for (int y = 0; y < 4; y++) {
+			texInfo->mEffectMtx[x][y] = copyMatrix[x][y];
+		}
+	}
 
-	J3DTexture* wraithMain = &modelData->mMaterialTable.mTextures[0];
+	texInfo->mEffectMtx[3][0] = texInfo->mEffectMtx[3][1] = texInfo->mEffectMtx[3][2] = 0.0f;
+	texInfo->mEffectMtx[3][3]                                                         = 1.0f;
 
-	ResTIMG* img = wraithMain->mRes;
-
-	*img = *gameSystem->mXfbTexture->mImage;
-
-	wraithMain->setImageOffset((int)img);
-	wraithMain->setPaletteOffset((int)img);
+	xfbUpdate(j3dModel, modelData);
 
 	for (u16 i = 0; i < modelData->mMaterialTable.mMaterialNum; i++) {
 		j3dSys.mMatPacket = &j3dModel->mMatPackets[i];
@@ -2595,47 +1469,22 @@ lbl_803A8234:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803A8264
- * Size:	000050
+/**
+ * @note Address: 0x803A8264
+ * @note Size: 0x50
  */
 void BlackMan::Obj::getShadowParam(ShadowParam& shadowParam)
 {
-	// ????? why does this have a regswap too???
-	shadowParam.mPosition = mChestJointPosition;
-	shadowParam.mPosition.y += 2.0f;
+	shadowParam.mPosition                 = mChestJointPosition;
+	shadowParam.mPosition.y               = mPosition.y + 2.0f;
 	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
 	shadowParam.mBoundingSphere.mRadius   = 50.0f;
 	shadowParam.mSize                     = 30.0f;
-	/*
-	lfs      f0, 0x304(r3)
-	lfs      f5, lbl_8051F4A8@sda21(r2)
-	stfs     f0, 0(r4)
-	lfs      f3, lbl_8051F438@sda21(r2)
-	lfs      f0, 0x308(r3)
-	lfs      f2, lbl_8051F480@sda21(r2)
-	stfs     f0, 4(r4)
-	lfs      f1, lbl_8051F4AC@sda21(r2)
-	lfs      f4, 0x30c(r3)
-	lfs      f0, lbl_8051F4A4@sda21(r2)
-	stfs     f4, 8(r4)
-	lfs      f4, 0x190(r3)
-	fadds    f4, f5, f4
-	stfs     f4, 4(r4)
-	stfs     f3, 0xc(r4)
-	stfs     f2, 0x10(r4)
-	stfs     f3, 0x14(r4)
-	stfs     f1, 0x18(r4)
-	stfs     f0, 0x1c(r4)
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	803A82B4
- * Size:	000064
+/**
+ * @note Address: 0x803A82B4
+ * @note Size: 0x64
  */
 void BlackMan::Obj::initWalkSmokeEffect()
 {
@@ -2644,10 +1493,9 @@ void BlackMan::Obj::initWalkSmokeEffect()
 	mWalkSmokeMgr.setup(1, mModel, "footL", 10.0f);
 }
 
-/*
- * --INFO--
- * Address:	803A8318
- * Size:	00001C
+/**
+ * @note Address: 0x803A8318
+ * @note Size: 0x1C
  */
 WalkSmokeEffect::Mgr* BlackMan::Obj::getWalkSmokeEffectMgr()
 {
@@ -2657,153 +1505,152 @@ WalkSmokeEffect::Mgr* BlackMan::Obj::getWalkSmokeEffectMgr()
 	return &mWalkSmokeMgr;
 }
 
-/*
- * --INFO--
- * Address:	803A8334
- * Size:	000848
+/**
+ * @note Address: 0x803A8334
+ * @note Size: 0x848
  */
 void BlackMan::Obj::walkFunc()
 {
-	f32 moveSpeed;
-	f32 rotationSpeed;
-	f32 rotationAccel;
-	if (!mTyre || isEvent(0, EB_Bittered)) {
-		if (isTyreFreeze()) {
-			mFSM->transit(this, WRAITH_Bend, nullptr);
-			mFreezeTimer = 0;
-			return;
+	if (mTyre && mTyre->isEvent(0, EB_Bittered)) {
+		return;
+	}
+
+	if (isTyreFreeze()) {
+		mFSM->transit(this, WRAITH_Bend, nullptr);
+		mFreezeTimer = 0;
+		return;
+	}
+
+	if (isOnTyres()) {
+		mHealth += 5.0f;
+		if (mHealth > mMaxHealth) {
+			mHealth = mMaxHealth;
 		}
+	}
 
-		if (isOnTyres()) {
-			mHealth += 5.0f;
-			if (mHealth > mMaxHealth) {
-				mHealth = mMaxHealth;
-			}
+	f32 rotationSpeed, moveSpeed, turnSpeed; // should be f31, f30, f29
+	moveSpeed     = C_GENERALPARMS.mMoveSpeed();
+	rotationSpeed = C_GENERALPARMS.mMaxTurnAngle();
+	turnSpeed     = C_GENERALPARMS.mTurnSpeed();
+
+	if (C_PARMS->_A1A >= 0) {
+		mStepPhase = C_PARMS->_A1A;
+	} else {
+		mStepTimer++;
+	}
+
+	if (mStepPhase == 0) {
+		if (mStepTimer > C_PROPERPARMS.mTimerToTwoStep) {
+			mStepPhase = 1;
+			mStepTimer = 0;
+			mFadeTimer = 0.0f;
 		}
-		moveSpeed     = C_PARMS->mGeneral.mMoveSpeed;
-		rotationSpeed = C_PARMS->mGeneral.mRotationalSpeed;
-		rotationAccel = C_PARMS->mGeneral.mRotationalAccel;
-		if (C_PARMS->_A1A >= 0) {
-			_2F0 = C_PARMS->_A1A;
-		} else {
-			_2EC++;
-		}
+	} else {
+		moveSpeed     = C_PROPERPARMS.mTravelSpeed();
+		rotationSpeed = C_PROPERPARMS.mMaxRotationStep();
+		turnSpeed     = C_PROPERPARMS.mRotationSpeed();
+	}
 
-		if (_2F0 == 0) {
-			if (_2EC > C_PARMS->mProperParms.mTimerToTwoStep) {
-				_2F0 = 1;
-				_2EC = 0;
-				_378 = 0.0f;
-			}
-		} else {
-			moveSpeed     = C_PROPERPARMS.mTravelSpeed;
-			rotationSpeed = C_PROPERPARMS.mMaxRotationStep;
-			rotationAccel = C_PROPERPARMS.mRotationSpeed;
-		}
+	if (mEscapePhase == 2) {
+		Navi* targetNavi = naviMgr->getActiveNavi();
+		turnSpeed        = C_PROPERPARMS.mEscapeSpeed();
+		if (targetNavi) {
+			Vector3f naviPosition = targetNavi->getPosition();
 
-		if (_2E0 == 2) {
-			Navi* targetNavi = naviMgr->getActiveNavi();
-			rotationAccel    = C_PROPERPARMS.mEscapeSpeed;
-			if (targetNavi) {
-				Vector3f naviPosition = targetNavi->getPosition();
+			bool isAnimEnd = false;
 
-				bool isAnimEnd = false;
-
-				f32 sqrDist = sqrDistanceXZ(mPosition, naviPosition);
-
-				if (mCurAnim->mIsPlaying && mCurAnim->mType == KEYEVENT_END) {
-					isAnimEnd = true;
-				}
-
-				if (sqrDist > SQUARE(800.0f)) {
-					_2F4 = 0;
-					if (getCurrAnimIndex() != 9) {
-						finishMotion();
-					}
-					if (isAnimEnd) {
-						startMotion(9, nullptr);
-					}
-				} else if (sqrDist > SQUARE(400.0f)) {
-					_2F4 = 0;
-					if (getCurrAnimIndex() != 11) {
-						finishMotion();
-					}
-					if (isAnimEnd) {
-						startMotion(11, nullptr);
-					}
-				} else {
-					_2F4++;
-					if (_2F4 > C_PROPERPARMS.mContinuousEscapeTimerLength || getCurrAnimIndex() != 8) {
-						finishMotion();
-					}
-					if (isAnimEnd) {
-						if (_2F4 > C_PROPERPARMS.mContinuousEscapeTimerLength) {
-							_2F4 = 0;
-							mFSM->transit(this, WRAITH_Tired, nullptr);
-						} else {
-							startMotion(8, nullptr);
-						}
-					}
-				}
-			}
-			if (getCurrAnimIndex() == 9) {
-				rotationAccel = 0.0f;
-			}
-
-			if (getCurrAnimIndex() == 11) {
-				rotationAccel = C_PROPERPARMS.mWalkingSpeed;
-			}
-
-			_374 += (rotationAccel - _374) * 0.2f;
-			moveSpeed     = _374;
-			rotationSpeed = C_PROPERPARMS.mMaxEscapeRotationStep;
-			rotationAccel = C_PROPERPARMS.mEscapeRotationSpeed;
-		} else if (ItemOnyon::mgr && ItemOnyon::mgr->mPod) {
-			Vector3f podPos = ItemOnyon::mgr->mPod->getPosition();
-			bool isAnimEnd  = false;
-			f32 sqrDist     = sqrDistanceXZ(mPosition, podPos);
+			f32 sqrDist = sqrDistanceXZ(mPosition, naviPosition);
 
 			if (mCurAnim->mIsPlaying && mCurAnim->mType == KEYEVENT_END) {
 				isAnimEnd = true;
 			}
 
-			if (sqrDist < SQUARE(100.0f)) {
-				if (getCurrAnimIndex() == 6) {
+			if (sqrDist > SQUARE(800.0f)) {
+				mEscapeTimer = 0;
+				if (getCurrAnimIndex() != WRAITHANIM_Wait) {
 					finishMotion();
 				}
 				if (isAnimEnd) {
-					startMotion(12, nullptr);
+					startMotion(WRAITHANIM_Wait, nullptr);
+				}
+			} else if (sqrDist > SQUARE(400.0f)) {
+				mEscapeTimer = 0;
+				if (getCurrAnimIndex() != WRAITHANIM_Walk) {
+					finishMotion();
+				}
+				if (isAnimEnd) {
+					startMotion(WRAITHANIM_Walk, nullptr);
 				}
 			} else {
-				if (getCurrAnimIndex() == 12) {
+				mEscapeTimer++;
+				if (mEscapeTimer > C_PROPERPARMS.mContinuousEscapeTimerLength() || getCurrAnimIndex() != WRAITHANIM_Run) {
 					finishMotion();
 				}
 				if (isAnimEnd) {
-					startMotion(6, nullptr);
+					if (mEscapeTimer > C_PROPERPARMS.mContinuousEscapeTimerLength()) {
+						mEscapeTimer = 0;
+						mFSM->transit(this, WRAITH_Tired, nullptr);
+					} else {
+						startMotion(WRAITHANIM_Run, nullptr);
+					}
 				}
 			}
 		}
+		if (getCurrAnimIndex() == WRAITHANIM_Wait) {
+			turnSpeed = 0.0f;
+		}
+
+		if (getCurrAnimIndex() == WRAITHANIM_Walk) {
+			turnSpeed = C_PROPERPARMS.mWalkingSpeed();
+		}
+
+		mEscapeMoveSpeed += (turnSpeed - mEscapeMoveSpeed) * 0.2f;
+		moveSpeed     = mEscapeMoveSpeed;
+		rotationSpeed = C_PROPERPARMS.mMaxEscapeRotationStep();
+		turnSpeed     = C_PROPERPARMS.mEscapeRotationSpeed();
+	} else if (ItemOnyon::mgr && ItemOnyon::mgr->mPod) {
+		Vector3f podPos = ItemOnyon::mgr->mPod->getPosition();
+		bool isAnimEnd  = false;
+		f32 sqrDist     = sqrDistanceXZ(mPosition, podPos);
+
+		if (mCurAnim->mIsPlaying && mCurAnim->mType == KEYEVENT_END) {
+			isAnimEnd = true;
+		}
+
+		if (sqrDist < SQUARE(100.0f)) {
+			if (getCurrAnimIndex() == WRAITHANIM_Move) {
+				finishMotion();
+			}
+			if (isAnimEnd) {
+				startMotion(WRAITHANIM_Through, nullptr);
+			}
+		} else {
+			if (getCurrAnimIndex() == WRAITHANIM_Through) {
+				finishMotion();
+			}
+			if (isAnimEnd) {
+				startMotion(WRAITHANIM_Move, nullptr);
+			}
+		}
 	}
-	if (mTyre && C_PARMS->_A10 != _2E0) {
-		_2E0 = C_PARMS->_A10;
-		if (_2E0 == 4) {
+	if (mTyre && C_PARMS->_A10 != mEscapePhase) {
+		mEscapePhase = C_PARMS->_A10;
+		if (mEscapePhase == 4) {
 			mCurrentVelocity = Vector3f(0.0f);
 			mTargetVelocity  = Vector3f(0.0f);
 			setPathFinder(false);
 		} else {
-			_34C = 0;
+			mFoundPath = 0;
 			releasePathFinder();
 		}
 	}
 
-	if (_2E0 == 4) {
-		if (!isEndPathFinder()) {
-
+	if (mEscapePhase == 4) {
+		if (isEndPathFinder()) {
+			moveSpeed = C_PROPERPARMS.mPodMoveSpeed();
 		} else {
-			moveSpeed = C_PROPERPARMS.mPodMoveSpeed;
+			return;
 		}
-	} else {
-		return;
 	}
 
 	Vector3f deltaPosition = mTargetPosition - mPosition;
@@ -2814,55 +1661,61 @@ void BlackMan::Obj::walkFunc()
 		_2E4 = 0;
 	}
 	if (mTyre) {
-		mTyre->_314 = mFaceDir;
+		mTyre->mFaceDirection = mFaceDir;
 	}
 	f32 prevFaceDir = mFaceDir;
-	EnemyFunc::walkToTarget(this, mTargetPosition, moveSpeed, rotationAccel, rotationSpeed);
+	EnemyFunc::walkToTarget(this, mTargetPosition, moveSpeed, turnSpeed, rotationSpeed);
 
 	if (mTyre) {
-		f32 distance      = _distanceXZflag(mPosition, mTyre->mWraithPosition);
-		mTyre->_30C       = distance / WRAITH_ROLLER_CIRCUMFERENCE;
-		EnemyBase* tyre   = mTyre;
-		tyre->mFaceDir    = mFaceDir;
-		tyre->mRotation.y = tyre->mFaceDir;
+		Vector3f sep                = mPosition - mTyre->mWraithPosition;
+		f32 distance                = sep.length2D();
+		mTyre->mSingleRotationRatio = distance / WRAITH_ROLLER_CIRCUMFERENCE;
+		EnemyBase* tyre             = mTyre;
+		tyre->mFaceDir              = mFaceDir;
+		tyre->mRotation.y           = tyre->mFaceDir;
 	}
 
-	if (_2E8 == 0) {
-		_334++;
-		if (_334 > 60) {
+	if (mRouteFindTimer == 0) {
+		mRouteFindCooldownTimer++;
+		if (mRouteFindCooldownTimer > 60) {
 			if (sqrDistanceXZ(mPosition, mNextRoutePos) < SQUARE(10.0f)) {
-				_2E8 = 120;
+				mRouteFindTimer = 120;
 				findNextRoutePoint();
 			}
-			mNextRoutePos = mPosition;
-			_334          = 0;
+			mNextRoutePos           = mPosition;
+			mRouteFindCooldownTimer = 0;
 		}
 	}
 
+	bool isInTurn = false; // lets the wraith do SICK DRIFTS
 	// turn inline hell is here
 	f32 angleDist = getAngDist2(mTargetPosition);
-	f32 turnSpeed = clamp(angleDist - prevFaceDir, 0.25f);
 
-	bool isInTurn = false; // lets the wraith do SICK DRIFTS
-
-	if (turnSpeed > 0.0f && angleDist > 0.05f) {
+	if (fabs((int)(angleDist > 0.25f))) {
 		isInTurn = true;
+	}
+	if (!isInTurn) {
+		// f32 turnSpeed2 = clamp(angleDist - prevFaceDir, 0.25f);
+
+		if (absF(prevFaceDir - mFaceDir) > 0.05f) {
+			isInTurn = true;
+		}
 	}
 
 	if (isInTurn) {
-		mTargetVelocity.x *= 0.5f;
-		mTargetVelocity.z *= 0.5f;
+		mCurrentVelocity.x *= 0.5f;
+		mCurrentVelocity.z *= 0.5f;
 	}
 
 	if (mTyre) {
-		if (_2F0 == 0) {
+		if (mStepPhase == 0) {
 			mSoundObj->startSound(PSSE_EN_KAGE_ZURUZURU, 0);
 			mTyre->mSoundObj->startSound(PSSE_EN_KAGE_ROLLER, 0);
 			mTyre->mSoundObj->startSound(PSSE_EN_KAGE_MELODYLOOP, 0);
 		} else {
 			JAISound* zuruzuru = mSoundObj->startSound(PSSE_EN_KAGE_ZURUZURU, 0);
 			if (zuruzuru) {
-				zuruzuru->setPitch(2.0f, 0, 0);
+				zuruzuru->setPitch(1.4f, 0, 0);
 			}
 			mTyre->mSoundObj->startSound(PSSE_EN_KAGE_ROLLER, 0);
 			mTyre->mSoundObj->startSound(PSSE_EN_KAGE_MELODYLOOP, 0);
@@ -3485,37 +2338,279 @@ lbl_803A8B4C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803A8B7C
- * Size:	000034
+/**
+ * @note Address: 0x803A8B7C
+ * @note Size: 0x34
  */
-bool BlackMan::Obj::isReachToGoal(f32)
-{
-	/*
-	fmuls    f0, f1, f1
-	lfs      f2, 0x194(r3)
-	lfs      f1, 0x2d8(r3)
-	lfs      f3, 0x18c(r3)
-	fsubs    f2, f2, f1
-	lfs      f1, 0x2d0(r3)
-	fsubs    f3, f3, f1
-	fmuls    f1, f2, f2
-	fmadds   f1, f3, f3, f1
-	fcmpo    cr0, f1, f0
-	mfcr     r0
-	srwi     r3, r0, 0x1f
-	blr
-	*/
-}
+bool BlackMan::Obj::isReachToGoal(f32 rad) { return (u8)(sqrDistanceXZ(mPosition, mTargetPosition) < SQUARE(rad)); }
 
-/*
- * --INFO--
- * Address:	803A8BB0
- * Size:	000ED0
+/**
+ * @note Address: 0x803A8BB0
+ * @note Size: 0xED0
  */
 void BlackMan::Obj::findNextRoutePoint()
 {
+	if (mFoundPath || mEscapePhase == 4) {
+		findNextTraceRoutePoint();
+		return;
+	}
+
+	RouteMgr* routeMgr = mapMgr->mRouteMgr;
+	if (mRouteFindTimer > 0) {
+		if (mPreviousWaypointIndex == mCurrentWaypointIndex && mCurrentWaypointIndex == mNextWaypointIndex) {
+			mTargetPosition = mHomePosition;
+			return;
+		}
+
+		mRouteFindTimer = 0;
+
+		WPEdgeSearchArg edgeArg(mPosition);
+		if (routeMgr->getNearestEdge(edgeArg)) {
+			s16 nextIdx = mCurrentWaypointIndex;  // r24
+			s16 prevIdx = mPreviousWaypointIndex; // r25
+			if (!edgeArg.mWp1->isFlag(WPF_Closed)) {
+				if (routeMgr->getWayPoint(edgeArg.mWp1->mIndex)->mNumFromLinks == 1 && !edgeArg.mWp2->isFlag(WPF_Closed)) {
+					mPreviousWaypointIndex = mCurrentWaypointIndex;
+					mCurrentWaypointIndex  = edgeArg.mWp2->mIndex;
+				} else {
+					mCurrentWaypointIndex = edgeArg.mWp1->mIndex;
+					if (routeMgr->getWayPoint(edgeArg.mWp2->mIndex)->mNumFromLinks > 1 && !edgeArg.mWp2->isFlag(WPF_Closed)) {
+						mPreviousWaypointIndex = edgeArg.mWp2->mIndex;
+					} else {
+						mPreviousWaypointIndex = mCurrentWaypointIndex;
+					}
+				}
+			} else {
+				mCurrentWaypointIndex = edgeArg.mWp2->mIndex;
+				if (routeMgr->getWayPoint(edgeArg.mWp1->mIndex)->mNumFromLinks > 1 && !edgeArg.mWp1->isFlag(WPF_Closed)) {
+					mPreviousWaypointIndex = edgeArg.mWp1->mIndex;
+				} else {
+					mPreviousWaypointIndex = mCurrentWaypointIndex;
+				}
+			}
+
+			if (mCurrentWaypointIndex == nextIdx && mPreviousWaypointIndex == prevIdx) {
+				mTargetPosition = mPosition;
+				mTargetPosition.x -= 100.0f * sinf(mFaceDir);
+				mTargetPosition.z -= 100.0f * cosf(mFaceDir);
+				return;
+			}
+
+			mPreviousWaypointIndex = mCurrentWaypointIndex;
+			mTargetPosition        = Vector3f(routeMgr->getWayPoint(mCurrentWaypointIndex)->mPosition);
+			return;
+		}
+	}
+
+	WayPoint* currWP = routeMgr->getWayPoint(mCurrentWaypointIndex);
+
+	P2ASSERTLINE(1557, currWP);
+
+	int counter = 0;
+	s16 indices[8];
+	WayPointIterator wpIter(currWP, true);
+	CI_LOOP(wpIter)
+	{
+		s16 index        = *wpIter;
+		WayPoint* wp     = routeMgr->getWayPoint(index);
+		Vector3f pos     = wp->mPosition;
+		Vector3f* posPtr = &pos;
+
+		if (wp && !wp->isFlag(WPF_Closed) && wp->mNumToLinks + wp->mNumFromLinks > 1) {
+			indices[counter] = index;
+			counter++;
+		}
+	}
+
+	if (counter == 0) {
+		WayPointIterator wpIter(currWP, true);
+		CI_LOOP(wpIter)
+		{
+			s16 index    = *wpIter;
+			WayPoint* wp = routeMgr->getWayPoint(index);
+
+			if (wp && !wp->isFlag(WPF_Closed)) {
+				indices[counter] = index;
+				counter++;
+			}
+		}
+	}
+
+	if (counter) {
+		int val     = -1;                                       // r28
+		bool check  = false;                                    // r27
+		f32 minDist = SQUARE(C_GENERALPARMS.mSearchDistance()); // f31
+		int targetWPIdx;                                        // r26
+		switch (mEscapePhase) {
+		case 0: {
+			targetWPIdx = randInt(counter);
+		} break;
+		case 1: {
+			for (int i = 0; i < counter; i++) {
+				Iterator<Piki> iter(pikiMgr);
+				s16 idx = indices[i];
+				if (mPreviousWaypointIndex == idx) {
+					if (mIsSameWaypoint || !C_PARMS->_A15) {
+						continue;
+					}
+
+					check = true;
+				}
+
+				WayPoint* wp = routeMgr->getWayPoint(idx);
+
+				CI_LOOP(iter)
+				{
+					Piki* piki = *iter;
+					if (piki->isAlive() && piki->isStickTo()) {
+						Vector3f wpPos      = Vector3f(wp->mPosition);
+						Vector3f wpPos1     = wpPos;
+						Vector3f* wpPosPtr  = &wpPos1;
+						Vector3f wpPos2     = wpPos;
+						Vector3f* wpPosPtr2 = &wpPos2;
+						Vector3f pikiPos    = Vector3f(piki->getPosition().x, 0.0f, piki->getPosition().z);
+
+						f32 sqrDist = sqrDistanceXZ(pikiPos, wpPos);
+						if (sqrDist < minDist) {
+							minDist = sqrDist;
+							val     = i;
+						}
+					}
+				}
+
+				Navi* activeNavi = naviMgr->getActiveNavi();
+				if (activeNavi && activeNavi->isAlive()) {
+					Vector3f wpPos      = Vector3f(wp->mPosition);
+					Vector3f wpPos1     = wpPos;
+					Vector3f* wpPosPtr  = &wpPos1;
+					Vector3f wpPos2     = wpPos;
+					Vector3f* wpPosPtr2 = &wpPos2;
+					Vector3f naviPos    = Vector3f(activeNavi->getPosition().x, 0.0f, activeNavi->getPosition().z);
+					f32 sqrDist         = sqrDistanceXZ(naviPos, wpPos);
+					if (sqrDist < minDist) {
+						minDist = sqrDist;
+						val     = i;
+					}
+				}
+			}
+
+			if (val < 0) {
+				for (int i = 0; i < 100; i++) {
+					if (mPreviousWaypointIndex != indices[targetWPIdx = randInt(counter)]) {
+						break;
+					}
+				}
+			} else {
+				targetWPIdx = val;
+			}
+		} break;
+		case 2: {
+			f32 minNaviDist = 1000000.0f;
+			for (int i = 0; i < counter; i++) {
+				s16 idx = indices[i];
+				if (mPreviousWaypointIndex != idx) {
+					WayPoint* wp     = routeMgr->getWayPoint(idx);
+					Navi* activeNavi = naviMgr->getActiveNavi();
+					if (activeNavi) {
+						Vector3f wpPos      = Vector3f(wp->mPosition);
+						Vector3f wpPos1     = wpPos;
+						Vector3f* wpPosPtr  = &wpPos1;
+						Vector3f wpPos2     = wpPos;
+						Vector3f* wpPosPtr2 = &wpPos2;
+						Vector3f wpPos3     = wpPos;
+						Vector3f* wpPosPtr3 = &wpPos3;
+						Vector3f naviPos = Vector3f(activeNavi->getPosition().x, activeNavi->getPosition().y, activeNavi->getPosition().z);
+						f32 dist         = naviPos.sqrDistance(wpPos);
+						if (dist < minNaviDist) {
+							minNaviDist = dist;
+							val         = i;
+						}
+					}
+				}
+			}
+
+			if (val < 0 || counter <= 2) {
+				targetWPIdx = randInt(counter);
+			} else {
+				for (int i = 0; i < 10; i++) { // mismatch here, try ten times to get a value different from "val"
+					targetWPIdx = randInt(counter);
+					if (targetWPIdx != val) {
+						break;
+					}
+
+					targetWPIdx = -1;
+				}
+
+				if (targetWPIdx < 0) {
+					targetWPIdx = val;
+				}
+			}
+		} break;
+		case 3: {
+			f32 maxDot = 0.0f;
+			for (int i = 0; i < counter; i++) {
+				s16 idx = indices[i];
+				if (mPreviousWaypointIndex == idx) {
+					continue;
+				}
+
+				WayPoint* wp1   = routeMgr->getWayPoint(mCurrentWaypointIndex);
+				Vector3f wp1Pos = wp1->mPosition;
+				WayPoint* wp2   = routeMgr->getWayPoint(mPreviousWaypointIndex);
+				Vector3f wp2Pos = wp2->mPosition;
+				Vector3f sep    = Vector3f(wp1Pos.x - wp2Pos.x, 0.0f, wp1Pos.z - wp2Pos.z); // 0xd4
+
+				sep.normalise();
+
+				Vector3f yAxis(0.0f, 1.0f, 0.0f);
+				Vector3f crossVec; // 0xbc
+				PSVECCrossProduct((Vec*)&yAxis, (Vec*)&sep, (Vec*)&crossVec);
+
+				crossVec.normalise();
+
+				WayPoint* wp = routeMgr->getWayPoint(idx);
+
+				Vector3f sep2 = wp->mPosition - mPosition;
+				sep2.normalise();
+
+				f32 dotProd = dot(crossVec, sep2);
+				if (dotProd > maxDot) {
+					maxDot = dotProd;
+					val    = i;
+				}
+			}
+
+			if (val < 0) {
+				targetWPIdx = randInt(counter);
+			} else {
+				targetWPIdx = val;
+			}
+		} break;
+		}
+
+		if (targetWPIdx >= counter) {
+			targetWPIdx = counter - 1;
+		}
+
+		s16 idx            = indices[targetWPIdx];
+		WayPoint* targetWP = routeMgr->getWayPoint(idx);
+		if (check || counter == 1 || idx != mPreviousWaypointIndex) {
+			if (mPreviousWaypointIndex == idx) {
+				mIsSameWaypoint = true;
+			} else {
+				mIsSameWaypoint = false;
+			}
+
+			mPreviousWaypointIndex = mCurrentWaypointIndex;
+			mCurrentWaypointIndex  = idx;
+		}
+	}
+
+	WayPoint* wp = routeMgr->getWayPoint(mCurrentWaypointIndex);
+	if (wp) {
+		mTargetPosition = Vector3f(wp->mPosition);
+	}
+
 	/*
 	stwu     r1, -0x1e0(r1)
 	mflr     r0
@@ -4604,186 +3699,117 @@ lbl_803A9A3C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803A9A80
- * Size:	0000D0
+/**
+ * @note Address: 0x803A9A80
+ * @note Size: 0xD0
  */
 void BlackMan::Obj::findNextTraceRoutePoint()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r0, 0x35c(r3)
-	cmplwi   r0, 0
-	beq      lbl_803A9B3C
-	mr       r4, r0
-	b        lbl_803A9B18
+	if (!mPath) {
+		return;
+	}
+	FOREACH_NODE(PathNode, mPath, node)
+	{
+		if (node->mWpIndex != mCurrentWaypointIndex) {
+			continue;
+		}
 
-lbl_803A9AA8:
-	lha      r0, 0x20(r4)
-	lha      r3, 0x340(r31)
-	cmpw     r0, r3
-	bne      lbl_803A9B14
-	sth      r3, 0x342(r31)
-	lwz      r3, 0xc(r4)
-	cmplwi   r3, 0
-	beq      lbl_803A9AD4
-	lha      r0, 0x20(r3)
-	sth      r0, 0x340(r31)
-	b        lbl_803A9ADC
+		mPreviousWaypointIndex = mCurrentWaypointIndex;
 
-lbl_803A9AD4:
-	lha      r0, 0x344(r31)
-	sth      r0, 0x340(r31)
+		PathNode* nextNode = node->mNext;
+		if (nextNode) {
+			mCurrentWaypointIndex = nextNode->mWpIndex;
+		} else {
+			mCurrentWaypointIndex = mNextWaypointIndex;
+		}
 
-lbl_803A9ADC:
-	lwz      r3, mapMgr__4Game@sda21(r13)
-	lha      r4, 0x340(r31)
-	lwz      r3, 8(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	lfs      f1, 0x50(r3)
-	lfs      f2, 0x54(r3)
-	lfs      f0, 0x4c(r3)
-	stfs     f0, 0x2d0(r31)
-	stfs     f1, 0x2d4(r31)
-	stfs     f2, 0x2d8(r31)
-	b        lbl_803A9B3C
+		mTargetPosition = Vector3f(mapMgr->mRouteMgr->getWayPoint(mCurrentWaypointIndex)->mPosition);
+		return;
+	}
 
-lbl_803A9B14:
-	lwz      r4, 0xc(r4)
-
-lbl_803A9B18:
-	cmplwi   r4, 0
-	bne      lbl_803A9AA8
-	lis      r3, lbl_80495688@ha
-	lis      r5, lbl_80495708@ha
-	addi     r3, r3, lbl_80495688@l
-	li       r4, 0x72e
-	addi     r5, r5, lbl_80495708@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803A9B3C:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	JUT_PANICLINE(1838, "failed traceRoutePoint\n");
 }
 
-/*
- * --INFO--
- * Address:	803A9B50
- * Size:	000114
+/**
+ * @note Address: 0x803A9B50
+ * @note Size: 0x114
  */
 bool BlackMan::Obj::isEndPathFinder()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	stw      r30, 8(r1)
-	mr       r30, r3
-	lis      r3, lbl_80495670@ha
-	lbz      r0, 0x34c(r30)
-	addi     r31, r3, lbl_80495670@l
-	cmplwi   r0, 0
-	beq      lbl_803A9B84
-	li       r3, 1
-	b        lbl_803A9C4C
+	if (mFoundPath) {
+		return true;
+	}
 
-lbl_803A9B84:
-	lwz      r0, testPathfinder__4Game@sda21(r13)
-	cmplwi   r0, 0
-	bne      lbl_803A9BA4
-	addi     r3, r31, 0x18
-	addi     r5, r31, 0x28
-	li       r4, 0x73a
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
+	P2ASSERTLINE(1850, testPathfinder);
 
-lbl_803A9BA4:
-	lwz      r3, testPathfinder__4Game@sda21(r13)
-	lwz      r4, 0x348(r30)
-	bl       check__Q24Game10PathfinderFUl
-	cmpwi    r3, 2
-	beq      lbl_803A9BF8
-	bge      lbl_803A9BCC
-	cmpwi    r3, 0
-	beq      lbl_803A9BD8
-	bge      lbl_803A9C08
-	b        lbl_803A9C48
+	switch (testPathfinder->check(mPathFindingHandle)) {
+	case PATHFIND_MakePath:
+		testPathfinder->makepath(mPathFindingHandle, &mPath);
+		mFoundPath = 1;
+		return true;
 
-lbl_803A9BCC:
-	cmpwi    r3, 4
-	bge      lbl_803A9C48
-	b        lbl_803A9C24
+	case PATHFIND_Busy:
+		mFoundPath = 0;
+		return false;
 
-lbl_803A9BD8:
-	lwz      r3, testPathfinder__4Game@sda21(r13)
-	addi     r5, r30, 0x35c
-	lwz      r4, 0x348(r30)
-	bl       makepath__Q24Game10PathfinderFUlPPQ24Game8PathNode
-	li       r0, 1
-	li       r3, 1
-	stb      r0, 0x34c(r30)
-	b        lbl_803A9C4C
+	case PATHFIND_Start:
+		mFoundPath = 0;
+		setPathFinder(true);
+		return false;
 
-lbl_803A9BF8:
-	li       r0, 0
-	li       r3, 0
-	stb      r0, 0x34c(r30)
-	b        lbl_803A9C4C
+	case PATHFIND_NoHandle:
+		JUT_PANICLINE(1870, "no handle pathFinder\n");
+		mFoundPath = 0;
+		return false;
+	}
 
-lbl_803A9C08:
-	li       r0, 0
-	mr       r3, r30
-	stb      r0, 0x34c(r30)
-	li       r4, 1
-	bl       setPathFinder__Q34Game8BlackMan3ObjFb
-	li       r3, 0
-	b        lbl_803A9C4C
-
-lbl_803A9C24:
-	addi     r3, r31, 0x18
-	addi     r5, r31, 0xb0
-	li       r4, 0x74e
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-	li       r0, 0
-	li       r3, 0
-	stb      r0, 0x34c(r30)
-	b        lbl_803A9C4C
-
-lbl_803A9C48:
-	li       r3, 0
-
-lbl_803A9C4C:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	return false;
 }
 
-/*
- * --INFO--
- * Address:	803A9C64
- * Size:	0001D8
+/**
+ * @note Address: 0x803A9C64
+ * @note Size: 0x1D8
  */
-void BlackMan::Obj::setPathFinder(bool)
+bool BlackMan::Obj::setPathFinder(bool check)
 {
+	releasePathFinder();
+	WPEdgeSearchArg edgeArg(mPosition);
+	RouteMgr* routeMgr = mapMgr->mRouteMgr;
+	P2ASSERTLINE(1893, routeMgr);
+
+	if (routeMgr->getNearestEdge(edgeArg)) {
+		Vector3f wp1Pos  = edgeArg.mWp1->mPosition;
+		Vector3f wp2Pos  = edgeArg.mWp2->mPosition;
+		Vector3f homePos = mHomePosition;
+		f32 wp2Dist      = sqrDistanceXZ(wp2Pos, homePos);
+		f32 wp1Dist      = sqrDistanceXZ(wp1Pos, homePos);
+		s16 idx1         = edgeArg.mWp1->mIndex;
+		s16 idx2         = edgeArg.mWp2->mIndex;
+		if (wp1Dist > wp2Dist) {
+			idx2 = edgeArg.mWp1->mIndex;
+			idx1 = edgeArg.mWp2->mIndex;
+		}
+
+		if (routeMgr->getWayPoint(idx1)->isFlag(WPF_Closed)) {
+			idx1 = idx2;
+		}
+
+		mPreviousWaypointIndex = mCurrentWaypointIndex;
+		mCurrentWaypointIndex  = idx1;
+
+		u32 flag = (check > 0) + 0xC3;
+		if (mPathFindingHandle) {
+			testPathfinder->release(mPathFindingHandle);
+		}
+
+		PathfindRequest request(mCurrentWaypointIndex, mNextWaypointIndex, flag);
+		mPathFindingHandle = testPathfinder->start(request);
+		mTargetPosition    = Vector3f(routeMgr->getWayPoint(mCurrentWaypointIndex)->mPosition);
+		return true;
+	}
+
+	JUT_PANICLINE(1934, nullptr);
+	return false;
 	/*
 	stwu     r1, -0x50(r1)
 	mflr     r0
@@ -4918,43 +3944,131 @@ lbl_803A9E28:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803A9E3C
- * Size:	000044
+/**
+ * @note Address: 0x803A9E3C
+ * @note Size: 0x44
  */
 void BlackMan::Obj::releasePathFinder()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	li       r0, 0
-	stb      r0, 0x34c(r3)
-	lwz      r0, testPathfinder__4Game@sda21(r13)
-	cmplwi   r0, 0
-	beq      lbl_803A9E70
-	lwz      r4, 0x348(r3)
-	cmplwi   r4, 0
-	beq      lbl_803A9E70
-	mr       r3, r0
-	bl       release__Q24Game10PathfinderFUl
-
-lbl_803A9E70:
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mFoundPath = 0;
+	if (testPathfinder && mPathFindingHandle) {
+		testPathfinder->release(mPathFindingHandle);
+	}
 }
 
-/*
- * --INFO--
- * Address:	803A9E80
- * Size:	000590
+/**
+ * @note Address: 0x803A9E80
+ * @note Size: 0x590
  */
-void BlackMan::Obj::jointMtxCalc(int)
+void BlackMan::Obj::jointMtxCalc(int jointIdx)
 {
+	int stateID = getStateID();
+	if (jointIdx < 2 && (stateID == WRAITH_Flick || stateID == WRAITH_Recover)) {
+		if (isEvent(0, EB_Bittered) || !mTyre->isEvent(0, EB_Bittered)) {
+			return;
+		}
+	}
+
+	Tyre::Obj* tyre = mTyre;
+	if (!tyre) {
+		return;
+	}
+
+	if (jointIdx >= 4) {
+		return;
+	}
+
+	char* tyreJoints[4]     = { "tyreFL", "TyreFR", "TyreBL", "tyreBR" };         // 0x48; the capitalisation here annoys me so much
+	char* handJoints[4]     = { "handLend", "handRend", "footL", "footR" };       // 0x38
+	char* wristJoints[4]    = { "handL", "handR", "legBL", "legBR" };             // 0x28
+	char* armJoints[4]      = { "armBL", "armBR", "legTL", "legTR" };             // 0x18
+	char* shoulderJoints[4] = { "shoulderL", "shoulderR", "clouchL", "clouchR" }; // 0x8
+
+	Matrixf* tyreMat = tyre->mModel->getJoint(tyreJoints[jointIdx])->getWorldMatrix(); // r29
+	Matrixf* handMat = mModel->getJoint(handJoints[jointIdx])->getWorldMatrix();
+
+	f32 val = 15.0f; // f7
+	if (mStepPhase < 1) {
+		val = 0.0f;
+	}
+
+	if (jointIdx < 2) {
+		val = 0.0f;
+	}
+
+	if (jointIdx % 2 != 0) {
+		val = -val;
+	}
+
+	Vector2f yScale(0.0f, val);
+	Vector3f newPos  = tyreMat->getScaledTranslation(yScale);
+	Vector3f handPos = handMat->getColumn(3);
+	Vector3f diff    = newPos - handPos; // f31, f30, f29
+	handMat->setTranslation(newPos);
+
+	PSMTXCopy(handMat->mMatrix.mtxView, J3DSys::mCurrentMtx);
+
+	Matrixf* wristMat = mModel->getJoint(wristJoints[jointIdx])->getWorldMatrix(); // r30
+	Matrixf* armMat   = mModel->getJoint(armJoints[jointIdx])->getWorldMatrix();   // r31
+
+	f32 scale1 = C_PARMS->_A30;
+	f32 scale2 = C_PARMS->_A34;
+
+	Vector3f vec1 = diff * scale1; // f28, f27, f26
+	if (jointIdx < 2) {
+		scale2 = 0.1f;
+	}
+
+	Vector3f vec2 = diff * scale2;   // f25, f24, f23
+	Vector3f vec3(0.0f, 0.0f, 0.0f); // f22, f21, f20
+
+	if (jointIdx < 2 && C_PARMS->_A18) {
+		f32 sinVal1 = C_PARMS->_A40 * absF(sinf(mTyre->mCurrentRotation2)); // f23
+		f32 sinVal2 = C_PARMS->_A44 * absF(sinf(mTyre->mCurrentRotation2)); // f24
+		getStateID();                                                       // unused
+
+		if (mTyre->mCurrentRotation2 < 0.0f) {
+			if (jointIdx == 0) {
+				vec3.y = sinVal2;
+				vec3.x = tyreMat->mMatrix.structView.xx * sinVal1;
+				vec3.z = tyreMat->mMatrix.structView.xz * sinVal1;
+			}
+		} else if (jointIdx == 1) {
+			vec3.y = sinVal2;
+			vec3.x = -tyreMat->mMatrix.structView.xx * sinVal1;
+			vec3.z = -tyreMat->mMatrix.structView.xz * sinVal1;
+		}
+
+		if (!C_PARMS->_A11) {
+			vec2.x = vec3.x;
+			vec2.z = vec3.z;
+		} else {
+			Vector3f tyreMatPos = tyreMat->getColumn(3);
+			Vector3f tyrePos    = mTyre->mTyrePositions[jointIdx];
+			vec2                = vec3 + (tyreMatPos - tyrePos);
+		}
+	}
+
+	wristMat->mMatrix.structView.tx += vec1.x;
+	wristMat->mMatrix.structView.ty += vec1.y;
+	wristMat->mMatrix.structView.tz += vec1.z;
+
+	armMat->mMatrix.structView.tx += vec2.x;
+	armMat->mMatrix.structView.ty += vec2.y;
+	armMat->mMatrix.structView.tz += vec2.z;
+
+	Matrixf* shoulderMat = mModel->getJoint(shoulderJoints[jointIdx])->getWorldMatrix();
+
+	Vector3f vec4 = diff * C_PARMS->_A38;
+
+	if (jointIdx < 2) {
+		vec2 *= C_PARMS->_A38;
+		vec4 = vec2;
+	}
+
+	shoulderMat->mMatrix.structView.tx += vec4.x;
+	shoulderMat->mMatrix.structView.ty += vec4.y;
+	shoulderMat->mMatrix.structView.tz += vec4.z;
 	/*
 	stwu     r1, -0x180(r1)
 	mflr     r0
@@ -5347,13 +4461,45 @@ lbl_803AA39C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803AA410
- * Size:	00028C
+/**
+ * @note Address: 0x803AA410
+ * @note Size: 0x28C
  */
 void BlackMan::Obj::bodyMtxCalc()
 {
+	if (!C_PARMS->_A18) {
+		return;
+	}
+
+	Matrixf* chestMtx = mModel->mJoints[mChestJointIndex].getWorldMatrix(); // r31
+
+	Vector3f pos; // f4, f5, f0
+
+	char* tyreJoints[2] = { "tyreFL", "TyreFR" };
+	if (mTyre->mCurrentRotation2 > 0.0f) {
+		pos = mTyre->mModel->getJoint(tyreJoints[0])->getWorldMatrix()->getColumn(3);
+	} else {
+		pos = mTyre->mModel->getJoint(tyreJoints[1])->getWorldMatrix()->getColumn(3);
+	}
+
+	pos -= mPosition;
+	pos.normalise();
+
+	f32 sinVal = absF(sinf(mTyre->mCurrentRotation2));
+	chestMtx->mMatrix.structView.tx += sinVal * (C_PARMS->_A28 * pos.x);
+	chestMtx->mMatrix.structView.tz += sinVal * (C_PARMS->_A28 * pos.z);
+
+	PSMTXCopy(chestMtx->mMatrix.mtxView, J3DSys::mCurrentMtx);
+
+	Vector3f translation(0.0f, 0.0f, 0.0f); // 0x1c
+	f32 yRot = -C_PARMS->mBodyRotationSpeed * sinf(mTyre->mCurrentRotation2);
+	Vector3f rotation(0.0f, yRot, 0.0f);
+
+	Matrixf mat;
+	mat.makeTR(translation, rotation);
+
+	PSMTXConcat(chestMtx->mMatrix.mtxView, mat.mMatrix.mtxView, chestMtx->mMatrix.mtxView);
+	PSMTXConcat(J3DSys::mCurrentMtx, mat.mMatrix.mtxView, J3DSys::mCurrentMtx);
 	/*
 	stwu     r1, -0x80(r1)
 	mflr     r0
@@ -5541,626 +4687,206 @@ lbl_803AA684:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803AA69C
- * Size:	000040
+/**
+ * @note Address: 0x803AA69C
+ * @note Size: 0x40
  */
 bool BlackMan::Obj::isTyreFreeze()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x364(r3)
-	cmplwi   r3, 0
-	beq      lbl_803AA6C8
-	bl       isFreeze__Q34Game4Tyre3ObjFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_803AA6C8
-	li       r3, 1
-	b        lbl_803AA6CC
+	if (mTyre && mTyre->isFreeze()) {
+		return true;
+	}
 
-lbl_803AA6C8:
-	li       r3, 0
-
-lbl_803AA6CC:
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	return false;
 }
 
-/*
- * --INFO--
- * Address:	803AA6DC
- * Size:	00009C
+/**
+ * @note Address: 0x803AA6DC
+ * @note Size: 0x9C
  */
 bool BlackMan::Obj::isTyreDead()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r3, 0x364(r3)
-	cmplwi   r3, 0
-	beq      lbl_803AA760
-	lfs      f1, 0x200(r3)
-	lfs      f0, lbl_8051F438@sda21(r2)
-	fcmpo    cr0, f1, f0
-	cror     2, 0, 2
-	bne      lbl_803AA760
-	lwz      r3, 0x184(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	lbz      r0, 0x18(r3)
-	clrlwi.  r0, r0, 0x1f
-	beq      lbl_803AA758
-	lwz      r6, 0x364(r31)
-	li       r4, 0
-	li       r0, 2
-	li       r3, 1
-	lwz      r5, 0x1e0(r6)
-	ori      r5, r5, 1
-	stw      r5, 0x1e0(r6)
-	stw      r4, 0x364(r31)
-	stw      r0, 0x2e0(r31)
-	b        lbl_803AA764
+	if (mTyre && mTyre->mHealth <= 0.0f) {
+		if (mAnimator->getAnimator().mFlags & 0x1) {
+			mTyre->enableEvent(0, EB_Invulnerable);
+			mTyre        = nullptr;
+			mEscapePhase = 2;
+			return true;
+		}
 
-lbl_803AA758:
-	mr       r3, r31
-	bl       finishMotion__Q24Game9EnemyBaseFv
+		finishMotion();
+	}
 
-lbl_803AA760:
-	li       r3, 0
-
-lbl_803AA764:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	return false;
 }
 
-/*
- * --INFO--
- * Address:	803AA778
- * Size:	000074
+/**
+ * @note Address: 0x803AA778
+ * @note Size: 0x74
  */
 bool BlackMan::Obj::isFallEnd()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	li       r31, 0
-	stw      r30, 8(r1)
-	mr       r30, r3
-	lwz      r0, 0xc8(r3)
-	cmplwi   r0, 0
-	beq      lbl_803AA7A4
-	li       r31, 1
+	bool result = false;
+	if (mBounceTriangle) {
+		result = true;
+	}
 
-lbl_803AA7A4:
-	lwz      r3, 0x364(r30)
-	cmplwi   r3, 0
-	beq      lbl_803AA7D0
-	bl       isFreeze__Q34Game4Tyre3ObjFv
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_803AA7CC
-	lwz      r3, 0x364(r30)
-	lbz      r0, 0x322(r3)
-	cmplwi   r0, 0
-	beq      lbl_803AA7D0
+	if (mTyre && (mTyre->isFreeze() || mTyre->mLandedOnPellet)) {
+		result = true;
+	}
 
-lbl_803AA7CC:
-	li       r31, 1
-
-lbl_803AA7D0:
-	lwz      r0, 0x14(r1)
-	mr       r3, r31
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	return result;
 }
 
-/*
- * --INFO--
- * Address:	803AA7EC
- * Size:	0001D4
+/**
+ * @note Address: 0x803AA7EC
+ * @note Size: 0x1D4
  */
 void BlackMan::Obj::moveRestart()
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lis      r4, lbl_80495670@ha
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r3
-	stw      r30, 0x18(r1)
-	addi     r30, r4, lbl_80495670@l
-	stw      r29, 0x14(r1)
-	lwz      r3, 0x364(r3)
-	cmplwi   r3, 0
-	beq      lbl_803AA9A4
-	bl       moveStart__Q34Game4Tyre3ObjFv
-	lwz      r3, 0x364(r31)
-	li       r4, 0
-	stb      r4, 0x2d0(r3)
-	lwz      r3, gameSystem__4Game@sda21(r13)
-	cmplwi   r3, 0
-	beq      lbl_803AA84C
-	lwz      r0, 0x44(r3)
-	cmpwi    r0, 4
-	bne      lbl_803AA84C
-	stb      r4, 0x3a8(r31)
-	b        lbl_803AA984
+	if (!mTyre) {
+		return;
+	}
 
-lbl_803AA84C:
-	mr       r3, r31
-	bl       isFinalFloor__Q34Game8BlackMan3ObjFv
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_803AA984
-	lbz      r0, 0x3a8(r31)
-	cmplwi   r0, 0
-	bne      lbl_803AA984
-	lbz      r0, 0x3ab(r31)
-	cmplwi   r0, 0
-	bne      lbl_803AA984
-	lwz      r3, gameSystem__4Game@sda21(r13)
-	lwz      r3, 0x58(r3)
-	cmplwi   r3, 0
-	beq      lbl_803AA984
-	lwz      r12, 0(r3)
-	lwz      r12, 0x78(r12)
-	mtctr    r12
-	bctrl
-	addis    r0, r3, 0x86a1
-	cmplwi   r0, 0x3034
-	bne      lbl_803AA984
-	lwz      r0, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r0, 0
-	bne      lbl_803AA8C0
-	addi     r3, r30, 0x70
-	addi     r5, r30, 0x28
-	li       r4, 0x1d3
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
+	mTyre->moveStart();
+	mTyre->_2D0 = 0;
 
-lbl_803AA8C0:
-	lwz      r29, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r29, 0
-	bne      lbl_803AA8E0
-	addi     r3, r30, 0x70
-	addi     r5, r30, 0x28
-	li       r4, 0x1dc
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
+	if (gameSystem && gameSystem->isZukanMode()) {
+		_3A8 = 0;
 
-lbl_803AA8E0:
-	lwz      r0, 4(r29)
-	cmplwi   r0, 0
-	bne      lbl_803AA900
-	addi     r3, r30, 0x7c
-	addi     r5, r30, 0x28
-	li       r4, 0xc7
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
+	} else if (!isFinalFloor() && !_3A8 && !mIsMoviePlaying && gameSystem->mSection && gameSystem->mSection->getCaveID() == 'y_04') {
+		PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
+		PSSystem::checkSceneMgr(mgr);
+		mgr->checkScene();
+		PSSystem::SeqBase* seqBase = PSSystem::getSeqData(mgr, 1);
+		P2ASSERTLINE(2221, seqBase);
+		seqBase->startSeq();
+		_3A8 = 1;
+	}
 
-lbl_803AA900:
-	lwz      r3, 4(r29)
-	lwz      r29, 4(r3)
-	cmplwi   r29, 0
-	bne      lbl_803AA924
-	addi     r3, r30, 0x70
-	addi     r5, r30, 0x28
-	li       r4, 0x1e5
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803AA924:
-	addi     r3, r29, 0x10
-	li       r4, 1
-	bl       getSeq__Q28PSSystem6SeqMgrFUl
-	or.      r29, r3, r3
-	bne      lbl_803AA94C
-	addi     r3, r30, 0x70
-	addi     r5, r30, 0x28
-	li       r4, 0x1e7
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803AA94C:
-	cmplwi   r29, 0
-	bne      lbl_803AA968
-	addi     r3, r30, 0x18
-	addi     r5, r30, 0x28
-	li       r4, 0x8ad
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803AA968:
-	mr       r3, r29
-	lwz      r12, 0x10(r29)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	li       r0, 1
-	stb      r0, 0x3a8(r31)
-
-lbl_803AA984:
-	lwz      r5, 0xc0(r31)
-	li       r4, 0
-	lwz      r3, 0x364(r31)
-	lfs      f1, 0x53c(r5)
-	lfs      f2, 0x4c4(r5)
-	lfs      f3, 0x4ec(r5)
-	lfs      f4, lbl_8051F49C@sda21(r2)
-	bl
-"flickStickPikmin__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Piki>"
-
-lbl_803AA9A4:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	EnemyFunc::flickStickPikmin(mTyre, C_GENERALPARMS.mShakeChance(), C_GENERALPARMS.mShakeKnockback(), C_GENERALPARMS.mShakeDamage(),
+	                            FLICK_BACKWARD_ANGLE, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	803AA9C0
- * Size:	000004
+/**
+ * @note Address: 0x803AA9C0
+ * @note Size: 0x4
  */
 void BlackMan::Obj::escape() { }
 
-/*
- * --INFO--
- * Address:	803AA9C4
- * Size:	000008
+/**
+ * @note Address: 0x803AA9C4
+ * @note Size: 0x8
  */
-void BlackMan::Obj::setTimer(f32 time) { _33C = time; }
+void BlackMan::Obj::setTimer(f32 time) { mWraithFallTimer = time; }
 
-/*
- * --INFO--
- * Address:	803AA9CC
- * Size:	000008
+/**
+ * @note Address: 0x803AA9CC
+ * @note Size: 0x8
  */
-f32 BlackMan::Obj::getTimer() { return _33C; }
+f32 BlackMan::Obj::getTimer() { return mWraithFallTimer; }
 
-/*
- * --INFO--
- * Address:	803AA9D4
- * Size:	0000A0
+/**
+ * @note Address: 0x803AA9D4
+ * @note Size: 0xA0
  */
 void BlackMan::Obj::collisionStOn()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	lis      r4, 0x6B6F7369@ha
-	stw      r0, 0x14(r1)
-	addi     r4, r4, 0x6B6F7369@l
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r3, 0x114(r3)
-	bl       getCollPart__8CollTreeFUl
-	lis      r4, 0x73745F5F@ha
-	addi     r3, r3, 0x3c
-	addi     r4, r4, 0x73745F5F@l
-	bl       __as__4ID32FUl
-	lis      r4, 0x6D756E65@ha
-	lwz      r3, 0x114(r31)
-	addi     r4, r4, 0x6D756E65@l
-	bl       getCollPart__8CollTreeFUl
-	lis      r4, 0x73745F5F@ha
-	addi     r3, r3, 0x3c
-	addi     r4, r4, 0x73745F5F@l
-	bl       __as__4ID32FUl
-	lis      r4, 0x68656164@ha
-	lwz      r3, 0x114(r31)
-	addi     r4, r4, 0x68656164@l
-	bl       getCollPart__8CollTreeFUl
-	lis      r4, 0x73745F5F@ha
-	addi     r3, r3, 0x3c
-	addi     r4, r4, 0x73745F5F@l
-	bl       __as__4ID32FUl
-	mr       r3, r31
-	bl       getCurrAnimIndex__Q24Game9EnemyBaseFv
-	cmpwi    r3, 0xa
-	beq      lbl_803AAA60
-	lfs      f0, lbl_8051F438@sda21(r2)
-	stfs     f0, 0x378(r31)
+	mCollTree->getCollPart('kosi')->mSpecialID = 'st__';
+	mCollTree->getCollPart('mune')->mSpecialID = 'st__';
+	mCollTree->getCollPart('head')->mSpecialID = 'st__';
 
-lbl_803AAA60:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (getCurrAnimIndex() != WRAITHANIM_Wait2) {
+		mFadeTimer = 0.0f;
+	}
 }
 
-/*
- * --INFO--
- * Address:	803AAA74
- * Size:	000098
+/**
+ * @note Address: 0x803AAA74
+ * @note Size: 0x98
  */
 void BlackMan::Obj::collisionStOff()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	lis      r4, 0x6B6F7369@ha
-	stw      r0, 0x14(r1)
-	addi     r4, r4, 0x6B6F7369@l
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r3, 0x114(r3)
-	bl       getCollPart__8CollTreeFUl
-	lis      r4, 0x5F5F5F5F@ha
-	addi     r3, r3, 0x3c
-	addi     r4, r4, 0x5F5F5F5F@l
-	bl       __as__4ID32FUl
-	lis      r4, 0x6D756E65@ha
-	lwz      r3, 0x114(r31)
-	addi     r4, r4, 0x6D756E65@l
-	bl       getCollPart__8CollTreeFUl
-	lis      r4, 0x5F5F5F5F@ha
-	addi     r3, r3, 0x3c
-	addi     r4, r4, 0x5F5F5F5F@l
-	bl       __as__4ID32FUl
-	lis      r4, 0x68656164@ha
-	lwz      r3, 0x114(r31)
-	addi     r4, r4, 0x68656164@l
-	bl       getCollPart__8CollTreeFUl
-	lis      r4, 0x5F5F5F5F@ha
-	addi     r3, r3, 0x3c
-	addi     r4, r4, 0x5F5F5F5F@l
-	bl       __as__4ID32FUl
-	lfs      f0, lbl_8051F438@sda21(r2)
-	mr       r3, r31
-	stfs     f0, 0x378(r31)
-	bl       flick__Q34Game8BlackMan3ObjFv
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mCollTree->getCollPart('kosi')->mSpecialID = '____';
+	mCollTree->getCollPart('mune')->mSpecialID = '____';
+	mCollTree->getCollPart('head')->mSpecialID = '____';
+
+	mFadeTimer = 0.0f;
+	flick();
 }
 
-/*
- * --INFO--
- * Address:	803AAB0C
- * Size:	00004C
+/**
+ * @note Address: 0x803AAB0C
+ * @note Size: 0x4C
  */
 void BlackMan::Obj::flick()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	lfs      f4, lbl_8051F49C@sda21(r2)
-	li       r4, 0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r5, 0xc0(r3)
-	lfs      f1, 0x53c(r5)
-	lfs      f2, 0x4c4(r5)
-	lfs      f3, 0x4ec(r5)
-	bl
-	"flickStickPikmin__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Piki>"
-	lfs      f0, lbl_8051F438@sda21(r2)
-	stfs     f0, 0x20c(r31)
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	EnemyFunc::flickStickPikmin(this, C_GENERALPARMS.mShakeChance(), C_GENERALPARMS.mShakeKnockback(), C_GENERALPARMS.mShakeDamage(),
+	                            FLICK_BACKWARD_ANGLE, nullptr);
+	mFlickTimer = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	803AAB58
- * Size:	000150
+/**
+ * @note Address: 0x803AAB58
+ * @note Size: 0x150
  */
 void BlackMan::Obj::recover()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r4, 0x364(r3)
-	cmplwi   r4, 0
-	beq      lbl_803AAC94
-	lwz      r0, 0x1e0(r31)
-	rlwinm.  r0, r0, 0, 0x16, 0x16
-	bne      lbl_803AABE4
-	lwz      r0, 0x1e0(r4)
-	rlwinm.  r0, r0, 0, 0x16, 0x16
-	beq      lbl_803AABE4
-	bl       getMotionFrame__Q24Game9EnemyBaseFv
-	lfs      f0, lbl_8051F4B0@sda21(r2)
-	fcmpo    cr0, f1, f0
-	cror     2, 1, 2
-	bne      lbl_803AABC0
-	lfs      f0, lbl_8051F4DC@sda21(r2)
-	mr       r3, r31
-	lfs      f1, defaultAnimSpeed__Q24Game17EnemyAnimatorBase@sda21(r2)
-	fneg     f0, f0
-	fmuls    f1, f1, f0
-	bl       setAnimSpeed__Q24Game9EnemyBaseFf
-	b        lbl_803AABEC
+	if (!mTyre) {
+		return;
+	}
 
-lbl_803AABC0:
-	mr       r3, r31
-	bl       getMotionFrame__Q24Game9EnemyBaseFv
-	lfs      f0, lbl_8051F480@sda21(r2)
-	fcmpo    cr0, f1, f0
-	bge      lbl_803AABEC
-	lfs      f1, defaultAnimSpeed__Q24Game17EnemyAnimatorBase@sda21(r2)
-	mr       r3, r31
-	bl       setAnimSpeed__Q24Game9EnemyBaseFf
-	b        lbl_803AABEC
+	if (!isEvent(0, EB_Bittered) && mTyre->isEvent(0, EB_Bittered)) {
+		if (getMotionFrame() >= 5.0f) {
+			f32 animScale = 0.5f;
+			setAnimSpeed(getReverseAnimSpeed(animScale));
+		} else if (getMotionFrame() < 1.0f) {
+			setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
+		}
+	} else {
+		resetAnimSpeed();
+	}
 
-lbl_803AABE4:
-	mr       r3, r31
-	bl       resetAnimSpeed__Q24Game9EnemyBaseFv
+	mTyre->_2D0 = 1;
 
-lbl_803AABEC:
-	lwz      r3, 0x364(r31)
-	li       r0, 1
-	lfs      f5, lbl_8051F4DC@sda21(r2)
-	stb      r0, 0x2d0(r3)
-	lfs      f0, lbl_8051F55C@sda21(r2)
-	lwz      r4, 0x174(r31)
-	lhz      r3, 0x36c(r31)
-	lwz      r5, 8(r4)
-	lhz      r0, 0x36e(r31)
-	mulli    r4, r3, 0x30
-	lwz      r5, 0x84(r5)
-	lwz      r3, 0x364(r31)
-	lwz      r5, 0xc(r5)
-	mulli    r0, r0, 0x30
-	add      r4, r5, r4
-	add      r5, r5, r0
-	lfs      f2, 0xc(r4)
-	lfs      f1, 0xc(r5)
-	lfs      f3, 0x1c(r4)
-	fadds    f1, f2, f1
-	lfs      f2, 0x1c(r5)
-	lfs      f4, 0x2c(r4)
-	fadds    f2, f3, f2
-	lfs      f3, 0x2c(r5)
-	fmuls    f1, f5, f1
-	fadds    f3, f4, f3
-	fmuls    f2, f5, f2
-	stfs     f1, 0x2d4(r3)
-	fmuls    f1, f5, f3
-	stfs     f2, 0x2d8(r3)
-	stfs     f1, 0x2dc(r3)
-	lwz      r3, 0x364(r31)
-	lfs      f1, 0x2d4(r3)
-	stfs     f1, 0x328(r31)
-	lfs      f1, 0x2d8(r3)
-	stfs     f1, 0x32c(r31)
-	lfs      f1, 0x2dc(r3)
-	stfs     f1, 0x330(r31)
-	lwz      r3, 0x364(r31)
-	lfs      f1, 0x2cc(r3)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x2cc(r3)
+	Matrixf* leftMtx  = mModel->mJ3dModel->mMtxBuffer->getWorldMatrix(mLeftHandJointIndex);  // r4
+	Matrixf* rightMtx = mModel->mJ3dModel->mMtxBuffer->getWorldMatrix(mRightHandJointIndex); // r5
 
-lbl_803AAC94:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	Vector3f pos;
+	pos.x = leftMtx->mMatrix.structView.tx + rightMtx->mMatrix.structView.tx;
+	pos.y = leftMtx->mMatrix.structView.ty + rightMtx->mMatrix.structView.ty;
+	pos.z = leftMtx->mMatrix.structView.tz + rightMtx->mMatrix.structView.tz;
+
+	mTyre->_2D4 = Vector3f(pos.x * 0.5f, pos.y * 0.5f, pos.z * 0.5f);
+
+	mLandPosition = mTyre->_2D4;
+
+	mTyre->mCurrentRotation2 *= 0.8f;
 }
 
-/*
- * --INFO--
- * Address:	803AACA8
- * Size:	0000F8
+/**
+ * @note Address: 0x803AACA8
+ * @note Size: 0xF8
  */
 void BlackMan::Obj::recoverFlick()
 {
-	/*
-	stwu     r1, -0x50(r1)
-	mflr     r0
-	stw      r0, 0x54(r1)
-	stfd     f31, 0x40(r1)
-	psq_st   f31, 72(r1), 0, qr0
-	stfd     f30, 0x30(r1)
-	psq_st   f30, 56(r1), 0, qr0
-	stfd     f29, 0x20(r1)
-	psq_st   f29, 40(r1), 0, qr0
-	stfd     f28, 0x10(r1)
-	psq_st   f28, 24(r1), 0, qr0
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r3, 0x364(r3)
-	lwz      r4, 0xc0(r31)
-	cmplwi   r3, 0
-	lfs      f31, 0x53c(r4)
-	lfs      f30, 0x4c4(r4)
-	lfs      f29, 0x4ec(r4)
-	lfs      f28, 0x514(r4)
-	beq      lbl_803AAD18
-	lfs      f0, lbl_8051F4A8@sda21(r2)
-	fmr      f1, f31
-	fmr      f3, f29
-	lfs      f4, 0x1fc(r31)
-	fmuls    f2, f0, f30
-	li       r4, 0
-	bl
-"flickStickPikmin__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Piki>"
+	f32 chance    = C_GENERALPARMS.mShakeChance();
+	f32 knockback = C_GENERALPARMS.mShakeKnockback();
+	f32 damage    = C_GENERALPARMS.mShakeDamage();
+	f32 range     = C_GENERALPARMS.mShakeRange();
 
-lbl_803AAD18:
-	fmr      f1, f31
-	lfs      f4, 0x1fc(r31)
-	fmr      f2, f30
-	mr       r3, r31
-	fmr      f3, f29
-	li       r4, 0
-	bl
-"flickStickPikmin__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Piki>"
-	fmr      f1, f28
-	lfs      f4, 0x1fc(r31)
-	fmr      f2, f30
-	mr       r3, r31
-	fmr      f3, f29
-	li       r4, 0
-	bl
-"flickNearbyPikmin__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Piki>"
-	fmr      f1, f28
-	lfs      f4, 0x1fc(r31)
-	fmr      f2, f30
-	mr       r3, r31
-	fmr      f3, f29
-	li       r4, 0
-	bl
-"flickNearbyNavi__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Navi>"
-	psq_l    f31, 72(r1), 0, qr0
-	lfd      f31, 0x40(r1)
-	psq_l    f30, 56(r1), 0, qr0
-	lfd      f30, 0x30(r1)
-	psq_l    f29, 40(r1), 0, qr0
-	lfd      f29, 0x20(r1)
-	psq_l    f28, 24(r1), 0, qr0
-	lfd      f28, 0x10(r1)
-	lwz      r0, 0x54(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x50
-	blr
-	*/
+	if (mTyre) {
+		EnemyFunc::flickStickPikmin(mTyre, chance, 2.0f * knockback, damage, mFaceDir, nullptr);
+	}
+
+	EnemyFunc::flickStickPikmin(this, chance, knockback, damage, mFaceDir, nullptr);
+	EnemyFunc::flickNearbyPikmin(this, range, knockback, damage, mFaceDir, nullptr);
+	EnemyFunc::flickNearbyNavi(this, range, knockback, damage, mFaceDir, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	803AADA0
- * Size:	00002C
+/**
+ * @note Address: 0x803AADA0
+ * @note Size: 0x2C
  */
 void BlackMan::Obj::tyreFlick()
 {
@@ -6169,262 +4895,78 @@ void BlackMan::Obj::tyreFlick()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803AADCC
- * Size:	0000D0
+/**
+ * @note Address: 0x803AADCC
+ * @note Size: 0xD0
  */
 void BlackMan::Obj::deadEffect()
 {
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stw      r31, 0x2c(r1)
-	mr       r31, r3
-	bl       createDeadBombEffect__Q24Game9EnemyBaseFv
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x264(r12)
-	mtctr    r12
-	bctrl
-	lfs      f1, lbl_8051F438@sda21(r2)
-	mr       r3, r31
-	bl       PSStartEnemyFatalHitSE__FPQ24Game9EnemyBasef
-	lis      r4, __vt__Q23efx5TBase@ha
-	lis      r3, __vt__Q23efx8TSimple1@ha
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx10TKageDead2@ha
-	stw      r0, 8(r1)
-	addi     r5, r3, __vt__Q23efx8TSimple1@l
-	lis      r3, __vt__Q23efx3Arg@ha
-	li       r0, 0x298
-	stw      r5, 8(r1)
-	addi     r7, r4, __vt__Q23efx10TKageDead2@l
-	addi     r6, r3, __vt__Q23efx3Arg@l
-	li       r4, 0
-	sth      r0, 0xc(r1)
-	lis      r3, __vt__Q23efx11ArgPrmColor@ha
-	addi     r5, r3, __vt__Q23efx11ArgPrmColor@l
-	li       r0, 0xff
-	stw      r4, 0x10(r1)
-	addi     r3, r1, 8
-	addi     r4, r1, 0x14
-	stw      r7, 8(r1)
-	stw      r6, 0x14(r1)
-	lfs      f0, 0x304(r31)
-	stfs     f0, 0x18(r1)
-	lfs      f0, 0x308(r31)
-	stfs     f0, 0x1c(r1)
-	lfs      f0, 0x30c(r31)
-	stfs     f0, 0x20(r1)
-	stw      r5, 0x14(r1)
-	stb      r0, 0x24(r1)
-	stb      r0, 0x25(r1)
-	stb      r0, 0x26(r1)
-	stb      r0, 0x27(r1)
-	bl       create__Q23efx10TKageDead2FPQ23efx3Arg
-	lwz      r0, 0x34(r1)
-	lwz      r31, 0x2c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
+	EnemyBase::createDeadBombEffect();
+	throwupItem();
+	PSStartEnemyFatalHitSE(this, 0.0f);
+	efx::TKageDead2 deadFX;
+	efx::ArgPrmColor fxArg(mChestJointPosition);
+	deadFX.create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	803AAE9C
- * Size:	000034
+/**
+ * @note Address: 0x803AAE9C
+ * @note Size: 0x34
  */
-void BlackMan::Obj::deadTraceEffect()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	li       r4, 0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x39c(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
+void BlackMan::Obj::deadTraceEffect() { mEfxDead->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	803AAED0
- * Size:	000074
+/**
+ * @note Address: 0x803AAED0
+ * @note Size: 0x74
  */
 void BlackMan::Obj::tyreUpEffect()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r3, 0x364(r3)
-	cmplwi   r3, 0
-	beq      lbl_803AAF30
-	lwz      r0, 0x1e0(r31)
-	rlwinm.  r0, r0, 0, 0x16, 0x16
-	bne      lbl_803AAF08
-	lwz      r0, 0x1e0(r3)
-	rlwinm.  r0, r0, 0, 0x16, 0x16
-	bne      lbl_803AAF30
-
-lbl_803AAF08:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x254(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x398(r31)
-	li       r4, 0
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-
-lbl_803AAF30:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (mTyre && (isEvent(0, EB_Bittered) || !mTyre->isEvent(0, EB_Bittered))) {
+		mTyre->fadeEfxHamon();
+		mEfxTyreup->create(nullptr);
+	}
 }
 
-/*
- * --INFO--
- * Address:	803AAF44
- * Size:	000050
+/**
+ * @note Address: 0x803AAF44
+ * @note Size: 0x50
  */
 void BlackMan::Obj::tyreDownEffect()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r3, 0x364(r3)
-	cmplwi   r3, 0
-	beq      lbl_803AAF80
-	addi     r4, r31, 0x328
-	bl       "landEffect__Q34Game4Tyre3ObjFR10Vector3<f>"
-	lwz      r3, 0x364(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x250(r12)
-	mtctr    r12
-	bctrl
-
-lbl_803AAF80:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (mTyre) {
+		mTyre->landEffect(mLandPosition);
+		mTyre->createEfxHamon();
+	}
 }
 
-/*
- * --INFO--
- * Address:	803AAF94
- * Size:	000094
+/**
+ * @note Address: 0x803AAF94
+ * @note Size: 0x94
  */
 void BlackMan::Obj::bendEffect()
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	lwz      r0, 0x364(r3)
-	cmplwi   r0, 0
-	beq      lbl_803AB018
-	lwz      r3, 0x174(r3)
-	addi     r4, r2, lbl_8051F560@sda21
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lis      r4, __vt__Q23efx5TBase@ha
-	li       r6, 0
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx8TSimple2@ha
-	stw      r0, 8(r1)
-	addi     r0, r4, __vt__Q23efx8TSimple2@l
-	lis      r5, __vt__Q23efx11TSimpleMtx2@ha
-	lis      r4, __vt__Q23efx10TKageBend1@ha
-	stw      r0, 8(r1)
-	addi     r0, r5, __vt__Q23efx11TSimpleMtx2@l
-	li       r7, 0x295
-	li       r5, 0x296
-	stw      r0, 8(r1)
-	addi     r0, r4, __vt__Q23efx10TKageBend1@l
-	li       r4, 0
-	stw      r3, 0x18(r1)
-	addi     r3, r1, 8
-	sth      r7, 0xc(r1)
-	sth      r5, 0xe(r1)
-	stw      r6, 0x10(r1)
-	stw      r6, 0x14(r1)
-	stw      r0, 8(r1)
-	bl       create__Q23efx11TSimpleMtx2FPQ23efx3Arg
-
-lbl_803AB018:
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	if (mTyre) {
+		efx::TKageBend1 bendFX(mModel->getJoint("head")->getWorldMatrix());
+		bendFX.create(nullptr);
+	}
 }
 
-/*
- * --INFO--
- * Address:	803AB028
- * Size:	00005C
+/**
+ * @note Address: 0x803AB028
+ * @note Size: 0x5C
  */
 void BlackMan::Obj::createTraceEffect()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r0, 0x364(r3)
-	cmplwi   r0, 0
-	beq      lbl_803AB05C
-	lwz      r3, 0x390(r3)
-	li       r4, 0
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_803AB074
-
-lbl_803AB05C:
-	lwz      r3, 0x394(r3)
-	li       r4, 0
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-
-lbl_803AB074:
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (mTyre) {
+		mEfxMove->create(nullptr);
+	} else {
+		mEfxRun->create(nullptr);
+	}
 }
 
-/*
- * --INFO--
- * Address:	803AB084
- * Size:	000050
+/**
+ * @note Address: 0x803AB084
+ * @note Size: 0x50
  */
 void BlackMan::Obj::fadeTraceEffect()
 {
@@ -6432,43 +4974,19 @@ void BlackMan::Obj::fadeTraceEffect()
 	mEfxRun->fade();
 }
 
-/*
- * --INFO--
- * Address:	803AB0D4
- * Size:	000058
+/**
+ * @note Address: 0x803AB0D4
+ * @note Size: 0x58
  */
 void BlackMan::Obj::createFlickEffect()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	li       r4, 0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r3, 0x3a0(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x3a4(r31)
-	li       r4, 0
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mEfxFrontFlick->create(nullptr);
+	mEfxBackFlick->create(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	803AB12C
- * Size:	000050
+/**
+ * @note Address: 0x803AB12C
+ * @note Size: 0x50
  */
 void BlackMan::Obj::fadeFlickEffect()
 {
@@ -6476,263 +4994,55 @@ void BlackMan::Obj::fadeFlickEffect()
 	mEfxBackFlick->fade();
 }
 
-/*
- * --INFO--
- * Address:	803AB17C
- * Size:	0000C4
+/**
+ * @note Address: 0x803AB17C
+ * @note Size: 0xC4
  */
 bool BlackMan::Obj::isFinalFloor()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	stw      r30, 8(r1)
-	lwz      r3, gameSystem__4Game@sda21(r13)
-	cmplwi   r3, 0
-	beq      lbl_803AB1B0
-	lwz      r0, 0x44(r3)
-	cmpwi    r0, 4
-	bne      lbl_803AB1B0
-	li       r3, 0
-	b        lbl_803AB228
+	if (gameSystem && gameSystem->isZukanMode()) {
+		return false;
+	}
 
-lbl_803AB1B0:
-	lwz      r30, 0x58(r3)
-	cmplwi   r30, 0
-	beq      lbl_803AB224
-	mr       r3, r30
-	lwz      r12, 0(r30)
-	lwz      r12, 0x78(r12)
-	mtctr    r12
-	bctrl
-	addis    r0, r3, 0x86a1
-	cmplwi   r0, 0x3034
-	bne      lbl_803AB224
-	lwz      r3, mapMgr__4Game@sda21(r13)
-	cmplwi   r3, 0
-	beq      lbl_803AB224
-	lwz      r3, 0x28(r3)
-	cmplwi   r3, 0
-	beq      lbl_803AB224
-	bl       getFloorMax__Q34Game4Cave8CaveInfoFv
-	mr       r31, r3
-	mr       r3, r30
-	lwz      r12, 0(r30)
-	lwz      r12, 0x58(r12)
-	mtctr    r12
-	bctrl
-	addi     r0, r3, 1
-	cmpw     r0, r31
-	bne      lbl_803AB224
-	li       r3, 1
-	b        lbl_803AB228
-
-lbl_803AB224:
-	li       r3, 0
-
-lbl_803AB228:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	BaseGameSection* section = gameSystem->getSection();
+	if (section && section->getCaveID() == 'y_04') { // submerged castle
+		RoomMapMgr* roomMgr = static_cast<RoomMapMgr*>(mapMgr);
+		if (roomMgr && roomMgr->mCaveInfo) {
+			if (section->getCurrFloor() + 1 == roomMgr->mCaveInfo->getFloorMax()) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
-/*
- * --INFO--
- * Address:	803AB240
- * Size:	0001C0
+/**
+ * @note Address: 0x803AB240
+ * @note Size: 0x1C0
  */
 void BlackMan::Obj::appearFanfare()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	lis      r5, lbl_80495670@ha
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	addi     r31, r5, lbl_80495670@l
-	stw      r30, 8(r1)
-	lwz      r4, moviePlayer__4Game@sda21(r13)
-	lwz      r0, 0x1f0(r4)
-	clrlwi.  r0, r0, 0x1f
-	beq      lbl_803AB3E8
-	lbz      r0, 0x3aa(r3)
-	cmplwi   r0, 0
-	beq      lbl_803AB3E8
-	li       r0, 0
-	stb      r0, 0x3aa(r3)
-	lwz      r0, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r0, 0
-	bne      lbl_803AB2A0
-	addi     r3, r31, 0x70
-	addi     r5, r31, 0x28
-	li       r4, 0x1d3
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
+	if (!moviePlayer->isFlag(MVP_IsActive)) {
+		return;
+	}
 
-lbl_803AB2A0:
-	lwz      r30, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r30, 0
-	bne      lbl_803AB2C0
-	addi     r3, r31, 0x70
-	addi     r5, r31, 0x28
-	li       r4, 0x1dc
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
+	if (!_3AA) {
+		return;
+	}
 
-lbl_803AB2C0:
-	lwz      r0, 4(r30)
-	cmplwi   r0, 0
-	bne      lbl_803AB2E0
-	addi     r3, r31, 0x7c
-	addi     r5, r31, 0x28
-	li       r4, 0xcf
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
+	_3AA = 0;
 
-lbl_803AB2E0:
-	lwz      r3, 4(r30)
-	lwz      r30, 4(r3)
-	cmplwi   r30, 0
-	bne      lbl_803AB304
-	addi     r3, r31, 0x7c
-	addi     r5, r31, 0x130
-	li       r4, 0xd1
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
+	PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
+	PSSystem::checkSceneMgr(mgr);
+	PSSystem::Scene* scene = mgr->getChildScene();
 
-lbl_803AB304:
-	lwz      r0, 4(r30)
-	cmplwi   r0, 0
-	bne      lbl_803AB324
-	addi     r3, r31, 0x7c
-	addi     r5, r31, 0x28
-	li       r4, 0x5a
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803AB324:
-	lwz      r0, 4(r30)
-	cmplwi   r0, 0
-	beq      lbl_803AB3E8
-	lwz      r0, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r0, 0
-	bne      lbl_803AB350
-	addi     r3, r31, 0x70
-	addi     r5, r31, 0x28
-	li       r4, 0x1d3
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803AB350:
-	lwz      r30, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r30, 0
-	bne      lbl_803AB370
-	addi     r3, r31, 0x70
-	addi     r5, r31, 0x28
-	li       r4, 0x1dc
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803AB370:
-	lwz      r0, 4(r30)
-	cmplwi   r0, 0
-	bne      lbl_803AB390
-	addi     r3, r31, 0x7c
-	addi     r5, r31, 0x28
-	li       r4, 0xcf
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803AB390:
-	lwz      r3, 4(r30)
-	lwz      r30, 4(r3)
-	cmplwi   r30, 0
-	bne      lbl_803AB3B4
-	addi     r3, r31, 0x7c
-	addi     r5, r31, 0x130
-	li       r4, 0xd1
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803AB3B4:
-	lwz      r0, 4(r30)
-	cmplwi   r0, 0
-	bne      lbl_803AB3D4
-	addi     r3, r31, 0x7c
-	addi     r5, r31, 0x28
-	li       r4, 0x5a
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803AB3D4:
-	lwz      r3, 4(r30)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_803AB3E8:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	803AB718
- * Size:	000004
- */
-void BlackMan::Obj::setInitialSetting(Game::EnemyInitialParamBase*) { }
-
-/*
- * --INFO--
- * Address:	803AB71C
- * Size:	000004
- */
-void BlackMan::Obj::throwupItemInDeathProcedure() { }
-
-/*
- * --INFO--
- * Address:	803AB720
- * Size:	00002C
- */
-void BlackMan::Obj::createEfxHamon()
-{
-	if (!mTyre) {
-		EnemyBase::createEfxHamon();
+	if (PSSystem::checkChildScene(scene)) {
+		PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
+		PSSystem::checkSceneMgr(mgr);
+		PSSystem::Scene* scene = mgr->getChildScene();
+		PSSystem::checkChildScene(scene)->startMainSeq();
 	}
 }
-
-/*
- * --INFO--
- * Address:	803AB74C
- * Size:	000040
- */
-void BlackMan::Obj::updateEfxHamon()
-{
-	if (mTyre) {
-		fadeEfxHamon();
-	} else {
-		EnemyBase::updateEfxHamon();
-	}
-}
-
-/*
- * --INFO--
- * Address:	803AB78C
- * Size:	000008
- */
-bool BlackMan::Obj::bombCallBack(Creature* creature, Vector3f& vec, f32 f) { return false; }
 
 } // namespace BlackMan
 } // namespace Game

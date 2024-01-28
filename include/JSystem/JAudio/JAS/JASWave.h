@@ -8,7 +8,7 @@ struct JASWaveArc : public JASDisposer {
 	/** @fabricated */
 	struct LoadToAramCallbackArgs {
 		JASWaveArc* mArc; // _00
-		long mFileNumber; // _04
+		s32 mFileNumber;  // _04
 		u8* _08;          // _08
 		u32 _0C;          // _0C
 	};
@@ -28,13 +28,13 @@ struct JASWaveArc : public JASDisposer {
 
 	// unused/inlined:
 	~JASWaveArc() { }
-	bool loadSetup(unsigned long);
+	bool loadSetup(u32);
 	bool eraseSetup();
 	bool sendLoadCmd();
 	void execLoad();
 	bool loadBlock(JASHeap*);
 	bool loadBlockTail(JASHeap*);
-	void setEntryNum(long);
+	void setEntryNum(s32);
 
 	JASHeap mHeap;   // _04
 	u32 _48;         // _48
@@ -45,18 +45,18 @@ struct JASWaveArc : public JASDisposer {
 };
 
 struct JASWaveInfo {
-	u8 _00;    // _00
-	u8 _01;    // _01
-	f32 _04;   // _04
-	u32 _08;   // _08
-	u32 _0C;   // _0C
-	u32 _10;   // _10
-	u32 _14;   // _14
-	u32 _18;   // _18
-	u32 _1C;   // _1C
-	s16 _20;   // _20
-	s16 _22;   // _22
-	void* _24; // _24
+	u8 mBlockType;   // _00
+	u8 mKey;         // _01
+	f32 mSampleRate; // _04
+	u32 mOffset;     // _08
+	u32 _0C;         // _0C
+	u32 _10;         // _10
+	u32 mBlockCount; // _14
+	u32 _18;         // _18
+	u32 _1C;         // _1C
+	s16 _20;         // _20
+	s16 _22;         // _22
+	void* _24;       // _24
 };
 
 struct JASWaveHandle {
@@ -86,29 +86,41 @@ struct JASBasicWaveBank : public JASWaveBank {
 		    : JASWaveHandle()
 		    , mInfo()
 		    , mHeap(nullptr)
-		    , _30(0)
+		    , mWaveID(0)
 		{
 		}
 
 		virtual ~TWaveHandle() { }                                        // _08 (weak)
 		virtual const JASWaveInfo* getWaveInfo() const { return &mInfo; } // _0C (weak)
-		virtual void* getWavePtr() const;                                 // _10 (weak)
+		virtual void* getWavePtr() const                                  // _10 (weak)
+		{
+			if (mHeap->mBase == nullptr) {
+				return nullptr;
+			}
+			return mHeap->mBase + mInfo.mOffset;
+		}
 
 		JASWaveInfo mInfo; // _04
 		JASHeap* mHeap;    // _2C
-		u32 _30;           // _30
+		u32 mWaveID;       // _30
 	};
 
 	/**
 	 * @size{0x3C}
 	 */
 	struct TWaveInfo {
-		TWaveInfo();
+		TWaveInfo()
+		    : mHandle()
+		    , mNext(nullptr)
+		    , mPrev(nullptr)
+		{
+		}
+
 		~TWaveInfo() { }
 
 		TWaveHandle mHandle; // _00
-		TWaveHandle* _34;    // _34
-		u32 _38;             // _38
+		TWaveInfo* mNext;    // _34
+		TWaveInfo* mPrev;    // _38
 	};
 
 	/**
@@ -121,8 +133,8 @@ struct JASBasicWaveBank : public JASWaveBank {
 		virtual void onLoadDone();  // _0C
 		virtual void onEraseDone(); // _10
 
-		void setWaveCount(unsigned long);
-		void setWaveInfo(int, unsigned long, const JASWaveInfo&);
+		void setWaveCount(u32);
+		void setWaveInfo(int, u32, const JASWaveInfo&);
 		u32 getWaveID(int) const;
 
 		JASBasicWaveBank* mBank; // _5C
@@ -134,18 +146,26 @@ struct JASBasicWaveBank : public JASWaveBank {
 
 	virtual ~JASBasicWaveBank();                     // _08
 	virtual JASWaveHandle* getWaveHandle(u32) const; // _0C
-	virtual JASWaveArc* getWaveArc(int);             // _10 (weak)
+	virtual JASWaveArc* getWaveArc(int groupIndex)
+	{
+		if (groupIndex >= mGroupCount) {
+			return nullptr;
+		}
+		return mGroups[groupIndex];
+	} // _10 (weak)
 
 	TWaveGroup* getWaveGroup(int);
 	void setGroupCount(u32);
 	void setWaveTableSize(u32);
+
+	inline TWaveInfo** getTable() { return mWaveTable; }
 
 	// unused/inlined:
 	void incWaveTable(const JASBasicWaveBank::TWaveGroup*);
 	void decWaveTable(const JASBasicWaveBank::TWaveGroup*);
 
 	OSMutex mMutex;         // _04
-	TWaveHandle** mHandles; // _1C
+	TWaveInfo** mWaveTable; // _1C
 	u32 mTableSize;         // _20
 	TWaveGroup** mGroups;   // _24
 	u32 mGroupCount;        // _28
@@ -217,40 +237,47 @@ struct THeader {
 	u32 mArchiveBankOffset; // _10
 	u32 mCtrlGroupOffset;   // _14
 };
+
 struct TCtrlWave {
 	u32 _00; // _00
 };
+
 struct TWave {
-	u8 _00;  // _00
-	u8 _01;  // _01
-	u8 _02;  // _02
-	f32 _04; // _04
-	u32 _08; // _08
-	u32 _0C; // _0C
-	u32 _10; // _10
-	u32 _14; // _14
-	u32 _18; // _18
-	u32 _1C; // _1C
-	s16 _20; // _20
-	s16 _22; // _22
+	u8 _00;           // _00, xayr tools skip this value
+	u8 mFormat;       // _01
+	u8 mKey;          // _02
+	f32 mSampleRate;  // _04
+	u32 mAwOffset;    // _08
+	u32 mAwLength;    // _0C
+	u32 mLoop;        // _10
+	u32 mLoopStart;   // _14
+	u32 mLoopEnd;     // _18
+	u32 mSampleCount; // _1C
+	s16 mLast;        // _20
+	s16 mPenult;      // _22
 };
+
 struct TWaveArchive {
 	char mFileName[0x74]; // _00 - unknown length
 	u32 mWaveOffsets[1];  // _74 - dynamic length
 };
+
 struct TWaveArchiveBank {
 	u8 _00[8];              // _00 - unknown/padding
 	u32 mArchiveOffsets[1]; // _08 - dynamic length
 };
+
 struct TCtrl {
 	u8 _00[4];               // _00 - unknown/padding
 	u32 mWaveCount;          // _04
 	u32 mCtrlWaveOffsets[1]; // _08 - dynamic length
 };
+
 struct TCtrlScene {
 	u8 _00[12];      // _00 - unknown/padding
 	u32 mCtrlOffset; // _0C
 };
+
 struct TCtrlGroup {
 	u8 _00[8];                // _00 - unknown/padding
 	u32 mCtrlGroupCount;      // _08

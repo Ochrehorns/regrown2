@@ -1,7 +1,6 @@
 #include "Dolphin/rand.h"
 #include "Game/generalEnemyMgr.h"
 #include "Game/Entities/Armor.h"
-#include "Game/Entities/SleepyBulbear.h"
 #include "Game/Entities/Baby.h"
 #include "Game/Entities/BigFoot.h"
 #include "Game/Entities/BigTreasure.h"
@@ -31,7 +30,6 @@
 #include "Game/Entities/Hanachirashi.h"
 #include "Game/Entities/Hiba.h"
 #include "Game/Entities/Houdai.h"
-#include "Game/Entities/Hydrant.h"
 #include "Game/Entities/Imomushi.h"
 #include "Game/Entities/Jigumo.h"
 #include "Game/Entities/Kabuto.h"
@@ -55,7 +53,6 @@
 #include "Game/Entities/Qurione.h"
 #include "Game/Entities/Rock.h"
 #include "Game/Entities/ShijimiChou.h"
-#include "Game/Entities/SmokyFrog.h"
 #include "Game/Entities/SnakeCrow.h"
 #include "Game/Entities/SnakeWhole.h"
 #include "Game/Entities/Sokkuri.h"
@@ -67,7 +64,6 @@
 #include "Game/Entities/Ujia.h"
 #include "Game/Entities/Ujib.h"
 #include "Game/Entities/UmiMushi.h"
-#include "Game/Entities/Usuba.h"
 #include "Game/Entities/WaterOtakara.h"
 #include "Game/Entities/Wealthy.h"
 #include "Game/Entities/YellowChappy.h"
@@ -79,6 +75,11 @@
 #include "LoadResource.h"
 
 #include "Game/Entities/HallowMushi.h"
+#include "Game/Entities/SleepyBulbear.h"
+#include "Game/Entities/Usuba.h"
+#include "Game/Entities/Hydrant.h"
+#include "Game/Entities/SmokyFrog.h"
+
 
 static const char matchText[] = "enemyBase";
 
@@ -88,10 +89,9 @@ GeneralEnemyMgr* generalEnemyMgr;
 int GeneralEnemyMgr::mCullCount;
 int GeneralEnemyMgr::mTotalCount;
 
-/*
- * --INFO--
- * Address:	8010BD3C
- * Size:	000FAC
+/**
+ * @note Address: 0x8010BD3C
+ * @note Size: 0xFAC
  */
 void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 {
@@ -319,9 +319,6 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 	case EnemyTypeID::EnemyID_Houdai:
 		mgr = new Houdai::Mgr(limit, type);
 		break;
-	case EnemyTypeID::EnemyID_Hydrant:
-		mgr = new Hydrant::Mgr(limit, type);
-		break;
 	case EnemyTypeID::EnemyID_LeafChappy:
 		mgr = new LeafChappy::Mgr(limit, type);
 		break;
@@ -401,6 +398,9 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 	case EnemyTypeID::EnemyID_HallowMushi:
 		mgr = new HallowMushi::Mgr(limit, type);
 		break;
+	case EnemyTypeID::EnemyID_Hydrant:
+		mgr = new Hydrant::Mgr(limit, type);
+		break;
 	}
 
 	mgr->alloc();
@@ -409,10 +409,9 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 	sys->heapStatusEnd(name);
 }
 
-/*
- * --INFO--
- * Address:	8010CCE8
- * Size:	0001BC
+/**
+ * @note Address: 0x8010CCE8
+ * @note Size: 0x1BC
  */
 GeneralEnemyMgr::GeneralEnemyMgr()
     : _1C(0)
@@ -427,14 +426,13 @@ GeneralEnemyMgr::GeneralEnemyMgr()
 	sys->heapStatusEnd("GeneralEnemyMgr");
 	resetEnemyNum();
 	mFlags.clear();
-	mFlags.typeView |= 0x1;
-	mFlags.typeView |= 0x2;
+	mFlags.set(1);
+	mFlags.set(2);
 }
 
-/*
- * --INFO--
- * Address:	8010CF0C
- * Size:	000078
+/**
+ * @note Address: 0x8010CF0C
+ * @note Size: 0x78
  */
 void GeneralEnemyMgr::killAll()
 {
@@ -447,10 +445,9 @@ void GeneralEnemyMgr::killAll()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010CFB4
- * Size:	00004C
+/**
+ * @note Address: 0x8010CFB4
+ * @note Size: 0x4C
  */
 void GeneralEnemyMgr::setupSoundViewerAndBas()
 {
@@ -460,17 +457,16 @@ void GeneralEnemyMgr::setupSoundViewerAndBas()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010D030
- * Size:	00008C
+/**
+ * @note Address: 0x8010D030
+ * @note Size: 0x8C
  */
 void GeneralEnemyMgr::doAnimation()
 {
 	mCullCount  = 0;
 	mTotalCount = 0;
 	sys->mTimers->_start("doaTEKI", true);
-	if (mFlags.typeView & 0x1) {
+	if (mFlags.isSet(1)) {
 		EnemyMgrNode* childNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
 		for (childNode; childNode != nullptr; childNode = static_cast<EnemyMgrNode*>(childNode->mNext)) {
 			childNode->doAnimation();
@@ -479,14 +475,13 @@ void GeneralEnemyMgr::doAnimation()
 	sys->mTimers->_stop("doaTEKI");
 }
 
-/*
- * --INFO--
- * Address:	8010D0EC
- * Size:	000058
+/**
+ * @note Address: 0x8010D0EC
+ * @note Size: 0x58
  */
 void GeneralEnemyMgr::doEntry()
 {
-	if (mFlags.typeView & 0x2) {
+	if (mFlags.isSet(2)) {
 		EnemyMgrNode* childNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
 		for (childNode; childNode != nullptr; childNode = static_cast<EnemyMgrNode*>(childNode->mNext)) {
 			childNode->doEntry();
@@ -494,14 +489,13 @@ void GeneralEnemyMgr::doEntry()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010D174
- * Size:	000068
+/**
+ * @note Address: 0x8010D174
+ * @note Size: 0x68
  */
 void GeneralEnemyMgr::doSetView(int viewportNumber)
 {
-	if (mFlags.typeView & 0x2) {
+	if (mFlags.isSet(2)) {
 		EnemyMgrNode* childNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
 		for (childNode; childNode != nullptr; childNode = static_cast<EnemyMgrNode*>(childNode->mNext)) {
 			childNode->doSetView(viewportNumber);
@@ -509,14 +503,13 @@ void GeneralEnemyMgr::doSetView(int viewportNumber)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010D20C
- * Size:	000058
+/**
+ * @note Address: 0x8010D20C
+ * @note Size: 0x58
  */
 void GeneralEnemyMgr::doViewCalc()
 {
-	if (mFlags.typeView & 0x2) {
+	if (mFlags.isSet(2)) {
 		EnemyMgrNode* childNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
 		for (childNode; childNode != nullptr; childNode = static_cast<EnemyMgrNode*>(childNode->mNext)) {
 			childNode->doViewCalc();
@@ -524,14 +517,13 @@ void GeneralEnemyMgr::doViewCalc()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010D294
- * Size:	000068
+/**
+ * @note Address: 0x8010D294
+ * @note Size: 0x68
  */
 void GeneralEnemyMgr::doSimulation(f32 constraint)
 {
-	if (mFlags.typeView & 0x1) {
+	if (mFlags.isSet(1)) {
 		EnemyMgrNode* childNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
 		for (childNode; childNode != nullptr; childNode = static_cast<EnemyMgrNode*>(childNode->mNext)) {
 			childNode->doSimulation(constraint);
@@ -539,14 +531,13 @@ void GeneralEnemyMgr::doSimulation(f32 constraint)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010D32C
- * Size:	000068
+/**
+ * @note Address: 0x8010D32C
+ * @note Size: 0x68
  */
 void GeneralEnemyMgr::doDirectDraw(Graphics& gfx)
 {
-	if (mFlags.typeView & 0x2) {
+	if (mFlags.isSet(2)) {
 		EnemyMgrNode* childNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
 		for (childNode; childNode != nullptr; childNode = static_cast<EnemyMgrNode*>(childNode->mNext)) {
 			childNode->doDirectDraw(gfx);
@@ -554,14 +545,13 @@ void GeneralEnemyMgr::doDirectDraw(Graphics& gfx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010D3C4
- * Size:	000080
+/**
+ * @note Address: 0x8010D3C4
+ * @note Size: 0x80
  */
 void GeneralEnemyMgr::doSimpleDraw(Viewport* viewport)
 {
-	if (mFlags.typeView & 0x2) {
+	if (mFlags.isSet(2)) {
 		EnemyMgrNode* childNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
 		for (childNode; childNode != nullptr; childNode = static_cast<EnemyMgrNode*>(childNode->mNext)) {
 			childNode->doSimpleDraw(viewport);
@@ -570,10 +560,9 @@ void GeneralEnemyMgr::doSimpleDraw(Viewport* viewport)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010D474
- * Size:	00004C
+/**
+ * @note Address: 0x8010D474
+ * @note Size: 0x4C
  */
 J3DModelData* GeneralEnemyMgr::getJ3DModelData(int idx)
 {
@@ -586,10 +575,9 @@ J3DModelData* GeneralEnemyMgr::getJ3DModelData(int idx)
 	return modelData;
 }
 
-/*
- * --INFO--
- * Address:	8010D4C0
- * Size:	0000BC
+/**
+ * @note Address: 0x8010D4C0
+ * @note Size: 0xBC
  */
 EnemyBase* GeneralEnemyMgr::birth(int enemyID, EnemyBirthArg& birthArg)
 {
@@ -605,24 +593,21 @@ EnemyBase* GeneralEnemyMgr::birth(int enemyID, EnemyBirthArg& birthArg)
 	return enemy;
 }
 
-/*
- * --INFO--
- * Address:	8010D57C
- * Size:	000028
+/**
+ * @note Address: 0x8010D57C
+ * @note Size: 0x28
  */
 char* GeneralEnemyMgr::getEnemyName(int p1, int p2) { return EnemyInfoFunc::getEnemyName(p1, p2); }
 
-/*
- * --INFO--
- * Address:	8010D5A4
- * Size:	000028
+/**
+ * @note Address: 0x8010D5A4
+ * @note Size: 0x28
  */
 int GeneralEnemyMgr::getEnemyID(char* name, int p1) { return EnemyInfoFunc::getEnemyID(name, p1); }
 
-/*
- * --INFO--
- * Address:	8010D5CC
- * Size:	00002C
+/**
+ * @note Address: 0x8010D5CC
+ * @note Size: 0x2C
  */
 IEnemyMgrBase* GeneralEnemyMgr::getIEnemyMgrBase(int enemyID)
 {
@@ -638,76 +623,72 @@ IEnemyMgrBase* GeneralEnemyMgr::getIEnemyMgrBase(int enemyID)
 	return base;
 }
 
-/*
- * --INFO--
- * Address:	8010D5F8
- * Size:	00021C
+/**
+ * @note Address: 0x8010D5F8
+ * @note Size: 0x21C
  */
-/*
 void GeneralEnemyMgr::allocateEnemys(u8 type, int heapSize)
 {
-    if (heapSize < 0) {
-        mHeapSize = 0x00200800;
-        if (gameSystem) {
-            if (gameSystem->isChallengeMode()) {
-                mHeapSize = 0x00177000;
-            } else if (gameSystem->isVersusMode()) {
-                mHeapSize = 0x001C2000;
-            }
-        }
-    } else {
-        mHeapSize = heapSize;
-    }
+	if (heapSize < 0) {
+		mHeapSize = 0x00200800;
+		if (gameSystem) {
+			if (gameSystem->isChallengeMode()) {
+				mHeapSize = 0x00177000;
+			} else if (gameSystem->isVersusMode()) {
+				mHeapSize = 0x001C2000;
+			}
+		}
+	} else {
+		mHeapSize = heapSize;
+	}
 
-    sys->heapStatusStart("enemyHeap", nullptr);
-    JKRHeap* currentHeap = JKRGetCurrentHeap();
-    mHeap                = JKRSolidHeap::create(mHeapSize, currentHeap, true);
-    mHeap->becomeCurrentHeap();
+	sys->heapStatusStart("enemyHeap", nullptr);
+	JKRHeap* currentHeap = JKRGetCurrentHeap();
+	mHeap                = JKRSolidHeap::create(mHeapSize, currentHeap, true);
+	mHeap->becomeCurrentHeap();
 
-    mStoneMgr.loadResource();
+	mStoneMgr.loadResource();
 
-    P2ASSERTLINE(1844, currentHeap->getHeapType() == 'EXPH');
+	P2ASSERTLINE(1844, currentHeap->getHeapType() == 'EXPH');
 
-    LoadResource::ArgAramOnly arg("enemy/parm/enemyParms.szs");
-    arg.mHeap = currentHeap;
-    arg._1C   = 2;
+	LoadResource::ArgAramOnly arg("/enemy/parm/enemyParms.szs");
+	arg.mHeap     = currentHeap;
+	arg.mAllocDir = JKRDvdRipper::ALLOC_DIR_BOTTOM;
 
-    LoadResource::Node* resourceNode = gLoadResourceMgr->mountArchive(arg);
-    gParmArc                         = resourceNode->mArchive;
+	LoadResource::Node* resourceNode = gLoadResourceMgr->mountArchive(arg);
+	gParmArc                         = resourceNode->mArchive;
 
-    sys->heapStatusStart("allocateEnemys", nullptr);
-    sys->heapStatusIndividual();
+	sys->heapStatusStart("allocateEnemys", nullptr);
+	sys->heapStatusIndividual();
 
-    for (int i = 0; i < gEnemyInfoNum; i++) {
-        int enemyNum = getEnemyNum(gEnemyInfo[i].mId, true);
-        if ((gEnemyInfo[i].mFlags & 0x1) && (enemyNum > 0)) {
-            createEnemyMgr(type, gEnemyInfo[i].mId, enemyNum);
-        }
-    }
+	for (int i = 0; i < gEnemyInfoNum; i++) {
+		int enemyNum = getEnemyNum(gEnemyInfo[i].mId, true);
+		OSReport("%i test(id)%i %x\n",enemyNum, gEnemyInfo[i].mId, mHeap->getFreeSize());
+		if ((gEnemyInfo[i].mFlags & 0x1) && (enemyNum > 0)) {
+			createEnemyMgr(type, gEnemyInfo[i].mId, enemyNum);
+		}
+	}
 
-    sys->heapStatusNormal();
-    sys->heapStatusEnd("allocateEnemys");
-    currentHeap->becomeCurrentHeap();
-    mHeap->mInitFlag = 1;
-    delete resourceNode;
+	sys->heapStatusNormal();
+	sys->heapStatusEnd("allocateEnemys");
+	currentHeap->becomeCurrentHeap();
+	mHeap->mInitFlag = 1;
+	delete resourceNode;
 
-    gParmArc = nullptr;
-    sys->heapStatusEnd("enemyHeap");
+	gParmArc = nullptr;
+	sys->heapStatusEnd("enemyHeap");
 }
-*/
-/*
- * --INFO--
- * Address:	8010D814
- * Size:	000040
+
+/**
+ * @note Address: 0x8010D814
+ * @note Size: 0x40
  */
 void GeneralEnemyMgr::resetEnemyNum() { mEnemyNumInfo.resetEnemyNum(); }
 
-/*
- * --INFO--
- * Address:	8010D854
- * Size:	00022C
+/**
+ * @note Address: 0x8010D854
+ * @note Size: 0x22C
  */
-
 #pragma dont_inline on
 void GeneralEnemyMgr::addEnemyNum(int enemyID, u8 max, GenObjectEnemy* genObj)
 {
@@ -724,7 +705,7 @@ void GeneralEnemyMgr::addEnemyNum(int enemyID, u8 max, GenObjectEnemy* genObj)
 					EnemyPelletInfo pelletInfo;
 					pelletInfo = genObj->mPelletInfo;
 
-					if (pelletInfo.mColor == 0 && pelletInfo.mSize == 1) {
+					if (pelletInfo.mColor == PELCOLOR_SPECTRALID && pelletInfo.mSize == PELSIZE_SPECTRALID) {
 						EnemyInfo* info = EnemyInfoFunc::getEnemyInfo(enemyID, 0xFFFF);
 						addEnemyNum(info->mChildID, info->mChildNum, nullptr);
 					}
@@ -760,23 +741,33 @@ void GeneralEnemyMgr::addEnemyNum(int enemyID, u8 max, GenObjectEnemy* genObj)
 	}
 }
 #pragma dont_inline reset
+/**
+ * @note Address: 0x8010DA80
+ * @note Size: 0x170
+ */
 
 /*
- * --INFO--
- * Address:	8010DA80
- * Size:	000170
- */
-/*
-u8 GeneralEnemyMgr::getEnemyNum(int enemyID, bool check)
+u8 GeneralEnemyMgr::getEnemyNum(int enemyID, bool doFullCount)
 {
-    return mEnemyNumInfo.getEnemyNum(enemyID, check);
+	u8 count = 0;
+
+	if (doFullCount) {
+		if (mEnemyNumInfo.mEnemyNumList) {
+			// ISSUE IN HERE
+			count = getEnemyCount(enemyID, getEnemyMgrID(enemyID));
+		}
+	} else {
+		// ISSUE IN HERE
+		count = mEnemyNumInfo.getEnemyNumData(enemyID);
+	}
+
+	return count;
 }
 */
 
-/*
- * --INFO--
- * Address:	8010DBF0
- * Size:	0000B4
+/**
+ * @note Address: 0x8010DBF0
+ * @note Size: 0xB4
  */
 JKRHeap* GeneralEnemyMgr::useHeap()
 {
@@ -790,10 +781,9 @@ JKRHeap* GeneralEnemyMgr::useHeap()
 	return mHeap;
 }
 
-/*
- * --INFO--
- * Address:	8010DCA4
- * Size:	000038
+/**
+ * @note Address: 0x8010DCA4
+ * @note Size: 0x38
  */
 EnemyMgrBase* GeneralEnemyMgr::getEnemyMgr(int enemyID)
 {
@@ -804,10 +794,9 @@ EnemyMgrBase* GeneralEnemyMgr::getEnemyMgr(int enemyID)
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8010DCDC
- * Size:	000098
+/**
+ * @note Address: 0x8010DCDC
+ * @note Size: 0x98
  */
 void GeneralEnemyMgr::setMovieDraw(bool isEndMovie)
 {
@@ -826,10 +815,9 @@ void GeneralEnemyMgr::setMovieDraw(bool isEndMovie)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010DDD4
- * Size:	00011C
+/**
+ * @note Address: 0x8010DDD4
+ * @note Size: 0x11C
  */
 void GeneralEnemyMgr::prepareDayendEnemies()
 {
@@ -860,256 +848,254 @@ void GeneralEnemyMgr::prepareDayendEnemies()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010E4BC
- * Size:	000C84
+/**
+ * @note Address: 0x8010E4BC
+ * @note Size: 0xC84
  */
-/*
 void GeneralEnemyMgr::createDayendEnemies(Sys::Sphere& sphere)
 {
-    if (mEnemyMgrNode.getChildCount() != 0) {
-        int i = 0;
-        while (i < 10) {
-            int randIdx = randFloat() * mEnemyMgrNode.getChildCount();
+	if (mEnemyMgrNode.getChildCount() != 0) {
+		int i = 0;
+		while (i < 10) {
+			int randIdx = randFloat() * mEnemyMgrNode.getChildCount();
 
-            EnemyMgrNode* startNode  = static_cast<EnemyMgrNode*>(mEnemyMgrNode.getChildAt(randIdx));
-            EnemyMgrNode* randomNode = startNode;
-            EnemyMgrBase* mgr;
-            EnemyBase* enemy;
-            do {
+			EnemyMgrNode* startNode  = static_cast<EnemyMgrNode*>(mEnemyMgrNode.getChildAt(randIdx));
+			EnemyMgrNode* randomNode = startNode;
+			EnemyMgrBase* mgr;
+			EnemyBase* enemy;
+			do {
 
-                EnemyInfo* randomInfo              = EnemyInfoFunc::getEnemyInfo(randomNode->mEnemyID, 0xFFFF);
-                EnemyTypeID::EEnemyTypeID randomID = randomNode->mEnemyID;
-                EnemyMgrNode* childNode            = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
-                mgr                                = nullptr;
+				EnemyInfo* randomInfo              = EnemyInfoFunc::getEnemyInfo(randomNode->mEnemyID, 0xFFFF);
+				EnemyTypeID::EEnemyTypeID randomID = randomNode->mEnemyID;
+				EnemyMgrNode* childNode            = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
+				mgr                                = nullptr;
 
-                for (childNode; childNode != nullptr; childNode = static_cast<EnemyMgrNode*>(childNode->mNext)) {
-                    if (childNode->mEnemyID == randomID) {
-                        mgr = childNode->mMgr;
-                    }
-                }
+				for (childNode; childNode != nullptr; childNode = static_cast<EnemyMgrNode*>(childNode->mNext)) {
+					if (childNode->mEnemyID == randomID) {
+						mgr = childNode->mMgr;
+					}
+				}
 
-                TekiStat::Info* tekiInfo = playData->mTekiStatMgr.getTekiInfo(randomID);
-                P2ASSERTLINE(2203, tekiInfo != nullptr);
+				TekiStat::Info* tekiInfo = playData->mTekiStatMgr.getTekiInfo(randomID);
+				P2ASSERTLINE(2203, tekiInfo != nullptr);
 
-                if ((randomInfo->mFlags & 0x10) && (tekiInfo->mState & 0x1)) {
-                    EnemyBirthArg birthArg;
-                    birthArg.mIsInPiklopedia = 0;
+				if ((randomInfo->mFlags & 0x10) && (tekiInfo->mState.isSet(1))) {
+					EnemyBirthArg birthArg;
+					birthArg.mIsInPiklopedia = 0;
 
-                    u16 infoFlags = randomInfo->mFlags;
+					u16 infoFlags = randomInfo->mFlags;
 
-                    if (infoFlags & 0x20) {
-                        birthArg.mPosition = sphere.mPosition;
+					if (infoFlags & 0x20) {
+						birthArg.mPosition = sphere.mPosition;
 
-                        birthArg.mFaceDir = TAU * randFloat();
+						birthArg.mFaceDir = TAU * randFloat();
 
-                        int searchID = randomNode->mEnemyID;
-                        enemy        = nullptr;
-                        int mgrID    = getEnemyMgrID(searchID);
+						int searchID = randomNode->mEnemyID;
+						enemy        = nullptr;
+						int mgrID    = getEnemyMgrID(searchID);
 
-                        EnemyMgrNode* anotherNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
-                        EnemyMgrBase* anotherMgr  = nullptr;
-                        for (anotherNode; anotherNode != nullptr; anotherNode = static_cast<EnemyMgrNode*>(anotherNode->mNext)) {
-                            if (anotherNode->mEnemyID == mgrID) {
-                                anotherMgr = anotherNode->mMgr;
-                            }
-                        }
+						EnemyMgrNode* anotherNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
+						EnemyMgrBase* anotherMgr  = nullptr;
+						for (anotherNode; anotherNode != nullptr; anotherNode = static_cast<EnemyMgrNode*>(anotherNode->mNext)) {
+							if (anotherNode->mEnemyID == mgrID) {
+								anotherMgr = anotherNode->mMgr;
+							}
+						}
 
-                        if (anotherMgr) {
-                            birthArg.mTypeID = (EnemyTypeID::EEnemyTypeID)searchID;
-                            enemy            = anotherMgr->birth(birthArg);
-                        }
+						if (anotherMgr) {
+							birthArg.mTypeID = (EnemyTypeID::EEnemyTypeID)searchID;
+							enemy            = anotherMgr->birth(birthArg);
+						}
 
-                        if (enemy) {
-                            enemy->init(nullptr);
-                            InteractAttack attack(enemy, 0.0f, nullptr);
-                            enemy->stimulate(attack);
-                            enemy->movie_begin(false);
-                        }
+						if (enemy) {
+							enemy->init(nullptr);
+							InteractAttack attack(enemy, 0.0f, nullptr);
+							enemy->stimulate(attack);
+							enemy->movie_begin(false);
+						}
 
-                        i += 10;
-                        goto noadd;
-                        // break;
-                    } else if (infoFlags & 0x40) {
-                        f32 randAngle     = TAU * randFloat();
-                        birthArg.mFaceDir = _angXZ(sphere.mPosition.x, sphere.mPosition.z, birthArg.mPosition.x, birthArg.mPosition.z);
+						i += 10;
+						goto noadd;
+						// break;
+					} else if (infoFlags & 0x40) {
+						f32 randAngle     = TAU * randFloat();
+						birthArg.mFaceDir = _angXZ(sphere.mPosition.x, sphere.mPosition.z, birthArg.mPosition.x, birthArg.mPosition.z);
 
-                        int searchID = randomNode->mEnemyID;
-                        enemy        = nullptr;
-                        int mgrID    = getEnemyMgrID(searchID);
+						// From here
+						int searchID = randomNode->mEnemyID;
+						enemy        = nullptr;
+						int mgrID    = getEnemyMgrID(searchID);
 
-                        EnemyMgrNode* anotherNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
-                        EnemyMgrBase* anotherMgr  = nullptr;
-                        for (anotherNode; anotherNode != nullptr; anotherNode = static_cast<EnemyMgrNode*>(anotherNode->mNext)) {
-                            if (anotherNode->mEnemyID == mgrID) {
-                                anotherMgr = anotherNode->mMgr;
-                            }
-                        }
+						EnemyMgrNode* anotherNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
+						EnemyMgrBase* anotherMgr  = nullptr;
+						for (anotherNode; anotherNode != nullptr; anotherNode = static_cast<EnemyMgrNode*>(anotherNode->mNext)) {
+							if (anotherNode->mEnemyID == mgrID) {
+								anotherMgr = anotherNode->mMgr;
+							}
+						}
 
-                        if (anotherMgr) {
-                            birthArg.mTypeID = (EnemyTypeID::EEnemyTypeID)searchID;
-                            enemy            = anotherMgr->birth(birthArg);
-                        }
+						if (anotherMgr) {
+							birthArg.mTypeID = (EnemyTypeID::EEnemyTypeID)searchID;
+							enemy            = anotherMgr->birth(birthArg);
+						}
+						// To here is an inline
 
-                        if (enemy) {
-                            Sys::Sphere boundingSphere;
-                            enemy->getBoundingSphere(boundingSphere);
-                            f32 radDiff = sphere.mRadius - boundingSphere.mRadius;
-                            if (radDiff < 0.0f) {
-                                radDiff = 0.0f;
-                            }
+						if (enemy) {
+							Sys::Sphere boundingSphere;
+							enemy->getBoundingSphere(boundingSphere);
+							f32 radDiff = sphere.mRadius - boundingSphere.mRadius;
+							if (radDiff < 0.0f) {
+								radDiff = 0.0f;
+							}
 
-                            Vector3f pos(radDiff * pikmin2_sinf(randAngle) + sphere.mPosition.x, 0.0f,
-                                         radDiff * pikmin2_cosf(randAngle) + sphere.mPosition.z);
-                            pos.y = mapMgr->getMinY(pos);
-                            enemy->setPosition(pos, false);
-                            enemy->mHomePosition = pos;
+							Vector3f pos(radDiff * sinf(randAngle) + sphere.mPosition.x, 0.0f,
+							             radDiff * cosf(randAngle) + sphere.mPosition.z);
+							pos.y = mapMgr->getMinY(pos);
+							enemy->setPosition(pos, false);
+							enemy->mHomePosition = pos;
 
-                            enemy->init(nullptr);
-                            InteractAttack attack(enemy, 0.0f, nullptr);
-                            enemy->stimulate(attack);
-                            enemy->movie_begin(false);
-                        }
+							enemy->init(nullptr);
+							InteractAttack attack(enemy, 0.0f, nullptr);
+							enemy->stimulate(attack);
+							enemy->movie_begin(false);
+						}
 
-                        i += 5;
-                        goto noadd;
-                    } else if (infoFlags & 0x80) {
-                        int maxObj    = mgr->getMaxObjects();
-                        int randLimit = (int)(7.0f * randFloat()) + 2;
+						i += 5;
+						goto noadd;
+					} else if (infoFlags & 0x80) {
+						int maxObj    = mgr->getMaxObjects();
+						int randLimit = randInt(7) + 2;
 
-                        if (maxObj > randLimit) {
-                            maxObj = randLimit;
-                        }
+						if (maxObj > randLimit) {
+							maxObj = randLimit;
+						}
 
-                        f32 randAngle = TAU * randFloat();
-                        f32 increment = TAU / (f32)maxObj;
-                        for (int j = 0; j < maxObj; j++) {
+						f32 randAngle = TAU * randFloat();
+						f32 increment = TAU / (f32)maxObj;
+						for (int j = 0; j < maxObj; j++) {
 
-                            rand();
-                            birthArg.mFaceDir = _angXZ(sphere.mPosition.x, sphere.mPosition.z, birthArg.mPosition.x, birthArg.mPosition.z);
-                            int searchID      = randomNode->mEnemyID;
-                            enemy             = nullptr;
-                            int mgrID         = getEnemyMgrID(searchID);
+							rand();
+							birthArg.mFaceDir = _angXZ(sphere.mPosition.x, sphere.mPosition.z, birthArg.mPosition.x, birthArg.mPosition.z);
+							int searchID      = randomNode->mEnemyID;
+							enemy             = nullptr;
+							int mgrID         = getEnemyMgrID(searchID);
 
-                            EnemyMgrNode* anotherNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
-                            EnemyMgrBase* anotherMgr  = nullptr;
-                            for (anotherNode; anotherNode != nullptr; anotherNode = static_cast<EnemyMgrNode*>(anotherNode->mNext)) {
-                                if (anotherNode->mEnemyID == mgrID) {
-                                    anotherMgr = anotherNode->mMgr;
-                                }
-                            }
+							EnemyMgrNode* anotherNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
+							EnemyMgrBase* anotherMgr  = nullptr;
+							for (anotherNode; anotherNode != nullptr; anotherNode = static_cast<EnemyMgrNode*>(anotherNode->mNext)) {
+								if (anotherNode->mEnemyID == mgrID) {
+									anotherMgr = anotherNode->mMgr;
+								}
+							}
 
-                            if (anotherMgr) {
-                                birthArg.mTypeID = (EnemyTypeID::EEnemyTypeID)searchID;
-                                enemy            = anotherMgr->birth(birthArg);
-                            }
+							if (anotherMgr) {
+								birthArg.mTypeID = (EnemyTypeID::EEnemyTypeID)searchID;
+								enemy            = anotherMgr->birth(birthArg);
+							}
 
-                            if (enemy) {
-                                Sys::Sphere boundingSphere;
-                                enemy->getBoundingSphere(boundingSphere);
-                                f32 radDiff = sphere.mRadius - boundingSphere.mRadius;
-                                if (radDiff < 0.0f) {
-                                    radDiff = 0.0f;
-                                }
+							if (enemy) {
+								Sys::Sphere boundingSphere;
+								enemy->getBoundingSphere(boundingSphere);
+								f32 radDiff = sphere.mRadius - boundingSphere.mRadius;
+								if (radDiff < 0.0f) {
+									radDiff = 0.0f;
+								}
 
-                                f32 randomRad = (0.5f * radDiff) * randFloat() + (0.5f * radDiff);
+								f32 randomRad = (0.5f * radDiff) * randFloat() + (0.5f * radDiff);
 
-                                Vector3f pos(randomRad * pikmin2_sinf(randAngle) + sphere.mPosition.x, 0.0f,
-                                             randomRad * pikmin2_cosf(randAngle) + sphere.mPosition.z);
-                                pos.y = mapMgr->getMinY(pos);
-                                enemy->setPosition(pos, false);
-                                enemy->mHomePosition = pos;
+								Vector3f pos(randomRad * sinf(randAngle) + sphere.mPosition.x, 0.0f,
+								             randomRad * cosf(randAngle) + sphere.mPosition.z);
+								pos.y = mapMgr->getMinY(pos);
+								enemy->setPosition(pos, false);
+								enemy->mHomePosition = pos;
 
-                                enemy->init(nullptr);
-                                InteractAttack attack(enemy, 0.0f, nullptr);
-                                enemy->stimulate(attack);
-                                enemy->movie_begin(false);
-                            }
-                            randAngle += increment;
-                        }
+								enemy->init(nullptr);
+								InteractAttack attack(enemy, 0.0f, nullptr);
+								enemy->stimulate(attack);
+								enemy->movie_begin(false);
+							}
+							randAngle += increment;
+						}
 
-                        i += 3;
-                        goto noadd;
-                    } else {
-                        int maxObj    = mgr->getMaxObjects();
-                        int randLimit = (int)(7.0f * randFloat()) + 7;
+						i += 3;
+						goto noadd;
+					} else {
+						int maxObj    = mgr->getMaxObjects();
+						int randLimit = randInt(7) + 7;
 
-                        if (maxObj > randLimit) {
-                            maxObj = randLimit;
-                        }
+						if (maxObj > randLimit) {
+							maxObj = randLimit;
+						}
 
-                        f32 randAngle = TAU * randFloat();
-                        f32 increment = TAU / (f32)maxObj;
-                        for (int j = 0; j < maxObj; j++) {
+						f32 randAngle = TAU * randFloat();
+						f32 increment = TAU / (f32)maxObj;
+						for (int j = 0; j < maxObj; j++) {
 
-                            rand();
+							rand();
 
-                            birthArg.mFaceDir = _angXZ(sphere.mPosition.x, sphere.mPosition.z, birthArg.mPosition.x, birthArg.mPosition.z);
+							birthArg.mFaceDir = _angXZ(sphere.mPosition.x, sphere.mPosition.z, birthArg.mPosition.x, birthArg.mPosition.z);
 
-                            int searchID = randomNode->mEnemyID;
-                            enemy        = nullptr;
-                            int mgrID    = getEnemyMgrID(searchID);
+							int searchID = randomNode->mEnemyID;
+							enemy        = nullptr;
+							int mgrID    = getEnemyMgrID(searchID);
 
-                            EnemyMgrNode* anotherNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
-                            EnemyMgrBase* anotherMgr  = nullptr;
-                            for (anotherNode; anotherNode != nullptr; anotherNode = static_cast<EnemyMgrNode*>(anotherNode->mNext)) {
-                                if (anotherNode->mEnemyID == mgrID) {
-                                    anotherMgr = anotherNode->mMgr;
-                                }
-                            }
+							EnemyMgrNode* anotherNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
+							EnemyMgrBase* anotherMgr  = nullptr;
+							for (anotherNode; anotherNode != nullptr; anotherNode = static_cast<EnemyMgrNode*>(anotherNode->mNext)) {
+								if (anotherNode->mEnemyID == mgrID) {
+									anotherMgr = anotherNode->mMgr;
+								}
+							}
 
-                            if (anotherMgr) {
-                                birthArg.mTypeID = (EnemyTypeID::EEnemyTypeID)searchID;
-                                enemy            = anotherMgr->birth(birthArg);
-                            }
+							if (anotherMgr) {
+								birthArg.mTypeID = (EnemyTypeID::EEnemyTypeID)searchID;
+								enemy            = anotherMgr->birth(birthArg);
+							}
 
-                            if (enemy) {
-                                Sys::Sphere boundingSphere;
-                                enemy->getBoundingSphere(boundingSphere);
-                                f32 radDiff = sphere.mRadius - boundingSphere.mRadius;
-                                if (radDiff < 0.0f) {
-                                    radDiff = 0.0f;
-                                }
+							if (enemy) {
+								Sys::Sphere boundingSphere;
+								enemy->getBoundingSphere(boundingSphere);
+								f32 radDiff = sphere.mRadius - boundingSphere.mRadius;
+								if (radDiff < 0.0f) {
+									radDiff = 0.0f;
+								}
 
-                                f32 randomRad = (0.5f * radDiff) * randFloat() + (0.5f * radDiff);
+								f32 randomRad = (0.5f * radDiff) * randFloat() + (0.5f * radDiff);
 
-                                Vector3f pos(randomRad * pikmin2_sinf(randAngle) + sphere.mPosition.x, 0.0f,
-                                             randomRad * pikmin2_cosf(randAngle) + sphere.mPosition.z);
-                                pos.y = mapMgr->getMinY(pos);
-                                enemy->setPosition(pos, false);
-                                enemy->mHomePosition = pos;
+								Vector3f pos(randomRad * sinf(randAngle) + sphere.mPosition.x, 0.0f,
+								             randomRad * cosf(randAngle) + sphere.mPosition.z);
+								pos.y = mapMgr->getMinY(pos);
+								enemy->setPosition(pos, false);
+								enemy->mHomePosition = pos;
 
-                                enemy->init(nullptr);
-                                InteractAttack attack(enemy, 0.0f, nullptr);
-                                enemy->stimulate(attack);
-                                enemy->movie_begin(false);
-                            }
+								enemy->init(nullptr);
+								InteractAttack attack(enemy, 0.0f, nullptr);
+								enemy->stimulate(attack);
+								enemy->movie_begin(false);
+							}
 
-                            randAngle += increment;
-                        }
+							randAngle += increment;
+						}
 
-                        i += 1;
-                        goto noadd;
-                    }
-                } else {
-                    randomNode = static_cast<EnemyMgrNode*>(randomNode->mNext);
-                    if (randomNode == nullptr) {
-                        randomNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
-                    }
-                }
-            } while (randomNode != startNode);
-            i += 10;
-        noadd:;
-        }
-    }
+						i += 1;
+						goto noadd;
+					}
+				} else {
+					randomNode = static_cast<EnemyMgrNode*>(randomNode->mNext);
+					if (randomNode == nullptr) {
+						randomNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
+					}
+				}
+			} while (randomNode != startNode);
+			i += 10;
+		noadd:;
+		}
+	}
 }
-*/
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00005C
+/**
+ * @note Address: N/A
+ * @note Size: 0x5C
  */
 void GeneralEnemyMgr::setParmsDebugNameAndID()
 {
@@ -1117,10 +1103,9 @@ void GeneralEnemyMgr::setParmsDebugNameAndID()
 	mEnemyMgrNode.setDebugParm(0);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000050
+/**
+ * @note Address: N/A
+ * @note Size: 0x50
  */
 void GeneralEnemyMgr::resetParmsDebugNameAndID()
 {

@@ -1,4 +1,3 @@
-#include "types.h"
 #include "ebi/title/Entities/TKogane.h"
 #include "ebi/title/TTitle.h"
 #include "JSystem/J3D/J3DModelLoader.h"
@@ -9,46 +8,43 @@
 
 namespace ebi {
 namespace title {
+namespace Kogane {
 
-static const int unusedTitleKoganeArray[] = { 0, 0, 0 };
-static const char ebiP2TitleKoganeName[]  = "ebiP2TitleKogane";
+static const int padding[]    = { 0, 0, 0 };
+static const char className[] = "ebiP2TitleKogane";
 
-/*
- * --INFO--
- * Address:	803E7358
- * Size:	000148
+/**
+ * @note Address: 0x803E7358
+ * @note Size: 0x148
  */
-Kogane::TMgr::TMgr()
+TMgr::TMgr()
     : CNode("KoganeMgr")
 {
 	mAnimator = new TAnimator;
 	mObject   = new TUnit;
 }
 
-/*
- * --INFO--
- * Address:	803E74A0
- * Size:	000050
+/**
+ * @note Address: 0x803E74A0
+ * @note Size: 0x50
  */
-void Kogane::TMgr::setArchive(JKRArchive* arc)
+void TMgr::setArchive(JKRArchive* arc)
 {
 	mParams.loadSettingFile(arc, "param/param_kogane.txt");
 	mAnimator->setArchive(arc);
 }
 
-/*
- * --INFO--
- * Address:	803E74F0
- * Size:	000028
+/**
+ * @note Address: 0x803E74F0
+ * @note Size: 0x28
  */
-void Kogane::TMgr::initUnit() { mObject->init(this); }
+void TMgr::initUnit() { mObject->init(this); }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
-void Kogane::TAnimFolder::load(J3DModelData* modelData, JKRArchive* arc)
+void TAnimFolder::load(J3DModelData* modelData, JKRArchive* arc)
 {
 	mAnims[0].load(modelData, arc, "kogane/kogane_move.bck");
 	mAnims[0].mMode = 1;
@@ -56,18 +52,17 @@ void Kogane::TAnimFolder::load(J3DModelData* modelData, JKRArchive* arc)
 	mAnims[1].mMode = 1;
 }
 
-/*
- * --INFO--
- * Address:	803E7518
- * Size:	000068
+/**
+ * @note Address: 0x803E7518
+ * @note Size: 0x68
  */
-Kogane::TAnimator::TAnimator() { mModelData = nullptr; }
-/*
- * --INFO--
- * Address:	803E7580
- * Size:	00011C
+TAnimator::TAnimator() { mModelData = nullptr; }
+
+/**
+ * @note Address: 0x803E7580
+ * @note Size: 0x11C
  */
-void Kogane::TAnimator::setArchive(JKRArchive* arc)
+void TAnimator::setArchive(JKRArchive* arc)
 {
 	void* file = arc->getResource("kogane/kogane_title.bmd");
 	P2ASSERTLINE(0x75, file);
@@ -82,95 +77,88 @@ void Kogane::TAnimator::setArchive(JKRArchive* arc)
 	mAnimFolder.load(mModelData, arc);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
-J3DModel* Kogane::TAnimator::newJ3DModel() { return new J3DModel(mModelData, 0x20000, 1); }
+J3DModel* TAnimator::newJ3DModel() { return new J3DModel(mModelData, 0x20000, 1); }
 
-/*
- * --INFO--
- * Address:	803E769C
- * Size:	000008
+/**
+ * @note Address: 0x803E769C
+ * @note Size: 0x8
  */
-void Kogane::TUnit::setController(Controller* ctrl) { mControl = ctrl; }
-/*
- * --INFO--
- * Address:	803E76A4
- * Size:	0000F4
+void TUnit::setController(Controller* ctrl) { mControl = ctrl; }
+
+/**
+ * @note Address: 0x803E76A4
+ * @note Size: 0xF4
  */
-void Kogane::TUnit::init(TMgr* mgr)
+void TUnit::init(TMgr* mgr)
 {
 	mManager = mgr;
 	mModel   = mManager->mAnimator->newJ3DModel();
 	mAnim.setAnimFolder(&mManager->mAnimator->mAnimFolder);
 
-	mPos      = titleMgr->getPosOutOfViewField();
+	mPosition = titleMgr->getPosOutOfViewField();
 	mParms[0] = mManager->mParams.mWalkSpeed.mValue;
 	mParms[1] = mManager->mParams.mScale.mValue;
 	mParms[4] = mManager->mParams.mCullRadius.mValue;
 	mParms[2] = mManager->mParams.mCollRadius.mValue;
 	mParms[3] = mManager->mParams.mPikiReactRadius.mValue;
 }
-/*
- * --INFO--
- * Address:	803E7798
- * Size:	00004C
+
+/**
+ * @note Address: 0x803E7798
+ * @note Size: 0x4C
  */
-void Kogane::TUnit::startZigzagWalk(Vector2f& pos, Vector2f& targetPos)
+void TUnit::startZigzagWalk(Vector2f& pos, Vector2f& targetPos)
 {
-	mPos       = pos;
+	mPosition  = pos;
 	mTargetPos = targetPos;
 	mActionID  = KOGANEACT_NULL;
 	startState(KSTATE_ZigZagWalk);
 }
 
-/*
- * --INFO--
- * Address:	803E77E4
- * Size:	000030
+/**
+ * @note Address: 0x803E77E4
+ * @note Size: 0x30
  */
-void Kogane::TUnit::goHome()
+void TUnit::goHome()
 {
 	if (mStateID != KSTATE_Inactive) {
 		startState(KSTATE_GoHome);
 	}
 }
 
-/*
- * --INFO--
- * Address:	803E7814
- * Size:	000024
+/**
+ * @note Address: 0x803E7814
+ * @note Size: 0x24
  */
-void Kogane::TUnit::outOfCalc() { startState(KSTATE_Inactive); }
+void TUnit::outOfCalc() { startState(KSTATE_Inactive); }
 
-/*
- * --INFO--
- * Address:	803E7838
- * Size:	000014
+/**
+ * @note Address: 0x803E7838
+ * @note Size: 0x14
  */
-bool Kogane::TUnit::isCalc() { return (bool)mStateID != 0; }
+bool TUnit::isCalc() { return (bool)mStateID != 0; }
 
-/*
- * --INFO--
- * Address:	803E784C
- * Size:	000014
+/**
+ * @note Address: 0x803E784C
+ * @note Size: 0x14
  */
-bool Kogane::TUnit::isController() { return (u8)(mStateID == KSTATE_Controlled); };
+bool TUnit::isController() { return (u8)(mStateID == KSTATE_Controlled); };
 
-/*
- * --INFO--
- * Address:	803E7860
- * Size:	0002D0
+/**
+ * @note Address: 0x803E7860
+ * @note Size: 0x2D0
  */
-void Kogane::TUnit::startState(enumState state)
+void TUnit::startState(enumState state)
 {
 
 	mStateID = state;
 	switch (state) {
 	case KSTATE_Inactive:
-		mPos = title::titleMgr->getPosOutOfViewField();
+		mPosition = title::titleMgr->getPosOutOfViewField();
 
 	case KSTATE_Controlled:
 		u32 time  = mManager->mParams.mControlStateTime.mValue / sys->mDeltaTime;
@@ -187,9 +175,9 @@ void Kogane::TUnit::startState(enumState state)
 		break;
 	case KSTATE_Turn:
 		f32 angle    = mManager->mParams.mWalkRandomAngle.mValue;
-		f32 line     = JMath::atanTable_.atan2_(mTargetPos.y - mPos.y, mTargetPos.x - mPos.x);
+		f32 line     = JMath::atanTable_.atan2_(mTargetPos.y - mPosition.y, mTargetPos.x - mPosition.x);
 		f32 test     = angle * DEG2RAD * PI * (randEbisawaFloat() * 2.0f + -1.0f) + line;
-		mTargetAngle = Vector2f(pikmin2_cosf(test), pikmin2_sinf(test));
+		mTargetAngle = Vector2f(cosf(test), sinf(test));
 		break;
 	case KSTATE_Walk:
 		f32 max2, min2;
@@ -202,7 +190,7 @@ void Kogane::TUnit::startState(enumState state)
 		break;
 
 	case KSTATE_ZigZagWalk:
-		Vector2f negPos(-mPos.x, -mPos.y);
+		Vector2f negPos(-mPosition.x, -mPosition.y);
 		f32 len = _sqrtf(negPos.x * negPos.x + negPos.y * negPos.y);
 		if (len != 0.0f) {
 			f32 norm = 1.0f / len;
@@ -214,12 +202,11 @@ void Kogane::TUnit::startState(enumState state)
 	}
 };
 
-/*
- * --INFO--
- * Address:	803E7B30
- * Size:	000734
+/**
+ * @note Address: 0x803E7B30
+ * @note Size: 0x734
  */
-void Kogane::TUnit::update()
+void TUnit::update()
 {
 	if (!isCalc())
 		return;
@@ -250,7 +237,7 @@ void Kogane::TUnit::update()
 			f32 stickY = mControl->mSStick.mYPos;
 			if (stickY > 0.7f) {
 				f32 paramProd = stickY * mParms[0];
-				mPos          = mPos + mAngle * paramProd;
+				mPosition     = mPosition + mAngle * paramProd;
 				mActionID     = KOGANEACT_2;
 			}
 		}
@@ -292,7 +279,7 @@ void Kogane::TUnit::update()
 		if (mCounter == 0) {
 			startState(KSTATE_Wait);
 		} else {
-			mPos = mPos + mAngle * mParms[0];
+			mPosition = mPosition + mAngle * mParms[0];
 		}
 
 	} break;
@@ -301,19 +288,19 @@ void Kogane::TUnit::update()
 		mActionID = KOGANEACT_2;
 		mAngle.normalise();
 
-		mPos = mPos + mAngle * mParms[0];
+		mPosition = mPosition + mAngle * mParms[0];
 	} break;
 
 	case KSTATE_GoHome: {
 		mActionID = KOGANEACT_2;
 		mAngle.normalise();
-		mPos = mPos + mAngle * mParms[0];
+		mPosition = mPosition + mAngle * mParms[0];
 	} break;
 	}
 
 	switch (mStateID) {
 	case KSTATE_Inactive:
-		mPos = titleMgr->getPosOutOfViewField();
+		mPosition = titleMgr->getPosOutOfViewField();
 
 	case KSTATE_ZigZagWalk:
 		if (titleMgr->isInViewField(this)) {
@@ -353,20 +340,20 @@ void Kogane::TUnit::update()
 	}
 
 	calcModelBaseMtx_();
-	if (mAnim._0C != nullptr) {
-		switch (mAnim._08) {
+	if (mAnim.mAnimRes != nullptr) {
+		switch (mAnim.mState) {
 		case 1:
-			mAnim._00 += mAnim._04 * mAnim._0C->float_0x18;
-			if (mAnim._00 > mAnim._0C->mLoopEnd) {
-				mAnim._00 -= mAnim._0C->mLoopEnd - mAnim._0C->mLoopStart;
+			mAnim.mAnimStartTime += mAnim.mTimeStep * mAnim.mAnimRes->mTimeScale;
+			if (mAnim.mAnimStartTime > mAnim.mAnimRes->mLoopEnd) {
+				mAnim.mAnimStartTime -= mAnim.mAnimRes->mLoopEnd - mAnim.mAnimRes->mLoopStart;
 			}
 			break;
 
 		case 2:
-			mAnim._00 += mAnim._04 * mAnim._0C->float_0x18;
-			if (mAnim._00 >= mAnim._0C->float_0xC) {
-				mAnim._00 = mAnim._0C->float_0xC;
-				mAnim._08 = 3;
+			mAnim.mAnimStartTime += mAnim.mTimeStep * mAnim.mAnimRes->mTimeScale;
+			if (mAnim.mAnimStartTime >= mAnim.mAnimRes->_0C) {
+				mAnim.mAnimStartTime = mAnim.mAnimRes->_0C;
+				mAnim.mState         = 3;
 			}
 			break;
 
@@ -378,9 +365,9 @@ void Kogane::TUnit::update()
 	}
 
 	J3DModel* model = mModel;
-	if (mAnim._0C != nullptr) {
-		mAnim._0C->pAnmTransform_0x0->mCurrentFrame        = mAnim._00;
-		model->mModelData->mJointTree.mJoints[0]->mMtxCalc = mAnim._0C->pMtxCalcAnm_0x4;
+	if (mAnim.mAnimRes != nullptr) {
+		mAnim.mAnimRes->mAnimTransform->mCurrentFrame      = mAnim.mAnimStartTime;
+		model->mModelData->mJointTree.mJoints[0]->mMtxCalc = mAnim.mAnimRes->mAnmCalcMtx;
 	}
 
 	mModel->calc();
@@ -388,5 +375,6 @@ void Kogane::TUnit::update()
 	return mModel->viewCalc();
 }
 
+} // namespace Kogane
 } // namespace title
 } // namespace ebi

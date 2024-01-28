@@ -3,7 +3,7 @@
 
 #include "JSystem/JStudio/TAdaptor.h"
 #include "JSystem/JStudio/TCreateObject.h"
-#include "JSystem/JStudio/stb-data.h"
+#include "JSystem/JStudio/stb-data-parse.h"
 #include "JSystem/JMessage/TControl.h"
 
 namespace JStudio_JMessage {
@@ -25,8 +25,8 @@ struct TCreateObject : public TCreateObject_base {
 };
 
 struct TAdaptor_message : public JStudio::TAdaptor_message {
-	virtual ~TAdaptor_message();                                                                 // _08
-	virtual void adaptor_do_MESSAGE(JStudio::data::TEOperationData, const void*, unsigned long); // _20
+	virtual ~TAdaptor_message();                                                       // _08
+	virtual void adaptor_do_MESSAGE(JStudio::data::TEOperationData, const void*, u32); // _20
 
 	TAdaptor_message(JMessage::TControl*);
 	JMessage::TControl* mControl; // _10

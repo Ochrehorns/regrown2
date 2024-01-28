@@ -8,10 +8,9 @@
 namespace Game {
 namespace TamagoMushi {
 
-/*
- * --INFO--
- * Address:	8036CCF0
- * Size:	000108
+/**
+ * @note Address: 0x8036CCF0
+ * @note Size: 0x108
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -24,10 +23,9 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateWait(TAMAGOMUSHI_Wait));
 }
 
-/*
- * --INFO--
- * Address:	8036CDF8
- * Size:	00003C
+/**
+ * @note Address: 0x8036CDF8
+ * @note Size: 0x3C
  */
 StateWalk::StateWalk(int stateID)
     : State(stateID)
@@ -35,21 +33,20 @@ StateWalk::StateWalk(int stateID)
 	mName = "walk";
 }
 
-/*
- * --INFO--
- * Address:	8036CE34
- * Size:	000108
+/**
+ * @note Address: 0x8036CE34
+ * @note Size: 0x108
  */
 void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	int p1;
 	int diff;
-	Obj* mitite = static_cast<Obj*>(enemy);
-	mitite->startMotion(2, nullptr);
+	Obj* mitite = OBJ(enemy);
+	mitite->startMotion(TAMAGOANIM_Move, nullptr);
 	mitite->resetWalkParm();
-	Parms* parms = static_cast<Parms*>(mitite->mParms);
-	p1           = parms->mProperParms.mIp01.mValue;
-	diff         = parms->mProperParms.mIp02.mValue - p1;
+	Parms* parms = CG_PARMS(mitite);
+	p1           = parms->mProperParms.mMinimumWalkTime.mValue;
+	diff         = parms->mProperParms.mMaximumWalkTime.mValue - p1;
 
 	f32 r = (f32)diff * randFloat() + (f32)p1;
 	_14   = (int)r;
@@ -58,14 +55,13 @@ void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 	mitite->setAlive(true);
 }
 
-/*
- * --INFO--
- * Address:	8036CF3C
- * Size:	0000EC
+/**
+ * @note Address: 0x8036CF3C
+ * @note Size: 0xEC
  */
 void StateWalk::exec(EnemyBase* enemy)
 {
-	Obj* mitite = static_cast<Obj*>(enemy);
+	Obj* mitite = OBJ(enemy);
 	_10++;
 	if (mitite->mBounceTriangle) {
 		mitite->walkFunc();
@@ -85,10 +81,9 @@ void StateWalk::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8036D028
- * Size:	00003C
+/**
+ * @note Address: 0x8036D028
+ * @note Size: 0x3C
  */
 StateTurn::StateTurn(int stateID)
     : State(stateID)
@@ -96,26 +91,24 @@ StateTurn::StateTurn(int stateID)
 	mName = "turn";
 }
 
-/*
- * --INFO--
- * Address:	8036D064
- * Size:	000054
+/**
+ * @note Address: 0x8036D064
+ * @note Size: 0x54
  */
 void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->startMotion(4, nullptr);
+	enemy->startMotion(TAMAGOANIM_Wait, nullptr);
 	enemy->mTargetVelocity  = Vector3f(0.0f);
 	enemy->mCurrentVelocity = Vector3f(0.0f);
 }
 
-/*
- * --INFO--
- * Address:	8036D0B8
- * Size:	000088
+/**
+ * @note Address: 0x8036D0B8
+ * @note Size: 0x88
  */
 void StateTurn::exec(EnemyBase* enemy)
 {
-	Obj* mitite = static_cast<Obj*>(enemy);
+	Obj* mitite = OBJ(enemy);
 	if (mitite->turnFunc()) {
 		mitite->finishMotion();
 	}
@@ -125,10 +118,9 @@ void StateTurn::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8036D140
- * Size:	00003C
+/**
+ * @note Address: 0x8036D140
+ * @note Size: 0x3C
  */
 StateAppear::StateAppear(int stateID)
     : State(stateID)
@@ -136,24 +128,23 @@ StateAppear::StateAppear(int stateID)
 	mName = "appear";
 }
 
-/*
- * --INFO--
- * Address:	8036D17C
- * Size:	000160
+/**
+ * @note Address: 0x8036D17C
+ * @note Size: 0x160
  */
 void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	int p1;
 	int diff;
 
-	enemy->startMotion(3, nullptr);
+	enemy->startMotion(TAMAGOANIM_Appear, nullptr);
 	enemy->stopMotion();
 	enemy->enableEvent(0, EB_BitterImmune);
 
-	Obj* mitite  = static_cast<Obj*>(enemy);
-	Parms* parms = static_cast<Parms*>(mitite->mParms);
-	p1           = parms->mProperParms.mIp03.mValue;
-	diff         = parms->mProperParms.mIp04.mValue - p1;
+	Obj* mitite  = OBJ(enemy);
+	Parms* parms = CG_PARMS(mitite);
+	p1           = parms->mProperParms.mMinimumAppearanceTime.mValue;
+	diff         = parms->mProperParms.mMaximumAppearanceTime.mValue - p1;
 
 	f32 r = (f32)diff * randFloat() + (f32)p1;
 	_18   = (int)r;
@@ -169,14 +160,13 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	mAppearFrame = 15.0f * randFloat();
 }
 
-/*
- * --INFO--
- * Address:	8036D2DC
- * Size:	0001AC
+/**
+ * @note Address: 0x8036D2DC
+ * @note Size: 0x1AC
  */
 void StateAppear::exec(EnemyBase* enemy)
 {
-	Obj* mitite = static_cast<Obj*>(enemy);
+	Obj* mitite = OBJ(enemy);
 	if (!_10 && mitite->isFound()) {
 		_10 = true;
 		mitite->createFellow();
@@ -213,10 +203,9 @@ void StateAppear::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8036D488
- * Size:	00003C
+/**
+ * @note Address: 0x8036D488
+ * @note Size: 0x3C
  */
 StateHide::StateHide(int stateID)
     : State(stateID)
@@ -224,28 +213,26 @@ StateHide::StateHide(int stateID)
 	mName = "hide";
 }
 
-/*
- * --INFO--
- * Address:	8036D4C4
- * Size:	00006C
+/**
+ * @note Address: 0x8036D4C4
+ * @note Size: 0x6C
  */
 void StateHide::init(EnemyBase* enemy, StateArg* stateArg)
 {
 
-	enemy->startMotion(1, nullptr);
+	enemy->startMotion(TAMAGOANIM_Dive, nullptr);
 	enemy->mTargetVelocity  = Vector3f(0.0f);
 	enemy->mCurrentVelocity = Vector3f(0.0f);
 	enemy->hardConstraintOn();
 	enemy->setEmotionCaution();
 
-	Obj* mitite = static_cast<Obj*>(enemy);
+	Obj* mitite = OBJ(enemy);
 	mitite->createHideEffect();
 }
 
-/*
- * --INFO--
- * Address:	8036D530
- * Size:	000044
+/**
+ * @note Address: 0x8036D530
+ * @note Size: 0x44
  */
 void StateHide::exec(EnemyBase* enemy)
 {
@@ -254,10 +241,9 @@ void StateHide::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8036D574
- * Size:	00003C
+/**
+ * @note Address: 0x8036D574
+ * @note Size: 0x3C
  */
 StateDead::StateDead(int stateID)
     : State(stateID)
@@ -265,14 +251,13 @@ StateDead::StateDead(int stateID)
 	mName = "dead";
 }
 
-/*
- * --INFO--
- * Address:	8036D5B0
- * Size:	000108
+/**
+ * @note Address: 0x8036D5B0
+ * @note Size: 0x108
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->startMotion(0, nullptr);
+	enemy->startMotion(TAMAGOANIM_Dead, nullptr);
 	enemy->mTargetVelocity  = Vector3f(0.0f);
 	enemy->mCurrentVelocity = Vector3f(0.0f);
 	enemy->enableEvent(0, EB_LeaveCarcass);
@@ -287,14 +272,13 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	bombFx.create(&arg);
 }
 
-/*
- * --INFO--
- * Address:	8036D6B8
- * Size:	000114
+/**
+ * @note Address: 0x8036D6B8
+ * @note Size: 0x114
  */
 void StateDead::exec(EnemyBase* enemy)
 {
-	Obj* mitite = static_cast<Obj*>(enemy);
+	Obj* mitite = OBJ(enemy);
 	if (mitite->mCurAnim->mIsPlaying && (u32)mitite->mCurAnim->mType == KEYEVENT_END) {
 		mitite->genItem();
 		mitite->kill(nullptr);
@@ -309,10 +293,9 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8036D7CC
- * Size:	00003C
+/**
+ * @note Address: 0x8036D7CC
+ * @note Size: 0x3C
  */
 StateWait::StateWait(int stateID)
     : State(stateID)
@@ -320,31 +303,29 @@ StateWait::StateWait(int stateID)
 	mName = "Wait";
 }
 
-/*
- * --INFO--
- * Address:	8036D808
- * Size:	000074
+/**
+ * @note Address: 0x8036D808
+ * @note Size: 0x74
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->startMotion(4, nullptr);
+	enemy->startMotion(TAMAGOANIM_Wait, nullptr);
 	enemy->setEmotionExcitement();
 	enemy->hardConstraintOff();
 	enemy->disableEvent(0, EB_Cullable);
 	enemy->setAtari(false);
 
-	Obj* mitite  = static_cast<Obj*>(enemy);
+	Obj* mitite  = OBJ(enemy);
 	mitite->_300 = 1;
 }
 
-/*
- * --INFO--
- * Address:	8036D87C
- * Size:	000098
+/**
+ * @note Address: 0x8036D87C
+ * @note Size: 0x98
  */
 void StateWait::exec(EnemyBase* enemy)
 {
-	Obj* mitite = static_cast<Obj*>(enemy);
+	Obj* mitite = OBJ(enemy);
 	if (mitite->_300 == 0) {
 		mitite->setAlive(true);
 		mitite->setAtari(true);

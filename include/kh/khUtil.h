@@ -4,6 +4,7 @@
 #include "P2DScreen.h"
 #include "efx2d/T2DCountKira.h"
 #include "og/Screen/callbackNodes.h"
+#include "P2Macros.h"
 
 struct Graphics;
 struct J2DAnmBase;
@@ -81,10 +82,13 @@ struct khUtilFadePaneWM : public khUtilFadePane {
 	virtual ~khUtilFadePaneWM() { } // _08 (weak)
 	virtual void fadeout_finish();  // _20
 
+	void create(P2DScreen::Mgr*, u64, u8);      // UNUSED
+	void create(P2DScreen::Mgr*, J2DPane*, u8); // UNUSED
+
 	// _00     = VTBL
 	// _00-_30 = khUtilFadePane
-	kh::Screen::WorldMap* mMapObj; // _34
-	bool mFinish;
+	kh::Screen::WorldMap* mMapObj; // _30
+	bool mFinish;                  // _34
 };
 
 struct khUtilColorAnm : public P2DScreen::CallBackNode {
@@ -95,6 +99,8 @@ struct khUtilColorAnm : public P2DScreen::CallBackNode {
 	virtual void do_update() { }  // _1C (weak)
 
 	inline JUtility::TColor& getColor(int id) const { return mColorList[id]; }
+
+	inline void setColor(JUtility::TColor color, int id) { mColorList[id] = color; }
 
 	// _00     = VTBL
 	// _00-_1C = P2DScreen::Node
@@ -122,6 +128,11 @@ struct khUtilColorAnmWM : public khUtilColorAnm {
 	}
 	virtual ~khUtilColorAnmWM() { } // _08 (weak)
 	virtual void do_update();       // _14
+
+	khUtilColorAnmWM(P2DScreen::Mgr*, u64, int, int);             // UNUSED
+	void my_init(J2DPicture**, og::Screen::CallBack_CounterRV**); // UNUSED
+	void effect_on(u32);                                          // UNUSED
+	void effect_off();                                            // UNUSED
 
 	// _00     = VTBL
 	// _00-_38 = khUtilColorAnm

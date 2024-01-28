@@ -1,43 +1,40 @@
 #include "efx2d/TChasePos.h"
 #include "efx2d/TForever.h"
 #include "efx2d/TSimple.h"
-#include "JSystem/JUtility/JUTException.h"
+#include "P2Macros.h"
 #include "TParticle2dMgr.h"
 
 namespace efx2d {
 
-/*
- * --INFO--
- * Address:	803B9830
- * Size:	000098
+/**
+ * @note Address: 0x803B9830
+ * @note Size: 0x98
  */
 bool TSimple1::create(Arg* arg)
 {
 	P2ASSERTLINE(10, arg != nullptr);
 
-	Vector2f vec = *arg;
-
-	mEmitters[0] = particle2dMgr->create(mEffectIDs[0], vec, _05, _04);
+	Vector2f pos = *arg;
+	mEmitters[0] = particle2dMgr->create(mEffectIDs[0], pos, _05, _04);
 
 	if (mEmitters[0] == nullptr) {
 		return false;
 	}
+
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803B98C8
- * Size:	0000B0
+/**
+ * @note Address: 0x803B98C8
+ * @note Size: 0xB0
  */
 bool TSimple2::create(Arg* arg)
 {
 	P2ASSERTLINE(25, arg != nullptr);
 
-	Vector2f vec = *arg;
-
+	Vector2f pos = *arg;
 	for (int i = 0; i < 2; i++) {
-		mEmitters[i] = particle2dMgr->create(mEffectIDs[i], vec, _05, _04);
+		mEmitters[i] = particle2dMgr->create(mEffectIDs[i], pos, _05, _04);
 		if (mEmitters[i] == nullptr) {
 			return false;
 		}
@@ -45,49 +42,46 @@ bool TSimple2::create(Arg* arg)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803B9978
- * Size:	0000B0
+/**
+ * @note Address: 0x803B9978
+ * @note Size: 0xB0
  */
 bool TSimple3::create(Arg* arg)
 {
 	P2ASSERTLINE(40, arg != nullptr);
 
-	Vector2f vec = *arg;
-
+	Vector2f pos = *arg;
 	for (int i = 0; i < 3; i++) {
-		mEmitters[i] = particle2dMgr->create(mEffectIDs[i], vec, _05, _04);
+		mEmitters[i] = particle2dMgr->create(mEffectIDs[i], pos, _05, _04);
 		if (mEmitters[i] == nullptr) {
 			return false;
 		}
 	}
+
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803B9A28
- * Size:	0000A4
+/**
+ * @note Address: 0x803B9A28
+ * @note Size: 0xA4
  */
 bool TForever::create(Arg* arg)
 {
 	P2ASSERTLINE(54, arg != nullptr);
 
-	Vector2f vec = *arg;
+	Vector2f pos = *arg;
 
 	if (mEmitter) {
 		return false;
 	}
 
-	mEmitter = particle2dMgr->create(mEfxID, vec, _05, _04);
+	mEmitter = particle2dMgr->create(mEfxID, pos, _05, _04);
 	return mEmitter != nullptr;
 }
 
-/*
- * --INFO--
- * Address:	803B9ACC
- * Size:	00003C
+/**
+ * @note Address: 0x803B9ACC
+ * @note Size: 0x3C
  */
 void TForever::kill()
 {
@@ -95,10 +89,9 @@ void TForever::kill()
 	mEmitter = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	803B9B08
- * Size:	00003C
+/**
+ * @note Address: 0x803B9B08
+ * @note Size: 0x3C
  */
 void TForever::fade()
 {
@@ -106,10 +99,9 @@ void TForever::fade()
 	mEmitter = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	803B9B44
- * Size:	000024
+/**
+ * @note Address: 0x803B9B44
+ * @note Size: 0x24
  */
 void TForever::setGlobalScale(f32 scale)
 {
@@ -122,36 +114,35 @@ void TForever::setGlobalScale(f32 scale)
 	emitter->setScale(scale);
 }
 
-/*
- * --INFO--
- * Address:	803B9B68
- * Size:	000028
+/**
+ * @note Address: 0x803B9B68
+ * @note Size: 0x28
  */
 void TForever::setGlobalEnvColor(JUtility::TColor& color)
 {
-	JPABaseEmitter* emitter = mEmitter;
-
-	if (emitter) {
-		mEmitter->mColor2.setRGB(color);
+	if (!mEmitter) {
+		return;
 	}
+
+	mEmitter->mGlobalEnvClr.setRGB(color);
 }
 
-/*
- * --INFO--
- * Address:	803B9B90
- * Size:	000014
+/**
+ * @note Address: 0x803B9B90
+ * @note Size: 0x14
  */
 void TForever::setGlobalAlpha(u8 alpha)
 {
-	if (mEmitter) {
-		mEmitter->mColor1.a = alpha;
+	if (!mEmitter) {
+		return;
 	}
+
+	mEmitter->mGlobalPrmClr.a = alpha;
 }
 
-/*
- * --INFO--
- * Address:	803B9BA4
- * Size:	000080
+/**
+ * @note Address: 0x803B9BA4
+ * @note Size: 0x80
  */
 TForeverN::TForeverN(u8 length)
     : mLength(length)
@@ -159,10 +150,9 @@ TForeverN::TForeverN(u8 length)
 	mForevers = new TForever[mLength];
 }
 
-/*
- * --INFO--
- * Address:	803B9C24
- * Size:	000050
+/**
+ * @note Address: 0x803B9C24
+ * @note Size: 0x50
  */
 TForever::TForever()
 {
@@ -170,26 +160,26 @@ TForever::TForever()
 	mEmitter = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	803B9C74
- * Size:	000098
+/**
+ * @note Address: 0x803B9C74
+ * @note Size: 0x98
  */
 bool TForeverN::create(Arg* arg)
 {
 	bool success = true;
+
 	for (u8 i = 0; i < mLength; i++) {
 		if (!mForevers[i].create(arg)) {
 			success = false;
 		}
 	}
+
 	return success;
 }
 
-/*
- * --INFO--
- * Address:	803B9D0C
- * Size:	00006C
+/**
+ * @note Address: 0x803B9D0C
+ * @note Size: 0x6C
  */
 void TForeverN::kill()
 {
@@ -198,10 +188,9 @@ void TForeverN::kill()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B9D78
- * Size:	00006C
+/**
+ * @note Address: 0x803B9D78
+ * @note Size: 0x6C
  */
 void TForeverN::fade()
 {
@@ -210,10 +199,9 @@ void TForeverN::fade()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B9DE4
- * Size:	00007C
+/**
+ * @note Address: 0x803B9DE4
+ * @note Size: 0x7C
  */
 void TForeverN::setGroup(u8 group)
 {
@@ -222,25 +210,26 @@ void TForeverN::setGroup(u8 group)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B9E60
- * Size:	000040
+/**
+ * @note Address: 0x803B9E60
+ * @note Size: 0x40
  */
 void TForeverN::setGlobalAlpha(u8 alpha)
 {
 	for (u8 i = 0; i < mLength; i++) {
 		JPABaseEmitter* emitter = mForevers[i].mEmitter;
-		if (emitter) {
-			emitter->mColor1.a = alpha;
+
+		if (!emitter) {
+			continue;
 		}
+
+		emitter->mGlobalPrmClr.a = alpha;
 	}
 }
 
-/*
- * --INFO--
- * Address:	803B9EA0
- * Size:	000088
+/**
+ * @note Address: 0x803B9EA0
+ * @note Size: 0x88
  */
 bool TChasePos::create(Arg* arg)
 {
@@ -248,7 +237,7 @@ bool TChasePos::create(Arg* arg)
 		return false;
 	}
 
-	mEmitter = particle2dMgr->create(mEfxID, *_14, _05, _04);
+	mEmitter = particle2dMgr->create(mEfxID, *mChasePosition, _05, _04);
 
 	if (mEmitter) {
 		mEmitter->mEmitterCallback = this;
@@ -259,27 +248,25 @@ bool TChasePos::create(Arg* arg)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803B9F28
- * Size:	000078
+/**
+ * @note Address: 0x803B9F28
+ * @note Size: 0x78
  */
 void TChasePos::execute(JPABaseEmitter* emitter)
 {
-	P2ASSERTLINE(214, _14 != nullptr);
+	P2ASSERTLINE(214, mChasePosition != nullptr);
 
-	f32 x = _14->x;
-	f32 y = _14->y;
+	f32 x = mChasePosition->x;
+	f32 y = mChasePosition->y;
 
-	emitter->mPosition.x = x;
-	emitter->mPosition.y = y;
-	emitter->mPosition.z = 0.0f;
+	emitter->mGlobalTrs.x = x;
+	emitter->mGlobalTrs.y = y;
+	emitter->mGlobalTrs.z = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	803B9FA0
- * Size:	000088
+/**
+ * @note Address: 0x803B9FA0
+ * @note Size: 0x88
  */
 bool TChasePosDir::create(Arg* arg)
 {
@@ -287,7 +274,7 @@ bool TChasePosDir::create(Arg* arg)
 		return false;
 	}
 
-	mEmitter = particle2dMgr->create(mEfxID, *_14, _05, _04);
+	mEmitter = particle2dMgr->create(mEfxID, *mChasePosition, _05, _04);
 
 	if (mEmitter) {
 		mEmitter->mEmitterCallback = this;
@@ -298,28 +285,27 @@ bool TChasePosDir::create(Arg* arg)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803BA028
- * Size:	0000B8
+/**
+ * @note Address: 0x803BA028
+ * @note Size: 0xB8
  */
 void TChasePosDir::execute(JPABaseEmitter* emitter)
 {
-	P2ASSERTLINE(244, _14 != nullptr);
-	P2ASSERTLINE(245, _18 != nullptr);
+	P2ASSERTLINE(244, mChasePosition != nullptr);
+	P2ASSERTLINE(245, mDirection != nullptr);
 
-	f32 x1 = _14->x;
-	f32 y1 = _14->y;
+	f32 x1 = mChasePosition->x;
+	f32 y1 = mChasePosition->y;
 
-	f32 x2 = _18->x;
-	f32 y2 = _18->y;
+	f32 x2 = mDirection->x;
+	f32 y2 = mDirection->y;
 
-	emitter->mPosition.x = x1;
-	emitter->mPosition.y = y1;
-	emitter->mPosition.z = 0.0f;
+	emitter->mGlobalTrs.x = x1;
+	emitter->mGlobalTrs.y = y1;
+	emitter->mGlobalTrs.z = 0.0f;
 
-	emitter->_18.x = x2;
-	emitter->_18.y = y2;
-	emitter->_18.z = 0.0f;
+	emitter->mLocalDir.x = x2;
+	emitter->mLocalDir.y = y2;
+	emitter->mLocalDir.z = 0.0f;
 }
 } // namespace efx2d

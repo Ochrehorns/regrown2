@@ -5,10 +5,9 @@
 namespace Game {
 namespace KumaKochappy {
 
-/*
- * --INFO--
- * Address:	802E4EE8
- * Size:	00027C
+/**
+ * @note Address: 0x802E4EE8
+ * @note Size: 0x27C
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -22,22 +21,20 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateWalkPath);
 }
 
-/*
- * --INFO--
- * Address:	802E5164
- * Size:	000050
+/**
+ * @note Address: 0x802E5164
+ * @note Size: 0x50
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->deathProcedure();
 	enemy->mTargetVelocity = Vector3f(0.0f);
-	enemy->startMotion(1, nullptr);
+	enemy->startMotion(KUMAKOCHAPPYANIM_Dead, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802E51B4
- * Size:	000044
+/**
+ * @note Address: 0x802E51B4
+ * @note Size: 0x44
  */
 void StateDead::exec(EnemyBase* enemy)
 {
@@ -46,30 +43,27 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802E51F8
- * Size:	000004
+/**
+ * @note Address: 0x802E51F8
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802E51FC
- * Size:	000058
+/**
+ * @note Address: 0x802E51FC
+ * @note Size: 0x58
  */
 void StatePress::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mHealth = 0.0f;
 	enemy->deathProcedure();
 	enemy->mTargetVelocity = Vector3f(0.0f);
-	enemy->startMotion(4, nullptr);
+	enemy->startMotion(KUMAKOCHAPPYANIM_Press, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802E5254
- * Size:	000044
+/**
+ * @note Address: 0x802E5254
+ * @note Size: 0x44
  */
 void StatePress::exec(EnemyBase* enemy)
 {
@@ -78,17 +72,15 @@ void StatePress::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802E5298
- * Size:	000004
+/**
+ * @note Address: 0x802E5298
+ * @note Size: 0x4
  */
 void StatePress::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802E529C
- * Size:	000054
+/**
+ * @note Address: 0x802E529C
+ * @note Size: 0x54
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -97,13 +89,12 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	kuma->mNextState = KUMAKOCHAPPY_NULL;
 	kuma->enableEvent(0, EB_Constrained);
 	kuma->mTargetVelocity = Vector3f(0.0f);
-	kuma->startMotion(6, nullptr);
+	kuma->startMotion(KUMAKOCHAPPYANIM_Wait, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802E52F0
- * Size:	0003A8
+/**
+ * @note Address: 0x802E52F0
+ * @note Size: 0x3A8
  */
 void StateWait::exec(EnemyBase* enemy)
 {
@@ -121,11 +112,10 @@ void StateWait::exec(EnemyBase* enemy)
 	Creature* target = kuma->getSearchedTarget();
 	if (target) {
 		// more nonsense going on in here than this
-		f32 dist = kuma->turnToTarget(target, CG_PARMS(kuma)->mGeneral.mRotationalSpeed.mValue,
-		                              CG_PARMS(kuma)->mGeneral.mRotationalAccel.mValue);
+		f32 dist = kuma->turnToTarget(target, CG_GENERALPARMS(kuma).mMaxTurnAngle.mValue, CG_GENERALPARMS(kuma).mTurnSpeed.mValue);
 
 		// this isn't the comparison, probably a bool spat out from an inline
-		if (FABS(dist) <= CG_PARMS(kuma)->mGeneral.mRotationalAccel.mValue) {
+		if (FABS(dist) <= CG_GENERALPARMS(kuma).mTurnSpeed.mValue) {
 			kuma->mNextState = KUMAKOCHAPPY_Attack;
 			kuma->finishMotion();
 		} else {
@@ -405,10 +395,9 @@ lbl_802E5648:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802E5698
- * Size:	00003C
+/**
+ * @note Address: 0x802E5698
+ * @note Size: 0x3C
  */
 void StateWait::cleanup(EnemyBase* enemy)
 {
@@ -416,10 +405,9 @@ void StateWait::cleanup(EnemyBase* enemy)
 	enemy->setAnimSpeed(30.0f);
 }
 
-/*
- * --INFO--
- * Address:	802E56D4
- * Size:	000058
+/**
+ * @note Address: 0x802E56D4
+ * @note Size: 0x58
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -427,13 +415,12 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	kuma->mNextState      = KUMAKOCHAPPY_NULL;
 	kuma->mTargetVelocity = Vector3f(0.0f);
 	kuma->setEmotionExcitement();
-	kuma->startMotion(0, nullptr);
+	kuma->startMotion(KUMAKOCHAPPYANIM_Attack, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802E572C
- * Size:	0004CC
+/**
+ * @note Address: 0x802E572C
+ * @note Size: 0x4CC
  */
 void StateAttack::exec(EnemyBase* enemy)
 {
@@ -445,17 +432,16 @@ void StateAttack::exec(EnemyBase* enemy)
 
 	if (kuma->mCurAnim->mIsPlaying) {
 		if (kuma->mCurAnim->mType == KEYEVENT_2) {
-			int naviEat  = EnemyFunc::attackNavi(kuma, CG_PARMS(kuma)->mGeneral.mAttackRadius.mValue,
-                                                CG_PARMS(kuma)->mGeneral.mAttackHitAngle.mValue,
-                                                CG_PARMS(kuma)->mGeneral.mAttackDamage.mValue, nullptr, nullptr);
+			int naviEat
+			    = EnemyFunc::attackNavi(kuma, CG_GENERALPARMS(kuma).mAttackRadius.mValue, CG_GENERALPARMS(kuma).mAttackHitAngle.mValue,
+			                            CG_GENERALPARMS(kuma).mAttackDamage.mValue, nullptr, nullptr);
 			int totalEat = naviEat + EnemyFunc::eatPikmin(kuma, nullptr);
 
-			EnemyFunc::flickStickPikmin(kuma, CG_PARMS(kuma)->mGeneral.mShakeRateMaybe.mValue,
-			                            CG_PARMS(kuma)->mGeneral.mShakeKnockback.mValue, CG_PARMS(kuma)->mGeneral.mShakeDamage.mValue,
-			                            kuma->getFaceDir(), nullptr);
+			EnemyFunc::flickStickPikmin(kuma, CG_GENERALPARMS(kuma).mShakeChance.mValue, CG_GENERALPARMS(kuma).mShakeKnockback.mValue,
+			                            CG_GENERALPARMS(kuma).mShakeDamage.mValue, kuma->getFaceDir(), nullptr);
 
 			if (!totalEat) {
-				kuma->startMotion(8, nullptr);
+				kuma->startMotion(KUMAKOCHAPPYANIM_Eat, nullptr);
 			}
 
 		} else if (kuma->mCurAnim->mType == KEYEVENT_3) {
@@ -475,11 +461,10 @@ void StateAttack::exec(EnemyBase* enemy)
 			Creature* target = kuma->getSearchedTarget();
 			if (target) {
 				// more nonsense going on in here than this
-				f32 dist = kuma->turnToTarget(target, CG_PARMS(kuma)->mGeneral.mRotationalSpeed.mValue,
-				                              CG_PARMS(kuma)->mGeneral.mRotationalAccel.mValue);
+				f32 dist = kuma->turnToTarget(target, CG_GENERALPARMS(kuma).mMaxTurnAngle.mValue, CG_GENERALPARMS(kuma).mTurnSpeed.mValue);
 
 				// this isn't the comparison, probably a bool spat out from an inline
-				if (FABS(dist) <= CG_PARMS(kuma)->mGeneral.mRotationalAccel.mValue) {
+				if (FABS(dist) <= CG_GENERALPARMS(kuma).mTurnSpeed.mValue) {
 					transit(kuma, KUMAKOCHAPPY_Attack, nullptr);
 					return;
 				} else {
@@ -491,7 +476,7 @@ void StateAttack::exec(EnemyBase* enemy)
 				Vector3f* parentPos = kuma->setTargetParentPosition();
 				if (parentPos) {
 					Vector3f pos = kuma->getPosition();
-					if (inRadius(CG_PARMS(kuma)->mGeneral.mHomeRadius.mValue, pos, *parentPos)) {
+					if (inRadius(CG_GENERALPARMS(kuma).mHomeRadius.mValue, pos, *parentPos)) {
 						transit(kuma, KUMAKOCHAPPY_Wait, nullptr);
 						return;
 					} else {
@@ -830,30 +815,27 @@ lbl_802E5BA8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802E5BF8
- * Size:	000024
+/**
+ * @note Address: 0x802E5BF8
+ * @note Size: 0x24
  */
 void StateAttack::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802E5C1C
- * Size:	000044
+/**
+ * @note Address: 0x802E5C1C
+ * @note Size: 0x44
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* kuma             = OBJ(enemy);
 	kuma->mNextState      = KUMAKOCHAPPY_NULL;
 	kuma->mTargetVelocity = Vector3f(0.0f);
-	kuma->startMotion(2, nullptr);
+	kuma->startMotion(KUMAKOCHAPPYANIM_Flick, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802E5C60
- * Size:	0004D0
+/**
+ * @note Address: 0x802E5C60
+ * @note Size: 0x4D0
  */
 void StateFlick::exec(EnemyBase* enemy)
 {
@@ -865,14 +847,13 @@ void StateFlick::exec(EnemyBase* enemy)
 
 	if (kuma->mCurAnim->mIsPlaying) {
 		if (kuma->mCurAnim->mType == KEYEVENT_2) {
-			EnemyFunc::flickStickPikmin(kuma, CG_PARMS(kuma)->mGeneral.mShakeRateMaybe.mValue,
-			                            CG_PARMS(kuma)->mGeneral.mShakeKnockback.mValue, CG_PARMS(kuma)->mGeneral.mShakeDamage.mValue,
-			                            kuma->getFaceDir(), nullptr);
-			EnemyFunc::flickNearbyPikmin(kuma, CG_PARMS(kuma)->mGeneral.mShakeRange.mValue, CG_PARMS(kuma)->mGeneral.mShakeKnockback.mValue,
-			                             CG_PARMS(kuma)->mGeneral.mShakeDamage.mValue, kuma->getFaceDir(), nullptr);
-			EnemyFunc::flickNearbyNavi(kuma, CG_PARMS(kuma)->mGeneral.mShakeRange.mValue, CG_PARMS(kuma)->mGeneral.mShakeKnockback.mValue,
-			                           CG_PARMS(kuma)->mGeneral.mShakeDamage.mValue, kuma->getFaceDir(), nullptr);
-			kuma->mToFlick = 0.0f;
+			EnemyFunc::flickStickPikmin(kuma, CG_GENERALPARMS(kuma).mShakeChance.mValue, CG_GENERALPARMS(kuma).mShakeKnockback.mValue,
+			                            CG_GENERALPARMS(kuma).mShakeDamage.mValue, kuma->getFaceDir(), nullptr);
+			EnemyFunc::flickNearbyPikmin(kuma, CG_GENERALPARMS(kuma).mShakeRange.mValue, CG_GENERALPARMS(kuma).mShakeKnockback.mValue,
+			                             CG_GENERALPARMS(kuma).mShakeDamage.mValue, kuma->getFaceDir(), nullptr);
+			EnemyFunc::flickNearbyNavi(kuma, CG_GENERALPARMS(kuma).mShakeRange.mValue, CG_GENERALPARMS(kuma).mShakeKnockback.mValue,
+			                           CG_GENERALPARMS(kuma).mShakeDamage.mValue, kuma->getFaceDir(), nullptr);
+			kuma->mFlickTimer = 0.0f;
 
 		} else if (kuma->mCurAnim->mType == KEYEVENT_END) {
 			if (kuma->mHealth <= 0.0f) {
@@ -888,11 +869,10 @@ void StateFlick::exec(EnemyBase* enemy)
 			Creature* target = kuma->getSearchedTarget();
 			if (target) {
 				// more nonsense going on in here than this
-				f32 dist = kuma->turnToTarget(target, CG_PARMS(kuma)->mGeneral.mRotationalSpeed.mValue,
-				                              CG_PARMS(kuma)->mGeneral.mRotationalAccel.mValue);
+				f32 dist = kuma->turnToTarget(target, CG_GENERALPARMS(kuma).mMaxTurnAngle.mValue, CG_GENERALPARMS(kuma).mTurnSpeed.mValue);
 
 				// this isn't the comparison, probably a bool spat out from an inline
-				if (FABS(dist) <= CG_PARMS(kuma)->mGeneral.mRotationalAccel.mValue) {
+				if (FABS(dist) <= CG_GENERALPARMS(kuma).mTurnSpeed.mValue) {
 					transit(kuma, KUMAKOCHAPPY_Attack, nullptr);
 					return;
 				} else {
@@ -904,7 +884,7 @@ void StateFlick::exec(EnemyBase* enemy)
 				Vector3f* parentPos = kuma->setTargetParentPosition();
 				if (parentPos) {
 					Vector3f pos = kuma->getPosition();
-					if (inRadius(CG_PARMS(kuma)->mGeneral.mHomeRadius.mValue, pos, *parentPos)) {
+					if (inRadius(CG_GENERALPARMS(kuma).mHomeRadius.mValue, pos, *parentPos)) {
 						transit(kuma, KUMAKOCHAPPY_Wait, nullptr);
 						return;
 					} else {
@@ -1252,29 +1232,26 @@ lbl_802E60E0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802E6130
- * Size:	000004
+/**
+ * @note Address: 0x802E6130
+ * @note Size: 0x4
  */
 void StateFlick::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802E6134
- * Size:	000034
+/**
+ * @note Address: 0x802E6134
+ * @note Size: 0x34
  */
 void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* kuma        = OBJ(enemy);
 	kuma->mNextState = KUMAKOCHAPPY_NULL;
-	kuma->startMotion(3, nullptr);
+	kuma->startMotion(KUMAKOCHAPPYANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802E6168
- * Size:	000538
+/**
+ * @note Address: 0x802E6168
+ * @note Size: 0x538
  */
 void StateWalk::exec(EnemyBase* enemy)
 {
@@ -1293,15 +1270,14 @@ void StateWalk::exec(EnemyBase* enemy)
 	Creature* target = kuma->getSearchedTarget();
 	if (target) {
 		// more nonsense going on in here than this
-		f32 dist = kuma->turnToTarget(target, CG_PARMS(kuma)->mGeneral.mRotationalSpeed.mValue,
-		                              CG_PARMS(kuma)->mGeneral.mRotationalAccel.mValue);
+		f32 dist = kuma->turnToTarget(target, CG_GENERALPARMS(kuma).mMaxTurnAngle.mValue, CG_GENERALPARMS(kuma).mTurnSpeed.mValue);
 
 		// this isn't the comparison, probably a bool spat out from an inline
-		if (FABS(dist) <= CG_PARMS(kuma)->mGeneral.mRotationalAccel.mValue) {
+		if (FABS(dist) <= CG_GENERALPARMS(kuma).mTurnSpeed.mValue) {
 			kuma->mNextState = KUMAKOCHAPPY_Attack;
 			kuma->finishMotion();
 			kuma->setAnimSpeed(60.0f);
-		} else if (FABS(dist) <= CG_PARMS(kuma)->mGeneral.mMinAttackRange.mValue) {
+		} else if (FABS(dist) <= CG_GENERALPARMS(kuma).mMaxAttackAngle.mValue) {
 			check = false;
 			// transit(kuma, KUMAKOCHAPPY_Walk, nullptr);
 			// return;
@@ -1311,7 +1287,7 @@ void StateWalk::exec(EnemyBase* enemy)
 		Vector3f* parentPos = kuma->setTargetParentPosition();
 		if (parentPos) {
 			Vector3f pos = kuma->getPosition();
-			if (inRadius(CG_PARMS(kuma)->mGeneral.mHomeRadius.mValue, pos, *parentPos)) {
+			if (inRadius(CG_GENERALPARMS(kuma).mHomeRadius.mValue, pos, *parentPos)) {
 				kuma->mNextState = KUMAKOCHAPPY_Wait;
 				kuma->finishMotion();
 			} else {
@@ -1327,13 +1303,13 @@ void StateWalk::exec(EnemyBase* enemy)
 	if (kuma->isFinishMotion()) {
 		kuma->mTargetVelocity = Vector3f(0.0f);
 	} else if (check) {
-		f32 moveSpeed         = CG_PARMS(kuma)->mGeneral.mMoveSpeed.mValue;
+		f32 moveSpeed         = CG_GENERALPARMS(kuma).mMoveSpeed.mValue;
 		f32 sinTheta          = (f32)sin(kuma->getFaceDir());
 		f32 y                 = kuma->getTargetVelocity().y;
 		f32 cosTheta          = (f32)cos(kuma->getFaceDir());
 		kuma->mTargetVelocity = Vector3f(moveSpeed * sinTheta, y, moveSpeed * cosTheta);
 	} else {
-		f32 moveSpeed         = CG_PARMS(kuma)->mGeneral.mMoveSpeed.mValue * 0.5f;
+		f32 moveSpeed         = CG_GENERALPARMS(kuma).mMoveSpeed.mValue * 0.5f;
 		f32 sinTheta          = (f32)sin(kuma->getFaceDir());
 		f32 y                 = kuma->getTargetVelocity().y;
 		f32 cosTheta          = (f32)cos(kuma->getFaceDir());
@@ -1709,30 +1685,27 @@ lbl_802E665C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802E66A0
- * Size:	000028
+/**
+ * @note Address: 0x802E66A0
+ * @note Size: 0x28
  */
 void StateWalk::cleanup(EnemyBase* enemy) { enemy->setAnimSpeed(30.0f); }
 
-/*
- * --INFO--
- * Address:	802E66C8
- * Size:	00004C
+/**
+ * @note Address: 0x802E66C8
+ * @note Size: 0x4C
  */
 void StateWalkPath::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* kuma        = OBJ(enemy);
 	kuma->mNextState = KUMAKOCHAPPY_NULL;
-	kuma->startMotion(3, nullptr);
+	kuma->startMotion(KUMAKOCHAPPYANIM_Move, nullptr);
 	kuma->setAnimSpeed(45.0f);
 }
 
-/*
- * --INFO--
- * Address:	802E6714
- * Size:	000534
+/**
+ * @note Address: 0x802E6714
+ * @note Size: 0x534
  */
 void StateWalkPath::exec(EnemyBase* enemy)
 {
@@ -1749,10 +1722,10 @@ void StateWalkPath::exec(EnemyBase* enemy)
 
 	Creature* target = kuma->getSearchedTarget();
 	if (target) {
-		f32 minRange = *CG_PARMS(kuma)->mGeneral.mMinAttackRange();
-		f32 maxRange = *CG_PARMS(kuma)->mGeneral.mMaxAttackRange();
+		f32 minRange = CG_GENERALPARMS(kuma).mMaxAttackAngle();
+		f32 maxRange = CG_GENERALPARMS(kuma).mMaxAttackRange();
 		f32 dist     = kuma->getAngDist(target);
-		if (kuma->checkDistAndAngle(target, dist, minRange, maxRange)) {
+		if (kuma->isTargetAttackable(target, dist, minRange, maxRange)) {
 			kuma->mNextState = KUMAKOCHAPPY_Attack;
 			kuma->finishMotion();
 			kuma->setAnimSpeed(60.0f);
@@ -1765,12 +1738,11 @@ void StateWalkPath::exec(EnemyBase* enemy)
 		Vector3f* parentPos = kuma->setTargetParentPosition();
 		if (parentPos) {
 			Vector3f pos = kuma->getPosition();
-			if (inRadius(CG_PARMS(kuma)->mGeneral.mHomeRadius.mValue, pos, *parentPos)) {
+			if (inRadius(CG_GENERALPARMS(kuma).mHomeRadius.mValue, pos, *parentPos)) {
 				kuma->mNextState = KUMAKOCHAPPY_Wait;
 				kuma->finishMotion();
 			} else {
-				f32 dist = kuma->turnToTarget(*parentPos, *CG_PARMS(kuma)->mGeneral.mRotationalAccel(),
-				                              *CG_PARMS(kuma)->mGeneral.mRotationalSpeed());
+				f32 dist = kuma->turnToTarget(*parentPos, CG_GENERALPARMS(kuma).mTurnSpeed(), CG_GENERALPARMS(kuma).mMaxTurnAngle());
 			}
 		} else {
 			kuma->mNextState = KUMAKOCHAPPY_Wait;
@@ -1781,7 +1753,7 @@ void StateWalkPath::exec(EnemyBase* enemy)
 	if (kuma->isFinishMotion()) {
 		kuma->mTargetVelocity = Vector3f(0.0f);
 	} else {
-		f32 moveSpeed = CG_PARMS(kuma)->mGeneral.mSearchHeight.mValue; // ??????????????????????????????????
+		f32 moveSpeed = CG_GENERALPARMS(kuma).mSearchHeight.mValue; // ??????????????????????????????????
 		f32 sinTheta  = (f32)sin(kuma->getFaceDir());
 		f32 y         = kuma->getTargetVelocity().y;
 		f32 cosTheta  = (f32)cos(kuma->getFaceDir());
@@ -2155,10 +2127,9 @@ lbl_802E6BF8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802E6C48
- * Size:	000028
+/**
+ * @note Address: 0x802E6C48
+ * @note Size: 0x28
  */
 void StateWalkPath::cleanup(EnemyBase* enemy) { enemy->setAnimSpeed(30.0f); }
 } // namespace KumaKochappy

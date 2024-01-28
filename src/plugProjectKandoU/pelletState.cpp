@@ -2,35 +2,31 @@
 #include "Game/MoviePlayer.h"
 #include "Game/gamePlayData.h"
 #include "Game/Entities/ItemOnyon.h"
+#include "Game/Entities/ItemHoney.h"
 #include "Game/PikiMgr.h"
 #include "Game/generalEnemyMgr.h"
-#include "System.h"
+#include "Game/EnemyFunc.h"
 #include "Game/Data.h"
 #include "Game/AIConstants.h"
-#include "Game/Entities/ItemHoney.h"
-#include "trig.h"
 #include "Game/Stickers.h"
-#include "Radar.h"
-#include "PSSystem/PSGame.h"
-#include "PSSystem/PSScene.h"
+#include "Game/pathfinder.h"
+#include "Game/MapMgr.h"
 #include "PSSystem/PSMainSide_Scene.h"
 #include "PSM/EventBase.h"
 #include "Dolphin/rand.h"
-#include "Game/pathfinder.h"
 #include "efx/TTsuyuGrow.h"
-#include "Game/MapMgr.h"
 #include "efx/TEnemyDownSmoke.h"
+#include "Radar.h"
 #include "nans.h"
 
 namespace Game {
 
-static const int unusedPelletArray[]      = { 0, 0, 0 };
-static const char unusedPelletStateName[] = "pelletState";
+static const u32 padding[]    = { 0, 0, 0 };
+static const char className[] = "pelletState";
 
-/*
- * --INFO--
- * Address:	801A4310
- * Size:	0002AC
+/**
+ * @note Address: 0x801A4310
+ * @note Size: 0x2AC
  */
 void PelletFSM::init(Pellet* obj)
 {
@@ -46,31 +42,27 @@ void PelletFSM::init(Pellet* obj)
 	registerState(new PelletReturnState);
 }
 
-/*
- * --INFO--
- * Address:	801A45BC
- * Size:	000004
+/**
+ * @note Address: 0x801A45BC
+ * @note Size: 0x4
  */
 void PelletNormalState::init(Pellet*, StateArg*) { }
 
-/*
- * --INFO--
- * Address:	801A45C0
- * Size:	000004
+/**
+ * @note Address: 0x801A45C0
+ * @note Size: 0x4
  */
 void PelletNormalState::exec(Pellet*) { }
 
-/*
- * --INFO--
- * Address:	801A45C4
- * Size:	000004
+/**
+ * @note Address: 0x801A45C4
+ * @note Size: 0x4
  */
 void PelletNormalState::cleanup(Pellet*) { }
 
-/*
- * --INFO--
- * Address:	801A45C8
- * Size:	00007C
+/**
+ * @note Address: 0x801A45C8
+ * @note Size: 0x7C
  */
 void PelletGoalWaitState::init(Pellet* pelt, StateArg* arg)
 {
@@ -82,10 +74,9 @@ void PelletGoalWaitState::init(Pellet* pelt, StateArg* arg)
 	pelt->getCreatureName();
 }
 
-/*
- * --INFO--
- * Address:	801A4644
- * Size:	000060
+/**
+ * @note Address: 0x801A4644
+ * @note Size: 0x60
  * This whole state exists solely to delay pellets being sucked into the ship
  * until after a cutscene isnt playing
  */
@@ -97,35 +88,32 @@ void PelletGoalWaitState::exec(Pellet* pelt)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801A46A4
- * Size:	000030
+/**
+ * @note Address: 0x801A46A4
+ * @note Size: 0x30
  */
 // void FSMState<Game::Pellet>::transit(Pellet*, int, StateArg*)
 //{
 //}
 
-/*
- * --INFO--
- * Address:	801A46D4
- * Size:	000004
+/**
+ * @note Address: 0x801A46D4
+ * @note Size: 0x4
  */
 void PelletGoalWaitState::cleanup(Pellet*) { }
 
-/*
- * --INFO--
- * Address:	801A46D8
- * Size:	000680
+/**
+ * @note Address: 0x801A46D8
+ * @note Size: 0x680
  */
 void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 {
 	pellet->clearClaim();
 
 	// check if a new upgrade is acquired
-	if (pellet->getKind() == PELTYPE_UPGRADE && gameSystem->mMode == GSM_STORY_MODE) {
+	if (pellet->getKind() == PELTYPE_UPGRADE && gameSystem->isStoryMode()) {
 		int id = pellet->getConfigIndex();
-		if (id >= 0 && id < 12) {
+		if (id >= 0 && id < OlimarData::ODII_LAST_NON_EXPLORATION_KIT_ITEM) {
 			playData->mOlimarData->getItem(id);
 		}
 	}
@@ -133,10 +121,10 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 	bool flag                = false;
 	PelletGoalStateArg* sarg = static_cast<PelletGoalStateArg*>(arg);
 	mOnyon                   = sarg->mCreature;
-	if (gameSystem->mMode == GSM_STORY_MODE || gameSystem->isChallengeMode()) {
+	if (gameSystem->isStoryMode() || gameSystem->isChallengeMode()) {
 		flag = checkMovie(pellet);
 
-	} else if (gameSystem->mMode == GSM_VERSUS_MODE) {
+	} else if (gameSystem->isVersusMode()) {
 		int type = pellet->mPelletFlag;
 		if ((u32)type == Pellet::FLAG_VS_BEDAMA_RED) {
 			pellet->movie_begin(false);
@@ -199,7 +187,8 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 		}
 
 		GeneralMgrIterator<EnemyBase> it2(generalEnemyMgr);
-		for (it2.first(); it2.mContainer; it2.next()) {
+		CI_LOOP(it2)
+		{
 			EnemyBase* enemy = it2.getObject();
 			enemy->movie_end(false);
 		}
@@ -215,10 +204,9 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801A4D58
- * Size:	000D6C
+/**
+ * @note Address: 0x801A4D58
+ * @note Size: 0xD6C
  */
 bool PelletGoalState::checkMovie(Pellet* pelt)
 {
@@ -226,7 +214,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 	// For treasure, upgrades, and corpses, only check for a cutscene if the pellet was collected for the first time. (only berries and
 	// number pellets dont check) This leads to a bug where the first corpse cutscene wont play for enemies youve already collected at an
 	// onion above ground
-	if (gameSystem->mMode == GSM_STORY_MODE) {
+	if (gameSystem->isStoryMode()) {
 		isGot = playData->firstCarryPellet(pelt);
 	}
 	if (pelt->getKind() == PELTYPE_BERRY) {
@@ -252,6 +240,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 		sys->mPlayData->mChallengeOpen = true;
 		playData->mStoryFlags |= STORY_LouieRescued;
 	}
+
 	bool draw2d = false;
 	bool doPlay = false;
 	if (isGot) {
@@ -467,10 +456,9 @@ static void weirdFixFunc(f32* p1, f32* p2, f32* p3, f32* p4, f32* p5, f32* p6)
 	*p6 = TAU;
 }
 
-/*
- * --INFO--
- * Address:	801A5AC4
- * Size:	000B34
+/**
+ * @note Address: 0x801A5AC4
+ * @note Size: 0xB34
  */
 void PelletGoalState::exec(Pellet* pelt)
 {
@@ -484,7 +472,7 @@ void PelletGoalState::exec(Pellet* pelt)
 	}
 
 	if (mInDemo && !mDidSuikomi && moviePlayer && moviePlayer->mDemoState == 5) {
-		if (((int)mOnyon->mObjectTypeID == OBJTYPE_Onyon || (int)mOnyon->mObjectTypeID == OBJTYPE_Ufo)) {
+		if (((int)mOnyon->mObjectTypeID == OBJTYPE_Onyon || (int)mOnyon->mObjectTypeID == OBJTYPE_Ufo)) { // maybe getOnyon inline?
 			static_cast<Onyon*>(mOnyon)->efxSuikomi();
 			mDidSuikomi = true;
 		}
@@ -519,96 +507,96 @@ void PelletGoalState::exec(Pellet* pelt)
 		pelt->setVelocity(velocity);
 		mSuckDelay -= sys->mDeltaTime;
 		mStartSuck = true;
+		return;
+	}
 
-	} else {
-		pelt->mRigid.mConfigs[0]._00 = test;
-		pelt->mPelletPosition        = test;
-		f32 scale                    = (1.0f - mSuckTime) * mScale;
+	pelt->mRigid.mConfigs[0].mPosition = test;
+	pelt->mPelletPosition              = test;
 
-		// weird regswap and also loading the sin values (325.whatever) too late??
-		f32 angle    = 8.0f * (TAU * (1.0f - mSuckTime));
-		f32 sinTheta = pikmin2_sinf(angle);
-		sinTheta *= 0.03f;
-		scale += sinTheta;
-		pelt->mScale = Vector3f(scale);
+	f32 suckRemain = (1.0f - mSuckTime);
+	f32 scale      = suckRemain * mScale;
 
-		mSuckTime += (mTimer * sys->mDeltaTime) / mDistance;
-		mTimer += sys->mDeltaTime * 720.0f;
-		if (mSuckTime >= 1.0f) {
-			Stickers stick(pelt);
-			Iterator<Creature> it(&stick);
-			InteractSuckFinish suckFinish(pelt);
-			CI_LOOP(it)
-			{
-				Creature* obj = *it;
-				obj->stimulate(suckFinish);
-			}
+	f32 sinTheta = sinf(8.0f * (TAU * suckRemain));
+	sinTheta *= 0.03f; // regswap here for f1 and f0
+	scale += sinTheta;
+	pelt->mScale = Vector3f(scale);
 
-			InteractSuckDone suckDone(pelt, 0);
-			mOnyon->stimulate(suckDone);
+	mSuckTime += (mTimer * sys->mDeltaTime) / mDistance;
+	mTimer += sys->mDeltaTime * 720.0f;
+	if (!(mSuckTime >= 1.0f)) {
+		return;
+	}
 
-			if (Radar::mgr) {
-				Radar::Mgr::getNumOtakaraItems();
-				Radar::Mgr::getNumOtakaraItems();
-				bool check = pelt->getKind() == PELTYPE_TREASURE;
-				if (!check) {
-					pelt->getKind();
-				}
-			}
+	Stickers stick(pelt);
+	Iterator<Creature> it(&stick);
+	InteractSuckFinish suckFinish(pelt);
+	CI_LOOP(it)
+	{
+		Creature* obj = *it;
+		obj->stimulate(suckFinish);
+	}
 
-			if (!gameSystem->isVersusMode() && (pelt->getKind() == PELTYPE_TREASURE || pelt->getKind() == PELTYPE_UPGRADE)
-			    && Radar::Mgr::getNumOtakaraItems() <= 1) {
-				if (gameSystem->mIsInCave) {
+	InteractSuckDone suckDone(pelt, 0);
+	mOnyon->stimulate(suckDone);
+
+	if (Radar::mgr) {
+		Radar::Mgr::getNumOtakaraItems();
+		Radar::Mgr::getNumOtakaraItems();
+		bool check = pelt->getKind() == PELTYPE_TREASURE;
+		if (!check) {
+			pelt->getKind();
+		}
+	}
+
+	if (!gameSystem->isVersusMode() && (pelt->getKind() == PELTYPE_TREASURE || pelt->getKind() == PELTYPE_UPGRADE)
+	    && Radar::Mgr::getNumOtakaraItems() <= 1) {
+		if (gameSystem->mIsInCave) {
+			PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
+			PSSystem::checkSceneMgr(mgr);
+			PSM::Scene_Cave* scene = static_cast<PSM::Scene_Cave*>(mgr->getChildScene());
+			PSSystem::checkGameScene(scene);
+			scene->stopPollutionSe();
+			if (gameSystem->isChallengeMode()) {
+				if (strcmp(pelt->mConfig->mParams.mName.mData, "key")) {
 					PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
 					PSSystem::checkSceneMgr(mgr);
 					PSM::Scene_Cave* scene = static_cast<PSM::Scene_Cave*>(mgr->getChildScene());
 					PSSystem::checkGameScene(scene);
-					scene->stopPollutionSe();
-					if (gameSystem->isChallengeMode()) {
-						if (strcmp(pelt->mConfig->mParams.mName.mData, "key")) {
-							PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
-							PSSystem::checkSceneMgr(mgr);
-							PSM::Scene_Cave* scene = static_cast<PSM::Scene_Cave*>(mgr->getChildScene());
-							PSSystem::checkGameScene(scene);
-							if (scene->isCave()) {
-								scene->startPollutUpSe();
-							}
-						}
+					if (scene->isCave()) {
+						scene->startPollutUpSe();
 					}
-				} else {
-					PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
-					PSSystem::checkSceneMgr(mgr);
-					PSM::Scene_Ground* scene = static_cast<PSM::Scene_Ground*>(mgr->getChildScene());
-					PSSystem::checkGameScene(scene);
-					scene->setPollutUp();
 				}
 			}
-
-			if (gameSystem->isVersusMode() && suckDone._08) {
-				return;
-			} else {
-				if (!mInDemo) {
-					if (!strcmp("orima", pelt->mConfig->mParams.mName.mData)) {
-						pelt->mSoundMgr->startSound(PSSE_EV_ONYON_BOUND_PLAYER, 0);
-					}
-					pelt->kill(nullptr);
-				} else {
-					if (pelt->getKind() == PELTYPE_CARCASS || pelt->getKind() == PELTYPE_NUMBER) {
-						pelt->kill(nullptr);
-					} else {
-						if (pelt->getKind() == PELTYPE_UPGRADE || pelt->getKind() == PELTYPE_TREASURE) {
-							pelt->mAnimSpeed = sys->mDeltaTime * 30.0f;
-							pelt->mCarryAnim.setFrameByKeyType(0);
-						}
-					}
-				}
-				if (shadowMgr) {
-					shadowMgr->delShadow(pelt);
-				}
-				transit(pelt, PELSTATE_Normal, nullptr);
-			}
+		} else {
+			PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
+			PSSystem::checkSceneMgr(mgr);
+			PSM::Scene_Ground* scene = static_cast<PSM::Scene_Ground*>(mgr->getChildScene());
+			PSSystem::checkGameScene(scene);
+			scene->setPollutUp();
 		}
 	}
+
+	if (gameSystem->isVersusMode() && suckDone._08) {
+		return;
+	}
+	if (!mInDemo) {
+		if (!strcmp("orima", pelt->mConfig->mParams.mName.mData)) {
+			pelt->mSoundMgr->startSound(PSSE_EV_ONYON_BOUND_PLAYER, 0);
+		}
+		pelt->kill(nullptr);
+	} else {
+		if (pelt->getKind() == PELTYPE_CARCASS || pelt->getKind() == PELTYPE_NUMBER) {
+			pelt->kill(nullptr);
+		} else if (pelt->getKind() == PELTYPE_UPGRADE || pelt->getKind() == PELTYPE_TREASURE) {
+			pelt->mAnimSpeed = sys->mDeltaTime * 30.0f;
+			pelt->mCarryAnim.setFrameByKeyType(0);
+		}
+	}
+	if (shadowMgr) {
+		shadowMgr->delShadow(pelt);
+	}
+	transit(pelt, PELSTATE_Normal, nullptr);
+
 	/*
 	stwu     r1, -0xe0(r1)
 	mflr     r0
@@ -1430,17 +1418,15 @@ lbl_801A65C0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801A65F8
- * Size:	000004
+/**
+ * @note Address: 0x801A65F8
+ * @note Size: 0x4
  */
 void PelletGoalState::cleanup(Pellet*) { }
 
-/*
- * --INFO--
- * Address:	801A65FC
- * Size:	000144
+/**
+ * @note Address: 0x801A65FC
+ * @note Size: 0x144
  */
 void PelletAppearState::init(Pellet* pelt, StateArg*)
 {
@@ -1457,10 +1443,9 @@ void PelletAppearState::init(Pellet* pelt, StateArg*)
 	mEfxMade = false;
 }
 
-/*
- * --INFO--
- * Address:	801A6740
- * Size:	000240
+/**
+ * @note Address: 0x801A6740
+ * @note Size: 0x240
  */
 void PelletAppearState::exec(Pellet* pelt)
 {
@@ -1472,7 +1457,7 @@ void PelletAppearState::exec(Pellet* pelt)
 		} else {
 			if (!mEfxMade) {
 				Vector3f translation;
-				pelt->mObjMatrix.getBasis(3, translation);
+				pelt->mBaseTrMatrix.getColumn(3, translation);
 				efx::TTsuyuGrowon growOnFX;
 				efx::Arg arg(translation);
 				growOnFX.create(&arg);
@@ -1482,7 +1467,7 @@ void PelletAppearState::exec(Pellet* pelt)
 
 			mAngle       = roundAng(_28 * frameTime + mAngle);
 			f32 rad      = 0.2f * mGoalScale;
-			f32 sinTheta = pikmin2_sinf(mAngle);
+			f32 sinTheta = sinf(mAngle);
 			f32 idk      = (mTime - (_1C + _20)) / _24;
 			mGoalScale   = -(idk * idk - 1.0f);
 			scale        = rad * sinTheta + 1.0f;
@@ -1499,17 +1484,15 @@ void PelletAppearState::exec(Pellet* pelt)
 	pelt->mScale = scale;
 }
 
-/*
- * --INFO--
- * Address:	801A6980
- * Size:	000004
+/**
+ * @note Address: 0x801A6980
+ * @note Size: 0x4
  */
 void PelletAppearState::cleanup(Pellet*) { }
 
-/*
- * --INFO--
- * Address:	801A6984
- * Size:	000130
+/**
+ * @note Address: 0x801A6984
+ * @note Size: 0x130
  */
 void PelletScaleAppearState::init(Pellet* pelt, StateArg*)
 {
@@ -1527,10 +1510,9 @@ void PelletScaleAppearState::init(Pellet* pelt, StateArg*)
 	pelt->setCollisionFlick(false);
 }
 
-/*
- * --INFO--
- * Address:	801A6AB4
- * Size:	0001BC
+/**
+ * @note Address: 0x801A6AB4
+ * @note Size: 0x1BC
  * This state is mostly identical to PelletAppearState but without the particle/sound
  */
 void PelletScaleAppearState::exec(Pellet* pelt)
@@ -1547,7 +1529,7 @@ void PelletScaleAppearState::exec(Pellet* pelt)
 
 			mAngle       = roundAng(_28 * frameTime + mAngle);
 			f32 rad      = 0.1f * mGoalScale;
-			f32 sinTheta = pikmin2_sinf(mAngle);
+			f32 sinTheta = sinf(mAngle);
 			f32 idk      = (mTime - (_1C + _20)) / _24;
 			mGoalScale   = -(idk * idk - 1.0f);
 			scale        = rad * sinTheta + 1.0f;
@@ -1564,38 +1546,33 @@ void PelletScaleAppearState::exec(Pellet* pelt)
 	pelt->mScale = scale;
 }
 
-/*
- * --INFO--
- * Address:	801A6C70
- * Size:	000034
+/**
+ * @note Address: 0x801A6C70
+ * @note Size: 0x34
  */
 void PelletScaleAppearState::cleanup(Pellet* pelt) { pelt->setCollisionFlick(true); }
 
-/*
- * --INFO--
- * Address:	801A6CA4
- * Size:	000024
+/**
+ * @note Address: 0x801A6CA4
+ * @note Size: 0x24
  */
 void PelletBuryState::init(Pellet* pelt, StateArg*) { pelt->clearClaim(); }
 
-/*
- * --INFO--
- * Address:	801A6CC8
- * Size:	000004
+/**
+ * @note Address: 0x801A6CC8
+ * @note Size: 0x4
  */
 void PelletBuryState::exec(Pellet*) { }
 
-/*
- * --INFO--
- * Address:	801A6CCC
- * Size:	000004
+/**
+ * @note Address: 0x801A6CCC
+ * @note Size: 0x4
  */
 void PelletBuryState::cleanup(Pellet*) { }
 
-/*
- * --INFO--
- * Address:	801A6CD0
- * Size:	000038
+/**
+ * @note Address: 0x801A6CD0
+ * @note Size: 0x38
  */
 void PelletZukanState::init(Pellet* pelt, StateArg*)
 {
@@ -1603,10 +1580,9 @@ void PelletZukanState::init(Pellet* pelt, StateArg*)
 	mTimer = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	801A6D08
- * Size:	000094
+/**
+ * @note Address: 0x801A6D08
+ * @note Size: 0x94
  */
 void PelletZukanState::exec(Pellet* pelt)
 {
@@ -1615,41 +1591,36 @@ void PelletZukanState::exec(Pellet* pelt)
 		mTimer = 0.0f;
 	}
 	Vector3f pos = pelt->getPosition();
-	pelt->mObjMatrix.makeT(pos);
+	pelt->mBaseTrMatrix.makeT(pos);
 }
 
-/*
- * --INFO--
- * Address:	801A6D9C
- * Size:	000004
+/**
+ * @note Address: 0x801A6D9C
+ * @note Size: 0x4
  */
 void PelletZukanState::cleanup(Pellet*) { }
 
-/*
- * --INFO--
- * Address:	801A6DA0
- * Size:	000024
+/**
+ * @note Address: 0x801A6DA0
+ * @note Size: 0x24
  */
 void PelletUpState::init(Pellet* pelt, StateArg*) { pelt->clearClaim(); }
 
-/*
- * --INFO--
- * Address:	801A6DC4
- * Size:	000004
+/**
+ * @note Address: 0x801A6DC4
+ * @note Size: 0x4
  */
 void PelletUpState::exec(Pellet*) { }
 
-/*
- * --INFO--
- * Address:	801A6DC8
- * Size:	000004
+/**
+ * @note Address: 0x801A6DC8
+ * @note Size: 0x4
  */
 void PelletUpState::cleanup(Pellet*) { }
 
-/*
- * --INFO--
- * Address:	801A6DCC
- * Size:	0000F0
+/**
+ * @note Address: 0x801A6DCC
+ * @note Size: 0xF0
  */
 PelletReturnState::PelletReturnState()
     : PelletState(PELSTATE_Return)
@@ -1662,10 +1633,9 @@ PelletReturnState::PelletReturnState()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801A6EBC
- * Size:	000318
+/**
+ * @note Address: 0x801A6EBC
+ * @note Size: 0x318
  */
 void PelletReturnState::init(Pellet* pelt, StateArg* arg)
 {
@@ -1685,8 +1655,8 @@ void PelletReturnState::init(Pellet* pelt, StateArg* arg)
 		if (mEfx && mEfxAct) {
 			mEfx->mNaviType    = 0;
 			mEfxAct->mNaviType = 0;
-			mEfx->setMtxptr(pelt->mObjMatrix.mMatrix.mtxView);
-			mEfxAct->setMtxptr(pelt->mObjMatrix.mMatrix.mtxView);
+			mEfx->setMtxptr(pelt->mBaseTrMatrix.mMatrix.mtxView);
+			mEfxAct->setMtxptr(pelt->mBaseTrMatrix.mMatrix.mtxView);
 			mEfx->create(nullptr);
 			mEfxAct->create(nullptr);
 		}
@@ -1708,17 +1678,16 @@ void PelletReturnState::init(Pellet* pelt, StateArg* arg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000280
+/**
+ * @note Address: N/A
+ * @note Size: 0x280
  */
 void PelletReturnState::flick(Pellet* pelt)
 {
 	Stickers stick(pelt);
 	Iterator<Creature> it(&stick);
 	f32 dmg   = 100.0f;
-	f32 ang   = -1000.0f;
+	f32 ang   = FLICK_BACKWARD_ANGLE;
 	f32 intes = 0.0f;
 	CI_LOOP(it)
 	{
@@ -1728,10 +1697,9 @@ void PelletReturnState::flick(Pellet* pelt)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801A71D4
- * Size:	0000D8
+/**
+ * @note Address: 0x801A71D4
+ * @note Size: 0xD8
  */
 void PelletReturnState::exec(Pellet* pelt)
 {
@@ -1764,10 +1732,9 @@ void PelletReturnState::exec(Pellet* pelt)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801A72AC
- * Size:	00009C
+/**
+ * @note Address: 0x801A72AC
+ * @note Size: 0x9C
  */
 void PelletReturnState::cleanup(Pellet* pelt)
 {
@@ -1782,10 +1749,9 @@ void PelletReturnState::cleanup(Pellet* pelt)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801A7348
- * Size:	0001B4
+/**
+ * @note Address: 0x801A7348
+ * @note Size: 0x1B4
  */
 int PelletReturnState::initPathfinding(Pellet* pelt)
 {
@@ -1798,14 +1764,14 @@ int PelletReturnState::initPathfinding(Pellet* pelt)
 	WayPoint* start;
 	if (mapMgr->mRouteMgr->getNearestEdge(arg)) {
 		WayPoint* wp = arg.mWp1;
-		if (!(wp->mFlags & WPF_Closed)) {
+		if (!(wp->isFlag(WPF_Closed))) {
 			start = wp;
 		} else {
 			start = arg.mWp2;
 		}
 	} else if (mapMgr->mRouteMgr->getNearestEdge(arg)) {
 		WayPoint* wp = arg.mWp1;
-		if ((wp->mFlags & WPF_Closed)) {
+		if ((wp->isFlag(WPF_Closed))) {
 			start = arg.mWp2;
 		} else {
 			start = wp;
@@ -1832,10 +1798,9 @@ int PelletReturnState::initPathfinding(Pellet* pelt)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801A74FC
- * Size:	000090
+/**
+ * @note Address: 0x801A74FC
+ * @note Size: 0x90
  */
 u32 PelletReturnState::execPathfinding(Pellet* pelt)
 {
@@ -1856,17 +1821,15 @@ u32 PelletReturnState::execPathfinding(Pellet* pelt)
 	return 0;
 }
 
-/*
- * --INFO--
- * Address:	801A758C
- * Size:	000858
+/**
+ * @note Address: 0x801A758C
+ * @note Size: 0x858
  */
 u32 PelletReturnState::execMove(Pellet* pelt)
 {
 	WayPoint* currWP = mapMgr->mRouteMgr->getWayPoint(mPathNode->mWpIndex);
-	Vector3f wpPos   = currWP->mPosition;
-	Vector3f peltPos = pelt->getPosition();
-	Vector3f sep     = wpPos - peltPos;
+	Vector3f wpPos   = currWP->mPosition; // wpPos is only used for sep calculation
+	Vector3f sep     = wpPos - pelt->getPosition();
 	sep.y            = 0.0f;
 	// not quite right - needs to ignore that sep.y is 0.0f.
 	f32 dist = _normaliseVec(sep);
@@ -1880,15 +1843,16 @@ u32 PelletReturnState::execMove(Pellet* pelt)
 
 	f32 yoffs;
 	f32 time      = mTimer;
-	f32 frameTime = sys->getFrameLength();
+	f32 frameTime = sys->getDeltaTime();
 
 	if (time < 0.1f) {
-		yoffs        = 0.0f;
-		f32 scale    = (time / 0.1f) * PI * 0.5f;
-		f32 sinTheta = pikmin2_sinf(scale);
-		f32 factor   = 0.3f;
+		yoffs            = 0.0f;
+		f32 scale        = (time / 0.1f) * PI * 0.5f;
+		f32 sinTheta     = sinf(scale);
+		const f32 factor = 0.3f; // not sure what the plan is with this load
 		// not quite right either - multiplication needs to be in the other order
 		// might be similar to the regswap in that one enemyBase function?
+		// What is the above note referring to in enemyBase? -Epoch
 		mPeltYScale = 1.0f - (sinTheta *= 0.3f);
 
 	} else if (time < 0.9f) {
@@ -1899,22 +1863,22 @@ u32 PelletReturnState::execMove(Pellet* pelt)
 		}
 
 		f32 angle     = PI * ((mTimer - 0.1f) / 0.9f);
-		f32 sinTheta1 = pikmin2_sinf(angle);
+		f32 sinTheta1 = sinf(angle);
 		yoffs         = (sinTheta1 *= 50.0f);
-		mPeltYScale   = 0.50000006f * pikmin2_sinf(angle) + 0.7f;
+		mPeltYScale   = 0.50000006f * sinf(angle) + 0.7f;
 	} else {
 		if (!mDoEfx && !pelt->inWater()) {
 			pelt->mSoundMgr->startSound(PSSE_EN_FROG_LAND, 0);
 			Vector3f pos = pelt->getPosition();
 			pos.y -= pelt->getCylinderHeight() * 0.5f;
 			::efx::Arg arg(pos);
-			::efx::TEnemyDownSmoke efx;
+			::efx::TEnemyDownSmoke efx(1.0f);
 			efx.mScale = 0.5f;
 			efx.create(&arg);
 		}
 		mDoEfx       = true;
 		f32 scale    = (mTimer - 0.9f) / 0.1f * PI * 0.5f;
-		f32 sinTheta = pikmin2_sinf(scale);
+		f32 sinTheta = sinf(scale);
 		// again, regswap
 		mPeltYScale = (sinTheta *= 0.3f) + 0.7f;
 		yoffs       = 0.0f;
@@ -2535,126 +2499,19 @@ lbl_801A7D8C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801A7DE4
- * Size:	000008
+/**
+ * @note Address: 0x801A7DE4
+ * @note Size: 0x8
  */
 u32 PelletReturnState::execMoveGoal(Pellet*) { return 0; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void PelletReturnState::getWayPont(int)
 {
 	// UNUSED FUNCTION
-}
-
-/*
- * --INFO--
- * Address:	801A7DEC
- * Size:	000008
- */
-bool PelletState::isBuried() { return false; }
-
-/*
- * --INFO--
- * Address:	801A7DF4
- * Size:	000008
- */
-bool PelletState::appeared() { return true; }
-
-/*
- * --INFO--
- * Address:	801A7DFC
- * Size:	000008
- */
-bool PelletUpState::isBuried() { return true; }
-
-/*
- * --INFO--
- * Address:	801A7E04
- * Size:	000008
- */
-bool PelletBuryState::isBuried() { return true; }
-
-/*
- * --INFO--
- * Address:	801A7E0C
- * Size:	000008
- */
-bool PelletScaleAppearState::appeared() { return false; }
-
-/*
- * --INFO--
- * Address:	801A7E14
- * Size:	000008
- */
-bool PelletAppearState::appeared() { return false; }
-
-/*
- * --INFO--
- * Address:	801A7E1C
- * Size:	000008
- */
-bool PelletNormalState::isPickable() { return true; }
-
-/*
- * --INFO--
- * Address:	801A7E24
- * Size:	000004
- */
-void FSMState<Game::Pellet>::resume(Pellet*) { }
-
-/*
- * --INFO--
- * Address:	801A7E28
- * Size:	000004
- */
-void FSMState<Game::Pellet>::restart(Pellet*) { }
-
-/*
- * --INFO--
- * Address:	801A7E2C
- * Size:	000064
- */
-void StateMachine<Game::Pellet>::create(int count)
-{
-	mLimit          = count;
-	mCount          = 0;
-	mStates         = new FSMState<Game::Pellet>*[mLimit];
-	mIndexToIDArray = new int[mLimit];
-	mIdToIndexArray = new int[mLimit];
-}
-
-/*
- * --INFO--
- * Address:	801A7E90
- * Size:	000084
- */
-void StateMachine<Game::Pellet>::registerState(FSMState<Game::Pellet>* newState)
-{
-	// copied all this from enemyFSM.cpp, do we actually need it here? no idea
-	bool check;
-	if (mCount >= mLimit) {
-		return;
-	}
-	mStates[mCount] = newState;
-	// TODO: This looks weird. How would they really have written it?
-	if (!(0 <= newState->mId && newState->mId < mLimit)) {
-		check = false;
-	} else {
-		check = true;
-	}
-	if (check == false) {
-		return;
-	}
-	newState->mStateMachine        = this;
-	mIndexToIDArray[mCount]        = newState->mId;
-	mIdToIndexArray[newState->mId] = mCount;
-	mCount++;
 }
 
 } // namespace Game

@@ -2,60 +2,31 @@
 #include "JSystem/JAudio/JAS/JASKernel.h"
 #include "JSystem/JAudio/JAS/JASMutexLock.h"
 #include "JSystem/JAudio/JAS/JASProbe.h"
-#include "types.h"
-
-/*
-    Generated from dpostproc
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global sProbes
-    sProbes:
-        .skip 0x8
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80516E68
-    lbl_80516E68:
-        .4byte 0x426FC28F
-    .global lbl_80516E6C
-    lbl_80516E6C:
-        .4byte 0x3F75C28F
-    .global lbl_80516E70
-    lbl_80516E70:
-        .float 0.04
-        .4byte 0x00000000
-    .global lbl_80516E78
-    lbl_80516E78:
-        .4byte 0x43300000
-        .4byte 0x00000000
-*/
 
 static JASProbe* sProbes;
 static u32 sProbeCount; // unused
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000130
+/**
+ * @note Address: N/A
+ * @note Size: 0x130
  */
 JASProbe::JASProbe()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000150
+/**
+ * @note Address: N/A
+ * @note Size: 0x150
  */
 void JASProbe::reset()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000050
+/**
+ * @note Address: N/A
+ * @note Size: 0x50
  */
 void JASProbe::start(char* name)
 {
@@ -67,10 +38,9 @@ void JASProbe::start(char* name)
 	OSRestoreInterrupts(interrupts);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00012C
+/**
+ * @note Address: N/A
+ * @note Size: 0x12C
  */
 void JASProbe::stop()
 {
@@ -91,97 +61,90 @@ void JASProbe::stop()
 	OSRestoreInterrupts(interrupts);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000068
+namespace JASKernel {
+/**
+ * @note Address: N/A
+ * @note Size: 0x68
  */
-void JASKernel::initProbe(long)
+void initProbe(s32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000190
+/**
+ * @note Address: N/A
+ * @note Size: 0x190
  */
-void JASKernel::resetProbe()
+void resetProbe()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A74D4
- * Size:	000060
+/**
+ * @note Address: 0x800A74D4
+ * @note Size: 0x60
  */
-void JASKernel::probeStart(long index, char* name)
+void probeStart(s32 index, char* name)
 {
 	if (sProbes != nullptr) {
 		sProbes[index].start(name);
 	}
 }
 
-/*
- * --INFO--
- * Address:	800A7534
- * Size:	00013C
+/**
+ * @note Address: 0x800A7534
+ * @note Size: 0x13C
  */
-void JASKernel::probeFinish(long index)
+void probeFinish(s32 index)
 {
 	if (sProbes != nullptr) {
 		sProbes[index].stop();
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
  */
-const char* JASKernel::getProbeName(long index)
+const char* getProbeName(s32 index)
 {
 	// UNUSED FUNCTION
 	return sProbes[index].mName;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000014
+/**
+ * @note Address: N/A
+ * @note Size: 0x14
  */
-void JASKernel::getProbeLast(long)
+void getProbeLast(s32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000014
+/**
+ * @note Address: N/A
+ * @note Size: 0x14
  */
-void JASKernel::getProbeAvg(long)
+void getProbeAvg(s32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00001C
+/**
+ * @note Address: N/A
+ * @note Size: 0x1C
  */
-void JASKernel::getProbeTotalAvg(long)
+void getProbeTotalAvg(s32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000014
+/**
+ * @note Address: N/A
+ * @note Size: 0x14
  */
-void JASKernel::getProbeMax(long)
+void getProbeMax(s32)
 {
 	// UNUSED FUNCTION
 }
+} // namespace JASKernel

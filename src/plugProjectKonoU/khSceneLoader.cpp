@@ -10,12 +10,11 @@
 namespace kh {
 namespace Screen {
 
-/*
- * --INFO--
- * Address:	803FBAD4
- * Size:	0001F8
+/**
+ * @note Address: 0x803FBAD4
+ * @note Size: 0x1F8
  */
-::Screen::SceneBase* createScene_Koono(long sceneType)
+::Screen::SceneBase* createScene_Koono(s32 sceneType)
 {
 	::Screen::SceneBase* base = nullptr;
 	switch (sceneType) {

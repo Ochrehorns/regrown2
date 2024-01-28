@@ -10,10 +10,9 @@
 namespace Game {
 namespace Sarai {
 
-/*
- * --INFO--
- * Address:	80272BC4
- * Size:	000138
+/**
+ * @note Address: 0x80272BC4
+ * @note Size: 0x138
  */
 Obj::Obj()
 {
@@ -21,17 +20,15 @@ Obj::Obj()
 	setFSM(new FSM);
 }
 
-/*
- * --INFO--
- * Address:	80272CFC
- * Size:	000004
+/**
+ * @note Address: 0x80272CFC
+ * @note Size: 0x4
  */
 void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-/*
- * --INFO--
- * Address:	80272D00
- * Size:	000078
+/**
+ * @note Address: 0x80272D00
+ * @note Size: 0x78
  */
 void Obj::onInit(CreatureInitArg* initArg)
 {
@@ -45,10 +42,9 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mFsm->start(this, SARAI_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80272D78
- * Size:	000048
+/**
+ * @note Address: 0x80272D78
+ * @note Size: 0x48
  */
 void Obj::doUpdate()
 {
@@ -56,10 +52,9 @@ void Obj::doUpdate()
 	mMouthSlots.update();
 }
 
-/*
- * --INFO--
- * Address:	80272DC0
- * Size:	00004C
+/**
+ * @note Address: 0x80272DC0
+ * @note Size: 0x4C
  */
 void Obj::setFSM(FSM* fsm)
 {
@@ -68,42 +63,39 @@ void Obj::setFSM(FSM* fsm)
 	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80272E0C
- * Size:	000004
+/**
+ * @note Address: 0x80272E0C
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	80272E10
- * Size:	000020
+/**
+ * @note Address: 0x80272E10
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	80272E30
- * Size:	000140
+/**
+ * @note Address: 0x80272E30
+ * @note Size: 0x140
  */
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
 	Matrixf* bodyMtx      = mModel->getJoint("bodyjnt")->getWorldMatrix();
-	shadowParam.mPosition = bodyMtx->getBasis(3);
+	shadowParam.mPosition = bodyMtx->getColumn(3);
 
 	if (isAlive()) {
 		s32 stateId = getStateID();
 
 		if (stateId == SARAI_Fall || stateId == SARAI_Damage || stateId == SARAI_TakeOff) {
 			shadowParam.mPosition.y -= 5.0f;
-			shadowParam.mBoundingSphere.mRadius = 100.0f + static_cast<Parms*>(mParms)->mProperParms.mFp01.mValue;
+			shadowParam.mBoundingSphere.mRadius = 100.0f + C_PROPERPARMS.mNormalFlightHeight.mValue;
 		} else if (mBounceTriangle) {
 			shadowParam.mPosition.y -= 5.0f;
 			shadowParam.mBoundingSphere.mRadius = 50.0f;
 		} else {
 			shadowParam.mPosition.y -= 20.0f;
-			shadowParam.mBoundingSphere.mRadius = 100.0f + static_cast<Parms*>(mParms)->mProperParms.mFp01.mValue;
+			shadowParam.mBoundingSphere.mRadius = 100.0f + C_PROPERPARMS.mNormalFlightHeight.mValue;
 		}
 	} else {
 		shadowParam.mPosition.y             = 2.5f + mPosition.y;
@@ -114,10 +106,9 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 	shadowParam.mSize                     = 12.5f;
 }
 
-/*
- * --INFO--
- * Address:	80272F70
- * Size:	000034
+/**
+ * @note Address: 0x80272F70
+ * @note Size: 0x34
  */
 void Obj::doStartStoneState()
 {
@@ -125,10 +116,9 @@ void Obj::doStartStoneState()
 	flickStickTarget();
 }
 
-/*
- * --INFO--
- * Address:	80272FA4
- * Size:	00005C
+/**
+ * @note Address: 0x80272FA4
+ * @note Size: 0x5C
  */
 void Obj::doFinishStoneState()
 {
@@ -140,17 +130,15 @@ void Obj::doFinishStoneState()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80273000
- * Size:	000028
+/**
+ * @note Address: 0x80273000
+ * @note Size: 0x28
  */
-void Obj::startCarcassMotion() { EnemyBase::startMotion(11, nullptr); }
+void Obj::startCarcassMotion() { EnemyBase::startMotion(SARAIANIM_Carry, nullptr); }
 
-/*
- * --INFO--
- * Address:	80273028
- * Size:	0000A8
+/**
+ * @note Address: 0x80273028
+ * @note Size: 0xA8
  */
 void Obj::initMouthSlots()
 {
@@ -163,10 +151,9 @@ void Obj::initMouthSlots()
 	}
 }
 
-/*
- * --INFO--
- * Address:	802730D0
- * Size:	000108
+/**
+ * @note Address: 0x802730D0
+ * @note Size: 0x108
  */
 f32 Obj::setHeightVelocity()
 {
@@ -177,8 +164,8 @@ f32 Obj::setHeightVelocity()
 	int pikminWeightFactor
 	    = (mStuckPikminCount < 0) ? (0) : (mStuckPikminCount <= MAX_PIKMIN_STUCK_FACTOR ? (mStuckPikminCount) : (MAX_PIKMIN_STUCK_FACTOR));
 
-	f32 riseFactor     = static_cast<Parms*>(mParms)->mProperParms.mFp11.mValue;
-	f32 climbingFactor = static_cast<Parms*>(mParms)->mProperParms.mFp12.mValue;
+	f32 riseFactor     = C_PROPERPARMS.mClimbingFactor0.mValue;
+	f32 climbingFactor = C_PROPERPARMS.mClimbingFactor5.mValue;
 	f32 weight         = pikminWeightFactor;
 
 	// Custom linear interpolation (https://en.wikipedia.org/wiki/Linear_interpolation)
@@ -190,8 +177,8 @@ f32 Obj::setHeightVelocity()
 	f32 mapPosY = mapMgr->getMinY(mPosition);
 
 	// Get intended flight height
-	f32 flightHeight = getCatchTargetNum() ? static_cast<Parms*>(mParms)->mProperParms.mFp02.mValue  // Grab flight height
-	                                       : static_cast<Parms*>(mParms)->mProperParms.mFp01.mValue; // Normal flight height
+	f32 flightHeight = getCatchTargetNum() ? C_PROPERPARMS.mGrabFlightHeight.mValue    // Grab flight height
+	                                       : C_PROPERPARMS.mNormalFlightHeight.mValue; // Normal flight height
 
 	// Upward velocity is offset by map height
 	mCurrentVelocity.y = velFactor * ((mapPosY + flightHeight) - mPosition.y);
@@ -199,23 +186,21 @@ f32 Obj::setHeightVelocity()
 	return mPosition.y - mapPosY;
 }
 
-/*
- * --INFO--
- * Address:	802731D8
- * Size:	000230
+/**
+ * @note Address: 0x802731D8
+ * @note Size: 0x230
  */
 void Obj::setRandTarget()
 {
 	// Set's a random target near the home radius, if in a cave then completely random
 	f32 radius;
 	if (getCatchTargetNum()) {
-		radius = randWeightFloat(static_cast<Parms*>(mParms)->mGeneral.mHomeRadius.mValue);
+		radius = randWeightFloat(C_GENERALPARMS.mHomeRadius.mValue);
 	} else if (gameSystem && gameSystem->mIsInCave) {
 		radius = 50.0f + randWeightFloat(50.0f);
 	} else {
-		radius = static_cast<Parms*>(mParms)->mGeneral.mHomeRadius.mValue
-		       + randWeightFloat(static_cast<Parms*>(mParms)->mGeneral.mTerritoryRadius.mValue
-		                         - static_cast<Parms*>(mParms)->mGeneral.mHomeRadius.mValue);
+		radius = C_GENERALPARMS.mHomeRadius.mValue
+		       + randWeightFloat(C_GENERALPARMS.mTerritoryRadius.mValue - C_GENERALPARMS.mHomeRadius.mValue);
 	}
 
 	// Get the direction from the home position towards our position
@@ -223,14 +208,12 @@ void Obj::setRandTarget()
 
 	// Randomise the angle a bit and set the target position
 	f32 rngAngle = HALF_PI + (dirToSarai + randWeightFloat(PI));
-	mTargetPos   = Vector3f((radius * pikmin2_sinf(rngAngle)) + mHomePosition.x, mHomePosition.y,
-                          (radius * pikmin2_cosf(rngAngle)) + mHomePosition.z);
+	mTargetPos   = Vector3f((radius * sinf(rngAngle)) + mHomePosition.x, mHomePosition.y, (radius * cosf(rngAngle)) + mHomePosition.z);
 }
 
-/*
- * --INFO--
- * Address:	80273408
- * Size:	000294
+/**
+ * @note Address: 0x80273408
+ * @note Size: 0x294
  */
 void Obj::fallMeckGround()
 {
@@ -245,23 +228,22 @@ void Obj::fallMeckGround()
 			continue;
 		}
 
-		InteractFallMeck fallMeck(this, static_cast<Parms*>(mParms)->mGeneral.mAttackDamage.mValue);
+		InteractFallMeck fallMeck(this, C_GENERALPARMS.mAttackDamage.mValue);
 		if (!c->stimulate(fallMeck)) {
 			continue;
 		}
 
 		Vector3f fallVelocity = Vector3f(0.0f);
 
-		const f32 fallMeckSpeed = static_cast<Parms*>(mParms)->mProperParms.mFp41.mValue;
+		const f32 fallMeckSpeed = C_PROPERPARMS.mFallMeckSpeed.mValue;
 		fallVelocity.y -= fallMeckSpeed;
 		c->setVelocity(fallVelocity);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027369C
- * Size:	00007C
+/**
+ * @note Address: 0x8027369C
+ * @note Size: 0x7C
  */
 int Obj::getCatchTargetNum()
 {
@@ -276,10 +258,9 @@ int Obj::getCatchTargetNum()
 	return count;
 }
 
-/*
- * --INFO--
- * Address:	80273718
- * Size:	000144
+/**
+ * @note Address: 0x80273718
+ * @note Size: 0x144
  * TODO
  */
 int Obj::getNextStateOnHeight()
@@ -304,8 +285,8 @@ int Obj::getNextStateOnHeight()
 			}
 		}
 
-		f32 va1 = static_cast<Parms*>(mParms)->mProperParms.mFp21.mValue;
-		f32 va2 = static_cast<Parms*>(mParms)->mProperParms.mFp22.mValue;
+		f32 va1 = C_PROPERPARMS.mPayoffProbability1.mValue;
+		f32 va2 = C_PROPERPARMS.mPayoffProbability5.mValue;
 
 		f32 fv1 = v1;
 		f32 f4  = (4.0f - fv1) / 4;
@@ -323,10 +304,9 @@ int Obj::getNextStateOnHeight()
 	return SARAI_NULL;
 }
 
-/*
- * --INFO--
- * Address:	8027385C
- * Size:	0000B0
+/**
+ * @note Address: 0x8027385C
+ * @note Size: 0xB0
  */
 void Obj::flickStickTarget()
 {
@@ -335,30 +315,28 @@ void Obj::flickStickTarget()
 		Creature* creature = mMouthSlots.getSlot(i)->mStuckCreature;
 
 		if (creature) {
-			InteractFlick flick(this, 10.0f, 0.0f, -1000.0f);
+			InteractFlick flick(this, 10.0f, 0.0f, FLICK_BACKWARD_ANGLE);
 			creature->stimulate(flick);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027390C
- * Size:	000080
+/**
+ * @note Address: 0x8027390C
+ * @note Size: 0x80
  */
 int Obj::getStickPikminNum() { return mStuckPikminCount - getCatchTargetNum(); }
 
-/*
- * --INFO--
- * Address:	8027398C
- * Size:	0003D0
+/**
+ * @note Address: 0x8027398C
+ * @note Size: 0x3D0
  */
 FakePiki* Obj::getAttackableTarget()
 {
 
-	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(*C_PARMS->mGeneral.mTerritoryRadius())) {
-		f32 maxAngle = PI * (DEG2RAD * *C_PARMS->mGeneral.mViewAngle());
-		f32 maxDist  = SQUARE(*C_PARMS->mGeneral.mSightRadius());
+	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
+		f32 maxAngle = PI * (DEG2RAD * C_GENERALPARMS.mViewAngle());
+		f32 maxDist  = SQUARE(C_GENERALPARMS.mSightRadius());
 
 		Iterator<Piki> iterator(pikiMgr);
 		iterator.first();
@@ -381,17 +359,15 @@ FakePiki* Obj::getAttackableTarget()
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80273D5C
- * Size:	000024
+/**
+ * @note Address: 0x80273D5C
+ * @note Size: 0x24
  */
 int Obj::catchTarget() { EnemyFunc::eatPikmin(this, nullptr); }
 
-/*
- * --INFO--
- * Address:	80273D80
- * Size:	000044
+/**
+ * @note Address: 0x80273D80
+ * @note Size: 0x44
  */
 void Obj::createDownEffect() { EnemyBase::createBounceEffect(mPosition, getDownSmokeScale()); }
 } // namespace Sarai

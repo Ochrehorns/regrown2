@@ -19,7 +19,7 @@ enum JAISoundTrackActiveFlags {
 	SOUNDACTIVE_Unk0                 = 0,
 	SOUNDACTIVE_Unk1                 = 1 << 0,  // 0x1
 	SOUNDACTIVE_DoFadeout            = 1 << 1,  // 0x2
-	SOUNDACTIVE_Unk3                 = 1 << 2,  // 0x4
+	SOUNDACTIVE_TempoProportion      = 1 << 2,  // 0x4
 	SOUNDACTIVE_Unk4                 = 1 << 3,  // 0x8
 	SOUNDACTIVE_Unk5                 = 1 << 4,  // 0x10
 	SOUNDACTIVE_Unk6                 = 1 << 5,  // 0x20
@@ -187,11 +187,26 @@ struct DummyVec {
 struct HeapBlock {
 	HeapBlock();
 
-	u8 _00;    // _00
-	void* _04; // _04
-	int _08;   // _08
-	u32 _0C;   // _0C
-	int _10;   // _10
+	u8 getStatus() { return mStatus; }
+	void setStatus(u8 status) { mStatus = status; }
+	void* getPointer() { return mPointer; }
+	void setPointer(void* pointer) { mPointer = pointer; }
+
+	u32 getSoundID() { return mSoundID; }
+	void setSoundID(u32 id) { mSoundID = id; }
+
+	u32 getUsedHeapID() { return mUsedHeapID; }
+	void setUsedHeapID(u32 id) { mUsedHeapID = id; }
+
+	// need better names
+	u32 get0C() { return _0C; }
+	void set0C(u32 c) { _0C = c; }
+
+	u8 mStatus;      // _00
+	void* mPointer;  // _04
+	u32 mSoundID;    // _08
+	u32 _0C;         // _0C
+	u32 mUsedHeapID; // _10
 };
 
 struct MuteBit {
@@ -304,8 +319,8 @@ struct SeqParameter : public MoveParaSet {
 	u32 mVolumeFlags;                   // _284
 	u32 mPanFlags;                      // _288
 	u32 mPitchFlags;                    // _28C
-	u32 _290;                           // _290
-	u32 _294;                           // _294
+	u32 mFxmixFlags;                    // _290
+	u32 mDolbyFlags;                    // _294
 	u32 _298;                           // _298
 	u32 _29C;                           // _29C
 	u32 _2A0;                           // _2A0

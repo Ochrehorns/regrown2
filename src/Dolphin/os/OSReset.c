@@ -4,10 +4,9 @@
 static OSResetQueue ResetFunctionQueue;
 static u32 bootThisDol;
 
-/*
- * --INFO--
- * Address:	800F02A4
- * Size:	000084
+/**
+ * @note Address: 0x800F02A4
+ * @note Size: 0x84
  */
 void OSRegisterResetFunction(OSResetFunctionInfo* info)
 {
@@ -42,10 +41,9 @@ void OSRegisterResetFunction(OSResetFunctionInfo* info)
 	tmp->next = info;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000094
+/**
+ * @note Address: N/A
+ * @note Size: 0x94
  */
 BOOL __OSCallResetFunctions(BOOL final)
 {
@@ -64,14 +62,13 @@ BOOL __OSCallResetFunctions(BOOL final)
 	return TRUE;
 }
 
-/*
- * --INFO--
- * Address:	800F0328
- * Size:	000070
+/**
+ * @note Address: 0x800F0328
+ * @note Size: 0x70
  */
-static asm void Reset(register s32 resetCode)
+ASM static void Reset(register s32 resetCode)
 {
-	// clang-format off
+#ifdef __MWERKS__ // clang-format off
 	nofralloc
 	b _jump1
 
@@ -79,13 +76,13 @@ _begin:
 	mfspr r8, HID0
 	ori r8, r8, 8
 	mtspr HID0, r8
-	isync 
+	isync
 	sync
-	nop 
+	nop
 	b _preloop
 
 _jump1:
-    b _jump2
+	b _jump2
 
 _preloop:
 	mftb r5, 268
@@ -94,37 +91,36 @@ _loop:
 	subf r7, r5, r6
 	cmplwi r7, 0x1124
 	blt _loop
-	nop 
+	nop
 	b _setPIReg
 
 _jump2:
-    b _jump3
+	b _jump3
 
 _setPIReg:
-    lis r8, 0xCC003000@h
-    ori r8, r8, 0xCC003000@l
-    li r4, 3
-    stw r4, 0x24(r8)
-    stw r3, 0x24(r8)
-    nop 
-    b _noptrap
+	lis r8, 0xCC003000@h
+	ori r8, r8, 0xCC003000@l
+	li r4, 3
+	stw r4, 0x24(r8)
+	stw r3, 0x24(r8)
+	nop
+	b _noptrap
 
 _jump3:
-    b _jump4
+	b _jump4
 
 _noptrap:
-    nop 
-    b _noptrap
+	nop
+	b _noptrap
 
 _jump4:
-    b _begin
-	// clang-format on
+	b _begin
+#endif // clang-format on
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000068
+/**
+ * @note Address: N/A
+ * @note Size: 0x68
  */
 static void KillThreads()
 {
@@ -144,10 +140,9 @@ static void KillThreads()
 	}
 }
 
-/*
- * --INFO--
- * Address:	800F0398
- * Size:	000048
+/**
+ * @note Address: 0x800F0398
+ * @note Size: 0x48
  */
 void __OSDoHotReset(s32 code)
 {
@@ -157,10 +152,9 @@ void __OSDoHotReset(s32 code)
 	Reset(code * 8);
 }
 
-/*
- * --INFO--
- * Address:	800F03E0
- * Size:	0002BC
+/**
+ * @note Address: 0x800F03E0
+ * @note Size: 0x2BC
  */
 void OSResetSystem(int reset, u32 resetCode, BOOL forceMenu)
 {
@@ -217,10 +211,9 @@ void OSResetSystem(int reset, u32 resetCode, BOOL forceMenu)
 	__PADDisableRecalibration(disableRecalibration);
 }
 
-/*
- * --INFO--
- * Address:	800F069C
- * Size:	000034
+/**
+ * @note Address: 0x800F069C
+ * @note Size: 0x34
  */
 u32 OSGetResetCode()
 {

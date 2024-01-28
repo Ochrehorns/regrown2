@@ -59,8 +59,8 @@ struct JUTException : public JKRThread {
 
 	JUTException(JUTDirectPrint*); // unused/inlined
 
-	virtual ~JUTException(); // _08 (weak)
-	virtual void* run();     // _0C
+	virtual ~JUTException() { } // _08 (weak)
+	virtual void* run();        // _0C
 
 	void showFloat(OSContext*);
 	void showStack(OSContext*);
@@ -72,11 +72,11 @@ struct JUTException : public JKRThread {
 	void printContext(u16, OSContext*, u32, u32);
 	void createFB();
 
-	static void waitTime(long);
+	static void waitTime(s32);
 	static JUTExceptionHandler setPreUserCallback(JUTExceptionHandler);
 	static void appendMapFile(const char*);
-	static bool queryMapAddress(char*, u32, long, u32*, u32*, char*, u32, bool, bool);
-	static bool queryMapAddress_single(char*, u32, long, u32*, u32*, char*, u32, bool, bool);
+	static bool queryMapAddress(char*, u32, s32, u32*, u32*, char*, u32, bool, bool);
+	static bool queryMapAddress_single(char*, u32, s32, u32*, u32*, char*, u32, bool, bool);
 
 	static JUTException* create(JUTDirectPrint*);
 	static void createConsole(void* buffer, u32 bufferSize);
@@ -143,9 +143,6 @@ struct JUTException : public JKRThread {
 	if (!(cond))                     \
 	JUT_PANIC(string_ref)
 
-#define P2ASSERT_BROKEN(cond) JUT_ASSERT(cond, nullptr)
-#define P2ASSERT(cond)        JUT_ASSERT(cond, "P2Assert")
-
 #ifndef MATCHING
 #define JUT_PANICLINE(line, ...) JUT_PANIC(__VA_ARGS__)
 #else
@@ -155,22 +152,6 @@ struct JUTException : public JKRThread {
 #define JUT_ASSERTLINE(line, cond, ...) \
 	if (!(cond))                        \
 	JUT_PANICLINE(line, __VA_ARGS__)
-
-#define P2ASSERTLINE(line, cond) JUT_ASSERTLINE(line, cond, "P2Assert")
-
-#define P2ASSERTBOUNDSLINE(line, lowerLimitInclusive, var, upperLimitExclusive) \
-	bool check##line = false;                                                   \
-	if (lowerLimitInclusive <= var && var < upperLimitExclusive) {              \
-		check##line = true;                                                     \
-	}                                                                           \
-	P2ASSERTLINE(line, check##line)
-
-#define P2ASSERTBOUNDSINCLUSIVELINE(line, lowerLimitInclusive, var, upperLimitInclusive) \
-	bool check##line = false;                                                            \
-	if (lowerLimitInclusive <= var && var <= upperLimitInclusive) {                      \
-		check##line = true;                                                              \
-	}                                                                                    \
-	P2ASSERTLINE(line, check##line)
 
 #define JUTASSERTBOUNDSLINE(line, lowerLimitInclusive, var, upperLimitExclusive, ...) \
 	bool check##line = false;                                                         \
@@ -186,30 +167,11 @@ struct JUTException : public JKRThread {
 	}                                                                                          \
 	JUT_ASSERTLINE(line, check##line, __VA_ARGS__, var)
 
-#define P2ASSERTBOOLLINE(line, var) \
-	bool check##line = false;       \
-	if (var) {                      \
-		check##line = true;         \
-	}                               \
-	P2ASSERTLINE(line, check##line)
+#if DEBUG
+// TODO: Reasonable definition of a debug print function
+#define JUT_LOG(...) JUT_PANIC(__VA_ARGS__)
+#else
+#define JUT_LOG(...) __VA_ARGS__
+#endif
 
 #endif
-// clang-format off
-#define FORCE_DONT_INLINE \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; \
-	(void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0; (void*)0;
-// clang-format on

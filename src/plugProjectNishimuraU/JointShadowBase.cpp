@@ -1,32 +1,48 @@
-#include "Vector3.h"
+#include "Game/shadowMgr.h"
+#include "Game/JointFuncs.h"
 #include "types.h"
 
-/*
-    Generated from dpostproc
+namespace Game {
 
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_8051D170
-    lbl_8051D170:
-        .float 0.5
-    .global lbl_8051D174
-    lbl_8051D174:
-        .4byte 0x00000000
-    .global lbl_8051D178
-    lbl_8051D178:
-        .float 1.0
-    .global lbl_8051D17C
-    lbl_8051D17C:
-        .4byte 0x42C80000
-*/
-
-/*
- * --INFO--
- * Address:	802F2040
- * Size:	000278
+/**
+ * @note Address: 0x802F2040
+ * @note Size: 0x278
  */
-void Game::TubeShadowTransNode::makeShadowSRT(Game::JointShadowParm&, Vector3f&, Vector3f&)
+void TubeShadowTransNode::makeShadowSRT(JointShadowParm& parm, Vector3f& originalPos, Vector3f& transformedPos)
 {
-	// void makeShadowSRT__Q24Game19TubeShadowTransNodeFRQ24Game15JointShadowParmR10Vector3<float> R10Vector3f()
+	Matrixf* worldMtx = mJoint->getWorldMatrix();
+
+	Vector3f xAxis, yAxis;
+	worldMtx->getColumn(0, xAxis);
+	worldMtx->getColumn(1, yAxis);
+
+	worldMtx->getTranslation(originalPos);
+	transformedPos.x = originalPos.x + (xAxis.x * parm._18 + yAxis.x * parm._1C);
+	transformedPos.y = originalPos.y + (xAxis.y * parm._18 + yAxis.y * parm._1C);
+	transformedPos.z = originalPos.z + (xAxis.z * parm._18 + yAxis.z * parm._1C);
+
+	Vector3f x;
+	x.x = (transformedPos.x - originalPos.x) * 0.5f;
+	x.y = (transformedPos.y - originalPos.y) * 0.5f;
+	x.z = (transformedPos.z - originalPos.z) * 0.5f;
+
+	Vector3f scale(x.y * parm.mRotation.z - x.z * parm.mRotation.y, x.z * parm.mRotation.x - x.x * parm.mRotation.z,
+	               x.x * parm.mRotation.y - x.y * parm.mRotation.x);
+	scale.normalise();
+
+	Vector3f w;
+	w.x = (transformedPos.x + originalPos.x) * 0.5f + parm.mRotation.x * parm._24;
+	w.y = (transformedPos.y + originalPos.y) * 0.5f + parm.mRotation.y * parm._24;
+	w.z = (transformedPos.z + originalPos.z) * 0.5f + parm.mRotation.z * parm._24;
+
+	Vector3f y = parm.mRotation;
+	y *= (100.0f + (w.y - parm.mPosition.y));
+	scale *= parm.mShadowScale;
+
+	mMainMtx->setColumn(0, x);
+	mMainMtx->setColumn(1, y);
+	mMainMtx->setColumn(2, scale);
+	mMainMtx->setColumn(3, w);
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x80(r1)
@@ -196,14 +212,45 @@ void Game::TubeShadowTransNode::makeShadowSRT(Game::JointShadowParm&, Vector3f&,
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802F22B8
- * Size:	000278
+/**
+ * @note Address: 0x802F22B8
+ * @note Size: 0x278
  */
-void Game::TubeShadowSetNode::makeShadowSRT(Game::JointShadowParm&, Vector3f&, Vector3f&)
+void TubeShadowSetNode::makeShadowSRT(JointShadowParm& parm, Vector3f& pos1, Vector3f& pos2)
 {
-	// void makeShadowSRT__Q24Game17TubeShadowSetNodeFRQ24Game15JointShadowParmR10Vector3<float> R10Vector3f()
+	Matrixf* mat = mJoint->getWorldMatrix();
+
+	Vector3f xVec, yVec;
+	mat->getColumn(0, xVec);
+	mat->getColumn(1, yVec);
+
+	mat->getTranslation(pos2);
+	pos2.x = pos2.x + (xVec.x * parm._18 + yVec.x * parm._1C);
+	pos2.y = pos2.y + (xVec.y * parm._18 + yVec.y * parm._1C);
+	pos2.z = pos2.z + (xVec.z * parm._18 + yVec.z * parm._1C);
+
+	Vector3f newX;
+	newX.x = (pos2.x - pos1.x) * 0.5f;
+	newX.y = (pos2.y - pos1.y) * 0.5f;
+	newX.z = (pos2.z - pos1.z) * 0.5f;
+
+	Vector3f newZ(newX.y * parm.mRotation.z - newX.z * parm.mRotation.y, newX.z * parm.mRotation.x - newX.x * parm.mRotation.z,
+	              newX.x * parm.mRotation.y - newX.y * parm.mRotation.x);
+	newZ.normalise();
+
+	Vector3f newPos;
+	newPos.x = (pos2.x + pos1.x) * 0.5f + parm.mRotation.x * parm._24;
+	newPos.y = (pos2.y + pos1.y) * 0.5f + parm.mRotation.y * parm._24;
+	newPos.z = (pos2.z + pos1.z) * 0.5f + parm.mRotation.z * parm._24;
+
+	Vector3f newY = parm.mRotation;
+	newY *= (100.0f + (newPos.y - parm.mPosition.y));
+	newZ *= parm.mShadowScale;
+
+	mMainMtx->setColumn(0, newX);
+	mMainMtx->setColumn(1, newY);
+	mMainMtx->setColumn(2, newZ);
+	mMainMtx->setColumn(3, newPos);
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x80(r1)
@@ -373,14 +420,34 @@ void Game::TubeShadowSetNode::makeShadowSRT(Game::JointShadowParm&, Vector3f&, V
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802F2530
- * Size:	0001AC
+/**
+ * @note Address: 0x802F2530
+ * @note Size: 0x1AC
  */
-void Game::TubeShadowPosNode::makeShadowSRT(Game::JointShadowParm&, Vector3f&, Vector3f&)
+void TubeShadowPosNode::makeShadowSRT(JointShadowParm& parm, Vector3f& pos1, Vector3f& pos2)
 {
-	// void makeShadowSRT__Q24Game17TubeShadowPosNodeFRQ24Game15JointShadowParmR10Vector3<float> R10Vector3f()
+	Vector3f newX;
+	newX.x = (pos2.x - pos1.x) * 0.5f;
+	newX.y = (pos2.y - pos1.y) * 0.5f;
+	newX.z = (pos2.z - pos1.z) * 0.5f;
+
+	Vector3f newZ(newX.y * parm.mRotation.z - newX.z * parm.mRotation.y, newX.z * parm.mRotation.x - newX.x * parm.mRotation.z,
+	              newX.x * parm.mRotation.y - newX.y * parm.mRotation.x);
+	newZ.normalise();
+
+	Vector3f newPos;
+	newPos.x = (pos2.x + pos1.x) * 0.5f + parm.mRotation.x * parm._24;
+	newPos.y = (pos2.y + pos1.y) * 0.5f + parm.mRotation.y * parm._24;
+	newPos.z = (pos2.z + pos1.z) * 0.5f + parm.mRotation.z * parm._24;
+
+	Vector3f newY = parm.mRotation;
+	newY *= (100.0f + (newPos.y - parm.mPosition.y));
+	newZ *= parm.mShadowScale;
+
+	mMainMtx->setColumn(0, newX);
+	mMainMtx->setColumn(1, newY);
+	mMainMtx->setColumn(2, newZ);
+	mMainMtx->setColumn(3, newPos);
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x70(r1)
@@ -499,14 +566,30 @@ void Game::TubeShadowPosNode::makeShadowSRT(Game::JointShadowParm&, Vector3f&, V
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802F26DC
- * Size:	000100
+/**
+ * @note Address: 0x802F26DC
+ * @note Size: 0x100
  */
-void Game::SphereShadowNode::makeShadowSRT(Game::JointShadowParm&, Vector3f&)
+void SphereShadowNode::makeShadowSRT(JointShadowParm& parm, Vector3f& pos)
 {
-	// void makeShadowSRT__Q24Game16SphereShadowNodeFRQ24Game15JointShadowParmR10Vector3<float>()
+	Vector3f newX(parm.mShadowScale, 0.0f, 0.0f);
+	Vector3f newZ(newX.y * parm.mRotation.z - newX.z * parm.mRotation.y, newX.z * parm.mRotation.x - newX.x * parm.mRotation.z,
+	              newX.x * parm.mRotation.y - newX.y * parm.mRotation.x);
+	newZ.normalise();
+
+	Vector3f newPos;
+	newPos.x = parm.mRotation.x * parm._24 + pos.x;
+	newPos.y = parm.mRotation.y * parm._24 + pos.y;
+	newPos.z = parm.mRotation.z * parm._24 + pos.z;
+
+	Vector3f newY = parm.mRotation;
+	newY *= (100.0f + (pos.y - parm.mPosition.y));
+	newZ *= parm.mShadowScale;
+
+	mMainMtx->setColumn(0, newX);
+	mMainMtx->setColumn(1, newY);
+	mMainMtx->setColumn(2, newZ);
+	mMainMtx->setColumn(3, newPos);
 	/*
 	.loc_0x0:
 	  lfs       f1, -0x11EC(r2)
@@ -581,3 +664,4 @@ void Game::SphereShadowNode::makeShadowSRT(Game::JointShadowParm&, Vector3f&)
 	  blr
 	*/
 }
+} // namespace Game

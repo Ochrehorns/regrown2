@@ -56,8 +56,8 @@ struct Obj : public EnemyBase {
 	virtual void doUpdateCommon();                                             // _1D0
 	virtual void doAnimationCullingOff();                                      // _1DC
 	virtual void doDebugDraw(Graphics& gfx);                                   // _1EC
-	virtual void getThrowupItemPosition(Vector3f*);                            // _268
-	virtual void getThrowupItemVelocity(Vector3f*);                            // _26C
+	virtual void getThrowupItemPosition(Vector3f* position);                   // _268
+	virtual void getThrowupItemVelocity(Vector3f* velocity);                   // _26C
 	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part); // _278
 	virtual void doStartStoneState();                                          // _2A4
 	virtual void doFinishStoneState();                                         // _2A8
@@ -149,7 +149,7 @@ struct Mgr : public EnemyMgrBase {
 
 	//////////////// VTABLE
 	// virtual ~Mgr();                                    // _58 (weak)
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual void doAlloc();                            // _A8
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
@@ -176,21 +176,21 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		inline ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mFp01(this, 'fp01', "ÉxÅ[ÉXåWêî", 3.0f, 0.0f, 10.0f)        // 'base factor'
-		    , mFp02(this, 'fp02', "è„Ç∞å∏ë¨åWêî", -0.2f, -5.0f, 5.0f)     // 'raising deceleration factor'
-		    , mFp03(this, 'fp03', "â∫Ç∞â¡ë¨åWêî", 0.5f, -5.0f, 5.0f)      // 'downward acceleration factor'
-		    , mFp04(this, 'fp04', "ç≈í·å∏â¡ë¨åWêî", -2.0f, -10.0f, 10.0f) // 'minimum deceleration acceleration factor'
-		    , mFp05(this, 'fp05', "ç≈çÇå∏â¡ë¨åWêî", 10.0f, -10.0f, 10.0f) // 'maximum deceleration acceleration factor'
-		    , mFp06(this, 'fp06', "ë´ÇÃêUÇËè„Ç∞", 120.0f, 0.0f, 200.0f)   // 'leg swing'
+		    , mBaseFactor(this, 'fp01', "ÉxÅ[ÉXåWêî", 3.0f, 0.0f, 10.0f)                 // 'base factor'
+		    , mRaiseDecelFactor(this, 'fp02', "è„Ç∞å∏ë¨åWêî", -0.2f, -5.0f, 5.0f)        // 'raising deceleration factor'
+		    , mDownwardAccelFactor(this, 'fp03', "â∫Ç∞â¡ë¨åWêî", 0.5f, -5.0f, 5.0f)      // 'downward acceleration factor'
+		    , mMinDecelAccelFactor(this, 'fp04', "ç≈í·å∏â¡ë¨åWêî", -2.0f, -10.0f, 10.0f) // 'minimum deceleration acceleration factor'
+		    , mMaxDecelAccelFactor(this, 'fp05', "ç≈çÇå∏â¡ë¨åWêî", 10.0f, -10.0f, 10.0f) // 'maximum deceleration acceleration factor'
+		    , mLegSwing(this, 'fp06', "ë´ÇÃêUÇËè„Ç∞", 120.0f, 0.0f, 200.0f)              // 'leg swing'
 		{
 		}
 
-		Parm<f32> mFp01; // _804
-		Parm<f32> mFp02; // _82C
-		Parm<f32> mFp03; // _854
-		Parm<f32> mFp04; // _87C
-		Parm<f32> mFp05; // _8A4
-		Parm<f32> mFp06; // _8CC
+		Parm<f32> mBaseFactor;          // _804
+		Parm<f32> mRaiseDecelFactor;    // _82C
+		Parm<f32> mDownwardAccelFactor; // _854
+		Parm<f32> mMinDecelAccelFactor; // _87C
+		Parm<f32> mMaxDecelAccelFactor; // _8A4
+		Parm<f32> mLegSwing;            // _8CC
 	};
 
 	Parms() { }
@@ -204,6 +204,14 @@ struct Parms : public EnemyParmsBase {
 
 	// _00-_7F8	= EnemyParmsBase
 	ProperParms mProperParms; // _7F8
+};
+
+enum AnimID {
+	DAMAGUMOANIM_Dead    = 0,
+	DAMAGUMOANIM_Landing = 1,
+	DAMAGUMOANIM_Wait    = 2,
+	DAMAGUMOANIM_Flick   = 3,
+	DAMAGUMOANIM_AnimCount, // 4
 };
 
 struct ProperAnimator : public EnemyAnimatorBase {
@@ -253,7 +261,7 @@ struct DamagumoGroundCallBack : public JointGroundCallBack {
 /////////////////////////////////////////////////////////////////
 // STATE MACHINE DEFINITIONS
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -276,9 +284,9 @@ struct StateDead : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -290,9 +298,9 @@ struct StateFlick : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -304,9 +312,9 @@ struct StateLand : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -318,9 +326,9 @@ struct StateStay : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -332,9 +340,9 @@ struct StateWait : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -346,9 +354,9 @@ struct StateWalk : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

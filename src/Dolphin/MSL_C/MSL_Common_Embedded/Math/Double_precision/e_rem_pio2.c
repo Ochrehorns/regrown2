@@ -1,6 +1,6 @@
 
 /* @(#)e_rem_pio2.c 1.4 95/01/18 */
-/*
+/**
  * ====================================================
  * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
  *
@@ -19,9 +19,9 @@
  */
 
 #include "fdlibm.h"
-#include "Dolphin/math.h"
+#include "math.h"
 
-/*
+/**
  * Table of constants for 2/pi, 396 Hex digits (476 decimal) of 2/pi
  */
 #ifdef __STDC__
@@ -47,7 +47,7 @@ static int npio2_hw[] = {
 	0x4042106C, 0x4042D97C, 0x4043A28C, 0x40446B9C, 0x404534AC, 0x4045FDBB, 0x4046C6CB, 0x40478FDB, 0x404858EB, 0x404921FB,
 };
 
-/*
+/**
  * invpio2:  53 bits of 2/pi
  * pio2_1:   first  33 bit of pi/2
  * pio2_1t:  pi/2 - pio2_1
@@ -58,9 +58,9 @@ static int npio2_hw[] = {
  */
 
 #ifdef __STDC__
-static const double
+static const f64
 #else
-static double
+static f64
 #endif
     zero
     = 0.00000000000000000000e+00,         /* 0x00000000, 0x00000000 */
@@ -75,13 +75,13 @@ static double
     pio2_3t = 8.47842766036889956997e-32; /* 0x397B839A, 0x252049C1 */
 
 #ifdef __STDC__
-int __ieee754_rem_pio2(double x, double* y)
+int __ieee754_rem_pio2(f64 x, f64* y)
 #else
-int __ieee754_rem_pio2(x, y) double x, y[];
+int __ieee754_rem_pio2(x, y) f64 x, y[];
 #endif
 {
-	double z, w, t, r, fn;
-	double tx[3];
+	f64 z, w, t, r, fn;
+	f64 tx[3];
 	int e0, i, j, nx, n, ix, hx;
 
 	hx = __HI(x); /* high word of x */
@@ -120,7 +120,7 @@ int __ieee754_rem_pio2(x, y) double x, y[];
 	if (ix <= 0x413921fb) { /* |x| ~<= 2^19*(pi/2), medium size */
 		t  = fabs(x);
 		n  = (int)(t * invpio2 + half);
-		fn = (double)n;
+		fn = (f64)n;
 		r  = t - fn * pio2_1;
 		w  = fn * pio2_1t; /* 1st round good to 85 bit */
 		if (n < 32 && ix != npio2_hw[n - 1]) {
@@ -152,7 +152,7 @@ int __ieee754_rem_pio2(x, y) double x, y[];
 		} else
 			return n;
 	}
-	/*
+	/**
 	 * all other (large) arguments
 	 */
 	if (ix >= 0x7ff00000) { /* x is inf or NaN */
@@ -164,7 +164,7 @@ int __ieee754_rem_pio2(x, y) double x, y[];
 	e0      = (ix >> 20) - 1046; /* e0 = ilogb(z)-23; */
 	__HI(z) = ix - (e0 << 20);
 	for (i = 0; i < 2; i++) {
-		tx[i] = (double)((int)(z));
+		tx[i] = (f64)((int)(z));
 		z     = (z - tx[i]) * two24;
 	}
 	tx[2] = z;

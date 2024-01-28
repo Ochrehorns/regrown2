@@ -6,17 +6,17 @@
 namespace Game {
 namespace PelletNumber {
 
-/*
- * --INFO--
- * Address:	801F90D4
- * Size:	000004
+Mgr* mgr;
+
+/**
+ * @note Address: 0x801F90D4
+ * @note Size: 0x4
  */
 void Object::do_onInit(CreatureInitArg*) { }
 
-/*
- * --INFO--
- * Address:	801F90D8
- * Size:	0000C0
+/**
+ * @note Address: 0x801F90D8
+ * @note Size: 0xC0
  */
 void Object::constructor()
 {
@@ -25,50 +25,19 @@ void Object::constructor()
 	shadowMgr->createShadow(this);
 }
 
-/*
- * --INFO--
- * Address:	801F9198
- * Size:	00006C
+/**
+ * @note Address: 0x801F9198
+ * @note Size: 0x6C
  */
 void Object::createKiraEffect(Vector3f& pos)
 {
 	efx::ArgPelType arg(mPelletSizeType, pos);
 	mPelkira->create(&arg);
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lis      r5, __vt__Q23efx3Arg@ha
-	stw      r0, 0x24(r1)
-	addi     r0, r5, __vt__Q23efx3Arg@l
-	lis      r5, __vt__Q23efx10ArgPelType@ha
-	lhz      r6, 0x43c(r3)
-	stw      r0, 8(r1)
-	addi     r0, r5, __vt__Q23efx10ArgPelType@l
-	lfs      f0, 0(r4)
-	stfs     f0, 0xc(r1)
-	lfs      f0, 4(r4)
-	stfs     f0, 0x10(r1)
-	lfs      f0, 8(r4)
-	addi     r4, r1, 8
-	stfs     f0, 0x14(r1)
-	stw      r0, 8(r1)
-	stw      r6, 0x18(r1)
-	lwz      r3, 0x458(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801F9204
- * Size:	000108
+/**
+ * @note Address: 0x801F9204
+ * @note Size: 0x108
  */
 void Object::changeMaterial()
 {
@@ -95,104 +64,24 @@ void Object::changeMaterial()
 	}
 
 	u16 id           = mModel->mJ3dModel->mModelData->mMaterialTable.mMaterialNames->getIndex("bpel1");
-	J3DTevBlock* tev = mModel->mJ3dModel->mModelData->mMaterialTable.mMaterials[id]->mTevBlock;
-	tev->setTevColor(0, color);
+	J3DMaterial* mat = mModel->mJ3dModel->mModelData->mMaterialTable.mMaterials[id];
+	mat->mTevBlock->setTevColor(0, color);
 	mModel->mJ3dModel->calcMaterial();
 	mModel->mJ3dModel->diff();
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stmw     r27, 0x1c(r1)
-	mr       r27, r3
-	lhz      r0, 0x43e(r3)
-	cmpwi    r0, 1
-	beq      lbl_801F9240
-	bge      lbl_801F9234
-	cmpwi    r0, 0
-	bge      lbl_801F9268
-	b        lbl_801F9278
-
-lbl_801F9234:
-	cmpwi    r0, 3
-	bge      lbl_801F9278
-	b        lbl_801F9254
-
-lbl_801F9240:
-	li       r31, 0xfb
-	li       r30, 0x11
-	li       r29, 0
-	li       r28, 0xff
-	b        lbl_801F9278
-
-lbl_801F9254:
-	li       r31, 0xff
-	li       r30, 0xdc
-	mr       r28, r31
-	li       r29, 0x34
-	b        lbl_801F9278
-
-lbl_801F9268:
-	li       r29, 0xff
-	li       r31, 0
-	mr       r28, r29
-	li       r30, 0x33
-
-lbl_801F9278:
-	lwz      r3, 0x174(r27)
-	addi     r4, r2, lbl_80519CE0@sda21
-	lwz      r3, 8(r3)
-	lwz      r3, 4(r3)
-	lwz      r3, 0x64(r3)
-	bl       getIndex__10JUTNameTabCFPCc
-	lwz      r4, 0x174(r27)
-	rlwinm   r0, r3, 2, 0xe, 0x1d
-	addi     r5, r1, 8
-	lwz      r3, 8(r4)
-	li       r4, 0
-	lwz      r3, 4(r3)
-	lwz      r3, 0x60(r3)
-	lwzx     r3, r3, r0
-	sth      r31, 8(r1)
-	sth      r30, 0xa(r1)
-	sth      r29, 0xc(r1)
-	sth      r28, 0xe(r1)
-	lwz      r3, 0x2c(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x174(r27)
-	lwz      r3, 8(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x174(r27)
-	lwz      r3, 8(r3)
-	bl       diff__8J3DModelFv
-	lmw      r27, 0x1c(r1)
-	lwz      r0, 0x34(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801F930C
- * Size:	0000B0
+/**
+ * @note Address: 0x801F930C
+ * @note Size: 0xB0
  */
 Mgr::Mgr()
     : FixedSizePelletMgr(PelletList::NUMBER_PELLET)
 {
 }
 
-/*
- * --INFO--
- * Address:	801F9668
- * Size:	0000F4
+/**
+ * @note Address: 0x801F9668
+ * @note Size: 0xF4
  */
 void Mgr::setupResources()
 {
@@ -208,15 +97,14 @@ void Mgr::setupResources()
 	mModelData[1]->newSharedDisplayList(0x40000);
 	mModelData[2]->newSharedDisplayList(0x40000);
 	mModelData[3]->newSharedDisplayList(0x40000);
-	useModelMgr(64, 0x80000);
+	useModelMgr(PELLET_NUMBER_MAXMODEL, 0x80000);
 	mCollPartMgr.alloc(PELLET_NUMBER_MAXCOLLPART);
 	sys->heapStatusEnd("NumberPellet");
 }
 
-/*
- * --INFO--
- * Address:	801F975C
- * Size:	00007C
+/**
+ * @note Address: 0x801F975C
+ * @note Size: 0x7C
  */
 void Mgr::onCreateModel(SysShape::Model* model)
 {
@@ -228,21 +116,21 @@ void Mgr::onCreateModel(SysShape::Model* model)
 	model->mJ3dModel->lock();
 }
 
-/*
- * --INFO--
- * Address:	801F97D8
- * Size:	00003C
+/**
+ * @note Address: 0x801F97D8
+ * @note Size: 0x3C
  */
-GenPelletParm* Mgr::generatorNewPelletParm() { return new GenPelletParm(PELCOLOR_BLUE, PELLET_NUMBER_ONE); }
+GenPelletParm* Mgr::generatorNewPelletParm() { return new GenNumberPelletParm(PELCOLOR_BLUE, PELLET_NUMBER_ONE); }
 
-/*
- * --INFO--
- * Address:	801F9814
- * Size:	0000D8
+/**
+ * @note Address: 0x801F9814
+ * @note Size: 0xD8
  */
 Pellet* Mgr::generatorBirth(Vector3f& pos, Vector3f& angle, GenPelletParm* parm)
 {
-	PelletNumberInitArg arg(parm->mSize, parm->mColor);
+	GenNumberPelletParm* nparm = static_cast<GenNumberPelletParm*>(parm);
+
+	PelletNumberInitArg arg(nparm->mSize, nparm->mColor);
 	Pellet* pelt = pelletMgr->birth(&arg);
 	if (pelt) {
 		if (mapMgr) {
@@ -256,27 +144,28 @@ Pellet* Mgr::generatorBirth(Vector3f& pos, Vector3f& angle, GenPelletParm* parm)
 	return pelt;
 }
 
-/*
- * --INFO--
- * Address:	801F98EC
- * Size:	000054
+/**
+ * @note Address: 0x801F98EC
+ * @note Size: 0x54
  */
 void Mgr::generatorWrite(Stream& stream, GenPelletParm* parm)
 {
-	stream.writeByte(parm->mColor);
-	stream.writeByte(parm->mSize);
+	GenNumberPelletParm* nparm = static_cast<GenNumberPelletParm*>(parm);
+	stream.writeByte(nparm->mColor);
+	stream.writeByte(nparm->mSize);
 }
 
-/*
- * --INFO--
- * Address:	801F9940
- * Size:	0000C4
+/**
+ * @note Address: 0x801F9940
+ * @note Size: 0xC4
  */
 void Mgr::generatorRead(Stream& stream, GenPelletParm* parm, u32 flag)
 {
-	parm->mColor = stream.readByte();
-	parm->mSize  = stream.readByte();
-	switch (parm->mSize) {
+	GenNumberPelletParm* nparm = static_cast<GenNumberPelletParm*>(parm);
+
+	nparm->mColor = stream.readByte();
+	nparm->mSize  = stream.readByte();
+	switch (nparm->mSize) {
 	case PELLET_NUMBER_ONE:
 		parm->mIndex = 0;
 		break;
@@ -290,7 +179,7 @@ void Mgr::generatorRead(Stream& stream, GenPelletParm* parm, u32 flag)
 		parm->mIndex = 3;
 		break;
 	default:
-		JUT_PANICLINE(258, "NumberPellet size %d error\n", parm->mSize);
+		JUT_PANICLINE(258, "NumberPellet size %d error\n", nparm->mSize);
 		break;
 	}
 }

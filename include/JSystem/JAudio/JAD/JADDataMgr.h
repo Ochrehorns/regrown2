@@ -9,6 +9,10 @@
 #include "JSystem/JAudio/JAD/JADUtility.h"
 #include "JSystem/JAudio/JAD/JADStr.h"
 
+namespace PSAutoBgm {
+struct Track;
+};
+
 namespace JADUtility {
 
 /**
@@ -37,20 +41,20 @@ struct DataLoadMgrNode : virtual public DataMgrBase {
 
 	DataLoadMgrNode();
 
-	virtual ~DataLoadMgrNode();     // _08 (weak)
-	virtual bool isTempBuffaMode(); // _0C (weak)
+	virtual ~DataLoadMgrNode();                      // _08 (weak)
+	virtual bool isTempBuffaMode() { return false; } // _0C (weak)
 	virtual void init()
 	{
 		_08 = 0;
 		DataMgrBase::init();
 	} // _10 (weak)
 
-	virtual JKRHeap* getObjHeap()          = 0; // _14
-	virtual JKRHeap* getDataHeap()         = 0; // _18
-	virtual bool initInstance(void*, long) = 0; // _1C
-	virtual bool initInstance()            = 0; // _20
+	virtual JKRHeap* getObjHeap()         = 0; // _14
+	virtual JKRHeap* getDataHeap()        = 0; // _18
+	virtual bool initInstance(void*, s32) = 0; // _1C
+	virtual bool initInstance()           = 0; // _20
 
-	bool initInstanceExt(void*, long);
+	bool initInstanceExt(void*, s32);
 	void setFlagsAsExternal(void*);
 
 	// unused/inlined:
@@ -60,9 +64,10 @@ struct DataLoadMgrNode : virtual public DataMgrBase {
 			strcpy(mLoadPath, path);
 		}
 	}
-	// void load(JADUtility::DataLoadMgrNode::ObjStatus, bool);
+
+	void load(JADUtility::DataLoadMgrNode::ObjStatus, bool);
 	// bool initInstanceExt();
-	// void loadDvd(unsigned long*);
+	// void loadDvd(u32*);
 
 	/** @fabricated */
 	inline void setPath(char const* path)
@@ -89,12 +94,12 @@ struct DataLoadMgrNode : virtual public DataMgrBase {
 struct DataMgrNode : public DataLoadMgrNode {
 	DataMgrNode();
 
-	virtual ~DataMgrNode() { }                                           // _08 (weak)
+	// virtual ~DataMgrNode() { }                                           // _08 (weak)
 	virtual void init() { DataLoadMgrNode::init(); }                     // _10 (weak)
-	virtual JKRHeap* getObjHeap()          = 0;                          // _14
-	virtual JKRHeap* getDataHeap()         = 0;                          // _18
-	virtual bool initInstance(void*, long) = 0;                          // _1C
-	virtual bool initInstance()            = 0;                          // _20
+	virtual JKRHeap* getObjHeap()         = 0;                           // _14
+	virtual JKRHeap* getDataHeap()        = 0;                           // _18
+	virtual bool initInstance(void*, s32) = 0;                           // _1C
+	virtual bool initInstance()           = 0;                           // _20
 	virtual char* getPath() { return mPath; }                            // _24 (weak)
 	virtual void setPath(char* path) { DataLoadMgrNode::setPath(path); } // _28 (weak)
 
@@ -108,31 +113,44 @@ struct DataMgrNode : public DataLoadMgrNode {
 
 template <typename A, typename B>
 struct PrmDataMgrNode : public DataMgrNode {
-	virtual ~PrmDataMgrNode<A, B>(); // _08 (weak)
-	virtual JKRHeap* getObjHeap();   // _14 (weak)
-	virtual JKRHeap* getDataHeap();  // _18 (weak)
-	virtual bool initInstance(void* buffer, long bufferLength)
+	inline PrmDataMgrNode(B* data)
+	    : mPrmSetRc(nullptr)
+	    , _254(data)
 	{
-		bool success = initInstance();
-		if (success != false) {
+	}
+
+	virtual ~PrmDataMgrNode<A, B>() { } // _08 (weak)
+	virtual JKRHeap* getObjHeap();      // _14 (weak)
+	virtual JKRHeap* getDataHeap();     // _18 (weak)
+	virtual bool initInstance(void* buffer, s32 bufferLength)
+	{
+		if (initInstance()) {
 			JSUMemoryInputStream input;
 			input.setBuffer(buffer, bufferLength);
-			// TODO: vt _250 + 0x10
+			mPrmSetRc->load(input);
+			return true;
 		}
-		return success;
+		return false;
 	}                               // _1C (weak)
 	virtual bool initInstance() { } // _20 (weak)
+
+	// _00      = DataMgrBase*
+	// _04      = VTBL
+	// _08-_250 = DataMgrNode
+	JADUtility::PrmSetRc<PSAutoBgm::Track>* mPrmSetRc; // _250
+	B* _254;                                           // _254, unknown
+	                                                   // _258-_278 = DataMgrBase (virtual)
 };
 
 struct DataLoadMgrVirNode {
-	DataLoadMgrVirNode(unsigned long);
+	DataLoadMgrVirNode(u32);
 	~DataLoadMgrVirNode();
 	void init();
 	const char* getPath();
 };
 
 struct DataMgrVirNode {
-	DataMgrVirNode(unsigned long);
+	DataMgrVirNode(u32);
 	~DataMgrVirNode();
 	void init();
 	const char* getPath();

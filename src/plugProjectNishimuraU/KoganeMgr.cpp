@@ -5,10 +5,9 @@
 namespace Game {
 namespace Kogane {
 
-/*
- * --INFO--
- * Address:	8025D898
- * Size:	000050
+/**
+ * @note Address: 0x8025D898
+ * @note Size: 0x50
  */
 Mgr::Mgr(int objLimit, u8 modelType)
     : EnemyMgrBase(objLimit, modelType)
@@ -16,10 +15,9 @@ Mgr::Mgr(int objLimit, u8 modelType)
 	mName = "コガネマネージャ"; // kogane manager
 }
 
-/*
- * --INFO--
- * Address:	8025D8E8
- * Size:	0000E8
+/**
+ * @note Address: 0x8025D8E8
+ * @note Size: 0xE8
  */
 void Mgr::loadModelData()
 {
@@ -41,15 +39,14 @@ void Mgr::loadModelData()
 	EnemyMgrBase::loadModelData();
 	J3DShape* shape;
 	for (u16 j = 0; j < mModelData->getShapeNum(); j++) {
-		shape         = mModelData->mShapeTable.mItems[j];
-		shape->mFlags = (shape->mFlags & (~0xF000)) | 0x2000;
+		shape = mModelData->mShapeTable.mItems[j];
+		shape->setTexMtxLoadType(0x2000);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025D9D0
- * Size:	0000A0
+/**
+ * @note Address: 0x8025D9D0
+ * @note Size: 0xA0
  */
 void Mgr::loadAnimData()
 {
@@ -70,10 +67,9 @@ void Mgr::loadAnimData()
 	EnemyMgrBase::loadAnimData();
 }
 
-/*
- * --INFO--
- * Address:	8025DA70
- * Size:	000130
+/**
+ * @note Address: 0x8025DA70
+ * @note Size: 0x130
  */
 SysShape::Model* Mgr::createModel()
 {

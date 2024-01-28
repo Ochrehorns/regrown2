@@ -11,10 +11,9 @@ static const char name[] = "ebiScreenTitleMenu";
 namespace ebi {
 namespace Screen {
 
-/*
- * --INFO--
- * Address:	803D9CE0
- * Size:	000928
+/**
+ * @note Address: 0x803D9CE0
+ * @note Size: 0x928
  */
 void TTitleMenu::doSetArchive(JKRArchive* arc)
 {
@@ -71,7 +70,7 @@ void TTitleMenu::doSetArchive(JKRArchive* arc)
 
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 6; j++) {
-			mMainScreen->addCallBackPane(mCategoryPanes[j], &mAnims1[j * i]);
+			mMainScreen->addCallBackPane(mCategoryPanes[j], &mAnims1[i][j]);
 		}
 	}
 
@@ -84,46 +83,47 @@ void TTitleMenu::doSetArchive(JKRArchive* arc)
 
 	mMainScreen->addCallBackPane(mMainScreen, &mAnim8);
 
-	mAnims1[0].loadAnm("title_menu_5.bck", arc, 100, 221);
-	mAnims1[1].loadAnm("title_menu_5.bck", arc, 295, 421);
-	mAnims1[2].loadAnm("title_menu_5.bck", arc, 495, 621);
-	mAnims1[3].loadAnm("title_menu_5.bck", arc, 695, 821);
-	mAnims1[4].loadAnm("title_menu_5.bck", arc, 895, 1021);
-	mAnims1[5].loadAnm("title_menu_5.bck", arc, 1095, 1221);
-	mAnims1[6].loadAnm("title_menu_6.bck", arc, 100, 221);
-	mAnims1[7].loadAnm("title_menu_6.bck", arc, 295, 421);
-	mAnims1[8].loadAnm("title_menu_6.bck", arc, 495, 621);
-	mAnims1[9].loadAnm("title_menu_6.bck", arc, 695, 821);
-	mAnims1[10].loadAnm("title_menu_6.bck", arc, 895, 1021);
-	mAnims1[11].loadAnm("title_menu_6.bck", arc, 1095, 1221);
+	mAnims1[0][0].loadAnm("title_menu_5.bck", arc, 100, 221);
+	mAnims1[0][1].loadAnm("title_menu_5.bck", arc, 295, 421);
+	mAnims1[0][2].loadAnm("title_menu_5.bck", arc, 495, 621);
+	mAnims1[0][3].loadAnm("title_menu_5.bck", arc, 695, 821);
+	mAnims1[0][4].loadAnm("title_menu_5.bck", arc, 895, 1021);
+	mAnims1[0][5].loadAnm("title_menu_5.bck", arc, 1095, 1221);
+	mAnims1[1][0].loadAnm("title_menu_6.bck", arc, 100, 221);
+	mAnims1[1][1].loadAnm("title_menu_6.bck", arc, 295, 421);
+	mAnims1[1][2].loadAnm("title_menu_6.bck", arc, 495, 621);
+	mAnims1[1][3].loadAnm("title_menu_6.bck", arc, 695, 821);
+	mAnims1[1][4].loadAnm("title_menu_6.bck", arc, 895, 1021);
+	mAnims1[1][5].loadAnm("title_menu_6.bck", arc, 1095, 1221);
 
-	mAnims2[0].loadAnm("title_menu_6.bck", arc, 95, 109);
-	mAnims4[0].loadAnm("title_menu_6.bck", arc, 110, 229);
-	mAnims2[1].loadAnm("title_menu_6.bck", arc, 295, 309);
-	mAnims4[1].loadAnm("title_menu_6.bck", arc, 310, 429);
-	mAnims2[2].loadAnm("title_menu_6.bck", arc, 494, 509);
-	mAnims4[2].loadAnm("title_menu_6.bck", arc, 510, 629);
-	mAnims2[3].loadAnm("title_menu_6.bck", arc, 694, 709);
-	mAnims4[3].loadAnm("title_menu_6.bck", arc, 710, 829);
-	mAnims2[4].loadAnm("title_menu_6.bck", arc, 894, 909);
-	mAnims4[4].loadAnm("title_menu_6.bck", arc, 910, 1029);
-	mAnims2[5].loadAnm("title_menu_6.bck", arc, 1094, 1109);
-	mAnims4[5].loadAnm("title_menu_6.bck", arc, 1110, 1229);
+	char* path = "title_menu_6.bck";
+	mAnims2[0].loadAnm(path, arc, 95, 109);
+	mAnims4[0].loadAnm(path, arc, 110, 229);
+	mAnims2[1].loadAnm(path, arc, 295, 309);
+	mAnims4[1].loadAnm(path, arc, 310, 429);
+	mAnims2[2].loadAnm(path, arc, 494, 509);
+	mAnims4[2].loadAnm(path, arc, 510, 629);
+	mAnims2[3].loadAnm(path, arc, 694, 709);
+	mAnims4[3].loadAnm(path, arc, 710, 829);
+	mAnims2[4].loadAnm(path, arc, 894, 909);
+	mAnims4[4].loadAnm(path, arc, 910, 1029);
+	mAnims2[5].loadAnm(path, arc, 1094, 1109);
+	mAnims4[5].loadAnm(path, arc, 1110, 1229);
 
-	mAnims3[0].loadAnm("title_menu_6.bck", arc, 95, 109);
-	mAnims5[0].loadAnm("title_menu_6.bck", arc, 110, 229);
-	mAnims3[1].loadAnm("title_menu_6.bck", arc, 295, 309);
-	mAnims5[1].loadAnm("title_menu_6.bck", arc, 310, 429);
-	mAnims3[2].loadAnm("title_menu_6.bck", arc, 494, 509);
-	mAnims5[2].loadAnm("title_menu_6.bck", arc, 510, 629);
-	mAnims3[3].loadAnm("title_menu_6.bck", arc, 694, 709);
-	mAnims5[3].loadAnm("title_menu_6.bck", arc, 710, 829);
-	mAnims3[4].loadAnm("title_menu_6.bck", arc, 894, 909);
-	mAnims5[4].loadAnm("title_menu_6.bck", arc, 910, 1029);
-	mAnims3[5].loadAnm("title_menu_6.bck", arc, 1094, 1109);
-	mAnims5[5].loadAnm("title_menu_6.bck", arc, 1110, 1229);
+	mAnims3[0].loadAnm(path, arc, 95, 109);
+	mAnims5[0].loadAnm(path, arc, 110, 229);
+	mAnims3[1].loadAnm(path, arc, 295, 309);
+	mAnims5[1].loadAnm(path, arc, 310, 429);
+	mAnims3[2].loadAnm(path, arc, 494, 509);
+	mAnims5[2].loadAnm(path, arc, 510, 629);
+	mAnims3[3].loadAnm(path, arc, 694, 709);
+	mAnims5[3].loadAnm(path, arc, 710, 829);
+	mAnims3[4].loadAnm(path, arc, 894, 909);
+	mAnims5[4].loadAnm(path, arc, 910, 1029);
+	mAnims3[5].loadAnm(path, arc, 1094, 1109);
+	mAnims5[5].loadAnm(path, arc, 1110, 1229);
 
-	mAnim6.loadAnm("title_menu_6.bck", arc, 0, 100);
+	mAnim6.loadAnm(path, arc, 0, 100);
 	mAnim7.loadAnm("title_menu_5.bck", arc, 0, 100);
 	E2DPane_setTreeInfluencedAlpha(mMainScreen, true);
 
@@ -140,10 +140,9 @@ void TTitleMenu::doSetArchive(JKRArchive* arc)
 	sys->heapStatusEnd("TTitleMenu::setArchive");
 }
 
-/*
- * --INFO--
- * Address:	803DA608
- * Size:	00021C
+/**
+ * @note Address: 0x803DA608
+ * @note Size: 0x21C
  */
 void TTitleMenu::doOpenScreen(ArgOpen* arg)
 {
@@ -151,9 +150,13 @@ void TTitleMenu::doOpenScreen(ArgOpen* arg)
 	P2ASSERTLINE(197, arg);
 
 	ArgOpenTitleMenu* sarg = static_cast<ArgOpenTitleMenu*>(arg);
+	bool check             = false;
 	mState                 = sarg->_04;
 	mSelectID              = sarg->mSelectID;
-	P2ASSERTBOUNDSLINE(203, 0, mState, 2);
+	if (mState >= 0 && mState < 2) {
+		check = true;
+	}
+	P2ASSERTLINE(203, check);
 
 	E2DPane_setTreeShow(mMainScreen);
 
@@ -191,10 +194,9 @@ void TTitleMenu::doOpenScreen(ArgOpen* arg)
 	mMainScreen->setAlpha(255);
 }
 
-/*
- * --INFO--
- * Address:	803DA824
- * Size:	0001C4
+/**
+ * @note Address: 0x803DA824
+ * @note Size: 0x1C4
  */
 void TTitleMenu::doInitWaitState()
 {
@@ -202,18 +204,18 @@ void TTitleMenu::doInitWaitState()
 	case 0:
 		mAnim7.setEndFrame();
 		for (int i = 0; i < 6; i++) {
-			mAnims1[i + 6].stop();
+			mAnims1[1][i].stop();
 		}
 		break;
 	case 1:
 		mAnim6.setEndFrame();
 		for (int i = 0; i < 6; i++) {
-			mAnims1[i].stop();
+			mAnims1[0][i].stop();
 		}
 		break;
 	}
 
-	mAnims1[mSelectID + (mState * 6)].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnims1[mState][mSelectID].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
 	showPika_(mSelectID);
 
 	for (int i = 0; i < 6; i++) {
@@ -231,28 +233,26 @@ void TTitleMenu::doInitWaitState()
 	mMenuCloseCounterMax = count;
 }
 
-/*
- * --INFO--
- * Address:	803DA9E8
- * Size:	000070
+/**
+ * @note Address: 0x803DA9E8
+ * @note Size: 0x70
  */
 void TTitleMenu::doCloseScreen(ArgClose*)
 {
 	if (mDoCloseMenu) {
-		u32 count            = 1.0f / sys->mDeltaTime;
+		u32 count            = 0.2f / sys->mDeltaTime;
 		mMenuCloseCounter    = count;
 		mMenuCloseCounterMax = count;
 	} else {
-		u32 count            = 0.2f / sys->mDeltaTime;
+		u32 count            = 1.0f / sys->mDeltaTime;
 		mMenuCloseCounter    = count;
 		mMenuCloseCounterMax = count;
 	}
 }
 
-/*
- * --INFO--
- * Address:	803DAA58
- * Size:	000084
+/**
+ * @note Address: 0x803DAA58
+ * @note Size: 0x84
  */
 bool TTitleMenu::doUpdateStateOpen()
 {
@@ -269,10 +269,9 @@ bool TTitleMenu::doUpdateStateOpen()
 	return u8(anm->isFinish() != 0);
 }
 
-/*
- * --INFO--
- * Address:	803DAADC
- * Size:	000470
+/**
+ * @note Address: 0x803DAADC
+ * @note Size: 0x470
  */
 bool TTitleMenu::doUpdateStateWait()
 {
@@ -292,13 +291,13 @@ bool TTitleMenu::doUpdateStateWait()
 		int id = mPad.mLastIndex;
 		// skip over challenge mode if its not unlocked
 		if (mState == 0 && mSelectID == 2) {
-			if (id < 2) {
-				mSelectID = 1;
+			if (id < mSelectID) {
+				mSelectID++;
 			} else {
-				mSelectID = 3;
+				mSelectID--;
 			}
 		}
-		mAnims1[mSelectID + (mState * 6)].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnims1[mState][mSelectID].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
 		showPika_(mSelectID);
 		mObjIcon[mSelectID].start();
 		mObjIcon2[mSelectID].start();
@@ -310,13 +309,13 @@ bool TTitleMenu::doUpdateStateWait()
 		mMenuCloseCounter    = count;
 		mMenuCloseCounterMax = count;
 	}
-	if (mAnims1[mSelectID + (mState * 6)].isFinish()) {
-		if (randFloat() < 0.2f) {
+	if (mAnims1[mState][mSelectID].isFinish()) {
+		if (randEbisawaFloat() < 0.2f) {
 			showPika_(mSelectID);
 		} else {
 			hidePika_(mSelectID);
 		}
-		mAnims1[mSelectID + (mState * 6)].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnims1[mState][mSelectID].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
 	}
 
 	if (mController->mButton.mButtonDown & Controller::PRESS_A || mController->mButton.mButtonDown & Controller::PRESS_START) {
@@ -339,10 +338,9 @@ bool TTitleMenu::doUpdateStateWait()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803DAF4C
- * Size:	0000D4
+/**
+ * @note Address: 0x803DAF4C
+ * @note Size: 0xD4
  */
 bool TTitleMenu::doUpdateStateClose()
 {
@@ -367,31 +365,29 @@ bool TTitleMenu::doUpdateStateClose()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803DB020
- * Size:	000074
+/**
+ * @note Address: 0x803DB020
+ * @note Size: 0x74
  */
 void TTitleMenu::doDraw()
 {
-	Graphics* gfx       = sys->mGfx;
-	J2DPerspGraph* graf = &gfx->mPerspGraph;
+	J2DPerspGraph* graf;
+	Graphics* gfx = sys->mGfx;
+	graf          = &gfx->mPerspGraph;
 
 	graf->setPort();
 	mMainScreen->draw(*gfx, *graf);
 }
 
-/*
- * --INFO--
- * Address:	803DB094
- * Size:	000008
+/**
+ * @note Address: 0x803DB094
+ * @note Size: 0x8
  */
 void TTitleMenu::setController(Controller* a1) { mController = a1; }
 
-/*
- * --INFO--
- * Address:	803DB09C
- * Size:	000060
+/**
+ * @note Address: 0x803DB09C
+ * @note Size: 0x60
  */
 bool TTitleMenu::openMenuSet(ArgOpen* arg)
 {
@@ -402,38 +398,34 @@ bool TTitleMenu::openMenuSet(ArgOpen* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803DB0FC
- * Size:	000008
+/**
+ * @note Address: 0x803DB0FC
+ * @note Size: 0x8
  */
 bool TTitleMenu::isDecide() { return mDecidedMenuOption; }
 
-/*
- * --INFO--
- * Address:	803DB104
- * Size:	000008
+/**
+ * @note Address: 0x803DB104
+ * @note Size: 0x8
  */
 bool TTitleMenu::isCancel() { return mDoCloseMenu; }
 
-/*
- * --INFO--
- * Address:	803DB10C
- * Size:	00003C
+/**
+ * @note Address: 0x803DB10C
+ * @note Size: 0x3C
  */
-void TTitleMenu::showPika_(long id)
+void TTitleMenu::showPika_(s32 id)
 {
 	for (int i = 0; i < mPikiCounts[id]; i++) {
 		mPikaPanes[id][i]->show();
 	}
 }
 
-/*
- * --INFO--
- * Address:	803DB148
- * Size:	00003C
+/**
+ * @note Address: 0x803DB148
+ * @note Size: 0x3C
  */
-void TTitleMenu::hidePika_(long id)
+void TTitleMenu::hidePika_(s32 id)
 {
 	for (int i = 0; i < mPikiCounts[id]; i++) {
 		mPikaPanes[id][i]->hide();

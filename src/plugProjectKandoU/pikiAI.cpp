@@ -26,10 +26,9 @@ namespace Game {
 
 u8 Piki::sGraspSituationOptimise = 1;
 
-/*
- * --INFO--
- * Address:	801B07C0
- * Size:	000BA0
+/**
+ * @note Address: 0x801B07C0
+ * @note Size: 0xBA0
  */
 int Piki::graspSituation_Fast(Game::Creature** outTarget)
 {
@@ -51,7 +50,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 
 	Sys::Sphere sphere(mPosition, 300.0f);
 	CellIteratorArg iterArg(sphere);
-	iterArg.mIsSphereCollisionDisabled = true;
+	iterArg.mOptimise = true;
 
 	CellIterator iter(iterArg);
 	CI_LOOP(iter)
@@ -110,7 +109,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 			    && (waterCheck || !waterCheck && !creature->inWater())) {
 				if (isGrabbable && !isZikatu() && (!gameSystem->isVersusMode() || pellet->getBedamaColor() != getKind())) {
 					f32 sphereDist = creature->calcSphereDistance(this);
-					if (!isActionSet && sphereDist < minDist && sphereDist < *pikiMgr->mParms->mPikiParms.mPelletSearchRange()) {
+					if (!isActionSet && sphereDist < minDist && sphereDist < pikiMgr->mParms->mPikiParms.mPelletSearchRange()) {
 						minDist = sphereDist;
 						target  = creature;
 						action  = PikiAI::ACT_Transport;
@@ -141,7 +140,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 
 				if (gate->isAlive() && isAttackable) {
 					f32 workDist = gate->getWorkDistance(mBoundingSphere);
-					if (!isActionSet && workDist < minDist && workDist < *pikiMgr->mParms->mPikiParms.mNectarRockRangeDuplicate()) {
+					if (!isActionSet && workDist < minDist && workDist < pikiMgr->mParms->mPikiParms.mNectarRockRangeDuplicate()) {
 						minDist = workDist;
 						target  = gate;
 						action  = PikiAI::ACT_BreakGate;
@@ -155,7 +154,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 				ItemBridge::Item* bridge = static_cast<ItemBridge::Item*>(creature);
 				if (bridge->isAlive() && bridge->workable(mPosition)) {
 					f32 workDist = bridge->getWorkDistance(mBoundingSphere);
-					if (workDist < minDist && workDist < *pikiMgr->mParms->mPikiParms.mBridgeSearchRange()) {
+					if (workDist < minDist && workDist < pikiMgr->mParms->mPikiParms.mBridgeSearchRange()) {
 						minDist = workDist;
 						target  = bridge;
 						action  = PikiAI::ACT_Bridge;
@@ -168,7 +167,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 			ItemRock::Item* mold = static_cast<ItemRock::Item*>(creature);
 			if (mold->isAlive()) {
 				f32 workDist = mold->getWorkDistance(mBoundingSphere);
-				if (workDist < minDist && workDist < *pikiMgr->mParms->mPikiParms.mNectarRockSearchRange()) {
+				if (workDist < minDist && workDist < pikiMgr->mParms->mPikiParms.mNectarRockSearchRange()) {
 					minDist = workDist;
 					target  = mold;
 					action  = PikiAI::ACT_BreakRock;
@@ -180,7 +179,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 			ItemBigFountain::Item* geyser = static_cast<ItemBigFountain::Item*>(creature);
 			if (geyser->isAlive()) {
 				f32 workDist = geyser->getWorkDistance(mBoundingSphere);
-				if (workDist < minDist && workDist < *pikiMgr->mParms->mPikiParms.mNectarRockSearchRange()) {
+				if (workDist < minDist && workDist < pikiMgr->mParms->mPikiParms.mNectarRockSearchRange()) {
 					minDist = workDist;
 					target  = geyser;
 					action  = PikiAI::ACT_BreakRock;
@@ -192,7 +191,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 			ItemBarrel::Item* clog = static_cast<ItemBarrel::Item*>(creature);
 			if (clog->isAlive() && (waterCheck || (!waterCheck && !clog->inWater()))) {
 				f32 workDist = clog->getWorkDistance(mBoundingSphere);
-				if (workDist < minDist && workDist < *pikiMgr->mParms->mPikiParms.mClogSearchRange()) {
+				if (workDist < minDist && workDist < pikiMgr->mParms->mPikiParms.mClogSearchRange()) {
 					minDist = workDist;
 					target  = clog;
 					action  = PikiAI::ACT_BreakRock;
@@ -204,7 +203,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 			ItemTreasure::Item* treasure = static_cast<ItemTreasure::Item*>(creature);
 			if (!isActionSet && treasure->isAlive() && (treasure->isVisible() || (!treasure->isVisible() && getKind() == White))) {
 				f32 workDist = treasure->getWorkDistance(mBoundingSphere);
-				if (workDist < minDist && workDist < *pikiMgr->mParms->mPikiParms.mBuriedTreasureSearchRange()) {
+				if (workDist < minDist && workDist < pikiMgr->mParms->mPikiParms.mBuriedTreasureSearchRange()) {
 					minDist = workDist;
 					target  = treasure;
 					action  = PikiAI::ACT_BreakRock;
@@ -215,8 +214,8 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 		case OBJTYPE_Ujamushi:
 		case OBJTYPE_Weed: { // can we pluck the grass/attack the ujadani?
 			if (creature->isAlive() && creature->getFlockMgr() && creature->getFlockMgr()->isAttackable()) {
-				f32 radius        = creature->getFlockMgr()->_0C.mRadius;
-				Vector3f flockPos = creature->getFlockMgr()->_0C.mPosition;
+				f32 radius        = creature->getFlockMgr()->mActivationSpherePosition.mRadius;
+				Vector3f flockPos = creature->getFlockMgr()->mActivationSpherePosition.mPosition;
 				f32 dist          = flockPos.distance(mPosition);
 				if (dist < radius) {
 					minDist = dist;
@@ -231,7 +230,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 			if (plant->isAlive()) {
 				Vector3f plantPos = plant->getPosition();
 				f32 dist          = plantPos.distance(mBoundingSphere.mPosition);
-				if (dist < minDist && dist < *pikiMgr->mParms->mPikiParms.mNectarRockSearchRange()) {
+				if (dist < minDist && dist < pikiMgr->mParms->mPikiParms.mNectarRockSearchRange()) {
 					minDist = dist;
 					target  = plant;
 					action  = PikiAI::ACT_Crop;
@@ -247,7 +246,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 					Sys::Sphere naviSphere;
 					navi->getBoundingSphere(naviSphere);
 					f32 heightCheck = FABS(naviSphere.mPosition.y - mPosition.y) - (naviSphere.mRadius + mBoundingSphere.mRadius);
-					if (sphereDist < minDist && sphereDist < *pikiMgr->mParms->mPikiParms.mEnemySearchRange() && heightCheck < 30.0f) {
+					if (sphereDist < minDist && sphereDist < pikiMgr->mParms->mPikiParms.mEnemySearchRange() && heightCheck < 30.0f) {
 						minDist = sphereDist;
 						target  = navi;
 						action  = PikiAI::ACT_Attack;
@@ -263,7 +262,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 				Sys::Sphere enemySphere;
 				enemy->getBoundingSphere(enemySphere);
 				f32 heightCheck = FABS(enemySphere.mPosition.y - mPosition.y) - (enemySphere.mRadius + mBoundingSphere.mRadius);
-				if (sphereDist < minDist && sphereDist < *pikiMgr->mParms->mPikiParms.mEnemySearchRange() && heightCheck < 30.0f) {
+				if (sphereDist < minDist && sphereDist < pikiMgr->mParms->mPikiParms.mEnemySearchRange() && heightCheck < 30.0f) {
 					minDist = sphereDist;
 					target  = enemy;
 					action  = PikiAI::ACT_Attack;
@@ -277,10 +276,9 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 	return action;
 }
 
-/*
- * --INFO--
- * Address:	801B1360
- * Size:	001A04
+/**
+ * @note Address: 0x801B1360
+ * @note Size: 0x1A04
  */
 int Piki::graspSituation(Game::Creature** outTarget)
 {
@@ -342,7 +340,7 @@ int Piki::graspSituation(Game::Creature** outTarget)
 
 	// check for pellets to grab
 	Pellet* targetPellet = nullptr;
-	f32 minPelDist       = *pikiMgr->mParms->mPikiParms.mPelletSearchRange();
+	f32 minPelDist       = pikiMgr->mParms->mPikiParms.mPelletSearchRange();
 
 	PelletIterator pelIter;
 	CI_LOOP(pelIter)
@@ -376,7 +374,7 @@ int Piki::graspSituation(Game::Creature** outTarget)
 	// check for gates to attack (NB: no poison check?)
 	if (itemGateMgr) {
 		ItemGate* targetGate = nullptr;
-		f32 minGateDist      = *pikiMgr->mParms->mPikiParms.mNectarRockRangeDuplicate();
+		f32 minGateDist      = pikiMgr->mParms->mPikiParms.mNectarRockRangeDuplicate();
 		Iterator<ItemGate> gateIter(&itemGateMgr->mNodeObjectMgr);
 		CI_LOOP(gateIter)
 		{
@@ -400,7 +398,7 @@ int Piki::graspSituation(Game::Creature** outTarget)
 	// check for electric gates to attack
 	if (ItemDengekiGate::mgr) {
 		ItemGate* targetGate = nullptr;
-		f32 minGateDist      = *pikiMgr->mParms->mPikiParms.mNectarRockRangeDuplicate();
+		f32 minGateDist      = pikiMgr->mParms->mPikiParms.mNectarRockRangeDuplicate();
 		Iterator<ItemGate> gateIter(ItemDengekiGate::mgr);
 		CI_LOOP(gateIter)
 		{
@@ -424,7 +422,7 @@ int Piki::graspSituation(Game::Creature** outTarget)
 	// check for bridges to build
 	if (ItemBridge::mgr) {
 		ItemBridge::Item* targetBridge = nullptr;
-		f32 minBridgeDist              = *pikiMgr->mParms->mPikiParms.mBridgeSearchRange();
+		f32 minBridgeDist              = pikiMgr->mParms->mPikiParms.mBridgeSearchRange();
 		Iterator<BaseItem> bridgeIter(ItemBridge::mgr);
 		CI_LOOP(bridgeIter)
 		{
@@ -448,7 +446,7 @@ int Piki::graspSituation(Game::Creature** outTarget)
 	// check for mold to attack
 	if (ItemRock::mgr) {
 		ItemRock::Item* targetRock = nullptr;
-		f32 minRockDist            = *pikiMgr->mParms->mPikiParms.mNectarRockSearchRange();
+		f32 minRockDist            = pikiMgr->mParms->mPikiParms.mNectarRockSearchRange();
 		Iterator<BaseItem> rockIter(ItemRock::mgr);
 		CI_LOOP(rockIter)
 		{
@@ -472,7 +470,7 @@ int Piki::graspSituation(Game::Creature** outTarget)
 	// check for geysers to break
 	if (ItemBigFountain::mgr) {
 		ItemBigFountain::Item* targetGeyser = nullptr;
-		f32 minGeyserDist                   = *pikiMgr->mParms->mPikiParms.mNectarRockSearchRange();
+		f32 minGeyserDist                   = pikiMgr->mParms->mPikiParms.mNectarRockSearchRange();
 		Iterator<BaseItem> geyserIter(ItemBigFountain::mgr);
 		CI_LOOP(geyserIter)
 		{
@@ -496,7 +494,7 @@ int Piki::graspSituation(Game::Creature** outTarget)
 	// check for clogs to break
 	if (ItemBarrel::mgr) {
 		ItemBarrel::Item* targetClog = nullptr;
-		f32 minClogDist              = *pikiMgr->mParms->mPikiParms.mClogSearchRange();
+		f32 minClogDist              = pikiMgr->mParms->mPikiParms.mClogSearchRange();
 		Iterator<BaseItem> clogIter(ItemBarrel::mgr);
 		CI_LOOP(clogIter)
 		{
@@ -520,7 +518,7 @@ int Piki::graspSituation(Game::Creature** outTarget)
 	// check for buried treasures to dig
 	if (ItemTreasure::mgr) {
 		ItemTreasure::Item* targetTreasure = nullptr;
-		f32 minTreasureDist                = *pikiMgr->mParms->mPikiParms.mBuriedTreasureSearchRange();
+		f32 minTreasureDist                = pikiMgr->mParms->mPikiParms.mBuriedTreasureSearchRange();
 		Iterator<BaseItem> treasureIter(ItemTreasure::mgr);
 		CI_LOOP(treasureIter)
 		{
@@ -544,7 +542,7 @@ int Piki::graspSituation(Game::Creature** outTarget)
 	// check for spiderworts to harvest berries from
 	if (ItemPlant::mgr) {
 		ItemPlant::Item* targetPlant = nullptr;
-		f32 minPlantDist             = *pikiMgr->mParms->mPikiParms.mSpiderWortSearchRange();
+		f32 minPlantDist             = pikiMgr->mParms->mPikiParms.mSpiderWortSearchRange();
 		Iterator<BaseItem> plantIter(ItemPlant::mgr);
 		CI_LOOP(plantIter)
 		{
@@ -568,7 +566,7 @@ int Piki::graspSituation(Game::Creature** outTarget)
 
 	// check if we have an enemy to fight
 	EnemyBase* targetTeki = nullptr;
-	f32 minTekiDist       = *pikiMgr->mParms->mPikiParms.mEnemySearchRange();
+	f32 minTekiDist       = pikiMgr->mParms->mPikiParms.mEnemySearchRange();
 	GeneralMgrIterator<EnemyBase> tekiIter(generalEnemyMgr);
 	CI_LOOP(tekiIter)
 	{
@@ -591,10 +589,9 @@ int Piki::graspSituation(Game::Creature** outTarget)
 	return action;
 }
 
-/*
- * --INFO--
- * Address:	801B2DB0
- * Size:	0007D4
+/**
+ * @note Address: 0x801B2DB0
+ * @note Size: 0x7D4
  */
 bool Piki::invokeAI(Game::CollEvent* event, bool check)
 {
@@ -605,7 +602,7 @@ bool Piki::invokeAI(Game::CollEvent* event, bool check)
 		formCheck = false;
 	}
 
-	if (check && creature->isAlive() && creature->getFlockMgr() && creature->getFlockMgr()->isAttackable()) {
+	if (formCheck && creature->isAlive() && creature->getFlockMgr() && creature->getFlockMgr()->isAttackable()) {
 		PikiAI::ActWeedArg weedArg;
 		weedArg.mWeed = static_cast<ItemWeed::Item*>(creature);
 		return mBrain->start(PikiAI::ACT_Weed, &weedArg);
@@ -758,10 +755,9 @@ bool Piki::invokeAI(Game::CollEvent* event, bool check)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801B3584
- * Size:	0002C4
+/**
+ * @note Address: 0x801B3584
+ * @note Size: 0x2C4
  */
 bool Piki::invokeAI(Game::PlatEvent* event)
 {
@@ -820,10 +816,9 @@ bool Piki::invokeAI(Game::PlatEvent* event)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801B3848
- * Size:	0000B0
+/**
+ * @note Address: 0x801B3848
+ * @note Size: 0xB0
  */
 bool Piki::invokeAIFree(Game::Piki::InvokeAIFreeArg& arg)
 {
@@ -837,10 +832,9 @@ bool Piki::invokeAIFree(Game::Piki::InvokeAIFreeArg& arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801B38F8
- * Size:	000310
+/**
+ * @note Address: 0x801B38F8
+ * @note Size: 0x310
  */
 bool Piki::checkInvokeAI(bool isSimpleCheck)
 {
@@ -919,10 +913,9 @@ bool Piki::checkInvokeAI(bool isSimpleCheck)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801B3C08
- * Size:	000054
+/**
+ * @note Address: 0x801B3C08
+ * @note Size: 0x54
  */
 bool Piki::invokeAI()
 {
@@ -934,10 +927,9 @@ bool Piki::invokeAI()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	801B3C5C
- * Size:	000028
+/**
+ * @note Address: 0x801B3C5C
+ * @note Size: 0x28
  */
 bool Piki::setActTransportArg(PikiAI::ActTransportArg& actTransportArg)
 {

@@ -6,10 +6,9 @@
 namespace Game {
 namespace Kogane {
 
-/*
- * --INFO--
- * Address:	8025CD48
- * Size:	0001D4
+/**
+ * @note Address: 0x8025CD48
+ * @note Size: 0x1D4
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -21,14 +20,13 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StatePress);
 }
 
-/*
- * --INFO--
- * Address:	8025CF1C
- * Size:	000098
+/**
+ * @note Address: 0x8025CF1C
+ * @note Size: 0x98
  */
 void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kogane = static_cast<Obj*>(enemy);
+	Obj* kogane = OBJ(enemy);
 	kogane->setAtari(false);
 	kogane->enableEvent(0, EB_BitterImmune);
 	kogane->hardConstraintOn();
@@ -36,31 +34,29 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	kogane->enableEvent(0, EB_ModelHidden);
 
 	kogane->mTargetVelocity = Vector3f(0.0f);
-	kogane->startMotion(0, nullptr);
+	kogane->startMotion(KOGANEANIM_Move, nullptr);
 	kogane->stopMotion();
 }
 
-/*
- * --INFO--
- * Address:	8025CFB4
- * Size:	000064
+/**
+ * @note Address: 0x8025CFB4
+ * @note Size: 0x64
  */
 void StateAppear::exec(EnemyBase* enemy)
 {
-	Obj* kogane = static_cast<Obj*>(enemy);
+	Obj* kogane = OBJ(enemy);
 	if (kogane->isAppear()) {
 		transit(kogane, KOGANE_Move, nullptr);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025D018
- * Size:	0001A0
+/**
+ * @note Address: 0x8025D018
+ * @note Size: 0x1A0
  */
 void StateAppear::cleanup(EnemyBase* enemy)
 {
-	Obj* kogane = static_cast<Obj*>(enemy);
+	Obj* kogane = OBJ(enemy);
 	kogane->setAtari(true);
 
 	kogane->disableEvent(0, EB_BitterImmune);
@@ -74,40 +70,38 @@ void StateAppear::cleanup(EnemyBase* enemy)
 	kogane->startMotion();
 
 	efx::TKoganeDive diveEffect;
-	efx::ArgScale scaleArg(kogane->getPosition(), static_cast<Parms*>(kogane->mParms)->mProperParms.mScale.mValue);
+	efx::ArgScale scaleArg(kogane->getPosition(), CG_PROPERPARMS(kogane).mScale.mValue);
 	diveEffect.create(&scaleArg);
 
 	kogane->startBodyEffect();
 	kogane->getJAIObject()->startSound(PSSE_EN_TAMAGOMUSHI_APPEAR, 0);
 }
 
-/*
- * --INFO--
- * Address:	8025D1BC
- * Size:	000138
+/**
+ * @note Address: 0x8025D1BC
+ * @note Size: 0x138
  */
 void StateDisappear::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kogane = static_cast<Obj*>(enemy);
+	Obj* kogane = OBJ(enemy);
 
 	kogane->enableEvent(0, EB_BitterImmune);
 
 	efx::TKoganeDive diveEffect;
-	efx::ArgScale scaleArg(kogane->getPosition(), static_cast<Parms*>(kogane->mParms)->mProperParms.mScale.mValue);
+	efx::ArgScale scaleArg(kogane->getPosition(), CG_PROPERPARMS(kogane).mScale.mValue);
 	diveEffect.create(&scaleArg);
 
 	kogane->finishBodyEffect();
 	kogane->getJAIObject()->startSound(PSSE_EN_TAMAGOMUSHI_DIVE, 0);
 }
 
-/*
- * --INFO--
- * Address:	8025D2F8
- * Size:	00006C
+/**
+ * @note Address: 0x8025D2F8
+ * @note Size: 0x6C
  */
 void StateDisappear::exec(EnemyBase* enemy)
 {
-	Obj* kogane = static_cast<Obj*>(enemy);
+	Obj* kogane = OBJ(enemy);
 
 	if (kogane->koganeScaleDown()) {
 		if (kogane->transitDisappear()) {
@@ -119,46 +113,43 @@ void StateDisappear::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025D364
- * Size:	000004
+/**
+ * @note Address: 0x8025D364
+ * @note Size: 0x4
  */
 void StateDisappear::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8025D368
- * Size:	00006C
+/**
+ * @note Address: 0x8025D368
+ * @note Size: 0x6C
  */
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kogane = static_cast<Obj*>(enemy);
+	Obj* kogane = OBJ(enemy);
 
-	Parms* parms = static_cast<Parms*>(kogane->mParms);
+	Parms* parms = CG_PARMS(kogane);
 	kogane->resetMoveTimer(parms->mProperParms.mMinTravelTime.mValue, parms->mProperParms.mMaxTravelTime.mValue);
 	kogane->setTargetPosition(nullptr);
-	kogane->startMotion(0, nullptr);
+	kogane->startMotion(KOGANEANIM_Move, nullptr);
 	kogane->createFartEffect();
 }
 
-/*
- * --INFO--
- * Address:	8025D3D8
- * Size:	000138
+/**
+ * @note Address: 0x8025D3D8
+ * @note Size: 0x138
  */
 void StateMove::exec(EnemyBase* enemy)
 {
-	Obj* kogane = static_cast<Obj*>(enemy);
+	Obj* kogane = OBJ(enemy);
 
 	kogane->koganeScaleUp();
 	Vector3f targetPos = Vector3f(kogane->mTargetPosition);
-	Parms* parms       = static_cast<Parms*>(kogane->mParms);
-	EnemyFunc::walkToTarget(kogane, targetPos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mRotationalAccel.mValue,
-	                        parms->mGeneral.mRotationalSpeed.mValue);
+	Parms* parms       = CG_PARMS(kogane);
+	EnemyFunc::walkToTarget(kogane, targetPos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
+	                        parms->mGeneral.mMaxTurnAngle.mValue);
 
-	if ((kogane->mAppearTimer > static_cast<Parms*>(kogane->mParms)->mProperParms.mMaxAppearTime.mValue)
-	    || (kogane->mMoveTimer > static_cast<Parms*>(kogane->mParms)->mProperParms.mMaxTravelTime.mValue)) {
+	if ((kogane->mAppearTimer > CG_PROPERPARMS(kogane).mMaxAppearTime.mValue)
+	    || (kogane->mMoveTimer > CG_PROPERPARMS(kogane).mMaxTravelTime.mValue)) {
 		kogane->finishMotion();
 	}
 
@@ -166,7 +157,7 @@ void StateMove::exec(EnemyBase* enemy)
 	kogane->mMoveTimer += sys->mDeltaTime;
 
 	if (kogane->mCurAnim->mIsPlaying && (u32)kogane->mCurAnim->mType == KEYEVENT_END) {
-		if (kogane->mAppearTimer > static_cast<Parms*>(kogane->mParms)->mProperParms.mMaxAppearTime.mValue) {
+		if (kogane->mAppearTimer > CG_PROPERPARMS(kogane).mMaxAppearTime.mValue) {
 			transit(kogane, KOGANE_Disappear, nullptr);
 		} else {
 			transit(kogane, KOGANE_Wait, nullptr);
@@ -174,40 +165,37 @@ void StateMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025D510
- * Size:	000004
+/**
+ * @note Address: 0x8025D510
+ * @note Size: 0x4
  */
 void StateMove::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8025D514
- * Size:	00005C
+/**
+ * @note Address: 0x8025D514
+ * @note Size: 0x5C
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kogane = static_cast<Obj*>(enemy);
+	Obj* kogane = OBJ(enemy);
 
-	Parms* parms = static_cast<Parms*>(kogane->mParms);
+	Parms* parms = CG_PARMS(kogane);
 	kogane->resetMoveTimer(parms->mProperParms.mMinStopTime.mValue, parms->mProperParms.mMaxStopTime.mValue);
 
 	kogane->mTargetVelocity = Vector3f(0.0f);
-	kogane->startMotion(1, nullptr);
+	kogane->startMotion(KOGANEANIM_Wait, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8025D570
- * Size:	0000BC
+/**
+ * @note Address: 0x8025D570
+ * @note Size: 0xBC
  */
 void StateWait::exec(EnemyBase* enemy)
 {
-	Obj* kogane = static_cast<Obj*>(enemy);
+	Obj* kogane = OBJ(enemy);
 
 	kogane->koganeScaleUp();
-	if (kogane->mMoveTimer > static_cast<Parms*>(kogane->mParms)->mProperParms.mMaxStopTime.mValue) {
+	if (kogane->mMoveTimer > CG_PROPERPARMS(kogane).mMaxStopTime.mValue) {
 		kogane->finishMotion();
 	}
 
@@ -219,40 +207,37 @@ void StateWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025D62C
- * Size:	000004
+/**
+ * @note Address: 0x8025D62C
+ * @note Size: 0x4
  */
 void StateWait::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8025D630
- * Size:	00011C
+/**
+ * @note Address: 0x8025D630
+ * @note Size: 0x11C
  */
 void StatePress::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kogane = static_cast<Obj*>(enemy);
+	Obj* kogane = OBJ(enemy);
 
 	kogane->disableEvent(0, EB_NoInterrupt);
 
 	efx::TKoganeHit hitEffect;
-	efx::ArgScale scaleArg(kogane->getPosition(), static_cast<Parms*>(kogane->mParms)->mProperParms.mScale.mValue);
+	efx::ArgScale scaleArg(kogane->getPosition(), CG_PROPERPARMS(kogane).mScale.mValue);
 	hitEffect.create(&scaleArg);
 
-	kogane->startMotion(2, nullptr);
+	kogane->startMotion(KOGANEANIM_Damage, nullptr);
 	kogane->createPressSENormal();
 }
 
-/*
- * --INFO--
- * Address:	8025D750
- * Size:	000130
+/**
+ * @note Address: 0x8025D750
+ * @note Size: 0x130
  */
 void StatePress::exec(EnemyBase* enemy)
 {
-	Obj* kogane = static_cast<Obj*>(enemy);
+	Obj* kogane = OBJ(enemy);
 
 	kogane->koganeScaleUp();
 	kogane->mAppearTimer += sys->mDeltaTime;
@@ -276,10 +261,9 @@ void StatePress::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025D888
- * Size:	000010
+/**
+ * @note Address: 0x8025D888
+ * @note Size: 0x10
  */
 void StatePress::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInterrupt); }
 

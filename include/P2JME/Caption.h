@@ -7,11 +7,7 @@ namespace P2JME {
 namespace Caption {
 
 struct TRenderingProcessor : public P2JME::Window::TRenderingProcessor {
-	TRenderingProcessor(JMessage::TReference* ref)
-	    : Window::TRenderingProcessor(ref)
-	{
-		_144 = 1.0f;
-	}
+	TRenderingProcessor(JMessage::TReference* ref);
 
 	virtual ~TRenderingProcessor() { }                       // _08 (weak)
 	virtual BOOL doDrawCommon(f32, f32, Matrixf*, Matrixf*); // _84
@@ -31,8 +27,8 @@ struct TSequenceProcessor : public P2JME::Window::TSequenceProcessor {
 	virtual ~TSequenceProcessor() { }          // _08 (weak)
 	virtual bool do_isReady() { return true; } // _48 (weak)
 	virtual void doResetAbtnWaitSE() { }       // _60 (weak)
-	virtual void doCharacterSEStart() { }      // _64 (weak)
 	virtual void doCharacterSE(int) { }        // _68 (weak)
+	virtual void doCharacterSEStart() { }      // _64 (weak)
 	virtual void doCharacterSEEnd() { }        // _6C (weak)
 
 	// _00     = VTBL
@@ -49,8 +45,8 @@ struct TControl : public P2JME::Window::TControl {
 	virtual void createSequenceProcessor() { mSequenceProc = new Caption::TSequenceProcessor(getReference(), this); } // _40 (weak)
 	virtual void createRenderingProcessor() { mTextRenderProc = new Caption::TRenderingProcessor(getReference()); }   // _44 (weak)
 
-	bool updateSetFrame(long);
-	void start(char*, long, long);
+	bool updateSetFrame(s32);
+	void start(char*, s32, s32);
 
 	// _00     = VTBL
 	// _00-_5C = P2JME::Window::TControl

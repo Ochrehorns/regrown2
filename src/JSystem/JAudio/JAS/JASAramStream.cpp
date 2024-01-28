@@ -4,91 +4,9 @@
 #include "JSystem/JAudio/JAS/JASDvd.h"
 #include "JSystem/JAudio/JAS/JASHeap.h"
 #include "JSystem/JAudio/JAS/JASMutexLock.h"
-#include "types.h"
 #include "JSystem/JAudio/JAS/JASAramStream.h"
 #include "JSystem/JAudio/JAS/JASThread.h"
-
-/*
-    Generated from dpostproc
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global OSC_RELEASE_TABLE
-    OSC_RELEASE_TABLE:
-        .4byte 0x00000002
-        .4byte 0x0000000F
-        .4byte 0x00000000
-    .global OSC_ENV
-    OSC_ENV:
-        .4byte 0x00000000
-        .float 1.0
-        .4byte 0x00000000
-        .4byte OSC_RELEASE_TABLE
-        .float 1.0
-        .4byte 0x00000000
-        .4byte 0x00000000
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804A44A0
-    lbl_804A44A0:
-        .4byte lbl_800A9AF8
-        .4byte lbl_800A9AEC
-        .4byte lbl_800A9B00
-        .4byte lbl_800A9AF8
-        .4byte lbl_800A9AF8
-        .4byte lbl_800A9AF8
-        .4byte lbl_800A9AF8
-        .4byte lbl_800A9AF8
-        .4byte lbl_800A9AF8
-        .4byte lbl_800A9AF8
-        .4byte lbl_800A9AF8
-        .4byte lbl_800A9AF8
-        .4byte lbl_800A9AF8
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global sLoadThread__13JASAramStream
-    sLoadThread__13JASAramStream:
-        .skip 0x4
-    .global sReadBuffer__13JASAramStream
-    sReadBuffer__13JASAramStream:
-        .skip 0x4
-    .global sBlockSize__13JASAramStream
-    sBlockSize__13JASAramStream:
-        .skip 0x4
-    .global sChannelMax__13JASAramStream
-    sChannelMax__13JASAramStream:
-        .skip 0x4
-    .global sSystemPauseFlag__13JASAramStream
-    sSystemPauseFlag__13JASAramStream:
-        .skip 0x1
-    .global sFatalErrorFlag__13JASAramStream
-    sFatalErrorFlag__13JASAramStream:
-        .skip 0x7
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80516EB0
-    lbl_80516EB0:
-        .4byte 0x00000000
-    .global lbl_80516EB4
-    lbl_80516EB4:
-        .float 1.0
-    .global lbl_80516EB8
-    lbl_80516EB8:
-        .float 0.5
-    .global lbl_80516EBC
-    lbl_80516EBC:
-        .4byte 0x42FE0000
-    .global lbl_80516EC0
-    lbl_80516EC0:
-        .4byte 0x43300000
-        .4byte 0x00000000
-    .global one$870
-    one$870:
-        .4byte 0x00000001
-        .4byte 0x00000000
-*/
+#include "JSystem/JKernel/JKRAram.h"
 
 JASTaskThread* JASAramStream::sLoadThread;
 u8* JASAramStream::sReadBuffer;
@@ -97,12 +15,11 @@ u32 JASAramStream::sChannelMax;
 bool JASAramStream::sSystemPauseFlag;
 bool JASAramStream::sFatalErrorFlag;
 
-/*
- * --INFO--
- * Address:	800A8FA4
- * Size:	000090
+/**
+ * @note Address: 0x800A8FA4
+ * @note Size: 0x90
  */
-void JASAramStream::initSystem(unsigned long blockSize, unsigned long channelMax)
+void JASAramStream::initSystem(u32 blockSize, u32 channelMax)
 {
 	if (JASDriver::registerSubFrameCallback(dvdErrorCheck, nullptr)) {
 		if (sLoadThread == nullptr) {
@@ -117,20 +34,18 @@ void JASAramStream::initSystem(unsigned long blockSize, unsigned long channelMax
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void JASAramStream::setLoadThread(JASTaskThread*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A9034
- * Size:	000158
+/**
+ * @note Address: 0x800A9034
+ * @note Size: 0x158
  */
 JASAramStream::JASAramStream()
     : _198(nullptr)
@@ -268,12 +183,11 @@ JASAramStream::JASAramStream()
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A918C
- * Size:	0000F8
+/**
+ * @note Address: 0x800A918C
+ * @note Size: 0xF8
  */
-void JASAramStream::init(unsigned long p1, unsigned long p2, void (*callback)(unsigned long, JASAramStream*, void*), void* p4)
+void JASAramStream::init(u32 p1, u32 p2, JASAramStreamCallback callback, void* p4)
 {
 	_238 = p1;
 	_23C = p2;
@@ -364,34 +278,31 @@ void JASAramStream::init(unsigned long p1, unsigned long p2, void (*callback)(un
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
  */
-void JASAramStream::setBusSetting(unsigned long, unsigned short)
+void JASAramStream::setBusSetting(u32, u16)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000058
+/**
+ * @note Address: N/A
+ * @note Size: 0x58
  */
 void JASAramStream::prepare(const char*, int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A9284
- * Size:	0000B8
+/**
+ * @note Address: 0x800A9284
+ * @note Size: 0xB8
  */
-BOOL JASAramStream::prepare(long inode, int p2)
+BOOL JASAramStream::prepare(s32 entryNum, int p2)
 {
-	if (!DVDFastOpen(inode, &_1BC)) {
+	if (!DVDFastOpen(entryNum, &mFileInfo)) {
 		return FALSE;
 	}
 	if (!JASDriver::registerSubFrameCallback(channelProcCallback, this)) {
@@ -407,24 +318,21 @@ BOOL JASAramStream::prepare(long inode, int p2)
 	return sLoadThread->sendCmdMsg(headerLoadTask, &args, sizeof(args)) != FALSE;
 }
 
-/*
- * --INFO--
- * Address:	800A933C
- * Size:	000034
+/**
+ * @note Address: 0x800A933C
+ * @note Size: 0x34
  */
 BOOL JASAramStream::start() { return OSSendMessage(&mMsgQueueA, nullptr, OS_MESSAGE_NOBLOCK) != FALSE; }
 
-/*
- * --INFO--
- * Address:	800A9370
- * Size:	000038
+/**
+ * @note Address: 0x800A9370
+ * @note Size: 0x38
  */
-int JASAramStream::stop(unsigned short p1) { return OSSendMessage(&mMsgQueueA, (void*)((u32)p1 << 0x10 | 1), OS_MESSAGE_NOBLOCK) != FALSE; }
+int JASAramStream::stop(u16 p1) { return OSSendMessage(&mMsgQueueA, (void*)((u32)p1 << 0x10 | 1), OS_MESSAGE_NOBLOCK) != FALSE; }
 
-/*
- * --INFO--
- * Address:	800A93A8
- * Size:	000048
+/**
+ * @note Address: 0x800A93A8
+ * @note Size: 0x48
  */
 bool JASAramStream::pause(bool p1)
 {
@@ -438,10 +346,9 @@ bool JASAramStream::pause(bool p1)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	800A93F0
- * Size:	000044
+/**
+ * @note Address: 0x800A93F0
+ * @note Size: 0x44
  */
 int JASAramStream::cancel()
 {
@@ -449,20 +356,18 @@ int JASAramStream::cancel()
 	return sLoadThread->sendCmdMsg(finishTask, this) != FALSE;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000034
+/**
+ * @note Address: N/A
+ * @note Size: 0x34
  */
 void JASAramStream::getBlockSamples() const
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A9434
- * Size:	000030
+/**
+ * @note Address: 0x800A9434
+ * @note Size: 0x30
  */
 void JASAramStream::headerLoadTask(void* args)
 {
@@ -470,10 +375,9 @@ void JASAramStream::headerLoadTask(void* args)
 	castedArgs->mStream->headerLoad(castedArgs->_04, castedArgs->_08);
 }
 
-/*
- * --INFO--
- * Address:	800A9464
- * Size:	0000DC
+/**
+ * @note Address: 0x800A9464
+ * @note Size: 0xDC
  */
 void JASAramStream::firstLoadTask(void* args)
 {
@@ -501,17 +405,15 @@ void JASAramStream::firstLoadTask(void* args)
 	stream->_208++;
 }
 
-/*
- * --INFO--
- * Address:	800A9540
- * Size:	000020
+/**
+ * @note Address: 0x800A9540
+ * @note Size: 0x20
  */
 bool JASAramStream::loadToAramTask(void* p1) { return static_cast<JASAramStream*>(p1)->load(); }
 
-/*
- * --INFO--
- * Address:	800A9560
- * Size:	000060
+/**
+ * @note Address: 0x800A9560
+ * @note Size: 0x60
  */
 void JASAramStream::finishTask(void* args)
 {
@@ -523,10 +425,9 @@ void JASAramStream::finishTask(void* args)
 	}
 }
 
-/*
- * --INFO--
- * Address:	800A95C0
- * Size:	000058
+/**
+ * @note Address: 0x800A95C0
+ * @note Size: 0x58
  */
 void JASAramStream::prepareFinishTask(void* args)
 {
@@ -537,12 +438,11 @@ void JASAramStream::prepareFinishTask(void* args)
 	}
 }
 
-/*
- * --INFO--
- * Address:	800A9618
- * Size:	0001CC
+/**
+ * @note Address: 0x800A9618
+ * @note Size: 0x1CC
  */
-bool JASAramStream::headerLoad(unsigned long p1, int p2)
+bool JASAramStream::headerLoad(u32 p1, int p2)
 {
 	if (sFatalErrorFlag) {
 		return false;
@@ -550,7 +450,7 @@ bool JASAramStream::headerLoad(unsigned long p1, int p2)
 	if (_204 != 0) {
 		return false;
 	}
-	if (DVDReadPrio(&_1BC, sReadBuffer, 0x40, 0, 1) < 0) {
+	if (DVDReadPrio(&mFileInfo, sReadBuffer, 0x40, 0, 1) < 0) {
 		sFatalErrorFlag = true;
 		return false;
 	}
@@ -588,13 +488,63 @@ bool JASAramStream::headerLoad(unsigned long p1, int p2)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	800A97E4
- * Size:	0002B4
+/**
+ * @note Address: 0x800A97E4
+ * @note Size: 0x2B4
  */
 bool JASAramStream::load()
 {
+	{
+		JASCriticalSection cs;
+		_208--;
+	}
+
+	if (sFatalErrorFlag) {
+		return false;
+	}
+
+	if (_204) {
+		return false;
+	}
+
+	u32 val;
+	if (_248 == 0) {
+		val = sBlockSize * 16 / 9;
+	} else {
+		val = sBlockSize / 2;
+	}
+
+	u32 val2 = (_260 - 1) / val;
+
+	u32 val3;
+	if (_248 == 0) {
+		val3 = sBlockSize * 16 / 9;
+	} else {
+		val3 = sBlockSize / 2;
+	}
+
+	u32 val4 = (_25C) / val3;
+
+	if (_200 > val2) {
+		return false;
+	}
+
+	u32 length = sBlockSize * _24A + 0x20;
+	u32 offset = _200 * _24A + 0x40;
+
+	if (_200 == val2) {
+		length = mFileInfo.length - offset;
+	}
+
+	if (DVDReadPrio(&mFileInfo, sReadBuffer, length, offset, 1) < 0) {
+		sFatalErrorFlag = true;
+		return false;
+	}
+
+	// u32
+	// for (int i = 0; i < _24A; i++) {
+	// 	if (JKRAram::mainRamToAram(sReadBuffer, ))
+	// }
 	/*
 	stwu     r1, -0x30(r1)
 	mflr     r0
@@ -818,25 +768,24 @@ lbl_800A9A84:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A9A98
- * Size:	000020
+/**
+ * @note Address: 0x800A9A98
+ * @note Size: 0x20
  */
-long JASAramStream::channelProcCallback(void* p1) { static_cast<JASAramStream*>(p1)->channelProc(); }
+s32 JASAramStream::channelProcCallback(void* stream) { return static_cast<JASAramStream*>(stream)->channelProc(); }
 
-/*
- * --INFO--
- * Address:	800A9AB8
- * Size:	00005C
+/**
+ * @note Address: 0x800A9AB8
+ * @note Size: 0x5C
  */
-long JASAramStream::dvdErrorCheck(void*)
+s32 JASAramStream::dvdErrorCheck(void*)
 {
-	long status = DVDGetDriveStatus();
+	u32 status = DVDGetDriveStatus();
 	switch (status) {
 	case 0:
 		sSystemPauseFlag = false;
 		break;
+	case 1:
 	case 2:
 	case 3:
 	case 4:
@@ -848,9 +797,8 @@ long JASAramStream::dvdErrorCheck(void*)
 	case 10:
 	case 11:
 	case -1:
+		// default:
 		sSystemPauseFlag = true;
-		break;
-	case 1:
 		break;
 	}
 	return 0;
@@ -890,22 +838,20 @@ lbl_800A9B00:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A9B14
- * Size:	00003C
+/**
+ * @note Address: 0x800A9B14
+ * @note Size: 0x3C
  */
-void JASAramStream::channelCallback(unsigned long p1, JASChannel* p2, JASDsp::TChannel* p3, void* p4)
+void JASAramStream::channelCallback(u32 p1, JASChannel* chan, JASDsp::TChannel* dspChan, void* stream)
 {
-	static_cast<JASAramStream*>(p4)->updateChannel(p1, p2, p3);
+	static_cast<JASAramStream*>(stream)->updateChannel(p1, chan, dspChan);
 }
 
-/*
- * --INFO--
- * Address:	800A9B50
- * Size:	000758
+/**
+ * @note Address: 0x800A9B50
+ * @note Size: 0x758
  */
-void JASAramStream::updateChannel(unsigned long, JASChannel*, JASDsp::TChannel*)
+void JASAramStream::updateChannel(u32 p1, JASChannel* chan, JASDsp::TChannel* dspChan)
 {
 	/*
 	stwu     r1, -0x50(r1)
@@ -1471,10 +1417,9 @@ lbl_800AA294:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800AA2A8
- * Size:	0001E4
+/**
+ * @note Address: 0x800AA2A8
+ * @note Size: 0x1E4
  */
 int JASAramStream::channelProc()
 {
@@ -1641,10 +1586,9 @@ lbl_800AA474:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800AA48C
- * Size:	000240
+/**
+ * @note Address: 0x800AA48C
+ * @note Size: 0x240
  */
 char* JASAramStream::channelStart()
 {
@@ -1824,12 +1768,11 @@ lbl_800AA69C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800AA6CC
- * Size:	000078
+/**
+ * @note Address: 0x800AA6CC
+ * @note Size: 0x78
  */
-void JASAramStream::channelStop(unsigned short p1)
+void JASAramStream::channelStop(u16 p1)
 {
 	for (int i = 0; i < _24A; i++) {
 		if (_180[i] != nullptr) {

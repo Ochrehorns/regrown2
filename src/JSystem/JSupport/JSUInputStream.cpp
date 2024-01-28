@@ -1,44 +1,17 @@
 #include "types.h"
 #include "JSystem/JSupport/JSUStream.h"
 
-/*
-    Generated from dpostproc
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__20JSURandomInputStream
-    __vt__20JSURandomInputStream:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__20JSURandomInputStreamFv
-        .4byte getAvailable__20JSURandomInputStreamCFv
-        .4byte skip__20JSURandomInputStreamFl
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-    .global __vt__14JSUInputStream
-    __vt__14JSUInputStream:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__14JSUInputStreamFv
-        .4byte 0
-        .4byte skip__14JSUInputStreamFl
-        .4byte 0
-*/
-
-/*
- * --INFO--
- * Address:	80026378
- * Size:	00005C
+/**
+ * @note Address: 0x80026378
+ * @note Size: 0x5C
  */
 JSUInputStream::~JSUInputStream() { }
 
-/*
- * --INFO--
- * Address:	800263D4
- * Size:	000058
+/**
+ * @note Address: 0x800263D4
+ * @note Size: 0x58
  */
-s32 JSUInputStream::read(void* data, long length)
+s32 JSUInputStream::read(void* data, s32 length)
 {
 	int len = readData(data, length);
 	if (len != length) {
@@ -47,10 +20,9 @@ s32 JSUInputStream::read(void* data, long length)
 	return len;
 }
 
-/*
- * --INFO--
- * Address:	8002642C
- * Size:	0000B0
+/**
+ * @note Address: 0x8002642C
+ * @note Size: 0xB0
  */
 char* JSUInputStream::read(char* str)
 {
@@ -70,12 +42,11 @@ char* JSUInputStream::read(char* str)
 	return str;
 }
 
-/*
- * --INFO--
- * Address:	800264DC
- * Size:	000088
+/**
+ * @note Address: 0x800264DC
+ * @note Size: 0x88
  */
-s32 JSUInputStream::skip(long val)
+s32 JSUInputStream::skip(s32 val)
 {
 	char unk;
 	int i;
@@ -88,10 +59,9 @@ s32 JSUInputStream::skip(long val)
 	return i;
 }
 
-/*
- * --INFO--
- * Address:	80026564
- * Size:	00008C
+/**
+ * @note Address: 0x80026564
+ * @note Size: 0x8C
  */
 u32 JSURandomInputStream::align(s32 arg0)
 {
@@ -112,26 +82,24 @@ u32 JSURandomInputStream::align(s32 arg0)
 	return newtemp;
 }
 
-/*
- * --INFO--
- * Address:	800265F0
- * Size:	00005C
+/**
+ * @note Address: 0x800265F0
+ * @note Size: 0x5C
  */
-s32 JSURandomInputStream::skip(long offset)
+s32 JSURandomInputStream::skip(s32 offset)
 {
-	long tmp = seekPos(offset, SEEK_CUR);
+	s32 tmp = seekPos(offset, SEEK_CUR);
 	if (tmp != offset) {
 		mIsEOFMaybe |= 1;
 	}
 	return tmp;
 }
 
-/*
- * --INFO--
- * Address:	8002664C
- * Size:	0000BC
+/**
+ * @note Address: 0x8002664C
+ * @note Size: 0xBC
  */
-size_t JSURandomInputStream::peek(void* buffer, long byteCount)
+size_t JSURandomInputStream::peek(void* buffer, s32 byteCount)
 {
 	int dataLength;
 	int position;
@@ -146,12 +114,11 @@ size_t JSURandomInputStream::peek(void* buffer, long byteCount)
 	return dataLength;
 }
 
-/*
- * --INFO--
- * Address:	80026708
- * Size:	000044
+/**
+ * @note Address: 0x80026708
+ * @note Size: 0x44
  */
-void JSURandomInputStream::seek(long offset, JSUStreamSeekFrom mode)
+void JSURandomInputStream::seek(s32 offset, JSUStreamSeekFrom mode)
 {
 	seekPos(offset, mode);
 	mIsEOFMaybe &= ~1;

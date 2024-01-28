@@ -13,34 +13,34 @@ namespace CardError {
 struct TMgr;
 
 enum StateID {
-	CARDERROR_Standby,
-	CARDERROR_EmptyScreen,
-	CARDERROR_NoCard,
-	CARDERROR_IOError,
-	CARDERROR_WrongDevice,
-	CARDERROR_WrongSector,
-	CARDERROR_OverCapacity,
-	CARDERROR_InitCardOnIPL,
-	CARDERROR_CardNotUsable,
-	CARDERROR_NoFileForSave,
-	CARDERROR_FinishFormat,
-	CARDERROR_FinishCreateNewFile,
-	CARDERROR_SerialNoError,
-	CARDERROR_FailToFormat_NoCard,
-	CARDERROR_FailToFormat_IOError,
-	CARDERROR_FailToCreateNewFile_NoCard,
-	CARDERROR_FailToCreateNewFile_IOError,
-	CARDERROR_FailToSave_NoCard,
-	CARDERROR_FailToSave_IOError,
-	CARDERROR_DataBrokenAndDoYouFormat,
-	CARDERROR_DoYouOpenIPL,
-	CARDERROR_DoYouFormat,
-	CARDERROR_DoYouCreateNewFile,
-	CARDERROR_DoYouStartGameWithoutSave,
-	CARDERROR_GameCantSave,
-	CARDERROR_NowFormat,
-	CARDERROR_NowCreateNewFile,
-	CARDERROR_StateCount // NOT A REAL STATE
+	CARDERROR_Standby,                     // 0
+	CARDERROR_EmptyScreen,                 // 1
+	CARDERROR_NoCard,                      // 2
+	CARDERROR_IOError,                     // 3
+	CARDERROR_WrongDevice,                 // 4
+	CARDERROR_WrongSector,                 // 5
+	CARDERROR_OverCapacity,                // 6
+	CARDERROR_InitCardOnIPL,               // 7
+	CARDERROR_CardNotUsable,               // 8
+	CARDERROR_NoFileForSave,               // 9
+	CARDERROR_FinishFormat,                // 10
+	CARDERROR_FinishCreateNewFile,         // 11
+	CARDERROR_SerialNoError,               // 12
+	CARDERROR_FailToFormat_NoCard,         // 13
+	CARDERROR_FailToFormat_IOError,        // 14
+	CARDERROR_FailToCreateNewFile_NoCard,  // 15
+	CARDERROR_FailToCreateNewFile_IOError, // 16
+	CARDERROR_FailToSave_NoCard,           // 17
+	CARDERROR_FailToSave_IOError,          // 18
+	CARDERROR_DataBrokenAndDoYouFormat,    // 19
+	CARDERROR_DoYouOpenIPL,                // 20
+	CARDERROR_DoYouFormat,                 // 21
+	CARDERROR_DoYouCreateNewFile,          // 22
+	CARDERROR_DoYouStartGameWithoutSave,   // 23
+	CARDERROR_GameCantSave,                // 24
+	CARDERROR_NowFormat,                   // 25
+	CARDERROR_NowCreateNewFile,            // 26
+	CARDERROR_StateCount                   // 27 (NOT A REAL STATE)
 };
 
 struct FSMStateMachine : public Game::StateMachine<TMgr> {
@@ -59,10 +59,10 @@ struct FSMState : public Game::FSMState<TMgr> {
 		mName = name;
 	}
 
-	virtual void init(TMgr* mgr, Game::StateArg* arg); // _08
-	virtual void exec(TMgr* mgr);                      // _0C
-	virtual void do_init(TMgr*, Game::StateArg*) { }   // _20 (weak)
-	virtual void do_exec(TMgr*) { }                    // _24 (weak)
+	virtual void init(TMgr* mgr, Game::StateArg* settings); // _08
+	virtual void exec(TMgr* mgr);                           // _0C
+	virtual void do_init(TMgr*, Game::StateArg*) { }        // _20 (weak)
+	virtual void do_exec(TMgr*) { }                         // _24 (weak)
 
 	// _00     = VTBL
 	// _00-_0C = Game::FSMState
@@ -500,7 +500,7 @@ struct FSMState_WN1_NowCreateNewFile : public FSMState_CardRequest {
 };
 ////////////////////////////////////////////////////////////
 
-struct TMgr : Screen::TMemoryCard {
+struct TMgr {
 	typedef FSMState StateType;
 
 	enum enumStart {
@@ -533,15 +533,16 @@ struct TMgr : Screen::TMemoryCard {
 	void draw();
 	bool isGetEnd();
 	bool isFinish();
-	void showInfo(long, long, long, long);
+	void showInfo(s32, s32, s32, s32);
 	int getStateID();
 
 	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
 
 	TMgr();
 	~TMgr();
 
-	// _00-_298 = TMemoryCard
+	Screen::TMemoryCard mScreen;   // _000
 	u32 mCounter;                  // _298
 	int _29C;                      // _29C
 	u32 mEndStat;                  // _2A0, unknown

@@ -11,210 +11,14 @@
 
 static const char name[] = "efx2dEffect";
 
-/*
-    Generated from dpostproc
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_80495B68
-    lbl_80495B68:
-        .4byte 0x65667832
-        .4byte 0x64456666
-        .4byte 0x65637400
-        .4byte 0x41726753
-        .4byte 0x63616C65
-        .4byte 0x00000000
-        .4byte 0x65667832
-        .4byte 0x64456666
-        .4byte 0x6563742E
-        .4byte 0x63707000
-        .asciz "P2Assert"
-        .skip 3
-        .4byte 0x41726753
-        .4byte 0x63616C65
-        .4byte 0x436F6C6F
-        .4byte 0x72436F6C
-        .4byte 0x6F720000
-        .4byte 0x41726743
-        .4byte 0x6F6C6F72
-        .4byte 0x00000000
-        .4byte 0x41726746
-        .4byte 0x696C6563
-        .4byte 0x6F707900
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__Q35efx2d8WorldMap10T2DRocketB
-    __vt__Q35efx2d8WorldMap10T2DRocketB:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q35efx2d8WorldMap10T2DRocketBFPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TForeverFv
-        .4byte fade__Q25efx2d8TForeverFv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-        .4byte 0
-        .4byte 0
-        .4byte "@8@__dt__Q35efx2d8WorldMap10T2DRocketBFv"
-        .4byte "@8@execute__Q25efx2d12TChasePosDirFP14JPABaseEmitter"
-        .4byte executeAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte __dt__Q35efx2d8WorldMap10T2DRocketBFv
-        .4byte execute__Q25efx2d12TChasePosDirFP14JPABaseEmitter
-    .global __vt__Q35efx2d8WorldMap12T2DOnyonKira
-    __vt__Q35efx2d8WorldMap12T2DOnyonKira:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q35efx2d8WorldMap12T2DOnyonKiraFPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TForeverFv
-        .4byte fade__Q25efx2d8TForeverFv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-        .4byte 0
-        .4byte 0
-        .4byte "@8@__dt__Q35efx2d8WorldMap12T2DOnyonKiraFv"
-        .4byte "@8@execute__Q25efx2d12TChasePosDirFP14JPABaseEmitter"
-        .4byte executeAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte __dt__Q35efx2d8WorldMap12T2DOnyonKiraFv
-        .4byte execute__Q25efx2d12TChasePosDirFP14JPABaseEmitter
-    .global __vt__Q35efx2d8WorldMap19TSimple_ArgDirScale
-    __vt__Q35efx2d8WorldMap19TSimple_ArgDirScale:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q35efx2d8WorldMap19TSimple_ArgDirScaleFPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TSimple1Fv
-        .4byte fade__Q25efx2d8TSimple1Fv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-    .global __vt__Q35efx2d8WorldMap9T2DNewmap
-    __vt__Q35efx2d8WorldMap9T2DNewmap:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q35efx2d8WorldMap9T2DNewmapFPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TSimple2Fv
-        .4byte fade__Q25efx2d8TSimple2Fv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-    .global __vt__Q35efx2d8WorldMap10T2DShstar2
-    __vt__Q35efx2d8WorldMap10T2DShstar2:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q35efx2d8WorldMap10T2DShstar2FPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TSimple1Fv
-        .4byte fade__Q25efx2d8TSimple1Fv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-    .global __vt__Q35efx2d10FileSelect15T2DFilecopyBase
-    __vt__Q35efx2d10FileSelect15T2DFilecopyBase:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q35efx2d10FileSelect15T2DFilecopyBaseFPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TForeverFv
-        .4byte fade__Q25efx2d8TForeverFv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-        .4byte 0
-        .4byte 0
-        .4byte "@8@__dt__Q35efx2d10FileSelect15T2DFilecopyBaseFv"
-        .4byte execute__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte executeAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte __dt__Q35efx2d10FileSelect15T2DFilecopyBaseFv
-    .global __vt__Q35efx2d10FileSelect14T2DFiledeleteM
-    __vt__Q35efx2d10FileSelect14T2DFiledeleteM:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q35efx2d10FileSelect14T2DFiledeleteMFPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TSimple1Fv
-        .4byte fade__Q25efx2d8TSimple1Fv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-    .global __vt__Q35efx2d10FileSelect13T2DFiledelete
-    __vt__Q35efx2d10FileSelect13T2DFiledelete:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q35efx2d10FileSelect13T2DFiledeleteFPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TSimple1Fv
-        .4byte fade__Q25efx2d8TSimple1Fv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-    .global __vt__Q35efx2d10FileSelect13T2DFilecopied
-    __vt__Q35efx2d10FileSelect13T2DFilecopied:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q35efx2d10FileSelect13T2DFilecopiedFPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TSimple1Fv
-        .4byte fade__Q25efx2d8TSimple1Fv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-    .global __vt__Q25efx2d17T2DSprayset_forVS
-    __vt__Q25efx2d17T2DSprayset_forVS:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q25efx2d17T2DSprayset_forVSFPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TSimple2Fv
-        .4byte fade__Q25efx2d8TSimple2Fv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-    .global __vt__Q25efx2d18T2DSensorGet_forVS
-    __vt__Q25efx2d18T2DSensorGet_forVS:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q25efx2d18T2DSensorGet_forVSFPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TSimple2Fv
-        .4byte fade__Q25efx2d8TSimple2Fv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-    .global __vt__Q25efx2d12T2DCountKira
-    __vt__Q25efx2d12T2DCountKira:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q25efx2d12T2DCountKiraFPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TForeverFv
-        .4byte fade__Q25efx2d8TForeverFv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-        .4byte 0
-        .4byte 0
-        .4byte "@8@__dt__Q25efx2d12T2DCountKiraFv"
-        .4byte execute__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte executeAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte __dt__Q25efx2d12T2DCountKiraFv
-    .global __vt__Q25efx2d9T2DCursor
-    __vt__Q25efx2d9T2DCursor:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q25efx2d9T2DCursorFPQ25efx2d3Arg
-        .4byte kill__Q25efx2d8TForeverFv
-        .4byte fade__Q25efx2d8TForeverFv
-        .4byte setGroup__Q25efx2d5TBaseFUc
-        .4byte 0
-        .4byte 0
-        .4byte "@8@__dt__Q25efx2d9T2DCursorFv"
-        .4byte "@8@execute__Q25efx2d9TChasePosFP14JPABaseEmitter"
-        .4byte executeAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte __dt__Q25efx2d9T2DCursorFv
-        .4byte execute__Q25efx2d9TChasePosFP14JPABaseEmitter
-        .4byte 0
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_8051F6E0
-    lbl_8051F6E0:
-        .4byte 0x3C8AD8F3
-    .global lbl_8051F6E4
-    lbl_8051F6E4:
-        .4byte 0x00000000
-    .global lbl_8051F6E8
-    lbl_8051F6E8:
-        .4byte 0x43480000
-    .global lbl_8051F6EC
-    lbl_8051F6EC:
-        .float 1.0
-*/
-
 namespace efx2d {
-/*
- * --INFO--
- * Address:	803BA18C
- * Size:	00007C
+/**
+ * @note Address: 0x803BA18C
+ * @note Size: 0x7C
  */
 bool T2DCursor::create(Arg* arg)
 {
-	if (sys->mDeltaTime < 0.01694915f) {
+	if (sys->mDeltaTime < 0.016949152f) {
 		mEfxID = PID_RocketA;
 	}
 
@@ -225,10 +29,9 @@ bool T2DCursor::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803BA208
- * Size:	00005C
+/**
+ * @note Address: 0x803BA208
+ * @note Size: 0x5C
  */
 bool T2DCountKira::create(Arg* arg)
 {
@@ -239,24 +42,22 @@ bool T2DCountKira::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E8
+/**
+ * @note Address: N/A
+ * @note Size: 0xE8
  */
 bool T2DSensorAct_forVS::create(Arg*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	803BA264
- * Size:	0000D8
+/**
+ * @note Address: 0x803BA264
+ * @note Size: 0xD8
  */
 bool T2DSensorGet_forVS::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(59, nameCheck);
 	ArgScale* args = static_cast<ArgScale*>(arg);
 
@@ -269,14 +70,13 @@ bool T2DSensorGet_forVS::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803BA33C
- * Size:	000140
+/**
+ * @note Address: 0x803BA33C
+ * @note Size: 0x140
  */
 bool T2DSprayset_forVS::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScaleColorColor", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScaleColorColor", static_cast<ArgScaleColorColor*>(arg)->getName()) == 0;
 	P2ASSERTLINE(79, nameCheck);
 	ArgScaleColorColor* args = static_cast<ArgScaleColorColor*>(arg);
 
@@ -295,14 +95,13 @@ bool T2DSprayset_forVS::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803BA47C
- * Size:	0000C8
+/**
+ * @note Address: 0x803BA47C
+ * @note Size: 0xC8
  */
 bool FileSelect::T2DFilecopied::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgColor", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgColor", static_cast<ArgColor*>(arg)->getName()) == 0;
 	P2ASSERTLINE(111, nameCheck);
 	ArgColor* args = static_cast<ArgColor*>(arg);
 
@@ -314,14 +113,13 @@ bool FileSelect::T2DFilecopied::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803BA544
- * Size:	0000C8
+/**
+ * @note Address: 0x803BA544
+ * @note Size: 0xC8
  */
 bool FileSelect::T2DFiledelete::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgColor", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgColor", static_cast<ArgColor*>(arg)->getName()) == 0;
 	P2ASSERTLINE(127, nameCheck);
 	ArgColor* args = static_cast<ArgColor*>(arg);
 
@@ -333,14 +131,13 @@ bool FileSelect::T2DFiledelete::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803BA60C
- * Size:	0000C8
+/**
+ * @note Address: 0x803BA60C
+ * @note Size: 0xC8
  */
 bool FileSelect::T2DFiledeleteM::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgColor", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgColor", static_cast<ArgColor*>(arg)->getName()) == 0;
 	P2ASSERTLINE(143, nameCheck);
 	ArgColor* args = static_cast<ArgColor*>(arg);
 
@@ -352,23 +149,38 @@ bool FileSelect::T2DFiledeleteM::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803BA6D4
- * Size:	0001CC
+/**
+ * @note Address: 0x803BA6D4
+ * @note Size: 0x1CC
  */
 bool FileSelect::T2DFilecopyBase::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgFilecopy", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgFilecopy", static_cast<ArgFilecopy*>(arg)->getName()) == 0;
 	P2ASSERTLINE(160, nameCheck);
 	ArgFilecopy* args = static_cast<ArgFilecopy*>(arg);
+	f32 dist          = args->mAltPosition.distance(*args);
+	f32 scale         = dist /= 200.0f;
 
-	f32 scale            = 200.0f; // yeah nope
+	Vector3f test(args->mAltPosition.x - args->x, args->mAltPosition.y - args->y, 0.0f);
+	test.normalise();
 	JUtility::TColor col = args->mColor;
-	Matrixf mtx;
+
+	Mtx mtx;
+	mtx[0][0] = test.x;
+	mtx[0][1] = test.x;
+	mtx[0][2] = 0.0f;
+	mtx[0][3] = test.y;
+	mtx[1][0] = test.y;
+	mtx[1][1] = test.x;
+	mtx[1][2] = 0.0f;
+	mtx[1][3] = test.y;
+	mtx[2][0] = test.z;
+	mtx[2][1] = 0.0f;
+	mtx[2][2] = 1.0f;
+	mtx[2][3] = 0.0f;
 	if (TForever::create(arg)) {
 		mEmitter->setColorRGB(col);
-		JPASetRMtxfromMtx(mtx.mMatrix.mtxView, mEmitter->mMatrix);
+		JPASetRMtxfromMtx(mtx, mEmitter->mGlobalRot);
 		mEmitter->setScaleOnly(scale);
 		return true;
 	}
@@ -508,14 +320,13 @@ lbl_803BA87C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803BA8A0
- * Size:	0000DC
+/**
+ * @note Address: 0x803BA8A0
+ * @note Size: 0xDC
  */
 bool WorldMap::T2DShstar2::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(201, nameCheck);
 	ArgScale* args = static_cast<ArgScale*>(arg);
 
@@ -530,14 +341,13 @@ bool WorldMap::T2DShstar2::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803BA97C
- * Size:	0000F4
+/**
+ * @note Address: 0x803BA97C
+ * @note Size: 0xF4
  */
 bool WorldMap::T2DNewmap::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = strcmp("ArgScale", static_cast<ArgScale*>(arg)->getName()) == 0;
 	P2ASSERTLINE(219, nameCheck);
 	ArgScale* args = static_cast<ArgScale*>(arg);
 
@@ -553,10 +363,9 @@ bool WorldMap::T2DNewmap::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803BAA70
- * Size:	0000AC
+/**
+ * @note Address: 0x803BAA70
+ * @note Size: 0xAC
  */
 bool WorldMap::TSimple_ArgDirScale::create(Arg* arg)
 {
@@ -576,27 +385,25 @@ bool WorldMap::TSimple_ArgDirScale::create(Arg* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803BAB1C
- * Size:	00005C
+/**
+ * @note Address: 0x803BAB1C
+ * @note Size: 0x5C
  */
 bool WorldMap::T2DOnyonKira::create(Arg* arg)
 {
 	if (TChasePosDir::create(arg)) {
-		Vector3f* vec = &mEmitter->mScale;
-		mPosition.x   = vec->x;
-		mPosition.y   = vec->y;
-		mPosition.z   = vec->z;
+		JGeometry::TVec3f* vec = &mEmitter->mLocalScl;
+		mPosition.x            = vec->x;
+		mPosition.y            = vec->y;
+		mPosition.z            = vec->z;
 		return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803BAB78
- * Size:	000040
+/**
+ * @note Address: 0x803BAB78
+ * @note Size: 0x40
  */
 void WorldMap::T2DOnyonKira::setGlobalParticleScale(f32 scale)
 {
@@ -613,10 +420,9 @@ void WorldMap::T2DOnyonKira::setGlobalParticleScale(f32 scale)
 	mEmitter->setScaleMain(test.x, test.y, test.z);
 }
 
-/*
- * --INFO--
- * Address:	803BABB8
- * Size:	000018
+/**
+ * @note Address: 0x803BABB8
+ * @note Size: 0x18
  */
 void WorldMap::T2DRocketGlow::setGlobalParticleScale(f32 scale)
 {
@@ -627,27 +433,25 @@ void WorldMap::T2DRocketGlow::setGlobalParticleScale(f32 scale)
 	emit->setGlobalScale(scale);
 }
 
-/*
- * --INFO--
- * Address:	803BABD0
- * Size:	00005C
+/**
+ * @note Address: 0x803BABD0
+ * @note Size: 0x5C
  */
 bool WorldMap::T2DRocketB::create(Arg* arg)
 {
 	if (TChasePosDir::create(arg)) {
-		Vector3f* vec = &mEmitter->mScale;
-		_1C.x         = vec->x;
-		_1C.y         = vec->y;
-		_1C.z         = vec->z;
+		JGeometry::TVec3f* vec = &mEmitter->mLocalScl;
+		_1C.x                  = vec->x;
+		_1C.y                  = vec->y;
+		_1C.z                  = vec->z;
 		return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803BAC2C
- * Size:	000040
+/**
+ * @note Address: 0x803BAC2C
+ * @note Size: 0x40
  */
 void WorldMap::T2DRocketB::setGlobalParticleScale(f32 scale)
 {
@@ -663,40 +467,5 @@ void WorldMap::T2DRocketB::setGlobalParticleScale(f32 scale)
 	test = test * scale;
 	mEmitter->setScaleMain(test.x, test.y, test.z);
 }
-
-/*
- * --INFO--
- * Address:	803BAC6C
- * Size:	00009C
- */
-// WorldMap::T2DRocketB::~T2DRocketB() { }
-
-/*
- * --INFO--
- * Address:	803BAD08
- * Size:	00009C
- */
-// WorldMap::T2DOnyonKira::~T2DOnyonKira() { }
-
-/*
- * --INFO--
- * Address:	803BADA4
- * Size:	000084
- */
-FileSelect::T2DFilecopyBase::~T2DFilecopyBase() { }
-
-/*
- * --INFO--
- * Address:	803BAE28
- * Size:	000084
- */
-// T2DCountKira::~T2DCountKira() { }
-
-/*
- * --INFO--
- * Address:	803BAEAC
- * Size:	00009C
- */
-// T2DCursor::~T2DCursor() { }
 
 } // namespace efx2d

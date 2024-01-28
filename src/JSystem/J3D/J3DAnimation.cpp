@@ -11,1277 +11,502 @@
 #include "JSystem/JUtility/JUTNameTab.h"
 #include "types.h"
 
-/*
-    Generated from dpostproc
+template <class T>
+f32 J3DGetKeyFrameInterpolation(f32, J3DAnmKeyTableBase*, T*);
 
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__14J3DAnmColorKey
-    __vt__14J3DAnmColorKey:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__14J3DAnmColorKeyFv
-        .4byte getKind__14J3DAnmColorKeyCFv
-        .4byte getColor__14J3DAnmColorKeyCFUsP8_GXColor
-    .global __vt__10J3DAnmBase
-    __vt__10J3DAnmBase:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__10J3DAnmBaseFv
-        .4byte 0
-    .global __vt__11J3DAnmColor
-    __vt__11J3DAnmColor:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__11J3DAnmColorFv
-        .4byte getKind__11J3DAnmColorCFv
-        .4byte getColor__11J3DAnmColorCFUsP8_GXColor
-    .global __vt__15J3DAnmColorFull
-    __vt__15J3DAnmColorFull:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__15J3DAnmColorFullFv
-        .4byte getKind__15J3DAnmColorFullCFv
-        .4byte getColor__15J3DAnmColorFullCFUsP8_GXColor
-    .global __vt__17J3DAnmVtxColorKey
-    __vt__17J3DAnmVtxColorKey:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__17J3DAnmVtxColorKeyFv
-        .4byte getKind__17J3DAnmVtxColorKeyCFv
-        .4byte getColor__17J3DAnmVtxColorKeyCFUcUsP8_GXColor
-    .global __vt__14J3DAnmVtxColor
-    __vt__14J3DAnmVtxColor:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__14J3DAnmVtxColorFv
-        .4byte getKind__14J3DAnmVtxColorCFv
-        .4byte getColor__14J3DAnmVtxColorCFUcUsP8_GXColor
-    .global __vt__18J3DAnmVtxColorFull
-    __vt__18J3DAnmVtxColorFull:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__18J3DAnmVtxColorFullFv
-        .4byte getKind__18J3DAnmVtxColorFullCFv
-        .4byte getColor__18J3DAnmVtxColorFullCFUcUsP8_GXColor
-    .global __vt__16J3DAnmClusterKey
-    __vt__16J3DAnmClusterKey:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__16J3DAnmClusterKeyFv
-        .4byte getKind__16J3DAnmClusterKeyCFv
-        .4byte getWeight__16J3DAnmClusterKeyCFUs
-    .global __vt__13J3DAnmCluster
-    __vt__13J3DAnmCluster:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__13J3DAnmClusterFv
-        .4byte getKind__13J3DAnmClusterCFv
-        .4byte getWeight__13J3DAnmClusterCFUs
-    .global __vt__17J3DAnmClusterFull
-    __vt__17J3DAnmClusterFull:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__17J3DAnmClusterFullFv
-        .4byte getKind__17J3DAnmClusterFullCFv
-        .4byte getWeight__17J3DAnmClusterFullCFUs
-    .global __vt__19J3DAnmTransformFull
-    __vt__19J3DAnmTransformFull:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__19J3DAnmTransformFullFv
-        .4byte getKind__19J3DAnmTransformFullCFv
-        .4byte getTransform__19J3DAnmTransformFullCFUsP16J3DTransformInfo
-    .global __vt__15J3DAnmTransform
-    __vt__15J3DAnmTransform:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__15J3DAnmTransformFv
-        .4byte getKind__15J3DAnmTransformCFv
-        .4byte 0
-        .4byte 0
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80516A18
-    lbl_80516A18:
-        .float 1.0
-    .global lbl_80516A1C
-    lbl_80516A1C:
-        .4byte 0x00000000
-    .global lbl_80516A20
-    lbl_80516A20:
-        .4byte 0x3A83126F
-        .4byte 0x00000000
-    .global lbl_80516A28
-    lbl_80516A28:
-        .4byte 0x43300000
-        .4byte 0x80000000
-    .global lbl_80516A30
-    lbl_80516A30:
-        .float 0.5
-    .global lbl_80516A34
-    lbl_80516A34:
-        .4byte 0x437F0000
-    .global lbl_80516A38
-    lbl_80516A38:
-        .4byte 0x43300000
-        .4byte 0x00000000
-    .global lbl_80516A40
-    lbl_80516A40:
-        .4byte 0xC4800000
-    .global lbl_80516A44
-    lbl_80516A44:
-        .4byte 0x447FC000
-*/
-
-/*
- * --INFO--
- * Address:	80067678
- * Size:	000030
+/**
+ * @note Address: 0x80067678
+ * @note Size: 0x30
  */
-void J3DFrameCtrl::init(short p1)
+void J3DFrameCtrl::init(s16 i_end)
 {
-	mAttr = 2;
-	_05   = 0;
-	_06   = 0;
-	_08   = p1;
-	_0A   = 0;
-	_0C   = 1.0f;
-	_10   = 0.0f;
+	mAttribute = 2;
+	mState     = 0;
+	mStart     = 0;
+	mEnd       = i_end;
+	mLoop      = 0;
+	mRate      = 1.0f;
+	mFrame     = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	800676A8
- * Size:	000474
+/**
+ * @note Address: 0x800676A8
+ * @note Size: 0x474
  */
 void J3DFrameCtrl::update()
 {
-	_05 = 0;
-	_10 = _10 + _0C;
-	switch (mAttr) {
+	mState = 0;
+	mFrame += mRate;
+	switch (mAttribute) {
 	case 0:
-		if (_10 < _06) {
-			_10 = _06;
-			_0C = 0.0f;
-			_05 = _05 | 1;
+		if (mFrame < mStart) {
+			mFrame = mStart;
+			mRate  = 0.0f;
+			mState |= 1;
 		}
-		if (_10 >= _08) {
-			_10 = _08 - 0.001f;
-			_0C = 0.0f;
-			_05 = _05 | 1;
+		if (mFrame >= mEnd) {
+			mFrame = mEnd - 0.001f;
+			mRate  = 0.0f;
+			mState |= 1;
 		}
-		return;
+		break;
 	case 1:
-		if (_10 < _06) {
-			_10 = _06;
-			_0C = 0.0f;
-			_05 = _05 | 1;
+		if (mFrame < mStart) {
+			mFrame = mStart;
+			mRate  = 0.0f;
+			mState |= 1;
 		}
-		if (_10 >= _08) {
-			_10 = _06;
-			_0C = 0.0f;
-			_05 = _05 | 1;
+		if (mFrame >= mEnd) {
+			mFrame = mStart;
+			mRate  = 0.0f;
+			mState |= 1;
 		}
-		return;
+		break;
 	case 2:
-		while (_10 < _06) {
-			_05    = _05 | 2;
-			int v1 = _0A - _06;
-			if (v1 <= 0.0f) {
+		while (mFrame < mStart) {
+			mState |= 2;
+			if (mLoop - mStart <= 0.0f) {
 				break;
 			}
-			_10 = _10 + v1;
+			mFrame += mLoop - mStart;
 		}
-		while (_10 >= _08) {
-			_05    = _05 | 2;
-			int v1 = _08 - _0A;
-			if (v1 <= 0.0f) {
+		while (mFrame >= mEnd) {
+			mState |= 2;
+			if (mEnd - mLoop <= 0.0f) {
 				break;
 			}
-			_10 = _10 - v1;
+			mFrame -= mEnd - mLoop;
 		}
-		return;
+		break;
 	case 3:
-		if (_10 >= _08) {
-			_10 = _08 - (_10 - _08);
-			_0C = -_0C;
+		if (mFrame >= mEnd) {
+			mFrame = mEnd - (mFrame - mEnd);
+			mRate  = -mRate;
 		}
-		if (_10 < _06) {
-			_10 = _06 - (_10 - _06);
-			_0C = 0.0f;
-			_05 = _05 | 1;
+		if (mFrame < mStart) {
+			mFrame = mStart - (mFrame - mStart);
+			mRate  = 0.0f;
+			mState |= 1;
 		}
-		return;
-	case 4: {
-		f32 v2 = _08 - 1.0f;
-		if (_10 >= v2) {
-			_10 = v2 - (_10 - v2);
-			_0C = -_0C;
+		break;
+	case 4:
+		if (mFrame >= mEnd - 1.0f) {
+			mFrame = (mEnd - 1.0f) - (mFrame - (mEnd - 1.0f));
+			mRate  = -mRate;
 		}
-		if (_10 < _06) {
-			_10 = _06 - (_10 - _06);
-			_0C = -_0C;
-			_05 = _05 | 2;
+		if (mFrame < mStart) {
+			mFrame = mStart - (mFrame - mStart);
+			mRate  = -mRate;
+			mState |= 2;
 		}
-		return;
-	}
+		break;
 	}
 }
 
-/*
- * --INFO--
- * Address:	80067B1C
- * Size:	000360
+/**
+ * @note Address: 0x80067B1C
+ * @note Size: 0x360
  */
-void J3DAnmTransformFull::getTransform(unsigned short p1, J3DTransformInfo* info) const
+void J3DAnmTransformFull::getTransform(u16 idx, J3DTransformInfo* info) const
 {
-	u16 tableIndex                    = p1 * 3;
-	J3DAnmTransformFullTable::Row* v1 = _20->_00[tableIndex];
-	J3DAnmTransformFullTable::Row* v2 = _20->_00[tableIndex + 1];
-	J3DAnmTransformFullTable::Row* v3 = _20->_00[tableIndex + 2];
-	if (mFTime < 0.0f) {
-		info->mScale.x     = _0C[v1[0][1]];
-		info->mScale.y     = _0C[v2[0][1]];
-		info->mScale.z     = _0C[v3[0][1]];
-		info->mEulerRot.x  = _10[v1[1][1]];
-		info->mEulerRot.y  = _10[v2[1][1]];
-		info->mEulerRot.z  = _10[v3[1][1]];
-		info->mZRotation.x = _14[v1[2][1]];
-		info->mZRotation.y = _14[v2[2][1]];
-		info->mZRotation.z = _14[v3[2][1]];
+	u16 tableIdx                     = idx * 3;
+	J3DAnmTransformFullTable* xTable = &mTable[tableIdx];
+	J3DAnmTransformFullTable* yTable = &mTable[tableIdx + 1];
+	J3DAnmTransformFullTable* zTable = &mTable[tableIdx + 2];
+
+	if (getFrame() < 0.0f) {
+		info->mScale.x = mScaleVals[xTable->mScaleOffset];
+		info->mScale.y = mScaleVals[yTable->mScaleOffset];
+		info->mScale.z = mScaleVals[zTable->mScaleOffset];
+
+		info->mRotation.x = mRotationVals[xTable->mRotationOffset];
+		info->mRotation.y = mRotationVals[yTable->mRotationOffset];
+		info->mRotation.z = mRotationVals[zTable->mRotationOffset];
+
+		info->mTranslation.x = mTranslationVals[xTable->mTranslationOffset];
+		info->mTranslation.y = mTranslationVals[yTable->mTranslationOffset];
+		info->mTranslation.z = mTranslationVals[zTable->mTranslationOffset];
+
 	} else {
-		u32 v4 = (int)(0.5f + mFTime);
-		if (v4 >= v1[0][0]) {
-			info->mScale.x = _0C[v1[0][0] - 1 + v1[0][1]];
+		u32 maxFrame = (int)(getFrame() + 0.5f);
+
+		// X VALUES
+		if (maxFrame >= xTable->mScaleMaxFrame) {
+			info->mScale.x = mScaleVals[xTable->mScaleMaxFrame - 1 + xTable->mScaleOffset];
 		} else {
-			info->mScale.x = _0C[v1[0][1] + v4];
-		}
-		if (v4 >= v1[1][0]) {
-			info->mEulerRot.x = _10[v1[1][0] - 1 + v1[1][1]];
-		} else {
-			info->mEulerRot.x = _10[v1[1][1] + v4];
-		}
-		if (v4 >= v1[2][0]) {
-			info->mZRotation.x = _14[v1[2][0] - 1 + v1[2][1]];
-		} else {
-			info->mZRotation.x = _14[v1[2][1] + v4];
+			info->mScale.x = mScaleVals[xTable->mScaleOffset + maxFrame];
 		}
 
-		if (v4 >= v2[0][0]) {
-			info->mScale.y = _0C[v2[0][0] - 1 + v2[0][1]];
+		if (maxFrame >= xTable->mRotationMaxFrame) {
+			info->mRotation.x = mRotationVals[xTable->mRotationMaxFrame - 1 + xTable->mRotationOffset];
 		} else {
-			info->mScale.y = _0C[v2[0][1] + v4];
-		}
-		if (v4 >= v2[1][0]) {
-			info->mEulerRot.y = _10[v2[1][0] - 1 + v2[1][1]];
-		} else {
-			info->mEulerRot.y = _10[v2[1][1] + v4];
-		}
-		if (v4 >= v2[2][0]) {
-			info->mZRotation.y = _14[v2[2][0] - 1 + v2[2][1]];
-		} else {
-			info->mZRotation.y = _14[v2[2][1] + v4];
+			info->mRotation.x = mRotationVals[xTable->mRotationOffset + maxFrame];
 		}
 
-		if (v4 >= v3[0][0]) {
-			info->mScale.z = _0C[v3[0][0] - 1 + v3[0][1]];
+		if (maxFrame >= xTable->mTranslationMaxFrame) {
+			info->mTranslation.x = mTranslationVals[xTable->mTranslationMaxFrame - 1 + xTable->mTranslationOffset];
 		} else {
-			info->mScale.z = _0C[v3[0][1] + v4];
+			info->mTranslation.x = mTranslationVals[xTable->mTranslationOffset + maxFrame];
 		}
-		if (v4 >= v3[1][0]) {
-			info->mEulerRot.z = _10[v3[1][0] - 1 + v3[1][1]];
+
+		// Y VALUES
+		if (maxFrame >= yTable->mScaleMaxFrame) {
+			info->mScale.y = mScaleVals[yTable->mScaleMaxFrame - 1 + yTable->mScaleOffset];
 		} else {
-			info->mEulerRot.z = _10[v3[1][1] + v4];
+			info->mScale.y = mScaleVals[yTable->mScaleOffset + maxFrame];
 		}
-		if (v4 >= v3[2][0]) {
-			info->mZRotation.z = _14[v3[2][0] - 1 + v3[2][1]];
+
+		if (maxFrame >= yTable->mRotationMaxFrame) {
+			info->mRotation.y = mRotationVals[yTable->mRotationMaxFrame - 1 + yTable->mRotationOffset];
 		} else {
-			info->mZRotation.z = _14[v3[2][1] + v4];
+			info->mRotation.y = mRotationVals[yTable->mRotationOffset + maxFrame];
+		}
+
+		if (maxFrame >= yTable->mTranslationMaxFrame) {
+			info->mTranslation.y = mTranslationVals[yTable->mTranslationMaxFrame - 1 + yTable->mTranslationOffset];
+		} else {
+			info->mTranslation.y = mTranslationVals[yTable->mTranslationOffset + maxFrame];
+		}
+
+		// Z VALUES
+		if (maxFrame >= zTable->mScaleMaxFrame) {
+			info->mScale.z = mScaleVals[zTable->mScaleMaxFrame - 1 + zTable->mScaleOffset];
+		} else {
+			info->mScale.z = mScaleVals[zTable->mScaleOffset + maxFrame];
+		}
+
+		if (maxFrame >= zTable->mRotationMaxFrame) {
+			info->mRotation.z = mRotationVals[zTable->mRotationMaxFrame - 1 + zTable->mRotationOffset];
+		} else {
+			info->mRotation.z = mRotationVals[zTable->mRotationOffset + maxFrame];
+		}
+
+		if (maxFrame >= zTable->mTranslationMaxFrame) {
+			info->mTranslation.z = mTranslationVals[zTable->mTranslationMaxFrame - 1 + zTable->mTranslationOffset];
+		} else {
+			info->mTranslation.z = mTranslationVals[zTable->mTranslationOffset + maxFrame];
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	80067E7C
- * Size:	000420
+/**
+ * @note Address: 0x80067E7C
+ * @note Size: 0x420
  * TODO: Needs J3DGetKeyFrameAnimation to be defined.
  */
-void J3DAnmTransformKey::calcTransform(float p1, unsigned short p2, J3DTransformInfo* info) const
+void J3DAnmTransformKey::calcTransform(f32 p1, u16 p2, J3DTransformInfo* info) const
 {
-	u16 v0                 = p2 * 3;
-	J3DAnmKeyTableBase* v1 = _24[v0]._00;
-	J3DAnmKeyTableBase* v2 = _24[v0 + 1]._00;
-	J3DAnmKeyTableBase* v3 = _24[v0 + 2]._00;
+	u16 idx                       = p2 * 3;
+	J3DAnmTransformKeyTable* xInf = &mTable[idx];
+	J3DAnmTransformKeyTable* yInf = &mTable[idx + 1];
+	J3DAnmTransformKeyTable* zInf = &mTable[idx + 2];
 
-	switch (v1[0]._00) {
+	switch (xInf->mScaleInfo.mMaxFrame) {
 	case 0:
-		info->mScale.x = 1.0f;
+		info->mScale.x = 1;
 		break;
 	case 1:
-		info->mScale.x = _0C[v1[0]._02];
+		info->mScale.x = mScaleVals[xInf->mScaleInfo.mOffset];
 		break;
 	default:
-		info->mScale.x = J3DGetKeyFrameInterpolation(p1, v1, _0C + v1[0]._02);
-		break;
+		info->mScale.x = J3DGetKeyFrameInterpolation<f32>(p1, &xInf->mScaleInfo, &mScaleVals[xInf->mScaleInfo.mOffset]);
 	}
 
-	switch (v2[0]._00) {
+	switch (yInf->mScaleInfo.mMaxFrame) {
 	case 0:
-		info->mScale.y = 1.0f;
+		info->mScale.y = 1;
 		break;
 	case 1:
-		info->mScale.y = _0C[v2[0]._02];
+		info->mScale.y = mScaleVals[yInf->mScaleInfo.mOffset];
 		break;
 	default:
-		info->mScale.y = J3DGetKeyFrameInterpolation(p1, v2, _0C + v2[0]._02);
-		break;
+		info->mScale.y = J3DGetKeyFrameInterpolation<f32>(p1, &yInf->mScaleInfo, &mScaleVals[yInf->mScaleInfo.mOffset]);
 	}
 
-	switch (v3[0]._00) {
+	switch (zInf->mScaleInfo.mMaxFrame) {
 	case 0:
-		info->mScale.z = 1.0f;
+		info->mScale.z = 1;
 		break;
 	case 1:
-		info->mScale.z = _0C[v3[0]._02];
+		info->mScale.z = mScaleVals[zInf->mScaleInfo.mOffset];
 		break;
 	default:
-		info->mScale.z = J3DGetKeyFrameInterpolation(p1, v3, _0C + v3[0]._02);
-		break;
+		info->mScale.z = J3DGetKeyFrameInterpolation<f32>(p1, &zInf->mScaleInfo, &mScaleVals[zInf->mScaleInfo.mOffset]);
 	}
 
-	switch (v1[1]._00) {
+	switch (xInf->mRotationInfo.mMaxFrame) {
 	case 0:
-		info->mEulerRot.x = 0;
+		info->mRotation.x = 0;
 		break;
 	case 1:
-		info->mEulerRot.x = _10[v1[1]._02] << _20;
+		info->mRotation.x = mRotationVals[xInf->mRotationInfo.mOffset] << _20;
 		break;
 	default:
-		info->mEulerRot.x = (int)J3DGetKeyFrameInterpolation(p1, v1 + 1, _10 + v1[1]._02) << _20;
-		break;
+		info->mRotation.x
+		    = static_cast<s32>(J3DGetKeyFrameInterpolation<s16>(p1, &xInf->mRotationInfo, &mRotationVals[xInf->mRotationInfo.mOffset]))
+		   << _20;
 	}
 
-	switch (v2[1]._00) {
+	switch (yInf->mRotationInfo.mMaxFrame) {
 	case 0:
-		info->mEulerRot.y = 0;
+		info->mRotation.y = 0;
 		break;
 	case 1:
-		info->mEulerRot.y = _10[v2[1]._02] << _20;
+		info->mRotation.y = mRotationVals[yInf->mRotationInfo.mOffset] << _20;
 		break;
 	default:
-		info->mEulerRot.y = (int)J3DGetKeyFrameInterpolation(p1, v2 + 1, _10 + v2[1]._02) << _20;
-		break;
+		info->mRotation.y
+		    = static_cast<s32>(J3DGetKeyFrameInterpolation<s16>(p1, &yInf->mRotationInfo, &mRotationVals[yInf->mRotationInfo.mOffset]))
+		   << _20;
 	}
 
-	switch (v3[1]._00) {
+	switch (zInf->mRotationInfo.mMaxFrame) {
 	case 0:
-		info->mEulerRot.z = 0;
+		info->mRotation.z = 0;
 		break;
 	case 1:
-		info->mEulerRot.z = _10[v3[1]._02] << _20;
+		info->mRotation.z = mRotationVals[zInf->mRotationInfo.mOffset] << _20;
 		break;
 	default:
-		info->mEulerRot.z = (int)J3DGetKeyFrameInterpolation(p1, v3 + 1, _10 + v3[1]._02) << _20;
-		break;
+		info->mRotation.z
+		    = static_cast<s32>(J3DGetKeyFrameInterpolation<s16>(p1, &zInf->mRotationInfo, &mRotationVals[zInf->mRotationInfo.mOffset]))
+		   << _20;
 	}
 
-	switch (v1[2]._00) {
+	switch (xInf->mTranslationInfo.mMaxFrame) {
 	case 0:
-		info->mZRotation.x = 0.0f;
+		info->mTranslation.x = 0;
 		break;
 	case 1:
-		info->mZRotation.x = _14[v1[2]._02];
+		info->mTranslation.x = mTranslationVals[xInf->mTranslationInfo.mOffset];
 		break;
 	default:
-		info->mZRotation.x = J3DGetKeyFrameInterpolation(p1, v1 + 2, _14 + v1[2]._02);
-		break;
+		info->mTranslation.x
+		    = J3DGetKeyFrameInterpolation<f32>(p1, &xInf->mTranslationInfo, &mTranslationVals[xInf->mTranslationInfo.mOffset]);
 	}
 
-	switch (v2[2]._00) {
+	switch (yInf->mTranslationInfo.mMaxFrame) {
 	case 0:
-		info->mZRotation.y = 0.0f;
+		info->mTranslation.y = 0;
 		break;
 	case 1:
-		info->mZRotation.y = _14[v2[2]._02];
+		info->mTranslation.y = mTranslationVals[yInf->mTranslationInfo.mOffset];
 		break;
 	default:
-		info->mZRotation.y = J3DGetKeyFrameInterpolation(p1, v2 + 2, _14 + v2[2]._02);
-		break;
+		info->mTranslation.y
+		    = J3DGetKeyFrameInterpolation<f32>(p1, &yInf->mTranslationInfo, &mTranslationVals[yInf->mTranslationInfo.mOffset]);
 	}
 
-	switch (v3[2]._00) {
+	switch (zInf->mTranslationInfo.mMaxFrame) {
 	case 0:
-		info->mZRotation.z = 0.0f;
+		info->mTranslation.z = 0;
 		break;
 	case 1:
-		info->mZRotation.z = _14[v3[2]._02];
+		info->mTranslation.z = mTranslationVals[zInf->mTranslationInfo.mOffset];
 		break;
 	default:
-		info->mZRotation.z = J3DGetKeyFrameInterpolation(p1, v3 + 2, _14 + v3[2]._02);
-		break;
+		info->mTranslation.z
+		    = J3DGetKeyFrameInterpolation<f32>(p1, &zInf->mTranslationInfo, &mTranslationVals[zInf->mTranslationInfo.mOffset]);
 	}
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x40(r1)
-	  mflr      r0
-	  stw       r0, 0x44(r1)
-	  stfd      f31, 0x30(r1)
-	  psq_st    f31,0x38(r1),0,0
-	  stmw      r27, 0x1C(r1)
-	  mulli     r0, r4, 0x3
-	  mr        r27, r3
-	  lwz       r6, 0x24(r3)
-	  fmr       f31, f1
-	  mr        r28, r5
-	  rlwinm    r3,r0,0,16,31
-	  mulli     r0, r3, 0x12
-	  addi      r4, r3, 0x1
-	  addi      r3, r3, 0x2
-	  add       r31, r6, r0
-	  lhz       r0, 0x0(r31)
-	  mulli     r4, r4, 0x12
-	  cmpwi     r0, 0x1
-	  mulli     r3, r3, 0x12
-	  add       r30, r6, r4
-	  add       r29, r6, r3
-	  beq-      .loc_0x78
-	  bge-      .loc_0x90
-	  cmpwi     r0, 0
-	  bge-      .loc_0x6C
-	  b         .loc_0x90
-
-	.loc_0x6C:
-	  lfs       f0, -0x7948(r2)
-	  stfs      f0, 0x0(r28)
-	  b         .loc_0xB0
-
-	.loc_0x78:
-	  lhz       r0, 0x2(r31)
-	  lwz       r3, 0xC(r27)
-	  rlwinm    r0,r0,2,0,29
-	  lfsx      f0, r3, r0
-	  stfs      f0, 0x0(r28)
-	  b         .loc_0xB0
-
-	.loc_0x90:
-	  lhz       r0, 0x2(r31)
-	  fmr       f1, f31
-	  lwz       r4, 0xC(r27)
-	  mr        r3, r31
-	  rlwinm    r0,r0,2,0,29
-	  add       r4, r4, r0
-	  bl        0x2054
-	  stfs      f1, 0x0(r28)
-
-	.loc_0xB0:
-	  lhz       r0, 0x0(r30)
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0xD8
-	  bge-      .loc_0xF0
-	  cmpwi     r0, 0
-	  bge-      .loc_0xCC
-	  b         .loc_0xF0
-
-	.loc_0xCC:
-	  lfs       f0, -0x7948(r2)
-	  stfs      f0, 0x4(r28)
-	  b         .loc_0x110
-
-	.loc_0xD8:
-	  lhz       r0, 0x2(r30)
-	  lwz       r3, 0xC(r27)
-	  rlwinm    r0,r0,2,0,29
-	  lfsx      f0, r3, r0
-	  stfs      f0, 0x4(r28)
-	  b         .loc_0x110
-
-	.loc_0xF0:
-	  lhz       r0, 0x2(r30)
-	  fmr       f1, f31
-	  lwz       r4, 0xC(r27)
-	  mr        r3, r30
-	  rlwinm    r0,r0,2,0,29
-	  add       r4, r4, r0
-	  bl        0x1FF4
-	  stfs      f1, 0x4(r28)
-
-	.loc_0x110:
-	  lhz       r0, 0x0(r29)
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0x138
-	  bge-      .loc_0x150
-	  cmpwi     r0, 0
-	  bge-      .loc_0x12C
-	  b         .loc_0x150
-
-	.loc_0x12C:
-	  lfs       f0, -0x7948(r2)
-	  stfs      f0, 0x8(r28)
-	  b         .loc_0x170
-
-	.loc_0x138:
-	  lhz       r0, 0x2(r29)
-	  lwz       r3, 0xC(r27)
-	  rlwinm    r0,r0,2,0,29
-	  lfsx      f0, r3, r0
-	  stfs      f0, 0x8(r28)
-	  b         .loc_0x170
-
-	.loc_0x150:
-	  lhz       r0, 0x2(r29)
-	  fmr       f1, f31
-	  lwz       r4, 0xC(r27)
-	  mr        r3, r29
-	  rlwinm    r0,r0,2,0,29
-	  add       r4, r4, r0
-	  bl        0x1F94
-	  stfs      f1, 0x8(r28)
-
-	.loc_0x170:
-	  lhz       r0, 0x6(r31)
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0x198
-	  bge-      .loc_0x1B8
-	  cmpwi     r0, 0
-	  bge-      .loc_0x18C
-	  b         .loc_0x1B8
-
-	.loc_0x18C:
-	  li        r0, 0
-	  sth       r0, 0xC(r28)
-	  b         .loc_0x1EC
-
-	.loc_0x198:
-	  lhz       r0, 0x8(r31)
-	  lwz       r4, 0x10(r27)
-	  rlwinm    r3,r0,1,0,30
-	  lwz       r0, 0x20(r27)
-	  lhax      r3, r4, r3
-	  slw       r0, r3, r0
-	  sth       r0, 0xC(r28)
-	  b         .loc_0x1EC
-
-	.loc_0x1B8:
-	  lhz       r0, 0x8(r31)
-	  fmr       f1, f31
-	  lwz       r4, 0x10(r27)
-	  addi      r3, r31, 0x6
-	  rlwinm    r0,r0,1,0,30
-	  add       r4, r4, r0
-	  bl        0x1CF8
-	  fctiwz    f0, f1
-	  lwz       r0, 0x20(r27)
-	  stfd      f0, 0x8(r1)
-	  lwz       r3, 0xC(r1)
-	  slw       r0, r3, r0
-	  sth       r0, 0xC(r28)
-
-	.loc_0x1EC:
-	  lhz       r0, 0x6(r30)
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0x214
-	  bge-      .loc_0x234
-	  cmpwi     r0, 0
-	  bge-      .loc_0x208
-	  b         .loc_0x234
-
-	.loc_0x208:
-	  li        r0, 0
-	  sth       r0, 0xE(r28)
-	  b         .loc_0x268
-
-	.loc_0x214:
-	  lhz       r0, 0x8(r30)
-	  lwz       r4, 0x10(r27)
-	  rlwinm    r3,r0,1,0,30
-	  lwz       r0, 0x20(r27)
-	  lhax      r3, r4, r3
-	  slw       r0, r3, r0
-	  sth       r0, 0xE(r28)
-	  b         .loc_0x268
-
-	.loc_0x234:
-	  lhz       r0, 0x8(r30)
-	  fmr       f1, f31
-	  lwz       r4, 0x10(r27)
-	  addi      r3, r30, 0x6
-	  rlwinm    r0,r0,1,0,30
-	  add       r4, r4, r0
-	  bl        0x1C7C
-	  fctiwz    f0, f1
-	  lwz       r0, 0x20(r27)
-	  stfd      f0, 0x8(r1)
-	  lwz       r3, 0xC(r1)
-	  slw       r0, r3, r0
-	  sth       r0, 0xE(r28)
-
-	.loc_0x268:
-	  lhz       r0, 0x6(r29)
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0x290
-	  bge-      .loc_0x2B0
-	  cmpwi     r0, 0
-	  bge-      .loc_0x284
-	  b         .loc_0x2B0
-
-	.loc_0x284:
-	  li        r0, 0
-	  sth       r0, 0x10(r28)
-	  b         .loc_0x2E4
-
-	.loc_0x290:
-	  lhz       r0, 0x8(r29)
-	  lwz       r4, 0x10(r27)
-	  rlwinm    r3,r0,1,0,30
-	  lwz       r0, 0x20(r27)
-	  lhax      r3, r4, r3
-	  slw       r0, r3, r0
-	  sth       r0, 0x10(r28)
-	  b         .loc_0x2E4
-
-	.loc_0x2B0:
-	  lhz       r0, 0x8(r29)
-	  fmr       f1, f31
-	  lwz       r4, 0x10(r27)
-	  addi      r3, r29, 0x6
-	  rlwinm    r0,r0,1,0,30
-	  add       r4, r4, r0
-	  bl        0x1C00
-	  fctiwz    f0, f1
-	  lwz       r0, 0x20(r27)
-	  stfd      f0, 0x8(r1)
-	  lwz       r3, 0xC(r1)
-	  slw       r0, r3, r0
-	  sth       r0, 0x10(r28)
-
-	.loc_0x2E4:
-	  lhz       r0, 0xC(r31)
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0x30C
-	  bge-      .loc_0x324
-	  cmpwi     r0, 0
-	  bge-      .loc_0x300
-	  b         .loc_0x324
-
-	.loc_0x300:
-	  lfs       f0, -0x7944(r2)
-	  stfs      f0, 0x14(r28)
-	  b         .loc_0x344
-
-	.loc_0x30C:
-	  lhz       r0, 0xE(r31)
-	  lwz       r3, 0x14(r27)
-	  rlwinm    r0,r0,2,0,29
-	  lfsx      f0, r3, r0
-	  stfs      f0, 0x14(r28)
-	  b         .loc_0x344
-
-	.loc_0x324:
-	  lhz       r0, 0xE(r31)
-	  fmr       f1, f31
-	  lwz       r4, 0x14(r27)
-	  addi      r3, r31, 0xC
-	  rlwinm    r0,r0,2,0,29
-	  add       r4, r4, r0
-	  bl        0x1DC0
-	  stfs      f1, 0x14(r28)
-
-	.loc_0x344:
-	  lhz       r0, 0xC(r30)
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0x36C
-	  bge-      .loc_0x384
-	  cmpwi     r0, 0
-	  bge-      .loc_0x360
-	  b         .loc_0x384
-
-	.loc_0x360:
-	  lfs       f0, -0x7944(r2)
-	  stfs      f0, 0x18(r28)
-	  b         .loc_0x3A4
-
-	.loc_0x36C:
-	  lhz       r0, 0xE(r30)
-	  lwz       r3, 0x14(r27)
-	  rlwinm    r0,r0,2,0,29
-	  lfsx      f0, r3, r0
-	  stfs      f0, 0x18(r28)
-	  b         .loc_0x3A4
-
-	.loc_0x384:
-	  lhz       r0, 0xE(r30)
-	  fmr       f1, f31
-	  lwz       r4, 0x14(r27)
-	  addi      r3, r30, 0xC
-	  rlwinm    r0,r0,2,0,29
-	  add       r4, r4, r0
-	  bl        0x1D60
-	  stfs      f1, 0x18(r28)
-
-	.loc_0x3A4:
-	  lhz       r0, 0xC(r29)
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0x3CC
-	  bge-      .loc_0x3E4
-	  cmpwi     r0, 0
-	  bge-      .loc_0x3C0
-	  b         .loc_0x3E4
-
-	.loc_0x3C0:
-	  lfs       f0, -0x7944(r2)
-	  stfs      f0, 0x1C(r28)
-	  b         .loc_0x404
-
-	.loc_0x3CC:
-	  lhz       r0, 0xE(r29)
-	  lwz       r3, 0x14(r27)
-	  rlwinm    r0,r0,2,0,29
-	  lfsx      f0, r3, r0
-	  stfs      f0, 0x1C(r28)
-	  b         .loc_0x404
-
-	.loc_0x3E4:
-	  lhz       r0, 0xE(r29)
-	  fmr       f1, f31
-	  lwz       r4, 0x14(r27)
-	  addi      r3, r29, 0xC
-	  rlwinm    r0,r0,2,0,29
-	  add       r4, r4, r0
-	  bl        0x1D00
-	  stfs      f1, 0x1C(r28)
-
-	.loc_0x404:
-	  psq_l     f31,0x38(r1),0,0
-	  lfd       f31, 0x30(r1)
-	  lmw       r27, 0x1C(r1)
-	  lwz       r0, 0x44(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x40
-	  blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	8006829C
- * Size:	000268
+/**
+ * @note Address: 0x8006829C
+ * @note Size: 0x268
  */
-void J3DAnmTextureSRTKey::calcTransform(float p1, unsigned short p2, J3DTextureSRTInfo* info) const
+void J3DAnmTextureSRTKey::calcTransform(f32 p1, u16 p2, J3DTextureSRTInfo* info) const
 {
-	u16 v0                 = p2 * 3;
-	J3DAnmKeyTableBase* v1 = _10[v0]._00;
-	J3DAnmKeyTableBase* v2 = _10[v0 + 1]._00;
-	J3DAnmKeyTableBase* v3 = _10[v0 + 2]._00;
+	u16 idx                       = p2 * 3;
+	J3DAnmTransformKeyTable* xInf = &mTable1[idx];
+	J3DAnmTransformKeyTable* yInf = &mTable1[idx + 1];
+	J3DAnmTransformKeyTable* zInf = &mTable1[idx + 2];
 
-	switch (v1[0]._00) {
+	switch (xInf->mScaleInfo.mMaxFrame) {
 	case 0:
-		info->mScaleX = 1.0f;
+		info->mScaleX = 1;
 		break;
 	case 1:
-		info->mScaleX = _1C[v1[0]._02];
+		info->mScaleX = mScale1Vals[xInf->mScaleInfo.mOffset];
 		break;
 	default:
-		info->mScaleX = J3DGetKeyFrameInterpolation(p1, v1, _1C + v1[0]._02);
-		break;
+		info->mScaleX = J3DGetKeyFrameInterpolation<f32>(p1, &xInf->mScaleInfo, &mScale1Vals[xInf->mScaleInfo.mOffset]);
 	}
 
-	switch (v2[0]._00) {
+	switch (yInf->mScaleInfo.mMaxFrame) {
 	case 0:
-		info->mScaleY = 1.0f;
+		info->mScaleY = 1;
 		break;
 	case 1:
-		info->mScaleY = _1C[v2[0]._02];
+		info->mScaleY = mScale1Vals[yInf->mScaleInfo.mOffset];
 		break;
 	default:
-		info->mScaleY = J3DGetKeyFrameInterpolation(p1, v2, _1C + v2[0]._02);
-		break;
+		info->mScaleY = J3DGetKeyFrameInterpolation<f32>(p1, &yInf->mScaleInfo, &mScale1Vals[yInf->mScaleInfo.mOffset]);
 	}
 
-	switch (v3[1]._00) {
+	switch (zInf->mRotationInfo.mMaxFrame) {
 	case 0:
-		info->_08 = 0;
+		info->mRotation = 0;
 		break;
 	case 1:
-		info->_08 = _20[v3[1]._02] << _0C;
+		info->mRotation = mRotation1Vals[zInf->mRotationInfo.mOffset] << _0C;
 		break;
 	default:
-		info->_08 = (int)J3DGetKeyFrameInterpolation(p1, v3 + 1, _20 + v3[1]._02) << _0C;
-		break;
+		info->mRotation
+		    = static_cast<s32>(J3DGetKeyFrameInterpolation<s16>(p1, &zInf->mRotationInfo, &mRotation1Vals[zInf->mRotationInfo.mOffset]))
+		   << _0C;
 	}
 
-	switch (v1[2]._00) {
+	switch (xInf->mTranslationInfo.mMaxFrame) {
 	case 0:
-		info->_0C = 0.0f;
+		info->mTranslationX = 0;
 		break;
 	case 1:
-		info->_0C = _24[v1[2]._02];
+		info->mTranslationX = mTranslation1Vals[xInf->mTranslationInfo.mOffset];
 		break;
 	default:
-		info->_0C = J3DGetKeyFrameInterpolation(p1, v1 + 2, _24 + v1[2]._02);
-		break;
+		info->mTranslationX
+		    = J3DGetKeyFrameInterpolation<f32>(p1, &xInf->mTranslationInfo, &mTranslation1Vals[xInf->mTranslationInfo.mOffset]);
 	}
 
-	switch (v2[2]._00) {
+	switch (yInf->mTranslationInfo.mMaxFrame) {
 	case 0:
-		info->_10 = 0.0f;
+		info->mTranslationY = 0;
 		break;
 	case 1:
-		info->_10 = _24[v2[2]._02];
+		info->mTranslationY = mTranslation1Vals[yInf->mTranslationInfo.mOffset];
 		break;
 	default:
-		info->_10 = J3DGetKeyFrameInterpolation(p1, v2 + 2, _24 + v2[2]._02);
-		break;
+		info->mTranslationY
+		    = J3DGetKeyFrameInterpolation<f32>(p1, &yInf->mTranslationInfo, &mTranslation1Vals[yInf->mTranslationInfo.mOffset]);
 	}
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x40(r1)
-	  mflr      r0
-	  stw       r0, 0x44(r1)
-	  stfd      f31, 0x30(r1)
-	  psq_st    f31,0x38(r1),0,0
-	  stmw      r27, 0x1C(r1)
-	  mulli     r0, r4, 0x3
-	  mr        r27, r3
-	  lwz       r6, 0x10(r3)
-	  fmr       f31, f1
-	  mr        r28, r5
-	  rlwinm    r3,r0,0,16,31
-	  mulli     r0, r3, 0x12
-	  addi      r4, r3, 0x1
-	  addi      r3, r3, 0x2
-	  add       r31, r6, r0
-	  lhz       r0, 0x0(r31)
-	  mulli     r4, r4, 0x12
-	  cmpwi     r0, 0x1
-	  mulli     r3, r3, 0x12
-	  add       r30, r6, r4
-	  add       r29, r6, r3
-	  beq-      .loc_0x78
-	  bge-      .loc_0x90
-	  cmpwi     r0, 0
-	  bge-      .loc_0x6C
-	  b         .loc_0x90
-
-	.loc_0x6C:
-	  lfs       f0, -0x7948(r2)
-	  stfs      f0, 0x0(r28)
-	  b         .loc_0xB0
-
-	.loc_0x78:
-	  lhz       r0, 0x2(r31)
-	  lwz       r3, 0x1C(r27)
-	  rlwinm    r0,r0,2,0,29
-	  lfsx      f0, r3, r0
-	  stfs      f0, 0x0(r28)
-	  b         .loc_0xB0
-
-	.loc_0x90:
-	  lhz       r0, 0x2(r31)
-	  fmr       f1, f31
-	  lwz       r4, 0x1C(r27)
-	  mr        r3, r31
-	  rlwinm    r0,r0,2,0,29
-	  add       r4, r4, r0
-	  bl        0x1C34
-	  stfs      f1, 0x0(r28)
-
-	.loc_0xB0:
-	  lhz       r0, 0x0(r30)
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0xD8
-	  bge-      .loc_0xF0
-	  cmpwi     r0, 0
-	  bge-      .loc_0xCC
-	  b         .loc_0xF0
-
-	.loc_0xCC:
-	  lfs       f0, -0x7948(r2)
-	  stfs      f0, 0x4(r28)
-	  b         .loc_0x110
-
-	.loc_0xD8:
-	  lhz       r0, 0x2(r30)
-	  lwz       r3, 0x1C(r27)
-	  rlwinm    r0,r0,2,0,29
-	  lfsx      f0, r3, r0
-	  stfs      f0, 0x4(r28)
-	  b         .loc_0x110
-
-	.loc_0xF0:
-	  lhz       r0, 0x2(r30)
-	  fmr       f1, f31
-	  lwz       r4, 0x1C(r27)
-	  mr        r3, r30
-	  rlwinm    r0,r0,2,0,29
-	  add       r4, r4, r0
-	  bl        0x1BD4
-	  stfs      f1, 0x4(r28)
-
-	.loc_0x110:
-	  lhz       r0, 0x6(r29)
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0x138
-	  bge-      .loc_0x158
-	  cmpwi     r0, 0
-	  bge-      .loc_0x12C
-	  b         .loc_0x158
-
-	.loc_0x12C:
-	  li        r0, 0
-	  sth       r0, 0x8(r28)
-	  b         .loc_0x18C
-
-	.loc_0x138:
-	  lhz       r0, 0x8(r29)
-	  lwz       r4, 0x20(r27)
-	  rlwinm    r3,r0,1,0,30
-	  lwz       r0, 0xC(r27)
-	  lhax      r3, r4, r3
-	  slw       r0, r3, r0
-	  sth       r0, 0x8(r28)
-	  b         .loc_0x18C
-
-	.loc_0x158:
-	  lhz       r0, 0x8(r29)
-	  fmr       f1, f31
-	  lwz       r4, 0x20(r27)
-	  addi      r3, r29, 0x6
-	  rlwinm    r0,r0,1,0,30
-	  add       r4, r4, r0
-	  bl        0x1938
-	  fctiwz    f0, f1
-	  lwz       r0, 0xC(r27)
-	  stfd      f0, 0x8(r1)
-	  lwz       r3, 0xC(r1)
-	  slw       r0, r3, r0
-	  sth       r0, 0x8(r28)
-
-	.loc_0x18C:
-	  lhz       r0, 0xC(r31)
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0x1B4
-	  bge-      .loc_0x1CC
-	  cmpwi     r0, 0
-	  bge-      .loc_0x1A8
-	  b         .loc_0x1CC
-
-	.loc_0x1A8:
-	  lfs       f0, -0x7944(r2)
-	  stfs      f0, 0xC(r28)
-	  b         .loc_0x1EC
-
-	.loc_0x1B4:
-	  lhz       r0, 0xE(r31)
-	  lwz       r3, 0x24(r27)
-	  rlwinm    r0,r0,2,0,29
-	  lfsx      f0, r3, r0
-	  stfs      f0, 0xC(r28)
-	  b         .loc_0x1EC
-
-	.loc_0x1CC:
-	  lhz       r0, 0xE(r31)
-	  fmr       f1, f31
-	  lwz       r4, 0x24(r27)
-	  addi      r3, r31, 0xC
-	  rlwinm    r0,r0,2,0,29
-	  add       r4, r4, r0
-	  bl        0x1AF8
-	  stfs      f1, 0xC(r28)
-
-	.loc_0x1EC:
-	  lhz       r0, 0xC(r30)
-	  cmpwi     r0, 0x1
-	  beq-      .loc_0x214
-	  bge-      .loc_0x22C
-	  cmpwi     r0, 0
-	  bge-      .loc_0x208
-	  b         .loc_0x22C
-
-	.loc_0x208:
-	  lfs       f0, -0x7944(r2)
-	  stfs      f0, 0x10(r28)
-	  b         .loc_0x24C
-
-	.loc_0x214:
-	  lhz       r0, 0xE(r30)
-	  lwz       r3, 0x24(r27)
-	  rlwinm    r0,r0,2,0,29
-	  lfsx      f0, r3, r0
-	  stfs      f0, 0x10(r28)
-	  b         .loc_0x24C
-
-	.loc_0x22C:
-	  lhz       r0, 0xE(r30)
-	  fmr       f1, f31
-	  lwz       r4, 0x24(r27)
-	  addi      r3, r30, 0xC
-	  rlwinm    r0,r0,2,0,29
-	  add       r4, r4, r0
-	  bl        0x1A98
-	  stfs      f1, 0x10(r28)
-
-	.loc_0x24C:
-	  psq_l     f31,0x38(r1),0,0
-	  lfd       f31, 0x30(r1)
-	  lmw       r27, 0x1C(r1)
-	  lwz       r0, 0x44(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x40
-	  blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	80068504
- * Size:	000094
+/**
+ * @note Address: 0x80068504
+ * @note Size: 0x94
  */
-float J3DAnmClusterFull::getWeight(unsigned short p1) const
+f32 J3DAnmClusterFull::getWeight(u16 idx) const
 {
-
-	int v4                     = (int)(0.5f + mFTime);
-	u32 index                  = p1;
-	J3DAnmClusterFullTable* v1 = _10;
-	if (mFTime < 0.0f) {
-		return _0C[v1[index]._00[1]];
+	int index      = idx;
+	int maxFrame   = (getFrame() + 0.5f);
+	int tableFrame = mTables[index].mMaxFrame;
+	if (getFrame() < 0.0f) {
+		return mWeights[mTables[index].mOffset];
 	}
-	if (v4 >= v1[index]._00[0]) {
-		int v2 = v1[index]._00[0] - 1 + v1[index]._00[1];
-		return _0C[v2];
+	if (maxFrame >= tableFrame) {
+		return mWeights[tableFrame - 1 + mTables[index].mOffset];
 	}
-	return _0C[v1[index]._00[1] + v4];
 
-	// int v4 = (int)(0.5f + mFTime);
-
-	// J3DAnmClusterFullTable* v1 = _10;
-	// if (mFTime < 0.0f) {
-	// 	return _0C[getTable(p1)->_02];
-	// }
-	// if (v4 >= getTable(p1)->_00) {
-	// 	int v2 = getTable(p1)->_00 + getTable(p1)->_02 - 1;
-	// 	return _0C[v2];
-	// }
-	// return _0C[getTable(p1)->_02 + v4];
-
-	// int v4                     = (int)(0.5f + mFTime);
-
-	// J3DAnmClusterFullTable* v1 = _10;
-	// if (mFTime < 0.0f) {
-	// 	return _0C[v1[p1]._02];
-	// }
-	// if (v4 >= v1[p1]._00) {
-	// 	int v2 = v1[p1]._00 + v1[p1]._02 - 1;
-	// 	return _0C[v2];
-	// }
-	// return _0C[v1[p1]._02 + v4];
-
-	// int v4  = (int)(0.5f + mFTime);
-	// u16* v1 = &_10[p1]._00;
-	// if (mFTime < 0.0f) {
-	// 	return _0C[v1[1]];
-	// }
-	// if (v4 >= v1[0]) {
-	// 	return _0C[v1[0] + v1[1] - 1];
-	// }
-	// return _0C[v4 + v1[1]];
-
-	/*
-	lfs      f1, lbl_80516A30@sda21(r2)
-	rlwinm   r0, r4, 2, 0xe, 0x1d
-	lfs      f2, 8(r3)
-	lfs      f0, lbl_80516A1C@sda21(r2)
-	fadds    f1, f1, f2
-	stwu     r1, -0x10(r1)
-	fcmpo    cr0, f2, f0
-	lwz      r4, 0x10(r3)
-	fctiwz   f0, f1
-	lhzx     r6, r4, r0
-	stfd     f0, 8(r1)
-	lwz      r5, 0xc(r1)
-	bge      lbl_80068550
-	add      r4, r4, r0
-	lwz      r3, 0xc(r3)
-	lhz      r0, 2(r4)
-	slwi     r0, r0, 2
-	lfsx     f1, r3, r0
-	b        lbl_80068590
-
-lbl_80068550:
-	cmpw     r5, r6
-	blt      lbl_80068578
-	add      r4, r4, r0
-	lwz      r5, 0xc(r3)
-	lhz      r0, 2(r4)
-	add      r3, r6, r0
-	addi     r0, r3, -1
-	slwi     r0, r0, 2
-	lfsx     f1, r5, r0
-	b        lbl_80068590
-
-lbl_80068578:
-	add      r4, r4, r0
-	lwz      r3, 0xc(r3)
-	lhz      r0, 2(r4)
-	add      r0, r5, r0
-	slwi     r0, r0, 2
-	lfsx     f1, r3, r0
-
-lbl_80068590:
-	addi     r1, r1, 0x10
-	blr
-	*/
+	return mWeights[maxFrame + mTables[index].mOffset];
 }
 
-/*
- * --INFO--
- * Address:	80068598
- * Size:	000084
+/**
+ * @note Address: 0x80068598
+ * @note Size: 0x84
  * getWeight__16J3DAnmClusterKeyCFUs
  */
-float J3DAnmClusterKey::getWeight(unsigned short p1) const
+f32 J3DAnmClusterKey::getWeight(u16 idx) const
 {
-	switch (_10[p1]._00) {
+	switch (mTables[idx].mMaxFrame) {
 	case 0:
 		return 1.0f;
 	case 1:
-		return _0C[_10[p1]._02];
-	default:
-		return J3DGetKeyFrameInterpolation<float>(mFTime, &_10[p1], &_0C[_10[p1]._02]);
+		return mWeights[mTables[idx].mOffset];
+	}
+
+	return J3DGetKeyFrameInterpolation<f32>(mCurrentFrame, &mTables[idx], &mWeights[mTables[idx].mOffset]);
+}
+
+/**
+ * @note Address: 0x8006861C
+ * @note Size: 0x178
+ */
+void J3DAnmVtxColorFull::getColor(u8 col, u16 idx, GXColor* outColor) const
+{
+	int index                   = idx;
+	J3DAnmColorFullTable* table = &getAnmTable(col)[idx];
+	if (getFrame() < 0.0f) {
+		outColor->r = mRedVals[table->mData[J3DAnmColorFullTable::RED][J3DAnmColorFullTable::Offset]];
+		outColor->g = mGreenVals[table->mData[J3DAnmColorFullTable::GREEN][J3DAnmColorFullTable::Offset]];
+		outColor->b = mBlueVals[table->mData[J3DAnmColorFullTable::BLUE][J3DAnmColorFullTable::Offset]];
+		outColor->a = mAlphaVals[table->mData[J3DAnmColorFullTable::ALPHA][J3DAnmColorFullTable::Offset]];
+		return;
+	}
+
+	int maxFrame = getFrame() + 0.5f;
+	int redMax   = table->mData[J3DAnmColorFullTable::RED][J3DAnmColorFullTable::MaxFrame];
+	if (maxFrame >= redMax) {
+		outColor->r = mRedVals[table->mData[J3DAnmColorFullTable::RED][J3DAnmColorFullTable::Offset] - 1 + redMax];
+	} else {
+		outColor->r = mRedVals[table->mData[J3DAnmColorFullTable::RED][J3DAnmColorFullTable::Offset] + maxFrame];
+	}
+
+	int greenMax = table->mData[J3DAnmColorFullTable::GREEN][J3DAnmColorFullTable::MaxFrame];
+	if (maxFrame >= greenMax) {
+		outColor->g = mGreenVals[table->mData[J3DAnmColorFullTable::GREEN][J3DAnmColorFullTable::Offset] - 1 + greenMax];
+	} else {
+		outColor->g = mGreenVals[table->mData[J3DAnmColorFullTable::GREEN][J3DAnmColorFullTable::Offset] + maxFrame];
+	}
+
+	int blueMax = table->mData[J3DAnmColorFullTable::BLUE][J3DAnmColorFullTable::MaxFrame];
+	if (maxFrame >= blueMax) {
+		outColor->b = mBlueVals[table->mData[J3DAnmColorFullTable::BLUE][J3DAnmColorFullTable::Offset] - 1 + blueMax];
+	} else {
+		outColor->b = mBlueVals[table->mData[J3DAnmColorFullTable::BLUE][J3DAnmColorFullTable::Offset] + maxFrame];
+	}
+
+	int alphaMax = table->mData[J3DAnmColorFullTable::ALPHA][J3DAnmColorFullTable::MaxFrame];
+	if (maxFrame >= alphaMax) {
+		outColor->a = mAlphaVals[table->mData[J3DAnmColorFullTable::ALPHA][J3DAnmColorFullTable::Offset] - 1 + alphaMax];
+	} else {
+		outColor->a = mAlphaVals[table->mData[J3DAnmColorFullTable::ALPHA][J3DAnmColorFullTable::Offset] + maxFrame];
 	}
 }
 
-/*
- * --INFO--
- * Address:	8006861C
- * Size:	000178
+/**
+ * @note Address: 0x80068794
+ * @note Size: 0x2F4
  */
-void J3DAnmVtxColorFull::getColor(unsigned char, unsigned short, _GXColor*) const
+void J3DAnmVtxColorKey::getColor(u8 col, u16 idx, GXColor* outColor) const
 {
-	/*
-	.loc_0x0:
-	  rlwinm    r0,r4,2,22,29
-	  lfs       f1, 0x8(r3)
-	  add       r4, r3, r0
-	  lfs       f0, -0x7944(r2)
-	  lwz       r4, 0x18(r4)
-	  rlwinm    r0,r5,4,12,27
-	  fcmpo     cr0, f1, f0
-	  stwu      r1, -0x10(r1)
-	  add       r4, r4, r0
-	  bge-      .loc_0x6C
-	  lwz       r5, 0x20(r3)
-	  lhz       r0, 0x2(r4)
-	  lwz       r7, 0x24(r3)
-	  lbzx      r0, r5, r0
-	  lwz       r5, 0x28(r3)
-	  stb       r0, 0x0(r6)
-	  lwz       r3, 0x2C(r3)
-	  lhz       r0, 0x6(r4)
-	  lbzx      r0, r7, r0
-	  stb       r0, 0x1(r6)
-	  lhz       r0, 0xA(r4)
-	  lbzx      r0, r5, r0
-	  stb       r0, 0x2(r6)
-	  lhz       r0, 0xE(r4)
-	  lbzx      r0, r3, r0
-	  stb       r0, 0x3(r6)
-	  b         .loc_0x170
+	int index                  = idx;
+	J3DAnmColorKeyTable* table = &getAnmTable(col)[idx];
+	if (getFrame() < 0.0f) {
+		outColor->r = mRedVals[table->mColorInfo[J3DAnmColorKeyTable::RED].mOffset];
+		outColor->g = mGreenVals[table->mColorInfo[J3DAnmColorKeyTable::GREEN].mOffset];
+		outColor->b = mBlueVals[table->mColorInfo[J3DAnmColorKeyTable::BLUE].mOffset];
+		outColor->a = mAlphaVals[table->mColorInfo[J3DAnmColorKeyTable::ALPHA].mOffset];
+		return;
+	}
 
-	.loc_0x6C:
-	  lfs       f0, -0x7930(r2)
-	  lhz       r8, 0x0(r4)
-	  fadds     f0, f0, f1
-	  fctiwz    f0, f0
-	  stfd      f0, 0x8(r1)
-	  lwz       r0, 0xC(r1)
-	  cmpw      r0, r8
-	  blt-      .loc_0xA8
-	  lwz       r7, 0x20(r3)
-	  lhz       r5, 0x2(r4)
-	  add       r5, r7, r5
-	  add       r5, r5, r8
-	  lbz       r5, -0x1(r5)
-	  stb       r5, 0x0(r6)
-	  b         .loc_0xBC
+	// int maxFrame = getFrame() + 0.5f;
+	// int redMax = table->mData[J3DAnmColorFullTable::RED][J3DAnmColorFullTable::MaxFrame];
+	// if (maxFrame >= redMax) {
+	// 	outColor->r = mRedVals[table->mData[J3DAnmColorFullTable::RED][J3DAnmColorFullTable::Offset] - 1 + redMax];
+	// } else {
+	// 	outColor->r = mRedVals[table->mData[J3DAnmColorFullTable::RED][J3DAnmColorFullTable::Offset] + maxFrame];
+	// }
 
-	.loc_0xA8:
-	  lhz       r5, 0x2(r4)
-	  lwz       r7, 0x20(r3)
-	  add       r5, r5, r0
-	  lbzx      r5, r7, r5
-	  stb       r5, 0x0(r6)
+	// int greenMax = table->mData[J3DAnmColorFullTable::GREEN][J3DAnmColorFullTable::MaxFrame];
+	// if (maxFrame >= greenMax) {
+	// 	outColor->g = mGreenVals[table->mData[J3DAnmColorFullTable::GREEN][J3DAnmColorFullTable::Offset] - 1 + greenMax];
+	// } else {
+	// 	outColor->g = mGreenVals[table->mData[J3DAnmColorFullTable::GREEN][J3DAnmColorFullTable::Offset] + maxFrame];
+	// }
 
-	.loc_0xBC:
-	  lhz       r8, 0x4(r4)
-	  cmpw      r0, r8
-	  blt-      .loc_0xE4
-	  lwz       r7, 0x24(r3)
-	  lhz       r5, 0x6(r4)
-	  add       r5, r7, r5
-	  add       r5, r5, r8
-	  lbz       r5, -0x1(r5)
-	  stb       r5, 0x1(r6)
-	  b         .loc_0xF8
+	// int blueMax = table->mData[J3DAnmColorFullTable::BLUE][J3DAnmColorFullTable::MaxFrame];
+	// if (maxFrame >= blueMax) {
+	// 	outColor->b = mBlueVals[table->mData[J3DAnmColorFullTable::BLUE][J3DAnmColorFullTable::Offset] - 1 + blueMax];
+	// } else {
+	// 	outColor->b = mBlueVals[table->mData[J3DAnmColorFullTable::BLUE][J3DAnmColorFullTable::Offset] + maxFrame];
+	// }
 
-	.loc_0xE4:
-	  lhz       r5, 0x6(r4)
-	  lwz       r7, 0x24(r3)
-	  add       r5, r5, r0
-	  lbzx      r5, r7, r5
-	  stb       r5, 0x1(r6)
-
-	.loc_0xF8:
-	  lhz       r8, 0x8(r4)
-	  cmpw      r0, r8
-	  blt-      .loc_0x120
-	  lwz       r7, 0x28(r3)
-	  lhz       r5, 0xA(r4)
-	  add       r5, r7, r5
-	  add       r5, r5, r8
-	  lbz       r5, -0x1(r5)
-	  stb       r5, 0x2(r6)
-	  b         .loc_0x134
-
-	.loc_0x120:
-	  lhz       r5, 0xA(r4)
-	  lwz       r7, 0x28(r3)
-	  add       r5, r5, r0
-	  lbzx      r5, r7, r5
-	  stb       r5, 0x2(r6)
-
-	.loc_0x134:
-	  lhz       r5, 0xC(r4)
-	  cmpw      r0, r5
-	  blt-      .loc_0x15C
-	  lwz       r3, 0x2C(r3)
-	  lhz       r0, 0xE(r4)
-	  add       r0, r3, r0
-	  add       r3, r0, r5
-	  lbz       r0, -0x1(r3)
-	  stb       r0, 0x3(r6)
-	  b         .loc_0x170
-
-	.loc_0x15C:
-	  lhz       r4, 0xE(r4)
-	  lwz       r3, 0x2C(r3)
-	  add       r0, r4, r0
-	  lbzx      r0, r3, r0
-	  stb       r0, 0x3(r6)
-
-	.loc_0x170:
-	  addi      r1, r1, 0x10
-	  blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	80068794
- * Size:	0002F4
- */
-void J3DAnmVtxColorKey::getColor(unsigned char, unsigned short, _GXColor*) const
-{
+	// int alphaMax = table->mData[J3DAnmColorFullTable::ALPHA][J3DAnmColorFullTable::MaxFrame];
+	// if (maxFrame >= alphaMax) {
+	// 	outColor->a = mAlphaVals[table->mData[J3DAnmColorFullTable::ALPHA][J3DAnmColorFullTable::Offset] - 1 + alphaMax];
+	// } else {
+	// 	outColor->a = mAlphaVals[table->mData[J3DAnmColorFullTable::ALPHA][J3DAnmColorFullTable::Offset] + maxFrame];
+	// }
 	/*
 	stwu     r1, -0x40(r1)
 	mflr     r0
@@ -1523,77 +748,73 @@ lbl_80068A64:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80068A88
- * Size:	0000A8
+/**
+ * @note Address: 0x80068A88
+ * @note Size: 0xA8
  */
 void J3DAnmColor::searchUpdateMaterialID(J3DModelData* data)
 {
-	for (u16 i = 0; i < _14; i++) {
+	for (u16 i = 0; i < mUpdateMaterialNum; i++) {
 		JUTNameTab* matNameTable = data->mMaterialTable.mMaterialNames;
 		int index                = matNameTable->getIndex(mNameTab.getName(i));
 		if (index != -1) {
-			_18[i] = index;
+			mUpdateMaterialID[i] = index;
 		} else {
-			_18[i] = 0xFFFF;
+			mUpdateMaterialID[i] = 0xFFFF;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	80068B30
- * Size:	000170
+/**
+ * @note Address: 0x80068B30
+ * @note Size: 0x170
  */
-void J3DAnmColorFull::getColor(unsigned short tableIndex, _GXColor* color) const
+void J3DAnmColorFull::getColor(u16 tableIndex, GXColor* color) const
 {
-	J3DAnmColorFullTable* table = _3C + tableIndex;
-	if (mFTime < 0.0f) {
-		color->r = _2C[table->mData[0][1]];
-		color->g = _30[table->mData[1][1]];
-		color->b = _34[table->mData[2][1]];
-		color->a = _38[table->mData[3][1]];
-	} else {
-		int v4 = 0.5f + mFTime;
-		if (v4 >= table->mData[0][0]) {
-			color->r = _2C[table->mData[0][1] - 1 + table->mData[0][0]];
-		} else {
-			color->r = _2C[table->mData[0][1] + v4];
-		}
-		if (v4 >= table->mData[1][0]) {
-			color->g = _30[table->mData[1][1] - 1 + table->mData[1][0]];
-		} else {
-			color->g = _30[table->mData[1][1] + v4];
-		}
-		if (v4 >= table->mData[2][0]) {
-			color->b = _34[table->mData[2][1] - 1 + table->mData[2][0]];
-		} else {
-			color->b = _34[table->mData[2][1] + v4];
-		}
-		if (v4 >= table->mData[3][0]) {
-			color->a = _38[table->mData[3][1] - 1 + table->mData[3][0]];
-		} else {
-			color->a = _38[table->mData[3][1] + v4];
-		}
-		// table->getField(0, v4, &color->r, _2C);
-		// table->getField(1, v4, &color->g, _30);
-		// table->getField(2, v4, &color->b, _34);
-		// table->getField(3, v4, &color->a, _38);
+	J3DAnmColorFullTable* table = mTable + tableIndex;
+	if (getFrame() < 0.0f) {
+		color->r = mRedVals[table->mData[J3DAnmColorFullTable::RED][J3DAnmColorFullTable::Offset]];
+		color->g = mGreenVals[table->mData[J3DAnmColorFullTable::GREEN][J3DAnmColorFullTable::Offset]];
+		color->b = mBlueVals[table->mData[J3DAnmColorFullTable::BLUE][J3DAnmColorFullTable::Offset]];
+		color->a = mAlphaVals[table->mData[J3DAnmColorFullTable::ALPHA][J3DAnmColorFullTable::Offset]];
+		return;
+	}
 
-		// color->r = table->getField(0, v4, _2C);
-		// color->g = table->getField(1, v4, _30);
-		// color->b = table->getField(2, v4, _34);
-		// color->a = table->getField(3, v4, _38);
+	int frame  = getFrame() + 0.5f;
+	int redMax = table->mData[J3DAnmColorFullTable::RED][J3DAnmColorFullTable::MaxFrame];
+	if (frame >= redMax) {
+		color->r = mRedVals[table->mData[J3DAnmColorFullTable::RED][J3DAnmColorFullTable::Offset] - 1 + redMax];
+	} else {
+		color->r = mRedVals[table->mData[J3DAnmColorFullTable::RED][J3DAnmColorFullTable::Offset] + frame];
+	}
+
+	int greenMax = table->mData[J3DAnmColorFullTable::GREEN][J3DAnmColorFullTable::MaxFrame];
+	if (frame >= greenMax) {
+		color->g = mGreenVals[table->mData[J3DAnmColorFullTable::GREEN][J3DAnmColorFullTable::Offset] - 1 + greenMax];
+	} else {
+		color->g = mGreenVals[table->mData[J3DAnmColorFullTable::GREEN][J3DAnmColorFullTable::Offset] + frame];
+	}
+
+	int blueMax = table->mData[J3DAnmColorFullTable::BLUE][J3DAnmColorFullTable::MaxFrame];
+	if (frame >= blueMax) {
+		color->b = mBlueVals[table->mData[J3DAnmColorFullTable::BLUE][J3DAnmColorFullTable::Offset] - 1 + blueMax];
+	} else {
+		color->b = mBlueVals[table->mData[J3DAnmColorFullTable::BLUE][J3DAnmColorFullTable::Offset] + frame];
+	}
+
+	int alphaMax = table->mData[J3DAnmColorFullTable::ALPHA][J3DAnmColorFullTable::MaxFrame];
+	if (frame >= alphaMax) {
+		color->a = mAlphaVals[table->mData[J3DAnmColorFullTable::ALPHA][J3DAnmColorFullTable::Offset] - 1 + alphaMax];
+	} else {
+		color->a = mAlphaVals[table->mData[J3DAnmColorFullTable::ALPHA][J3DAnmColorFullTable::Offset] + frame];
 	}
 }
 
-/*
- * --INFO--
- * Address:	80068CA0
- * Size:	0002CC
+/**
+ * @note Address: 0x80068CA0
+ * @note Size: 0x2CC
  */
-void J3DAnmColorKey::getColor(unsigned short, _GXColor*) const
+void J3DAnmColorKey::getColor(u16, _GXColor*) const
 {
 	/*
 	stwu     r1, -0x40(r1)
@@ -1826,84 +1047,31 @@ lbl_80068F48:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80068F6C
- * Size:	0000B4
+/**
+ * @note Address: 0x80068F6C
+ * @note Size: 0xB4
  */
-void J3DAnmTexPattern::getTexNo(unsigned short p1, unsigned short* p2) const
+void J3DAnmTexPattern::getTexNo(u16 idx, u16* texNo) const
 {
-	int index                     = p1;
-	J3DAnmTexPatternFullTable* v1 = _10;
-	if (mFTime < 0.0f) {
-		*p2 = _0C[v1[index].mData[0][1]];
+	int index                        = idx;
+	J3DAnmTexPatternFullTable* table = mAnmTable;
+	u32 maxFrame                     = table[index].mData[0][0];
+	if (getFrame() < 0.0f) {
+		*texNo = _0C[table[index].mData[0][1]];
 		return;
 	}
-	if (mFTime >= v1[index].mData[0][0]) {
-		int v2 = v1[index].mData[0][0] - 1 + v1[index].mData[0][1];
-		*p2    = _0C[v2];
+
+	if (getFrame() >= (f32)maxFrame) {
+		*texNo = _0C[maxFrame - 1 + table[index].mData[0][1]];
 		return;
 	}
-	*p2 = _0C[v1[index].mData[0][1] + (int)mFTime];
-	/*
-	lfs      f2, 8(r3)
-	rlwinm   r4, r4, 3, 0xd, 0x1c
-	lfs      f0, lbl_80516A1C@sda21(r2)
-	stwu     r1, -0x10(r1)
-	lwz      r6, 0x10(r3)
-	fcmpo    cr0, f2, f0
-	lhzx     r7, r6, r4
-	bge      lbl_80068FA8
-	add      r4, r6, r4
-	lwz      r3, 0xc(r3)
-	lhz      r0, 2(r4)
-	slwi     r0, r0, 1
-	lhzx     r0, r3, r0
-	sth      r0, 0(r5)
-	b        lbl_80069018
 
-lbl_80068FA8:
-	lis      r0, 0x4330
-	stw      r7, 0xc(r1)
-	lfd      f1, lbl_80516A38@sda21(r2)
-	stw      r0, 8(r1)
-	lfd      f0, 8(r1)
-	fsubs    f0, f0, f1
-	fcmpo    cr0, f2, f0
-	cror     2, 1, 2
-	bne      lbl_80068FF0
-	add      r4, r6, r4
-	lwz      r6, 0xc(r3)
-	lhz      r0, 2(r4)
-	add      r3, r7, r0
-	addi     r0, r3, -1
-	slwi     r0, r0, 1
-	lhzx     r0, r6, r0
-	sth      r0, 0(r5)
-	b        lbl_80069018
-
-lbl_80068FF0:
-	fctiwz   f0, f2
-	add      r4, r6, r4
-	lhz      r0, 2(r4)
-	lwz      r4, 0xc(r3)
-	stfd     f0, 8(r1)
-	lwz      r3, 0xc(r1)
-	add      r0, r3, r0
-	slwi     r0, r0, 1
-	lhzx     r0, r4, r0
-	sth      r0, 0(r5)
-
-lbl_80069018:
-	addi     r1, r1, 0x10
-	blr
-	*/
+	*texNo = _0C[(int)mCurrentFrame + table[index].mData[0][1]];
 }
 
-/*
- * --INFO--
- * Address:	80069020
- * Size:	000124
+/**
+ * @note Address: 0x80069020
+ * @note Size: 0x124
  */
 void J3DAnmTextureSRTKey::searchUpdateMaterialID(J3DModelData*)
 {
@@ -2000,17 +1168,16 @@ lbl_80069110:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80069144
- * Size:	0002CC
+/**
+ * @note Address: 0x80069144
+ * @note Size: 0x2CC
  */
-void J3DAnmTevRegKey::getTevColorReg(unsigned short p1, _GXColorS10* color) const
+void J3DAnmTevRegKey::getTevColorReg(u16 p1, _GXColorS10* color) const
 {
-	_48[p1]._00[0].getColorField(mFTime, &color->r, _50);
-	_48[p1]._00[1].getColorField(mFTime, &color->g, _54);
-	_48[p1]._00[2].getColorField(mFTime, &color->b, _58);
-	_48[p1]._00[3].getColorField(mFTime, &color->a, _5C);
+	// _48[p1].mTables[0].getColorField(mCurrentFrame, &color->r, _50);
+	// _48[p1].mTables[1].getColorField(mCurrentFrame, &color->g, _54);
+	// _48[p1].mTables[2].getColorField(mCurrentFrame, &color->b, _58);
+	// _48[p1].mTables[3].getColorField(mCurrentFrame, &color->a, _5C);
 	/*
 	stwu     r1, -0x40(r1)
 	mflr     r0
@@ -2242,12 +1409,11 @@ lbl_800693EC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80069410
- * Size:	0002CC
+/**
+ * @note Address: 0x80069410
+ * @note Size: 0x2CC
  */
-void J3DAnmTevRegKey::getTevKonstReg(unsigned short, _GXColor*) const
+void J3DAnmTevRegKey::getTevKonstReg(u16, _GXColor*) const
 {
 	/*
 	stwu     r1, -0x40(r1)
@@ -2480,183 +1646,162 @@ lbl_800696B8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800696DC
- * Size:	00010C
+/**
+ * @note Address: 0x800696DC
+ * @note Size: 0x10C
  * searchUpdateMaterialID__15J3DAnmTevRegKeyFP12J3DModelData
  */
 void J3DAnmTevRegKey::searchUpdateMaterialID(J3DModelData* data)
 {
 	u16 i;
-	for (i = 0; i < mCountTevColorAnm; i++) {
+	for (i = 0; i < mCRegUpdateMaterialNum; i++) {
 		JUTNameTab* nameTable = data->mMaterialTable.mMaterialNames;
-		int index             = nameTable->getIndex(_24.getName(i));
+		int index             = nameTable->getIndex(mCRegNameTable.getName(i));
 		if (index != -1) {
-			_20[i] = index;
+			mCRegUpdateMaterialID[i] = index;
 		} else {
-			_20[i] = 0xFFFF;
+			mCRegUpdateMaterialID[i] = 0xFFFF;
 		}
 	}
-	for (i = 0; i < mCountTevKColorAnm; i++) {
+	for (i = 0; i < mKRegUpdateMaterialNum; i++) {
 		JUTNameTab* nameTable = data->mMaterialTable.mMaterialNames;
-		int index             = nameTable->getIndex(_38.getName(i));
+		int index             = nameTable->getIndex(mKRegNameTable.getName(i));
 		if (index != -1) {
-			_34[i] = index;
+			mKRegUpdateMaterialID[i] = index;
 		} else {
-			_34[i] = 0xFFFF;
+			mKRegUpdateMaterialID[i] = 0xFFFF;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	800697E8
- * Size:	000084
+/**
+ * @note Address: 0x800697E8
+ * @note Size: 0x84
  * __dt__14J3DAnmColorKeyFv
  */
 // J3DAnmColorKey::~J3DAnmColorKey() { }
 
-/*
- * --INFO--
- * Address:	8006986C
- * Size:	000008
+/**
+ * @note Address: 0x8006986C
+ * @note Size: 0x8
  */
 // J3DAnmKind J3DAnmColorKey::getKind() const { return J3DAnmKind_ColorKey; }
 
-/*
- * --INFO--
- * Address:	80069874
- * Size:	000048
+/**
+ * @note Address: 0x80069874
+ * @note Size: 0x48
  * __dt__10J3DAnmBaseFv
  */
 // J3DAnmBase::~J3DAnmBase() { }
 
-/*
- * --INFO--
- * Address:	800698BC
- * Size:	000074
+/**
+ * @note Address: 0x800698BC
+ * @note Size: 0x74
  * __dt__11J3DAnmColorFv
  */
 // J3DAnmColor::~J3DAnmColor() { }
 
-/*
- * --INFO--
- * Address:	80069930
- * Size:	000008
+/**
+ * @note Address: 0x80069930
+ * @note Size: 0x8
  */
 // J3DAnmKind J3DAnmColor::getKind() const { return J3DAnmKind_Color; }
 
-/*
- * --INFO--
- * Address:	80069938
- * Size:	000004
+/**
+ * @note Address: 0x80069938
+ * @note Size: 0x4
  */
-// void J3DAnmColor::getColor(unsigned short, _GXColor*) const { }
+// void J3DAnmColor::getColor(u16, _GXColor*) const { }
 
-/*
- * --INFO--
- * Address:	8006993C
- * Size:	000084
+/**
+ * @note Address: 0x8006993C
+ * @note Size: 0x84
  * __dt__15J3DAnmColorFullFv
  */
 // J3DAnmColorFull::~J3DAnmColorFull() { }
 
-/*
- * --INFO--
- * Address:	800699C0
- * Size:	000008
+/**
+ * @note Address: 0x800699C0
+ * @note Size: 0x8
  */
 // J3DAnmKind J3DAnmColorFull::getKind() const { return J3DAnmKind_ColorFull; }
 
-/*
- * --INFO--
- * Address:	800699C8
- * Size:	00006C
+/**
+ * @note Address: 0x800699C8
+ * @note Size: 0x6C
  * __dt__17J3DAnmVtxColorKeyFv
  */
 // J3DAnmVtxColorKey::~J3DAnmVtxColorKey() { }
 
-/*
- * --INFO--
- * Address:	80069A34
- * Size:	000008
+/**
+ * @note Address: 0x80069A34
+ * @note Size: 0x8
  */
 // J3DAnmKind J3DAnmVtxColorKey::getKind() const { return J3DAnmKind_VtxColorKey; }
 
-/*
- * --INFO--
- * Address:	80069A3C
- * Size:	00005C
+/**
+ * @note Address: 0x80069A3C
+ * @note Size: 0x5C
  * __dt__14J3DAnmVtxColorFv
  */
 // J3DAnmVtxColor::~J3DAnmVtxColor() { }
 
-/*
- * --INFO--
- * Address:	80069A98
- * Size:	000008
+/**
+ * @note Address: 0x80069A98
+ * @note Size: 0x8
  */
 // J3DAnmKind J3DAnmVtxColor::getKind() const { return J3DAnmKind_VtxColor; }
 
-/*
- * --INFO--
- * Address:	80069AA0
- * Size:	000004
+/**
+ * @note Address: 0x80069AA0
+ * @note Size: 0x4
  */
-// void J3DAnmVtxColor::getColor(unsigned char, unsigned short, _GXColor*) const { }
+// void J3DAnmVtxColor::getColor(u8, u16, _GXColor*) const { }
 
-/*
- * --INFO--
- * Address:	80069AA4
- * Size:	00006C
+/**
+ * @note Address: 0x80069AA4
+ * @note Size: 0x6C
  * __dt__18J3DAnmVtxColorFullFv
  */
 // J3DAnmVtxColorFull::~J3DAnmVtxColorFull() { }
 
-/*
- * --INFO--
- * Address:	80069B10
- * Size:	000008
+/**
+ * @note Address: 0x80069B10
+ * @note Size: 0x8
  */
 // J3DAnmKind J3DAnmVtxColorFull::getKind() const { return J3DAnmKind_VtxColorFull; }
 
-/*
- * --INFO--
- * Address:	80069B18
- * Size:	00006C
+/**
+ * @note Address: 0x80069B18
+ * @note Size: 0x6C
  * __dt__16J3DAnmClusterKeyFv
  */
 // J3DAnmClusterKey::~J3DAnmClusterKey() { }
 
-/*
- * --INFO--
- * Address:	80069B84
- * Size:	000008
+/**
+ * @note Address: 0x80069B84
+ * @note Size: 0x8
  */
 // J3DAnmKind J3DAnmClusterKey::getKind() const { return J3DAnmKind_ClusterKey; }
 
-/*
- * --INFO--
- * Address:	80069B8C
- * Size:	00005C
+/**
+ * @note Address: 0x80069B8C
+ * @note Size: 0x5C
  * __dt__13J3DAnmClusterFv
  */
 // J3DAnmCluster::~J3DAnmCluster() { }
 
-/*
- * --INFO--
- * Address:	80069BE8
- * Size:	000008
+/**
+ * @note Address: 0x80069BE8
+ * @note Size: 0x8
  */
 // J3DAnmKind J3DAnmCluster::getKind() const { return J3DAnmKind_Cluster; }
 
-/*
- * --INFO--
- * Address:	80069BF0
- * Size:	000008
+/**
+ * @note Address: 0x80069BF0
+ * @note Size: 0x8
  */
-float J3DAnmCluster::getWeight(unsigned short) const
+f32 J3DAnmCluster::getWeight(u16) const
 {
 	/*
 	lfs      f1, lbl_80516A18@sda21(r2)
@@ -2664,341 +1809,83 @@ float J3DAnmCluster::getWeight(unsigned short) const
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80069BF8
- * Size:	00006C
+/**
+ * @note Address: 0x80069BF8
+ * @note Size: 0x6C
  * __dt__17J3DAnmClusterFullFv
  */
 // J3DAnmClusterFull::~J3DAnmClusterFull() { }
 
-/*
- * --INFO--
- * Address:	80069C64
- * Size:	000008
+/**
+ * @note Address: 0x80069C64
+ * @note Size: 0x8
  */
 // J3DAnmKind J3DAnmClusterFull::getKind() const { return J3DAnmKind_ClusterFull; }
 
-/*
- * --INFO--
- * Address:	80069C6C
- * Size:	00006C
+/**
+ * @note Address: 0x80069C6C
+ * @note Size: 0x6C
  * __dt__19J3DAnmTransformFullFv
  */
 // J3DAnmTransformFull::~J3DAnmTransformFull() { }
 
-/*
- * --INFO--
- * Address:	80069CD8
- * Size:	000008
+/**
+ * @note Address: 0x80069CD8
+ * @note Size: 0x8
  */
 // J3DAnmKind J3DAnmTransformFull::getKind() const { return J3DAnmKind_TransformFull; }
 
-/*
- * --INFO--
- * Address:	80069CE0
- * Size:	00005C
+/**
+ * @note Address: 0x80069CE0
+ * @note Size: 0x5C
  * __dt__15J3DAnmTransformFv
  */
 // J3DAnmTransform::~J3DAnmTransform() { }
 
-/*
- * --INFO--
- * Address:	80069D3C
- * Size:	000008
+/**
+ * @note Address: 0x80069D3C
+ * @note Size: 0x8
  */
 // J3DAnmKind J3DAnmTransform::getKind() const { return J3DAnmKind_Transform; }
 
-/*
- * --INFO--
- * Address:	80069D44
- * Size:	000234
- * J3DGetKeyFrameInterpolation<s>__FfP18J3DAnmKeyTableBasePs
- */
-// void J3DGetKeyFrameInterpolation<short>(float, J3DAnmKeyTableBase*, short*)
-// {
-// 	/*
-// 	stwu     r1, -0x10(r1)
-// 	lis      r5, 0x4330
-// 	lfd      f2, lbl_80516A28@sda21(r2)
-// 	lha      r0, 0(r4)
-// 	stw      r5, 8(r1)
-// 	xoris    r0, r0, 0x8000
-// 	stw      r0, 0xc(r1)
-// 	lfd      f0, 8(r1)
-// 	fsubs    f0, f0, f2
-// 	fcmpo    cr0, f1, f0
-// 	bge      lbl_80069D8C
-// 	lha      r0, 2(r4)
-// 	stw      r5, 8(r1)
-// 	xoris    r0, r0, 0x8000
-// 	stw      r0, 0xc(r1)
-// 	lfd      f0, 8(r1)
-// 	fsubs    f1, f0, f2
-// 	b        lbl_80069F70
-
-// lbl_80069D8C:
-// 	lhz      r0, 4(r3)
-// 	cmplwi   r0, 0
-// 	bne      lbl_80069E88
-// 	lhz      r6, 0(r3)
-// 	stw      r5, 8(r1)
-// 	addi     r0, r6, -1
-// 	mulli    r3, r0, 6
-// 	lhax     r0, r4, r3
-// 	xoris    r0, r0, 0x8000
-// 	stw      r0, 0xc(r1)
-// 	lfd      f0, 8(r1)
-// 	fsubs    f0, f0, f2
-// 	fcmpo    cr0, f0, f1
-// 	cror     2, 0, 2
-// 	bne      lbl_80069E2C
-// 	add      r3, r4, r3
-// 	stw      r5, 8(r1)
-// 	lha      r0, 2(r3)
-// 	xoris    r0, r0, 0x8000
-// 	stw      r0, 0xc(r1)
-// 	lfd      f0, 8(r1)
-// 	fsubs    f1, f0, f2
-// 	b        lbl_80069F70
-// 	b        lbl_80069E2C
-
-// lbl_80069DEC:
-// 	srwi     r7, r6, 1
-// 	stw      r5, 8(r1)
-// 	mulli    r0, r7, 3
-// 	slwi     r3, r0, 1
-// 	lhax     r0, r4, r3
-// 	xoris    r0, r0, 0x8000
-// 	stw      r0, 0xc(r1)
-// 	lfd      f0, 8(r1)
-// 	fsubs    f0, f0, f2
-// 	fcmpo    cr0, f1, f0
-// 	cror     2, 1, 2
-// 	bne      lbl_80069E28
-// 	add      r4, r4, r3
-// 	subf     r6, r7, r6
-// 	b        lbl_80069E2C
-
-// lbl_80069E28:
-// 	mr       r6, r7
-
-// lbl_80069E2C:
-// 	cmplwi   r6, 1
-// 	bgt      lbl_80069DEC
-// 	psq_l    f2, 0(r4), 1, qr5
-// 	psq_l    f0, 6(r4), 1, qr5
-// 	psq_l    f7, 2(r4), 1, qr5
-// 	fsubs    f5, f0, f2
-// 	psq_l    f6, 8(r4), 1, qr5
-// 	fsubs    f3, f1, f2
-// 	psq_l    f0, 10(r4), 1, qr5
-// 	fsubs    f4, f6, f7
-// 	fdivs    f3, f3, f5
-// 	psq_l    f1, 4(r4), 1, qr5
-// 	fmadds   f0, f0, f5, f7
-// 	fnmsubs  f4, f5, f1, f4
-// 	fmuls    f2, f3, f3
-// 	fsubs    f0, f0, f6
-// 	fsubs    f0, f0, f4
-// 	fmuls    f0, f2, f0
-// 	fmadds   f1, f5, f1, f0
-// 	fmadds   f1, f1, f3, f7
-// 	fmadds   f1, f4, f2, f1
-// 	fsubs    f1, f1, f0
-// 	b        lbl_80069F70
-
-// lbl_80069E88:
-// 	lhz      r6, 0(r3)
-// 	stw      r5, 8(r1)
-// 	addi     r0, r6, -1
-// 	slwi     r3, r0, 3
-// 	lhax     r0, r4, r3
-// 	xoris    r0, r0, 0x8000
-// 	stw      r0, 0xc(r1)
-// 	lfd      f0, 8(r1)
-// 	fsubs    f0, f0, f2
-// 	fcmpo    cr0, f0, f1
-// 	cror     2, 0, 2
-// 	bne      lbl_80069F18
-// 	add      r3, r4, r3
-// 	stw      r5, 8(r1)
-// 	lha      r0, 2(r3)
-// 	xoris    r0, r0, 0x8000
-// 	stw      r0, 0xc(r1)
-// 	lfd      f0, 8(r1)
-// 	fsubs    f1, f0, f2
-// 	b        lbl_80069F70
-// 	b        lbl_80069F18
-
-// lbl_80069EDC:
-// 	rlwinm   r3, r6, 2, 0, 0x1c
-// 	stw      r5, 8(r1)
-// 	lhax     r0, r4, r3
-// 	srwi     r7, r6, 1
-// 	xoris    r0, r0, 0x8000
-// 	stw      r0, 0xc(r1)
-// 	lfd      f0, 8(r1)
-// 	fsubs    f0, f0, f2
-// 	fcmpo    cr0, f1, f0
-// 	cror     2, 1, 2
-// 	bne      lbl_80069F14
-// 	add      r4, r4, r3
-// 	subf     r6, r7, r6
-// 	b        lbl_80069F18
-
-// lbl_80069F14:
-// 	mr       r6, r7
-
-// lbl_80069F18:
-// 	cmplwi   r6, 1
-// 	bgt      lbl_80069EDC
-// 	psq_l    f2, 0(r4), 1, qr5
-// 	psq_l    f0, 8(r4), 1, qr5
-// 	psq_l    f7, 2(r4), 1, qr5
-// 	fsubs    f5, f0, f2
-// 	psq_l    f6, 10(r4), 1, qr5
-// 	fsubs    f3, f1, f2
-// 	psq_l    f0, 12(r4), 1, qr5
-// 	fsubs    f4, f6, f7
-// 	fdivs    f3, f3, f5
-// 	psq_l    f1, 6(r4), 1, qr5
-// 	fmadds   f0, f0, f5, f7
-// 	fnmsubs  f4, f5, f1, f4
-// 	fmuls    f2, f3, f3
-// 	fsubs    f0, f0, f6
-// 	fsubs    f0, f0, f4
-// 	fmuls    f0, f2, f0
-// 	fmadds   f1, f5, f1, f0
-// 	fmadds   f1, f1, f3, f7
-// 	fmadds   f1, f4, f2, f1
-// 	fsubs    f1, f1, f0
-
-// lbl_80069F70:
-// 	addi     r1, r1, 0x10
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80069F78
- * Size:	00017C
- * J3DGetKeyFrameInterpolation<f>__FfP18J3DAnmKeyTableBasePf
- */
-// void J3DGetKeyFrameInterpolation<float>(float, J3DAnmKeyTableBase*, float*)
-// {
-// 	/*
-// 	lfs      f0, 0(r4)
-// 	fcmpo    cr0, f1, f0
-// 	bge      lbl_80069F8C
-// 	lfs      f1, 4(r4)
-// 	blr
-
-// lbl_80069F8C:
-// 	lhz      r0, 4(r3)
-// 	cmplwi   r0, 0
-// 	bne      lbl_8006A048
-// 	lhz      r3, 0(r3)
-// 	addi     r0, r3, -1
-// 	mulli    r0, r0, 0xc
-// 	lfsx     f0, r4, r0
-// 	fcmpo    cr0, f0, f1
-// 	cror     2, 0, 2
-// 	bne      lbl_80069FF0
-// 	add      r3, r4, r0
-// 	lfs      f1, 4(r3)
-// 	blr
-// 	b        lbl_80069FF0
-
-// lbl_80069FC4:
-// 	srwi     r5, r3, 1
-// 	mulli    r0, r5, 3
-// 	slwi     r0, r0, 2
-// 	lfsx     f0, r4, r0
-// 	fcmpo    cr0, f1, f0
-// 	cror     2, 1, 2
-// 	bne      lbl_80069FEC
-// 	add      r4, r4, r0
-// 	subf     r3, r5, r3
-// 	b        lbl_80069FF0
-
-// lbl_80069FEC:
-// 	mr       r3, r5
-
-// lbl_80069FF0:
-// 	cmplwi   r3, 1
-// 	bgt      lbl_80069FC4
-// 	lfs      f0, 0(r4)
-// 	lfs      f2, 0xc(r4)
-// 	fsubs    f5, f1, f0
-// 	lfs      f6, 4(r4)
-// 	fsubs    f4, f2, f0
-// 	lfs      f2, 0x10(r4)
-// 	lfs      f7, 8(r4)
-// 	lfs      f8, 0x14(r4)
-// 	fdivs    f3, f5, f4
-// 	fmuls    f0, f3, f3
-// 	fsubs    f4, f6, f2
-// 	fadds    f1, f3, f3
-// 	fsubs    f2, f0, f3
-// 	fmsubs   f0, f1, f2, f0
-// 	fmadds   f1, f7, f2, f7
-// 	fmadds   f0, f0, f4, f6
-// 	fmadds   f1, f8, f2, f1
-// 	fmsubs   f1, f3, f7, f1
-// 	fnmsubs  f1, f5, f1, f0
-// 	blr
-
-// lbl_8006A048:
-// 	lhz      r3, 0(r3)
-// 	addi     r0, r3, -1
-// 	slwi     r0, r0, 4
-// 	lfsx     f0, r4, r0
-// 	fcmpo    cr0, f0, f1
-// 	cror     2, 0, 2
-// 	bne      lbl_8006A09C
-// 	add      r3, r4, r0
-// 	lfs      f1, 4(r3)
-// 	blr
-// 	b        lbl_8006A09C
-
-// lbl_8006A074:
-// 	rlwinm   r0, r3, 3, 0, 0x1b
-// 	srwi     r5, r3, 1
-// 	lfsx     f0, r4, r0
-// 	fcmpo    cr0, f1, f0
-// 	cror     2, 1, 2
-// 	bne      lbl_8006A098
-// 	add      r4, r4, r0
-// 	subf     r3, r5, r3
-// 	b        lbl_8006A09C
-
-// lbl_8006A098:
-// 	mr       r3, r5
-
-// lbl_8006A09C:
-// 	cmplwi   r3, 1
-// 	bgt      lbl_8006A074
-// 	lfs      f0, 0(r4)
-// 	lfs      f2, 0x10(r4)
-// 	fsubs    f5, f1, f0
-// 	lfs      f6, 4(r4)
-// 	fsubs    f4, f2, f0
-// 	lfs      f2, 0x14(r4)
-// 	lfs      f7, 0xc(r4)
-// 	lfs      f8, 0x18(r4)
-// 	fdivs    f3, f5, f4
-// 	fmuls    f0, f3, f3
-// 	fsubs    f4, f6, f2
-// 	fadds    f1, f3, f3
-// 	fsubs    f2, f0, f3
-// 	fmsubs   f0, f1, f2, f0
-// 	fmadds   f1, f7, f2, f7
-// 	fmadds   f0, f0, f4, f6
-// 	fmadds   f1, f8, f2, f1
-// 	fmsubs   f1, f3, f7, f1
-// 	fnmsubs  f1, f5, f1, f0
-// 	blr
-// 	*/
-// }
+template <typename T>
+f32 J3DGetKeyFrameInterpolation(f32 frame, J3DAnmKeyTableBase* table, T* values)
+{
+	if (frame < values[0]) {
+		return values[1];
+	} else {
+		if (table->mType == 0) {
+			if (values[(table->mMaxFrame - 1) * 3] <= frame) {
+				return values[(table->mMaxFrame - 1) * 3 + 1];
+			} else {
+				u32 tmp = table->mMaxFrame;
+				while (tmp > 1) {
+					u32 halfTmp = tmp / 2;
+					u32 upIdx   = halfTmp * 3;
+					if (frame >= values[upIdx]) {
+						values = values + upIdx;
+						tmp -= halfTmp;
+					} else {
+						tmp = halfTmp;
+					}
+				}
+				return J3DHermiteInterpolation<T>(frame, &values[0], &values[1], &values[2], &values[3], &values[4], &values[5]);
+			}
+		} else if (values[(table->mMaxFrame - 1) * 4] <= frame) {
+			return values[(table->mMaxFrame - 1) * 4 + 1];
+		} else {
+			u32 tmp = table->mMaxFrame;
+			while (tmp > 1) {
+				u32 halfTmp = tmp / 2;
+				u32 upIdx   = halfTmp * 4;
+				if (frame >= values[upIdx]) {
+					values = values + upIdx;
+					tmp -= halfTmp;
+				} else {
+					tmp = halfTmp;
+				}
+			}
+			return J3DHermiteInterpolation<T>(frame, &values[0], &values[1], &values[3], &values[4], &values[5], &values[6]);
+		}
+	}
+}

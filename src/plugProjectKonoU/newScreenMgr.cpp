@@ -25,12 +25,11 @@
 
 namespace newScreen {
 
-/*
- * --INFO--
- * Address:	804001D8
- * Size:	0003CC
+/**
+ * @note Address: 0x804001D8
+ * @note Size: 0x3CC
  */
-::Screen::SceneBase* createScene_Ogawa(long sceneType)
+::Screen::SceneBase* createScene_Ogawa(s32 sceneType)
 {
 	::Screen::SceneBase* base = nullptr;
 	switch (sceneType) {
@@ -149,12 +148,11 @@ namespace newScreen {
 	return base;
 }
 
-/*
- * --INFO--
- * Address:	804005A4
- * Size:	000348
+/**
+ * @note Address: 0x804005A4
+ * @note Size: 0x348
  */
-::Screen::SceneBase* createScene_Morimura(long sceneType)
+::Screen::SceneBase* createScene_Morimura(s32 sceneType)
 {
 	::Screen::SceneBase* base = nullptr;
 	switch (sceneType) {
@@ -213,12 +211,11 @@ namespace newScreen {
 	return base;
 }
 
-/*
- * --INFO--
- * Address:	804008EC
- * Size:	000050
+/**
+ * @note Address: 0x804008EC
+ * @note Size: 0x50
  */
-::Screen::SceneBase* Mgr::doGetSceneBase(long id)
+::Screen::SceneBase* Mgr::doGetSceneBase(s32 id)
 {
 	::Screen::SceneBase* base;
 	base = createScene_Ogawa(id);
@@ -231,10 +228,9 @@ namespace newScreen {
 	return base;
 }
 
-/*
- * --INFO--
- * Address:	8040093C
- * Size:	0000AC
+/**
+ * @note Address: 0x8040093C
+ * @note Size: 0xAC
  */
 Mgr* Mgr::create()
 {
@@ -249,10 +245,9 @@ Mgr* Mgr::create()
 	return mgr;
 }
 
-/*
- * --INFO--
- * Address:	80400A98
- * Size:	0001A0
+/**
+ * @note Address: 0x80400A98
+ * @note Size: 0x1A0
  */
 void Mgr::drawBG(Graphics& gfx)
 {
@@ -289,22 +284,21 @@ void Mgr::drawBG(Graphics& gfx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80400C38
- * Size:	000064
+/**
+ * @note Address: 0x80400C38
+ * @note Size: 0x64
  */
 bool Mgr::reset()
 {
 	if (::Screen::Mgr::reset()) {
-		_90        = 0;
-		mInCave    = false;
-		mInDemo    = false;
-		_94        = 0;
-		_98        = 0;
-		mBgColor.a = 0;
-		mColor2.a  = 0;
-		mBgMode    = 0;
+		mInitialised = 0;
+		mInCave      = false;
+		mInDemo      = false;
+		mCourseIndex = 0;
+		_98          = 0;
+		mBgColor.a   = 0;
+		mColor2.a    = 0;
+		mBgMode      = 0;
 		return true;
 	}
 	return false;

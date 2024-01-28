@@ -47,38 +47,44 @@ struct Generator : public CNode {
 
 	void informDeath(Creature*);
 
-	GenObject* _18;            // _18
-	u32 _1C;                   // _1C /* Initialized to '____' */
+	inline void readName(Stream& input)
+	{
+		for (int i = 0; i < 32; i++) {
+			mGenObjName[i] = input.readByte();
+		}
+	}
+
+	GenObject* mObject;        // _18
+	u32 mId;                   // _1C /* Initialized to '____' */
 	char mGenObjName[32];      // _20 /* shift-jis name given in generator files */
-	ID32 _40;                  // _40
+	ID32 mNameId;              // _40
 	ID32 mVersion;             // _4C
 	u8 _58[4];                 // _58
 	u16 mReservedNum;          // _5C
-	Generator* _60;            // _60 /* mPrev */
-	Generator* _64;            // _64 /* mNext */
+	Generator* mPrevGenerator; // _60
+	Generator* mNextGenerator; // _64
 	GeneratorMgr* mMgr;        // _68
 	Creature* mCreature;       // _6C
-	int mDaysTillRessurection; // _70
-	u32 _74;                   // _74
-	u32 _78;                   // _78
+	int mDaysTillResurrection; // _70
+	u32 mDeathCount;           // _74
+	u32 mDayNum;               // _78
 	u32 _7C;                   // _7C
 	u8 _80[4];                 // _80
-	int mDayLimitMaybe;        // _84
+	int mDayLimit;             // _84
 	u8 _88[12];                // _88
 	Vector3f mPosition;        // _94
 	Vector3f mOffset;          // _A0
-	u8 _AC;                    // _AC
-	int mGeneratorIndexMaybe;  // _B0
+	u8 mIsInactive;            // _AC
+	int mIndex;                // _B0
 
-	//  0: format of the generator files on disc
-	// !0: format of the gencache?
+	enum RamMode { RM_Disc = 0, RM_MemoryCache };
 	static u8 ramMode;
 };
 
 struct GeneratorMgr : public CNode {
 	GeneratorMgr();
 
-	virtual ~GeneratorMgr();                    // _08
+	// virtual ~GeneratorMgr();                    // _08
 	virtual void doAnimation();                 // _10
 	virtual void doEntry();                     // _14
 	virtual void doSetView(int viewportNumber); // _18
@@ -86,8 +92,8 @@ struct GeneratorMgr : public CNode {
 
 	void addMgr(GeneratorMgr*);
 	void generate();
-	GeneratorMgr* getNext();
-	GeneratorMgr* getChild();
+	GeneratorMgr* getNext() { return mNextMgr; }
+	GeneratorMgr* getChild() { return mChildMgr; }
 	bool isRootMgr();
 	void read(Stream&, bool);
 	void write(Stream&);
@@ -102,7 +108,7 @@ struct GeneratorMgr : public CNode {
 	GeneratorMgr* mChildMgr;  // _1C
 	GeneratorMgr* mParentMgr; // _20
 	Vector3f mCursorPosition; // _24
-	Generator* mGenerator;    // _28
+	Generator* mGenerator;    // _30
 	ID32 _34;                 // _34
 	ID32 mVersionID;          // _40
 	int mGeneratorCount;      // _4C
@@ -130,15 +136,15 @@ struct GenArg : public CreatureInitArg {
 struct GenBase : public Parameters {
 	GenBase(u32, char*, char*);
 
-	virtual void doWrite(Stream&);              // _08 (weak)
-	virtual void ramSaveParameters(Stream&);    // _0C
-	virtual void ramLoadParameters(Stream&);    // _10
-	virtual void doEvent(u32) { }               // _14 (weak)
-	virtual void doRead(Stream&);               // _18 (weak)
-	virtual void update(Generator*);            // _1C (weak)
-	virtual void render(Graphics&, Generator*); // _20 (weak)
-	virtual u32 getLatestVersion();             // _24 (weak)
-	virtual J3DModelData* getShape();           // _28 (weak)
+	virtual void doWrite(Stream&) { }                    // _08 (weak)
+	virtual void ramSaveParameters(Stream&);             // _0C
+	virtual void ramLoadParameters(Stream&);             // _10
+	virtual void doEvent(u32) { }                        // _14 (weak)
+	virtual void doRead(Stream&) { }                     // _18 (weak)
+	virtual void update(Generator*) { }                  // _1C (weak)
+	virtual void render(Graphics&, Generator*) { }       // _20 (weak)
+	virtual u32 getLatestVersion() { return 'udef'; }    // _24 (weak)
+	virtual J3DModelData* getShape() { return nullptr; } // _28 (weak)
 
 	void readVersion(Stream&);
 	void read(Stream&);
@@ -147,11 +153,11 @@ struct GenBase : public Parameters {
 
 	// _00 - _0C: Parameters
 	// _0C: vtable
-	u32 mTypeID;        // _10
-	u32 mRawID;         // _14
-	char* mLabelData;   // _18
-	char* mObjTypeName; // _1C
-	u32 _20;            // _20
+	u32 mTypeID;             // _10
+	u32 mRawID;              // _14
+	char* mLabelData;        // _18
+	char* mObjTypeName;      // _1C
+	SysShape::Model* mModel; // _20
 };
 
 struct EnemyGeneratorBase : public CNode {
@@ -180,10 +186,10 @@ struct GenObject : public GenBase {
 	}
 
 	virtual void update(Game::Generator*) { }                                // _1C (weak)
-	virtual void render(Graphics&, Generator*);                              // _20 (weak)
+	virtual void render(Graphics&, Generator*) { }                           // _20 (weak)
 	virtual u32 getLatestVersion();                                          // _24
-	virtual void updateUseList(Generator*, int);                             // _2C
-	virtual Creature* generate(Generator*);                                  // _30 (weak)
+	virtual void updateUseList(Generator*, int) { }                          // _2C
+	virtual Creature* generate(Generator*) { return nullptr; }               // _30 (weak)
 	virtual Creature* birth(GenArg*) = 0;                                    // _34
 	virtual void generatorMakeMatrix(Matrixf& genMatrix, Vector3f& position) // _38 (weak)
 	{
@@ -203,13 +209,16 @@ struct GenItemParm {
 };
 
 struct GenPelletParm {
-	GenPelletParm(int color, int size)
+	int mIndex;
+};
+
+struct GenNumberPelletParm : public GenPelletParm {
+	GenNumberPelletParm(int color, int size)
 	{
 		mColor = color;
 		mSize  = size;
 	}
-	// virtual int getShapeID() { return 0; } // _08 (weak)
-	int mIndex;
+
 	int mColor;
 	int mSize;
 };
@@ -265,7 +274,7 @@ struct GenPellet : public GenObject {
 	virtual void doWrite(Stream&);                                            // _08
 	virtual void ramSaveParameters(Stream&);                                  // _0C
 	virtual void ramLoadParameters(Stream&);                                  // _10
-	virtual void doEvent(unsigned long);                                      // _14
+	virtual void doEvent(u32);                                                // _14
 	virtual void doRead(Stream&);                                             // _18
 	virtual J3DModelData* getShape();                                         // _28
 	virtual void updateUseList(Generator*, int);                              // _2C
@@ -330,7 +339,7 @@ struct GenObjectEnemy : public GenObject {
 	PelletMgr::OtakaraItemCode mOtakaraItemCode; // _38
 	EnemyPelletInfo mPelletInfo;                 // _3C
 	EnemyGeneratorBase* mEnemyGenerator;         // _48
-	u8 _4C;                                      // _4C
+	BitFlag<u8> mFlagBit;                        // _4C, set during constuction
 };
 
 /**
@@ -358,6 +367,27 @@ struct GenObjectFactoryFactory {
 		mFactories = new GenObjectFactory[12];
 		mLimit     = 12;
 		mCount     = 0;
+	}
+
+	inline u32 checkVersion(u32 version)
+	{
+		for (int i = 0; i < mCount; i++) {
+			if (version == mFactories[i].mTypeID) {
+				return mFactories[i].mVersion;
+			}
+		}
+		return version;
+	}
+
+	inline GenObject* make(u32 id)
+	{
+		for (int i = 0; i < mCount; i++) {
+			if (id == mFactories[i].mTypeID) {
+				return mFactories[i].mMakeFunction();
+			}
+		}
+
+		return nullptr;
 	}
 
 	int mCount;                   // _00

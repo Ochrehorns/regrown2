@@ -12,8 +12,10 @@ extern "C" {
 
 ///////////// USEFUL HELPERS ///////////////
 // Set bitfields manually.
-#define GX_BITFIELD_SET(field, pos, size, value) (field) = __rlwimi((field), (value), 31 - (pos) - (size) + 1, (pos), (pos) + (size)-1)
-
+#define GX_BITFIELD(field, pos, size, value)       (__rlwimi((field), (value), 31 - (pos) - (size) + 1, (pos), (pos) + (size)-1))
+#define GX_BITFIELD_SET(field, pos, size, value)   ((field) = GX_BITFIELD(field, pos, size, value))
+#define GX_BITFIELD_TRUNC(field, pos, size, value) (__rlwimi((field), (value), 0, (pos), (pos) + (size)-1))
+#define GX_BITGET(field, pos, size)                ((field) >> (31 - (pos) - (size) + 1) & ((1 << (size)) - 1))
 ////////////////////////////////////////////
 
 ////////////////// COLORS //////////////////
@@ -21,6 +23,8 @@ extern "C" {
 typedef struct _GXColor {
 	u8 r, g, b, a; // _00, _01, _02, _03
 } GXColor;
+
+#define GXCOLOR_AS_U32(color) (*((u32*)&(color)))
 
 // Signed 10-bit-component colors for TEV const (konst) colors.
 typedef struct _GXColorS10 {
@@ -35,51 +39,72 @@ typedef struct _GXColorS10 {
 
 // Generic struct for texture objects.
 typedef struct _GXTexObj {
-	u8 padding[0x20]; // _00
+	u8 pad[0x20]; // _00
+} GXTexObj;       // size 0x20
 
-	// structure of obj, note as found:
-	// 	u32 _00;
-	// 	u32 _04;
-	// 	u32 _08;
-	// 	u32 _0c;
-	// 	u8 _10;
-	// 	u8 _11;
-	// 	u8 _12;
-	// 	u8 _13;
-	// 	u32 format_14;
-	// 	u32 tlut_name_18;
-	// 	u16 _1c;
-	// 	s8 _1e;
-	// 	s8 mipmap_1f;
-} GXTexObj;
+// Internal struct for texture objects.
+typedef struct _GXTexObjPriv {
+	u32 mode0;       // _00
+	u32 mode1;       // _04
+	u32 image0;      // _08
+	u32 image3;      // _0C
+	void* userData;  // _10
+	GXTexFmt format; // _14
+	u32 tlutName;    // _18
+	u16 loadCount;   // _1C
+	u8 loadFormat;   // _1E
+	u8 flags;        // _1F
+} GXTexObjPriv;
 
 // Generic struct for texture memory storage.
 typedef struct _GXTexRegion {
 	u8 padding[0x10]; // _00
 } GXTexRegion;
 
+typedef struct _GXTexRegionPriv {
+	u32 unk0;      // _00
+	u32 unk4;      // _04
+	u32 unk8;      // _08
+	u8 unkC;       // _0C
+	u8 unkD;       // _0D
+	u8 padding[2]; // _0E
+} GXTexRegionPriv;
+
 // Generic struct for texture look-up table objects.
 typedef struct _GXTlutObj {
-	u8 padding[0xC]; // _00
+	u8 padding[0xc]; // _00
 } GXTlutObj;
+
+typedef struct _GXTlutObjPriv {
+	u32 unk0;        // _00
+	u32 unk4;        // _04
+	u16 numEntries;  // _08
+	u8 padding[0x2]; // _0A
+} GXTlutObjPriv;
 
 // Generic struct for texture look-up table memory storage.
 typedef struct _GXTlutRegion {
 	u8 padding[0x10]; // _00
 } GXTlutRegion;
 
+typedef struct _GXTlutRegionPriv {
+	u32 unk0;              // _00
+	GXTlutObjPriv tlutObj; // _04
+} GXTlutRegionPriv;
+
 // Generic struct for light information.
 typedef struct _GXLightObj {
 	u8 padding[0x40]; // _00
+} GXLightObj;         // size 0x40
 
-	// structure of obj, note as found:
-	// 	u32 reserved[3];
-	// 	u32 Color;   // _0C, light color
-	// 	f32 a[3];    // _10, angle-attenuation coefficients
-	// 	f32 k[3];    // _1C, distance-attenuation coefficients
-	// 	f32 lpos[3]; // _28, diffuse: position;  specular: direction
-	// 	f32 ldir[3]; // _34, diffuse: direction; specular: half-angle
-} GXLightObj;
+typedef struct __GXLightObjPriv {
+	u32 reserved[3]; // _00
+	GXColor color;   // _0C, light color
+	f32 a[3];        // _10, angle-attenuation coefficients
+	f32 k[3];        // _1C, distance-attenuation coefficients
+	f32 lpos[3];     // _28, diffuse: position;  specular: direction
+	f32 ldir[3];     // _34, diffuse: direction; specular: half-angle
+} GXLightObjPriv;
 
 ////////////////////////////////////////////
 

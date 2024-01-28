@@ -1,5 +1,6 @@
 #include "efx/THallow.h"
 #include "Game/Entities/HallowMushi.h"
+#include "efx/Arg.h"
 
 namespace efx {
 
@@ -15,9 +16,8 @@ bool THallow::create(Arg* arg)
 
 	if (TSimple1::create(arg)) {
 		for (int i = 0; i < ARRAY_SIZE(mEmitters); i++) {
-			mEmitters[i]->mScale    = Vector3f(emitterScale, 1.0f, emitterScale);
-			mEmitters[i]->_B0       = paritcleScale;
-			mEmitters[i]->_B4       = paritcleScale;
+			mEmitters[i]->mLocalScl.set(emitterScale, 1.0f, emitterScale);
+			mEmitters[i]->mGlobalPScl = paritcleScale;
 			mEmitters[i]->mLifeTime = (int)(scaleArg->mTime * 30);
 		}
 		return true;

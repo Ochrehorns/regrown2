@@ -8,6 +8,7 @@
 #include "Matrixf.h"
 #include "CNode.h"
 #include "Graphics.h"
+#include "P2Macros.h"
 
 namespace P2JME {
 
@@ -60,10 +61,7 @@ struct TControl : public JMessage::TControl {
 	TRenderingProcessor* mTextRenderProc;        // _40
 	JMessage::TResourceContainer* mResContainer; // _44
 	f32 mTimer;                                  // _48
-	union {
-		u8 byteView[4];
-		u32 typeView;
-	} mStatus; // _4C
+	BitFlag<u32> mStatus;                        // _4C
 };
 
 namespace Window {
@@ -75,11 +73,18 @@ struct DrawInfo : public CNode {
 	void update();
 	void init(int);
 
+	f32 getCalc()
+	{
+		f32 calc = mTimer / mTimeLimit;
+		calc *= TAU * 2.0f;
+		return calc;
+	}
+
 	// _00     = VTBL
 	// _00-_18 = CNode
-	u32 _18;    // _18
-	f32 mTimer; // _1C
-	f32 _20;    // _20
+	u32 _18;        // _18
+	f32 mTimer;     // _1C
+	f32 mTimeLimit; // _20
 };
 
 struct DrawInfoMgr {
@@ -103,8 +108,8 @@ struct TRenderingProcessor : public P2JME::TRenderingProcessor {
 	virtual void update();                                       // _68
 	virtual void reset();                                        // _6C
 	virtual void doDrawImage(JUTTexture*, f32, f32, f32, f32);   // _74
-	virtual void doDrawRuby(f32, f32, f32, f32, int, bool);      // _78
-	virtual void doDrawLetter(f32, f32, f32, f32, int, bool);    // _7C
+	virtual f32 doDrawRuby(f32, f32, f32, f32, int, bool);       // _78
+	virtual f32 doDrawLetter(f32, f32, f32, f32, int, bool);     // _7C
 	virtual BOOL doDrawCommon(f32, f32, Matrixf*, Matrixf*);     // _84
 	virtual void makeMatrix(Matrixf*, DrawInfo*, f32, Vector3f); // _88
 	virtual void doGetDrawInfo(DrawInfo*) { }                    // _8C (weak)
@@ -130,8 +135,10 @@ struct TSequenceProcessor : public P2JME::TSequenceProcessor {
 	{
 		bool ret = false;
 		switch (_6C) {
-		case 2:
+		case 0:
+			break;
 		case 1:
+		case 2:
 			ret = true;
 			break;
 		}
@@ -167,9 +174,9 @@ struct TControl : public P2JME::TControl {
 
 	// _00     = VTBL
 	// _00-_50 = P2JME::TControl
-	f32 _50; // _50
-	f32 _54; // _54
-	f32 _58; // _58
+	f32 _50;     // _50
+	f32 mTimer1; // _54
+	f32 mTimer2; // _58
 };
 
 } // namespace Window

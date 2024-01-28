@@ -16,10 +16,9 @@ static const char* sStoneMdlName[2] = { "sekikaobj_large.bmd", "sekikaobj_small.
 namespace Game {
 namespace EnemyStone {
 
-/*
- * --INFO--
- * Address:	80127C00
- * Size:	000088
+/**
+ * @note Address: 0x80127C00
+ * @note Size: 0x88
  */
 Mgr::Mgr()
     : mModelData(nullptr)
@@ -29,10 +28,9 @@ Mgr::Mgr()
 	mObj.clearRelations();
 }
 
-/*
- * --INFO--
- * Address:	80127C88
- * Size:	000174
+/**
+ * @note Address: 0x80127C88
+ * @note Size: 0x174
  */
 void Mgr::loadResource()
 {
@@ -55,7 +53,7 @@ void Mgr::loadResource()
 		loadModDat    = J3DModelLoaderDataBase::load(modDat, 0x240000 | 0x240000);
 		mModelData[i] = loadModDat;
 		mModelData[i]->newSharedDisplayList(0x40000);
-		mModelData[i]->simpleCalcMaterial(0, j3dDefaultMtx);
+		mModelData[i]->simpleCalcMaterial(0, *(Mtx*)(&j3dDefaultMtx));
 		mModelData[i]->makeSharedDL();
 	}
 	sys->heapStatusEnd("EnemyStone::Mgr::stoneModel");
@@ -73,10 +71,9 @@ void Mgr::loadResource()
 	sys->heapStatusEnd("EnemyStone::Mgr::loadResource");
 }
 
-/*
- * --INFO--
- * Address:	80127E20
- * Size:	0000F8
+/**
+ * @note Address: 0x80127E20
+ * @note Size: 0xF8
  */
 bool Mgr::regist(Obj* obj)
 {
@@ -111,10 +108,9 @@ bool Mgr::regist(Obj* obj)
 	return validCount;
 }
 
-/*
- * --INFO--
- * Address:	80127F18
- * Size:	00008C
+/**
+ * @note Address: 0x80127F18
+ * @note Size: 0x8C
  */
 void Mgr::release(Obj* obj)
 {
@@ -136,51 +132,52 @@ void Mgr::release(Obj* obj)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80127FA4
- * Size:	000164
+/**
+ * @note Address: 0x80127FA4
+ * @note Size: 0x164
  */
 void Mgr::draw(Viewport* viewport)
 {
 	for (int i = 0; i < 2; i++) {
 		Obj* obj = (Obj*)mObj.mChild;
-		if (obj) {
-			for (obj; obj; obj = (Obj*)obj->mNext) {
-				if (obj->mEnemy->mLod.isFlag(AILOD_IsVisible)) {
-					DrawInfo* baseInfo = static_cast<DrawInfo*>(&obj->mNodeArray[i]);
+		if (!obj) {
+			continue;
+		}
 
-					FOREACH_NODE(DrawInfo, static_cast<DrawInfo*>(baseInfo->mChild), drawInfo)
-					{
-						J3DModelData* modelData = mModelData[i];
-						J3DMaterial* material   = modelData->mJointTree.mJoints[0]->mMaterial;
-						j3dSys.mVtxPos          = modelData->mVertexData.mVtxPos;
-						j3dSys.mVtxNorm         = modelData->mVertexData.mVtxNorm;
-						j3dSys.mVtxColor        = modelData->mVertexData.mVtxColor[0];
-						J3DShape::sOldVcdVatCmd = 0;
+		for (obj; obj; obj = (Obj*)obj->mNext) {
+			if (obj->mEnemy->mLod.isFlag(AILOD_IsVisible)) {
+				DrawInfo* baseInfo = static_cast<DrawInfo*>(&obj->mNodeArray[i]);
 
-						for (material; material != nullptr; material = material->mNext) {
-							material->loadSharedDL();
-							material->mShape->loadPreDrawSetting();
+				FOREACH_NODE(DrawInfo, static_cast<DrawInfo*>(baseInfo->mChild), drawInfo)
+				{
+					J3DModelData* modelData = mModelData[i];
+					J3DMaterial* material   = modelData->mJointTree.mJoints[0]->mMaterial;
+					j3dSys.mVtxPos          = modelData->mVertexData.mVtxPos;
+					j3dSys.mVtxNorm         = modelData->mVertexData.mVtxNorm;
+					j3dSys.mVtxColor        = modelData->mVertexData.mVtxColor[0];
+					J3DShape::sOldVcdVatCmd = 0;
 
-							Matrixf drawMtx;
-							drawInfo->makeMatrix(&drawMtx, true);
+					for (material; material != nullptr; material = material->mNext) {
+						material->loadSharedDL();
+						material->mShape->loadPreDrawSetting();
 
-							Matrixf* viewMtx = viewport->getMatrix(true);
+						Matrixf drawMtx;
+						drawInfo->makeMatrix(&drawMtx, true);
 
-							Matrixf combined;
-							PSMTXConcat(viewMtx->mMatrix.mtxView, drawMtx.mMatrix.mtxView, combined.mMatrix.mtxView);
+						Matrixf* viewMtx = viewport->getMatrix(true);
 
-							Matrixf inverse;
-							PSMTXInverse(combined.mMatrix.mtxView, inverse.mMatrix.mtxView);
+						Matrixf combined;
+						PSMTXConcat(viewMtx->mMatrix.mtxView, drawMtx.mMatrix.mtxView, combined.mMatrix.mtxView);
 
-							Matrixf transpose;
-							PSMTXTranspose(inverse.mMatrix.mtxView, transpose.mMatrix.mtxView);
+						Matrixf inverse;
+						PSMTXInverse(combined.mMatrix.mtxView, inverse.mMatrix.mtxView);
 
-							GXLoadPosMtxImm(combined.mMatrix.mtxView, 0);
-							GXLoadNrmMtxImm(transpose.mMatrix.mtxView, 0);
-							material->mShape->simpleDrawCache();
-						}
+						Matrixf transpose;
+						PSMTXTranspose(inverse.mMatrix.mtxView, transpose.mMatrix.mtxView);
+
+						GXLoadPosMtxImm(combined.mMatrix.mtxView, 0);
+						GXLoadNrmMtxImm(transpose.mMatrix.mtxView, 0);
+						material->mShape->simpleDrawCache();
 					}
 				}
 			}

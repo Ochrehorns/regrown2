@@ -6,21 +6,20 @@
 #include "Game/GameConfig.h"
 #include "Game/Data.h"
 
-static const char idk[]  = "\0\0\0\0\0\0\0\0\0";
-static const char name[] = "ebiMainTitleMgr";
+static const u32 padding[]    = { 0, 0, 0 };
+static const char className[] = "ebiMainTitleMgr";
 
 namespace ebi {
 
 const f32 TMainTitleMgr::kFadeOutTime = 1.0f;
 
-/*
- * --INFO--
- * Address:	803EA170
- * Size:	0003B4
+/**
+ * @note Address: 0x803EA170
+ * @note Size: 0x3B4
  */
 TMainTitleMgr::TMainTitleMgr()
-    : _1634(0, 0, 0, -1)
-    , mAlpha(-1)
+    : mDrawColor(0, 0, 0, -1)
+    , mDrawAlpha(-1)
     , mDrawState(0)
     , mOpenMenuCounter(0)
     , mOpenMenuCounterMax(0)
@@ -31,12 +30,11 @@ TMainTitleMgr::TMainTitleMgr()
 	title::titleMgr->init();
 }
 
-/*
- * --INFO--
- * Address:	803EA524
- * Size:	000068
+/**
+ * @note Address: 0x803EA524
+ * @note Size: 0x68
  */
-void TMainTitleMgr::setMode(long set)
+void TMainTitleMgr::setMode(s32 set)
 {
 	switch (set) {
 	case 0:
@@ -54,10 +52,9 @@ void TMainTitleMgr::setMode(long set)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803EA58C
- * Size:	000124
+/**
+ * @note Address: 0x803EA58C
+ * @note Size: 0x124
  */
 void TMainTitleMgr::loadResource()
 {
@@ -67,7 +64,7 @@ void TMainTitleMgr::loadResource()
 	char buf[256];
 	og::newScreen::makeLanguageResName(buf, "title.szs");
 
-	JKRArchive* arc = JKRArchive::mount(buf, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	JKRArchive* arc = JKRMountArchive(buf, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 	P2ASSERTLINE(69, arc);
 	sys->heapStatusEnd("TTitleMenu::loadResource");
 
@@ -82,10 +79,9 @@ void TMainTitleMgr::loadResource()
 	sys->heapStatusEnd("TMainTitleMgr::loadResource");
 }
 
-/*
- * --INFO--
- * Address:	803EA6B0
- * Size:	00004C
+/**
+ * @note Address: 0x803EA6B0
+ * @note Size: 0x4C
  */
 void TMainTitleMgr::setController(Controller* control)
 {
@@ -95,10 +91,9 @@ void TMainTitleMgr::setController(Controller* control)
 	mController = control;
 }
 
-/*
- * --INFO--
- * Address:	803EA6FC
- * Size:	0000C0
+/**
+ * @note Address: 0x803EA6FC
+ * @note Size: 0xC0
  */
 void TMainTitleMgr::start()
 {
@@ -117,12 +112,11 @@ void TMainTitleMgr::start()
 	mDrawState          = 0;
 }
 
-/*
- * --INFO--
- * Address:	803EA7BC
- * Size:	0001F0
+/**
+ * @note Address: 0x803EA7BC
+ * @note Size: 0x1F0
  */
-void TMainTitleMgr::startMenuSet(long, long select)
+void TMainTitleMgr::startMenuSet(s32, s32 select)
 {
 	mSelectedMenuOption = select;
 	int id;
@@ -172,41 +166,36 @@ void TMainTitleMgr::startMenuSet(long, long select)
 	mDrawState          = 1;
 }
 
-/*
- * --INFO--
- * Address:	803EA9AC
- * Size:	00000C
+/**
+ * @note Address: 0x803EA9AC
+ * @note Size: 0xC
  */
 void TMainTitleMgr::forceQuit() { mState = Standby; }
 
-/*
- * --INFO--
- * Address:	803EA9B8
- * Size:	000010
+/**
+ * @note Address: 0x803EA9B8
+ * @note Size: 0x10
  */
 bool TMainTitleMgr::isFinish() { return u8(mState == Standby); }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000068
+/**
+ * @note Address: N/A
+ * @note Size: 0x68
  */
 bool TMainTitleMgr::isAnyKey()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	803EA9C8
- * Size:	000008
+/**
+ * @note Address: 0x803EA9C8
+ * @note Size: 0x8
  */
 int TMainTitleMgr::getSelectedMenu() { return mSelectedMenuOption; }
 
-/*
- * --INFO--
- * Address:	803EA9D0
- * Size:	0004B0
+/**
+ * @note Address: 0x803EA9D0
+ * @note Size: 0x4B0
  */
 void TMainTitleMgr::update()
 {
@@ -328,10 +317,9 @@ void TMainTitleMgr::update()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803EAE80
- * Size:	000274
+/**
+ * @note Address: 0x803EAE80
+ * @note Size: 0x274
  */
 void TMainTitleMgr::draw()
 {
@@ -345,30 +333,27 @@ void TMainTitleMgr::draw()
 		if (mDrawState != 0) {
 			J2DPerspGraph* graf = &sys->mGfx->mPerspGraph;
 			graf->setPort();
-			JUtility::TColor color(_1634);
+			JUtility::TColor color(mDrawColor);
 			switch (mDrawState) {
 			case 1: {
-				u32 count1 = mOpenMenuCounterMax;
-				f32 calc1;
-				if (count1) {
-					calc1 = (f32)mOpenMenuCounter / count1;
+				f32 calc;
+				if (mOpenMenuCounterMax) {
+					calc = (f32)mOpenMenuCounter / (f32)mOpenMenuCounterMax;
 				} else {
-					calc1 = 0.0f;
+					calc = 0.0f;
 				}
-				color.a = calcAlpha(calc1);
+				color.a = (f32)mDrawAlpha * calc;
 				break;
 			}
 			case 2: {
-				u32 count2 = mOpenMenuCounterMax;
-				f32 calc2;
-				if (count2) {
-					calc2 = (f32)mOpenMenuCounter / count2;
+				f32 calc;
+				if (mOpenMenuCounterMax) {
+					calc = (f32)mOpenMenuCounter / (f32)mOpenMenuCounterMax;
 				} else {
-					calc2 = 0.0f;
+					calc = 0.0f;
 				}
-				f32 factor = 1.0f;
-				factor -= calc2;
-				color.a = calcAlpha(factor);
+				f32 alpha = 1.0f - calc;
+				color.a   = (f32)mDrawAlpha * alpha;
 				break;
 			}
 			}
@@ -381,188 +366,11 @@ void TMainTitleMgr::draw()
 			graf->fillBox(box);
 		}
 	}
-	/*
-	stwu     r1, -0x60(r1)
-	mflr     r0
-	stw      r0, 0x64(r1)
-	stw      r31, 0x5c(r1)
-	stw      r30, 0x58(r1)
-	mr       r30, r3
-	lwz      r0, 0x1650(r3)
-	cmpwi    r0, 0
-	beq      lbl_803EB0DC
-	lwz      r3, titleMgr__Q23ebi5title@sda21(r13)
-	bl       draw__Q33ebi5title9TTitleMgrFv
-	li       r3, 0
-	li       r4, 7
-	li       r5, 0
-	bl       GXSetZMode
-	addi     r3, r30, 0x160c
-	lwz      r12, 0x160c(r30)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r30
-	lwz      r12, 0(r30)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	addi     r3, r30, 0x137c
-	lwz      r12, 0x137c(r30)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	addi     r3, r30, 0x1624
-	lwz      r12, 0x1624(r30)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x163c(r30)
-	cmpwi    r0, 0
-	beq      lbl_803EB0DC
-	lwz      r3, sys@sda21(r13)
-	lwz      r3, 0x24(r3)
-	addi     r31, r3, 0x190
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x163c(r30)
-	lwz      r3, 0x1634(r30)
-	cmpwi    r0, 2
-	stw      r3, 0x18(r1)
-	beq      lbl_803EAFD4
-	bge      lbl_803EB050
-	cmpwi    r0, 1
-	bge      lbl_803EAF5C
-	b        lbl_803EB050
-
-lbl_803EAF5C:
-	lwz      r4, 0x1644(r30)
-	cmplwi   r4, 0
-	beq      lbl_803EAF9C
-	lwz      r3, 0x1640(r30)
-	lis      r0, 0x4330
-	stw      r0, 0x30(r1)
-	lfd      f2, lbl_8051FE20@sda21(r2)
-	stw      r3, 0x34(r1)
-	lfd      f0, 0x30(r1)
-	stw      r4, 0x3c(r1)
-	fsubs    f1, f0, f2
-	stw      r0, 0x38(r1)
-	lfd      f0, 0x38(r1)
-	fsubs    f0, f0, f2
-	fdivs    f2, f1, f0
-	b        lbl_803EAFA0
-
-lbl_803EAF9C:
-	lfs      f2, lbl_8051FE18@sda21(r2)
-
-lbl_803EAFA0:
-	lbz      r3, 0x1638(r30)
-	lis      r0, 0x4330
-	stw      r0, 0x40(r1)
-	lfd      f1, lbl_8051FE20@sda21(r2)
-	stw      r3, 0x44(r1)
-	lfd      f0, 0x40(r1)
-	fsubs    f0, f0, f1
-	fmuls    f0, f0, f2
-	fctiwz   f0, f0
-	stfd     f0, 0x48(r1)
-	lwz      r0, 0x4c(r1)
-	stb      r0, 0x1b(r1)
-	b        lbl_803EB050
-
-lbl_803EAFD4:
-	lwz      r4, 0x1644(r30)
-	cmplwi   r4, 0
-	beq      lbl_803EB014
-	lwz      r3, 0x1640(r30)
-	lis      r0, 0x4330
-	stw      r0, 0x48(r1)
-	lfd      f2, lbl_8051FE20@sda21(r2)
-	stw      r3, 0x4c(r1)
-	lfd      f0, 0x48(r1)
-	stw      r4, 0x44(r1)
-	fsubs    f1, f0, f2
-	stw      r0, 0x40(r1)
-	lfd      f0, 0x40(r1)
-	fsubs    f0, f0, f2
-	fdivs    f1, f1, f0
-	b        lbl_803EB018
-
-lbl_803EB014:
-	lfs      f1, lbl_8051FE18@sda21(r2)
-
-lbl_803EB018:
-	lbz      r3, 0x1638(r30)
-	lis      r0, 0x4330
-	lfs      f0, lbl_8051FE1C@sda21(r2)
-	stw      r3, 0x3c(r1)
-	lfd      f2, lbl_8051FE20@sda21(r2)
-	fsubs    f0, f0, f1
-	stw      r0, 0x38(r1)
-	lfd      f1, 0x38(r1)
-	fsubs    f1, f1, f2
-	fmuls    f0, f1, f0
-	fctiwz   f0, f0
-	stfd     f0, 0x30(r1)
-	lwz      r0, 0x34(r1)
-	stb      r0, 0x1b(r1)
-
-lbl_803EB050:
-	lwz      r0, 0x18(r1)
-	mr       r3, r31
-	addi     r4, r1, 8
-	addi     r5, r1, 0xc
-	stw      r0, 0x14(r1)
-	addi     r6, r1, 0x10
-	addi     r7, r1, 0x14
-	stw      r0, 0x10(r1)
-	stw      r0, 0xc(r1)
-	stw      r0, 8(r1)
-	bl
-setColor__14J2DGrafContextFQ28JUtility6TColorQ28JUtility6TColorQ28JUtility6TColorQ28JUtility6TColor
-	bl       getRenderModeObj__6SystemFv
-	lhz      r30, 6(r3)
-	bl       getRenderModeObj__6SystemFv
-	lhz      r4, 4(r3)
-	lis      r0, 0x4330
-	lfs      f3, lbl_8051FE18@sda21(r2)
-	mr       r3, r31
-	stw      r4, 0x4c(r1)
-	addi     r4, r1, 0x1c
-	lfd      f2, lbl_8051FE20@sda21(r2)
-	stw      r0, 0x48(r1)
-	lfd      f0, 0x48(r1)
-	stw      r30, 0x44(r1)
-	fsubs    f1, f0, f2
-	stw      r0, 0x40(r1)
-	lfd      f0, 0x40(r1)
-	fadds    f1, f3, f1
-	stfs     f3, 0x1c(r1)
-	fsubs    f0, f0, f2
-	stfs     f3, 0x20(r1)
-	fadds    f0, f3, f0
-	stfs     f1, 0x24(r1)
-	stfs     f0, 0x28(r1)
-	bl       "fillBox__14J2DGrafContextFRCQ29JGeometry8TBox2<f>"
-
-lbl_803EB0DC:
-	lwz      r0, 0x64(r1)
-	lwz      r31, 0x5c(r1)
-	lwz      r30, 0x58(r1)
-	mtlr     r0
-	addi     r1, r1, 0x60
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000034
+/**
+ * @note Address: N/A
+ * @note Size: 0x34
  */
 void TMainTitleMgr::showInfo()
 {

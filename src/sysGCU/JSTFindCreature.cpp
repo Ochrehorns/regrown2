@@ -1,11 +1,10 @@
-#include "types.h"
 #include "nans.h"
 #include "Game/P2JST/ObjectSystem.h"
 #include "Game/Navi.h"
 #include "Game/MoviePlayer.h"
 #include "Game/gamePlayData.h"
 #include "Game/Entities/ItemOnyon.h"
-#include "JSystem/JUtility/JUTException.h"
+#include "P2Macros.h"
 
 static const u32 filler[] = { 0, 0, 0 };
 const char filename[]     = "JSTFindCreature";
@@ -13,10 +12,9 @@ const char filename[]     = "JSTFindCreature";
 namespace Game {
 namespace P2JST {
 
-/*
- * --INFO--
- * Address:	804313B8
- * Size:	000450
+/**
+ * @note Address: 0x804313B8
+ * @note Size: 0x450
  */
 Creature* ObjectSystem::findCreature(const char* query) const
 {
@@ -52,10 +50,10 @@ Creature* ObjectSystem::findCreature(const char* query) const
 	}
 
 	if (!strcmp(stringBuffer, "theOrima")) {
-		creature = naviMgr->getAt(0);
+		creature = naviMgr->getAt(NAVIID_Olimar);
 
 	} else if (!strcmp(stringBuffer, "theLouie")) {
-		creature = naviMgr->getAt(1);
+		creature = naviMgr->getAt(NAVIID_Louie);
 
 	} else if (!strcmp(stringBuffer, "orimaAlive")) {
 		int i = targetChar - '1';

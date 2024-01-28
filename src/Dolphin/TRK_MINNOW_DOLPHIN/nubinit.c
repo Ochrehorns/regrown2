@@ -2,79 +2,71 @@
 
 BOOL gTRKBigEndian;
 
-/*
- * --INFO--
- * Address:	800BB6FC
- * Size:	00014C
+/**
+ * @note Address: 0x800BB6FC
+ * @note Size: 0x14C
  */
-TRKResult TRKInitializeNub(void)
+DSError TRKInitializeNub(void)
 {
-	TRKResult TVar1;
-	TRKResult TVar2;
+	DSError ret;
+	DSError uartErr;
 
-	TVar1 = TRKInitializeEndian();
+	ret = TRKInitializeEndian();
 
 	MWTRACE(1, "Initialize NUB\n");
-	if (TVar1 == TRKSuccess) {
+	if (ret == DS_NoError) {
 		usr_put_initialize();
 	}
-	if (TVar1 == TRKSuccess) {
-		TVar1 = TRKInitializeEventQueue();
+	if (ret == DS_NoError) {
+		ret = TRKInitializeEventQueue();
 	}
-	if (TVar1 == TRKSuccess) {
-		TVar1 = TRKInitializeMessageBuffers();
+	if (ret == DS_NoError) {
+		ret = TRKInitializeMessageBuffers();
 	}
-	if (TVar1 == TRKSuccess) {
-		TVar1 = TRKInitializeDispatcher();
+	if (ret == DS_NoError) {
+		ret = TRKInitializeDispatcher();
 	}
 	InitializeProgramEndTrap();
-	if (TVar1 == TRKSuccess) {
-		TVar1 = TRKInitializeSerialHandler();
+	if (ret == DS_NoError) {
+		ret = TRKInitializeSerialHandler();
 	}
-	if (TVar1 == TRKSuccess) {
-		TVar1 = TRKInitializeTarget();
+	if (ret == DS_NoError) {
+		ret = TRKInitializeTarget();
 	}
-	if (TVar1 == TRKSuccess) {
+	if (ret == DS_NoError) {
 
-		TVar2 = TRKInitializeIntDrivenUART(0x0000e100, 1, 0, &gTRKInputPendingPtr);
+		uartErr = TRKInitializeIntDrivenUART(0x0000e100, 1, 0, &gTRKInputPendingPtr);
 		TRKTargetSetInputPendingPtr(gTRKInputPendingPtr);
-		if (TVar2 != TRKSuccess) {
-			TVar1 = TVar2;
+		if (uartErr != DS_NoError) {
+			ret = uartErr;
 		}
 	}
-	return TVar1;
+	return ret;
 }
 
-/*
- * --INFO--
- * Address:	800BB6D8
- * Size:	000024
+/**
+ * @note Address: 0x800BB6D8
+ * @note Size: 0x24
  */
-extern TRKResult TRKTerminateSerialHandler(void);
-TRKResult TRKTerminateNub(void)
+DSError TRKTerminateNub(void)
 {
-
 	TRKTerminateSerialHandler();
-	return TRKSuccess;
+	return DS_NoError;
 }
 
-/*
- * --INFO--
- * Address:	800BB6B0
- * Size:	000028
+/**
+ * @note Address: 0x800BB6B0
+ * @note Size: 0x28
  */
-extern void TRK_board_display(char*);
 void TRKNubWelcome(void)
 {
-
 	TRK_board_display("MetroTRK for GAMECUBE v2.6"); //"MetroTRK for GAMECUBE v2.6"
 	return;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000070
+/**
+ * @note Address: N/A
+ * @note Size: 0x70
  */
 BOOL TRKInitializeEndian(void)
 {

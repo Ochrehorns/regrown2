@@ -8,10 +8,9 @@
 namespace Game {
 namespace ShijimiChou {
 
-/*
- * --INFO--
- * Address:	80387718
- * Size:	000108
+/**
+ * @note Address: 0x80387718
+ * @note Size: 0x108
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -25,10 +24,9 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateRest(SHIJIMICHOU_Rest));
 }
 
-/*
- * --INFO--
- * Address:	80387820
- * Size:	00003C
+/**
+ * @note Address: 0x80387820
+ * @note Size: 0x3C
  */
 StateWait::StateWait(int stateID)
     : State(stateID)
@@ -36,59 +34,55 @@ StateWait::StateWait(int stateID)
 	mName = "wait";
 }
 
-/*
- * --INFO--
- * Address:	8038785C
- * Size:	0000C0
+/**
+ * @note Address: 0x8038785C
+ * @note Size: 0xC0
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->enableEvent(0, EB_Untargetable);
 	enemy->mTargetVelocity  = Vector3f(0.0f);
 	enemy->mCurrentVelocity = Vector3f(0.0f);
-	enemy->startMotion(2, nullptr);
+	enemy->startMotion(SHIJIMIANIM_Move, nullptr);
 	enemy->setMotionFrame(enemy->getMotionFrameMax() * randFloat());
 	mWaitTimer = 0;
 }
 
-/*
- * --INFO--
- * Address:	8038791C
- * Size:	000140
+/**
+ * @note Address: 0x8038791C
+ * @note Size: 0x140
  */
 void StateWait::exec(EnemyBase* enemy)
 {
 	mWaitTimer++;
 
 	if (mWaitTimer > 10) {
-		if (static_cast<Obj*>(enemy)->mSpawnSource == SHIJIMISOURCE_Enemy) {
-			if (static_cast<Obj*>(enemy)->mGroupLeader != enemy) {
+		if (OBJ(enemy)->mSpawnSource == SHIJIMISOURCE_Enemy) {
+			if (OBJ(enemy)->mGroupLeader != enemy) {
 				transit(enemy, SHIJIMICHOU_Rest, nullptr);
 				return;
 			}
 
-			EnemyBase* spawnEnemy = static_cast<Obj*>(enemy)->mSpawningEnemy;
+			EnemyBase* spawnEnemy = OBJ(enemy)->mSpawningEnemy;
 			if (spawnEnemy && !spawnEnemy->isConstrained()) {
 				transit(enemy, SHIJIMICHOU_Fly, nullptr);
 				return;
 			}
 
-		} else if (static_cast<Obj*>(enemy)->mGroupLeader != enemy
-		           || EnemyFunc::getNearestPikmin(enemy, 180.0f, 150.0f, nullptr, nullptr)) {
+		} else if (OBJ(enemy)->mGroupLeader != enemy || EnemyFunc::getNearestPikmin(enemy, 180.0f, 150.0f, nullptr, nullptr)) {
 			transit(enemy, SHIJIMICHOU_Fly, nullptr);
 			return;
 		}
-	} else if (static_cast<Obj*>(enemy)->mGroupLeader == enemy) {
-		static_cast<Obj*>(enemy)->leaderInit();
+	} else if (OBJ(enemy)->mGroupLeader == enemy) {
+		OBJ(enemy)->leaderInit();
 	}
 
-	static_cast<Obj*>(enemy)->fly();
+	OBJ(enemy)->fly();
 }
 
-/*
- * --INFO--
- * Address:	80387A5C
- * Size:	00003C
+/**
+ * @note Address: 0x80387A5C
+ * @note Size: 0x3C
  */
 StateFly::StateFly(int stateID)
     : State(stateID)
@@ -96,23 +90,21 @@ StateFly::StateFly(int stateID)
 	mName = "fly";
 }
 
-/*
- * --INFO--
- * Address:	80387A98
- * Size:	000054
+/**
+ * @note Address: 0x80387A98
+ * @note Size: 0x54
  */
 void StateFly::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	static_cast<Obj*>(enemy)->setNextGoal();
-	static_cast<Obj*>(enemy)->mFlyTime = 0;
+	OBJ(enemy)->setNextGoal();
+	OBJ(enemy)->mFlyTime = 0;
 	enemy->disableEvent(0, EB_Cullable);
 	mFlyTimer = 0;
 }
 
-/*
- * --INFO--
- * Address:	80387AEC
- * Size:	0000E8
+/**
+ * @note Address: 0x80387AEC
+ * @note Size: 0xE8
  */
 void StateFly::exec(EnemyBase* enemy)
 {
@@ -126,9 +118,9 @@ void StateFly::exec(EnemyBase* enemy)
 		mFlyTimer++;
 	}
 
-	f32 flyMax = CG_PROPERPARMS(OBJ(enemy)).mFp01.mValue;
+	f32 flyMax = CG_PROPERPARMS(OBJ(enemy)).mMaxFlyTime.mValue;
 	if (OBJ(enemy)->mSpawnSource == SHIJIMISOURCE_Plants) {
-		flyMax = CG_PROPERPARMS(OBJ(enemy)).mFp08.mValue;
+		flyMax = CG_PROPERPARMS(OBJ(enemy)).mMaxFlyTimePlant.mValue;
 	}
 	if (OBJ(enemy)->mSpawnSource == SHIJIMISOURCE_Enemy) {
 		flyMax = 60.0f;
@@ -141,10 +133,9 @@ void StateFly::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80387BD4
- * Size:	00003C
+/**
+ * @note Address: 0x80387BD4
+ * @note Size: 0x3C
  */
 StateFall::StateFall(int stateID)
     : State(stateID)
@@ -152,36 +143,34 @@ StateFall::StateFall(int stateID)
 	mName = "fall";
 }
 
-/*
- * --INFO--
- * Address:	80387C10
- * Size:	0000D0
+/**
+ * @note Address: 0x80387C10
+ * @note Size: 0xD0
  */
 void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->hardConstraintOff();
 	enemy->disableEvent(0, EB_Untargetable);
 
-	if (CG_PARMS(OBJ(enemy))->_94C) {
+	if (CG_PARMS(OBJ(enemy))->mCanFall) {
 		f32 x = enemy->getTargetVelocity().x;
 		f32 y = -20.0f;
 		f32 z = enemy->getTargetVelocity().z;
 		enemy->setTargetVelocity(Vector3f(x, y, z));
 	}
 
-	OBJ(enemy)->_2CC = enemy->getPosition();
+	OBJ(enemy)->mFallStartPosition = enemy->getPosition();
 	enemy->mSoundObj->startSound(PSSE_EN_BUTTERFLY_HIT, 0);
 	mFallTimer = 0;
 }
 
-/*
- * --INFO--
- * Address:	80387CE0
- * Size:	000094
+/**
+ * @note Address: 0x80387CE0
+ * @note Size: 0x94
  */
 void StateFall::exec(EnemyBase* enemy)
 {
-	if (CG_PARMS(OBJ(enemy))->_94C) {
+	if (CG_PARMS(OBJ(enemy))->mCanFall) {
 		OBJ(enemy)->fallBehavior();
 	}
 
@@ -191,10 +180,9 @@ void StateFall::exec(EnemyBase* enemy)
 	mFallTimer++;
 }
 
-/*
- * --INFO--
- * Address:	80387D74
- * Size:	00003C
+/**
+ * @note Address: 0x80387D74
+ * @note Size: 0x3C
  */
 StateDead::StateDead(int stateID)
     : State(stateID)
@@ -202,10 +190,9 @@ StateDead::StateDead(int stateID)
 	mName = "dead";
 }
 
-/*
- * --INFO--
- * Address:	80387DB0
- * Size:	0000A0
+/**
+ * @note Address: 0x80387DB0
+ * @note Size: 0xA0
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -215,15 +202,14 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	enemy->mCurrentVelocity = Vector3f(0.0f);
 	enemy->enableEvent(0, EB_LeaveCarcass);
 	enemy->deathProcedure();
-	enemy->startMotion(1, nullptr);
+	enemy->startMotion(SHIJIMIANIM_Dead, nullptr);
 	PSStartEnemyFatalHitSE(enemy, 0.0f);
 	OBJ(enemy)->deadEffect();
 }
 
-/*
- * --INFO--
- * Address:	80387E50
- * Size:	000114
+/**
+ * @note Address: 0x80387E50
+ * @note Size: 0x114
  */
 void StateDead::exec(EnemyBase* enemy)
 {
@@ -239,10 +225,9 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80387F64
- * Size:	00003C
+/**
+ * @note Address: 0x80387F64
+ * @note Size: 0x3C
  */
 StateLeave::StateLeave(int stateID)
     : State(stateID)
@@ -250,10 +235,9 @@ StateLeave::StateLeave(int stateID)
 	mName = "leave";
 }
 
-/*
- * --INFO--
- * Address:	80387FA0
- * Size:	000044
+/**
+ * @note Address: 0x80387FA0
+ * @note Size: 0x44
  */
 void StateLeave::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -262,17 +246,15 @@ void StateLeave::init(EnemyBase* enemy, StateArg* stateArg)
 	OBJ(enemy)->leaveInit();
 }
 
-/*
- * --INFO--
- * Address:	80387FE4
- * Size:	000024
+/**
+ * @note Address: 0x80387FE4
+ * @note Size: 0x24
  */
 void StateLeave::exec(EnemyBase* enemy) { OBJ(enemy)->leave(); }
 
-/*
- * --INFO--
- * Address:	80388008
- * Size:	00003C
+/**
+ * @note Address: 0x80388008
+ * @note Size: 0x3C
  */
 StateRest::StateRest(int stateID)
     : State(stateID)
@@ -280,29 +262,27 @@ StateRest::StateRest(int stateID)
 	mName = "rest";
 }
 
-/*
- * --INFO--
- * Address:	80388044
- * Size:	0000BC
+/**
+ * @note Address: 0x80388044
+ * @note Size: 0xBC
  */
 void StateRest::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	_1C = true;
-	_10 = 0;
-	_18 = 30.0f + 100.0f * randFloat();
-	_1D = false;
-	_14 = 0;
-	_1E = false;
+	_1C        = true;
+	mRestTimer = 0;
+	_18        = 30.0f + 100.0f * randFloat();
+	_1D        = false;
+	_14        = 0;
+	_1E        = false;
 
-	if (gameSystem && gameSystem->mMode == GSM_PIKLOPEDIA) {
+	if (gameSystem && gameSystem->isZukanMode()) {
 		enemy->disableEvent(0, EB_Cullable);
 	}
 }
 
-/*
- * --INFO--
- * Address:	80388100
- * Size:	00034C
+/**
+ * @note Address: 0x80388100
+ * @note Size: 0x34C
  */
 void StateRest::exec(EnemyBase* enemy)
 {
@@ -312,7 +292,7 @@ void StateRest::exec(EnemyBase* enemy)
 		}
 	}
 
-	_10++;
+	mRestTimer++;
 
 	if (_1D) {
 		_14 = 0;
@@ -321,10 +301,10 @@ void StateRest::exec(EnemyBase* enemy)
 		}
 
 		if (_1C) {
-			_10 = 0;
-			_18 = 50.0f * randFloat() + 50.0f;
-			_1C = false;
-			_1E = false;
+			mRestTimer = 0;
+			_18        = 50.0f * randFloat() + 50.0f;
+			_1C        = false;
+			_1E        = false;
 			enemy->finishMotion();
 
 		} else if (enemy->isFinishMotion() && enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
@@ -334,9 +314,9 @@ void StateRest::exec(EnemyBase* enemy)
 
 		OBJ(enemy)->resetRestPos();
 
-		if (_10 >= _18) {
-			if (_10 == _18) {
-				enemy->startMotion(2, nullptr);
+		if (mRestTimer >= _18) {
+			if (mRestTimer == _18) {
+				enemy->startMotion(SHIJIMIANIM_Move, nullptr);
 				_1E = false;
 			}
 
@@ -355,17 +335,17 @@ void StateRest::exec(EnemyBase* enemy)
 				landPos.y += (chouPos.y - landPos.y);
 				landPos.z += (chouPos.z - landPos.z);
 
-				OBJ(enemy)->_304 = landPos;
+				OBJ(enemy)->mGoalPosition = landPos;
 
-				_10 = 0;
-				_18 = 600.0f + 400.0f * randFloat();
-				enemy->startMotion(2, nullptr);
+				mRestTimer = 0;
+				_18        = 600.0f + 400.0f * randFloat();
+				enemy->startMotion(SHIJIMIANIM_Move, nullptr);
 			}
 		}
 
 	} else {
-		if (_10 > _18) {
-			OBJ(enemy)->_304 = Vector3f(OBJ(enemy)->mSpawningEnemy->getPosition());
+		if (mRestTimer > _18) {
+			OBJ(enemy)->mGoalPosition = Vector3f(OBJ(enemy)->mSpawningEnemy->getPosition());
 		}
 
 		_14++;

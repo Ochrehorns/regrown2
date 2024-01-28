@@ -69,15 +69,15 @@ struct Obj : public EnemyBase {
 	}
 	virtual void createEffect() { }              // _2FC (weak)
 	virtual void setupEffect() { }               // _300 (weak)
-	virtual void startEffect();                  // _304 (weak)
-	virtual void startYodare();                  // _308 (weak)
+	virtual void startEffect() { }               // _304 (weak)
+	virtual void startYodare() { }               // _308 (weak)
 	virtual void finishEffect() { }              // _30C (weak)
 	virtual void effectDrawOn() { }              // _310 (weak)
 	virtual void effectDrawOff() { }             // _314 (weak)
 	virtual void interactCreature(Creature*) { } // _318 (weak)
 	virtual void stopEffectRadius(f32) { }       // _31C (weak)
-	virtual void createChargeSE();               // _320 (weak)
-	virtual void createDisChargeSE();            // _324 (weak)
+	virtual void createChargeSE() { }            // _320 (weak)
+	virtual void createDisChargeSE() { }         // _324 (weak)
 	//////////////// VTABLE END
 
 	bool isAttackable(bool);
@@ -140,6 +140,17 @@ struct Parms : public EnemyParmsBase {
 	Parameters mParameters; // _7F8
 };
 
+enum AnimID {
+	TANKANIM_Dead   = 0,
+	TANKANIM_Move   = 1, // 'move1'
+	TANKANIM_Flick  = 2,
+	TANKANIM_Attack = 3,
+	TANKANIM_Turn   = 4, // 'waitact1'
+	TANKANIM_Wait   = 5, // 'waitact2'
+	TANKANIM_Carry  = 6, // 'type5'
+	TANKANIM_AnimCount,  // 7
+};
+
 struct ProperAnimator : public EnemyAnimatorBase {
 	virtual ~ProperAnimator() { }                                   // _08 (weak)
 	virtual void setAnimMgr(SysShape::AnimMgr* mgr);                // _0C
@@ -154,7 +165,7 @@ struct ProperAnimator : public EnemyAnimatorBase {
 /////////////////////////////////////////////////////////////////
 // STATE MACHINE DEFINITIONS
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -177,9 +188,9 @@ struct StateAttack : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -190,9 +201,9 @@ struct StateChaseTurn : public State {
 	    : State(TANK_ChaseTurn, "chaseturn")
 	{
 	}
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -203,9 +214,9 @@ struct StateDead : public State {
 	    : State(TANK_Dead, "dead")
 	{
 	}
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -216,9 +227,9 @@ struct StateFlick : public State {
 	    : State(TANK_Flick, "flick")
 	{
 	}
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -229,9 +240,9 @@ struct StateMove : public State {
 	    : State(TANK_Move, "move")
 	{
 	}
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -242,9 +253,9 @@ struct StateMoveTurn : public State {
 	    : State(TANK_MoveTurn, "moveturn")
 	{
 	}
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -255,9 +266,9 @@ struct StateWait : public State {
 	    : State(TANK_Wait, "wait")
 	{
 	}
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -300,7 +311,7 @@ struct Mgr : public Tank::Mgr {
 	Mgr(int objLimit, u8 modelType);
 
 	// virtual ~Mgr();                                     // _58 (weak)
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual void doAlloc();                            // _A8
 	virtual void loadTexData();                        // _D0
@@ -355,7 +366,7 @@ struct Mgr : public Tank::Mgr {
 	Mgr(int objLimit, u8 modelType);
 
 	// virtual ~Mgr();                                     // _58 (weak)
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual void doAlloc();                            // _A8
 	virtual void loadTexData();                        // _D0

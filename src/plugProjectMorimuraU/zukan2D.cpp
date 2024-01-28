@@ -1,19 +1,14 @@
 #include "Morimura/Zukan.h"
-#include "PSSystem/PSSystemIF.h"
-#include "nans.h"
-#include "Game/IconTexture.h"
 #include "Game/ResultTexMgr.h"
 #include "Game/IllustratedBook.h"
-#include "trig.h"
-#include "Dolphin/rand.h"
 #include "Game/gamePlayData.h"
-#include "System.h"
 #include "Game/Data.h"
-#include "Game/enemyInfo.h"
 #include "Game/TekiStat.h"
 #include "Game/PelletList.h"
-#include "P2JME/P2JME.h"
+#include "PSSystem/PSSystemIF.h"
+#include "Dolphin/rand.h"
 #include "efx2d/T2DChangesmoke.h"
+#include "nans.h"
 
 static const int unusedArray[] = { 0, 0, 0 };
 
@@ -22,10 +17,10 @@ s16 TZukanBase::mRequestTimerMax    = 10;
 bool TZukanBase::mIconMove          = true;
 f32 TZukanBase::mLineSpace          = 48.0f; // [vertical spacing between lines of text in message box]
 f32 TZukanBase::mWarpRadius         = 15.0f;
-f32 TZukanBase::mScrollValueCoe     = 3.5f;  // 3.5f  [max scroll speed]
-f32 TZukanBase::mScrollSpeedCoe     = 0.08f; // 0.08f [acceleration]
+f32 TZukanBase::mScrollValueCoe     = 3.5f;  // [max scroll speed]
+f32 TZukanBase::mScrollSpeedCoe     = 0.08f; // [acceleration]
 f32 TZukanBase::mNewScale           = 0.7f;
-f32 TZukanBase::mPodIconOffsetX     = 480.0f; // 480.0f
+f32 TZukanBase::mPodIconOffsetX     = 480.0f;
 f32 TZukanBase::mLargeCategoryScale = 2.0f;
 f32 TZukanBase::mCategoryAlphaRate  = 0.6f;
 u8 TZukanBase::mDrawLineType        = 2;
@@ -165,6 +160,7 @@ TEnemyZukanIndex eIDInfo[ENEMY_ZUKAN_COUNT] = {
 	{ TEnemyZukan::Zukan_HallowMushi, Game::EnemyTypeID::EnemyID_HallowMushi },
 	{ TEnemyZukan::Zukan_Usuba, Game::EnemyTypeID::EnemyID_Usuba },
 };
+
 /**
  * @note Address: 0x80370C08
  * @note Size: 0x204

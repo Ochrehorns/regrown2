@@ -7,10 +7,9 @@
 
 namespace Game {
 namespace Cave {
-/*
- * --INFO--
- * Address:	8029EF0C
- * Size:	00005C
+/**
+ * @note Address: 0x8029EF0C
+ * @note Size: 0x5C
  */
 RandPlantUnit::RandPlantUnit(MapUnitGenerator* generator)
 {
@@ -22,16 +21,15 @@ RandPlantUnit::RandPlantUnit(MapUnitGenerator* generator)
 	FOREACH_NODE(EnemyNode, mGenerator->mMainEnemies->mChild, currEnemy)
 	{
 		// if TekiInfo exists and the Teki type is 6 (plant), add its weight to goal count
-		if ((currEnemy->mEnemyUnit->mTekiInfo) && (currEnemy->mEnemyUnit->mTekiInfo->mType == BaseGen::Plant)) {
+		if ((currEnemy->mEnemyUnit->mTekiInfo) && (currEnemy->mEnemyUnit->mTekiInfo->mType == BaseGen::CGT_Plant)) {
 			mGoalCount += currEnemy->mEnemyUnit->mTekiInfo->mWeight;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029EF68
- * Size:	0000DC
+/**
+ * @note Address: 0x8029EF68
+ * @note Size: 0xDC
  */
 void Game::Cave::RandPlantUnit::setPlantSlot()
 {
@@ -69,12 +67,11 @@ void Game::Cave::RandPlantUnit::setPlantSlot()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029F044
- * Size:	000134
+/**
+ * @note Address: 0x8029F044
+ * @note Size: 0x134
  */
-MapNode* RandPlantUnit::getPlantSetMapNode(BaseGen** outSpawn)
+MapNode* RandPlantUnit::getPlantSetMapNode(BaseGen** plantSpawnsList)
 {
 	// make list of EMPTY plant spawns and pick one at random
 	// returns mapnode of randomly selected plant spawn and puts pointer to basegen for plant in outSpawn
@@ -93,7 +90,7 @@ MapNode* RandPlantUnit::getPlantSetMapNode(BaseGen** outSpawn)
 		if (spawn) {
 			FOREACH_NODE(BaseGen, spawn->mChild, currSpawn)
 			{
-				if ((currSpawn->mSpawnType == BaseGen::Plant) && (isPlantSet(currTile, currSpawn))) {
+				if ((currSpawn->mSpawnType == BaseGen::CGT_Plant) && (isPlantSet(currTile, currSpawn))) {
 					tileList[count]  = currTile;
 					spawnList[count] = currSpawn;
 					count++;
@@ -105,18 +102,17 @@ MapNode* RandPlantUnit::getPlantSetMapNode(BaseGen** outSpawn)
 	// assuming we hit at least one plant spawn, pick one from the list at random
 	// return the map node pointer, and put the basegen pointer into *baseGenOut
 	if (count) {
-		int randBase = count * randFloat();
-		*outSpawn    = spawnList[randBase];
+		int randBase     = randInt(count);
+		*plantSpawnsList = spawnList[randBase];
 		return tileList[randBase];
 	}
 	// if we didn't hit any empty spawns, return nullptr
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8029F178
- * Size:	000068
+/**
+ * @note Address: 0x8029F178
+ * @note Size: 0x68
  */
 EnemyUnit* RandPlantUnit::getPlantUnit(BaseGen* spawn)
 {
@@ -129,7 +125,7 @@ EnemyUnit* RandPlantUnit::getPlantUnit(BaseGen* spawn)
 		FOREACH_NODE(EnemyNode, mGenerator->mMainEnemies->mChild, currEnemy)
 		{
 			// if TekiInfo exists and Teki type = plant, add weight to slotCount
-			if (currEnemy->mEnemyUnit->mTekiInfo && (currEnemy->mEnemyUnit->mTekiInfo->mType == BaseGen::Plant)) {
+			if (currEnemy->mEnemyUnit->mTekiInfo && (currEnemy->mEnemyUnit->mTekiInfo->mType == BaseGen::CGT_Plant)) {
 				slotCount += currEnemy->mEnemyUnit->mTekiInfo->mWeight;
 
 				// if we've gotten further than current plant count, we've hit the next plant type to add
@@ -144,10 +140,9 @@ EnemyUnit* RandPlantUnit::getPlantUnit(BaseGen* spawn)
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8029F1E0
- * Size:	000048
+/**
+ * @note Address: 0x8029F1E0
+ * @note Size: 0x48
  */
 bool RandPlantUnit::isPlantSet(MapNode* testTile, BaseGen* testSpawn)
 {

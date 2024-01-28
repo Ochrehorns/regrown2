@@ -74,7 +74,25 @@ enum JBlockType {
 
 enum J3DErrType { JET_Success = 0, JET_NoMatAnm, JET_LockedModelData, JET_NullBinRes, JET_OutOfMemory, JET_InvalidArg, JET_InvalidData };
 
+struct J3DAlphaCompInfo {
+	u8 _00[0x8]; // _00
+};
+
 struct J3DAlphaComp {
+	inline J3DAlphaComp(J3DAlphaCompInfo& info)
+	{
+		_00 = (info._00[0] * 0x20) + (info._00[2] * 8) + (info._00[3]);
+		_02 = info._00[1];
+		_03 = info._00[4];
+	}
+
+	inline J3DAlphaComp()
+	{
+		_00 = -1;
+		_02 = 0;
+		_03 = 0;
+	}
+
 	u16 _00; // _00
 	u8 _02;  // _02
 	u8 _03;  // _03
@@ -141,7 +159,7 @@ struct J3DZMode {
 struct J3DColorChan {
 	J3DColorChan();
 
-	u16 _00;
+	u16 channelInfo;
 };
 
 // IDK what the structure of this is meant to be
@@ -194,17 +212,16 @@ struct J3DTevOrderInfo {
 	// inline GXTexCoordID getTexCoordID() const { return (GXTexCoordID)mData[0]; }
 	// inline GXTexMapID getTexMapID() const { return (GXTexMapID)mData[1]; }
 	// inline u8 getChannelID() const { return mData[2]; }
-	u8 mData[3]; // _00
+	// u8 mData[4]; // _00 size should be 4 for newTevOrder to work
 
 	// inline GXTexCoordID getTexCoordID() const { return (GXTexCoordID)mTexCoordID; }
 	// inline GXTexMapID getTexMapID() const { return (GXTexMapID)mTexMapID; }
 	// inline u8 getChannelID() const { return mChannelID; }
 
-	// u8 mTexCoordID; // _00
-	// u8 mTexMapID;   // _01
-	// u8 mChannelID;  // _02
-
-	// u8 _03;          // _03 - unknown/padding
+	u8 mTexCoordID; // _00
+	u8 mTexMapID;   // _01
+	u8 mChannelID;  // _02
+	u8 _03;         // _03 - unknown/padding
 };
 
 extern const J3DTevOrderInfo j3dDefaultTevOrderInfoNull;
@@ -220,9 +237,9 @@ struct J3DTevOrder {
 		// 	mData[i] = j3dDefaultTevOrderInfoNull.mData[i];
 		// }
 		const J3DTevOrderInfo& info = j3dDefaultTevOrderInfoNull;
-		mTexCoordID                 = info.mData[0];
-		mTexMapID                   = info.mData[1];
-		mChannelID                  = info.mData[2];
+		mTexCoordID                 = info.mTexCoordID;
+		mTexMapID                   = info.mTexMapID;
+		mChannelID                  = info.mChannelID;
 		// mTexCoordID                = info.mTexCoordID;
 		// mTexMapID                  = info.mTexMapID;
 		// mChannelID                 = info.mChannelID;
@@ -241,9 +258,9 @@ struct J3DTevOrder {
 	    // : mTexCoordID(info.mTexCoordID)
 	    // , mTexMapID(info.mTexMapID)
 	    // , mChannelID(info.mChannelID)
-	    : mTexCoordID(info.mData[0])
-	    , mTexMapID(info.mData[1])
-	    , mChannelID(info.mData[2])
+	    : mTexCoordID(info.mTexCoordID)
+	    , mTexMapID(info.mTexMapID)
+	    , mChannelID(info.mChannelID)
 	{
 		// for (int i = 0; i < 3; i++) {
 		// 	mData[i] = info.mData[i];
@@ -285,7 +302,7 @@ struct J3DTevOrder {
 struct J3DTevSwapModeTable {
 	J3DTevSwapModeTable();
 
-	u8 _00;
+	u8 mTevSwapID; // _00
 };
 
 struct J3DTevStage {
@@ -323,39 +340,28 @@ struct J3DDefaultTexCoordInfo {
 	u8 mPadding;    // _03
 };
 
+extern const J3DDefaultTexCoordInfo j3dDefaultTexCoordInfo[8];
+
 struct J3DTexCoordInfo {
 	u8 mTexGenType; // _00
 	u8 mTexGenSrc;  // _01
 	u8 mTexGenMtx;  // _02
+	void operator=(J3DTexCoordInfo const& other) { *(u32*)this = *(u32*)&other; }
 };
 
-extern const J3DDefaultTexCoordInfo j3dDefaultTexCoordInfo[8];
+struct J3DTexCoord : public J3DTexCoordInfo {
 
-// TODO: Determine if this needs packing pragmas to make it exactly 6 bytes
-/**
- * @size{0x6}
- */
-struct J3DTexCoord {
-	inline J3DTexCoord()
-	    : _00(j3dDefaultTexCoordInfo[0].mTexGenType)
-	    , _01(j3dDefaultTexCoordInfo[0].mTexGenSrc)
-	    , _02(j3dDefaultTexCoordInfo[0].mTexGenMtx)
-	    , _04(_02)
-	{
-	}
+	J3DTexCoord();
+	void setTexCoordInfo(J3DTexCoordInfo* param_1) { *(J3DTexCoordInfo*)this = *param_1; }
 
-	inline J3DTexCoord(const J3DTexCoordInfo& info)
-	    : _00(info.mTexGenType)
-	    , _01(info.mTexGenSrc)
-	    , _02(info.mTexGenMtx)
-	    , _04(_02)
-	{
-	}
+	u8 getTexGenType() { return mTexGenType; }
+	u8 getTexGenSrc() { return mTexGenSrc; }
+	u8 getTexGenMtx() { return mTexGenMtx & 0xff; }
+	u16 getTexMtxReg() { return mTexMtxReg & 0xff; }
 
-	u8 _00;  // _00
-	u8 _01;  // _01
-	u8 _02;  // _02
-	u16 _04; // _04
+	void resetTexMtxReg() { mTexMtxReg = mTexGenMtx; }
+
+	u16 mTexMtxReg; // _04
 };
 
 struct J3DTextureSRTInfo {
@@ -366,17 +372,26 @@ struct J3DTextureSRTInfo {
 	f32 mTranslationY; // _10
 };
 
+// hate this but whatever's in here can't have constructors bc of J3DTransform
 struct J3DTransformInfo {
-	JGeometry::TVec3f mScale;        // _00
-	JGeometry::TVec3<s16> mRotation; // _0C
-	JGeometry::TVec3f mTranslation;  // _14
+	inline J3DTransformInfo& operator=(const J3DTransformInfo& b)
+	{
+		mScale       = b.mScale;
+		mRotation    = b.mRotation;
+		mTranslation = b.mTranslation;
+		return *this;
+	}
+
+	Vec mScale;       // _00
+	SVec mRotation;   // _0C
+	Vec mTranslation; // _14
 };
 
 extern const J3DTransformInfo j3dDefaultTransformInfo;
 
 struct J3DNBTScaleInfo {
-	u8 _00;                // _00
-	JGeometry::TVec3f _04; // _04
+	u8 _00;  // _00
+	Vec _04; // _04
 
 	// f32 _08; // _08
 	// f32 _0C; // _0C
@@ -386,8 +401,8 @@ extern const J3DNBTScaleInfo j3dDefaultNBTScaleInfo;
 
 struct J3DNBTScale {
 	inline J3DNBTScale()
-	    : _00(j3dDefaultNBTScaleInfo._00)
-	    , _04(j3dDefaultNBTScaleInfo._04)
+	    : mbHasScale(j3dDefaultNBTScaleInfo._00)
+	    , mScale(j3dDefaultNBTScaleInfo._04)
 	{
 		// _04.x = j3dDefaultNBTScaleInfo._04;
 		// _04.y = j3dDefaultNBTScaleInfo._08;
@@ -396,17 +411,27 @@ struct J3DNBTScale {
 
 	/** @fabricated */
 	inline J3DNBTScale(const J3DNBTScaleInfo& info)
-	    : _00(info._00)
-	    , _04(info._04)
+	    : mbHasScale(info._00)
+	    , mScale(info._04)
 	{
 		// _04.x = info._04;
 		// _04.y = info._08;
 		// _04.z = info._0C;
 	}
 
-	u8 _00; // _00
-	JGeometry::TVec3f _04;
+	Vec* getScale() { return &mScale; }
+
+	u8 mbHasScale; // _00
+	Vec mScale;
 };
+
+struct J3DTexCoordScaleInfo {
+	u16 _00;
+	u16 _02;
+	u16 _04;
+	u16 _06;
+};
+
 void loadNBTScale(J3DNBTScale&);
 
 void loadTexCoordGens(u32, J3DTexCoord*);

@@ -1,44 +1,42 @@
 #include "types.h"
 #include "PowerPC_EABI_Support/MetroTRK/trk.h"
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000080
+/**
+ * @note Address: N/A
+ * @note Size: 0x80
  */
 void TRKWaitForACK(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800BDD20
- * Size:	000098
+/**
+ * @note Address: 0x800BDD20
+ * @note Size: 0x98
  */
-s32 TRKDoNotifyStopped(s32 arg0)
+DSError TRKDoNotifyStopped(MessageCommandID cmd)
 {
-	s32 sp8;
-	s32 spC;
-	s32 sp10;
-	s32 retval; // r31
-	s32 temp_r3;
+	int reqIdx;
+	int bufIdx;
+	MessageBuffer* msg;
+	DSError err;
+	DSError bufError;
 
-	temp_r3 = TRKGetFreeBuffer(&spC, &sp10);
-	if ((retval = temp_r3) == 0) {
-		if (retval == 0) {
-			if (arg0 == 0x90) {
-				TRKTargetAddStopInfo(sp10);
+	bufError = TRKGetFreeBuffer(&bufIdx, &msg);
+	if ((err = bufError) == FALSE) {
+		if (err == DS_NoError) {
+			if (cmd == DSMSG_NotifyStopped) {
+				TRKTargetAddStopInfo(msg);
 			} else {
-				TRKTargetAddExceptionInfo(sp10);
+				TRKTargetAddExceptionInfo(msg);
 			}
 		}
-		temp_r3 = TRKRequestSend(sp10, &sp8, 2, 3, 1);
-		retval  = temp_r3;
-		if (retval == 0) {
-			TRKReleaseBuffer(sp8);
+		bufError = TRKRequestSend(msg, &reqIdx, 2, 3, 1);
+		err      = bufError;
+		if (err == DS_NoError) {
+			TRKReleaseBuffer(reqIdx);
 		}
-		TRKReleaseBuffer(spC);
+		TRKReleaseBuffer(bufIdx);
 	}
-	return retval;
+	return err;
 }

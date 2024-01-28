@@ -32,10 +32,10 @@ struct FSMState : public Game::FSMState<TMgr> {
 		mName = name;
 	}
 
-	virtual void init(TMgr* mgr, Game::StateArg* arg) { do_init(mgr, arg); } // _08 (weak)
-	virtual void exec(TMgr* mgr) { do_exec(mgr); }                           // _0C (weak)
-	virtual void do_init(TMgr*, Game::StateArg*) { }                         // _20 (weak)
-	virtual void do_exec(TMgr*) { }                                          // _24 (weak)
+	virtual void init(TMgr* mgr, Game::StateArg* settings); // _08
+	virtual void exec(TMgr* mgr);                           // _0C
+	virtual void do_init(TMgr*, Game::StateArg*) { }        // _20 (weak)
+	virtual void do_exec(TMgr*) { }                         // _24 (weak)
 
 	// _00     = VTBL
 	// _00-_0C = Game::FSMState
@@ -199,6 +199,8 @@ struct FSMState_MountCheck : public FSMState_CardRequest {
 };
 
 struct TMgr : public JKRDisposer {
+	typedef FSMState StateType;
+
 	enum enumEnd { End_0 = 0, End_1 = 1, End_2 = 2, End_3 = 3, End_4 = 4 };
 
 	TMgr();
@@ -220,18 +222,27 @@ struct TMgr : public JKRDisposer {
 	static void onDvdErrorOccured();
 	static void onDvdErrorRecovered();
 
+	inline void doLoadMenuResource()
+	{
+		mSaveMenu.loadResource();
+		doLoadResource(JKRGetCurrentHeap());
+	}
+
 	inline void doLoadResource(JKRHeap* heap)
 	{
-		mMemCardErrorMgr.loadResource(heap);
+		mMemCardErrorMgr.mScreen.loadResource(heap);
 		static_cast<Game::MemoryCard::Mgr*>(sys->mCardMgr)->loadResource(heap);
 	}
 
 	inline void setControllers(Controller* pad)
 	{
-		mController                  = pad;
-		mSaveMenu.mController        = pad;
-		mMemCardErrorMgr.mController = pad;
+		mController                          = pad;
+		mSaveMenu.mController                = pad;
+		mMemCardErrorMgr.mScreen.mController = pad;
 	}
+
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
 
 	static TMgr* msInstance;
 
@@ -240,17 +251,17 @@ struct TMgr : public JKRDisposer {
 	Screen::TSaveMenu mSaveMenu;                      // _18
 	CardError::TMgr mMemCardErrorMgr;                 // _100
 	u32 mCounter;                                     // _3C8
-	u32 _3CC;                                         // _3CC, unknown
+	u32 mCounterBackup;                               // _3CC
 	Controller* mController;                          // _3D0
 	Game::MemoryCard::PlayerFileInfo mPlayerFileInfo; // _3D4
-	int mIsStoryGameSave;                             // _470
+	BOOL mIsStoryGameSave;                            // _470
 	int mCurrStateID;                                 // _474
 	u8 mSaveType;                                     // _478
 	bool mIsAutosaveOn;                               // _479
 	u8 _47A;                                          // _47A
 	bool mDVDErrorSuspended;                          // _47B
 	FSMStateMachine mStateMachine;                    // _47C
-	FSMState* mCurrState;                             // _498
+	FSMState* mCurrentState;                          // _498
 };
 } // namespace Save
 } // namespace ebi

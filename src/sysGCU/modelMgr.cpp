@@ -1,10 +1,9 @@
 #include "JSystem/J3D/J3DModel.h"
 #include "JSystem/JKernel/JKRHeap.h"
-#include "JSystem/JUtility/JUTException.h"
+#include "P2Macros.h"
 #include "SysShape/Model.h"
 #include "SysShape/ModelMgr.h"
 #include "System.h"
-#include "types.h"
 
 /*
     Generated from dpostproc
@@ -49,10 +48,9 @@
         .4byte 0x25640A00
 */
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E4
+/**
+ * @note Address: N/A
+ * @note Size: 0xE4
  */
 void _Print(char* name, ...) { OSReport("modelMgr"); }
 
@@ -60,10 +58,9 @@ bool gPikiActive = false;
 
 namespace SysShape {
 
-/*
- * --INFO--
- * Address:	8042AB00
- * Size:	0001D8
+/**
+ * @note Address: 0x8042AB00
+ * @note Size: 0x1D8
  */
 ModelMgr::ModelMgr(int modelDataLimit, J3DModelData** modelData, int heapLimit, u32 p4, u32 p5, IDelegate1<Model*>* delegate)
 {
@@ -84,10 +81,9 @@ ModelMgr::ModelMgr(int modelDataLimit, J3DModelData** modelData, int heapLimit, 
 	}
 }
 
-/*
- * --INFO--
- * Address:	8042ACD8
- * Size:	000084
+/**
+ * @note Address: 0x8042ACD8
+ * @note Size: 0x84
  */
 int ModelMgr::calcMaximumModelSize()
 {
@@ -113,10 +109,9 @@ int ModelMgr::calcMaximumModelSize()
 	return maxsize;
 }
 
-/*
- * --INFO--
- * Address:	8042AD5C
- * Size:	0000A0
+/**
+ * @note Address: 0x8042AD5C
+ * @note Size: 0xA0
  */
 int ModelMgr::calcModelSize(J3DModelData* data)
 {
@@ -131,10 +126,9 @@ int ModelMgr::calcModelSize(J3DModelData* data)
 	return initialFreeSize - JKRHeap::sCurrentHeap->getTotalFreeSize();
 }
 
-/*
- * --INFO--
- * Address:	8042ADFC
- * Size:	0001C8
+/**
+ * @note Address: 0x8042ADFC
+ * @note Size: 0x1C8
  */
 Model* ModelMgr::createModel(int modelIndex, int heapIndex)
 {

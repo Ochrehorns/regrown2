@@ -2,44 +2,31 @@
 #include "JSystem/JAudio/JAS/JASDvd.h"
 #include "JSystem/JAudio/JAS/JASHeap.h"
 #include "JSystem/JAudio/JAS/JASThread.h"
-#include "types.h"
-
-/*
-    Generated from dpostproc
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global sThread__6JASDvd
-    sThread__6JASDvd:
-        .skip 0x8
-*/
 
 JASTaskThread* JASDvd::sThread;
 
-/*
- * --INFO--
- * Address:	800A698C
- * Size:	000008
+/**
+ * @note Address: 0x800A698C
+ * @note Size: 0x8
  */
 JASTaskThread* JASDvd::getThreadPointer() { return sThread; }
 
-/*
- * --INFO--
- * Address:	800A6994
- * Size:	00007C
+/**
+ * @note Address: 0x800A6994
+ * @note Size: 0x7C
  */
-bool JASDvd::createThread(long priority, int p2, unsigned long p3)
+bool JASDvd::createThread(s32 priority, int p2, u32 p3)
 {
 	sThread = new (JASDram, 0) JASTaskThread(priority, p2, p3);
 	OSResumeThread(sThread->mThread);
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	800A6A10
- * Size:	000044
+/**
+ * @note Address: 0x800A6A10
+ * @note Size: 0x44
  */
-void JASDvd::checkPassDvdT(unsigned long p1, unsigned long* p2, JASDvdCallback p3)
+void JASDvd::checkPassDvdT(u32 p1, u32* p2, JASDvdCallback p3)
 {
 	DVDThreadCheckBackArgs args;
 	args._00 = p1;
@@ -48,30 +35,27 @@ void JASDvd::checkPassDvdT(unsigned long p1, unsigned long* p2, JASDvdCallback p
 	sThread->sendCmdMsg(dvdThreadCheckBack, &args, sizeof(DVDThreadCheckBackArgs));
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
 void JASDvd::pauseDvdT()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
 void JASDvd::unpauseDvdT()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A6A54
- * Size:	000048
+/**
+ * @note Address: 0x800A6A54
+ * @note Size: 0x48
  */
 void JASDvd::dvdThreadCheckBack(void* args)
 {

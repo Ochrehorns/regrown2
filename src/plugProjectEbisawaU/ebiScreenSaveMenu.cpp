@@ -10,10 +10,9 @@ static const char name[] = "ebiScreenSaveMenu";
 namespace ebi {
 namespace Screen {
 
-/*
- * --INFO--
- * Address:	803DD0A8
- * Size:	000350
+/**
+ * @note Address: 0x803DD0A8
+ * @note Size: 0x350
  */
 void TSaveMenu::doSetArchive(JKRArchive* arc)
 {
@@ -54,10 +53,9 @@ void TSaveMenu::doSetArchive(JKRArchive* arc)
 	mFuriko = og::Screen::setCallBack_Furiko(mScreenObj, 'furiko00');
 }
 
-/*
- * --INFO--
- * Address:	803DD3F8
- * Size:	00007C
+/**
+ * @note Address: 0x803DD3F8
+ * @note Size: 0x7C
  */
 void TSaveMenu::doOpenScreen(ArgOpen*)
 {
@@ -72,10 +70,9 @@ void TSaveMenu::doOpenScreen(ArgOpen*)
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
 }
 
-/*
- * --INFO--
- * Address:	803DD474
- * Size:	000064
+/**
+ * @note Address: 0x803DD474
+ * @note Size: 0x64
  */
 void TSaveMenu::doCloseScreen(ArgClose*)
 {
@@ -87,26 +84,24 @@ void TSaveMenu::doCloseScreen(ArgClose*)
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
 }
 
-/*
- * --INFO--
- * Address:	803DD4D8
- * Size:	000084
+/**
+ * @note Address: 0x803DD4D8
+ * @note Size: 0x84
  */
 void TSaveMenu::doKillScreen()
 {
 	startMsgState_(MSG_Kill);
 	mDrawState = 0;
-	mCursor1.kill();
-	mCursor2.kill();
+	mCursor1.mCursor.kill();
+	mCursor2.mCursor.kill();
 	for (int i = 0; i < 3; i++) {
 		mAnimScreen[i]->stop();
 	}
 }
 
-/*
- * --INFO--
- * Address:	803DD55C
- * Size:	0000DC
+/**
+ * @note Address: 0x803DD55C
+ * @note Size: 0xDC
  */
 bool TSaveMenu::doUpdateStateOpen()
 {
@@ -125,10 +120,9 @@ bool TSaveMenu::doUpdateStateOpen()
 	return u8(mScreenMovePos <= 0.0f);
 }
 
-/*
- * --INFO--
- * Address:	803DD638
- * Size:	000074
+/**
+ * @note Address: 0x803DD638
+ * @note Size: 0x74
  */
 bool TSaveMenu::doUpdateStateWait()
 {
@@ -142,10 +136,9 @@ bool TSaveMenu::doUpdateStateWait()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803DD6AC
- * Size:	0000D4
+/**
+ * @note Address: 0x803DD6AC
+ * @note Size: 0xD4
  */
 bool TSaveMenu::doUpdateStateClose()
 {
@@ -164,56 +157,58 @@ bool TSaveMenu::doUpdateStateClose()
 	return u8(mFadeTimer > 0.3f);
 }
 
-/*
- * --INFO--
- * Address:	803DD780
- * Size:	000234
+/**
+ * @note Address: 0x803DD780
+ * @note Size: 0x234
  */
 void TSaveMenu::doDraw()
 {
+	J2DPerspGraph* graf2;
 	Graphics* gfx       = sys->mGfx;
 	J2DPerspGraph* graf = &gfx->mPerspGraph;
 	graf->setPort();
 
 	if (mDrawState) {
-		f32 factor;
-		J2DPerspGraph* graf = &sys->mGfx->mPerspGraph;
-		graf->setPort();
-		u8 alpha = _14;
-
+		graf2 = &sys->mGfx->mPerspGraph;
+		graf2->setPort();
+		u8 alpha = mBGColor;
+		JUtility::TColor color(mBGColor);
 		switch (mDrawState) {
-		case 1:
+		case 1: {
+			f32 calc;
 			if (mOpenCloseCounterMax) {
-				factor = (f32)mOpenCloseCounter / (f32)mOpenCloseCounterMax;
+				calc = (f32)mOpenCloseCounter / (f32)mOpenCloseCounterMax;
 			} else {
-				factor = 0.0f;
+				calc = 0.0f;
 			}
-			alpha = mAlpha * factor;
-			break;
-		case 2:
-			if (mOpenCloseCounterMax) {
-				factor = (f32)mOpenCloseCounter / (f32)mOpenCloseCounterMax;
-			} else {
-				factor = 0.0f;
-			}
-			alpha = mAlpha * (1.0f - factor);
+			color.a = mAlpha * calc;
 			break;
 		}
-		JUtility::TColor c(0, 0, 0, alpha);
-		graf->setColor(c);
+		case 2: {
+			f32 calc;
+			if (mOpenCloseCounterMax) {
+				calc = (f32)mOpenCloseCounter / (f32)mOpenCloseCounterMax;
+			} else {
+				calc = 0.0f;
+			}
+			color.a = mAlpha * (1.0f - calc);
+			break;
+		}
+		}
+		graf2->setColor(color);
 		u32 y    = System::getRenderModeObj()->efbHeight;
 		u32 x    = System::getRenderModeObj()->fbWidth;
 		f32 zero = 0.0f;
-		JGeometry::TBox2f box(0.0f, zero + x, 0.0f, zero + y);
-		graf->fillBox(box);
+		JGeometry::TBox2f box(0.0f, 0.0f, zero + x, zero + y);
+		graf2->fillBox(box);
 	}
+
 	mScreenObj->draw(*gfx, *graf);
 }
 
-/*
- * --INFO--
- * Address:	803DD9B4
- * Size:	0000B0
+/**
+ * @note Address: 0x803DD9B4
+ * @note Size: 0xB0
  */
 void TSaveMenu::loadResource()
 {
@@ -221,19 +216,18 @@ void TSaveMenu::loadResource()
 
 	char buf[256];
 	og::newScreen::makeLanguageResName(buf, "info_window.szs");
-	JKRArchive* arc = JKRArchive::mount(buf, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	JKRArchive* arc = JKRMountArchive(buf, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 	P2ASSERTLINE(226, arc);
 	sys->heapStatusEnd("TScreenSaveMenu::loadResource");
 
 	setArchive(arc);
 }
 
-/*
- * --INFO--
- * Address:	803DDA64
- * Size:	000094
+/**
+ * @note Address: 0x803DDA64
+ * @note Size: 0x94
  */
-bool TSaveMenu::openMsg(long id)
+bool TSaveMenu::openMsg(s32 id)
 {
 	P2ASSERTBOUNDSLINE(239, 0, id, 4);
 
@@ -245,10 +239,9 @@ bool TSaveMenu::openMsg(long id)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803DDAF8
- * Size:	00003C
+/**
+ * @note Address: 0x803DDAF8
+ * @note Size: 0x3C
  */
 bool TSaveMenu::closeMsg()
 {
@@ -259,10 +252,9 @@ bool TSaveMenu::closeMsg()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803DDB34
- * Size:	000054
+/**
+ * @note Address: 0x803DDB34
+ * @note Size: 0x54
  */
 void TSaveMenu::noMsg()
 {
@@ -272,29 +264,27 @@ void TSaveMenu::noMsg()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803DDB88
- * Size:	000010
+/**
+ * @note Address: 0x803DDB88
+ * @note Size: 0x10
  */
 bool TSaveMenu::isFinishMsg() { return u8(mStateID == MSG_Kill); }
 
-/*
- * --INFO--
- * Address:	803DDB98
- * Size:	0003B4
+/**
+ * @note Address: 0x803DDB98
+ * @note Size: 0x3B4
  */
 void TSaveMenu::startMsgState_(enumMsgState state)
 {
 	mStateID = state;
 	switch (mStateID) {
 	case MSG_Kill:
-		mCursor1.kill();
-		mCursor2.kill();
+		mCursor1.mCursor.kill();
+		mCursor2.mCursor.kill();
 		break;
 	case MSG_Open:
-		mCursor1.kill();
-		mCursor2.kill();
+		mCursor1.mCursor.kill();
+		mCursor2.mCursor.kill();
 		// yes this isnt a switch
 		if (mMesgState == MESSAGE_SaveOption) {
 			mPressedA       = false;
@@ -307,12 +297,10 @@ void TSaveMenu::startMsgState_(enumMsgState state)
 			mAnimScreen[1]->blink(0.0f, 0.0f);
 			mCursor1.setPanes(mCursorEfxPane[0], mCursorEfxPane[2]);
 			mCursor2.setPanes(mCursorEfxPane[1], mCursorEfxPane[3]);
-			mCursor1.mTimer    = 1.0f;
-			mCursor1.mSelected = true;
-			mCursor2.mTimer    = 1.0f;
-			mCursor2.mSelected = true;
-			mCursor1.create(nullptr);
-			mCursor2.create(nullptr);
+			mCursor1.start();
+			mCursor2.start();
+			mCursor1.mCursor.create(nullptr);
+			mCursor2.mCursor.create(nullptr);
 		} else if (mMesgState == MESSAGE_NoSaveOption) {
 			mPressedA       = false;
 			mSelectedOption = true;
@@ -324,12 +312,10 @@ void TSaveMenu::startMsgState_(enumMsgState state)
 			mAnimScreen[1]->blink(0.0f, 0.0f);
 			mCursor1.setPanes(mCursorEfxPane[0], mCursorEfxPane[2]);
 			mCursor2.setPanes(mCursorEfxPane[1], mCursorEfxPane[3]);
-			mCursor1.mTimer    = 1.0f;
-			mCursor1.mSelected = true;
-			mCursor2.mTimer    = 1.0f;
-			mCursor2.mSelected = true;
-			mCursor1.create(nullptr);
-			mCursor2.create(nullptr);
+			mCursor1.start();
+			mCursor2.start();
+			mCursor1.mCursor.create(nullptr);
+			mCursor2.mCursor.create(nullptr);
 		} else if (mMesgState == MESSAGE_Saving) {
 			mAnimScreen[2]->setText('8372_00'); // "Saving... Do not touch the Memory Card in Slot A or the POWER Button."
 			mAnimScreen[2]->open(0.0f);
@@ -348,8 +334,8 @@ void TSaveMenu::startMsgState_(enumMsgState state)
 		case MESSAGE_NoSaveOption:
 			mAnimScreen[0]->close();
 			mAnimScreen[1]->close();
-			mCursor1.fade();
-			mCursor2.fade();
+			mCursor1.mCursor.fade();
+			mCursor2.mCursor.fade();
 			break;
 		case MESSAGE_Saving:
 		case MESSAGE_SaveSuccess:
@@ -365,10 +351,9 @@ void TSaveMenu::startMsgState_(enumMsgState state)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803DDF4C
- * Size:	000368
+/**
+ * @note Address: 0x803DDF4C
+ * @note Size: 0x368
  */
 void TSaveMenu::updateMsg_()
 {
@@ -381,61 +366,59 @@ void TSaveMenu::updateMsg_()
 			startMsgState_(MSG_Idle);
 		}
 		break;
-	case MSG_Idle:
-		int index1, index2;
-		if (mMesgState == MESSAGE_SaveOption) {
-			index1 = 0;
-			index2 = 1;
-		} else if (mMesgState == MESSAGE_NoSaveOption) {
-			index1 = 0;
-			index2 = 1;
+	case MSG_Idle: {
+		switch (mMesgState) {
+		default:
+			break;
+		case MESSAGE_SaveOption:
+		case MESSAGE_NoSaveOption:
+			int index1, index2;
+			getMenuMinMax(index1, index2);
+			if (mController->isMoveUp()) {
+				if (!mSelectedOption) {
+					mSelectedOption = true;
+					mAnimScreen[index1]->blink(0.6f, 0.0f);
+					mAnimScreen[index2]->blink(0.0f, 0.0f);
+					mCursor1.mIsLeft = mSelectedOption;
+					mCursor2.mIsLeft = mSelectedOption;
+					PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+				}
+			} else if (mController->isMoveDown()) {
+				if (mSelectedOption == true) {
+					mSelectedOption = false;
+					mAnimScreen[index1]->blink(0.0f, 0.0f);
+					mAnimScreen[index2]->blink(0.6f, 0.0f);
+					mCursor1.mIsLeft = mSelectedOption;
+					mCursor2.mIsLeft = mSelectedOption;
+					PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+				}
+			} else if (mController->getButtonDown() & Controller::PRESS_A) {
+				mPressedA = true;
+				if (mSelectedOption) {
+					mSelectState = 0;
+					mCursor1.start();
+					mCursor2.start();
+				} else {
+					mSelectState = 1;
+					mCursor1.stop();
+					mCursor2.stop();
+				}
+				startMsgState_(MSG_Close);
+				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
+			} else if (mController->getButtonDown() & Controller::PRESS_B) {
+				mSelectState = 2;
+				mPressedA    = true;
+				mCursor1.mCursor.kill();
+				mCursor2.mCursor.kill();
+				startMsgState_(MSG_Close);
+				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
+			}
+			break;
+		case MESSAGE_Saving:
+			PSSystem::spSysIF->playSystemSe(PSSE_SY_MEMORYCARD_ACCESS, 0);
 		}
 
-		if (mController->mButton.mButton & Controller::PRESS_DPAD_DOWN || mController->mMStick.mYPos > 0.5f) {
-			if (!mSelectedOption) {
-				mSelectedOption = true;
-				mAnimScreen[index1]->blink(0.6f, 0.0f);
-				mAnimScreen[index2]->blink(0.0f, 0.0f);
-				mCursor1.mSelected = mSelectedOption;
-				mCursor2.mSelected = mSelectedOption;
-				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
-			}
-		} else if (mController->mButton.mButton & Controller::PRESS_DPAD_UP || mController->mMStick.mYPos < -0.5f) {
-			if (mSelectedOption == true) {
-				mSelectedOption = false;
-				mAnimScreen[index1]->blink(0.0f, 0.0f);
-				mAnimScreen[index2]->blink(0.6f, 0.0f);
-				mCursor1.mSelected = mSelectedOption;
-				mCursor2.mSelected = mSelectedOption;
-				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
-			}
-		} else if (mController->mButton.mButtonDown & Controller::PRESS_A) {
-			mPressedA = true;
-			if (mSelectedOption) {
-				mSelectState       = 0;
-				mCursor1.mTimer    = 1.0f;
-				mCursor1.mSelected = true;
-				mCursor2.mTimer    = 1.0f;
-				mCursor2.mSelected = true;
-			} else {
-				mSelectState       = 1;
-				mCursor1.mTimer    = 0.0f;
-				mCursor1.mSelected = false;
-				mCursor2.mTimer    = 0.0f;
-				mCursor2.mSelected = false;
-			}
-			startMsgState_(MSG_Close);
-			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
-		} else if (mController->mButton.mButtonDown & Controller::PRESS_B) {
-			mSelectState = 2;
-			mPressedA    = true;
-			mCursor1.kill();
-			mCursor2.kill();
-			startMsgState_(MSG_Close);
-			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
-		} else
-			PSSystem::spSysIF->playSystemSe(PSSE_SY_MEMORYCARD_ACCESS, 0); // ???
-		break;
+	} break;
 	case MSG_Close:
 		og::Screen::AnimText_Screen* screen;
 		switch (mMesgState) {

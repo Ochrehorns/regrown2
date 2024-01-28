@@ -8,8 +8,8 @@ static AISCallback __AIS_Callback = NULL;
 static AIDCallback __AID_Callback = NULL;
 static u8* __CallbackStack;
 static u8* __OldStack;
-static volatile s32 __AI_init_flag = FALSE;
-static volatile s32 __AID_Active   = FALSE;
+static vs32 __AI_init_flag = FALSE;
+static vs32 __AID_Active   = FALSE;
 
 static OSTime bound_32KHz;
 static OSTime bound_48KHz;
@@ -23,10 +23,9 @@ static void __AIDHandler(s16 interrupt, OSContext* context);
 static void __AICallbackStackSwitch(register AIDCallback cb);
 static void __AI_SRC_INIT(void);
 
-/*
- * --INFO--
- * Address:	800F6864
- * Size:	000044
+/**
+ * @note Address: 0x800F6864
+ * @note Size: 0x44
  */
 AIDCallback AIRegisterDMACallback(AIDCallback callback)
 {
@@ -40,353 +39,395 @@ AIDCallback AIRegisterDMACallback(AIDCallback callback)
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	800F68A8
- * Size:	000088
+/**
+ * @note Address: 0x800F68A8
+ * @note Size: 0x88
  */
-void AIInitDMA(u32 addr, u32 length)
+void AIInitDMA(u32 address, u32 length)
 {
-	s32 oldInts;
-	oldInts       = OSDisableInterrupts();
-	__DSPRegs[24] = (u16)((__DSPRegs[24] & ~0x3FF) | (addr >> 16));
-	__DSPRegs[25] = (u16)((__DSPRegs[25] & ~0xFFE0) | (0xffff & addr));
-	__DSPRegs[27] = (u16)((__DSPRegs[27] & ~0x7FFF) | (u16)((length >> 5) & 0xFFFF));
-	OSRestoreInterrupts(oldInts);
+	s32 previousInterruptState;
+
+	previousInterruptState = OSDisableInterrupts();
+
+	__DSPRegs[DSP_DMA_START_HI]    = (u16)((__DSPRegs[DSP_DMA_START_HI] & ~0x3FF) | (address >> 16));
+	__DSPRegs[DSP_DMA_START_LO]    = (u16)((__DSPRegs[DSP_DMA_START_LO] & ~0xFFE0) | (address & 0xFFFF));
+	__DSPRegs[DSP_DMA_CONTROL_LEN] = (u16)((__DSPRegs[DSP_DMA_CONTROL_LEN] & ~0x7FFF) | ((length >> 5) & 0xFFFF));
+
+	OSRestoreInterrupts(previousInterruptState);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
  */
 BOOL AIGetDMAEnableFlag(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800F6930
- * Size:	000018
+/**
+ * @note Address: 0x800F6930
+ * @note Size: 0x18
  */
-void AIStartDMA(void) { __DSPRegs[27] |= 0x8000; }
+void AIStartDMA(void) { SET_FLAG(__DSPRegs[DSP_DMA_CONTROL_LEN], DSP_DMA_START_FLAG); }
 
-/*
- * --INFO--
- * Address:	800F6948
- * Size:	000018
+/**
+ * @note Address: 0x800F6948
+ * @note Size: 0x18
  */
-void AIStopDMA(void) { __DSPRegs[27] &= ~0x8000; }
+void AIStopDMA(void) { RESET_FLAG(__DSPRegs[DSP_DMA_CONTROL_LEN], DSP_DMA_START_FLAG); }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
  */
 u32 AIGetDMABytesLeft(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00001C
+/**
+ * @note Address: N/A
+ * @note Size: 0x1C
  */
-u32 AIGetDMAStartAddr(void) { return (u32)((__DSPRegs[24] & 0x03ff) << 16) | (__DSPRegs[25] & 0xffe0); }
+u32 AIGetDMAStartAddr(void)
+{
+	const u32 startAddressHigh = (__DSPRegs[DSP_DMA_START_HI] & 0x03FF) << 16;
+	const u32 startAddressLow  = __DSPRegs[DSP_DMA_START_LO] & 0xFFE0;
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+	return startAddressHigh | startAddressLow;
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
  */
 u32 AIGetDMALength(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 BOOL AICheckInit(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000044
+/**
+ * @note Address: N/A
+ * @note Size: 0x44
  */
-AISCallback AIRegisterStreamCallback(AISCallback callback)
+AISCallback AIRegisterStreamCallback(AISCallback newCallback)
 {
-	AISCallback ret;
-	s32 oldInts;
+	s32 previousInterruptState;
+	AISCallback previousCallback;
 
-	ret            = __AIS_Callback;
-	oldInts        = OSDisableInterrupts();
-	__AIS_Callback = callback;
-	OSRestoreInterrupts(oldInts);
-	return ret;
+	previousCallback = __AIS_Callback;
+
+	previousInterruptState = OSDisableInterrupts();
+	__AIS_Callback         = newCallback;
+	OSRestoreInterrupts(previousInterruptState);
+
+	return previousCallback;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
  */
 u32 AIGetStreamSampleCount(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000018
+/**
+ * @note Address: N/A
+ * @note Size: 0x18
  */
-void AIResetStreamSampleCount(void) { __AIRegs[0] = (__AIRegs[0] & ~0x20) | 0x20; }
+void AIResetStreamSampleCount(void)
+{
+	__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~AI_CONTROL_STREAM_SAMPLE_COUNT) | AI_CONTROL_STREAM_SAMPLE_COUNT;
+}
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00000C
+/**
+ * @note Address: N/A
+ * @note Size: 0xC
  */
 
 void AISetStreamTrigger(u32 trigger) { __AIRegs[AI_INTRPT_TIMING] = trigger; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
  */
 u32 AIGetStreamTrigger(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800F6960
- * Size:	0000D8
+/**
+ * @note Address: 0x800F6960
+ * @note Size: 0xD8
  */
-void AISetStreamPlayState(u32 state)
+void AISetStreamPlayState(u32 playState)
 {
-	s32 oldInts;
-	u8 volRight;
-	u8 volLeft;
+	s32 previousInterruptState;
+	u8 rightVolume;
+	u8 leftVolume;
 
-	if (state == AIGetStreamPlayState()) {
+	// If the requested state is the same as the current state, do nothing
+	if (playState == AIGetStreamPlayState()) {
 		return;
 	}
-	if ((AIGetStreamSampleRate() == 0U) && (state == 1)) {
-		volRight = AIGetStreamVolRight();
-		volLeft  = AIGetStreamVolLeft();
+
+	// If the sample rate is 0 and the requested state is play, initialize the sample rate converter
+	if (AIGetStreamSampleRate() == 0 && playState == TRUE) {
+		rightVolume = AIGetStreamVolRight();
+		leftVolume  = AIGetStreamVolLeft();
+
+		// Temporarily mute the audio
 		AISetStreamVolRight(0);
 		AISetStreamVolLeft(0);
-		oldInts = OSDisableInterrupts();
+
+		// Disable interrupts and initialize the sample rate converter
+		previousInterruptState = OSDisableInterrupts();
 		__AI_SRC_INIT();
-		__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~0x20) | 0x20;
-		__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~1) | 1;
-		OSRestoreInterrupts(oldInts);
-		AISetStreamVolLeft(volRight);
-		AISetStreamVolRight(volLeft);
+
+		// Set the stream and state bits in the control register
+		__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~AI_CONTROL_STREAM_SAMPLE_COUNT) | AI_CONTROL_STREAM_SAMPLE_COUNT;
+		__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~AI_CONTROL_PLAY_STATE) | AI_CONTROL_PLAY_STATE;
+
+		// Restore the previous interrupt state
+		OSRestoreInterrupts(previousInterruptState);
+
+		// Restore the audio volume
+		AISetStreamVolLeft(rightVolume);
+		AISetStreamVolRight(leftVolume);
 	} else {
-		__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~1) | state;
+		// Set the state bit in the control register to the requested state
+		__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~AI_CONTROL_PLAY_STATE) | playState;
 	}
 }
 
-/*
- * --INFO--
- * Address:	800F6A38
- * Size:	000010
+/**
+ * @note Address: 0x800F6A38
+ * @note Size: 0x10
  */
-u32 AIGetStreamPlayState(void) { return __AIRegs[AI_CONTROL] & 1; }
+u32 AIGetStreamPlayState(void) { return __AIRegs[AI_CONTROL] & AI_CONTROL_PLAY_STATE; }
 
-/*
- * --INFO--
- * Address:	800F6A48
- * Size:	0000E0
+/**
+ * @note Address: 0x800F6A48
+ * @note Size: 0xE0
  */
 void AISetDSPSampleRate(u32 rate)
 {
-	u32 state;
-	s32 oldInts;
-	u8 left;
-	u8 right;
-	u32 sampleRate;
+	u32 playState;
+	s32 previousInterruptState;
+	u8 leftVolume;
+	u8 rightVolume;
+	u32 streamSampleRate;
 
+	// If the requested rate is the same as the current rate, do nothing
 	if (rate == AIGetDSPSampleRate()) {
 		return;
 	}
 
-	__AIRegs[AI_CONTROL] &= ~0x40;
+	// Clear the DSP sample rate bit in the control register
+	__AIRegs[AI_CONTROL] &= ~AI_CONTROL_DSP_SAMPLE_RATE;
+
 	if (rate == 0) {
-		left       = AIGetStreamVolLeft();
-		right      = AIGetStreamVolRight();
-		state      = AIGetStreamPlayState();
-		sampleRate = AIGetStreamSampleRate();
+		leftVolume       = AIGetStreamVolLeft();
+		rightVolume      = AIGetStreamVolRight();
+		playState        = AIGetStreamPlayState();
+		streamSampleRate = AIGetStreamSampleRate();
+
+		// Temporarily mute the audio
 		AISetStreamVolLeft(0);
 		AISetStreamVolRight(0);
-		oldInts = OSDisableInterrupts();
+
+		// Disable interrupts and initialize the sample rate converter
+		previousInterruptState = OSDisableInterrupts();
 		__AI_SRC_INIT();
-		__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~0x20) | 0x20;
-		__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~2) | (sampleRate * 2);
-		__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~1) | state;
-		__AIRegs[AI_CONTROL] |= 0x40;
-		OSRestoreInterrupts(oldInts);
-		AISetStreamVolLeft(left);
-		AISetStreamVolRight(right);
+
+		// Set the stream sample count, stream sample rate, and play state bits in the control register
+		__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~AI_CONTROL_STREAM_SAMPLE_COUNT) | AI_CONTROL_STREAM_SAMPLE_COUNT;
+		__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~AI_CONTROL_STREAM_SAMPLE_RATE) | (streamSampleRate * 2);
+		__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~AI_CONTROL_PLAY_STATE) | playState;
+
+		// Set the DSP sample rate bit in the control register
+		__AIRegs[AI_CONTROL] |= AI_CONTROL_DSP_SAMPLE_RATE;
+
+		// Restore the previous interrupt state
+		OSRestoreInterrupts(previousInterruptState);
+
+		// Restore the audio volume
+		AISetStreamVolLeft(leftVolume);
+		AISetStreamVolRight(rightVolume);
 	}
 }
 
-/*
- * --INFO--
- * Address:	800F6B28
- * Size:	000014
+/**
+ * @note Address: 0x800F6B28
+ * @note Size: 0x14
  */
 u32 AIGetDSPSampleRate(void) { return ((__AIRegs[AI_CONTROL] >> 6) & 1) ^ 1; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
 void AISetStreamSampleRate(u32 rate)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000020
+/**
+ * @note Address: N/A
+ * @note Size: 0x20
  */
 void __AI_DEBUG_set_stream_sample_rate(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800F6B3C
- * Size:	0000D4
+/**
+ * @note Address: 0x800F6B3C
+ * @note Size: 0xD4
  */
 static void __AI_set_stream_sample_rate(u32 rate)
 {
-	s32 oldInts;
-	s32 state;
-	u8 left;
-	u8 right;
-	s32 temp_r26;
+	s32 previousInterruptState;
+	s32 playState;
+	u8 leftVolume;
+	u8 rightVolume;
+	s32 dspSampleRateState;
 
+	// If the requested rate is the same as the current rate, do nothing
 	if (rate == AIGetStreamSampleRate()) {
 		return;
 	}
-	state = AIGetStreamPlayState();
-	left  = AIGetStreamVolLeft();
-	right = AIGetStreamVolRight();
+
+	playState   = AIGetStreamPlayState();
+	leftVolume  = AIGetStreamVolLeft();
+	rightVolume = AIGetStreamVolRight();
+
+	// Temporarily mute the audio
 	AISetStreamVolRight(0);
 	AISetStreamVolLeft(0);
-	temp_r26 = __AIRegs[AI_CONTROL] & 0x40;
-	__AIRegs[AI_CONTROL] &= ~0x40;
-	oldInts = OSDisableInterrupts();
+
+	// Save the state of the DSP sample rate bit and clear it in the control register
+	dspSampleRateState = __AIRegs[AI_CONTROL] & AI_CONTROL_DSP_SAMPLE_RATE;
+	__AIRegs[AI_CONTROL] &= ~AI_CONTROL_DSP_SAMPLE_RATE;
+
+	// Disable interrupts and initialize the sample rate converter
+	previousInterruptState = OSDisableInterrupts();
 	__AI_SRC_INIT();
-	__AIRegs[AI_CONTROL] |= temp_r26;
-	__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~0x20) | 0x20;
-	__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~2) | (rate * 2);
-	OSRestoreInterrupts(oldInts);
-	AISetStreamPlayState(state);
-	AISetStreamVolLeft(left);
-	AISetStreamVolRight(right);
+
+	// Restore the DSP sample rate bit in the control register
+	__AIRegs[AI_CONTROL] |= dspSampleRateState;
+
+	// Set the stream sample count and stream sample rate bits in the control register
+	__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~AI_CONTROL_STREAM_SAMPLE_COUNT) | AI_CONTROL_STREAM_SAMPLE_COUNT;
+	__AIRegs[AI_CONTROL] = (__AIRegs[AI_CONTROL] & ~AI_CONTROL_STREAM_SAMPLE_RATE) | (rate * 2);
+
+	// Restore the previous interrupt state
+	OSRestoreInterrupts(previousInterruptState);
+
+	// Restore the audio play state and volume
+	AISetStreamPlayState(playState);
+	AISetStreamVolLeft(leftVolume);
+	AISetStreamVolRight(rightVolume);
 }
 
-/*
- * --INFO--
- * Address:	800F6C10
- * Size:	000010
+/**
+ * @note Address: 0x800F6C10
+ * @note Size: 0x10
  */
 u32 AIGetStreamSampleRate(void) { return (__AIRegs[AI_CONTROL] >> 1) & 1; }
 
-/*
- * --INFO--
- * Address:	800F6C20
- * Size:	00001C
+/**
+ * @note Address: 0x800F6C20
+ * @note Size: 0x1C
  */
 void AISetStreamVolLeft(u8 volume) { __AIRegs[AI_VOLUME] = (__AIRegs[AI_VOLUME] & ~0xFF) | (volume & 0xFF); }
 
-/*
- * --INFO--
- * Address:	800F6C3C
- * Size:	000010
+/**
+ * @note Address: 0x800F6C3C
+ * @note Size: 0x10
  */
 u8 AIGetStreamVolLeft(void) { return __AIRegs[AI_VOLUME]; }
 
-/*
- * --INFO--
- * Address:	800F6C4C
- * Size:	00001C
+/**
+ * @note Address: 0x800F6C4C
+ * @note Size: 0x1C
  */
 void AISetStreamVolRight(u8 volume) { __AIRegs[AI_VOLUME] = (__AIRegs[AI_VOLUME] & ~0xFF00) | ((volume & 0xFF) << 8); }
 
-/*
- * --INFO--
- * Address:	800F6C68
- * Size:	000010
+/**
+ * @note Address: 0x800F6C68
+ * @note Size: 0x10
  */
 u8 AIGetStreamVolRight(void) { return __AIRegs[AI_VOLUME] >> 8; }
 
-/*
- * --INFO--
- * Address:	800F6C78
- * Size:	00016C
+/**
+ * @note Address: 0x800F6C78
+ * @note Size: 0x16C
  */
 void AIInit(u8* stack)
 {
+	// If AI is already initialized, do nothing
 	if (__AI_init_flag == TRUE) {
 		return;
 	}
 
+	// Register AI version
 	OSRegisterVersion(__AIVersion);
+
+	// Set bounds and buffer sizes in ticks
 	bound_32KHz = OSNanosecondsToTicks(31524);
 	bound_48KHz = OSNanosecondsToTicks(42024);
 	min_wait    = OSNanosecondsToTicks(42000);
 	max_wait    = OSNanosecondsToTicks(63000);
 	buffer      = OSNanosecondsToTicks(3000);
 
+	// Initialize AI stream settings
 	AISetStreamVolRight(0);
 	AISetStreamVolLeft(0);
 	AISetStreamTrigger(0);
 	AIResetStreamSampleCount();
 	__AI_set_stream_sample_rate(1);
 	AISetDSPSampleRate(0);
+
+	// Clear callbacks and set callback stack
 	__AIS_Callback  = 0;
 	__AID_Callback  = 0;
 	__CallbackStack = stack;
+
+	// Set interrupt handlers and unmask interrupts
 	__OSSetInterruptHandler(5, __AIDHandler);
-	__OSUnmaskInterrupts(0x04000000);
+	__OSUnmaskInterrupts(OS_INTERRUPTMASK_DSP_AI);
 	__OSSetInterruptHandler(8, __AISHandler);
-	__OSUnmaskInterrupts(0x800000);
+	__OSUnmaskInterrupts(OS_INTERRUPTMASK_AI);
+
+	// Set AI initialisation flag to TRUE
 	__AI_init_flag = TRUE;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00000C
+/**
+ * @note Address: N/A
+ * @note Size: 0xC
  */
 void AIReset(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800F6DE4
- * Size:	00007C
+/**
+ * @note Address: 0x800F6DE4
+ * @note Size: 0x7C
  */
 static void __AISHandler(s16 interrupt, OSContext* context)
 {
@@ -401,10 +442,9 @@ static void __AISHandler(s16 interrupt, OSContext* context)
 	OSSetCurrentContext(context);
 }
 
-/*
- * --INFO--
- * Address:	800F6E60
- * Size:	0000AC
+/**
+ * @note Address: 0x800F6E60
+ * @note Size: 0xAC
  */
 static void __AIDHandler(s16 interrupt, OSContext* context)
 {
@@ -428,48 +468,47 @@ static void __AIDHandler(s16 interrupt, OSContext* context)
 	OSSetCurrentContext(context);
 }
 
-/*
- * --INFO--
- * Address:	800F6F0C
- * Size:	000058
+/**
+ * @note Address: 0x800F6F0C
+ * @note Size: 0x58
  */
-// clang-format off
-asm static void __AICallbackStackSwitch(register AIDCallback cb) {
-  // Allocate stack frame
-  fralloc
+ASM static void __AICallbackStackSwitch(register AIDCallback cb)
+{
+#ifdef __MWERKS__ // clang-format off
+	// Allocate stack frame
+	fralloc
 
-  // Store current stack
-  lis r5, __OldStack@ha
-  addi r5, r5, __OldStack@l
-  stw r1, 0(r5)
+	// Store current stack
+	lis r5, __OldStack@ha
+	addi r5, r5, __OldStack@l
+	stw r1, 0(r5)
 
-  // Load stack for callback
-  lis r5, __CallbackStack@ha 
-  addi r5, r5, __CallbackStack@l 
-  lwz r1,0(r5)
+	// Load stack for callback
+	lis r5, __CallbackStack@ha
+	addi r5, r5, __CallbackStack@l
+	lwz r1,0(r5)
 
-  // Move stack down 8 bytes
-  subi r1, r1, 8
-  // Call callback
-  mtlr cb 
-  blrl
+	// Move stack down 8 bytes
+	subi r1, r1, 8
+	// Call callback
+	mtlr cb
+	blrl
 
-  // Restore old stack
-  lis r5, __OldStack @ha 
-  addi r5, r5, __OldStack@l 
-  lwz r1,0(r5)
+	// Restore old stack
+	lis r5, __OldStack @ha
+	addi r5, r5, __OldStack@l
+	lwz r1,0(r5)
 
-  // Free stack frame
-  frfree
+	// Free stack frame
+	frfree
 
-  blr
+	blr
+#endif // clang-format on
 }
-// clang-format on
 
-/*
- * --INFO--
- * Address:	800F6F64
- * Size:	0001E4
+/**
+ * @note Address: 0x800F6F64
+ * @note Size: 0x1E4
  */
 static void __AI_SRC_INIT(void)
 {
@@ -532,10 +571,9 @@ static void __AI_SRC_INIT(void)
 		;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void __ai_src_get_time(void)
 {

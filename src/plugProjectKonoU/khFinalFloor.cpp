@@ -13,10 +13,9 @@ static const char unused[] = "\0\0\0\0\0\0\0\0";
 namespace kh {
 namespace Screen {
 
-/*
- * --INFO--
- * Address:	80401D38
- * Size:	00021C
+/**
+ * @note Address: 0x80401D38
+ * @note Size: 0x21C
  */
 void ObjFinalFloor::doCreate(JKRArchive* arc)
 {
@@ -41,8 +40,9 @@ void ObjFinalFloor::doCreate(JKRArchive* arc)
 		// Load the animation files.
 		void* file = JKRFileLoader::getGlbResource("final_floor.bck", arc);
 		mAnim1[i]  = static_cast<J2DAnmTransform*>(J2DAnmLoaderDataBase::load(file));
-		file       = JKRFileLoader::getGlbResource("final_floor.bpk", arc);
-		mAnim2[i]  = static_cast<J2DAnmColor*>(J2DAnmLoaderDataBase::load(file));
+
+		file      = JKRFileLoader::getGlbResource("final_floor.bpk", arc);
+		mAnim2[i] = static_cast<J2DAnmColor*>(J2DAnmLoaderDataBase::load(file));
 
 		// Set the animations for the screen manager.
 		mScreen[i]->setAnimation(mAnim1[i]);
@@ -53,17 +53,15 @@ void ObjFinalFloor::doCreate(JKRArchive* arc)
 	startBGM();
 }
 
-/*
- * --INFO--
- * Address:	80401F54
- * Size:	000020
+/**
+ * @note Address: 0x80401F54
+ * @note Size: 0x20
  */
 bool ObjFinalFloor::doUpdate() { return updateAnimation(); }
 
-/*
- * --INFO--
- * Address:	80401F74
- * Size:	0000DC
+/**
+ * @note Address: 0x80401F74
+ * @note Size: 0xDC
  */
 void ObjFinalFloor::doDraw(Graphics& gfx)
 {
@@ -75,10 +73,9 @@ void ObjFinalFloor::doDraw(Graphics& gfx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80402050
- * Size:	000038
+/**
+ * @note Address: 0x80402050
+ * @note Size: 0x38
  */
 bool ObjFinalFloor::doUpdateFadein()
 {
@@ -86,10 +83,9 @@ bool ObjFinalFloor::doUpdateFadein()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80402088
- * Size:	0001F8
+/**
+ * @note Address: 0x80402088
+ * @note Size: 0x1F8
  */
 bool ObjFinalFloor::doUpdateFadeout()
 {
@@ -126,17 +122,15 @@ bool ObjFinalFloor::doUpdateFadeout()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80402280
- * Size:	000034
+/**
+ * @note Address: 0x80402280
+ * @note Size: 0x34
  */
 void ObjFinalFloor::doUpdateFadeoutFinish() { Game::gameSystem->mSection->startMainBgm(); }
 
-/*
- * --INFO--
- * Address:	804022B4
- * Size:	0001C8
+/**
+ * @note Address: 0x804022B4
+ * @note Size: 0x1C8
  */
 bool ObjFinalFloor::updateAnimation()
 {
@@ -150,7 +144,7 @@ bool ObjFinalFloor::updateAnimation()
 		mScreen[i]->animation();
 
 		// Check if the game is in demo mode
-		if (::Screen::gGame2DMgr && ::Screen::gGame2DMgr->mScreenMgr->mInDemo) {
+		if (::Screen::gGame2DMgr && static_cast<newScreen::Mgr*>(::Screen::gGame2DMgr->mScreenMgr)->mInDemo) {
 			mScreen[i]->hide();
 
 			// Reset animation if current frame is >75% of the length.
@@ -177,10 +171,9 @@ bool ObjFinalFloor::updateAnimation()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	8040247C
- * Size:	000040
+/**
+ * @note Address: 0x8040247C
+ * @note Size: 0x40
  */
 void ObjFinalFloor::stopSound()
 {
@@ -190,10 +183,9 @@ void ObjFinalFloor::stopSound()
 	PSStop2DStream();
 }
 
-/*
- * --INFO--
- * Address:	804024BC
- * Size:	00015C
+/**
+ * @note Address: 0x804024BC
+ * @note Size: 0x15C
  */
 void ObjFinalFloor::restartSound()
 {
@@ -203,10 +195,9 @@ void ObjFinalFloor::restartSound()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80402618
- * Size:	000040
+/**
+ * @note Address: 0x80402618
+ * @note Size: 0x40
  */
 bool SceneFinalFloor::doConfirmSetScene(::Screen::SetSceneArg& arg) { return arg.getSceneType() != SCENE_PAUSE_MENU; }
 

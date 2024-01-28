@@ -9,56 +9,13 @@
 #include "JSystem/JAudio/JAS/JASWave.h"
 #include "JSystem/JKernel/JKRDvdAramRipper.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
-#include "types.h"
-
-/*
-    Generated from dpostproc
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global sCurrentDir__16JASWaveArcLoader
-    sCurrentDir__16JASWaveArcLoader:
-        .4byte 0x2F42616E
-        .4byte 0x6B732F00
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-    .global __vt__10JASWaveArc
-    __vt__10JASWaveArc:
-        .4byte 0
-        .4byte 0
-        .4byte onDispose__10JASWaveArcFv
-        .4byte onLoadDone__10JASWaveArcFv
-        .4byte onEraseDone__10JASWaveArcFv
-    .global __vt__11JASDisposer
-    __vt__11JASDisposer:
-        .4byte 0
-        .4byte 0
-        .4byte onDispose__11JASDisposerFv
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global sAramHeap__16JASWaveArcLoader
-    sAramHeap__16JASWaveArcLoader:
-        .skip 0x8
-*/
 
 char JASWaveArcLoader::sCurrentDir[0x40] = "/Banks/";
 JASHeap* JASWaveArcLoader::sAramHeap;
 
-/*
- * --INFO--
- * Address:	8009BA08
- * Size:	00002C
+/**
+ * @note Address: 0x8009BA08
+ * @note Size: 0x2C
  */
 void JASWaveArcLoader::init(JASHeap* heap)
 {
@@ -68,10 +25,9 @@ void JASWaveArcLoader::init(JASHeap* heap)
 	sAramHeap = heap;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 JASHeap* JASWaveArcLoader::getRootHeap()
 {
@@ -79,10 +35,9 @@ JASHeap* JASWaveArcLoader::getRootHeap()
 	return sAramHeap;
 }
 
-/*
- * --INFO--
- * Address:	8009BA34
- * Size:	000060
+/**
+ * @note Address: 0x8009BA34
+ * @note Size: 0x60
  */
 void JASWaveArcLoader::setCurrentDir(const char* path)
 {
@@ -94,10 +49,9 @@ void JASWaveArcLoader::setCurrentDir(const char* path)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00000C
+/**
+ * @note Address: N/A
+ * @note Size: 0xC
  */
 const char* JASWaveArcLoader::getCurrentDir()
 {
@@ -105,10 +59,9 @@ const char* JASWaveArcLoader::getCurrentDir()
 	return sCurrentDir;
 }
 
-/*
- * --INFO--
- * Address:	8009BA94
- * Size:	00006C
+/**
+ * @note Address: 0x8009BA94
+ * @note Size: 0x6C
  * __ct__10JASWaveArcFv
  */
 JASWaveArc::JASWaveArc()
@@ -122,20 +75,11 @@ JASWaveArc::JASWaveArc()
 {
 }
 
-/*
- * --INFO--
- * Address:	8009BB00
- * Size:	000078
- * __dt__7JASHeapFv
+/**
+ * @note Address: N/A
+ * @note Size: 0x84
  */
-// JASHeap::~JASHeap() { }
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000084
- */
-bool JASWaveArc::loadSetup(unsigned long p1)
+bool JASWaveArc::loadSetup(u32 p1)
 {
 	// UNUSED FUNCTION
 	JASCriticalSection criticalSection;
@@ -150,10 +94,9 @@ bool JASWaveArc::loadSetup(unsigned long p1)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
 bool JASWaveArc::eraseSetup()
 {
@@ -171,10 +114,9 @@ bool JASWaveArc::eraseSetup()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	8009BB78
- * Size:	0000C8
+/**
+ * @note Address: 0x8009BB78
+ * @note Size: 0xC8
  */
 void JASWaveArc::loadToAramCallback(void* args)
 {
@@ -188,10 +130,9 @@ void JASWaveArc::loadToAramCallback(void* args)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000A8
+/**
+ * @note Address: N/A
+ * @note Size: 0xA8
  */
 bool JASWaveArc::sendLoadCmd()
 {
@@ -202,7 +143,7 @@ bool JASWaveArc::sendLoadCmd()
 	LoadToAramCallbackArgs args;
 	args.mArc        = this;
 	args.mFileNumber = mFileNumber;
-	args._08         = mHeap._38;
+	args._08         = mHeap.mBase;
 	args._0C         = ++_58;
 	if (JASDvd::getThreadPointer()->sendCmdMsg(loadToAramCallback, &args, 0x10) == false) {
 		mHeap.free();
@@ -211,20 +152,18 @@ bool JASWaveArc::sendLoadCmd()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000128
+/**
+ * @note Address: N/A
+ * @note Size: 0x128
  */
 void JASWaveArc::execLoad()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8009BC40
- * Size:	000128
+/**
+ * @note Address: 0x8009BC40
+ * @note Size: 0x128
  * load__10JASWaveArcFP7JASHeap
  */
 bool JASWaveArc::load(JASHeap* fileHeap)
@@ -245,10 +184,9 @@ bool JASWaveArc::load(JASHeap* fileHeap)
 	return sendLoadCmd();
 }
 
-/*
- * --INFO--
- * Address:	8009BD68
- * Size:	000128
+/**
+ * @note Address: 0x8009BD68
+ * @note Size: 0x128
  * loadTail__10JASWaveArcFP7JASHeap
  */
 bool JASWaveArc::loadTail(JASHeap* fileHeap)
@@ -269,10 +207,9 @@ bool JASWaveArc::loadTail(JASHeap* fileHeap)
 	return sendLoadCmd();
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00019C
+/**
+ * @note Address: N/A
+ * @note Size: 0x19C
  */
 bool JASWaveArc::loadBlock(JASHeap*)
 {
@@ -280,10 +217,9 @@ bool JASWaveArc::loadBlock(JASHeap*)
 	return false; // fake
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00019C
+/**
+ * @note Address: N/A
+ * @note Size: 0x19C
  */
 bool JASWaveArc::loadBlockTail(JASHeap*)
 {
@@ -291,18 +227,16 @@ bool JASWaveArc::loadBlockTail(JASHeap*)
 	return false; // fake
 }
 
-/*
- * --INFO--
- * Address:	8009BE90
- * Size:	000024
+/**
+ * @note Address: 0x8009BE90
+ * @note Size: 0x24
  * erase__10JASWaveArcFv
  */
 bool JASWaveArc::erase() { return mHeap.free(); }
 
-/*
- * --INFO--
- * Address:	8009BEB4
- * Size:	000094
+/**
+ * @note Address: 0x8009BEB4
+ * @note Size: 0x94
  * onDispose__10JASWaveArcFv
  */
 void JASWaveArc::onDispose()
@@ -312,12 +246,11 @@ void JASWaveArc::onDispose()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000060
+/**
+ * @note Address: N/A
+ * @note Size: 0x60
  */
-void JASWaveArc::setEntryNum(long entryNum)
+void JASWaveArc::setEntryNum(s32 entryNum)
 {
 	// UNUSED FUNCTION
 	DVDFileInfo player;
@@ -332,10 +265,9 @@ void JASWaveArc::setEntryNum(long entryNum)
 	mFileNumber = entryNum;
 }
 
-/*
- * --INFO--
- * Address:	8009BF48
- * Size:	0000E4
+/**
+ * @note Address: 0x8009BF48
+ * @note Size: 0xE4
  */
 void JASWaveArc::setFileName(const char* fileName)
 {
@@ -346,16 +278,9 @@ void JASWaveArc::setFileName(const char* fileName)
 	strcpy(buffer, JASWaveArcLoader::sCurrentDir);
 	strcat(buffer, fileName);
 	buffer[length] = '\0';
-	long entryNum  = DVDConvertPathToEntrynum(buffer);
+	s32 entryNum   = DVDConvertPathToEntrynum(buffer);
 	delete[] buffer;
 	if (0 <= entryNum) {
 		setEntryNum(entryNum);
 	}
 }
-
-/*
- * --INFO--
- * Address:	8009C02C
- * Size:	000004
- */
-// void JASDisposer::onDispose() { }

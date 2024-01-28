@@ -8,10 +8,9 @@
 namespace Game {
 namespace Miulin {
 
-/*
- * --INFO--
- * Address:	80362618
- * Size:	000150
+/**
+ * @note Address: 0x80362618
+ * @note Size: 0x150
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -26,10 +25,9 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateDead(MIULIN_Dead));
 }
 
-/*
- * --INFO--
- * Address:	80362768
- * Size:	00003C
+/**
+ * @note Address: 0x80362768
+ * @note Size: 0x3C
  */
 StateWait::StateWait(int stateID)
     : State(stateID)
@@ -37,51 +35,50 @@ StateWait::StateWait(int stateID)
 	mName = "wait";
 }
 
-/*
- * --INFO--
- * Address:	803627A4
- * Size:	00008C
+/**
+ * @note Address: 0x803627A4
+ * @note Size: 0x8C
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->startMotion(7, nullptr);
+	enemy->startMotion(MIULINANIM_Wait, nullptr);
 	enemy->stopMotion();
 	enemy->mTargetVelocity  = Vector3f(0.0f);
 	enemy->mCurrentVelocity = Vector3f(0.0f);
 	enemy->setEmotionCaution();
 	enemy->hardConstraintOn();
-	static_cast<Obj*>(enemy)->_2E4 = false;
+	OBJ(enemy)->mIsSearching = false;
 	enemy->disableEvent(0, EB_LifegaugeVisible);
 	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
 }
 
-/*
- * --INFO--
- * Address:	80362830
- * Size:	000118
+/**
+ * @note Address: 0x80362830
+ * @note Size: 0x118
  */
 void StateWait::exec(EnemyBase* enemy)
 {
-	if (static_cast<Obj*>(enemy)->isStartWalk()) {
-		if (enemy->mHealth <= 0.0f) {
-			transit(enemy, MIULIN_Dead, nullptr);
-		} else if (static_cast<Obj*>(enemy)->isAttackStart()) {
-			transit(enemy, MIULIN_AttackStart, nullptr);
-		} else if (static_cast<Obj*>(enemy)->nextTargetTurnCheck()) {
-			transit(enemy, MIULIN_Turn, nullptr);
-		} else {
-			transit(enemy, MIULIN_Walk, nullptr);
-		}
-
-		enemy->hardConstraintOff();
-		enemy->enableEvent(0, EB_LifegaugeVisible);
+	if (!OBJ(enemy)->isStartWalk()) {
+		return;
 	}
+
+	if (enemy->mHealth <= 0.0f) {
+		transit(enemy, MIULIN_Dead, nullptr);
+	} else if (OBJ(enemy)->isAttackStart()) {
+		transit(enemy, MIULIN_AttackStart, nullptr);
+	} else if (OBJ(enemy)->nextTargetTurnCheck()) {
+		transit(enemy, MIULIN_Turn, nullptr);
+	} else {
+		transit(enemy, MIULIN_Walk, nullptr);
+	}
+
+	enemy->hardConstraintOff();
+	enemy->enableEvent(0, EB_LifegaugeVisible);
 }
 
-/*
- * --INFO--
- * Address:	80362948
- * Size:	00003C
+/**
+ * @note Address: 0x80362948
+ * @note Size: 0x3C
  */
 StateWalk::StateWalk(int stateID)
     : State(stateID)
@@ -89,51 +86,53 @@ StateWalk::StateWalk(int stateID)
 	mName = "walk";
 }
 
-/*
- * --INFO--
- * Address:	80362984
- * Size:	00016C
+/**
+ * @note Address: 0x80362984
+ * @note Size: 0x16C
  */
 void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
+
 	OBJ(enemy)->mNextState = MIULIN_NULL;
-	enemy->startMotion(5, nullptr);
-	_14 = 0;
+	enemy->startMotion(MIULINANIM_Move, nullptr);
+	mTurnTimer = 0;
+
 	if (enemy->mTargetCreature) {
-		_10                = 0;
+		mReturnTimer = 0;
+
 		Vector3f targetPos = enemy->mTargetCreature->getPosition();
 		Vector3f pos       = enemy->getPosition();
 
-		f32 angle = angDist(angXZ(targetPos.x, targetPos.z, pos), enemy->getFaceDir());
-		if (FABS(angle) > 3.0f * (PI * (DEG2RAD * CG_PROPERPARMS(OBJ(enemy)).mFp06.mValue))) {
+		f32 angleToTarget = angDist(angXZ(targetPos.x, targetPos.z, pos), enemy->getFaceDir());
+		if (FABS(angleToTarget) > 3.0f * (PI * (DEG2RAD * CG_PROPERPARMS(OBJ(enemy)).mMaxTurnAngle.mValue))) {
 			transit(enemy, MIULIN_Turn, nullptr);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	80362AF0
- * Size:	000364
+/**
+ * @note Address: 0x80362AF0
+ * @note Size: 0x364
  */
 void StateWalk::exec(EnemyBase* enemy)
 {
-	if (OBJ(enemy)->mNextState < 0) {
-		_14++;
+	if (OBJ(enemy)->mNextState < MIULIN_Wait) {
+		mTurnTimer++;
 		OBJ(enemy)->walkFunc();
-		if (OBJ(enemy)->_2E4) {
+
+		if (OBJ(enemy)->mIsSearching) {
 			OBJ(enemy)->turnFunc(1.0f);
 		}
 
-		if (!OBJ(enemy)->_2E4 && (OBJ(enemy)->isOutOfTerritory() || _10 > CG_PROPERPARMS(OBJ(enemy)).mIp01.mValue)) {
+		if (!OBJ(enemy)->mIsSearching && (OBJ(enemy)->isOutOfTerritory() || mReturnTimer > CG_PROPERPARMS(OBJ(enemy)).mReturnTime.mValue)) {
 			OBJ(enemy)->setReturnState();
 			enemy->finishMotion();
 			OBJ(enemy)->mNextState = MIULIN_Turn;
-			_10                    = 0;
+			mReturnTimer           = 0;
 
 		} else if (OBJ(enemy)->isReachToGoal(10.0f)) {
-			if (OBJ(enemy)->_2E4) {
+			if (OBJ(enemy)->mIsSearching) {
 				enemy->finishMotion();
 				OBJ(enemy)->mNextState = MIULIN_Wait;
 
@@ -141,12 +140,12 @@ void StateWalk::exec(EnemyBase* enemy)
 				enemy->finishMotion();
 				OBJ(enemy)->mNextState = MIULIN_Turn;
 			}
-		} else if (_14 > 30) {
+		} else if (mTurnTimer > 30) {
 			f32 x;
 			f32 z;
 			Creature* creature = enemy->mTargetCreature;
 			if (creature) {
-				_10                  = 0;
+				mReturnTimer         = 0;
 				Vector3f creaturePos = creature->getPosition();
 				x                    = creaturePos.x;
 				z                    = creaturePos.z;
@@ -156,12 +155,12 @@ void StateWalk::exec(EnemyBase* enemy)
 					x                = goalPos.x;
 					z                = goalPos.z;
 				}
-				_10++;
+				mReturnTimer++;
 			}
 
 			Vector3f pos = enemy->getPosition();
 			f32 angle    = angDist(angXZ(x, z, pos), enemy->getFaceDir());
-			if (FABS(angle) > 3.0f * (PI * (DEG2RAD * CG_PROPERPARMS(OBJ(enemy)).mFp06.mValue))) {
+			if (FABS(angle) > 3.0f * (PI * (DEG2RAD * CG_PROPERPARMS(OBJ(enemy)).mMaxTurnAngle.mValue))) {
 				enemy->finishMotion();
 				OBJ(enemy)->mNextState = MIULIN_Turn;
 			}
@@ -194,10 +193,9 @@ void StateWalk::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80362E54
- * Size:	000040
+/**
+ * @note Address: 0x80362E54
+ * @note Size: 0x40
  */
 StateAttackStart::StateAttackStart(int stateID)
     : State(stateID)
@@ -205,22 +203,20 @@ StateAttackStart::StateAttackStart(int stateID)
 	mName = "attackstart";
 }
 
-/*
- * --INFO--
- * Address:	80362E94
- * Size:	00004C
+/**
+ * @note Address: 0x80362E94
+ * @note Size: 0x4C
  */
 void StateAttackStart::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
-	enemy->startMotion(0, nullptr);
+	enemy->startMotion(MIULINANIM_AttackStart, nullptr);
 	enemy->setEmotionExcitement();
 }
 
-/*
- * --INFO--
- * Address:	80362EE0
- * Size:	000050
+/**
+ * @note Address: 0x80362EE0
+ * @note Size: 0x50
  */
 void StateAttackStart::exec(EnemyBase* enemy)
 {
@@ -229,10 +225,9 @@ void StateAttackStart::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80362F30
- * Size:	000040
+/**
+ * @note Address: 0x80362F30
+ * @note Size: 0x40
  */
 StateAttacking::StateAttacking(int stateID)
     : State(stateID)
@@ -240,26 +235,24 @@ StateAttacking::StateAttacking(int stateID)
 	mName = "attackind"; // thanks devs
 }
 
-/*
- * --INFO--
- * Address:	80362F70
- * Size:	000058
+/**
+ * @note Address: 0x80362F70
+ * @note Size: 0x58
  */
 void StateAttacking::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
-	enemy->startMotion(1, nullptr);
-	_10 = 1;
+	enemy->startMotion(MIULINANIM_Attacking, nullptr);
+	mIsTransitioning = true;
 }
 
-/*
- * --INFO--
- * Address:	80362FC8
- * Size:	00082C
+/**
+ * @note Address: 0x80362FC8
+ * @note Size: 0x82C
  */
 void StateAttacking::exec(EnemyBase* enemy)
 {
-	if (_10) {
+	if (mIsTransitioning) {
 		OBJ(enemy)->turnFunc(0.5f);
 	}
 
@@ -269,33 +262,35 @@ void StateAttacking::exec(EnemyBase* enemy)
 	if (enemy->mCurAnim->mIsPlaying) {
 		switch (enemy->mCurAnim->mType) {
 		case KEYEVENT_2:
-			_10             = 0;
-			pos             = enemy->getPosition();
-			const f32 theta = enemy->getFaceDir();
-			f32 weight      = CG_PROPERPARMS(OBJ(enemy)).mFp08.mValue;
-			effectPos       = Vector3f(weight * pikmin2_sinf(theta), 0.0f, weight * pikmin2_cosf(theta));
-			pos.x += effectPos.x;
-			pos.y += effectPos.y;
-			pos.z += effectPos.z;
+			mIsTransitioning = false;
+			pos              = enemy->getPosition();
+			const f32 theta  = enemy->getFaceDir();
+
+			f32 weight = CG_PROPERPARMS(OBJ(enemy)).mMinAttackRange.mValue;
+			effectPos  = Vector3f(weight * sinf(theta), 0.0f, weight * cosf(theta));
+			pos += effectPos;
 
 			f32 maxY   = 20.0f + pos.y;
 			f32 minY   = pos.y - 20.0f;
-			f32 radius = SQUARE(CG_PARMS(enemy)->mGeneral.mAttackRadius.mValue);
+			f32 radius = SQUARE(CG_GENERALPARMS(enemy).mAttackRadius.mValue);
 
 			Iterator<Piki> iterPiki(pikiMgr);
 
 			CI_LOOP(iterPiki)
 			{
 				Piki* piki = *iterPiki;
-				if (piki->isAlive() && piki->mSticker != enemy) {
-					Vector3f pikiPos = piki->getPosition();
-					if (maxY > pikiPos.y && minY < pikiPos.y && sqrDistanceXZ(pos, pikiPos) < radius) {
-						if (enemy->mTargetCreature == piki) {
-							enemy->mTargetCreature = nullptr;
-						}
-						InteractBury bury(enemy, 0.0f);
-						piki->stimulate(bury);
+				if (!piki->isAlive() || piki->mSticker == enemy) {
+					continue;
+				}
+
+				Vector3f pikiPos = piki->getPosition();
+				if (maxY > pikiPos.y && minY < pikiPos.y && sqrDistanceXZ(pos, pikiPos) < radius) {
+					if (enemy->mTargetCreature == piki) {
+						enemy->mTargetCreature = nullptr;
 					}
+
+					InteractBury bury(enemy, 0.0f);
+					piki->stimulate(bury);
 				}
 			}
 
@@ -304,37 +299,40 @@ void StateAttacking::exec(EnemyBase* enemy)
 			CI_LOOP(iterNavi)
 			{
 				Navi* navi = *iterNavi;
-				if (navi->isAlive()) {
-					Vector3f naviPos = navi->getPosition();
-					if (maxY > naviPos.y && minY < naviPos.y && sqrDistanceXZ(pos, naviPos) < radius) {
-						if (enemy->mTargetCreature == navi) {
-							enemy->mTargetCreature = nullptr;
-						}
-						InteractBury bury(enemy, 5.0f);
-						navi->stimulate(bury);
+				if (!navi->isAlive()) {
+					continue;
+				}
+
+				Vector3f naviPos = navi->getPosition();
+				if (maxY > naviPos.y && minY < naviPos.y && sqrDistanceXZ(pos, naviPos) < radius) {
+					if (enemy->mTargetCreature == navi) {
+						enemy->mTargetCreature = nullptr;
 					}
+
+					InteractBury bury(enemy, 5.0f);
+					navi->stimulate(bury);
 				}
 			}
 
-			f32 rate      = CG_PARMS(enemy)->mGeneral.mShakeRateMaybe.mValue;
-			f32 knockback = CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue;
-			f32 damage    = CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue;
-			f32 range     = CG_PARMS(enemy)->mGeneral.mShakeRange.mValue;
+			f32 chance    = CG_GENERALPARMS(enemy).mShakeChance.mValue;
+			f32 knockback = CG_GENERALPARMS(enemy).mShakeKnockback.mValue;
+			f32 damage    = CG_GENERALPARMS(enemy).mShakeDamage.mValue;
+			f32 range     = CG_GENERALPARMS(enemy).mShakeRange.mValue;
 
-			EnemyFunc::flickNearbyPikmin(enemy, range, knockback, damage, -1000.0f, nullptr);
-			EnemyFunc::flickStickPikmin(enemy, rate, knockback, damage, -1000.0f, nullptr);
-			EnemyFunc::flickNearbyNavi(enemy, range, knockback, damage, -1000.0f, nullptr);
+			EnemyFunc::flickNearbyPikmin(enemy, range, knockback, damage, FLICK_BACKWARD_ANGLE, nullptr);
+			EnemyFunc::flickStickPikmin(enemy, chance, knockback, damage, FLICK_BACKWARD_ANGLE, nullptr);
+			EnemyFunc::flickNearbyNavi(enemy, range, knockback, damage, FLICK_BACKWARD_ANGLE, nullptr);
 
-			enemy->mToFlick = 0.0f;
-			effectPos       = Vector3f(-20.0f, 0.0f, 31.0f);
+			enemy->mFlickTimer = 0.0f;
+			effectPos          = Vector3f(-20.0f, 0.0f, 31.0f);
 			OBJ(enemy)->attackEffect(effectPos);
-			rumbleMgr->startRumble(12, pos, 2);
+			rumbleMgr->startRumble(12, pos, RUMBLEID_Both);
 			break;
 
 		case KEYEVENT_3:
 			effectPos = Vector3f(11.0f, 0.0f, 56.0f);
 			OBJ(enemy)->attackEffect(effectPos);
-			rumbleMgr->startRumble(12, pos, 2);
+			rumbleMgr->startRumble(12, pos, RUMBLEID_Both);
 			break;
 
 		case KEYEVENT_END:
@@ -349,10 +347,9 @@ void StateAttacking::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803637F4
- * Size:	000040
+/**
+ * @note Address: 0x803637F4
+ * @note Size: 0x40
  */
 StateAttackEnd::StateAttackEnd(int stateID)
     : State(stateID)
@@ -360,40 +357,38 @@ StateAttackEnd::StateAttackEnd(int stateID)
 	mName = "attackend";
 }
 
-/*
- * --INFO--
- * Address:	80363834
- * Size:	000054
+/**
+ * @note Address: 0x80363834
+ * @note Size: 0x54
  */
 void StateAttackEnd::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
-	enemy->startMotion(2, nullptr);
-	static_cast<Obj*>(enemy)->mNextState = MIULIN_Turn;
+	enemy->startMotion(MIULINANIM_AttackEnd, nullptr);
+	OBJ(enemy)->mNextState = MIULIN_Turn;
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	80363888
- * Size:	0000AC
+/**
+ * @note Address: 0x80363888
+ * @note Size: 0xAC
  */
 void StateAttackEnd::exec(EnemyBase* enemy)
 {
 	if (enemy->mHealth <= 0.0f) {
-		static_cast<Obj*>(enemy)->mNextState = MIULIN_Dead;
+		OBJ(enemy)->mNextState = MIULIN_Dead;
 	} else if (EnemyFunc::isStartFlick(enemy, false)) {
-		static_cast<Obj*>(enemy)->mNextState = MIULIN_Flick;
+		OBJ(enemy)->mNextState = MIULIN_Flick;
 	}
+
 	if (enemy->mCurAnim->mIsPlaying && (u32)enemy->mCurAnim->mType == KEYEVENT_END) {
-		transit(enemy, static_cast<Obj*>(enemy)->mNextState, nullptr);
+		transit(enemy, OBJ(enemy)->mNextState, nullptr);
 	}
 }
 
-/*
- * --INFO--
- * Address:	80363934
- * Size:	00003C
+/**
+ * @note Address: 0x80363934
+ * @note Size: 0x3C
  */
 StateTurn::StateTurn(int stateID)
     : State(stateID)
@@ -401,10 +396,9 @@ StateTurn::StateTurn(int stateID)
 	mName = "turn";
 }
 
-/*
- * --INFO--
- * Address:	80363970
- * Size:	0000F4
+/**
+ * @note Address: 0x80363970
+ * @note Size: 0xF4
  */
 void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -413,24 +407,23 @@ void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 		OBJ(enemy)->setNextGoal();
 	}
 
-	f32 maxAngle = (PI * (DEG2RAD * CG_PROPERPARMS(OBJ(enemy)).mFp06.mValue));
-	if (OBJ(enemy)->_2E4) {
+	f32 maxAngle = (PI * (DEG2RAD * CG_PROPERPARMS(OBJ(enemy)).mMaxTurnAngle.mValue));
+	if (OBJ(enemy)->mIsSearching) {
 		maxAngle = 0.01f;
 	}
 
 	if (OBJ(enemy)->turnFunc(1.0f) < maxAngle) {
 		transit(enemy, MIULIN_Walk, nullptr);
 	} else {
-		enemy->startMotion(8, nullptr);
+		enemy->startMotion(MIULINANIM_Turn, nullptr);
 		enemy->mTargetVelocity  = Vector3f(0.0f);
 		enemy->mCurrentVelocity = Vector3f(0.0f);
 	}
 }
 
-/*
- * --INFO--
- * Address:	80363A64
- * Size:	000178
+/**
+ * @note Address: 0x80363A64
+ * @note Size: 0x178
  */
 void StateTurn::exec(EnemyBase* enemy)
 {
@@ -453,7 +446,7 @@ void StateTurn::exec(EnemyBase* enemy)
 			OBJ(enemy)->isFindTarget();
 		}
 
-		if (OBJ(enemy)->turnFunc(1.0f) < (PI * (DEG2RAD * CG_PROPERPARMS(OBJ(enemy)).mFp06.mValue))) {
+		if (OBJ(enemy)->turnFunc(1.0f) < (PI * (DEG2RAD * CG_PROPERPARMS(OBJ(enemy)).mMaxTurnAngle.mValue))) {
 			enemy->finishMotion();
 			OBJ(enemy)->mNextState = MIULIN_Walk;
 		}
@@ -465,10 +458,9 @@ void StateTurn::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80363BDC
- * Size:	00003C
+/**
+ * @note Address: 0x80363BDC
+ * @note Size: 0x3C
  */
 StateFlick::StateFlick(int stateID)
     : State(stateID)
@@ -476,56 +468,55 @@ StateFlick::StateFlick(int stateID)
 	mName = "flick";
 }
 
-/*
- * --INFO--
- * Address:	80363C18
- * Size:	00004C
+/**
+ * @note Address: 0x80363C18
+ * @note Size: 0x4C
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
-	enemy->startMotion(4, nullptr);
+	enemy->startMotion(MIULINANIM_Flick, nullptr);
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	80363C64
- * Size:	000190
+/**
+ * @note Address: 0x80363C64
+ * @note Size: 0x190
  */
 void StateFlick::exec(EnemyBase* enemy)
 {
-	if (enemy->mCurAnim->mIsPlaying) {
-		if (enemy->mCurAnim->mType == KEYEVENT_3) {
-			f32 rate      = CG_PARMS(enemy)->mGeneral.mShakeRateMaybe.mValue;
-			f32 knockback = CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue;
-			f32 damage    = CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue;
-			f32 range     = CG_PARMS(enemy)->mGeneral.mShakeRange.mValue;
+	if (!enemy->mCurAnim->mIsPlaying) {
+		return;
+	}
 
-			EnemyFunc::flickNearbyPikmin(enemy, range, knockback, damage, -1000.0f, nullptr);
-			EnemyFunc::flickStickPikmin(enemy, rate, knockback, damage, -1000.0f, nullptr);
-			EnemyFunc::flickNearbyNavi(enemy, range, knockback, damage, -1000.0f, nullptr);
+	if (enemy->mCurAnim->mType == KEYEVENT_3) {
+		f32 rate      = CG_GENERALPARMS(enemy).mShakeChance.mValue;
+		f32 knockback = CG_GENERALPARMS(enemy).mShakeKnockback.mValue;
+		f32 damage    = CG_GENERALPARMS(enemy).mShakeDamage.mValue;
+		f32 range     = CG_GENERALPARMS(enemy).mShakeRange.mValue;
 
-			enemy->mToFlick = 0.0f;
+		EnemyFunc::flickNearbyPikmin(enemy, range, knockback, damage, FLICK_BACKWARD_ANGLE, nullptr);
+		EnemyFunc::flickStickPikmin(enemy, rate, knockback, damage, FLICK_BACKWARD_ANGLE, nullptr);
+		EnemyFunc::flickNearbyNavi(enemy, range, knockback, damage, FLICK_BACKWARD_ANGLE, nullptr);
 
-		} else if (enemy->mCurAnim->mType == KEYEVENT_END) {
-			if (enemy->mHealth <= 0.0f) {
-				transit(enemy, MIULIN_Dead, nullptr);
+		enemy->mFlickTimer = 0.0f;
 
-			} else if (OBJ(enemy)->isAttackStart()) {
-				transit(enemy, MIULIN_AttackStart, nullptr);
+	} else if (enemy->mCurAnim->mType == KEYEVENT_END) {
+		if (enemy->mHealth <= 0.0f) {
+			transit(enemy, MIULIN_Dead, nullptr);
 
-			} else {
-				transit(enemy, MIULIN_Turn, nullptr);
-			}
+		} else if (OBJ(enemy)->isAttackStart()) {
+			transit(enemy, MIULIN_AttackStart, nullptr);
+
+		} else {
+			transit(enemy, MIULIN_Turn, nullptr);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	80363DF4
- * Size:	00003C
+/**
+ * @note Address: 0x80363DF4
+ * @note Size: 0x3C
  */
 StateDead::StateDead(int stateID)
     : State(stateID)
@@ -533,30 +524,28 @@ StateDead::StateDead(int stateID)
 	mName = "dead";
 }
 
-/*
- * --INFO--
- * Address:	80363E30
- * Size:	000054
+/**
+ * @note Address: 0x80363E30
+ * @note Size: 0x54
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
-	enemy->startMotion(3, nullptr);
+	enemy->startMotion(MIULINANIM_Dead, nullptr);
 	enemy->setEmotionCaution();
 	enemy->deathProcedure();
 }
 
-/*
- * --INFO--
- * Address:	80363E84
- * Size:	000060
+/**
+ * @note Address: 0x80363E84
+ * @note Size: 0x60
  */
 void StateDead::exec(EnemyBase* enemy)
 {
 	if (enemy->mCurAnim->mIsPlaying) {
 		switch (enemy->mCurAnim->mType) {
 		case KEYEVENT_2:
-			static_cast<Obj*>(enemy)->landEffect();
+			OBJ(enemy)->landEffect();
 			break;
 
 		case KEYEVENT_END:

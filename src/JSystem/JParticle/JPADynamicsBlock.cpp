@@ -43,17 +43,18 @@
         .4byte 0x00000000
 */
 
-/*
- * --INFO--
- * Address:	8008EFD0
- * Size:	0000DC
+/**
+ * @note Address: 0x8008EFD0
+ * @note Size: 0xDC
  */
 void JPAVolumePoint(JPAEmitterWorkData* workData)
 {
-	workData->_10 = JGeometry::TVec3f(0.0f, 0.0f, 0.0f);
-	workData->_1C = JGeometry::TVec3f(workData->mEmitter->mRng.nextFloat_0_1() - 0.5f, workData->mEmitter->mRng.nextFloat_0_1() - 0.5f,
-	                                  workData->mEmitter->mRng.nextFloat_0_1() - 0.5f);
-	workData->_28 = JGeometry::TVec3f(workData->_1C.x, 0.0f, workData->_1C.z);
+	workData->mVolumePos.set(0.0f, 0.0f, 0.0f);
+	workData->mVelOmni.x = workData->mEmitter->mRandom.nextFloat_0_1() - 0.5f;
+	workData->mVelOmni.y = workData->mEmitter->mRandom.nextFloat_0_1() - 0.5f;
+	workData->mVelOmni.z = workData->mEmitter->mRandom.nextFloat_0_1() - 0.5f;
+
+	workData->mVelAxis = workData->mVelOmni;
 	/*
 	stwu     r1, -0x20(r1)
 	lis      r4, 0x0019660D@ha
@@ -113,22 +114,30 @@ void JPAVolumePoint(JPAEmitterWorkData* workData)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8008F0AC
- * Size:	00011C
+/**
+ * @note Address: 0x8008F0AC
+ * @note Size: 0x11C
  */
 void JPAVolumeLine(JPAEmitterWorkData* workData)
 {
-	if (workData->mEmitter->mResource->_2C->castData()->_08 & 2) {
-		workData->_10
-		    = JGeometry::TVec3f(0.0f, 0.0f, workData->_34 * ((float)workData->_44 / ((float)workData->mCreateNumber - 1.0f) - 0.5f));
-		workData->_44++;
+	if (workData->mEmitter->mResource->mDynamicsBlock->castData()->mFlags & 2) {
+		workData->mVolumePos.x = 0.0f;
+		workData->mVolumePos.y = 0.0f;
+		workData->mVolumePos.z = workData->mVolumeSize * ((f32)workData->mVolumeEmitIdx / ((f32)workData->mCreateNumber - 1.0f) - 0.5f);
+		workData->mVolumeEmitIdx++;
 	} else {
-		workData->_10 = JGeometry::TVec3f(0.0f, 0.0f, workData->_34 * (workData->mEmitter->mRng.nextFloat_0_1() - 0.5f));
+		workData->mVolumePos.x = 0.0f;
+		workData->mVolumePos.y = 0.0f;
+		workData->mVolumePos.z = workData->mVolumeSize * (workData->mEmitter->mRandom.nextFloat_0_1() - 0.5f);
 	}
-	workData->_1C = JGeometry::TVec3f(0.0f, 0.0f, workData->_10.z * workData->_11C);
-	workData->_28 = JGeometry::TVec3f(0.0f, 0.0f, workData->_10.z);
+	workData->mVelOmni.x = 0.0f;
+	workData->mVelOmni.y = 0.0f;
+	workData->mVelOmni.z = workData->mVolumePos.z * workData->mGlobalScl.z;
+
+	workData->mVelAxis.x = 0.0f;
+	workData->mVelAxis.y = 0.0f;
+	workData->mVelAxis.z = workData->mVolumePos.z;
+
 	/*
 	stwu     r1, -0x20(r1)
 	lwz      r6, 0(r3)
@@ -208,10 +217,9 @@ lbl_8008F194:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8008F1C8
- * Size:	0001B4
+/**
+ * @note Address: 0x8008F1C8
+ * @note Size: 0x1B4
  */
 void JPAVolumeCircle(JPAEmitterWorkData*)
 {
@@ -334,10 +342,9 @@ lbl_8008F2E8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8008F37C
- * Size:	000118
+/**
+ * @note Address: 0x8008F37C
+ * @note Size: 0x118
  */
 void JPAVolumeCube(JPAEmitterWorkData*)
 {
@@ -415,10 +422,9 @@ void JPAVolumeCube(JPAEmitterWorkData*)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8008F494
- * Size:	00028C
+/**
+ * @note Address: 0x8008F494
+ * @note Size: 0x28C
  */
 void JPAVolumeSphere(JPAEmitterWorkData*)
 {
@@ -605,10 +611,9 @@ lbl_8008F674:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8008F720
- * Size:	000184
+/**
+ * @note Address: 0x8008F720
+ * @note Size: 0x184
  */
 void JPAVolumeCylinder(JPAEmitterWorkData*)
 {
@@ -715,10 +720,9 @@ lbl_8008F7D0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8008F8A4
- * Size:	000128
+/**
+ * @note Address: 0x8008F8A4
+ * @note Size: 0x128
  */
 void JPAVolumeTorus(JPAEmitterWorkData*)
 {
@@ -800,12 +804,11 @@ void JPAVolumeTorus(JPAEmitterWorkData*)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8008F9CC
- * Size:	000034
+/**
+ * @note Address: 0x8008F9CC
+ * @note Size: 0x34
  */
-JPADynamicsBlock::JPADynamicsBlock(const unsigned char*)
+JPADynamicsBlock::JPADynamicsBlock(const u8*)
 {
 	/*
 	stwu     r1, -0x10(r1)
@@ -824,20 +827,18 @@ JPADynamicsBlock::JPADynamicsBlock(const unsigned char*)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0001E0
+/**
+ * @note Address: N/A
+ * @note Size: 0x1E0
  */
-void JPADynamicsBlock::init_jpa(const unsigned char*, JKRHeap*)
+void JPADynamicsBlock::init_jpa(const u8*, JKRHeap*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8008FA00
- * Size:	00009C
+/**
+ * @note Address: 0x8008FA00
+ * @note Size: 0x9C
  */
 void JPADynamicsBlock::init()
 {
@@ -905,10 +906,9 @@ lbl_8008FA8C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8008FA9C
- * Size:	000200
+/**
+ * @note Address: 0x8008FA9C
+ * @note Size: 0x200
  */
 void JPADynamicsBlock::create(JPAEmitterWorkData*)
 {

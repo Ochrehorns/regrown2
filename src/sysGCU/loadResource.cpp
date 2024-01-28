@@ -1,312 +1,219 @@
 #include "LoadResource.h"
-#include "JSystem/JKernel/JKRArchive.h"
-#include "JSystem/JKernel/JKRDvdRipper.h"
-#include "JSystem/JUtility/JUTException.h"
-#include "types.h"
+#include "ARAM.h"
+#include "string.h"
+#include "P2Macros.h"
 
-/*
-    Generated from dpostproc
+static void _Print(char* format, ...) { OSReport(format, __FILE__); }
+LoadResource::Mgr* gLoadResourceMgr;
 
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_8049B368
-    lbl_8049B368:
-        .4byte 0x6C6F6164
-        .4byte 0x5265736F
-        .4byte 0x75726365
-        .4byte 0x2E637070
-        .4byte 0x00000000
-        .4byte 0x4172616D
-        .4byte 0x526F6F74
-        .4byte 0x00000000
-        .asciz "P2Assert"
-        .skip 3
-    .global lbl_8049B394
-    lbl_8049B394:
-        .4byte 0x6D6F756E
-        .4byte 0x74206172
-        .4byte 0x63206661
-        .4byte 0x696C7572
-        .4byte 0x65000000
-    .global lbl_8049B3A8
-    lbl_8049B3A8:
-        .4byte 0x556E6B6E
-        .4byte 0x6F776E20
-        .4byte 0x666C6167
-        .4byte 0x3A256420
-        .4byte 0x0A000000
-        .4byte 0x00000000
+namespace LoadResource {
 
-    .section .data, "wa"	# 0x8049E220 - 0x804EFC20
-    .global __vt__Q212LoadResource4Node
-    __vt__Q212LoadResource4Node:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q212LoadResource4NodeFv
-        .4byte getChildCount__5CNodeFv
-        .4byte 0
-        .4byte 0
-        .4byte "@24@__dt__Q212LoadResource4NodeFv"
-        .4byte 0
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80520AA8
-    lbl_80520AA8:
-        .4byte 0x44766452
-        .4byte 0x6F6F7400
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global gLoadResourceMgr
-    gLoadResourceMgr:
-        .skip 0x8
-*/
-
-// TODO: Similar issue to ogObjWorldMapInfoWindow0.cpp with rodata.
-// TODO: Register in init__Q212LoadResource3MgrFv
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
-LoadResource::Node::Node(char const*)
+Node::Node(char const* path)
+    : CNode(const_cast<char*>(path))
 {
-	// UNUSED FUNCTION
+	mFile    = nullptr;
+	mArchive = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8044C520
- * Size:	0000B8
+/**
+ * @note Address: 0x8044C520
+ * @note Size: 0xB8
  */
-LoadResource::Node::~Node()
+Node::~Node()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	or.      r30, r3, r3
-	beq      lbl_8044C5BC
-	lis      r4, __vt__Q212LoadResource4Node@ha
-	addi     r4, r4, __vt__Q212LoadResource4Node@l
-	stw      r4, 0(r30)
-	addi     r0, r4, 0x10
-	stw      r0, 0x18(r30)
-	bl       del__5CNodeFv
-	lwz      r3, 0x30(r30)
-	cmplwi   r3, 0
-	beq      lbl_8044C568
-	bl       __dl__FPv
-
-lbl_8044C568:
-	lwz      r3, 0x34(r30)
-	cmplwi   r3, 0
-	beq      lbl_8044C584
-	lwz      r12, 0(r3)
-	lwz      r12, 0xc(r12)
-	mtctr    r12
-	bctrl
-
-lbl_8044C584:
-	lwz      r3, 0x14(r30)
-	cmplwi   r3, 0
-	beq      lbl_8044C594
-	bl       __dl__FPv
-
-lbl_8044C594:
-	addi     r3, r30, 0x18
-	li       r4, 0
-	bl       __dt__11JKRDisposerFv
-	mr       r3, r30
-	li       r4, 0
-	bl       __dt__5CNodeFv
-	extsh.   r0, r31
-	ble      lbl_8044C5BC
-	mr       r3, r30
-	bl       __dl__FPv
-
-lbl_8044C5BC:
-	lwz      r0, 0x14(r1)
-	mr       r3, r30
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	del();
+	if (mFile)
+		delete mFile;
+	if (mArchive)
+		mArchive->unmount();
+	if (mName)
+		delete mName;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000004
+/**
+ * @note Address: N/A
+ * @note Size: 0x4
  */
-void LoadResource::Node::dump()
-{
-	// UNUSED FUNCTION
-}
+void Node::dump() { }
 
-/*
+/**
  * __ct__Q212LoadResource3ArgFPCc
- * --INFO--
- * Address:	8044C5D8
- * Size:	000044
+ * @note Address: 0x8044C5D8
+ * @note Size: 0x44
  */
-LoadResource::Arg::Arg(char const* p1)
+Arg::Arg(char const* p1)
     : mPath(p1)
-    , _04(nullptr)
-    , _08(0)
-    , _0C(0)
+    , mBuffer(nullptr)
+    , mAddress(0)
+    , mOffset(0)
     , mExpandSwitch(Switch_1)
-    , _14(0)
+    , mMaxExpandSize(0)
     , mHeap(nullptr)
-    , _1C(1)
-    , _20(-1)
-    , _24(nullptr)
-    , _28(nullptr)
-    , _2C(1)
-    , _2D(1)
+    , mAllocDir(JKRDvdRipper::ALLOC_DIR_TOP)
+    , mAramID(-1)
+    , mDvdFileCompression(nullptr)
+    , mNewSize(nullptr)
+    , mUseAram(1)
+    , mUseDVD(1)
 {
 }
 
-/*
+/**
  * __ct__Q212LoadResource11ArgAramOnlyFPCc
- * --INFO--
- * Address:	8044C61C
- * Size:	000048
+ * @note Address: 0x8044C61C
+ * @note Size: 0x48
  */
-LoadResource::ArgAramOnly::ArgAramOnly(char const* p1)
+ArgAramOnly::ArgAramOnly(char const* p1)
     : Arg(p1)
 {
-	_2D = 0;
+	mUseDVD = 0;
 }
 
-/*
+/**
  * __ct__Q212LoadResource3MgrFv
- * --INFO--
- * Address:	........
- * Size:	00009C
+ * @note Address: N/A
+ * @note Size: 0x9C
  */
-LoadResource::Mgr::Mgr()
+Mgr::Mgr()
     : mAramRoot("AramRoot")
     , mDvdRoot("DvdRoot")
 {
-	// UNUSED FUNCTION
-	P2ASSERTLINE(118, gLoadResourceMgr == nullptr);
+	P2ASSERTLINE(118, !gLoadResourceMgr);
+	gLoadResourceMgr = this;
 }
 
-/*
- * --INFO--
- * Address:	8044C664
- * Size:	0000B0
+/**
+ * @note Address: 0x8044C664
+ * @note Size: 0xB0
  */
-void LoadResource::Mgr::init()
+void Mgr::init() { new Mgr(); }
+
+/**
+ * @note Address: N/A
+ * @note Size: 0xB4
+ */
+Node* Mgr::search(char const* path)
 {
-	// Mgr* mgr = new Mgr();
-	// gLoadResourceMgr = mgr;
-	gLoadResourceMgr = new Mgr();
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	lis      r4, lbl_8049B368@ha
-	li       r3, 0x30
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	addi     r31, r4, lbl_8049B368@l
-	stw      r30, 8(r1)
-	bl       __nw__FUl
-	cmplwi   r3, 0
-	beq      lbl_8044C6FC
-	lis      r4, __vt__5CNode@ha
-	mr       r30, r3
-	addi     r5, r4, __vt__5CNode@l
-	li       r4, 0
-	stw      r5, 0(r3)
-	addi     r3, r31, 0x14
-	addi     r0, r2, lbl_80520AA8@sda21
-	stw      r4, 0x10(r30)
-	stw      r4, 0xc(r30)
-	stw      r4, 8(r30)
-	stw      r4, 4(r30)
-	stw      r3, 0x14(r30)
-	stw      r5, 0x18(r30)
-	stw      r4, 0x28(r30)
-	stw      r4, 0x24(r30)
-	stw      r4, 0x20(r30)
-	stw      r4, 0x1c(r30)
-	stw      r0, 0x2c(r30)
-	lwz      r0, gLoadResourceMgr@sda21(r13)
-	cmplwi   r0, 0
-	beq      lbl_8044C6F8
-	addi     r3, r31, 0
-	addi     r5, r31, 0x20
-	li       r4, 0x76
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
+	Node* ret = nullptr;
+	FOREACH_NODE(Node, mAramRoot.mChild, node)
+	{
+		if (!strcmp(path, node->mName)) {
+			ret = node;
+			break;
+		}
+	}
 
-lbl_8044C6F8:
-	stw      r30, gLoadResourceMgr@sda21(r13)
-
-lbl_8044C6FC:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (ret) {
+		FOREACH_NODE(Node, mDvdRoot.mChild, node)
+		{
+			if (!strcmp(path, node->mName)) {
+				ret = node;
+				break;
+			}
+		}
+	}
+	return ret;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000B4
+/**
+ * @note Address: N/A
+ * @note Size: 0x2C
  */
-void LoadResource::Mgr::search(char const*)
+void Mgr::dump()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00002C
+/**
+ * @note Address: 0x8044C714
+ * @note Size: 0x8C
  */
-void LoadResource::Mgr::dump()
-{
-	// UNUSED FUNCTION
-}
-
-/*
- * --INFO--
- * Address:	8044C714
- * Size:	00008C
- */
-LoadResource::Node* LoadResource::Mgr::mountArchive(LoadResource::Arg& arg)
+Node* Mgr::mountArchive(Arg& arg)
 {
 	Node* node = load(arg);
 	if (node) {
 		JKRArchive::EMountDirection mountDirection = JKRArchive::EMD_Tail;
 		void* v1                                   = node->mFile;
 		JKRHeap* heap                              = arg.mHeap;
-		if (arg._1C == 1) {
+		if (arg.mAllocDir == JKRDvdRipper::ALLOC_DIR_TOP) {
 			mountDirection = JKRArchive::EMD_Head;
 		}
-		node->mArchive = JKRArchive::mount(v1, heap, mountDirection);
+		node->mArchive = JKRMountArchive(v1, heap, mountDirection);
 		JUT_ASSERTLINE(221, node->mArchive != nullptr, "mount arc failure");
 	}
 	return node;
 }
 
-/*
- * --INFO--
- * Address:	8044C7A0
- * Size:	000324
+/**
+ * @note Address: 0x8044C7A0
+ * @note Size: 0x324
  */
-LoadResource::Node* LoadResource::Mgr::load(LoadResource::Arg&)
+Node* Mgr::load(Arg& arg)
 {
+	Node* node = search(arg.mPath);
+
+	if (!node) {
+
+		void* data = nullptr;
+		if (!arg.mHeap) {
+			arg.mHeap = JKRGetCurrentHeap();
+		}
+
+		if (!arg.mNewSize) {
+			u32 what[3];
+			arg.mNewSize = what;
+		}
+
+		char* path;
+
+		switch (arg.mAllocDir) {
+		case JKRDvdRipper::ALLOC_DIR_TOP:
+			path = new (arg.mHeap, 0) char[strlen(arg.mPath) + 1];
+			strcpy(path, arg.mPath);
+
+			node = new (arg.mHeap, 0) Node(path);
+			break;
+		case JKRDvdRipper::ALLOC_DIR_BOTTOM:
+			path = new (arg.mHeap, -1) char[strlen(arg.mPath)];
+			strcpy(path, arg.mPath);
+
+			node = new (arg.mHeap, -0x20) Node(path);
+			break;
+		default:
+			JUT_PANICLINE(276, "Unknown flag:%d \n", arg.mAllocDir);
+			break;
+		}
+
+		if (arg.mUseAram) {
+			data = gAramMgr->aramToMainRam(arg.mPath, arg.mBuffer, arg.mAddress, arg.mOffset, arg.mExpandSwitch, arg.mMaxExpandSize,
+			                               arg.mHeap, arg.mAllocDir, arg.mAramID, arg.mNewSize);
+		}
+
+		if (data) {
+			mAramRoot.add(node);
+		} else if (arg.mUseDVD) {
+			void* data2 = JKRDvdRipper::loadToMainRAM(arg.mPath, arg.mBuffer, arg.mExpandSwitch, arg.mMaxExpandSize, arg.mHeap,
+			                                          arg.mAllocDir, arg.mOffset, arg.mDvdFileCompression, arg.mNewSize);
+			if (data2) {
+				DCFlushRange(data2, *arg.mNewSize);
+				mDvdRoot.add(node);
+				data = data2;
+			}
+		}
+
+		if (data) {
+			node->mFile = data;
+		} else {
+			delete node;
+			delete path;
+		}
+	}
+
+	return node;
 	/*
 	stwu     r1, -0x40(r1)
 	mflr     r0
@@ -558,15 +465,4 @@ lbl_8044CAAC:
 	*/
 }
 
-// /*
-//  * --INFO--
-//  * Address:	8044CAC4
-//  * Size:	000008
-//  */
-// @24 @LoadResource::Node::~Node()
-// {
-// 	/*
-// 	addi     r3, r3, -24
-// 	b        __dt__Q212LoadResource4NodeFv
-// 	*/
-// }
+} // namespace LoadResource

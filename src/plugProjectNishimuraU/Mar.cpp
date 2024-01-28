@@ -10,10 +10,9 @@
 namespace Game {
 namespace Mar {
 
-/*
- * --INFO--
- * Address:	8027F50C
- * Size:	00015C
+/**
+ * @note Address: 0x8027F50C
+ * @note Size: 0x15C
  */
 Obj::Obj()
 {
@@ -23,17 +22,15 @@ Obj::Obj()
 	mMatAnimators = new Sys::MatLoopAnimator[2];
 }
 
-/*
- * --INFO--
- * Address:	8027F668
- * Size:	000004
+/**
+ * @note Address: 0x8027F668
+ * @note Size: 0x4
  */
 void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-/*
- * --INFO--
- * Address:	8027F66C
- * Size:	0000EC
+/**
+ * @note Address: 0x8027F66C
+ * @note Size: 0xEC
  */
 void Obj::onInit(CreatureInitArg* settings)
 {
@@ -62,10 +59,9 @@ void Obj::onInit(CreatureInitArg* settings)
 	mMatAnimators[1].start(C_MGR->mTevRegAnimation);
 }
 
-/*
- * --INFO--
- * Address:	8027F758
- * Size:	000044
+/**
+ * @note Address: 0x8027F758
+ * @note Size: 0x44
  */
 void Obj::onKill(CreatureKillArg* settings)
 {
@@ -73,10 +69,9 @@ void Obj::onKill(CreatureKillArg* settings)
 	EnemyBase::onKill(settings);
 }
 
-/*
- * --INFO--
- * Address:	8027F79C
- * Size:	000050
+/**
+ * @note Address: 0x8027F79C
+ * @note Size: 0x50
  */
 void Obj::doUpdate()
 {
@@ -85,10 +80,9 @@ void Obj::doUpdate()
 	updateEmit();
 }
 
-/*
- * --INFO--
- * Address:	8027F7EC
- * Size:	0000D4
+/**
+ * @note Address: 0x8027F7EC
+ * @note Size: 0xD4
  */
 void Obj::changeMaterial()
 {
@@ -109,10 +103,9 @@ void Obj::changeMaterial()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027F8C0
- * Size:	00004C
+/**
+ * @note Address: 0x8027F8C0
+ * @note Size: 0x4C
  */
 void Obj::setFSM(FSM* fsm)
 {
@@ -121,43 +114,39 @@ void Obj::setFSM(FSM* fsm)
 	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8027F90C
- * Size:	000004
+/**
+ * @note Address: 0x8027F90C
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	8027F910
- * Size:	000020
+/**
+ * @note Address: 0x8027F910
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	8027F930
- * Size:	0000D0
+/**
+ * @note Address: 0x8027F930
+ * @note Size: 0xD0
  */
 void Obj::getShadowParam(ShadowParam& shadow)
 {
 	Matrixf* baseMatrix              = mModel->getJoint("mune")->getWorldMatrix();
-	shadow.mPosition                 = baseMatrix->getPosition();
+	shadow.mPosition                 = baseMatrix->getTranslation();
 	shadow.mPosition.y               = mPosition.y + mShadowOffset;
 	shadow.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
 	if (isFlying() || !mBounceTriangle) {
-		shadow.mBoundingSphere.mRadius = C_PROPERPARMS.mFp01.mValue + 100.0f;
+		shadow.mBoundingSphere.mRadius = C_PROPERPARMS.mStandardFlightHeight.mValue + 100.0f;
 	} else {
 		shadow.mBoundingSphere.mRadius = 50.0f;
 	}
 	shadow.mSize = mShadowRadius;
 }
 
-/*
- * --INFO--
- * Address:	8027FA00
- * Size:	00003C
+/**
+ * @note Address: 0x8027FA00
+ * @note Size: 0x3C
  */
 void Obj::doStartStoneState()
 {
@@ -166,10 +155,9 @@ void Obj::doStartStoneState()
 	setShadowOffsetMax();
 }
 
-/*
- * --INFO--
- * Address:	8027FA3C
- * Size:	000074
+/**
+ * @note Address: 0x8027FA3C
+ * @note Size: 0x74
  */
 void Obj::doFinishStoneState()
 {
@@ -181,10 +169,9 @@ void Obj::doFinishStoneState()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027FAB0
- * Size:	000034
+/**
+ * @note Address: 0x8027FAB0
+ * @note Size: 0x34
  */
 void Obj::doStartWaitingBirthTypeDrop()
 {
@@ -192,10 +179,9 @@ void Obj::doStartWaitingBirthTypeDrop()
 	effectDrawOff();
 }
 
-/*
- * --INFO--
- * Address:	8027FAE4
- * Size:	000034
+/**
+ * @note Address: 0x8027FAE4
+ * @note Size: 0x34
  */
 void Obj::doFinishWaitingBirthTypeDrop()
 {
@@ -203,24 +189,21 @@ void Obj::doFinishWaitingBirthTypeDrop()
 	effectDrawOn();
 }
 
-/*
- * --INFO--
- * Address:	8027FB18
- * Size:	000020
+/**
+ * @note Address: 0x8027FB18
+ * @note Size: 0x20
  */
 void Obj::doStartMovie() { effectDrawOff(); }
 
-/*
- * --INFO--
- * Address:	8027FB38
- * Size:	000020
+/**
+ * @note Address: 0x8027FB38
+ * @note Size: 0x20
  */
 void Obj::doEndMovie() { effectDrawOn(); }
 
-/*
- * --INFO--
- * Address:	8027FB58
- * Size:	000064
+/**
+ * @note Address: 0x8027FB58
+ * @note Size: 0x64
  */
 Vector3f Obj::getOffsetForMapCollision()
 {
@@ -230,10 +213,9 @@ Vector3f Obj::getOffsetForMapCollision()
 	return pos;
 }
 
-/*
- * --INFO--
- * Address:	8027FBBC
- * Size:	000050
+/**
+ * @note Address: 0x8027FBBC
+ * @note Size: 0x50
  */
 void Obj::getThrowupItemPosition(Vector3f* position)
 {
@@ -244,10 +226,9 @@ void Obj::getThrowupItemPosition(Vector3f* position)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027FC0C
- * Size:	000040
+/**
+ * @note Address: 0x8027FC0C
+ * @note Size: 0x40
  */
 void Obj::getThrowupItemVelocity(Vector3f* velocity)
 {
@@ -260,43 +241,40 @@ void Obj::getThrowupItemVelocity(Vector3f* velocity)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027FC4C
- * Size:	000050
+/**
+ * @note Address: 0x8027FC4C
+ * @note Size: 0x50
  */
-Vector3f Obj::getHeadJointPos() { return mModel->getJoint("head")->getWorldMatrix()->getPosition(); }
+Vector3f Obj::getHeadJointPos() { return mModel->getJoint("head")->getWorldMatrix()->getTranslation(); }
 
-/*
- * --INFO--
- * Address:	8027FC9C
- * Size:	00011C
+/**
+ * @note Address: 0x8027FC9C
+ * @note Size: 0x11C
  */
 f32 Obj::setHeightVelocity()
 {
 	f32 groundY     = mapMgr->getMinY(mPosition);
-	f32 idealHeight = C_PROPERPARMS.mFp01.mValue;
+	f32 idealHeight = C_PROPERPARMS.mStandardFlightHeight.mValue;
 
-	if (mPosition.y - groundY > idealHeight - C_PROPERPARMS.mFp06.mValue) {
+	if (mPosition.y - groundY > idealHeight - C_PROPERPARMS.mVerticalSwingWidth.mValue) {
 		addPitchRatio();
-		idealHeight += C_PROPERPARMS.mFp06.mValue * pikmin2_sinf(mPitchRatio);
+		idealHeight += C_PROPERPARMS.mVerticalSwingWidth.mValue * sinf(mPitchRatio);
 	}
 
 	f32 totalHeight = groundY + idealHeight;
 	totalHeight -= mPosition.y;
-	mCurrentVelocity.y = totalHeight * C_PROPERPARMS.mFp02.mValue;
+	mCurrentVelocity.y = totalHeight * C_PROPERPARMS.mRiseFactor.mValue;
 	return mPosition.y - groundY;
 }
 
-/*
- * --INFO--
- * Address:	8027FDB8
- * Size:	0001D8
+/**
+ * @note Address: 0x8027FDB8
+ * @note Size: 0x1D8
  */
 void Obj::setRandTarget()
 {
-	f32 outsideRadius  = C_PARMS->mGeneral.mTerritoryRadius.mValue - C_PARMS->mGeneral.mHomeRadius.mValue;
-	f32 radius         = randWeightFloat(outsideRadius) + C_PARMS->mGeneral.mHomeRadius.mValue;
+	f32 outsideRadius  = C_GENERALPARMS.mTerritoryRadius.mValue - C_GENERALPARMS.mHomeRadius.mValue;
+	f32 radius         = randWeightFloat(outsideRadius) + C_GENERALPARMS.mHomeRadius.mValue;
 	Vector3f position  = getPosition();
 	Vector3f homePos   = mHomePosition;
 	Vector3f atanInput = position - homePos;
@@ -304,27 +282,24 @@ void Obj::setRandTarget()
 
 	f32 theta = aboutTheta + randWeightFloat(PI) + HALF_PI;
 
-	mTargetPosition = Vector3f(radius * pikmin2_sinf(theta) + homePos.x, homePos.y, radius * pikmin2_cosf(theta) + homePos.z);
+	mTargetPosition = Vector3f(radius * sinf(theta) + homePos.x, homePos.y, radius * cosf(theta) + homePos.z);
 }
 
-/*
- * --INFO--
- * Address:	8027FF90
- * Size:	00000C
+/**
+ * @note Address: 0x8027FF90
+ * @note Size: 0xC
  */
 void Obj::resetShadowOffset() { mShadowOffset = -10.0f; }
 
-/*
- * --INFO--
- * Address:	8027FF9C
- * Size:	00000C
+/**
+ * @note Address: 0x8027FF9C
+ * @note Size: 0xC
  */
 void Obj::setShadowOffsetMax() { mShadowOffset = 10.0f; }
 
-/*
- * --INFO--
- * Address:	8027FFA8
- * Size:	000028
+/**
+ * @note Address: 0x8027FFA8
+ * @note Size: 0x28
  */
 void Obj::addShadowOffset()
 {
@@ -334,10 +309,9 @@ void Obj::addShadowOffset()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027FFD0
- * Size:	000028
+/**
+ * @note Address: 0x8027FFD0
+ * @note Size: 0x28
  */
 void Obj::subShadowOffset()
 {
@@ -347,17 +321,15 @@ void Obj::subShadowOffset()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8027FFF8
- * Size:	00000C
+/**
+ * @note Address: 0x8027FFF8
+ * @note Size: 0xC
  */
 void Obj::resetShadowRadius() { mShadowRadius = 40.0f; }
 
-/*
- * --INFO--
- * Address:	80280004
- * Size:	000030
+/**
+ * @note Address: 0x80280004
+ * @note Size: 0x30
  */
 void Obj::subShadowRadius()
 {
@@ -370,10 +342,9 @@ void Obj::subShadowRadius()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80280034
- * Size:	000030
+/**
+ * @note Address: 0x80280034
+ * @note Size: 0x30
  */
 void Obj::updateFallTimer()
 {
@@ -384,10 +355,9 @@ void Obj::updateFallTimer()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80280064
- * Size:	0000A4
+/**
+ * @note Address: 0x80280064
+ * @note Size: 0xA4
  */
 StateID Obj::getFlyingNextState()
 {
@@ -399,8 +369,8 @@ StateID Obj::getFlyingNextState()
 		return MAR_Fall;
 	}
 
-	if (mFallTimer > C_PROPERPARMS.mFp04.mValue || mStuckPikminCount >= C_PROPERPARMS.mIp01.mValue) {
-		if (mStuckPikminCount < C_PROPERPARMS.mIp01.mValue) {
+	if (mFallTimer > C_PROPERPARMS.mShakeOffTime.mValue || mStuckPikminCount >= C_PROPERPARMS.mFallingMinPikiNumber.mValue) {
+		if (mStuckPikminCount < C_PROPERPARMS.mFallingMinPikiNumber.mValue) {
 			return MAR_FlyFlick;
 		} else {
 			return MAR_Fall;
@@ -409,31 +379,29 @@ StateID Obj::getFlyingNextState()
 	return MAR_NULL;
 }
 
-/*
- * --INFO--
- * Address:	80280108
- * Size:	000038
+/**
+ * @note Address: 0x80280108
+ * @note Size: 0x38
  */
 void Obj::addPitchRatio()
 {
-	mPitchRatio += C_PROPERPARMS.mFp05.mValue * sys->mDeltaTime;
+	mPitchRatio += C_PROPERPARMS.mVerticalSwingSpeed.mValue * sys->mDeltaTime;
 	if (mPitchRatio > TAU) {
 		mPitchRatio -= TAU;
 	}
 }
 
-/*
- * --INFO--
- * Address:	80280140
- * Size:	0003AC
+/**
+ * @note Address: 0x80280140
+ * @note Size: 0x3AC
  */
 Piki* Obj::getSearchedPikmin()
 {
 	f32 FOV      = PI;
-	f32 sight    = C_PARMS->mGeneral.mSightRadius.mValue;
+	f32 sight    = C_GENERALPARMS.mSightRadius.mValue;
 	f32 sqrSight = SQUARE(sight);
 	if (mStuckPikminCount == 0) {
-		FOV = C_PARMS->mGeneral.mViewAngle.mValue * DEG2RAD * PI;
+		FOV = C_GENERALPARMS.mViewAngle.mValue * DEG2RAD * PI;
 	}
 
 	Iterator<Piki> iPiki = pikiMgr;
@@ -453,25 +421,24 @@ Piki* Obj::getSearchedPikmin()
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	802804EC
- * Size:	0002F0
+/**
+ * @note Address: 0x802804EC
+ * @note Size: 0x2F0
  */
 bool Obj::isTargetLost()
 {
 	Creature* target = mTargetCreature;
 	if (target && target->isAlive() && !target->isStickToMouth() && target->mSticker != this) {
-		f32 viewAngle = C_PARMS->mGeneral.mViewAngle.mValue;
+		f32 viewAngle = C_GENERALPARMS.mViewAngle.mValue;
 		if (mStuckPikminCount) {
 			viewAngle = 180.0f;
 		}
 
-		f32 sightRad  = C_PARMS->mGeneral.mSightRadius.mValue;
-		f32 privRad   = C_PARMS->mGeneral.mPrivateRadius.mValue;
+		f32 sightRad  = C_GENERALPARMS.mSightRadius.mValue;
+		f32 privRad   = C_GENERALPARMS.mPrivateRadius.mValue;
 		f32 sightDiff = getCreatureViewAngle(target);
 
-		bool checkDist = checkDistAndAngle(target, sightDiff, privRad, sightRad);
+		bool checkDist = isTargetAttackable(target, sightDiff, privRad, sightRad);
 		if (!checkDist && FABS(sightDiff) <= viewAngle * DEG2RAD * PI) {
 			return false;
 		}
@@ -680,19 +647,18 @@ lbl_8028078C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802807DC
- * Size:	00038C
+/**
+ * @note Address: 0x802807DC
+ * @note Size: 0x38C
  */
 Creature* Obj::isAttackable()
 {
 	const f32 faceDir = getFaceDir();
 	Parms* parms      = C_PARMS;
-	Vector3f vec      = Vector3f(parms->mGeneral.mMaxAttackRange.mValue * pikmin2_sinf(faceDir), 0.0f,
-                            parms->mGeneral.mMaxAttackRange.mValue * pikmin2_cosf(faceDir));
+	Vector3f vec
+	    = Vector3f(parms->mGeneral.mMaxAttackRange.mValue * sinf(faceDir), 0.0f, parms->mGeneral.mMaxAttackRange.mValue * cosf(faceDir));
 	vec += getPosition();
-	f32 radius = SQUARE(C_PARMS->mGeneral.mMinAttackRange.mValue);
+	f32 radius = SQUARE(C_GENERALPARMS.mMaxAttackAngle.mValue);
 
 	Iterator<Piki> iter(pikiMgr);
 	CI_LOOP(iter)
@@ -964,10 +930,9 @@ lbl_80280B38:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80280B68
- * Size:	0001AC
+/**
+ * @note Address: 0x80280B68
+ * @note Size: 0x1AC
  */
 void Obj::updateEmit()
 {
@@ -975,26 +940,25 @@ void Obj::updateEmit()
 		mEfxMatrix->getTranslation(_2E0);
 	}
 
-	_2EC = Vector3f(pikmin2_sinf(getFaceDir()), -0.85f, pikmin2_cosf(getFaceDir()));
+	_2EC = Vector3f(sinf(getFaceDir()), -0.85f, cosf(getFaceDir()));
 	_2EC.normalise();
 }
 
-/*
- * --INFO--
- * Address:	80280D14
- * Size:	0001E8
+/**
+ * @note Address: 0x80280D14
+ * @note Size: 0x1E8
  */
 Vector3f Obj::getAttackPosition()
 {
 	Vector3f vec2 = _2E0;
 	Vector3f vec1 = _2EC;
 
-	vec1 *= C_PARMS->mGeneral.mAttackRadius.mValue;
+	vec1 *= C_GENERALPARMS.mAttackRadius.mValue;
 
 	vec1 += vec2;
 
-	f32 inc    = 25.0f / C_PARMS->mGeneral.mAttackRadius.mValue;
-	f32 t      = 100.0f / C_PARMS->mGeneral.mAttackRadius.mValue;
+	f32 inc    = 25.0f / C_GENERALPARMS.mAttackRadius.mValue;
+	f32 t      = 100.0f / C_GENERALPARMS.mAttackRadius.mValue;
 	f32 tCompl = 1.0f - t;
 
 	Vector3f prevPos = Vector3f(vec2.x * tCompl + vec1.x * t, vec2.y * tCompl + vec1.y * t, vec2.z * tCompl + vec1.z * t);
@@ -1017,10 +981,9 @@ Vector3f Obj::getAttackPosition()
 	return nextPos;
 }
 
-/*
- * --INFO--
- * Address:	80280EFC
- * Size:	0008F4
+/**
+ * @note Address: 0x80280EFC
+ * @note Size: 0x8F4
  */
 void Obj::windTarget()
 {
@@ -1031,10 +994,10 @@ void Obj::windTarget()
 		}
 	}
 
-	f32 radius    = _304 * C_PARMS->mGeneral.mAttackRadius.mValue;
-	Vector3f vec1 = _2E0;                                                                // f16
-	Vector3f vec2 = _2EC;                                                                // f29
-	f32 slope     = (f32)tan(PI * (DEG2RAD * C_PARMS->mGeneral.mAttackHitAngle.mValue)); // f20
+	f32 radius    = _304 * C_GENERALPARMS.mAttackRadius.mValue;
+	Vector3f vec1 = _2E0;                                                             // f16
+	Vector3f vec2 = _2EC;                                                             // f29
+	f32 slope     = (f32)tan(PI * (DEG2RAD * C_GENERALPARMS.mAttackHitAngle.mValue)); // f20
 
 	// this is probably a new vector
 	vec2.z = -vec2.z;
@@ -1717,10 +1680,9 @@ lbl_80281714:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802817F0
- * Size:	000150
+/**
+ * @note Address: 0x802817F0
+ * @note Size: 0x150
  */
 void Obj::createEffect()
 {
@@ -1730,10 +1692,9 @@ void Obj::createEffect()
 	mEfxSui    = new efx::TFusenSui;
 }
 
-/*
- * --INFO--
- * Address:	80281940
- * Size:	00004C
+/**
+ * @note Address: 0x80281940
+ * @note Size: 0x4C
  */
 void Obj::setupEffect()
 {
@@ -1742,10 +1703,9 @@ void Obj::setupEffect()
 	mEfxSui->mMtx = mEfxMatrix;
 }
 
-/*
- * --INFO--
- * Address:	8028198C
- * Size:	00007C
+/**
+ * @note Address: 0x8028198C
+ * @note Size: 0x7C
  */
 void Obj::startDeadEffect()
 {
@@ -1755,17 +1715,15 @@ void Obj::startDeadEffect()
 	mEfxSui->fade();
 }
 
-/*
- * --INFO--
- * Address:	80281A08
- * Size:	000034
+/**
+ * @note Address: 0x80281A08
+ * @note Size: 0x34
  */
 void Obj::createSuckEffect() { mEfxSui->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	80281A3C
- * Size:	000090
+/**
+ * @note Address: 0x80281A3C
+ * @note Size: 0x90
  */
 void Obj::startWindEffect()
 {
@@ -1775,10 +1733,9 @@ void Obj::startWindEffect()
 	mEfxAirhit->create(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80281ACC
- * Size:	000078
+/**
+ * @note Address: 0x80281ACC
+ * @note Size: 0x78
  */
 void Obj::finishWindEffect()
 {
@@ -1788,10 +1745,9 @@ void Obj::finishWindEffect()
 	mEfxSui->fade();
 }
 
-/*
- * --INFO--
- * Address:	80281B44
- * Size:	000074
+/**
+ * @note Address: 0x80281B44
+ * @note Size: 0x74
  */
 void Obj::createDownEffect()
 {
@@ -1799,10 +1755,9 @@ void Obj::createDownEffect()
 	createBounceEffect(downEffectPos, getDownSmokeScale());
 }
 
-/*
- * --INFO--
- * Address:	80281BC0
- * Size:	000078
+/**
+ * @note Address: 0x80281BC0
+ * @note Size: 0x78
  */
 void Obj::effectDrawOn()
 {
@@ -1812,10 +1767,9 @@ void Obj::effectDrawOn()
 	mEfxSui->endDemoDrawOn();
 }
 
-/*
- * --INFO--
- * Address:	80281C38
- * Size:	000078
+/**
+ * @note Address: 0x80281C38
+ * @note Size: 0x78
  */
 void Obj::effectDrawOff()
 {

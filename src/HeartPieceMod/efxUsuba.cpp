@@ -22,7 +22,7 @@ void TParticleCallBack_UsubaFire::execute(JPABaseEmitter* emit, JPABaseParticle*
 	f32 x = particle->getCalcCurrentPositionX(emit);
 	Vector3f tgt(x, y, z);
 
-	if (tgt.distance(emit->mPosition) > _04) {
+	if (tgt.distance(emit->mGlobalTrs) > _04) {
 		particle->mFlags |= 2;
 
 		TUsubaFireHit* hit = mEfxHit;

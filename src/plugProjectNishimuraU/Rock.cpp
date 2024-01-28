@@ -7,10 +7,9 @@
 namespace Game {
 namespace Rock {
 
-/*
- * --INFO--
- * Address:	80262FF0
- * Size:	000138
+/**
+ * @note Address: 0x80262FF0
+ * @note Size: 0x138
  */
 Obj::Obj()
 {
@@ -19,10 +18,9 @@ Obj::Obj()
 	createEffect();
 }
 
-/*
- * --INFO--
- * Address:	80263128
- * Size:	00005C
+/**
+ * @note Address: 0x80263128
+ * @note Size: 0x5C
  */
 void Obj::birth(Vector3f& pos, f32 angle)
 {
@@ -31,22 +29,20 @@ void Obj::birth(Vector3f& pos, f32 angle)
 	setInitialSetting(&params);
 }
 
-/*
- * --INFO--
- * Address:	80263184
- * Size:	000028
+/**
+ * @note Address: 0x80263184
+ * @note Size: 0x28
  */
 void Obj::setInitialSetting(EnemyInitialParamBase* param)
 {
-	mFallSpeed   = C_PARMS->mGeneral.mSearchDistance;
-	mFallOffset  = C_PARMS->mGeneral.mSearchHeight;
-	mScaleUpRate = C_PARMS->mGeneral.mSearchAngle;
+	mFallSpeed   = C_GENERALPARMS.mSearchDistance;
+	mFallOffset  = C_GENERALPARMS.mSearchHeight;
+	mScaleUpRate = C_GENERALPARMS.mSearchAngle;
 }
 
-/*
- * --INFO--
- * Address:	802631AC
- * Size:	0001E0
+/**
+ * @note Address: 0x802631AC
+ * @note Size: 0x1E0
  */
 void Obj::onInit(CreatureInitArg* initArg)
 {
@@ -97,10 +93,9 @@ void Obj::onInit(CreatureInitArg* initArg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80263394
- * Size:	000054
+/**
+ * @note Address: 0x80263394
+ * @note Size: 0x54
  */
 void Obj::onKill(CreatureKillArg* arg)
 {
@@ -110,17 +105,15 @@ void Obj::onKill(CreatureKillArg* arg)
 	EnemyBase::onKill(arg);
 }
 
-/*
- * --INFO--
- * Address:	802633E8
- * Size:	000034
+/**
+ * @note Address: 0x802633E8
+ * @note Size: 0x34
  */
 void Obj::doUpdate() { mFsm->exec(this); }
 
-/*
- * --INFO--
- * Address:	8026341C
- * Size:	00004C
+/**
+ * @note Address: 0x8026341C
+ * @note Size: 0x4C
  */
 void Obj::setFSM(FSM* fsm)
 {
@@ -129,24 +122,21 @@ void Obj::setFSM(FSM* fsm)
 	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80263468
- * Size:	000004
+/**
+ * @note Address: 0x80263468
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics& gfx) { }
 
-/*
- * --INFO--
- * Address:	8026346C
- * Size:	000020
+/**
+ * @note Address: 0x8026346C
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	8026348C
- * Size:	0000E4
+/**
+ * @note Address: 0x8026348C
+ * @note Size: 0xE4
  */
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
@@ -167,10 +157,9 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 	shadowParam.mSize                     = 25.0f * mScaleModifier;
 }
 
-/*
- * --INFO--
- * Address:	80263570
- * Size:	000060
+/**
+ * @note Address: 0x80263570
+ * @note Size: 0x60
  */
 bool Obj::needShadow()
 {
@@ -186,10 +175,9 @@ bool Obj::needShadow()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	802635D0
- * Size:	000088
+/**
+ * @note Address: 0x802635D0
+ * @note Size: 0x88
  */
 bool Obj::hipdropCallBack(Creature* creature, f32 damage, CollPart* part)
 {
@@ -201,10 +189,9 @@ bool Obj::hipdropCallBack(Creature* creature, f32 damage, CollPart* part)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80263658
- * Size:	0001A4
+/**
+ * @note Address: 0x80263658
+ * @note Size: 0x1A4
  */
 void Obj::collisionCallback(CollEvent& event)
 {
@@ -220,7 +207,7 @@ void Obj::collisionCallback(CollEvent& event)
 					target = mSourceEnemy;
 				}
 
-				InteractPress press(target, C_PARMS->mGeneral.mAttackDamage.mValue, nullptr);
+				InteractPress press(target, C_GENERALPARMS.mAttackDamage.mValue, nullptr);
 				event.mCollidingCreature->stimulate(press);
 			}
 		} else if (other->isTeki()) {
@@ -242,10 +229,9 @@ void Obj::collisionCallback(CollEvent& event)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802637FC
- * Size:	000054
+/**
+ * @note Address: 0x802637FC
+ * @note Size: 0x54
  */
 void Obj::wallCallback(const MoveInfo& info)
 {
@@ -254,10 +240,9 @@ void Obj::wallCallback(const MoveInfo& info)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80263850
- * Size:	00006C
+/**
+ * @note Address: 0x80263850
+ * @note Size: 0x6C
  */
 void Obj::inWaterCallback(WaterBox* wbox)
 {
@@ -268,10 +253,9 @@ void Obj::inWaterCallback(WaterBox* wbox)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802638BC
- * Size:	000060
+/**
+ * @note Address: 0x802638BC
+ * @note Size: 0x60
  */
 void Obj::outWaterCallback()
 {
@@ -281,24 +265,21 @@ void Obj::outWaterCallback()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8026391C
- * Size:	000020
+/**
+ * @note Address: 0x8026391C
+ * @note Size: 0x20
  */
 void Obj::doStartMovie() { effectDrawOff(); }
 
-/*
- * --INFO--
- * Address:	8026393C
- * Size:	000020
+/**
+ * @note Address: 0x8026393C
+ * @note Size: 0x20
  */
 void Obj::doEndMovie() { effectDrawOn(); }
 
-/*
- * --INFO--
- * Address:	8026395C
- * Size:	00002C
+/**
+ * @note Address: 0x8026395C
+ * @note Size: 0x2C
  */
 bool Obj::ignoreAtari(Creature* creature)
 {
@@ -308,10 +289,9 @@ bool Obj::ignoreAtari(Creature* creature)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80263988
- * Size:	00007C
+/**
+ * @note Address: 0x80263988
+ * @note Size: 0x7C
  */
 bool Obj::fallRockScaleUp()
 {
@@ -332,10 +312,9 @@ bool Obj::fallRockScaleUp()
 	return isDone;
 }
 
-/*
- * --INFO--
- * Address:	80263A04
- * Size:	00007C
+/**
+ * @note Address: 0x80263A04
+ * @note Size: 0x7C
  */
 bool Obj::moveRockScaleUp()
 {
@@ -356,19 +335,18 @@ bool Obj::moveRockScaleUp()
 	return isDone;
 }
 
-/*
- * --INFO--
- * Address:	80263A80
- * Size:	000100
+/**
+ * @note Address: 0x80263A80
+ * @note Size: 0x100
  */
 void Obj::initMoveVelocity()
 {
 	f32 theta    = mFaceDir;
-	f32 cosTheta = pikmin2_cosf(theta);
-	f32 sinTheta = pikmin2_sinf(theta);
+	f32 cosTheta = cosf(theta);
+	f32 sinTheta = sinf(theta);
 
 	Vector3f vel(sinTheta, 0.0f, cosTheta);
-	vel *= *C_PARMS->mGeneral.mMoveSpeed();
+	vel *= C_GENERALPARMS.mMoveSpeed();
 	mTargetVelocity = vel;
 	setVelocity(vel);
 	/*
@@ -445,10 +423,9 @@ lbl_80263B14:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80263B80
- * Size:	0003A0
+/**
+ * @note Address: 0x80263B80
+ * @note Size: 0x3A0
  */
 void Obj::updateMoveVelocity()
 {
@@ -458,7 +435,7 @@ void Obj::updateMoveVelocity()
 			target = naviMgr->getActiveNavi();
 		}
 		if (!target) {
-			target = EnemyFunc::getNearestPikminOrNavi(this, 180.0f, C_PARMS->mGeneral.mSightRadius.mValue, nullptr, nullptr, nullptr);
+			target = EnemyFunc::getNearestPikminOrNavi(this, 180.0f, C_GENERALPARMS.mSightRadius.mValue, nullptr, nullptr, nullptr);
 		}
 
 		Vector2f XZ;
@@ -473,7 +450,7 @@ void Obj::updateMoveVelocity()
 
 		changeFaceDir(XZ);
 
-		f32 homingSpeed = C_PROPERPARMS.mFp01.mValue;
+		f32 homingSpeed = C_PROPERPARMS.mSearchRumbleSpeed.mValue;
 		f32 sinTheta    = sin(getFaceDir());
 		f32 oldY        = getTargetVelocity().y;
 		f32 cosTheta    = cos(getFaceDir());
@@ -754,10 +731,9 @@ lbl_80263EEC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80263F20
- * Size:	0001A4
+/**
+ * @note Address: 0x80263F20
+ * @note Size: 0x1A4
  */
 void Obj::createEffect()
 {
@@ -766,10 +742,9 @@ void Obj::createEffect()
 	mEfxWaterRun  = new efx::TRockWRun();
 }
 
-/*
- * --INFO--
- * Address:	802640C4
- * Size:	000018
+/**
+ * @note Address: 0x802640C4
+ * @note Size: 0x18
  */
 void Obj::setupEffect()
 {
@@ -777,38 +752,33 @@ void Obj::setupEffect()
 	mEfxGroundRun->mPosition = &mPosition;
 }
 
-/*
- * --INFO--
- * Address:	802640DC
- * Size:	000034
+/**
+ * @note Address: 0x802640DC
+ * @note Size: 0x34
  */
 void Obj::startFallEffect() { mEfxRun->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	80264110
- * Size:	000030
+/**
+ * @note Address: 0x80264110
+ * @note Size: 0x30
  */
 void Obj::finishFallEffect() { mEfxRun->fade(); }
 
-/*
- * --INFO--
- * Address:	80264140
- * Size:	000034
+/**
+ * @note Address: 0x80264140
+ * @note Size: 0x34
  */
 void Obj::startRollingGroundEffect() { mEfxGroundRun->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	80264174
- * Size:	000030
+/**
+ * @note Address: 0x80264174
+ * @note Size: 0x30
  */
 void Obj::finishRollingGroundEffect() { mEfxGroundRun->fade(); }
 
-/*
- * --INFO--
- * Address:	802641A4
- * Size:	0000E8
+/**
+ * @note Address: 0x802641A4
+ * @note Size: 0xE8
  */
 void Obj::startRollingWaterEffect()
 {
@@ -825,91 +795,23 @@ void Obj::startRollingWaterEffect()
 		f32 heightDiff = waterFX->mSeaHeight - mPosition.y;
 		if (8.0f <= heightDiff && heightDiff < 45.0f) {
 			efx::TRockWRun* waterFX = mEfxWaterRun;
-			waterFX->mPosition      = Vector3f(mPosition.x, heightDiff, mPosition.z);
+			waterFX->mPosition      = Vector3f(mPosition.x, waterFX->mSeaHeight, mPosition.z);
 			waterFX->mChasePos.create(nullptr);
 		} else {
 			waterFX->mChasePos.fade();
 		}
 	}
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	lfs      f0, lbl_8051ADB0@sda21(r2)
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r3, 0x280(r3)
-	cmplwi   r3, 0
-	beq      lbl_802641DC
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	lfs      f0, 0(r3)
-
-lbl_802641DC:
-	lwz      r3, 0x2e0(r31)
-	li       r4, 0
-	stfs     f0, 0x44(r3)
-	lwz      r3, 0x2e0(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lwz      r5, 0x2e0(r31)
-	lbz      r0, 0x54(r5)
-	cmplwi   r0, 0
-	beq      lbl_80264278
-	lfs      f2, 0x44(r5)
-	lfs      f1, 0x190(r31)
-	lfs      f0, lbl_8051ADFC@sda21(r2)
-	fsubs    f1, f2, f1
-	fcmpo    cr0, f0, f1
-	cror     2, 0, 2
-	bne      lbl_80264264
-	lfs      f0, lbl_8051AE00@sda21(r2)
-	fcmpo    cr0, f1, f0
-	bge      lbl_80264264
-	lfs      f1, 0x194(r31)
-	addi     r3, r5, 4
-	lfs      f0, 0x18c(r31)
-	li       r4, 0
-	stfs     f0, 0x48(r5)
-	stfs     f2, 0x4c(r5)
-	stfs     f1, 0x50(r5)
-	lwz      r12, 4(r5)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80264278
-
-lbl_80264264:
-	addi     r3, r5, 4
-	lwz      r12, 4(r5)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80264278:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	8026429C
- * Size:	000030
+/**
+ * @note Address: 0x8026429C
+ * @note Size: 0x30
  */
 void Obj::finishRollingWaterEffect() { mEfxWaterRun->fade(); }
 
-/*
- * --INFO--
- * Address:	80264310
- * Size:	0000A4
+/**
+ * @note Address: 0x80264310
+ * @note Size: 0xA4
  */
 void Obj::updateWaterEffectPosition()
 {
@@ -917,65 +819,17 @@ void Obj::updateWaterEffectPosition()
 		f32 heightDiff = mEfxWaterRun->mSeaHeight - mPosition.y;
 		if (8.0f <= heightDiff && heightDiff < 45.0f) {
 			efx::TRockWRun* waterFX = mEfxWaterRun;
-			waterFX->mPosition      = Vector3f(mPosition.x, heightDiff, mPosition.z);
+			waterFX->mPosition      = Vector3f(mPosition.x, mEfxWaterRun->mSeaHeight, mPosition.z);
 			waterFX->mChasePos.create(nullptr);
 		} else {
 			mEfxWaterRun->mChasePos.fade();
 		}
 	}
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r0, 0x280(r3)
-	cmplwi   r0, 0
-	beq      lbl_802643A4
-	lwz      r5, 0x2e0(r3)
-	lbz      r0, 0x54(r5)
-	cmplwi   r0, 0
-	beq      lbl_802643A4
-	lfs      f2, 0x44(r5)
-	lfs      f1, 0x190(r3)
-	lfs      f0, lbl_8051ADFC@sda21(r2)
-	fsubs    f1, f2, f1
-	fcmpo    cr0, f0, f1
-	cror     2, 0, 2
-	bne      lbl_80264390
-	lfs      f0, lbl_8051AE00@sda21(r2)
-	fcmpo    cr0, f1, f0
-	bge      lbl_80264390
-	lfs      f1, 0x194(r3)
-	li       r4, 0
-	lfs      f0, 0x18c(r3)
-	addi     r3, r5, 4
-	stfs     f0, 0x48(r5)
-	stfs     f2, 0x4c(r5)
-	stfs     f1, 0x50(r5)
-	lwz      r12, 4(r5)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_802643A4
-
-lbl_80264390:
-	addi     r3, r5, 4
-	lwz      r12, 4(r5)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-
-lbl_802643A4:
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	802643B4
- * Size:	000098
+/**
+ * @note Address: 0x802643B4
+ * @note Size: 0x98
  */
 void Obj::createRockDeadEffect()
 {
@@ -985,10 +839,9 @@ void Obj::createRockDeadEffect()
 	deadFX.create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	8026444C
- * Size:	000064
+/**
+ * @note Address: 0x8026444C
+ * @note Size: 0x64
  */
 void Obj::effectDrawOn()
 {
@@ -997,10 +850,9 @@ void Obj::effectDrawOn()
 	mEfxWaterRun->mChasePos.endDemoDrawOn();
 }
 
-/*
- * --INFO--
- * Address:	802644B0
- * Size:	000064
+/**
+ * @note Address: 0x802644B0
+ * @note Size: 0x64
  */
 void Obj::effectDrawOff()
 {

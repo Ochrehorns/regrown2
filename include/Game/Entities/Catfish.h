@@ -27,7 +27,7 @@ struct Obj : public KochappyBase::Obj {
 	{
 		return EnemyTypeID::EnemyID_Catfish;
 	}
-	virtual bool pressCallBack(Creature*, f32, CollPart*);                      // _27C
+	virtual bool pressCallBack(Creature* source, f32 damage, CollPart* part);   // _27C
 	virtual bool hipdropCallBack(Creature* source, f32 damage, CollPart* part); // _284
 	virtual void resetEnemyNonStone();                                          // _300
 	virtual void setEnemyNonStone() { enableEvent(0, EB_NoInterrupt); }         // _304 (weak)
@@ -44,7 +44,7 @@ struct Mgr : public EnemyMgrBase {
 
 	//////////////// VTABLE
 	// virtual ~Mgr() { }                                 // _58 (weak)
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual void doAlloc();                            // _A8
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)

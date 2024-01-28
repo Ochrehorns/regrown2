@@ -1,33 +1,14 @@
 #include "JSystem/JAudio/JAS/JASChannel.h"
-#include "types.h"
 
-/*
-    Generated from dpostproc
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80516EA0
-    lbl_80516EA0:
-        .float 1.0
-    .global lbl_80516EA4
-    lbl_80516EA4:
-        .float 0.5
-    .global lbl_80516EA8
-    lbl_80516EA8:
-        .4byte 0x00000000
-        .4byte 0x00000000
-*/
-
-/*
- * --INFO--
- * Address:	800A8504
- * Size:	000030
+/**
+ * @note Address: 0x800A8504
+ * @note Size: 0x30
  */
 JASChannelUpdater::JASChannelUpdater() { init(); }
 
-/*
- * --INFO--
- * Address:	800A8534
- * Size:	0000C0
+/**
+ * @note Address: 0x800A8534
+ * @note Size: 0xC0
  */
 void JASChannelUpdater::init()
 {
@@ -70,10 +51,9 @@ void JASChannelUpdater::init()
 	_4C    = 0xD;
 }
 
-/*
- * --INFO--
- * Address:	800A85F4
- * Size:	000164
+/**
+ * @note Address: 0x800A85F4
+ * @note Size: 0x164
  */
 void JASChannelUpdater::initialUpdateChannel(JASChannel* p1, JASDsp::TChannel* p2)
 {
@@ -109,10 +89,9 @@ void JASChannelUpdater::initialUpdateChannel(JASChannel* p1, JASDsp::TChannel* p
 	p2->setDistFilter(_34);
 }
 
-/*
- * --INFO--
- * Address:	800A8758
- * Size:	0000E8
+/**
+ * @note Address: 0x800A8758
+ * @note Size: 0xE8
  * updateChannel__17JASChannelUpdaterFP10JASChannelPQ26JASDsp8TChannel
  */
 void JASChannelUpdater::updateChannel(JASChannel* p1, JASDsp::TChannel* p2)

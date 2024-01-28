@@ -5,10 +5,9 @@
 namespace Game {
 namespace KumaChappy {
 
-/*
- * --INFO--
- * Address:	80295E28
- * Size:	000328
+/**
+ * @note Address: 0x80295E28
+ * @note Size: 0x328
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -24,22 +23,20 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateWalkPath);
 }
 
-/*
- * --INFO--
- * Address:	80296150
- * Size:	000050
+/**
+ * @note Address: 0x80296150
+ * @note Size: 0x50
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->deathProcedure();
 	enemy->mTargetVelocity = Vector3f(0.0f);
-	enemy->startMotion(1, nullptr);
+	enemy->startMotion(KUMACHAPPYANIM_Dead, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802961A0
- * Size:	000098
+/**
+ * @note Address: 0x802961A0
+ * @note Size: 0x98
  */
 void StateDead::exec(EnemyBase* enemy)
 {
@@ -57,17 +54,15 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80296240
- * Size:	000004
+/**
+ * @note Address: 0x80296240
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	80296244
- * Size:	000058
+/**
+ * @note Address: 0x80296244
+ * @note Size: 0x58
  */
 void StateRebirth::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -76,19 +71,69 @@ void StateRebirth::init(EnemyBase* enemy, StateArg* stateArg)
 	chappy->disableEvent(0, EB_NoInterrupt);
 	chappy->mTargetCreature = nullptr;
 	chappy->mTargetVelocity = Vector3f(0.0f);
-	chappy->startMotion(8, nullptr);
+	chappy->startMotion(KUMACHAPPYANIM_Rebirth, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8029629C
- * Size:	0005B0
+/**
+ * @note Address: 0x8029629C
+ * @note Size: 0x5B0
  */
 void StateRebirth::exec(EnemyBase* enemy)
 {
 	Obj* chappy = OBJ(enemy);
 	if (chappy->mCurAnim->mIsPlaying) {
-		if (chappy->mCurAnim->mType == KEYEVENT_2) { }
+		if (chappy->mCurAnim->mType == KEYEVENT_2) {
+			EnemyFunc::flickStickPikmin(chappy, CG_GENERALPARMS(chappy).mShakeChance(), CG_GENERALPARMS(chappy).mShakeKnockback(),
+			                            CG_GENERALPARMS(chappy).mShakeDamage(), FLICK_BACKWARD_ANGLE, nullptr);
+			EnemyFunc::flickNearbyPikmin(chappy, CG_GENERALPARMS(chappy).mShakeRange(), CG_GENERALPARMS(chappy).mShakeKnockback(),
+			                             CG_GENERALPARMS(chappy).mShakeDamage(), FLICK_BACKWARD_ANGLE, nullptr);
+			EnemyFunc::flickNearbyNavi(chappy, CG_GENERALPARMS(chappy).mShakeRange(), CG_GENERALPARMS(chappy).mShakeKnockback(),
+			                           CG_GENERALPARMS(chappy).mShakeDamage(), FLICK_BACKWARD_ANGLE, nullptr);
+			chappy->mFlickTimer = 0.0f;
+
+		} else if (chappy->mCurAnim->mType == KEYEVENT_3) {
+			chappy->enableEvent(0, EB_NoInterrupt);
+
+		} else if (chappy->mCurAnim->mType == KEYEVENT_4) {
+			chappy->disableEvent(0, EB_NoInterrupt);
+
+		} else if (chappy->mCurAnim->mType == KEYEVENT_END) {
+			if (chappy->mHealth <= 0.0f) {
+				transit(chappy, KUMACHAPPY_Dead, nullptr);
+				return;
+			}
+
+			if (EnemyFunc::isStartFlick(chappy, false)) {
+				transit(chappy, KUMACHAPPY_Flick, nullptr);
+				return;
+			}
+
+			Creature* target = chappy->getSearchedTarget();
+			if (target) {
+				f32 angleDist = chappy->getCreatureViewAngle(target);
+				if (chappy->isTargetAttackable(target, chappy->getCreatureViewAngle(target), CG_GENERALPARMS(chappy).mMaxAttackRange(),
+				                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+					transit(chappy, KUMACHAPPY_Attack, nullptr);
+					return;
+				}
+
+				if (absF(angleDist) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+					transit(chappy, KUMACHAPPY_Walk, nullptr);
+					return;
+				}
+
+				transit(chappy, KUMACHAPPY_Turn, nullptr);
+				return;
+			}
+			Vector3f targetPos = chappy->mTargetPos;
+			f32 angleDist      = chappy->getCreatureViewAngle(targetPos);
+			if (absF(angleDist) <= (PI / 4)) {
+				transit(chappy, KUMACHAPPY_WalkPath, nullptr);
+				return;
+			}
+
+			transit(chappy, KUMACHAPPY_TurnPath, nullptr);
+		}
 	}
 	/*
 	stwu     r1, -0x150(r1)
@@ -483,17 +528,15 @@ lbl_802967F4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8029684C
- * Size:	000010
+/**
+ * @note Address: 0x8029684C
+ * @note Size: 0x10
  */
 void StateRebirth::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInterrupt); }
 
-/*
- * --INFO--
- * Address:	8029685C
- * Size:	00004C
+/**
+ * @note Address: 0x8029685C
+ * @note Size: 0x4C
  */
 void StateLost::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -501,18 +544,55 @@ void StateLost::init(EnemyBase* enemy, StateArg* stateArg)
 	chappy->mNextState      = KUMACHAPPY_NULL;
 	chappy->mTargetCreature = nullptr;
 	chappy->mTargetVelocity = Vector3f(0.0f);
-	chappy->startMotion(5, nullptr);
+	chappy->startMotion(KUMACHAPPYANIM_Lost, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802968A8
- * Size:	00045C
+/**
+ * @note Address: 0x802968A8
+ * @note Size: 0x45C
  */
 void StateLost::exec(EnemyBase* enemy)
 {
 	Obj* chappy = OBJ(enemy);
+	if (chappy->mCurAnim->mIsPlaying && chappy->mCurAnim->mType == KEYEVENT_END) {
+		if (chappy->mHealth <= 0.0f) {
+			transit(chappy, KUMACHAPPY_Dead, nullptr);
+			return;
+		}
 
+		if (EnemyFunc::isStartFlick(chappy, false)) {
+			transit(chappy, KUMACHAPPY_Flick, nullptr);
+			return;
+		}
+
+		Creature* target = chappy->getSearchedTarget();
+		if (target) {
+			f32 angleSep = chappy->getCreatureViewAngle(target);
+			if (chappy->isTargetAttackable(target, angleSep, CG_GENERALPARMS(chappy).mMaxAttackRange(),
+			                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+				transit(chappy, KUMACHAPPY_Attack, nullptr);
+				return;
+			}
+
+			if (absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+				transit(chappy, KUMACHAPPY_Walk, nullptr);
+				return;
+			}
+
+			transit(chappy, KUMACHAPPY_Turn, nullptr);
+			return;
+		}
+
+		chappy->setNearestWayPoint();
+		Vector3f targetPos = chappy->mTargetPos;
+		f32 angleSep       = chappy->getCreatureViewAngle(targetPos);
+		if (absF(angleSep) <= (PI / 4)) {
+			transit(chappy, KUMACHAPPY_WalkPath, nullptr);
+			return;
+		}
+
+		transit(chappy, KUMACHAPPY_TurnPath, nullptr);
+	}
 	/*
 	stwu     r1, -0x110(r1)
 	mflr     r0
@@ -812,17 +892,15 @@ lbl_80296CB4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80296D04
- * Size:	000004
+/**
+ * @note Address: 0x80296D04
+ * @note Size: 0x4
  */
 void StateLost::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	80296D08
- * Size:	000058
+/**
+ * @note Address: 0x80296D08
+ * @note Size: 0x58
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -830,18 +908,82 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	chappy->mNextState      = KUMACHAPPY_NULL;
 	chappy->mTargetVelocity = Vector3f(0.0f);
 	chappy->setEmotionExcitement();
-	chappy->startMotion(0, nullptr);
+	chappy->startMotion(KUMACHAPPYANIM_Attack, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80296D60
- * Size:	000550
+/**
+ * @note Address: 0x80296D60
+ * @note Size: 0x550
  */
 void StateAttack::exec(EnemyBase* enemy)
 {
 	Obj* chappy = OBJ(enemy);
+	if (chappy->mCurAnim->mIsPlaying) {
+		if (chappy->mCurAnim->mType == KEYEVENT_2) {
+			if (chappy->getCurrAnimIndex() == KUMACHAPPYANIM_Attack) {
+				int naviCheck
+				    = EnemyFunc::attackNavi(chappy, CG_GENERALPARMS(chappy).mAttackRadius(), CG_GENERALPARMS(chappy).mAttackHitAngle(),
+				                            CG_GENERALPARMS(chappy).mAttackDamage(), nullptr, nullptr);
+				int eatCheck = naviCheck + EnemyFunc::eatPikmin(chappy, nullptr);
 
+				EnemyFunc::flickStickPikmin(chappy, CG_GENERALPARMS(chappy).mShakeChance(), CG_GENERALPARMS(chappy).mShakeKnockback(),
+				                            CG_GENERALPARMS(chappy).mShakeDamage(), chappy->getFaceDir(), nullptr);
+				if (eatCheck != 0) {
+					return;
+				}
+
+				chappy->startMotion(KUMACHAPPYANIM_Eat, nullptr);
+				return;
+			}
+
+			chappy->startEnemyRumble();
+
+		} else if (chappy->mCurAnim->mType == KEYEVENT_3) {
+			EnemyFunc::swallowPikmin(chappy, CG_PROPERPARMS(chappy).mPoisonDamage(), nullptr);
+			if (chappy->mHealth <= 0.0f) {
+				chappy->setAnimSpeed(60.0f);
+			}
+
+		} else if (chappy->mCurAnim->mType == KEYEVENT_END) {
+			if (chappy->mHealth <= 0.0f) {
+				transit(chappy, KUMACHAPPY_Dead, nullptr);
+				return;
+			}
+
+			if (EnemyFunc::isStartFlick(chappy, false)) {
+				transit(chappy, KUMACHAPPY_Flick, nullptr);
+				return;
+			}
+
+			Creature* target = chappy->getSearchedTarget();
+			if (target) {
+				f32 angleSep = chappy->getCreatureViewAngle(target);
+				if (chappy->isTargetAttackable(target, angleSep, CG_GENERALPARMS(chappy).mMaxAttackRange(),
+				                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+					transit(chappy, KUMACHAPPY_Attack, nullptr);
+					return;
+				}
+
+				if (absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+					transit(chappy, KUMACHAPPY_Walk, nullptr);
+					return;
+				}
+
+				transit(chappy, KUMACHAPPY_Turn, nullptr);
+				return;
+			}
+
+			chappy->setNearestWayPoint();
+			Vector3f targetPos = chappy->mTargetPos;
+			f32 angleSep       = chappy->getCreatureViewAngle(targetPos);
+			if (absF(angleSep) <= (PI / 4)) {
+				transit(chappy, KUMACHAPPY_WalkPath, nullptr);
+				return;
+			}
+
+			transit(chappy, KUMACHAPPY_TurnPath, nullptr);
+		}
+	}
 	/*
 	stwu     r1, -0x110(r1)
 	mflr     r0
@@ -1201,10 +1343,9 @@ lbl_80297260:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802972B0
- * Size:	00003C
+/**
+ * @note Address: 0x802972B0
+ * @note Size: 0x3C
  */
 void StateAttack::cleanup(EnemyBase* enemy)
 {
@@ -1212,10 +1353,9 @@ void StateAttack::cleanup(EnemyBase* enemy)
 	enemy->setAnimSpeed(30.0f);
 }
 
-/*
- * --INFO--
- * Address:	802972EC
- * Size:	000064
+/**
+ * @note Address: 0x802972EC
+ * @note Size: 0x64
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -1223,19 +1363,62 @@ void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	chappy->mNextState = KUMACHAPPY_NULL;
 	chappy->setEmotionExcitement();
 	chappy->mTargetVelocity = Vector3f(0.0f);
-	chappy->startMotion(2, nullptr);
+	chappy->startMotion(KUMACHAPPYANIM_Flick, nullptr);
 	chappy->setAnimSpeed(45.0f);
 }
 
-/*
- * --INFO--
- * Address:	80297350
- * Size:	0004D4
+/**
+ * @note Address: 0x80297350
+ * @note Size: 0x4D4
  */
 void StateFlick::exec(EnemyBase* enemy)
 {
 	Obj* chappy = OBJ(enemy);
+	if (chappy->mCurAnim->mIsPlaying) {
+		if (chappy->mCurAnim->mType == KEYEVENT_2) {
+			EnemyFunc::flickStickPikmin(chappy, CG_GENERALPARMS(chappy).mShakeChance(), CG_GENERALPARMS(chappy).mShakeKnockback(),
+			                            CG_GENERALPARMS(chappy).mShakeDamage(), chappy->getFaceDir(), nullptr);
+			EnemyFunc::flickNearbyPikmin(chappy, CG_GENERALPARMS(chappy).mShakeRange(), CG_GENERALPARMS(chappy).mShakeKnockback(),
+			                             CG_GENERALPARMS(chappy).mShakeDamage(), chappy->getFaceDir(), nullptr);
+			EnemyFunc::flickNearbyNavi(chappy, CG_GENERALPARMS(chappy).mShakeRange(), CG_GENERALPARMS(chappy).mShakeKnockback(),
+			                           CG_GENERALPARMS(chappy).mShakeDamage(), chappy->getFaceDir(), nullptr);
+			chappy->mFlickTimer = 0.0f;
 
+		} else if (chappy->mCurAnim->mType == KEYEVENT_END) {
+			if (chappy->mHealth <= 0.0f) {
+				transit(chappy, KUMACHAPPY_Dead, nullptr);
+				return;
+			}
+
+			Creature* target = chappy->getSearchedTarget();
+			if (target) {
+				f32 angleSep = chappy->getCreatureViewAngle(target);
+				if (chappy->isTargetAttackable(target, angleSep, CG_GENERALPARMS(chappy).mMaxAttackRange(),
+				                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+					transit(chappy, KUMACHAPPY_Attack, nullptr);
+					return;
+				}
+
+				if (absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+					transit(chappy, KUMACHAPPY_Walk, nullptr);
+					return;
+				}
+
+				transit(chappy, KUMACHAPPY_Turn, nullptr);
+				return;
+			}
+
+			chappy->setNearestWayPoint();
+			Vector3f targetPos = chappy->mTargetPos;
+			f32 angleSep       = chappy->getCreatureViewAngle(targetPos);
+			if (absF(angleSep) <= (PI / 4)) {
+				transit(chappy, KUMACHAPPY_WalkPath, nullptr);
+				return;
+			}
+
+			transit(chappy, KUMACHAPPY_TurnPath, nullptr);
+		}
+	}
 	/*
 	stwu     r1, -0x110(r1)
 	mflr     r0
@@ -1568,10 +1751,9 @@ lbl_802977D4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80297824
- * Size:	00003C
+/**
+ * @note Address: 0x80297824
+ * @note Size: 0x3C
  */
 void StateFlick::cleanup(EnemyBase* enemy)
 {
@@ -1579,10 +1761,9 @@ void StateFlick::cleanup(EnemyBase* enemy)
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	80297860
- * Size:	000060
+/**
+ * @note Address: 0x80297860
+ * @note Size: 0x60
  */
 void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -1591,18 +1772,60 @@ void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 	chappy->mNextState = KUMACHAPPY_NULL;
 	chappy->setEmotionExcitement();
 	chappy->mTargetVelocity = Vector3f(0.0f);
-	chappy->startMotion(6, nullptr);
+	chappy->startMotion(KUMACHAPPYANIM_Turn, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802978C0
- * Size:	000670
+/**
+ * @note Address: 0x802978C0
+ * @note Size: 0x670
  */
 void StateTurn::exec(EnemyBase* enemy)
 {
 	Obj* chappy = OBJ(enemy);
+	if (chappy->mHealth <= 0.0f) {
+		chappy->mNextState = KUMACHAPPY_Dead;
+		chappy->finishMotion();
+		chappy->setAnimSpeed(60.0f);
+	} else if (EnemyFunc::isStartFlick(chappy, false)) {
+		chappy->mNextState = KUMACHAPPY_Flick;
+		chappy->finishMotion();
+		chappy->setAnimSpeed(60.0f);
+	} else {
+		Creature* target = chappy->getSearchedTarget();
+		if (target) {
+			f32 angleSep = chappy->changeFaceDir2(target);
+			if (chappy->isTargetAttackable(target, angleSep, CG_GENERALPARMS(chappy).mMaxAttackRange(),
+			                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+				chappy->mNextState = KUMACHAPPY_Attack;
+				chappy->finishMotion();
+				chappy->setAnimSpeed(60.0f);
 
+			} else if (chappy->isTargetOutOfRange(target, angleSep, CG_GENERALPARMS(chappy).mPrivateRadius(),
+			                                      CG_GENERALPARMS(chappy).mSightRadius(), CG_GENERALPARMS(chappy).mFov(),
+			                                      chappy->getViewAngle())) {
+				chappy->mNextState = KUMACHAPPY_Lost;
+				chappy->finishMotion();
+			} else if (absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+				chappy->mNextState = KUMACHAPPY_Walk;
+				chappy->finishMotion();
+			}
+		} else {
+			chappy->setNearestWayPoint();
+			Vector3f targetPos = chappy->mTargetPos;
+			f32 angleSep = chappy->turnToTarget(targetPos, CG_GENERALPARMS(chappy).mTurnSpeed(), CG_GENERALPARMS(chappy).mMaxTurnAngle());
+			if (absF(angleSep) <= (PI / 4)) {
+				chappy->mNextState = KUMACHAPPY_WalkPath;
+				chappy->finishMotion();
+			} else {
+				chappy->mNextState = KUMACHAPPY_TurnPath;
+				chappy->finishMotion();
+			}
+		}
+	}
+
+	if (chappy->mCurAnim->mIsPlaying && chappy->mCurAnim->mType == KEYEVENT_END) {
+		transit(chappy, chappy->mNextState, nullptr);
+	}
 	/*
 	stwu     r1, -0x160(r1)
 	mflr     r0
@@ -2051,10 +2274,9 @@ lbl_80297ED0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80297F30
- * Size:	00003C
+/**
+ * @note Address: 0x80297F30
+ * @note Size: 0x3C
  */
 void StateTurn::cleanup(EnemyBase* enemy)
 {
@@ -2062,28 +2284,64 @@ void StateTurn::cleanup(EnemyBase* enemy)
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	80297F6C
- * Size:	000044
+/**
+ * @note Address: 0x80297F6C
+ * @note Size: 0x44
  */
 void StateTurnPath::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* chappy             = OBJ(enemy);
 	chappy->mNextState      = KUMACHAPPY_NULL;
 	chappy->mTargetVelocity = Vector3f(0.0f);
-	chappy->startMotion(6, nullptr);
+	chappy->startMotion(KUMACHAPPYANIM_Turn, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80297FB0
- * Size:	0004E0
+/**
+ * @note Address: 0x80297FB0
+ * @note Size: 0x4E0
  */
 void StateTurnPath::exec(EnemyBase* enemy)
 {
 	Obj* chappy = OBJ(enemy);
+	chappy->updateHomePosition();
+	if (chappy->mHealth <= 0.0f) {
+		chappy->mNextState = KUMACHAPPY_Dead;
+		chappy->finishMotion();
+		chappy->setAnimSpeed(60.0f);
+	} else if (EnemyFunc::isStartFlick(chappy, false)) {
+		chappy->mNextState = KUMACHAPPY_Flick;
+		chappy->finishMotion();
+		chappy->setAnimSpeed(60.0f);
+	} else {
+		Creature* target = chappy->getSearchedTarget();
+		if (target) {
+			f32 angleSep = chappy->changeFaceDir2(target);
+			if (chappy->isTargetAttackable(target, angleSep, CG_GENERALPARMS(chappy).mMaxAttackRange(),
+			                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+				chappy->mNextState = KUMACHAPPY_Attack;
+				chappy->finishMotion();
+				chappy->setAnimSpeed(60.0f);
 
+			} else if (absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+				chappy->mNextState = KUMACHAPPY_Walk;
+				chappy->finishMotion();
+			} else {
+				chappy->mNextState = KUMACHAPPY_Turn;
+				chappy->finishMotion();
+			}
+		} else {
+			Vector3f targetPos = chappy->mTargetPos;
+			f32 angleSep = chappy->turnToTarget(targetPos, CG_GENERALPARMS(chappy).mTurnSpeed(), CG_GENERALPARMS(chappy).mMaxTurnAngle());
+			if (absF(angleSep) <= (PI / 4)) {
+				chappy->mNextState = KUMACHAPPY_WalkPath;
+				chappy->finishMotion();
+			}
+		}
+	}
+
+	if (chappy->mCurAnim->mIsPlaying && chappy->mCurAnim->mType == KEYEVENT_END) {
+		transit(chappy, chappy->mNextState, nullptr);
+	}
 	/*
 	stwu     r1, -0xf0(r1)
 	mflr     r0
@@ -2424,17 +2682,15 @@ lbl_80298440:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80298490
- * Size:	000028
+/**
+ * @note Address: 0x80298490
+ * @note Size: 0x28
  */
 void StateTurnPath::cleanup(EnemyBase* enemy) { enemy->setAnimSpeed(30.0f); }
 
-/*
- * --INFO--
- * Address:	802984B8
- * Size:	000050
+/**
+ * @note Address: 0x802984B8
+ * @note Size: 0x50
  */
 void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -2442,18 +2698,77 @@ void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 	chappy->mTimer     = 0.0f;
 	chappy->mNextState = KUMACHAPPY_NULL;
 	chappy->setEmotionExcitement();
-	chappy->startMotion(3, nullptr);
+	chappy->startMotion(KUMACHAPPYANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80298508
- * Size:	00070C
+/**
+ * @note Address: 0x80298508
+ * @note Size: 0x70C
  */
 void StateWalk::exec(EnemyBase* enemy)
 {
-	Obj* chappy = OBJ(enemy);
+	Obj* chappy      = OBJ(enemy);
+	f32 turnSpeed    = CG_GENERALPARMS(chappy).mTurnSpeed();    // f30
+	f32 maxTurnAngle = CG_GENERALPARMS(chappy).mMaxTurnAngle(); // f29
+	if (chappy->isFinishMotion()) {
+		turnSpeed    = 0.01f;
+		maxTurnAngle = 1.0f;
+	}
+	if (chappy->mHealth <= 0.0f) {
+		chappy->mNextState = KUMACHAPPY_Dead;
+		chappy->finishMotion();
+		chappy->setAnimSpeed(60.0f);
+	} else if (EnemyFunc::isStartFlick(chappy, false)) {
+		chappy->mNextState = KUMACHAPPY_Flick;
+		chappy->finishMotion();
+		chappy->setAnimSpeed(60.0f);
+	} else {
+		Creature* target = chappy->getSearchedTarget();
+		if (target) {
+			f32 angleSep = chappy->turnToTarget(target, turnSpeed, maxTurnAngle);
+			if (chappy->isTargetAttackable(target, angleSep, CG_GENERALPARMS(chappy).mMaxAttackRange(),
+			                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+				chappy->mNextState = KUMACHAPPY_Attack;
+				chappy->finishMotion();
+				chappy->setAnimSpeed(60.0f);
 
+			} else if (chappy->isTargetOutOfRange(target, angleSep, CG_GENERALPARMS(chappy).mPrivateRadius(),
+			                                      CG_GENERALPARMS(chappy).mSightRadius(), CG_GENERALPARMS(chappy).mFov(),
+			                                      chappy->getViewAngle())) {
+				chappy->mNextState = KUMACHAPPY_Lost;
+				chappy->finishMotion();
+			} else if (!(absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle()))) {
+				chappy->mNextState = KUMACHAPPY_Turn;
+				chappy->finishMotion();
+			}
+		} else {
+			chappy->setNearestWayPoint();
+			Vector3f targetPos = chappy->mTargetPos;
+			f32 angleSep       = chappy->turnToTarget(targetPos, turnSpeed, maxTurnAngle);
+			if (absF(angleSep) <= (PI / 4)) {
+				chappy->mNextState = KUMACHAPPY_WalkPath;
+				chappy->finishMotion();
+			} else {
+				chappy->mNextState = KUMACHAPPY_TurnPath;
+				chappy->finishMotion();
+			}
+		}
+	}
+
+	if (chappy->isFinishMotion()) {
+		chappy->mTargetVelocity = Vector3f(0.0f);
+	} else {
+		f32 moveSpeed = CG_GENERALPARMS(chappy).mMoveSpeed();
+		f32 x         = sin(chappy->getFaceDir());
+		f32 y         = chappy->getTargetVelocity().y;
+		f32 z         = cos(chappy->getFaceDir());
+
+		chappy->mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+	}
+
+	if (chappy->mCurAnim->mIsPlaying && chappy->mCurAnim->mType == KEYEVENT_END) {
+		transit(chappy, chappy->mNextState, nullptr);
+	}
 	/*
 	stwu     r1, -0x170(r1)
 	mflr     r0
@@ -2947,10 +3262,9 @@ lbl_80298BB4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80298C14
- * Size:	00003C
+/**
+ * @note Address: 0x80298C14
+ * @note Size: 0x3C
  */
 void StateWalk::cleanup(EnemyBase* enemy)
 {
@@ -2958,27 +3272,82 @@ void StateWalk::cleanup(EnemyBase* enemy)
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	80298C50
- * Size:	000034
+/**
+ * @note Address: 0x80298C50
+ * @note Size: 0x34
  */
 void StateWalkPath::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* chappy        = OBJ(enemy);
 	chappy->mNextState = KUMACHAPPY_NULL;
-	chappy->startMotion(3, nullptr);
+	chappy->startMotion(KUMACHAPPYANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80298C84
- * Size:	000594
+/**
+ * @note Address: 0x80298C84
+ * @note Size: 0x594
  */
 void StateWalkPath::exec(EnemyBase* enemy)
 {
 	Obj* chappy = OBJ(enemy);
+	chappy->updateHomePosition();
+	f32 turnSpeed    = CG_GENERALPARMS(chappy).mTurnSpeed();    // f30
+	f32 maxTurnAngle = CG_GENERALPARMS(chappy).mMaxTurnAngle(); // f29
+	if (chappy->isFinishMotion()) {
+		turnSpeed    = 0.01f;
+		maxTurnAngle = 1.0f;
+	}
+	if (chappy->mHealth <= 0.0f) {
+		chappy->mNextState = KUMACHAPPY_Dead;
+		chappy->finishMotion();
+		chappy->setAnimSpeed(60.0f);
+	} else if (EnemyFunc::isStartFlick(chappy, false)) {
+		chappy->mNextState = KUMACHAPPY_Flick;
+		chappy->finishMotion();
+		chappy->setAnimSpeed(60.0f);
+	} else {
+		Creature* target = chappy->getSearchedTarget();
+		if (target) {
+			f32 angleSep = chappy->turnToTarget(target, turnSpeed, maxTurnAngle);
+			if (chappy->isTargetAttackable(target, angleSep, CG_GENERALPARMS(chappy).mMaxAttackRange(),
+			                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+				chappy->mNextState = KUMACHAPPY_Attack;
+				chappy->finishMotion();
+				chappy->setAnimSpeed(60.0f);
 
+			} else if (absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+				chappy->mNextState = KUMACHAPPY_Walk;
+				chappy->finishMotion();
+			} else {
+				chappy->mNextState = KUMACHAPPY_Turn;
+				chappy->finishMotion();
+			}
+		} else {
+			Vector3f targetPos = chappy->mTargetPos;
+			f32 angleSep       = chappy->turnToTarget(targetPos, turnSpeed, maxTurnAngle);
+			if (!(absF(angleSep) <= (PI / 4))) {
+				chappy->mNextState = KUMACHAPPY_TurnPath;
+				chappy->finishMotion();
+			}
+		}
+	}
+
+	if (chappy->isFinishMotion()) {
+		chappy->mTargetVelocity = Vector3f(0.0f);
+	} else {
+		f32 moveSpeed = CG_GENERALPARMS(chappy).mMoveSpeed();
+		f32 x         = sin(chappy->getFaceDir());
+		f32 y         = chappy->getTargetVelocity().y;
+		f32 z         = cos(chappy->getFaceDir());
+
+		chappy->mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+	}
+
+	chappy->mTimer += 0.5f * sys->mDeltaTime;
+
+	if (chappy->mCurAnim->mIsPlaying && chappy->mCurAnim->mType == KEYEVENT_END) {
+		transit(chappy, chappy->mNextState, nullptr);
+	}
 	/*
 	stwu     r1, -0x100(r1)
 	mflr     r0
@@ -3370,10 +3739,9 @@ lbl_802991C8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80299218
- * Size:	000028
+/**
+ * @note Address: 0x80299218
+ * @note Size: 0x28
  */
 void StateWalkPath::cleanup(EnemyBase* enemy) { enemy->setAnimSpeed(30.0f); }
 } // namespace KumaChappy

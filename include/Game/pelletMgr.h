@@ -3,6 +3,7 @@
 
 #include "CarryInfo.h"
 #include "Game/DynCreature.h"
+#include "Game/DynParticle.h"
 #include "ObjectMgr.h"
 #include "GenericObjectMgr.h"
 #include "Game/Interaction.h"
@@ -22,8 +23,7 @@
 #include "TexCaster.h"
 #include "Vector3.h"
 #include "Matrixf.h"
-#include "types.h"
-#include "JSystem/JUtility/JUTException.h"
+#include "P2Macros.h"
 #include "JSystem/J3D/J3DMtxCalc.h"
 #include "System.h"
 #include "Iterator.h"
@@ -35,6 +35,12 @@
 #define PELCOLOR_YELLOW (2)
 #define PELCOLOR_RANDOM (3)
 
+#define PELCOLOR_SPICY  (0)
+#define PELCOLOR_BITTER (1)
+
+#define PELCOLOR_SPECTRALID (0)
+#define PELSIZE_SPECTRALID  (1)
+
 // pellet types
 // for use with Pellet:mPelletType and getKind()
 #define PELTYPE_NUMBER   (0)
@@ -42,6 +48,7 @@
 #define PELTYPE_BERRY    (2)
 #define PELTYPE_TREASURE (3)
 #define PELTYPE_UPGRADE  (4)
+#define PELTYPE_INVALID  (0xFF)
 
 namespace PSM {
 struct EventBase;
@@ -104,9 +111,10 @@ struct PelletMgr : public NodeObjectMgr<GenericObjectMgr> {
 	void makeOtakaraItemCode(char*, PelletMgr::OtakaraItemCode&);
 	void addMgr(BasePelletMgr*);
 	void setupSoundViewerAndBas();
-	void decode(long, u8&, int&);
+	void decode(s32, u8&, int&);
 	int encode(u8, int);
 	BasePelletMgr* getMgrByID(u8);
+	void calcNearestTreasure(Vector3f&, f32);
 
 	static bool mDebug;
 	static bool disableDynamics;
@@ -137,8 +145,8 @@ struct PelletInitArg : public CreatureInitArg {
 	{
 		_1C                   = 0;
 		mState                = 0;
-		mPelletType           = 0xFF;
-		_18                   = nullptr;
+		mPelletType           = PELTYPE_INVALID;
+		mPelView              = nullptr;
 		_17                   = 0;
 		_04                   = true;
 		mAdjustWeightForSquad = 0;
@@ -164,7 +172,7 @@ struct PelletInitArg : public CreatureInitArg {
 	u16 mState;               // _14
 	u8 mPelletType;           // _16
 	u8 _17;                   // _17
-	PelletView* _18;          // _18
+	PelletView* mPelView;     // _18
 	u8 _1C;                   // _1C
 	u8 mAdjustWeightForSquad; // _1D, should Item decrease weight for piki squads that are less than minimum carry weight
 	u8 _1E;                   // _1E
@@ -175,8 +183,6 @@ struct PelletInitArg : public CreatureInitArg {
 
 struct PelletIndexInitArg : public PelletInitArg {
 	PelletIndexInitArg(int);
-
-	u8 _28[0x8]; // _28, unknown
 };
 
 struct PelletNumberInitArg : public PelletInitArg {
@@ -184,6 +190,14 @@ struct PelletNumberInitArg : public PelletInitArg {
 };
 
 struct PelletKillArg : public CreatureKillArg {
+	inline PelletKillArg()
+	    : CreatureKillArg(0)
+	{
+		_08 = 1;
+	}
+
+	// _00     = VTBL
+	// _00-_08 = CreatureKillArg
 	u8 _08; // _08
 };
 
@@ -192,6 +206,17 @@ struct PelletKillArg : public CreatureKillArg {
  */
 struct Pellet : public DynCreature, public SysShape::MotionListener, public CarryInfoOwner {
 	typedef PelletState StateType;
+
+	struct PelletSlots {
+		PelletSlots()
+		{
+			for (int i = 0; i < 16; i++) {
+				mSlots[i] = 0;
+			}
+		}
+
+		u8 mSlots[16]; // _00
+	};
 
 	Pellet();
 
@@ -210,21 +235,25 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 	{
 		return mPelletPosition;
 	}
-	virtual void getBoundingSphere(Sys::Sphere& boundSphere);        // _10
-	virtual bool deferPikiCollision() { return true; }               // _20 (weak)
-	virtual void constructor();                                      // _2C
-	virtual void onInit(CreatureInitArg* settings);                  // _30 (weak)
-	virtual void onKill(CreatureKillArg* settings);                  // _34
-	virtual void doAnimation();                                      // _3C
-	virtual void doEntry();                                          // _40
-	virtual void doSetView(int viewportNumber);                      // _44
-	virtual void doViewCalc();                                       // _48
-	virtual void doSimulation(f32 rate);                             // _4C
-	virtual void doDirectDraw(Graphics& gfx);                        // _50
-	virtual f32 getFaceDir() { return mFaceDir; }                    // _64 (weak)
-	virtual void setVelocity(Vector3f& vel);                         // _68
-	virtual Vector3f getVelocity();                                  // _6C
-	virtual void onSetPosition(Vector3f& dest);                      // _70 (weak)
+	virtual void getBoundingSphere(Sys::Sphere& boundSphere); // _10
+	virtual bool deferPikiCollision() { return true; }        // _20 (weak)
+	virtual void constructor();                               // _2C
+	virtual void onInit(CreatureInitArg* settings);           // _30 (weak)
+	virtual void onKill(CreatureKillArg* settings);           // _34
+	virtual void doAnimation();                               // _3C
+	virtual void doEntry();                                   // _40
+	virtual void doSetView(int viewportNumber);               // _44
+	virtual void doViewCalc();                                // _48
+	virtual void doSimulation(f32 rate);                      // _4C
+	virtual void doDirectDraw(Graphics& gfx);                 // _50
+	virtual f32 getFaceDir() { return mFaceDir; }             // _64 (weak)
+	virtual void setVelocity(Vector3f& vel);                  // _68
+	virtual Vector3f getVelocity();                           // _6C
+	virtual void onSetPosition(Vector3f& dest)                // _70 (weak)
+	{
+		mPelletPosition = dest;
+		onSetPosition();
+	}
 	virtual void updateTrMatrix();                                   // _78
 	virtual bool inWater() { return mIsInWater; }                    // _8C (weak)
 	virtual void onStartCapture();                                   // _94
@@ -241,13 +270,13 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 	virtual void getLODSphere(Sys::Sphere& lodSphere);               // _140
 	virtual void startPick();                                        // _148
 	virtual void endPick(bool);                                      // _14C
-	virtual bool isSlotFree(short);                                  // _168
-	virtual short getFreeStickSlot();                                // _16C
-	virtual short getNearFreeStickSlot(Vector3f&);                   // _170
-	virtual short getRandomFreeStickSlot();                          // _174
-	virtual void onSlotStickStart(Creature*, short);                 // _178
-	virtual void onSlotStickEnd(Creature*, short);                   // _17C
-	virtual void calcStickSlotGlobal(short, Vector3f&);              // _180
+	virtual bool isSlotFree(s16);                                    // _168
+	virtual s16 getFreeStickSlot();                                  // _16C
+	virtual s16 getNearFreeStickSlot(Vector3f&);                     // _170
+	virtual s16 getRandomFreeStickSlot();                            // _174
+	virtual void onSlotStickStart(Creature*, s16);                   // _178
+	virtual void onSlotStickEnd(Creature*, s16);                     // _17C
+	virtual void calcStickSlotGlobal(s16, Vector3f&);                // _180
 	virtual bool stimulate(Interaction& data);                       // _1A4
 	virtual char* getCreatureName();                                 // _1A8
 	virtual s32 getCreatureID();                                     // _1AC
@@ -260,54 +289,26 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 
 	////////////// VTABLE 3 (CARRYINFOOWNER + SELF)
 	// getCarryInfoParam thunk at _1C8
-	virtual void do_onInit(CreatureInitArg*) { }                // _1CC (weak)
-	virtual void onCreateShape() { }                            // _1D0 (weak)
-	virtual void theEntry();                                    // _1D4
-	virtual void onBounce() { }                                 // _1D8 (weak)
-	virtual void shadowOn();                                    // _1DC
-	virtual void shadowOff();                                   // _1E0
-	virtual bool isPickable();                                  // _1E4
-	virtual s32 getBedamaColor() { return -1; }                 // _1E8 (weak)
-	virtual void do_update() { }                                // _1EC (weak)
-	virtual void onKeyEvent(const SysShape::KeyEvent& keyEvent) // _1F0 (weak, thunk at _1BC)
-	{
-		if ((keyEvent.mType == 1000U) && (mCarryAnim.mFlags & 2)) {
-			mCarryAnim.startAnim(0, this);
-			if (_3D0 & 1) {
-				mAnimSpeed = 30.0f * sys->mDeltaTime;
-				return;
-			}
-			mAnimSpeed = 0.0f;
-		}
-	}
-	virtual u8 getKind() = 0;                                 // _1F4
-	virtual void changeMaterial() { }                         // _1F8 (weak)
-	virtual void createKiraEffect(Vector3f&) { }              // _1FC (weak)
-	virtual void getCarryInfoParam(CarryInfoParam& infoParam) // _200 (weak, thunk at _1C8)
-	{
-		infoParam.mUseType    = 0;
-		infoParam.mPosition   = mRigid.mConfigs[0]._00;
-		infoParam.mYOffsetMax = 30.0f + mConfig->mParams.mHeight.mData;
-		infoParam._14         = 1;
-		infoParam.mIsTopFirst = 1;
-		infoParam.mValue2     = getTotalCarryPikmins();
-
-		int minVal;
-		if (mMinCarriers > 0) {
-			minVal = mMinCarriers;
-		} else {
-			minVal = mConfig->mParams.mMin.mData;
-		}
-		infoParam.mValue1 = minVal;
-
-		infoParam.mColor = mCarryColor;
-	}
-	virtual bool isCarried();                    // _204
-	virtual bool isPicked() { return _3D0 & 1; } // _208 (weak)
-	virtual void sound_otakaraEventStart() { }   // _20C (weak)
-	virtual void sound_otakaraEventRestart() { } // _210 (weak)
-	virtual void sound_otakaraEventStop() { }    // _214 (weak)
-	virtual void sound_otakaraEventFinish() { }  // _218 (weak)
+	virtual void do_onInit(CreatureInitArg*) { }                 // _1CC (weak)
+	virtual void onCreateShape() { }                             // _1D0 (weak)
+	virtual void theEntry();                                     // _1D4
+	virtual void onBounce() { }                                  // _1D8 (weak)
+	virtual void shadowOn();                                     // _1DC
+	virtual void shadowOff();                                    // _1E0
+	virtual bool isPickable();                                   // _1E4
+	virtual s32 getBedamaColor() { return -1; }                  // _1E8 (weak)
+	virtual void do_update() { }                                 // _1EC (weak)
+	virtual void onKeyEvent(const SysShape::KeyEvent& keyEvent); // _1F0 (weak, thunk at _1BC)
+	virtual u8 getKind() = 0;                                    // _1F4
+	virtual void changeMaterial() { }                            // _1F8 (weak)
+	virtual void createKiraEffect(Vector3f&) { }                 // _1FC (weak)
+	virtual void getCarryInfoParam(CarryInfoParam& infoParam);   // _200 (not weak, thunk at _1C8)
+	virtual bool isCarried();                                    // _204
+	virtual bool isPicked() { return mPickFlags & 1; }           // _208 (weak)
+	virtual void sound_otakaraEventStart() { }                   // _20C (weak)
+	virtual void sound_otakaraEventRestart() { }                 // _210 (weak)
+	virtual void sound_otakaraEventStop() { }                    // _214 (weak)
+	virtual void sound_otakaraEventFinish() { }                  // _218 (weak)
 
 	u8 getWallTimer();
 	void clearClaim();
@@ -365,7 +366,7 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 		if (slot < 128) {
 			u32 index = slot >> 3;
 			u32 flag  = 1 << slot - index * 8;
-			mSlots[15 - index] |= flag;
+			mSlots.mSlots[15 - index] |= flag;
 		}
 	}
 
@@ -374,7 +375,7 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 		if (slot < 128) {
 			u32 index = slot >> 3;
 			u32 flag  = 1 << slot - index * 8;
-			mSlots[15 - index] &= ~flag;
+			mSlots.mSlots[15 - index] &= ~flag;
 		}
 	}
 
@@ -401,10 +402,10 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 	inline bool isTreasurePosition() // this probably needs a better name; used in Pellet::onSetPosition
 	{
 		bool check = false;
-		if ((mCaptureMatrix == nullptr) && (PelletMgr::mDebug == false) && (mConfig->mParams.mDepth.mData > 0.0f) && (_3C4 == 0)) {
+		if ((mCaptureMatrix == nullptr) && (PelletMgr::mDebug == false) && (mConfig->mParams.mDepth.mData > 0.0f) && (mIsCaptured == 0)) {
 			check = true;
 		}
-		if ((gameSystem->mMode == GSM_VERSUS_MODE) && (mCaptureMatrix == nullptr) && (_3C4 == 0)) {
+		if (gameSystem->isVersusMode() && (mCaptureMatrix == nullptr) && (mIsCaptured == 0)) {
 			u8 test = mPelletFlag;
 			if (test == FLAG_VS_BEDAMA_RED) {
 				check = false;
@@ -421,61 +422,70 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 
 	inline f32 getStickRadius() { return mConfig->mParams.mRadius.mData; }
 
+	inline StateType* getCurrState() { return mCurrentState; }
+
 	inline void setCurrState(StateType* state) { mCurrentState = state; }
+
+	inline void setupDynParticle(int idx, f32 height, Vector3f& rotation)
+	{
+		_2F4                          = _2F4 + rotation;
+		mDynParticle->getAt(idx)->_00 = rotation;
+		mDynParticle->getAt(idx)->_18 = height;
+	}
+
+	inline bool checkBedamaColor(int color)
+	{
+		int bedamaColor = getBedamaColor();
+		return bedamaColor != color;
+	}
 
 	// _00		= VTABLE 1
 	// _04-_314	= DYNCREATURE
 	// _318 	= VTABLE 2? 3?
-	f32 mRadius;                   // _31C
-	f32 mDepth;                    // _320
-	u8 _324;                       // _324 - unknown
-	bool mIsInWater;               // _325
-	u8 _326[0x2];                  // _326 - could be padding
-	TexCaster::Caster* mCaster;    // _328
-	u8 mPelletFlag;                // _32C
-	u8 mDiscoverDisable;           // _32D
-	u8 _32E[0x2];                  //  _32E - could be padding
-	PSM::EventBase* mSoundMgr;     // _330
-	PelletCarry* mPelletCarry;     // _334
-	u8 mNumPMotions;               // _338
-	u8 _339[0x3];                  // _339, unknown/padding
-	SysShape::Animator _33C;       // _33C
-	PelletView* mPelletView;       // _358
-	PelletConfig* mConfig;         // _35C
-	int _360;                      // _360
-	u8 _364;                       // _364
-	u8 _365[0x33];                 // _365 - unknown
-	CarryInfoMgr* mCarryInfoMgr;   // _398
-	u8 _39C;                       // _39C - unknown
-	u8 _39D[0xF];                  // _39D - unknown
-	Vector3f mPelletPosition;      // _3AC
-	f32 mFaceDir;                  // _3B8
-	u8 mWallTimer;                 // _3BC
-	u8 _3BD[0x3];                  // _3BD - possibly padding
-	u32 mClaim;                    // _3C0
-	bool _3C4;                     // _3C4
-	u8 _3C5[0x3];                  // _3C5 - unknown
-	PelletFSM* mPelletSM;          // _3C8
-	PelletState* mCurrentState;    // _3CC
-	u8 _3D0;                       // _3D0
-	int mCarryColor;               // _3D4
-	int mMinCarriers;              // _3D8, to do with pikmin number
-	int mMaxCarriers;              // _3DC
-	f32 _3E0;                      // _3E0
-	u8 mSlots[16];                 // _3E4
-	short mSlotCount;              // _3F4
-	u8 _3F6;                       // _3F6
-	u8 _3F7;                       // _3F7 - unknown, maybe padding
-	u32 mPikminCount[7];           // _3F8, TODO: likely [PikiColorCount]
-	u32 _414;                      // _414 - unknown
-	f32 mCarryPower;               // _418
-	SysShape::Animator mCarryAnim; // _41C
-	f32 mAnimSpeed;                // _438
-	u16 mPelletSizeType;           // _43C, used for number pellets
-	u16 mPelletColor;              // _43E, this reflects pellet color for Number pellets, and the color of berries
-	int mSlotIndex;                // _440
-	Sys::Sphere mLodSphere;        // _444
-	BasePelletMgr* mMgr;           // _454
+	f32 mRadius;                      // _31C
+	f32 mDepth;                       // _320
+	bool mIsBounced;                  // _324
+	bool mIsInWater;                  // _325
+	TexCaster::Caster* mCaster;       // _328
+	u8 mPelletFlag;                   // _32C
+	u8 mDiscoverDisable;              // _32D
+	PSM::EventBase* mSoundMgr;        // _330
+	PelletCarry* mPelletCarry;        // _334
+	u8 mNumPMotions;                  // _338
+	SysShape::Animator mPmotionAnim;  // _33C
+	PelletView* mPelletView;          // _358
+	PelletConfig* mConfig;            // _35C
+	int mMaxCollParticle;             // _360
+	u8 mDynamicType;                  // _364, 2 = never, 1 = lod, 0 = always
+	u8 _365[0x33];                    // _365 - unknown
+	CarryInfoList* mCarryInfoList;    // _398
+	u8 mIsDynamic;                    // _39C - unknown
+	u8 _39D[0xF];                     // _39D - unknown
+	Vector3f mPelletPosition;         // _3AC
+	f32 mFaceDir;                     // _3B8
+	u8 mWallTimer;                    // _3BC
+	int mClaim;                       // _3C0
+	bool mIsCaptured;                 // _3C4, might be more like "is alive"
+	PelletFSM* mPelletSM;             // _3C8
+	PelletState* mCurrentState;       // _3CC
+	u8 mPickFlags;                    // _3D0
+	int mCarryColor;                  // _3D4
+	int mMinCarriers;                 // _3D8, to do with pikmin number
+	int mMaxCarriers;                 // _3DC
+	f32 mAngleOffset;                 // _3E0
+	PelletSlots mSlots;               // _3E4
+	s16 mSlotCount;                   // _3F4
+	u8 _3F6;                          // _3F6
+	u32 mPikminCount[PikiColorCount]; // _3F8
+	u32 mTotalCarriers;               // _414, might be for non-pikmin carriers?
+	f32 mCarryPower;                  // _418
+	SysShape::Animator mCarryAnim;    // _41C
+	f32 mAnimSpeed;                   // _438
+	u16 mPelletSizeType;              // _43C, used for number pellets
+	u16 mPelletColor;                 // _43E, this reflects pellet color for Number pellets, and the color of berries
+	int mSlotIndex;                   // _440
+	Sys::Sphere mLodSphere;           // _444
+	BasePelletMgr* mMgr;              // _454
 
 	static bool sFromTekiEnable;
 };
@@ -488,16 +498,16 @@ struct PelletFSM : public StateMachine<Pellet> {
 };
 
 enum StateID {
-	PELSTATE_Normal,
-	PELSTATE_Goal,
-	PELSTATE_Bury,
-	PELSTATE_Up,
-	PELSTATE_Appear,
-	PELSTATE_ScaleAppear,
-	PELSTATE_Zukan,
-	PELSTATE_GoalWait,
-	PELSTATE_Return,
-	PELLET_STATE_COUNT
+	PELSTATE_Normal      = 0,
+	PELSTATE_Goal        = 1,
+	PELSTATE_Bury        = 2,
+	PELSTATE_Up          = 3,
+	PELSTATE_Appear      = 4,
+	PELSTATE_ScaleAppear = 5,
+	PELSTATE_Zukan       = 6,
+	PELSTATE_GoalWait    = 7,
+	PELSTATE_Return      = 8,
+	PELLET_STATE_COUNT, // 9
 };
 
 struct PelletGoalStateArg : public StateArg {
@@ -521,8 +531,8 @@ struct PelletState : public FSMState<Pellet> {
 	{
 	}
 
-	virtual bool isBuried();                    // _20 (weak)
-	virtual bool appeared();                    // _24 (weak)
+	virtual bool isBuried() { return false; }   // _20 (weak)
+	virtual bool appeared() { return true; }    // _24 (weak)
 	virtual bool isPickable() { return false; } // _28 (weak)
 
 	u8 _0C[0x4]; // _0C
@@ -534,10 +544,10 @@ struct PelletAppearState : public PelletState {
 	{
 	}
 
-	virtual void init(Pellet*, StateArg*); // _08
-	virtual void exec(Pellet*);            // _0C
-	virtual void cleanup(Pellet*);         // _10
-	virtual bool appeared();               // _24 (weak)
+	virtual void init(Pellet*, StateArg*);    // _08
+	virtual void exec(Pellet*);               // _0C
+	virtual void cleanup(Pellet*);            // _10
+	virtual bool appeared() { return false; } // _24 (weak)
 
 	f32 mTime;      // _10
 	f32 mAngle;     // _14
@@ -555,10 +565,10 @@ struct PelletBuryState : public PelletState {
 	{
 	}
 
-	virtual void init(Pellet*, StateArg*); // _08
-	virtual void exec(Pellet*);            // _0C
-	virtual void cleanup(Pellet*);         // _10
-	virtual bool isBuried();               // _20 (weak)
+	virtual void init(Pellet*, StateArg*);   // _08
+	virtual void exec(Pellet*);              // _0C
+	virtual void cleanup(Pellet*);           // _10
+	virtual bool isBuried() { return true; } // _20 (weak)
 };
 
 struct PelletGoalState : public PelletState {
@@ -606,10 +616,10 @@ struct PelletNormalState : public PelletState {
 	{
 	}
 
-	virtual void init(Pellet*, StateArg*); // _08
-	virtual void exec(Pellet*);            // _0C
-	virtual void cleanup(Pellet*);         // _10
-	virtual bool isPickable();             // _28 (weak)
+	virtual void init(Pellet*, StateArg*);     // _08
+	virtual void exec(Pellet*);                // _0C
+	virtual void cleanup(Pellet*);             // _10
+	virtual bool isPickable() { return true; } // _28 (weak)
 };
 
 struct PelletReturnArg : StateArg {
@@ -654,10 +664,10 @@ struct PelletScaleAppearState : public PelletState {
 	}
 
 	// might inherit PelletAppearState or vice versa?
-	virtual void init(Pellet*, StateArg*); // _08
-	virtual void exec(Pellet*);            // _0C
-	virtual void cleanup(Pellet*);         // _10
-	virtual bool appeared();               // _24 (weak)
+	virtual void init(Pellet*, StateArg*);    // _08
+	virtual void exec(Pellet*);               // _0C
+	virtual void cleanup(Pellet*);            // _10
+	virtual bool appeared() { return false; } // _24 (weak)
 
 	f32 mTime;      // _10
 	f32 mAngle;     // _14
@@ -675,10 +685,10 @@ struct PelletUpState : public PelletState {
 	{
 	}
 
-	virtual void init(Pellet*, StateArg*); // _08
-	virtual void exec(Pellet*);            // _0C
-	virtual void cleanup(Pellet*);         // _10
-	virtual bool isBuried();               // _20 (weak)
+	virtual void init(Pellet*, StateArg*);   // _08
+	virtual void exec(Pellet*);              // _0C
+	virtual void cleanup(Pellet*);           // _10
+	virtual bool isBuried() { return true; } // _20 (weak)
 };
 
 struct PelletZukanState : public PelletState {

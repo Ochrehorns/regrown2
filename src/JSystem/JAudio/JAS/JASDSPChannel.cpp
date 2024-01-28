@@ -1,20 +1,11 @@
 #include "JSystem/JAudio/JAS/JASDsp.h"
 #include "JSystem/JAudio/JAS/JASHeap.h"
-#include "types.h"
 
-/*
-    Generated from dpostproc
+JASDSPChannel* JASDSPChannel::sDspChannels;
 
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global sDspChannels__13JASDSPChannel
-    sDspChannels__13JASDSPChannel:
-        .skip 0x8
-*/
-
-/*
- * --INFO--
- * Address:	800A4B48
- * Size:	00002C
+/**
+ * @note Address: 0x800A4B48
+ * @note Size: 0x2C
  */
 JASDSPChannel::JASDSPChannel()
 {
@@ -27,10 +18,9 @@ JASDSPChannel::JASDSPChannel()
 	_18 = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	800A4B74
- * Size:	000010
+/**
+ * @note Address: 0x800A4B74
+ * @note Size: 0x10
  */
 void JASDSPChannel::free()
 {
@@ -38,17 +28,15 @@ void JASDSPChannel::free()
 	_14 = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	800A4B84
- * Size:	000010
+/**
+ * @note Address: 0x800A4B84
+ * @note Size: 0x10
  */
 void JASDSPChannel::start() { _08 |= 1; }
 
-/*
- * --INFO--
- * Address:	800A4B94
- * Size:	000088
+/**
+ * @note Address: 0x800A4B94
+ * @note Size: 0x88
  */
 void JASDSPChannel::drop()
 {
@@ -65,10 +53,9 @@ void JASDSPChannel::drop()
 	}
 }
 
-/*
- * --INFO--
- * Address:	800A4C1C
- * Size:	000084
+/**
+ * @note Address: 0x800A4C1C
+ * @note Size: 0x84
  */
 void JASDSPChannel::initAll()
 {
@@ -78,12 +65,11 @@ void JASDSPChannel::initAll()
 	}
 }
 
-/*
- * --INFO--
- * Address:	800A4CA0
- * Size:	0000DC
+/**
+ * @note Address: 0x800A4CA0
+ * @note Size: 0xDC
  */
-JASDSPChannel* JASDSPChannel::alloc(u8 index, long (*cb)(unsigned long, JASDsp::TChannel*, void*), void* p3)
+JASDSPChannel* JASDSPChannel::alloc(u8 index, s32 (*cb)(u32, JASDsp::TChannel*, void*), void* p3)
 {
 	JASDSPChannel* channel = getLowestChannel(index);
 	if (!channel) {
@@ -107,12 +93,11 @@ JASDSPChannel* JASDSPChannel::alloc(u8 index, long (*cb)(unsigned long, JASDsp::
 	return channel;
 }
 
-/*
- * --INFO--
- * Address:	800A4D7C
- * Size:	0000E4
+/**
+ * @note Address: 0x800A4D7C
+ * @note Size: 0xE4
  */
-JASDSPChannel* JASDSPChannel::allocForce(u8 index, long (*cb)(unsigned long, JASDsp::TChannel*, void*), void* p3)
+JASDSPChannel* JASDSPChannel::allocForce(u8 index, s32 (*cb)(u32, JASDsp::TChannel*, void*), void* p3)
 {
 	JASDSPChannel* channel = getLowestChannel(index);
 	if (!channel) {
@@ -137,24 +122,22 @@ JASDSPChannel* JASDSPChannel::allocForce(u8 index, long (*cb)(unsigned long, JAS
 	return channel;
 }
 
-/*
- * --INFO--
- * Address:	800A4E60
- * Size:	00000C
+/**
+ * @note Address: 0x800A4E60
+ * @note Size: 0xC
  */
 void JASDSPChannel::setPriority(u8 priority) { _04 = priority; }
 
-/*
- * --INFO--
- * Address:	800A4E6C
- * Size:	0000DC
+/**
+ * @note Address: 0x800A4E6C
+ * @note Size: 0xDC
  */
 JASDSPChannel* JASDSPChannel::getLowestChannel(int threshold)
 {
 	// JASDSPChannel* channel = sDspChannels;
-	short lowestPriority = 0xFF;
-	int lowestIndex      = -1;
-	u32 v1               = 0;
+	s16 lowestPriority = 0xFF;
+	int lowestIndex    = -1;
+	u32 v1             = 0;
 	for (int i = 0; i < 0x40; i++) {
 		if (sDspChannels[i]._04 < 0) {
 			return &sDspChannels[i];
@@ -246,20 +229,18 @@ lbl_800A4F3C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000CC
+/**
+ * @note Address: N/A
+ * @note Size: 0xCC
  */
 JASDSPChannel* JASDSPChannel::getLowestActiveChannel()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A4F48
- * Size:	0001E4
+/**
+ * @note Address: 0x800A4F48
+ * @note Size: 0x1E4
  */
 void JASDSPChannel::updateProc()
 {
@@ -475,61 +456,24 @@ lbl_800A5118:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A512C
- * Size:	000074
+/**
+ * @note Address: 0x800A512C
+ * @note Size: 0x74
  */
 void JASDSPChannel::updateAll()
 {
-	for (int i = 0; i < 0x40; i++) {
+	for (u32 i = 0; i < 0x40; i++) {
 		if ((i & 0xF) == 0 && i != 0) {
 			JASDsp::releaseHalt((i - 1) >> 4);
 		}
 		sDspChannels[i].updateProc();
 	}
 	JASDsp::releaseHalt(3);
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	li       r31, 0
-	stw      r30, 8(r1)
-	li       r30, 0
-
-lbl_800A5148:
-	clrlwi.  r0, r30, 0x1c
-	bne      lbl_800A5164
-	cmplwi   r30, 0
-	beq      lbl_800A5164
-	addi     r0, r30, -1
-	srwi     r3, r0, 4
-	bl       releaseHalt__6JASDspFUl
-
-lbl_800A5164:
-	lwz      r0, sDspChannels__13JASDSPChannel@sda21(r13)
-	add      r3, r0, r31
-	bl       updateProc__13JASDSPChannelFv
-	addi     r30, r30, 1
-	addi     r31, r31, 0x1c
-	cmplwi   r30, 0x40
-	blt      lbl_800A5148
-	li       r3, 3
-	bl       releaseHalt__6JASDspFUl
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	800A51A0
- * Size:	000160
+/**
+ * @note Address: 0x800A51A0
+ * @note Size: 0x160
  */
 bool JASDSPChannel::killActiveChannel()
 {
@@ -663,37 +607,33 @@ lbl_800A52EC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A5300
- * Size:	000010
+/**
+ * @note Address: 0x800A5300
+ * @note Size: 0x10
  */
 JASDSPChannel* JASDSPChannel::getHandle(u32 index) { return sDspChannels + index; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000A4
+/**
+ * @note Address: N/A
+ * @note Size: 0xA4
  */
 void JASDSPChannel::getNumUse()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000A4
+/**
+ * @note Address: N/A
+ * @note Size: 0xA4
  */
 void JASDSPChannel::getNumFree()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000A4
+/**
+ * @note Address: N/A
+ * @note Size: 0xA4
  */
 void JASDSPChannel::getNumBreak()
 {

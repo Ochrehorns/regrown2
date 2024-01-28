@@ -19,10 +19,9 @@ namespace Screen {
 
 static const char otakaraSensorName[] = "ogOtakaraSensor";
 
-/*
- * --INFO--
- * Address:	8032D8E8
- * Size:	000140
+/**
+ * @note Address: 0x8032D8E8
+ * @note Size: 0x140
  */
 OtakaraSensor::OtakaraSensor()
 {
@@ -66,10 +65,9 @@ OtakaraSensor::OtakaraSensor()
 	mSetGrayTimer      = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	8032DA28
- * Size:	0000A8
+/**
+ * @note Address: 0x8032DA28
+ * @note Size: 0xA8
  */
 void OtakaraSensor::init(J2DPane* pane1, J2DPane* pane2, int state)
 {
@@ -89,10 +87,9 @@ void OtakaraSensor::init(J2DPane* pane1, J2DPane* pane2, int state)
 	mNotreasures = true;
 }
 
-/*
- * --INFO--
- * Address:	8032DAD0
- * Size:	000150
+/**
+ * @note Address: 0x8032DAD0
+ * @note Size: 0x150
  */
 void OtakaraSensor::setParam(f32 dist, int state, bool enabled, bool complete)
 {
@@ -134,10 +131,9 @@ void OtakaraSensor::setParam(f32 dist, int state, bool enabled, bool complete)
 	mAngleOffsetMod    = temp;
 }
 
-/*
- * --INFO--
- * Address:	8032DC20
- * Size:	00005C
+/**
+ * @note Address: 0x8032DC20
+ * @note Size: 0x5C
  */
 f32 OtakaraSensor::calcLevel(f32 distance)
 {
@@ -159,24 +155,21 @@ f32 OtakaraSensor::calcLevel(f32 distance)
 	return level;
 }
 
-/*
- * --INFO--
- * Address:	8032DC7C
- * Size:	000010
+/**
+ * @note Address: 0x8032DC7C
+ * @note Size: 0x10
  */
 void OtakaraSensor::show() { mPane2->show(); }
 
-/*
- * --INFO--
- * Address:	8032DC8C
- * Size:	000010
+/**
+ * @note Address: 0x8032DC8C
+ * @note Size: 0x10
  */
 void OtakaraSensor::hide() { mPane2->hide(); }
 
-/*
- * --INFO--
- * Address:	8032DC9C
- * Size:	000014
+/**
+ * @note Address: 0x8032DC9C
+ * @note Size: 0x14
  */
 void OtakaraSensor::startSensorEff()
 {
@@ -184,32 +177,29 @@ void OtakaraSensor::startSensorEff()
 	mTimer     = 0.3f;
 }
 
-/*
- * --INFO--
- * Address:	8032DCB0
- * Size:	0000D8
+/**
+ * @note Address: 0x8032DCB0
+ * @note Size: 0xD8
  */
 void OtakaraSensor::adjPos(f32 x, f32 y)
 {
 	f32 offs = 0.0f;
 	if (mEfxActive) {
 		f32 temp = mAngleMgr->calc();
-		offs     = pikmin2_cosf(temp) * 100.0f;
+		offs     = cosf(temp) * 100.0f;
 	}
 	mPane2->setOffset(mPanePos.x + x, mPanePos.y + y + offs);
 }
 
-/*
- * --INFO--
- * Address:	8032DD88
- * Size:	000008
+/**
+ * @note Address: 0x8032DD88
+ * @note Size: 0x8
  */
 void OtakaraSensor::adjScale(f32 scale) { mScale = scale; }
 
-/*
- * --INFO--
- * Address:	8032DD90
- * Size:	000088
+/**
+ * @note Address: 0x8032DD90
+ * @note Size: 0x88
  */
 void OtakaraSensor::update()
 {
@@ -226,10 +216,9 @@ void OtakaraSensor::update()
 	PSStartTresureLaderNoiseSE(mState, mNoiseLevel, mCurrReactionLevel);
 }
 
-/*
- * --INFO--
- * Address:	8032DE18
- * Size:	000160
+/**
+ * @note Address: 0x8032DE18
+ * @note Size: 0x160
  */
 void OtakaraSensor::updateInit()
 {
@@ -254,10 +243,9 @@ void OtakaraSensor::updateInit()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8032DF78
- * Size:	000370
+/**
+ * @note Address: 0x8032DF78
+ * @note Size: 0x370
  */
 void OtakaraSensor::calcGrayColor()
 {
@@ -272,20 +260,18 @@ void OtakaraSensor::calcGrayColor()
 				mIsPoweredOff = true;
 				mSetGrayTimer = 1.5f;
 			}
+		} else if (mDoIncNoise) {
+			mNoiseLevel += 0.05f;
+			if (mNoiseLevel > 1.0f) {
+				mNoiseLevel = 1.0f;
+			}
+			if (mState != 0) {
+				mDoIncNoise = false;
+			}
 		} else {
-			if (mDoIncNoise) {
-				mNoiseLevel += 0.05f;
-				if (mNoiseLevel > 1.0f) {
-					mNoiseLevel = 1.0f;
-				}
-				if (mState != 0) {
-					mDoIncNoise = false;
-				}
-			} else {
-				mNoiseLevel -= 0.05f;
-				if (mNoiseLevel < 0.0f) {
-					mNoiseLevel = 0.0f;
-				}
+			mNoiseLevel -= 0.05f;
+			if (mNoiseLevel < 0.0f) {
+				mNoiseLevel = 0.0f;
 			}
 		}
 
@@ -305,7 +291,7 @@ void OtakaraSensor::calcGrayColor()
 			if (mNoiseTimer > TAU) {
 				mNoiseTimer -= TAU;
 			}
-			mNoiseLevel  = (pikmin2_sinf(mNoiseTimer) + 1.0f) * 0.3f / 2;
+			mNoiseLevel  = (sinf(mNoiseTimer) + 1.0f) * 0.3f / 2;
 			mCanIncNoise = true;
 			break;
 
@@ -315,7 +301,7 @@ void OtakaraSensor::calcGrayColor()
 			mNoiseTimer += newScreen::ObjCave::msVal._44 * timeFactor;
 			if (mNoiseTimer > TAU)
 				mNoiseTimer -= TAU;
-			mNoiseLevel  = (pikmin2_sinf(mNoiseTimer) + 1.0f) * newScreen::ObjCave::msVal._48 / 2;
+			mNoiseLevel  = (sinf(mNoiseTimer) + 1.0f) * newScreen::ObjCave::msVal._48 / 2;
 			mCanIncNoise = true;
 			break;
 
@@ -331,10 +317,9 @@ void OtakaraSensor::calcGrayColor()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8032E2E8
- * Size:	0001FC
+/**
+ * @note Address: 0x8032E2E8
+ * @note Size: 0x1FC
  */
 void OtakaraSensor::calcAppear()
 {
@@ -356,10 +341,9 @@ void OtakaraSensor::calcAppear()
 				mScaleMgr->up(0.7f, 40.0f, 0.5f, 0.0f);
 				mAppearTimer = 3.0f;
 				efx2d::T2DSensorGet efx;
-				Vector3f pos1   = mPane1->getGlbVtx(0);
-				Vector3f pos2   = mPane1->getGlbVtx(3);
-				Vector3f midPos = pos1 + pos2;
-				Vector2f argVec(midPos.x / 2 + mAppearEfxOffset.x, midPos.y / 2 + mAppearEfxOffset.y);
+				JGeometry::TVec3f pos1 = mPane1->getGlbVtx(0);
+				JGeometry::TVec3f pos2 = mPane1->getGlbVtx(3);
+				Vector2f argVec((pos1.x + pos2.x) / 2 + mAppearEfxOffset.x, (pos1.y + pos2.y) / 2 + mAppearEfxOffset.y);
 				efx2d::Arg arg = argVec;
 				efx.create(&arg);
 				ogSound->setGetSensor();
@@ -368,26 +352,23 @@ void OtakaraSensor::calcAppear()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8032E4E4
- * Size:	000138
+/**
+ * @note Address: 0x8032E4E4
+ * @note Size: 0x138
  */
 void OtakaraSensor::startGraySensor()
 {
 	efx2d::T2DSensorComp efx;
-	Vector3f pos1   = mPane1->getGlbVtx(0);
-	Vector3f pos2   = mPane1->getGlbVtx(3);
-	Vector3f midPos = pos1 + pos2;
-	Vector2f argVec(midPos.x / 2 + mCompleteEfxOffset.x, midPos.y / 2 + mCompleteEfxOffset.y);
+	JGeometry::TVec3f pos1 = mPane1->getGlbVtx(0);
+	JGeometry::TVec3f pos2 = mPane1->getGlbVtx(3);
+	Vector2f argVec((pos1.x + pos2.x) / 2 + mCompleteEfxOffset.x, (pos1.y + pos2.y) / 2 + mCompleteEfxOffset.y);
 	efx2d::Arg arg = argVec;
 	efx.create(&arg);
 }
 
-/*
- * --INFO--
- * Address:	8032E61C
- * Size:	00022C
+/**
+ * @note Address: 0x8032E61C
+ * @note Size: 0x22C
  */
 void OtakaraSensor::calcAngle()
 {
@@ -454,10 +435,9 @@ void OtakaraSensor::calcAngle()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8032E848
- * Size:	000204
+/**
+ * @note Address: 0x8032E848
+ * @note Size: 0x204
  */
 void OtakaraSensor::calcReaction()
 {
@@ -470,10 +450,9 @@ void OtakaraSensor::calcReaction()
 				if (mAppearTimer <= 0.0f) {
 					mScaleMgr->up(mCurrReactionLevel * 0.1f, 30.0f, 0.8f, 0.0f);
 					efx2d::T2DSensorAct efx;
-					Vector3f pos1   = mPane1->getGlbVtx(0);
-					Vector3f pos2   = mPane1->getGlbVtx(3);
-					Vector3f midPos = pos1 + pos2;
-					Vector2f argVec(midPos.x / 2 + mCompleteEfxOffset.x, midPos.y / 2 + mCompleteEfxOffset.y);
+					JGeometry::TVec3f pos1 = mPane1->getGlbVtx(0);
+					JGeometry::TVec3f pos2 = mPane1->getGlbVtx(3);
+					Vector2f argVec((pos1.x + pos2.x) / 2 + mCompleteEfxOffset.x, (pos1.y + pos2.y) / 2 + mCompleteEfxOffset.y);
 					efx2d::Arg arg = argVec;
 					efx.create(&arg);
 				}
@@ -487,10 +466,9 @@ void OtakaraSensor::calcReaction()
 	mPane2->updateScale(mScale * mScaleMgr->calc());
 }
 
-/*
- * --INFO--
- * Address:	8032EA4C
- * Size:	000004
+/**
+ * @note Address: 0x8032EA4C
+ * @note Size: 0x4
  */
 void OtakaraSensor::draw(J2DGrafContext&) { }
 

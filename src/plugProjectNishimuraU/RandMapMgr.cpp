@@ -6,10 +6,9 @@ namespace Cave {
 
 RandMapMgr* randMapMgr;
 
-/*
- * --INFO--
- * Address:	80244528
- * Size:	000088
+/**
+ * @note Address: 0x80244528
+ * @note Size: 0x88
  */
 RandMapMgr::RandMapMgr(bool isVersusHiba)
 {
@@ -28,14 +27,14 @@ RandMapMgr::RandMapMgr(bool isVersusHiba)
 	mName             = "RandMapMgr";
 }
 
-/*
- * --INFO--
- * Address:	802445B0
- * Size:	0001A4
+/**
+ * @note Address: 0x802445B0
+ * @note Size: 0x1A4
  */
-void RandMapMgr::loadResource(MapUnitInterface* interface, int p1, FloorInfo* floorInfo, bool check, EditMapUnit* editMU)
+void RandMapMgr::loadResource(MapUnitInterface* interface, int interfaceCount, FloorInfo* floorInfo, bool isFinalFloor,
+                              EditMapUnit* editUnit)
 {
-	mGenerator        = new MapUnitGenerator(interface, p1, floorInfo, check, editMU);
+	mGenerator        = new MapUnitGenerator(interface, interfaceCount, floorInfo, isFinalFloor, editUnit);
 	mRandMapUnit      = new RandMapUnit(mGenerator);
 	mRandEnemyUnit    = new RandEnemyUnit(mGenerator, mIsVersusHiba);
 	mRandCapEnemyUnit = new RandCapEnemyUnit(mGenerator);
@@ -51,10 +50,9 @@ void RandMapMgr::loadResource(MapUnitInterface* interface, int p1, FloorInfo* fl
 	mRandItemUnit->setManageClassPtr(mRandMapScore);
 }
 
-/*
- * --INFO--
- * Address:	80244754
- * Size:	000104
+/**
+ * @note Address: 0x80244754
+ * @note Size: 0x104
  */
 void RandMapMgr::create()
 {
@@ -96,17 +94,15 @@ void RandMapMgr::create()
 	sys->heapStatusEnd("Radar Map Texture");
 }
 
-/*
- * --INFO--
- * Address:	80244858
- * Size:	000034
+/**
+ * @note Address: 0x80244858
+ * @note Size: 0x34
  */
 int RandMapMgr::getNumRooms() { return mGenerator->mPlacedMapNodes->getChildCount(); }
 
-/*
- * --INFO--
- * Address:	8024488C
- * Size:	00003C
+/**
+ * @note Address: 0x8024488C
+ * @note Size: 0x3C
  */
 char* RandMapMgr::getUseUnitName(int idx)
 {
@@ -118,12 +114,11 @@ char* RandMapMgr::getUseUnitName(int idx)
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	802448C8
- * Size:	000084
+/**
+ * @note Address: 0x802448C8
+ * @note Size: 0x84
  */
-char* RandMapMgr::getRoomData(int idx, float& x, float& y, int& dir)
+char* RandMapMgr::getRoomData(int idx, f32& x, f32& y, int& dir)
 {
 	MapNode* node = static_cast<MapNode*>(mGenerator->mPlacedMapNodes->getChildAt(idx));
 	if (node) {
@@ -135,10 +130,9 @@ char* RandMapMgr::getRoomData(int idx, float& x, float& y, int& dir)
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8024494C
- * Size:	0000E4
+/**
+ * @note Address: 0x8024494C
+ * @note Size: 0xE4
  */
 RoomLink* RandMapMgr::makeRoomLink(int idx)
 {
@@ -162,10 +156,9 @@ RoomLink* RandMapMgr::makeRoomLink(int idx)
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80244A30
- * Size:	000084
+/**
+ * @note Address: 0x80244A30
+ * @note Size: 0x84
  */
 ObjectLayoutInfo* RandMapMgr::makeObjectLayoutInfo(int idx)
 {
@@ -178,10 +171,9 @@ ObjectLayoutInfo* RandMapMgr::makeObjectLayoutInfo(int idx)
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80244AB4
- * Size:	000088
+/**
+ * @note Address: 0x80244AB4
+ * @note Size: 0x88
  */
 void RandMapMgr::getStartPosition(Vector3f& position, int idx)
 {
@@ -198,37 +190,35 @@ void RandMapMgr::getStartPosition(Vector3f& position, int idx)
 	position.y += 50.0f;
 }
 
-/*
- * --INFO--
- * Address:	80244B3C
- * Size:	0000A0
+/**
+ * @note Address: 0x80244B3C
+ * @note Size: 0xA0
  */
 void RandMapMgr::getItemDropPosition(Vector3f& position, f32 minDist, f32 maxDist)
 {
 	mRandItemUnit->getItemDropPosition(position, minDist + randWeightFloat(maxDist - minDist), -1);
 }
 
-/*
- * --INFO--
- * Address:	80244BDC
- * Size:	000188
+/**
+ * @note Address: 0x80244BDC
+ * @note Size: 0x188
  */
-void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, f32 p1, f32 p2)
+void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, f32 lowerWeightBound, f32 upperWeightBound)
 {
-	f32 avg    = 0.5f * (p1 + p2);
-	f32 weight = (p2 - avg > 0.0f) ? p2 - avg : -(p2 - avg);
+	f32 avg    = 0.5f * (lowerWeightBound + upperWeightBound);
+	f32 weight = (upperWeightBound - avg > 0.0f) ? upperWeightBound - avg : -(upperWeightBound - avg);
 
 	MapNode* nodeList[16];
 	BaseGen* genList[16];
 
-	int randVal  = 2.0f * randFloat();
-	int absCount = ((count < 0) ? -count : count) - 1; // ?? what even is this
+	const int randVal   = randInt(2);
+	const int countEven = (count % 2) - 1;
 	mRandItemUnit->setItemDropPositionList(nodeList, genList);
 
 	for (int i = 0; i < count; i++) {
 		f32 val = avg;
-		if (((i < 0) ? -i : i) != absCount) { // ?? again, what
-			if (i == randVal) {
+		if (i != countEven) {
+			if (i % 2 == randVal) {
 				val = avg + randWeightFloat(weight);
 			} else {
 				val = avg - randWeightFloat(weight);
@@ -236,125 +226,11 @@ void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, f32 p1, f32
 		}
 		mRandItemUnit->getItemDropPosition(positions[i], val, i);
 	}
-	/*
-	stwu     r1, -0xd0(r1)
-	mflr     r0
-	stw      r0, 0xd4(r1)
-	stfd     f31, 0xc0(r1)
-	psq_st   f31, 200(r1), 0, qr0
-	stfd     f30, 0xb0(r1)
-	psq_st   f30, 184(r1), 0, qr0
-	stmw     r26, 0x98(r1)
-	fadds    f1, f1, f2
-	lfs      f3, lbl_8051A738@sda21(r2)
-	lfs      f0, lbl_8051A73C@sda21(r2)
-	mr       r30, r3
-	mr       r26, r4
-	mr       r31, r5
-	fmuls    f30, f3, f1
-	fsubs    f31, f2, f30
-	fcmpo    cr0, f31, f0
-	ble      lbl_80244C28
-	b        lbl_80244C2C
-
-lbl_80244C28:
-	fneg     f31, f31
-
-lbl_80244C2C:
-	bl       rand
-	xoris    r0, r3, 0x8000
-	lis      r4, 0x4330
-	stw      r0, 0x8c(r1)
-	srwi     r3, r31, 0x1f
-	clrlwi   r0, r31, 0x1f
-	lfd      f3, lbl_8051A730@sda21(r2)
-	stw      r4, 0x88(r1)
-	xor      r0, r0, r3
-	subf     r3, r3, r0
-	lfs      f1, lbl_8051A72C@sda21(r2)
-	lfd      f2, 0x88(r1)
-	addi     r27, r3, -1
-	lfs      f0, lbl_8051A740@sda21(r2)
-	addi     r4, r1, 0x48
-	fsubs    f2, f2, f3
-	lwz      r3, 0x30(r30)
-	addi     r5, r1, 8
-	fdivs    f1, f2, f1
-	fmuls    f0, f0, f1
-	fctiwz   f0, f0
-	stfd     f0, 0x90(r1)
-	lwz      r29, 0x94(r1)
-	bl
-setItemDropPositionList__Q34Game4Cave12RandItemUnitFPPQ34Game4Cave7MapNodePPQ34Game4Cave7BaseGen
-	mr       r28, r26
-	li       r26, 0
-	b        lbl_80244D38
-
-lbl_80244C98:
-	fmr      f1, f30
-	cmpw     r26, r27
-	beq      lbl_80244D20
-	srwi     r3, r26, 0x1f
-	clrlwi   r0, r26, 0x1f
-	xor      r0, r0, r3
-	subf     r0, r3, r0
-	cmpw     r0, r29
-	bne      lbl_80244CF0
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0x94(r1)
-	lfd      f2, lbl_8051A730@sda21(r2)
-	stw      r0, 0x90(r1)
-	lfs      f0, lbl_8051A72C@sda21(r2)
-	lfd      f1, 0x90(r1)
-	fsubs    f1, f1, f2
-	fmuls    f1, f31, f1
-	fdivs    f0, f1, f0
-	fadds    f1, f30, f0
-	b        lbl_80244D20
-
-lbl_80244CF0:
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0x94(r1)
-	lfd      f2, lbl_8051A730@sda21(r2)
-	stw      r0, 0x90(r1)
-	lfs      f0, lbl_8051A72C@sda21(r2)
-	lfd      f1, 0x90(r1)
-	fsubs    f1, f1, f2
-	fmuls    f1, f31, f1
-	fdivs    f0, f1, f0
-	fsubs    f1, f30, f0
-
-lbl_80244D20:
-	lwz      r3, 0x30(r30)
-	mr       r4, r28
-	mr       r5, r26
-	bl       "getItemDropPosition__Q34Game4Cave12RandItemUnitFR10Vector3<f>fi"
-	addi     r28, r28, 0xc
-	addi     r26, r26, 1
-
-lbl_80244D38:
-	cmpw     r26, r31
-	blt      lbl_80244C98
-	psq_l    f31, 200(r1), 0, qr0
-	lfd      f31, 0xc0(r1)
-	psq_l    f30, 184(r1), 0, qr0
-	lfd      f30, 0xb0(r1)
-	lmw      r26, 0x98(r1)
-	lwz      r0, 0xd4(r1)
-	mtlr     r0
-	addi     r1, r1, 0xd0
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	80244D64
- * Size:	000048
+/**
+ * @note Address: 0x80244D64
+ * @note Size: 0x48
  */
 void RandMapMgr::setUnitTexture(int idx, JUTTexture* texture)
 {
@@ -364,17 +240,15 @@ void RandMapMgr::setUnitTexture(int idx, JUTTexture* texture)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80244DAC
- * Size:	00000C
+/**
+ * @note Address: 0x80244DAC
+ * @note Size: 0xC
  */
 void RandMapMgr::setCaptureOn() { mIsCaptureOn = true; }
 
-/*
- * --INFO--
- * Address:	80244DB8
- * Size:	0000DC
+/**
+ * @note Address: 0x80244DB8
+ * @note Size: 0xDC
  */
 void RandMapMgr::captureRadarMap(Graphics& gfx)
 {
@@ -391,10 +265,9 @@ void RandMapMgr::captureRadarMap(Graphics& gfx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80244E94
- * Size:	00001C
+/**
+ * @note Address: 0x80244E94
+ * @note Size: 0x1C
  */
 bool RandMapMgr::isLastFloor()
 {
@@ -404,31 +277,27 @@ bool RandMapMgr::isLastFloor()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80244EB0
- * Size:	000008
+/**
+ * @note Address: 0x80244EB0
+ * @note Size: 0x8
  */
 bool RandMapMgr::isVersusHiba() { return mIsVersusHiba; }
 
-/*
- * --INFO--
- * Address:	80244EB8
- * Size:	000008
+/**
+ * @note Address: 0x80244EB8
+ * @note Size: 0x8
  */
 JUTTexture* RandMapMgr::getRadarMapTexture() { return mRadarMapTexture; }
 
-/*
- * --INFO--
- * Address:	80244EC0
- * Size:	000024
+/**
+ * @note Address: 0x80244EC0
+ * @note Size: 0x24
  */
-void RandMapMgr::radarMapPartsOpen(Vector3f& vec) { mRandMapDraw->radarMapPartsOpen(vec); }
+void RandMapMgr::radarMapPartsOpen(Vector3f& pos) { mRandMapDraw->radarMapPartsOpen(pos); }
 
-/*
- * --INFO--
- * Address:	80244EE4
- * Size:	000020
+/**
+ * @note Address: 0x80244EE4
+ * @note Size: 0x20
  */
 void RandMapMgr::getPositionOnTex(Vector3f& pos, f32& x, f32& y)
 {
@@ -436,10 +305,19 @@ void RandMapMgr::getPositionOnTex(Vector3f& pos, f32& x, f32& y)
 	y = pos.z * (4.0f / 85.0f);
 }
 
-/*
- * --INFO--
- * Address:	80244F04
- * Size:	000254
+/**
+ * @brief Retrieves base generation data.
+ *
+ * This function retrieves the base generation data for enemy group or enemy solo spawns.
+ * It iterates through the map nodes and their child base generators to find the relevant data.
+ * The positions and directions of the base generators are stored in the provided arrays.
+ * The selection of the base generator is based on a random value.
+ *
+ * @param positions An array to store the positions of the base generators.
+ * @param dirs An array to store the directions of the base generators.
+ *
+ * @note Address: 0x80244F04
+ * @note Size: 0x254
  */
 void RandMapMgr::getBaseGenData(Vector3f* positions, f32* dirs)
 {
@@ -462,7 +340,7 @@ void RandMapMgr::getBaseGenData(Vector3f* positions, f32* dirs)
 
 				FOREACH_NODE(BaseGen, baseGen->mChild, currGen)
 				{
-					if (currGen->mSpawnType == BaseGen::TekiA__Easy || currGen->mSpawnType == BaseGen::TekiB__Hard) {
+					if (currGen->mSpawnType == BaseGen::CGT_EnemyEasy || currGen->mSpawnType == BaseGen::CGT_EnemyHard) {
 						Vector3f globalPos = currNode->getBaseGenGlobalPosition(currGen);
 						Vector3f sep       = Vector3f(positions->y - globalPos.y, positions->z - globalPos.z, positions->x - globalPos.x);
 						nodeList[counter]  = currNode;
@@ -648,10 +526,9 @@ lbl_8024512C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80245158
- * Size:	000200
+/**
+ * @note Address: 0x80245158
+ * @note Size: 0x200
  */
 void RandMapMgr::drawFrameBuffer(Graphics& gfx)
 {
@@ -676,10 +553,11 @@ void RandMapMgr::drawFrameBuffer(Graphics& gfx)
 
 	GXBegin(GX_QUADS, GX_VTXFMT0, 4);
 
-	GXPosition3f32(0.0f, 0.0f, 0.0f);                                                 // bottom left
-	GXPosition3f32(mRadarMapTexture->getSizeX(), 0.0f, 0.0f);                         // bottom right
-	GXPosition3f32(mRadarMapTexture->getSizeX(), mRadarMapTexture->getSizeY(), 0.0f); // top right
-	GXPosition3f32(0.0f, mRadarMapTexture->getSizeY(), 0.0f);                         // top left
+	f32 zero = 0.0f;
+	GXPosition3f32(zero, zero, zero);                                                 // bottom left
+	GXPosition3f32(mRadarMapTexture->getSizeX(), zero, zero);                         // bottom right
+	GXPosition3f32(mRadarMapTexture->getSizeX(), mRadarMapTexture->getSizeY(), zero); // top right
+	GXPosition3f32(zero, mRadarMapTexture->getSizeY(), zero);                         // top left
 	GXSetDstAlpha(GX_FALSE, 0);
 }
 } // namespace Cave

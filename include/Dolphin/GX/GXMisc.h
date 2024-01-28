@@ -10,6 +10,7 @@ extern "C" {
 #include "Dolphin/GX/GXEnum.h"
 #include "Dolphin/GX/GXTypes.h"
 #include "Dolphin/GX/GXFifo.h"
+#include "Dolphin/OS/OSInterrupt.h"
 
 //////////////// CALLBACKS /////////////////
 typedef void (*GXDrawSyncCallback)(u16 token);
@@ -18,15 +19,16 @@ typedef void (*GXDrawDoneCallback)(void);
 ////////////////////////////////////////////
 
 ///////////// BASIC FUNCTIONS //////////////
-extern GXTexRegion* __GXDefaultTexRegionCallback(GXTexObj* obj);
-extern GXTlutRegion* __GXDefaultTlutRegionCallback(GXTlut tlut);
-extern void __GXShutdown(); // need to check types
+static GXTexRegion* __GXDefaultTexRegionCallback(const GXTexObj* obj, GXTexMapID id);
+static GXTlutRegion* __GXDefaultTlutRegionCallback(u32 tlut);
+static BOOL __GXShutdown(BOOL final); // need to check types
 
 ////////////////////////////////////////////
 
 ////////////// INIT FUNCTIONS //////////////
 extern GXFifoObj* GXInit(void* base, u32 size);
 extern void __GXInitGX(); // need to check types
+extern void __GXPEInit();
 
 ////////////////////////////////////////////
 
@@ -46,9 +48,9 @@ extern void GXDrawDone();
 // Other syncs/interrupts.
 extern void GXPixModeSync();
 extern GXDrawSyncCallback GXSetDrawSyncCallback(GXDrawSyncCallback callback);
-extern void GXTokenInterruptHandler(); // need to check types
+extern void GXTokenInterruptHandler(__OSInterrupt interrupt, OSContext* context);
 extern GXDrawDoneCallback GXSetDrawDoneCallback(GXDrawDoneCallback callback);
-extern void GXFinishInterruptHandler(); // need to check types
+extern void GXFinishInterruptHandler(__OSInterrupt interrupt, OSContext* context);
 
 // Poke functions.
 extern void GXPokeAlphaMode(GXCompare func, u8 threshold);

@@ -6,19 +6,23 @@
 #include "JSystem/JAudio/JAS/JASMutexLock.h"
 #include "types.h"
 
-struct JASGenericMemPool {
-	JASGenericMemPool(); // unused/inlined
+// fabricated
+struct JASGenericMem {
+};
 
-	void newMemPool(unsigned long, int);
-	void* alloc(unsigned long);
-	void free(void*, unsigned long);
+struct JASGenericMemPool {
+	JASGenericMemPool();
+
+	void newMemPool(u32, int);
+	void* alloc(u32);
+	void free(void*, u32);
 
 	// unused/inlined:
 	~JASGenericMemPool();
 
-	u32 _00; // _00
-	u32 _04; // _04
-	u32 _08; // _08
+	void** _00;        // _00
+	void** _04;        // _04
+	int mFreeMemCount; // _08
 };
 
 namespace JASCreationPolicy {

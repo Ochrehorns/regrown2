@@ -9,7 +9,7 @@
 
 namespace JStudio {
 struct TControl : stb::TControl {
-	struct TTransformTranslation_rotation_scaling {
+	struct TTransform_translation_rotation_scaling {
 		/** @fabricated */
 		Vec& getTranslation() { return mVecs[0]; }
 		/** @fabricated */
@@ -32,7 +32,7 @@ struct TControl : stb::TControl {
 		Vec mVecs[3];
 	};
 
-	struct TTransformPosition {
+	struct TTransform_position {
 		Vec mPosition;
 	};
 
@@ -45,6 +45,12 @@ struct TControl : stb::TControl {
 
 	// unused/inlined:
 	void forward_value(u32);
+
+	inline void create(JStudio::stb::TFactory* factory, JStudio::fvb::TFactory* fvb)
+	{
+		mFactory     = factory;
+		_60.pFactory = fvb;
+	}
 
 	f64 _58;           // _58
 	fvb::TControl _60; // _60 - JStudio::fvb::TControl?

@@ -10,24 +10,21 @@
 namespace Game {
 namespace Egg {
 
-/*
- * --INFO--
- * Address:	8034BB30
- * Size:	000020
+/**
+ * @note Address: 0x8034BB30
+ * @note Size: 0x20
  */
 void Obj::setParameters() { EnemyBase::setParameters(); }
 
-/*
- * --INFO--
- * Address:	8034BB50
- * Size:	000020
+/**
+ * @note Address: 0x8034BB50
+ * @note Size: 0x20
  */
 void Obj::birth(Vector3f& position, f32 p1) { EnemyBase::birth(position, p1); }
 
-/*
- * --INFO--
- * Address:	8034BB70
- * Size:	000150
+/**
+ * @note Address: 0x8034BB70
+ * @note Size: 0x150
  */
 void Obj::onInit(CreatureInitArg* initArg)
 {
@@ -48,20 +45,19 @@ void Obj::onInit(CreatureInitArg* initArg)
 			mPosition.y = mapMgr->getMinY(position);
 		}
 
-		mCurAnim->mIsPlaying = 0;
+		mCurAnim->mIsPlaying = false;
 		doAnimationUpdateAnimator();
 
-		mObjMatrix.makeSRT(mScale, mRotation, mPosition);
+		mBaseTrMatrix.makeSRT(mScale, mRotation, mPosition);
 
-		PSMTXCopy(mObjMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
+		PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
 		mModel->mJ3dModel->calc();
 	}
 }
 
-/*
- * --INFO--
- * Address:	8034BCC0
- * Size:	000138
+/**
+ * @note Address: 0x8034BCC0
+ * @note Size: 0x138
  */
 Obj::Obj()
 {
@@ -70,10 +66,9 @@ Obj::Obj()
 	setFSM(new FSM);
 }
 
-/*
- * --INFO--
- * Address:	8034BE44
- * Size:	00006C
+/**
+ * @note Address: 0x8034BE44
+ * @note Size: 0x6C
  */
 void Obj::doUpdate()
 {
@@ -86,79 +81,73 @@ void Obj::doUpdate()
 	mFsm->exec(this);
 }
 
-/*
- * --INFO--
- * Address:	8034BEB0
- * Size:	000004
+/**
+ * @note Address: 0x8034BEB0
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	8034BEB4
- * Size:	000020
+/**
+ * @note Address: 0x8034BEB4
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	8034BED4
- * Size:	00004C
+/**
+ * @note Address: 0x8034BED4
+ * @note Size: 0x4C
  */
 void Obj::doSimulation(f32 constraint)
 {
 	if (mCaptureMatrix) {
-		mPosition = mCaptureMatrix->getBasis(3);
+		mPosition = mCaptureMatrix->getColumn(3);
 		updateSpheres();
 	} else {
 		EnemyBase::doSimulation(constraint);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8034BF20
- * Size:	000128
+/**
+ * @note Address: 0x8034BF20
+ * @note Size: 0x128
  */
 void Obj::doAnimationCullingOff()
 {
-	mCurAnim->mIsPlaying = 0;
+	mCurAnim->mIsPlaying = false;
 	doAnimationUpdateAnimator();
 	bool check;
-	Vector3f vec = mObjMatrix.getBasis(3);
+	Vector3f vec = mBaseTrMatrix.getColumn(3);
 	if (mCaptureMatrix) {
 		check             = false;
-		Vector3f checkVec = mCaptureMatrix->getBasis(3);
+		Vector3f checkVec = mCaptureMatrix->getColumn(3);
 		if (vec.x != checkVec.x || vec.y != checkVec.y || vec.z != checkVec.z) {
 			check = true;
-			PSMTXCopy(mCaptureMatrix->mMatrix.mtxView, mObjMatrix.mMatrix.mtxView);
+			PSMTXCopy(mCaptureMatrix->mMatrix.mtxView, mBaseTrMatrix.mMatrix.mtxView);
 		}
 	} else {
 		check = false;
 		if (mPosition.x != vec.x || mPosition.y != vec.y || mPosition.z != vec.z) {
 			check = true;
-			mObjMatrix.makeSRT(mScale, mRotation, mPosition);
+			mBaseTrMatrix.makeSRT(mScale, mRotation, mPosition);
 		}
 	}
 
 	if (check || !isStopMotion()) {
-		PSMTXCopy(mObjMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
+		PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
 		mModel->mJ3dModel->calc();
 		mCollTree->update();
 	}
 }
 
-/*
- * --INFO--
- * Address:	8034C048
- * Size:	000008
+/**
+ * @note Address: 0x8034C048
+ * @note Size: 0x8
  */
 bool Obj::pressCallBack(Creature*, f32, CollPart*) { return false; }
 
-/*
- * --INFO--
- * Address:	8034C050
- * Size:	000054
+/**
+ * @note Address: 0x8034C050
+ * @note Size: 0x54
  */
 void Obj::bounceCallback(Sys::Triangle* triangle)
 {
@@ -168,10 +157,9 @@ void Obj::bounceCallback(Sys::Triangle* triangle)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8034C0A4
- * Size:	000090
+/**
+ * @note Address: 0x8034C0A4
+ * @note Size: 0x90
  */
 void Obj::collisionCallback(CollEvent& collEvent)
 {
@@ -182,10 +170,9 @@ void Obj::collisionCallback(CollEvent& collEvent)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8034C134
- * Size:	000050
+/**
+ * @note Address: 0x8034C134
+ * @note Size: 0x50
  */
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
@@ -196,10 +183,9 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 	shadowParam.mSize                     = 10.0f;
 }
 
-/*
- * --INFO--
- * Address:	8034C184
- * Size:	000048
+/**
+ * @note Address: 0x8034C184
+ * @note Size: 0x48
  */
 bool Obj::needShadow()
 {
@@ -207,15 +193,14 @@ bool Obj::needShadow()
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	8034C1CC
- * Size:	0000A0
+/**
+ * @note Address: 0x8034C1CC
+ * @note Size: 0xA0
  */
 void Obj::onStartCapture()
 {
 	if (mCaptureMatrix) {
-		Vector3f position = mCaptureMatrix->getBasis(3);
+		Vector3f position = mCaptureMatrix->getColumn(3);
 		onSetPosition(position);
 		mCurrentVelocity = Vector3f(0.0f);
 		mTargetVelocity  = Vector3f(0.0f);
@@ -225,10 +210,9 @@ void Obj::onStartCapture()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8034C26C
- * Size:	000040
+/**
+ * @note Address: 0x8034C26C
+ * @note Size: 0x40
  */
 void Obj::onEndCapture()
 {
@@ -237,10 +221,9 @@ void Obj::onEndCapture()
 	enableEvent(0, EB_Cullable);
 }
 
-/*
- * --INFO--
- * Address:	8034C2AC
- * Size:	0005F4
+/**
+ * @note Address: 0x8034C2AC
+ * @note Size: 0x5F4
  */
 void Obj::genItem()
 {
@@ -251,23 +234,23 @@ void Obj::genItem()
 	position.y += 2.0f;
 
 	f32 randVal = randFloat();
-	f32 test    = C_PARMS->mProperParms.mSingleNectarChance.mValue;
+	f32 test    = C_PROPERPARMS.mSingleNectarChance.mValue;
 	if (randVal < test) {
 		dropType = EGGDROP_SingleNectar;
 	} else {
-		test += C_PARMS->mProperParms.mDoubleNectarChance.mValue;
+		test += C_PROPERPARMS.mDoubleNectarChance.mValue;
 		if (randVal < test) {
 			dropType = EGGDROP_DoubleNectar;
 		} else {
-			test += C_PARMS->mProperParms.mMititesChance.mValue;
+			test += C_PROPERPARMS.mMititesChance.mValue;
 			if (randVal < test) {
 				dropType = EGGDROP_Mitites;
 			} else {
-				test += C_PARMS->mProperParms.mSpicyChance.mValue;
+				test += C_PROPERPARMS.mSpicyChance.mValue;
 				if (randVal < test) {
 					dropType = EGGDROP_Spicy;
 				} else {
-					test += C_PARMS->mProperParms.mBitterChance.mValue;
+					test += C_PROPERPARMS.mBitterChance.mValue;
 					if (randVal < test) {
 						dropType = EGGDROP_Bitter;
 					}
@@ -328,8 +311,8 @@ void Obj::genItem()
 			if (doubleNectarItem) {
 				ItemHoney::Item* nectar = static_cast<ItemHoney::Item*>(doubleNectarItem);
 				f32 theta               = PI * i + angle;
-				sprayVelocity.x         = 50.0f * pikmin2_sinf(theta);
-				sprayVelocity.z         = 50.0f * pikmin2_cosf(theta);
+				sprayVelocity.x         = 50.0f * sinf(theta);
+				sprayVelocity.z         = 50.0f * cosf(theta);
 				nectar->init(nullptr);
 				nectar->mHoneyType = HONEY_Y;
 				nectar->setPosition(position, false);

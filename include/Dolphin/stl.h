@@ -6,12 +6,12 @@ extern "C" {
 #endif // ifdef __cplusplus
 
 #ifndef size_t
-typedef unsigned long size_t;
+typedef u32 size_t;
 #endif
 
-__declspec(section ".init") void* memcpy(void*, const void*, size_t);
-__declspec(section ".init") void __fill_mem(void*, int, size_t);
-__declspec(section ".init") void* memset(void*, int, size_t);
+DECL_SECT(".init") void* memcpy(void*, const void*, size_t);
+DECL_SECT(".init") void __fill_mem(void*, int, size_t);
+DECL_SECT(".init") void* memset(void*, int, size_t);
 
 // typedef struct __va_list_struct {
 // 	char gpr;
@@ -40,7 +40,7 @@ typedef __va_list va_list;
 extern void __builtin_va_info(va_list*);
 #endif
 
-void* __va_arg(va_list v_list, unsigned char type);
+void* __va_arg(va_list v_list, u8 type);
 
 #define va_start(ap, fmt) ((void)fmt, __builtin_va_info(&ap))
 #define va_arg(ap, t)     (*((t*)__va_arg(ap, _var_arg_typeof(t))))
@@ -53,10 +53,9 @@ typedef __builtin_va_list va_list;
 #define va_arg(v, l)   __builtin_va_arg(v, l)
 #endif
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E0 or 0000E4, depending on param.
+/**
+ * @note Address: N/A
+ * @note Size: 0xE0 or 0xE4, depending on param.
  */
 #define DEFINE__PRINT(unit) \
 	inline static void _Print(char*, ...) { printf(unit); }

@@ -3,211 +3,24 @@
 #include "Game/WaterBox.h"
 #include "Game/MapMgr.h"
 #include "Game/routeMgr.h"
+#include "Game/cellPyramid.h"
+#include "Game/PlatInstance.h"
 #include "Iterator.h"
 #include "JSystem/JKernel/JKRDisposer.h"
-#include "JSystem/JUtility/JUTException.h"
+#include "PikiAI.h"
+#include "P2Macros.h"
 #include "Sys/Sphere.h"
+#include "Sys/RayIntersectInfo.h"
 #include "types.h"
 #include "Vector3.h"
 
-/*
-    Generated from dpostproc
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_8047E548
-    lbl_8047E548:
-        .4byte 0x726F7574
-        .4byte 0x654D6772
-        .4byte 0x00000000
-    .global lbl_8047E554
-    lbl_8047E554:
-        .4byte 0x726F7574
-        .4byte 0x654D6772
-        .4byte 0x2E637070
-        .4byte 0x00000000
-    .global lbl_8047E564
-    lbl_8047E564:
-        .asciz "P2Assert"
-        .skip 3
-        .4byte 0x77617970
-        .4byte 0x6F696E74
-        .4byte 0x20256400
-        .4byte 0x09232069
-        .4byte 0x6E646578
-        .4byte 0x0D0A0000
-        .4byte 0x0923206E
-        .4byte 0x756D4C69
-        .4byte 0x6E6B730D
-        .4byte 0x0A000000
-        .4byte 0x0923206C
-        .4byte 0x696E6B20
-        .4byte 0x25640D0A
-        .4byte 0x00000000
-    .global lbl_8047E5A8
-    lbl_8047E5A8:
-        .4byte 0x526F7574
-        .4byte 0x654D6772
-        .4byte 0x00000000
-    .global lbl_8047E5B4
-    lbl_8047E5B4:
-        .4byte 0x746F6F20
-        .4byte 0x6D616E79
-        .4byte 0x20746F2D
-        .4byte 0x6C696E6B
-        .4byte 0x73202877
-        .4byte 0x70423D25
-        .4byte 0x64292028
-        .4byte 0x7770413D
-        .4byte 0x2564290A
-        .4byte 0x00000000
-    .global lbl_8047E5DC
-    lbl_8047E5DC:
-        .4byte 0x77704128
-        .4byte 0x25642920
-        .4byte 0x616E6420
-        .4byte 0x77704228
-        .4byte 0x25642920
-        .4byte 0x63617573
-        .4byte 0x65207369
-        .4byte 0x6E67756C
-        .4byte 0x61726974
-        .4byte 0x7920210A
-        .4byte 0x00000000
-        .4byte 0x0923206E
-        .4byte 0x756D5761
-        .4byte 0x79506F69
-        .4byte 0x6E74730D
-        .4byte 0x0A000000
-        .4byte 0x00000000
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__Q24Game14EditorRouteMgr
-    __vt__Q24Game14EditorRouteMgr:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q24Game14EditorRouteMgrFv
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__27Container<Q24Game8WayPoint>FPv"
-        .4byte getNext__Q24Game14EditorRouteMgrFPv
-        .4byte getStart__Q24Game14EditorRouteMgrFv
-        .4byte getEnd__Q24Game14EditorRouteMgrFv
-        .4byte get__Q24Game14EditorRouteMgrFPv
-        .4byte "getAt__27Container<Q24Game8WayPoint>Fi"
-        .4byte "getTo__27Container<Q24Game8WayPoint>Fv"
-        .4byte getWayPoint__Q24Game14EditorRouteMgrFs
-        .4byte read__Q24Game14EditorRouteMgrFR6Stream
-        .4byte write__Q24Game8RouteMgrFR6Stream
-    .global __vt__Q34Game14EditorRouteMgr6WPNode
-    __vt__Q34Game14EditorRouteMgr6WPNode:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q34Game14EditorRouteMgr6WPNodeFv
-        .4byte getChildCount__5CNodeFv
-    .global __vt__Q24Game12GameRouteMgr
-    __vt__Q24Game12GameRouteMgr:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q24Game12GameRouteMgrFv
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__27Container<Q24Game8WayPoint>FPv"
-        .4byte getNext__Q24Game12GameRouteMgrFPv
-        .4byte getStart__Q24Game12GameRouteMgrFv
-        .4byte getEnd__Q24Game12GameRouteMgrFv
-        .4byte get__Q24Game12GameRouteMgrFPv
-        .4byte "getAt__27Container<Q24Game8WayPoint>Fi"
-        .4byte "getTo__27Container<Q24Game8WayPoint>Fv"
-        .4byte getWayPoint__Q24Game12GameRouteMgrFs
-        .4byte read__Q24Game12GameRouteMgrFR6Stream
-        .4byte write__Q24Game8RouteMgrFR6Stream
-    .global "__vt__26Iterator<Q24Game8WayPoint>"
-    "__vt__26Iterator<Q24Game8WayPoint>":
-        .4byte 0
-        .4byte 0
-        .4byte "first__26Iterator<Q24Game8WayPoint>Fv"
-        .4byte "next__26Iterator<Q24Game8WayPoint>Fv"
-        .4byte "isDone__26Iterator<Q24Game8WayPoint>Fv"
-        .4byte "__ml__26Iterator<Q24Game8WayPoint>Fv"
-    .global __vt__Q24Game8RouteMgr
-    __vt__Q24Game8RouteMgr:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q24Game8RouteMgrFv
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__27Container<Q24Game8WayPoint>FPv"
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte "getAt__27Container<Q24Game8WayPoint>Fi"
-        .4byte "getTo__27Container<Q24Game8WayPoint>Fv"
-        .4byte 0
-        .4byte 0
-        .4byte write__Q24Game8RouteMgrFR6Stream
-    .global "__vt__27Container<Q24Game8WayPoint>"
-    "__vt__27Container<Q24Game8WayPoint>":
-        .4byte 0
-        .4byte 0
-        .4byte "__dt__27Container<Q24Game8WayPoint>Fv"
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__27Container<Q24Game8WayPoint>FPv"
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte "getAt__27Container<Q24Game8WayPoint>Fi"
-        .4byte "getTo__27Container<Q24Game8WayPoint>Fv"
-    .global __vt__Q24Game8WayPoint
-    __vt__Q24Game8WayPoint:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q24Game8WayPointFv
-        .4byte directDraw__Q24Game8WayPointFR8Graphics
-        .4byte directDraw_Simple__Q24Game8WayPointFR8Graphics
-    .global __vt__Q34Game8WayPoint8RoomList
-    __vt__Q34Game8WayPoint8RoomList:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q34Game8WayPoint8RoomListFv
-        .4byte getChildCount__5CNodeFv
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80518A00
-    lbl_80518A00:
-        .float 1.0
-    .global lbl_80518A04
-    lbl_80518A04:
-        .4byte 0x0D0A0000
-    .global lbl_80518A08
-    lbl_80518A08:
-        .4byte 0x00000000
-    .global lbl_80518A0C
-    lbl_80518A0C:
-        .4byte 0x47FA0000
-    .global lbl_80518A10
-    lbl_80518A10:
-        .4byte 0xC7FA0000
-    .global lbl_80518A14
-    lbl_80518A14:
-        .4byte 0x41C80000
-    .global lbl_80518A18
-    lbl_80518A18:
-        .float 0.1
-    .global lbl_80518A1C
-    lbl_80518A1C:
-        .4byte 0x40800000
-    .global lbl_80518A20
-    lbl_80518A20:
-        .4byte 0x499C4000
-    .global lbl_80518A24
-    lbl_80518A24:
-        .4byte 0x43960000
-*/
-
 namespace Game {
-/*
- * --INFO--
- * Address:	80172520
- * Size:	000014
+
+static const char unusedName[] = "routeMgr";
+
+/**
+ * @note Address: 0x80172520
+ * @note Size: 0x14
  */
 WayPointIterator::WayPointIterator(WayPoint* wp, bool r5)
     : mWayPoint(wp)
@@ -216,10 +29,9 @@ WayPointIterator::WayPointIterator(WayPoint* wp, bool r5)
 	mIndex = 0;
 }
 
-/*
- * --INFO--
- * Address:	80172534
- * Size:	000028
+/**
+ * @note Address: 0x80172534
+ * @note Size: 0x28
  */
 void WayPointIterator::first()
 {
@@ -227,10 +39,9 @@ void WayPointIterator::first()
 	forward();
 }
 
-/*
- * --INFO--
- * Address:	8017255C
- * Size:	00002C
+/**
+ * @note Address: 0x8017255C
+ * @note Size: 0x2C
  */
 void WayPointIterator::next()
 {
@@ -238,11 +49,10 @@ void WayPointIterator::next()
 	forward();
 }
 
-// /*
-//  * --INFO--
-//  * Address:	80172588
-//  * Size:	00003C
-//  */
+/**
+ * @note Address: 0x80172588
+ * @note Size: 0x3C
+ */
 bool WayPointIterator::isDone()
 {
 	if (_08) {
@@ -256,11 +66,10 @@ bool WayPointIterator::isDone()
 	return false;
 }
 
-/*
+/**
  * __ml
- * --INFO--
- * Address:	801725C4
- * Size:	000034
+ * @note Address: 0x801725C4
+ * @note Size: 0x34
  */
 s16 WayPointIterator::operator*()
 {
@@ -270,215 +79,88 @@ s16 WayPointIterator::operator*()
 
 	return mWayPoint->mToLinks[mIndex - 8];
 }
-} // namespace Game
 
-/*
- * --INFO--
- * Address:	801725F8
- * Size:	0000A8
+/**
+ * @note Address: 0x801725F8
+ * @note Size: 0xA8
  */
-void Game::WayPointIterator::forward()
+void WayPointIterator::forward()
 {
-	/*
-	.loc_0x0:
-	  lwz       r4, 0x0(r3)
-	  lwz       r5, 0x4(r3)
-	  cmpwi     r4, 0x8
-	  mr        r7, r4
-	  addi      r6, r5, 0x3A
-	  blt-      .loc_0x94
-	  addi      r6, r5, 0x5E
-	  subi      r7, r4, 0x8
-	  b         .loc_0x94
+	s16* links = mWayPoint->mFromLinks;
+	int idx    = mIndex;
 
-	.loc_0x24:
-	  lwz       r4, 0x0(r3)
-	  addi      r0, r4, 0x1
-	  stw       r0, 0x0(r3)
-	  lwz       r5, 0x0(r3)
-	  cmpwi     r5, 0x10
-	  bgelr-
-	  lwz       r4, 0x4(r3)
-	  lha       r0, 0x38(r4)
-	  cmpw      r5, r0
-	  blt-      .loc_0x68
-	  cmpwi     r5, 0x8
-	  bge-      .loc_0x68
-	  li        r0, 0x8
-	  stw       r0, 0x0(r3)
-	  lwz       r4, 0x4(r3)
-	  addi      r6, r4, 0x5E
-	  b         .loc_0x84
+	// we're in the "to" part of the graph
+	if (mIndex >= 8) {
+		links = mWayPoint->mToLinks;
+		idx   = mIndex - 8;
+	}
 
-	.loc_0x68:
-	  lha       r4, 0x5C(r4)
-	  addi      r0, r4, 0x8
-	  cmpw      r5, r0
-	  blt-      .loc_0x84
-	  li        r0, 0x10
-	  stw       r0, 0x0(r3)
-	  blr
+	// skip through "from" list assuming current isn't valid
+	// check each "to" list member until we hit one with a valid idx
+	while (links[idx] == -1) {
+		mIndex++;
 
-	.loc_0x84:
-	  lwz       r4, 0x0(r3)
-	  cmpwi     r4, 0x8
-	  blt-      .loc_0x94
-	  subi      r7, r4, 0x8
+		// we've hit the end of both potential lists, stop
+		if (mIndex >= 16) {
+			return;
+		}
 
-	.loc_0x94:
-	  rlwinm    r0,r7,1,0,30
-	  lhax      r0, r6, r0
-	  cmpwi     r0, -0x1
-	  beq+      .loc_0x24
-	  blr
-	*/
+		// if we exhausted the "from" list, jump into the "to" list
+		if (mIndex >= mWayPoint->mNumFromLinks && mIndex < 8) {
+			mIndex = 8;
+			links  = mWayPoint->mToLinks;
+
+			// if we've exhausted the "to" list, set index to max and stop
+		} else if (mIndex >= mWayPoint->mNumToLinks + 8) {
+			mIndex = 16;
+			return;
+		}
+
+		// update current link to other list if we've swapped
+		if (mIndex >= 8) {
+			idx = mIndex - 8;
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	801726A0
- * Size:	00006C
+/**
+ * @note Address: 0x801726A0
+ * @note Size: 0x6C
  */
-Game::WayPoint::WayPoint()
+WayPoint::WayPoint()
     : JKRDisposer()
     , mRoomList()
 {
-
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  stw       r0, 0x14(r1)
-	  stw       r31, 0xC(r1)
-	  mr        r31, r3
-	  stw       r30, 0x8(r1)
-	  bl        -0x1556EC
-	  lis       r3, 0x804B
-	  addi      r30, r31, 0x18
-	  addi      r0, r3, 0x23FC
-	  stw       r0, 0x0(r31)
-	  mr        r3, r30
-	  bl        0x29ECC0
-	  lis       r3, 0x804B
-	  li        r0, -0x1
-	  addi      r4, r3, 0x2410
-	  mr        r3, r31
-	  stw       r4, 0x0(r30)
-	  sth       r0, 0x18(r30)
-	  bl        0x104
-	  lwz       r0, 0x14(r1)
-	  mr        r3, r31
-	  lwz       r31, 0xC(r1)
-	  lwz       r30, 0x8(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
+	reset();
 }
 
-/*
- * --INFO--
- * Address:	8017270C
- * Size:	000060
+/**
+ * @note Address: 0x8017276C
+ * @note Size: 0x84
  */
-Game::WayPoint::RoomList::~RoomList()
+WayPoint::~WayPoint() { }
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x34
+ */
+bool WayPoint::includeRoom(s16 roomIdx)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  stw       r0, 0x14(r1)
-	  stw       r31, 0xC(r1)
-	  mr        r31, r4
-	  stw       r30, 0x8(r1)
-	  mr.       r30, r3
-	  beq-      .loc_0x44
-	  lis       r5, 0x804B
-	  li        r4, 0
-	  addi      r0, r5, 0x2410
-	  stw       r0, 0x0(r30)
-	  bl        0x29EE4C
-	  extsh.    r0, r31
-	  ble-      .loc_0x44
-	  mr        r3, r30
-	  bl        -0x14E698
+	FOREACH_NODE(RoomList, mRoomList.mChild, room)
+	{
+		if (room->mRoomIdx == roomIdx) {
+			return true;
+		}
+	}
 
-	.loc_0x44:
-	  lwz       r0, 0x14(r1)
-	  mr        r3, r30
-	  lwz       r31, 0xC(r1)
-	  lwz       r30, 0x8(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
+	return false;
 }
 
-/*
- * --INFO--
- * Address:	8017276C
- * Size:	000084
+/**
+ * @note Address: 0x801727F0
+ * @note Size: 0x84
  */
-Game::WayPoint::~WayPoint()
-{
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  stw       r0, 0x14(r1)
-	  stw       r31, 0xC(r1)
-	  mr        r31, r4
-	  stw       r30, 0x8(r1)
-	  mr.       r30, r3
-	  beq-      .loc_0x68
-	  lis       r3, 0x804B
-	  addic.    r0, r30, 0x18
-	  addi      r0, r3, 0x23FC
-	  stw       r0, 0x0(r30)
-	  beq-      .loc_0x4C
-	  lis       r4, 0x804B
-	  addi      r3, r30, 0x18
-	  addi      r0, r4, 0x2410
-	  li        r4, 0
-	  stw       r0, 0x18(r30)
-	  bl        0x29EDD4
-
-	.loc_0x4C:
-	  mr        r3, r30
-	  li        r4, 0
-	  bl        -0x15578C
-	  extsh.    r0, r31
-	  ble-      .loc_0x68
-	  mr        r3, r30
-	  bl        -0x14E71C
-
-	.loc_0x68:
-	  lwz       r0, 0x14(r1)
-	  mr        r3, r30
-	  lwz       r31, 0xC(r1)
-	  lwz       r30, 0x8(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000034
- */
-void Game::WayPoint::includeRoom(short)
-{
-	// UNUSED FUNCTION
-}
-
-/*
- * --INFO--
- * Address:	801727F0
- * Size:	000084
- */
-void Game::WayPoint::reset()
+void WayPoint::reset()
 {
 	for (int i = 0; i < 8; ++i) {
 		mFromLinks[i] = -1;
@@ -490,129 +172,142 @@ void Game::WayPoint::reset()
 	mNumFromLinks = 0;
 	mNumToLinks   = 0;
 	mDoFloorSnap  = 0;
-	mFlags        = WPF_Unset;
+	mFlags        = 0;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
-void Game::WayPoint::getLink(int)
+void WayPoint::getLink(int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80172874
- * Size:	000028
+/**
+ * @note Address: 0x80172874
+ * @note Size: 0x28
  */
-void Game::WayPoint::setOpen(bool open)
+void WayPoint::setOpen(bool open)
 {
 	if (open) {
-		mFlags &= ~WPF_Closed;
+		resetFlag(WPF_Closed);
 	} else {
-		mFlags |= WPF_Closed;
+		setFlag(WPF_Closed);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8017289C
- * Size:	000028
+/**
+ * @note Address: 0x8017289C
+ * @note Size: 0x28
  */
-void Game::WayPoint::setWater(bool water)
+void WayPoint::setWater(bool water)
 {
 	if (water) {
-		mFlags |= WPF_Water;
+		setFlag(WPF_Water);
 	} else {
-		mFlags &= ~WPF_Water;
+		resetFlag(WPF_Water);
 	}
 }
 
-/*
- * --INFO--
- * Address:	801728C4
- * Size:	000028
+/**
+ * @note Address: 0x801728C4
+ * @note Size: 0x28
  */
-void Game::WayPoint::setBridge(bool bridge)
+void WayPoint::setBridge(bool bridge)
 {
 	if (bridge) {
-		mFlags |= WPF_Bridge;
+		setFlag(WPF_Bridge);
 	} else {
-		mFlags &= ~WPF_Bridge;
+		resetFlag(WPF_Bridge);
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
-void Game::WayPoint::setVisit(bool)
+void WayPoint::setVisit(bool)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000048
+/**
+ * @note Address: N/A
+ * @note Size: 0x48
  */
-void Game::WayPoint::setVsColor(int)
+void WayPoint::setVsColor(int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000040
+/**
+ * @note Address: N/A
+ * @note Size: 0x40
  */
-bool Game::WayPoint::hasLinkTo(short)
+bool WayPoint::hasLinkTo(s16 idx)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000B4
+/**
+ * @note Address: N/A
+ * @note Size: 0xB4
  */
-void Game::WayPoint::addLink(short)
+void WayPoint::addLink(s16)
+{
+	P2ASSERTLINE(300, false);
+	// UNUSED FUNCTION
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0xA4
+ */
+void WayPoint::killLink(s16)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000A4
+/**
+ * @note Address: N/A
+ * @note Size: 0x12C
  */
-void Game::WayPoint::killLink(short)
+void WayPoint::write(Stream& output)
 {
-	// UNUSED FUNCTION
+	char buf[256];
+	sprintf(buf, "waypoint %d", mIndex);
+
+	output.textBeginGroup(buf);
+
+	output.textWriteTab(output.mTabCount);
+	output.writeShort(mIndex);
+	output.textWriteText("\t# index\r\n");
+
+	output.textWriteTab(output.mTabCount);
+	output.writeShort(mNumFromLinks);
+	output.textWriteText("\t# numLinks\r\n");
+
+	for (int i = 0; i < mNumFromLinks; i++) {
+		output.textWriteTab(output.mTabCount);
+		output.writeShort(mFromLinks[i]);
+		output.textWriteText("\t# link %d\r\n", i);
+	}
+
+	output.textWriteTab(output.mTabCount);
+	mPosition.write(output);
+	output.writeFloat(mRadius);
+	output.textWriteText("\r\n");
+
+	output.textEndGroup();
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00012C
+/**
+ * @note Address: N/A
+ * @note Size: 0xA0
  */
-void Game::WayPoint::write(Stream&)
+void WayPoint::read(Stream& input)
 {
-	// UNUSED FUNCTION
-}
-
-/*
- * --INFO--
- * Address:	........
- * Size:	0000A0
- */
-void Game::WayPoint::read(Stream& input)
-{
-	// UNUSED FUNCTION
 	mIndex        = input.readShort();
 	mNumFromLinks = input.readShort();
 	for (int i = 0; i < mNumFromLinks; i++) {
@@ -622,911 +317,288 @@ void Game::WayPoint::read(Stream& input)
 	mRadius = input.readFloat();
 }
 
-/*
- * --INFO--
- * Address:	801728EC
- * Size:	000004
+/**
+ * @note Address: 0x801728EC
+ * @note Size: 0x4
  */
-void Game::WayPoint::directDraw(Graphics&) { }
+void WayPoint::directDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	801728F0
- * Size:	000004
+/**
+ * @note Address: 0x801728F0
+ * @note Size: 0x4
  */
-void Game::WayPoint::directDraw_Simple(Graphics&) { }
+void WayPoint::directDraw_Simple(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00010C
+/**
+ * @note Address: N/A
+ * @note Size: 0x10C
  */
-void Game::WayPoint::createOffPlane(Plane&, Game::WayPoint*)
+void WayPoint::createOffPlane(Plane&, WayPoint*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00006C
+/**
+ * @note Address: N/A
+ * @note Size: 0x6C
  */
-Game::RouteMgr::RouteMgr()
-    : Container<Game::WayPoint>()
+RouteMgr::RouteMgr()
+    : Container<WayPoint>()
 {
 	mCount = 0;
 	mName  = "RouteMgr";
-	// UNUSED FUNCTION
 }
 
-// /*
-//  * --INFO--
-//  * Address:	801728F4
-//  * Size:	000070
-//  */
-// Container<Game::WayPoint>::~Container()
-// {
-// 	/*
-// 	.loc_0x0:
-// 	  stwu      r1, -0x10(r1)
-// 	  mflr      r0
-// 	  stw       r0, 0x14(r1)
-// 	  stw       r31, 0xC(r1)
-// 	  mr        r31, r4
-// 	  stw       r30, 0x8(r1)
-// 	  mr.       r30, r3
-// 	  beq-      .loc_0x54
-// 	  lis       r4, 0x804B
-// 	  addi      r0, r4, 0x23D0
-// 	  stw       r0, 0x0(r30)
-// 	  beq-      .loc_0x44
-// 	  lis       r5, 0x804B
-// 	  li        r4, 0
-// 	  subi      r0, r5, 0x5324
-// 	  stw       r0, 0x0(r30)
-// 	  bl        0x29EC54
-
-// 	.loc_0x44:
-// 	  extsh.    r0, r31
-// 	  ble-      .loc_0x54
-// 	  mr        r3, r30
-// 	  bl        -0x14E890
-
-// 	.loc_0x54:
-// 	  lwz       r0, 0x14(r1)
-// 	  mr        r3, r30
-// 	  lwz       r31, 0xC(r1)
-// 	  lwz       r30, 0x8(r1)
-// 	  mtlr      r0
-// 	  addi      r1, r1, 0x10
-// 	  blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80172964
- * Size:	000080
+/**
+ * @note Address: 0x80172964
+ * @note Size: 0x80
  */
-Game::RouteMgr::~RouteMgr()
+RouteMgr::~RouteMgr() { }
+
+/**
+ * @note Address: 0x801729E4
+ * @note Size: 0x148
+ */
+void RouteMgr::makeInvertLinks()
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  stw       r0, 0x14(r1)
-	  stw       r31, 0xC(r1)
-	  mr        r31, r4
-	  stw       r30, 0x8(r1)
-	  mr.       r30, r3
-	  beq-      .loc_0x64
-	  lis       r4, 0x804B
-	  addi      r0, r4, 0x2398
-	  stw       r0, 0x0(r30)
-	  beq-      .loc_0x54
-	  lis       r4, 0x804B
-	  addi      r0, r4, 0x23D0
-	  stw       r0, 0x0(r30)
-	  beq-      .loc_0x54
-	  lis       r5, 0x804B
-	  li        r4, 0
-	  subi      r0, r5, 0x5324
-	  stw       r0, 0x0(r30)
-	  bl        0x29EBD4
+	for (s16 i = 0; i < mCount; i++) {
+		WayPoint* wpA = getWayPoint(i);
 
-	.loc_0x54:
-	  extsh.    r0, r31
-	  ble-      .loc_0x64
-	  mr        r3, r30
-	  bl        -0x14E910
+		for (int j = 0; j < wpA->mNumFromLinks; j++) {
+			s16 linkIdx = wpA->mFromLinks[j];
+			if (linkIdx != -1) {
+				WayPoint* link = getWayPoint(linkIdx);
 
-	.loc_0x64:
-	  lwz       r0, 0x14(r1)
-	  mr        r3, r30
-	  lwz       r31, 0xC(r1)
-	  lwz       r30, 0x8(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
+				if (linkable(wpA, link)) {
+					JUT_ASSERTLINE(525, link->mNumToLinks < 8, "too many to-links (wpB=%d) (wpA=%d)\n", link->mIndex, wpA->mIndex);
+					s16 idx      = wpA->mIndex;
+					bool hasLink = false;
+
+					for (int i = 0; i < link->mNumFromLinks; i++) {
+						if (link->mFromLinks[i] == idx) {
+							hasLink = true;
+						}
+					}
+
+					if (!hasLink) {
+						link->mToLinks[link->mNumToLinks] = idx;
+						link->mNumToLinks++;
+					}
+				}
+			}
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	801729E4
- * Size:	000148
+/**
+ * @note Address: 0x80172B2C
+ * @note Size: 0x1E4
  */
-void Game::RouteMgr::makeInvertLinks()
+bool RouteMgr::linkable(WayPoint* wpA, WayPoint* wpB)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x20(r1)
-	  mflr      r0
-	  stw       r0, 0x24(r1)
-	  stmw      r26, 0x8(r1)
-	  mr        r26, r3
-	  li        r30, 0
-	  b         .loc_0x124
+	if (!mapMgr) {
+		return true;
+	}
 
-	.loc_0x1C:
-	  mr        r3, r26
-	  mr        r4, r30
-	  lwz       r12, 0x0(r26)
-	  lwz       r12, 0x2C(r12)
-	  mtctr     r12
-	  bctrl
-	  mr        r29, r3
-	  li        r28, 0
-	  mr        r31, r29
-	  b         .loc_0x114
+	Vector3f posA       = wpA->mPosition;
+	Vector3f posB       = wpB->mPosition;
+	f32 prevFloorHeight = posA.y;
 
-	.loc_0x44:
-	  lha       r4, 0x3A(r31)
-	  cmpwi     r4, -0x1
-	  beq-      .loc_0x10C
-	  lwz       r12, 0x0(r26)
-	  mr        r3, r26
-	  lwz       r12, 0x2C(r12)
-	  mtctr     r12
-	  bctrl
-	  mr        r0, r3
-	  mr        r3, r26
-	  mr        r27, r0
-	  mr        r4, r29
-	  mr        r5, r27
-	  bl        .loc_0x148
-	  rlwinm.   r0,r3,0,24,31
-	  beq-      .loc_0x10C
-	  lha       r0, 0x5C(r27)
-	  cmpwi     r0, 0x8
-	  blt-      .loc_0xB4
-	  lis       r3, 0x8048
-	  lis       r4, 0x8048
-	  subi      r5, r4, 0x1A4C
-	  lha       r6, 0x36(r27)
-	  lha       r7, 0x36(r29)
-	  subi      r3, r3, 0x1AAC
-	  li        r4, 0x20D
-	  crclr     6, 0x6
-	  bl        -0x148454
+	Vector3f sep = posB - posA;
+	sep.y        = 0.0f;
 
-	.loc_0xB4:
-	  lha       r0, 0x38(r27)
-	  mr        r3, r27
-	  lha       r4, 0x36(r29)
-	  li        r5, 0
-	  mtctr     r0
-	  cmpwi     r0, 0
-	  ble-      .loc_0xE8
+	for (f32 i = 0.0f; i <= 1.0f; i += 0.1f) {
+		CurrTriInfo info;
+		info.mPosition        = posA + sep * i;
+		info.mUpdateOnNewMaxY = false;
 
-	.loc_0xD0:
-	  lha       r0, 0x3A(r3)
-	  cmpw      r0, r4
-	  bne-      .loc_0xE0
-	  li        r5, 0x1
+		mapMgr->getCurrTri(info);
+		if (FABS(prevFloorHeight - info.mMinY) > 25.0f) {
+			return false;
+		}
+		prevFloorHeight = info.mMinY;
+	}
 
-	.loc_0xE0:
-	  addi      r3, r3, 0x2
-	  bdnz+     .loc_0xD0
-
-	.loc_0xE8:
-	  rlwinm.   r0,r5,0,24,31
-	  bne-      .loc_0x10C
-	  lha       r0, 0x5C(r27)
-	  rlwinm    r3,r0,1,0,30
-	  addi      r0, r3, 0x5E
-	  sthx      r4, r27, r0
-	  lha       r3, 0x5C(r27)
-	  addi      r0, r3, 0x1
-	  sth       r0, 0x5C(r27)
-
-	.loc_0x10C:
-	  addi      r31, r31, 0x2
-	  addi      r28, r28, 0x1
-
-	.loc_0x114:
-	  lha       r0, 0x38(r29)
-	  cmpw      r28, r0
-	  blt+      .loc_0x44
-	  addi      r30, r30, 0x1
-
-	.loc_0x124:
-	  lhz       r0, 0x1C(r26)
-	  extsh     r3, r30
-	  cmpw      r3, r0
-	  blt+      .loc_0x1C
-	  lmw       r26, 0x8(r1)
-	  lwz       r0, 0x24(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x20
-	  blr
-
-	.loc_0x148:
-	*/
+	return true;
 }
 
-/*
- * --INFO--
- * Address:	80172B2C
- * Size:	0001E4
+/**
+ * @note Address: 0x80172D10
+ * @note Size: 0x268
  */
-bool Game::RouteMgr::linkable(Game::WayPoint*, Game::WayPoint*)
+void RouteMgr::refreshWater()
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x110(r1)
-	  mflr      r0
-	  stw       r0, 0x114(r1)
-	  stfd      f31, 0x100(r1)
-	  psq_st    f31,0x108(r1),0,0
-	  stfd      f30, 0xF0(r1)
-	  psq_st    f30,0xF8(r1),0,0
-	  stfd      f29, 0xE0(r1)
-	  psq_st    f29,0xE8(r1),0,0
-	  stfd      f28, 0xD0(r1)
-	  psq_st    f28,0xD8(r1),0,0
-	  stfd      f27, 0xC0(r1)
-	  psq_st    f27,0xC8(r1),0,0
-	  stfd      f26, 0xB0(r1)
-	  psq_st    f26,0xB8(r1),0,0
-	  stfd      f25, 0xA0(r1)
-	  psq_st    f25,0xA8(r1),0,0
-	  stfd      f24, 0x90(r1)
-	  psq_st    f24,0x98(r1),0,0
-	  stfd      f23, 0x80(r1)
-	  psq_st    f23,0x88(r1),0,0
-	  stfd      f22, 0x70(r1)
-	  psq_st    f22,0x78(r1),0,0
-	  stfd      f21, 0x60(r1)
-	  psq_st    f21,0x68(r1),0,0
-	  stfd      f20, 0x50(r1)
-	  psq_st    f20,0x58(r1),0,0
-	  stfd      f19, 0x40(r1)
-	  psq_st    f19,0x48(r1),0,0
-	  lwz       r0, -0x6CF8(r13)
-	  cmplwi    r0, 0
-	  bne-      .loc_0x88
-	  li        r3, 0x1
-	  b         .loc_0x16C
-
-	.loc_0x88:
-	  lfs       f26, 0x50(r4)
-	  lfs       f21, -0x5958(r2)
-	  lfs       f27, 0x4C(r4)
-	  fmr       f22, f26
-	  lfs       f1, 0x4C(r5)
-	  fmr       f30, f21
-	  lfs       f25, 0x54(r4)
-	  lfs       f0, 0x54(r5)
-	  fsubs     f24, f1, f27
-	  lfs       f28, -0x5954(r2)
-	  fsubs     f23, f0, f25
-	  lfs       f29, -0x5950(r2)
-	  lfs       f31, -0x5960(r2)
-	  lfs       f19, -0x594C(r2)
-	  lfs       f20, -0x5948(r2)
-	  b         .loc_0x15C
-
-	.loc_0xC8:
-	  fmuls     f2, f24, f21
-	  li        r5, 0
-	  fmuls     f1, f30, f21
-	  li        r0, 0x1
-	  fmuls     f0, f23, f21
-	  stb       r0, 0x14(r1)
-	  fadds     f2, f27, f2
-	  stw       r5, 0x1C(r1)
-	  fadds     f1, f26, f1
-	  lwz       r3, -0x6CF8(r13)
-	  fadds     f0, f25, f0
-	  stfs      f28, 0x20(r1)
-	  stfs      f29, 0x24(r1)
-	  addi      r4, r1, 0x8
-	  stw       r5, 0x18(r1)
-	  stfs      f30, 0x28(r1)
-	  stfs      f31, 0x2C(r1)
-	  stfs      f30, 0x30(r1)
-	  stb       r5, 0x15(r1)
-	  stfs      f2, 0x8(r1)
-	  stfs      f1, 0xC(r1)
-	  stfs      f0, 0x10(r1)
-	  stb       r5, 0x14(r1)
-	  lwz       r12, 0x4(r3)
-	  lwz       r12, 0x2C(r12)
-	  mtctr     r12
-	  bctrl
-	  lfs       f1, 0x24(r1)
-	  fsubs     f0, f22, f1
-	  fabs      f0, f0
-	  frsp      f0, f0
-	  fcmpo     cr0, f0, f19
-	  ble-      .loc_0x154
-	  li        r3, 0
-	  b         .loc_0x16C
-
-	.loc_0x154:
-	  fmr       f22, f1
-	  fadds     f21, f21, f20
-
-	.loc_0x15C:
-	  fcmpo     cr0, f21, f31
-	  cror      2, 0, 0x2
-	  beq+      .loc_0xC8
-	  li        r3, 0x1
-
-	.loc_0x16C:
-	  psq_l     f31,0x108(r1),0,0
-	  lfd       f31, 0x100(r1)
-	  psq_l     f30,0xF8(r1),0,0
-	  lfd       f30, 0xF0(r1)
-	  psq_l     f29,0xE8(r1),0,0
-	  lfd       f29, 0xE0(r1)
-	  psq_l     f28,0xD8(r1),0,0
-	  lfd       f28, 0xD0(r1)
-	  psq_l     f27,0xC8(r1),0,0
-	  lfd       f27, 0xC0(r1)
-	  psq_l     f26,0xB8(r1),0,0
-	  lfd       f26, 0xB0(r1)
-	  psq_l     f25,0xA8(r1),0,0
-	  lfd       f25, 0xA0(r1)
-	  psq_l     f24,0x98(r1),0,0
-	  lfd       f24, 0x90(r1)
-	  psq_l     f23,0x88(r1),0,0
-	  lfd       f23, 0x80(r1)
-	  psq_l     f22,0x78(r1),0,0
-	  lfd       f22, 0x70(r1)
-	  psq_l     f21,0x68(r1),0,0
-	  lfd       f21, 0x60(r1)
-	  psq_l     f20,0x58(r1),0,0
-	  lfd       f20, 0x50(r1)
-	  psq_l     f19,0x48(r1),0,0
-	  lwz       r0, 0x114(r1)
-	  lfd       f19, 0x40(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x110
-	  blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	80172D10
- * Size:	000268
- */
-void Game::RouteMgr::refreshWater()
-{
-	Iterator<WayPoint> iterator(this, 0, nullptr);
-	iterator.first();
-	while (!iterator.isDone()) {
-		WayPoint* wp = (*iterator);
-		wp->mFlags &= ~WPF_Water;
-		if (Game::mapMgr) {
+	Iterator<WayPoint> iter(this);
+	CI_LOOP(iter)
+	{
+		WayPoint* wp = (*iter);
+		wp->resetFlag(WPF_Water);
+		if (mapMgr) {
 			Sys::Sphere searchSphere;
-			searchSphere.mPosition.y = wp->mPosition.y;
-			searchSphere.mPosition.z = wp->mPosition.z;
-			searchSphere.mPosition.x = wp->mPosition.x;
-			if (wp->mFlags & WPF_Water) {
+			searchSphere.mPosition = Vector3f(wp->mPosition);
+			if (!wp->isFlag(WPF_Bridge)) {
 				searchSphere.mPosition.y = mapMgr->getMinY(searchSphere.mPosition);
 			}
 			searchSphere.mRadius = 4.0f;
 			WaterBox* waterBox   = mapMgr->findWater(searchSphere);
-			if ((waterBox) && (waterBox->mFlags & 1)) {
-				wp->mFlags |= WPF_Water;
+			if ((waterBox) && (waterBox->isFlag(WBF_Unknown1))) {
+				wp->setFlag(WPF_Water);
 			}
 		}
-		iterator.next();
 	}
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x30(r1)
-	  mflr      r0
-	  lis       r4, 0x804B
-	  stw       r0, 0x34(r1)
-	  li        r0, 0
-	  addi      r4, r4, 0x2380
-	  stw       r31, 0x2C(r1)
-	  cmplwi    r0, 0
-	  stw       r0, 0x24(r1)
-	  stw       r4, 0x18(r1)
-	  stw       r0, 0x1C(r1)
-	  stw       r3, 0x20(r1)
-	  bne-      .loc_0x4C
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x18(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0x1C(r1)
-	  b         .loc_0x234
-
-	.loc_0x4C:
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x18(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0x1C(r1)
-	  b         .loc_0xB8
-
-	.loc_0x64:
-	  lwz       r3, 0x20(r1)
-	  lwz       r4, 0x1C(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x20(r12)
-	  mtctr     r12
-	  bctrl
-	  mr        r4, r3
-	  lwz       r3, 0x24(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x8(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  bne-      .loc_0x234
-	  lwz       r3, 0x20(r1)
-	  lwz       r4, 0x1C(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x14(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0x1C(r1)
-
-	.loc_0xB8:
-	  lwz       r12, 0x18(r1)
-	  addi      r3, r1, 0x18
-	  lwz       r12, 0x10(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  beq+      .loc_0x64
-	  b         .loc_0x234
-
-	.loc_0xD8:
-	  lwz       r3, 0x20(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x20(r12)
-	  mtctr     r12
-	  bctrl
-	  lbz       r0, 0x34(r3)
-	  mr        r31, r3
-	  rlwinm    r0,r0,0,31,29
-	  stb       r0, 0x34(r3)
-	  lwz       r3, -0x6CF8(r13)
-	  cmplwi    r3, 0
-	  beq-      .loc_0x178
-	  lfs       f1, 0x50(r31)
-	  lfs       f2, 0x54(r31)
-	  lfs       f0, 0x4C(r31)
-	  stfs      f0, 0x8(r1)
-	  stfs      f1, 0xC(r1)
-	  stfs      f2, 0x10(r1)
-	  lbz       r0, 0x34(r31)
-	  rlwinm.   r0,r0,0,29,29
-	  bne-      .loc_0x144
-	  lwz       r12, 0x4(r3)
-	  addi      r4, r1, 0x8
-	  lwz       r12, 0x28(r12)
-	  mtctr     r12
-	  bctrl
-	  stfs      f1, 0xC(r1)
-
-	.loc_0x144:
-	  lfs       f0, -0x5944(r2)
-	  addi      r4, r1, 0x8
-	  lwz       r3, -0x6CF8(r13)
-	  stfs      f0, 0x14(r1)
-	  bl        -0xF53C
-	  cmplwi    r3, 0
-	  beq-      .loc_0x178
-	  lbz       r0, 0x4(r3)
-	  rlwinm.   r0,r0,0,31,31
-	  beq-      .loc_0x178
-	  lbz       r0, 0x34(r31)
-	  ori       r0, r0, 0x2
-	  stb       r0, 0x34(r31)
-
-	.loc_0x178:
-	  lwz       r0, 0x24(r1)
-	  cmplwi    r0, 0
-	  bne-      .loc_0x1A4
-	  lwz       r3, 0x20(r1)
-	  lwz       r4, 0x1C(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x14(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0x1C(r1)
-	  b         .loc_0x234
-
-	.loc_0x1A4:
-	  lwz       r3, 0x20(r1)
-	  lwz       r4, 0x1C(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x14(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0x1C(r1)
-	  b         .loc_0x218
-
-	.loc_0x1C4:
-	  lwz       r3, 0x20(r1)
-	  lwz       r4, 0x1C(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x20(r12)
-	  mtctr     r12
-	  bctrl
-	  mr        r4, r3
-	  lwz       r3, 0x24(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x8(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  bne-      .loc_0x234
-	  lwz       r3, 0x20(r1)
-	  lwz       r4, 0x1C(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x14(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0x1C(r1)
-
-	.loc_0x218:
-	  lwz       r12, 0x18(r1)
-	  addi      r3, r1, 0x18
-	  lwz       r12, 0x10(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  beq+      .loc_0x1C4
-
-	.loc_0x234:
-	  lwz       r3, 0x20(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x1C(r12)
-	  mtctr     r12
-	  bctrl
-	  lwz       r4, 0x1C(r1)
-	  cmplw     r4, r3
-	  bne+      .loc_0xD8
-	  lwz       r0, 0x34(r1)
-	  lwz       r31, 0x2C(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x30
-	  blr
-	*/
 }
 
-// /*
-//  * --INFO--
-//  * Address:	80172F78
-//  * Size:	00004C
-//  */
-// template<> bool Iterator<Game::WayPoint>::isDone()
-// {
-// 	/*
-// 	.loc_0x0:
-// 	  stwu      r1, -0x10(r1)
-// 	  mflr      r0
-// 	  stw       r0, 0x14(r1)
-// 	  stw       r31, 0xC(r1)
-// 	  mr        r31, r3
-// 	  lwz       r3, 0x8(r3)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x1C(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  lwz       r0, 0x4(r31)
-// 	  sub       r0, r3, r0
-// 	  cntlzw    r0, r0
-// 	  rlwinm    r3,r0,27,5,31
-// 	  lwz       r31, 0xC(r1)
-// 	  lwz       r0, 0x14(r1)
-// 	  mtlr      r0
-// 	  addi      r1, r1, 0x10
-// 	  blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80172FC4
- * Size:	0003A8
+/**
+ * @note Address: 0x80172FC4
+ * @note Size: 0x3A8
  */
-void Game::RouteMgr::getNearestWayPoint(Game::WPSearchArg&)
+WayPoint* RouteMgr::getNearestWayPoint(WPSearchArg& searchArg)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0xF0(r1)
-	  mflr      r0
-	  stw       r0, 0xF4(r1)
-	  stfd      f31, 0xE0(r1)
-	  psq_st    f31,0xE8(r1),0,0
-	  stfd      f30, 0xD0(r1)
-	  psq_st    f30,0xD8(r1),0,0
-	  stw       r31, 0xCC(r1)
-	  stw       r30, 0xC8(r1)
-	  stw       r29, 0xC4(r1)
-	  li        r0, 0
-	  lis       r5, 0x804B
-	  addi      r5, r5, 0x2380
-	  stw       r0, 0x14(r1)
-	  cmplwi    r0, 0
-	  lfs       f30, -0x5940(r2)
-	  stw       r5, 0x8(r1)
-	  mr        r30, r4
-	  li        r31, 0
-	  stw       r0, 0xC(r1)
-	  stw       r3, 0x10(r1)
-	  bne-      .loc_0x70
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x18(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0xC(r1)
-	  b         .loc_0x358
+	f32 minDist         = 1280000.0f;
+	WayPoint* nearestWP = nullptr;
+	Iterator<WayPoint> iter(this);
+	CI_LOOP(iter)
+	{
+		WayPoint* wp = *iter;
+		if (!searchArg.mCondition || searchArg.mCondition->satisfy(wp)) {
+			Vector3f sep = wp->mPosition - searchArg.mPosition;
+			f32 dist     = sep.length();
+			if (dist < minDist) {
+				if (searchArg.mDoRayCheck && dist < 300.0f) {
+					Sys::RayIntersectInfo mapInfo;
+					mapInfo.mCheckHorizontal         = 1;
+					mapInfo.mDistance                = 1280000.0f;
+					mapInfo.mIntersectEdge.mStartPos = searchArg.mPosition;
+					mapInfo.mIntersectEdge.mEndPos   = wp->mPosition;
+					mapInfo.mRadius                  = searchArg.mRadius;
+					if (mapMgr && mapMgr->findRayIntersection(mapInfo)) {
+						continue;
+					}
 
-	.loc_0x70:
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x18(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0xC(r1)
-	  b         .loc_0xDC
+					Sys::RayIntersectInfo platInfo;
+					platInfo.mCheckHorizontal         = 1;
+					platInfo.mDistance                = 1280000.0f;
+					platInfo.mIntersectEdge.mStartPos = searchArg.mPosition;
+					platInfo.mIntersectEdge.mEndPos   = wp->mPosition;
+					platInfo.mRadius                  = searchArg.mRadius;
+					if (platMgr && platMgr->findRayIntersection(platInfo)) {
+						continue;
+					}
+				}
 
-	.loc_0x88:
-	  lwz       r3, 0x10(r1)
-	  lwz       r4, 0xC(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x20(r12)
-	  mtctr     r12
-	  bctrl
-	  mr        r4, r3
-	  lwz       r3, 0x14(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x8(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  bne-      .loc_0x358
-	  lwz       r3, 0x10(r1)
-	  lwz       r4, 0xC(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x14(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0xC(r1)
+				minDist   = dist;
+				nearestWP = wp;
+			}
+		}
+	}
 
-	.loc_0xDC:
-	  lwz       r12, 0x8(r1)
-	  addi      r3, r1, 0x8
-	  lwz       r12, 0x10(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  beq+      .loc_0x88
-	  b         .loc_0x358
-
-	.loc_0xFC:
-	  lwz       r3, 0x10(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x20(r12)
-	  mtctr     r12
-	  bctrl
-	  lwz       r0, 0xC(r30)
-	  mr        r29, r3
-	  cmplwi    r0, 0
-	  beq-      .loc_0x140
-	  mr        r3, r0
-	  mr        r4, r29
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x8(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  beq-      .loc_0x29C
-
-	.loc_0x140:
-	  lfs       f1, 0x50(r29)
-	  lfs       f0, 0x4(r30)
-	  lfs       f3, 0x54(r29)
-	  fsubs     f4, f1, f0
-	  lfs       f2, 0x8(r30)
-	  lfs       f1, 0x4C(r29)
-	  lfs       f0, 0x0(r30)
-	  fsubs     f2, f3, f2
-	  fmuls     f3, f4, f4
-	  fsubs     f1, f1, f0
-	  lfs       f0, -0x5958(r2)
-	  fmuls     f2, f2, f2
-	  fmadds    f1, f1, f1, f3
-	  fadds     f31, f2, f1
-	  fcmpo     cr0, f31, f0
-	  ble-      .loc_0x190
-	  ble-      .loc_0x194
-	  fsqrte    f0, f31
-	  fmuls     f31, f0, f31
-	  b         .loc_0x194
-
-	.loc_0x190:
-	  fmr       f31, f0
-
-	.loc_0x194:
-	  fcmpo     cr0, f31, f30
-	  bge-      .loc_0x29C
-	  lbz       r0, 0x10(r30)
-	  cmplwi    r0, 0
-	  beq-      .loc_0x294
-	  lfs       f0, -0x593C(r2)
-	  fcmpo     cr0, f31, f0
-	  bge-      .loc_0x294
-	  lfs       f0, -0x5940(r2)
-	  li        r0, 0x1
-	  lwz       r3, -0x6CF8(r13)
-	  stb       r0, 0x84(r1)
-	  cmplwi    r3, 0
-	  stfs      f0, 0xA8(r1)
-	  lfs       f0, 0x0(r30)
-	  stfs      f0, 0x68(r1)
-	  lfs       f0, 0x4(r30)
-	  stfs      f0, 0x6C(r1)
-	  lfs       f0, 0x8(r30)
-	  stfs      f0, 0x70(r1)
-	  lfs       f0, 0x4C(r29)
-	  stfs      f0, 0x74(r1)
-	  lfs       f0, 0x50(r29)
-	  stfs      f0, 0x78(r1)
-	  lfs       f0, 0x54(r29)
-	  stfs      f0, 0x7C(r1)
-	  lfs       f0, 0x14(r30)
-	  stfs      f0, 0x80(r1)
-	  beq-      .loc_0x224
-	  lwz       r12, 0x4(r3)
-	  addi      r4, r1, 0x68
-	  lwz       r12, 0x20(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  bne-      .loc_0x29C
-
-	.loc_0x224:
-	  lfs       f0, -0x5940(r2)
-	  li        r0, 0x1
-	  lwz       r3, -0x6BE0(r13)
-	  stb       r0, 0x34(r1)
-	  cmplwi    r3, 0
-	  stfs      f0, 0x58(r1)
-	  lfs       f0, 0x0(r30)
-	  stfs      f0, 0x18(r1)
-	  lfs       f0, 0x4(r30)
-	  stfs      f0, 0x1C(r1)
-	  lfs       f0, 0x8(r30)
-	  stfs      f0, 0x20(r1)
-	  lfs       f0, 0x4C(r29)
-	  stfs      f0, 0x24(r1)
-	  lfs       f0, 0x50(r29)
-	  stfs      f0, 0x28(r1)
-	  lfs       f0, 0x54(r29)
-	  stfs      f0, 0x2C(r1)
-	  lfs       f0, 0x14(r30)
-	  stfs      f0, 0x30(r1)
-	  beq-      .loc_0x294
-	  lwz       r12, 0x0(r3)
-	  addi      r4, r1, 0x18
-	  lwz       r12, 0x80(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  bne-      .loc_0x29C
-
-	.loc_0x294:
-	  fmr       f30, f31
-	  mr        r31, r29
-
-	.loc_0x29C:
-	  lwz       r0, 0x14(r1)
-	  cmplwi    r0, 0
-	  bne-      .loc_0x2C8
-	  lwz       r3, 0x10(r1)
-	  lwz       r4, 0xC(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x14(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0xC(r1)
-	  b         .loc_0x358
-
-	.loc_0x2C8:
-	  lwz       r3, 0x10(r1)
-	  lwz       r4, 0xC(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x14(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0xC(r1)
-	  b         .loc_0x33C
-
-	.loc_0x2E8:
-	  lwz       r3, 0x10(r1)
-	  lwz       r4, 0xC(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x20(r12)
-	  mtctr     r12
-	  bctrl
-	  mr        r4, r3
-	  lwz       r3, 0x14(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x8(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  bne-      .loc_0x358
-	  lwz       r3, 0x10(r1)
-	  lwz       r4, 0xC(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x14(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0xC(r1)
-
-	.loc_0x33C:
-	  lwz       r12, 0x8(r1)
-	  addi      r3, r1, 0x8
-	  lwz       r12, 0x10(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  beq+      .loc_0x2E8
-
-	.loc_0x358:
-	  lwz       r3, 0x10(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x1C(r12)
-	  mtctr     r12
-	  bctrl
-	  lwz       r4, 0xC(r1)
-	  cmplw     r4, r3
-	  bne+      .loc_0xFC
-	  mr        r3, r31
-	  psq_l     f31,0xE8(r1),0,0
-	  lfd       f31, 0xE0(r1)
-	  psq_l     f30,0xD8(r1),0,0
-	  lfd       f30, 0xD0(r1)
-	  lwz       r31, 0xCC(r1)
-	  lwz       r30, 0xC8(r1)
-	  lwz       r0, 0xF4(r1)
-	  lwz       r29, 0xC4(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0xF0
-	  blr
-	*/
+	return nearestWP;
 }
 
-/*
- * --INFO--
- * Address:	8017336C
- * Size:	00081C
+/**
+ * @note Address: 0x8017336C
+ * @note Size: 0x81C
  */
-void Game::RouteMgr::getNearestEdge(Game::WPEdgeSearchArg&)
+bool RouteMgr::getNearestEdge(WPEdgeSearchArg& searchArg)
 {
+	f32 minDist = 128000.0f;
+	bool result = false;
+	Iterator<WayPoint> iter(this);
+	CI_LOOP(iter)
+	{
+		WayPoint* wp = *iter;
+		if (!(searchArg.mInWater & 1) || !wp->isFlag(WPF_Bridge)) {
+			int wpIdx  = wp->mIndex;
+			bool check = (searchArg.mLinks) ? searchArg.mLinks->isLinkedTo(wpIdx) : false;
+			if (!check) {
+				for (int i = 0; i < 8; i++) {
+					s16 linkIdx = wp->mFromLinks[i];
+					if (linkIdx != -1) {
+						WayPoint* link = getWayPoint(linkIdx);
+						s16 newLinkIdx = link->mIndex;
+						bool newCheck  = (searchArg.mLinks) ? searchArg.mLinks->isLinkedTo(newLinkIdx) : false;
+						if (!newCheck) {
+							s16 roomIdx = searchArg.mRoomID;
+							if (roomIdx == -1 || wp->includeRoom(roomIdx) || link->includeRoom(roomIdx)) {
+								if (!(searchArg.mInWater & 1) || !link->isFlag(WPF_Bridge)) {
+									s16 prevIdx    = wp->mIndex;
+									s16 linkIdx    = link->mFromLinks[i];
+									bool linkCheck = false;
+									if (linkIdx == prevIdx) {
+										linkCheck = true;
+									}
+									if (!check || wpIdx <= newLinkIdx) {
+										bool firstOpen = wp->isFlag(WPF_Closed);
+										if (!firstOpen || !link->isFlag(WPF_Closed)) {
+											WayPoint* wpA;
+											WayPoint* wpB;
+											if (firstOpen == false) {
+												wpA = wp;
+												wpB = link;
+											} else {
+												wpA = link;
+												wpB = wp;
+											}
+
+											Vector3f sep = wpA->mPosition - wpB->mPosition;
+											sep.normalise();
+
+											// some weird math here.
+
+											if (sep.y < 0.0f) { // not the correct comparison, just a placeholder
+												continue;
+											}
+										}
+										Vector3f wpPos = wp->mPosition;
+										Vector3f sep   = link->mPosition - wpPos;
+
+										f32 dist = sep.normalise();
+
+										Vector3f searchSep = searchArg.mStartPosition - wpPos;
+										f32 dotProd        = dot(sep, searchSep) / dist;
+
+										if (dist < 0.1f) {
+											JUT_PANICLINE(768, "wpA(%d) and wpB(%d) cause singularity !\n", wp->mIndex, link->mIndex);
+										}
+
+										Vector3f searchPos = searchArg.mStartPosition;
+										f32 revDistA       = wp->mPosition.distance(searchPos);   // f0
+										f32 revDistB       = link->mPosition.distance(searchPos); // f13
+
+										f32 newDist;
+										if (dotProd < 0.0f || dotProd > 1.0f) {
+											if (revDistB < revDistA) {
+												newDist = revDistB - link->mRadius;
+											} else {
+												newDist = revDistA - wp->mRadius;
+											}
+										} else {
+											f32 factor = dotProd * dist;
+											newDist    = searchPos.length(); // this isn't the correct vector, need to do more math here
+										}
+
+										if (newDist < minDist) {
+											if (revDistA < revDistB) {
+												searchArg.mWp1 = wp;
+												searchArg.mWp2 = link;
+											} else {
+												searchArg.mWp1 = link;
+												searchArg.mWp2 = wp;
+											}
+											minDist = newDist;
+											result  = true;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return result;
 	/*
 	.loc_0x0:
 	  stwu      r1, -0xB0(r1)
@@ -2183,219 +1255,64 @@ void Game::RouteMgr::getNearestEdge(Game::WPEdgeSearchArg&)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80173B88
- * Size:	0001E0
+/**
+ * @note Address: 0x80173B88
+ * @note Size: 0x1E0
  */
-void Game::RouteMgr::setCloseAll()
+void RouteMgr::setCloseAll()
 {
-	Iterator<WayPoint> iterator(this);
-	iterator.first();
-	while (!iterator.isDone()) {
-		WayPoint* wp = (*iterator);
-		wp->mFlags |= WPF_Unknown8;
-		iterator.next();
+	Iterator<WayPoint> iter(this);
+	CI_LOOP(iter)
+	{
+		WayPoint* wp = (*iter);
+		wp->setFlag(WPF_Unknown8);
 	}
 }
 
-/*
- * --INFO--
- * Address:	80173D68
- * Size:	000210
+/**
+ * @note Address: 0x80173D68
+ * @note Size: 0x210
  */
-void Game::RouteMgr::openRoom(short p1)
+void RouteMgr::openRoom(s16 roomIdx)
 {
-	Iterator<WayPoint> iterator(this);
-	iterator.first();
-	while (!iterator.isDone()) {
-		WayPoint* wp = (*iterator);
-		for (WayPoint::RoomList* node = (WayPoint::RoomList*)wp->mRoomList.mChild; node != nullptr;
-		     node                     = (WayPoint::RoomList*)node->mNext) {
-			if (node->_18 == p1) {
-				wp->mFlags &= ~WPF_Closed;
+	Iterator<WayPoint> iter(this);
+	CI_LOOP(iter)
+	{
+		WayPoint* wp = (*iter);
+		FOREACH_NODE(WayPoint::RoomList, wp->mRoomList.mChild, node)
+		{
+			if (node->mRoomIdx == roomIdx) {
+				wp->resetFlag(WPF_Unknown8);
 			}
 		}
-		iterator.next();
 	}
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x20(r1)
-	  mflr      r0
-	  lis       r5, 0x804B
-	  stw       r0, 0x24(r1)
-	  li        r0, 0
-	  addi      r5, r5, 0x2380
-	  stw       r31, 0x1C(r1)
-	  cmplwi    r0, 0
-	  mr        r31, r4
-	  stw       r0, 0x14(r1)
-	  stw       r5, 0x8(r1)
-	  stw       r0, 0xC(r1)
-	  stw       r3, 0x10(r1)
-	  bne-      .loc_0x50
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x18(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0xC(r1)
-	  b         .loc_0xD8
-
-	.loc_0x50:
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x18(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0xC(r1)
-	  b         .loc_0xBC
-
-	.loc_0x68:
-	  lwz       r3, 0x10(r1)
-	  lwz       r4, 0xC(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x20(r12)
-	  mtctr     r12
-	  bctrl
-	  mr        r4, r3
-	  lwz       r3, 0x14(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x8(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  bne-      .loc_0xD8
-	  lwz       r3, 0x10(r1)
-	  lwz       r4, 0xC(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x14(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0xC(r1)
-
-	.loc_0xBC:
-	  lwz       r12, 0x8(r1)
-	  addi      r3, r1, 0x8
-	  lwz       r12, 0x10(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  beq+      .loc_0x68
-
-	.loc_0xD8:
-	  extsh     r31, r31
-	  b         .loc_0x1DC
-
-	.loc_0xE0:
-	  lwz       r3, 0x10(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x20(r12)
-	  mtctr     r12
-	  bctrl
-	  lwz       r4, 0x28(r3)
-	  b         .loc_0x118
-
-	.loc_0xFC:
-	  lha       r0, 0x18(r4)
-	  cmpw      r0, r31
-	  bne-      .loc_0x114
-	  lbz       r0, 0x34(r3)
-	  rlwinm    r0,r0,0,25,31
-	  stb       r0, 0x34(r3)
-
-	.loc_0x114:
-	  lwz       r4, 0x4(r4)
-
-	.loc_0x118:
-	  cmplwi    r4, 0
-	  bne+      .loc_0xFC
-	  lwz       r0, 0x14(r1)
-	  cmplwi    r0, 0
-	  bne-      .loc_0x14C
-	  lwz       r3, 0x10(r1)
-	  lwz       r4, 0xC(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x14(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0xC(r1)
-	  b         .loc_0x1DC
-
-	.loc_0x14C:
-	  lwz       r3, 0x10(r1)
-	  lwz       r4, 0xC(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x14(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0xC(r1)
-	  b         .loc_0x1C0
-
-	.loc_0x16C:
-	  lwz       r3, 0x10(r1)
-	  lwz       r4, 0xC(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x20(r12)
-	  mtctr     r12
-	  bctrl
-	  mr        r4, r3
-	  lwz       r3, 0x14(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x8(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  bne-      .loc_0x1DC
-	  lwz       r3, 0x10(r1)
-	  lwz       r4, 0xC(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x14(r12)
-	  mtctr     r12
-	  bctrl
-	  stw       r3, 0xC(r1)
-
-	.loc_0x1C0:
-	  lwz       r12, 0x8(r1)
-	  addi      r3, r1, 0x8
-	  lwz       r12, 0x10(r12)
-	  mtctr     r12
-	  bctrl
-	  rlwinm.   r0,r3,0,24,31
-	  beq+      .loc_0x16C
-
-	.loc_0x1DC:
-	  lwz       r3, 0x10(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x1C(r12)
-	  mtctr     r12
-	  bctrl
-	  lwz       r4, 0xC(r1)
-	  cmplw     r4, r3
-	  bne+      .loc_0xE0
-	  lwz       r0, 0x24(r1)
-	  lwz       r31, 0x1C(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x20
-	  blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00011C
+/**
+ * @note Address: N/A
+ * @note Size: 0x11C
  */
-void Game::RouteMgr::sonarCheck(Game::RouteMgr::SonarArg&)
+void RouteMgr::sonarCheck(RouteMgr::SonarArg&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80173F78
- * Size:	00031C
+/**
+ * @note Address: 0x80173F78
+ * @note Size: 0x31C
  */
-void Game::RouteMgr::write(Stream&)
+void RouteMgr::write(Stream& output)
 {
+	output.textWriteTab(output.mTabCount);
+	output.writeShort(mCount);
+	output.textWriteText("\t# numWayPoints\r\n");
+
+	Iterator<WayPoint> iter(this);
+	CI_LOOP(iter)
+	{
+		WayPoint* wp = (*iter);
+		wp->write(output);
+	}
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x130(r1)
@@ -2620,366 +1537,108 @@ void Game::RouteMgr::write(Stream&)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000004
+/**
+ * @note Address: N/A
+ * @note Size: 0x4
  */
-void Game::RouteMgr::directDraw(Graphics&, Game::WayPoint*, Game::WayPoint*, int, short*)
+void RouteMgr::directDraw(Graphics&, WayPoint*, WayPoint*, int, s16*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80174294
- * Size:	00007C
+/**
+ * @note Address: 0x80174294
+ * @note Size: 0x7C
  */
-Game::GameRouteMgr::GameRouteMgr()
+GameRouteMgr::GameRouteMgr()
     : RouteMgr()
 {
 	mWayPoints = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80174310
- * Size:	0000BC
+/**
+ * @note Address: 0x80174310
+ * @note Size: 0xBC
  */
-Game::GameRouteMgr::~GameRouteMgr()
+GameRouteMgr::~GameRouteMgr()
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  stw       r0, 0x14(r1)
-	  stw       r31, 0xC(r1)
-	  mr        r31, r4
-	  stw       r30, 0x8(r1)
-	  mr.       r30, r3
-	  beq-      .loc_0xA0
-	  lis       r3, 0x804B
-	  addi      r0, r3, 0x2348
-	  stw       r0, 0x0(r30)
-	  lwz       r3, 0x20(r30)
-	  cmplwi    r3, 0
-	  beq-      .loc_0x50
-	  beq-      .loc_0x50
-	  lwz       r12, 0x0(r3)
-	  li        r4, 0x1
-	  lwz       r12, 0x8(r12)
-	  mtctr     r12
-	  bctrl
-
-	.loc_0x50:
-	  cmplwi    r30, 0
-	  beq-      .loc_0x90
-	  lis       r3, 0x804B
-	  addi      r0, r3, 0x2398
-	  stw       r0, 0x0(r30)
-	  beq-      .loc_0x90
-	  lis       r3, 0x804B
-	  addi      r0, r3, 0x23D0
-	  stw       r0, 0x0(r30)
-	  beq-      .loc_0x90
-	  lis       r4, 0x804B
-	  mr        r3, r30
-	  subi      r0, r4, 0x5324
-	  li        r4, 0
-	  stw       r0, 0x0(r30)
-	  bl        0x29D1EC
-
-	.loc_0x90:
-	  extsh.    r0, r31
-	  ble-      .loc_0xA0
-	  mr        r3, r30
-	  bl        -0x1502F8
-
-	.loc_0xA0:
-	  lwz       r0, 0x14(r1)
-	  mr        r3, r30
-	  lwz       r31, 0xC(r1)
-	  lwz       r30, 0x8(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
+	if (mWayPoints) {
+		delete mWayPoints;
+	}
 }
 
-/*
+/**
  * read__Q24Game12GameRouteMgrFR6Stream
- * --INFO--
- * Address:	801743CC
- * Size:	0000F4
+ * @note Address: 0x801743CC
+ * @note Size: 0xF4
  */
-void Game::GameRouteMgr::read(Stream& input)
+void GameRouteMgr::read(Stream& input)
 {
 	mCount     = input.readShort();
 	mWayPoints = new WayPoint[mCount];
 	for (int i = 0; i < mCount; i++) {
-		WayPoint* wp = &mWayPoints[i];
-		wp->read(input);
+		mWayPoints[i].read(input);
 	}
 	makeInvertLinks();
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x30(r1)
-	  mflr      r0
-	  stw       r0, 0x34(r1)
-	  stmw      r25, 0x14(r1)
-	  mr        r26, r4
-	  mr        r25, r3
-	  mr        r3, r26
-	  bl        0x2A037C
-	  sth       r3, 0x1C(r25)
-	  lhz       r31, 0x1C(r25)
-	  mulli     r3, r31, 0x78
-	  addi      r3, r3, 0x10
-	  bl        -0x150450
-	  lis       r4, 0x8017
-	  lis       r5, 0x8017
-	  addi      r4, r4, 0x26A0
-	  mr        r7, r31
-	  addi      r5, r5, 0x276C
-	  li        r6, 0x78
-	  bl        -0xB2A28
-	  stw       r3, 0x20(r25)
-	  li        r27, 0
-	  li        r28, 0
-	  b         .loc_0xCC
-
-	.loc_0x60:
-	  lwz       r0, 0x20(r25)
-	  mr        r3, r26
-	  add       r30, r0, r28
-	  bl        0x2A032C
-	  sth       r3, 0x36(r30)
-	  mr        r3, r26
-	  bl        0x2A0320
-	  sth       r3, 0x38(r30)
-	  mr        r29, r30
-	  li        r31, 0
-	  b         .loc_0xA0
-
-	.loc_0x8C:
-	  mr        r3, r26
-	  bl        0x2A0308
-	  sth       r3, 0x3A(r29)
-	  addi      r29, r29, 0x2
-	  addi      r31, r31, 0x1
-
-	.loc_0xA0:
-	  lha       r0, 0x38(r30)
-	  cmpw      r31, r0
-	  blt+      .loc_0x8C
-	  mr        r4, r26
-	  addi      r3, r30, 0x4C
-	  bl        0x29D510
-	  mr        r3, r26
-	  bl        0x2A0924
-	  stfs      f1, 0x58(r30)
-	  addi      r28, r28, 0x78
-	  addi      r27, r27, 0x1
-
-	.loc_0xCC:
-	  lhz       r0, 0x1C(r25)
-	  cmpw      r27, r0
-	  blt+      .loc_0x60
-	  mr        r3, r25
-	  bl        -0x1AC4
-	  lmw       r25, 0x14(r1)
-	  lwz       r0, 0x34(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x30
-	  blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801744C0
- * Size:	000088
+/**
+ * @note Address: 0x801744C0
+ * @note Size: 0x88
  */
-Game::WayPoint* Game::GameRouteMgr::getWayPoint(short index)
+WayPoint* GameRouteMgr::getWayPoint(s16 index)
 {
-	P2ASSERTLINE(1124, -1 >= index || index >= mCount);
+	P2ASSERTBOUNDSLINE(1124, 0, index, mCount);
 	return &mWayPoints[index];
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  stw       r0, 0x14(r1)
-	  stw       r31, 0xC(r1)
-	  mr        r31, r4
-	  extsh.    r0, r31
-	  li        r4, 0
-	  stw       r30, 0x8(r1)
-	  mr        r30, r3
-	  blt-      .loc_0x3C
-	  lhz       r0, 0x1C(r30)
-	  extsh     r3, r31
-	  cmpw      r3, r0
-	  bge-      .loc_0x3C
-	  li        r4, 0x1
-
-	.loc_0x3C:
-	  rlwinm.   r0,r4,0,24,31
-	  bne-      .loc_0x60
-	  lis       r3, 0x8048
-	  lis       r5, 0x8048
-	  subi      r3, r3, 0x1AAC
-	  li        r4, 0x464
-	  subi      r5, r5, 0x1A9C
-	  crclr     6, 0x6
-	  bl        -0x149EDC
-
-	.loc_0x60:
-	  extsh     r0, r31
-	  lwz       r3, 0x20(r30)
-	  mulli     r0, r0, 0x78
-	  add       r3, r3, r0
-	  lwz       r31, 0xC(r1)
-	  lwz       r30, 0x8(r1)
-	  lwz       r0, 0x14(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	80174548
- * Size:	000030
+/**
+ * @note Address: 0x80174548
+ * @note Size: 0x30
  */
-Game::WayPoint* Game::GameRouteMgr::get(void* index)
-{
-	return getWayPoint(*(short*)index);
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  extsh     r4, r4
-	  stw       r0, 0x14(r1)
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x2C(r12)
-	  mtctr     r12
-	  bctrl
-	  lwz       r0, 0x14(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
-}
+WayPoint* GameRouteMgr::get(void* index) { return getWayPoint((s16)index); }
 
-/*
- * --INFO--
- * Address:	80174578
- * Size:	000008
+/**
+ * @note Address: 0x80174578
+ * @note Size: 0x8
  */
-void* Game::GameRouteMgr::getNext(void* index)
-{
-	return (int*)index + 1;
-	/*
-	.loc_0x0:
-	  addi      r3, r4, 0x1
-	  blr
-	*/
-}
+void* GameRouteMgr::getNext(void* index) { return (void*)((int)index + 1); }
 
-/*
- * --INFO--
- * Address:	80174580
- * Size:	000008
+/**
+ * @note Address: 0x80174580
+ * @note Size: 0x8
  */
-void* Game::GameRouteMgr::getStart()
-{
-	return 0;
-	/*
-	.loc_0x0:
-	  li        r3, 0
-	  blr
-	*/
-}
+void* GameRouteMgr::getStart() { return 0; }
 
-/*
- * --INFO--
- * Address:	80174588
- * Size:	000008
+/**
+ * @note Address: 0x80174588
+ * @note Size: 0x8
  */
-void* Game::GameRouteMgr::getEnd()
-{
-	return &mCount;
-	/*
-	.loc_0x0:
-	  lhz       r3, 0x1C(r3)
-	  blr
-	*/
-}
+void* GameRouteMgr::getEnd() { return (void*)mCount; }
 
-/*
- * --INFO--
- * Address:	80174590
- * Size:	0000AC
+/**
+ * @note Address: 0x80174590
+ * @note Size: 0xAC
  */
-Game::EditorRouteMgr::EditorRouteMgr()
+EditorRouteMgr::EditorRouteMgr()
     : RouteMgr()
     , mNode()
 {
 }
 
-/*
- * --INFO--
- * Address:	8017463C
- * Size:	000060
+/**
+ * @note Address: 0x8017469C
+ * @note Size: 0x1AC
  */
-Game::EditorRouteMgr::WPNode::~WPNode()
+void EditorRouteMgr::read(Stream& input)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  stw       r0, 0x14(r1)
-	  stw       r31, 0xC(r1)
-	  mr        r31, r4
-	  stw       r30, 0x8(r1)
-	  mr.       r30, r3
-	  beq-      .loc_0x44
-	  lis       r5, 0x804B
-	  li        r4, 0
-	  addi      r0, r5, 0x2338
-	  stw       r0, 0x0(r30)
-	  bl        0x29CF1C
-	  extsh.    r0, r31
-	  ble-      .loc_0x44
-	  mr        r3, r30
-	  bl        -0x1505C8
+	FOREACH_NODE(WPNode, mNode.mChild, node) { delWayPoint(node->mWayPoint); }
 
-	.loc_0x44:
-	  lwz       r0, 0x14(r1)
-	  mr        r3, r30
-	  lwz       r31, 0xC(r1)
-	  lwz       r30, 0x8(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	8017469C
- * Size:	0001AC
- */
-void Game::EditorRouteMgr::read(Stream& input)
-{
-	for (WPNode* node = (WPNode*)mNode.mChild; node != nullptr; node = (WPNode*)node->mNext) {
-		delWayPoint(node->mWayPoint);
-	}
 	u16 count = input.readShort();
-	mCount    = 0;
+	WayPoint* wp;
+	mCount = 0;
 	for (int i = 0; i < count; i++) {
-		WayPoint* wp = new WayPoint();
+		wp = new WayPoint();
 		wp->read(input);
 		addWayPoint(wp);
 	}
@@ -3112,12 +1771,11 @@ void Game::EditorRouteMgr::read(Stream& input)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80174848
- * Size:	00008C
+/**
+ * @note Address: 0x80174848
+ * @note Size: 0x8C
  */
-void Game::EditorRouteMgr::addWayPoint(Game::WayPoint* wp)
+void EditorRouteMgr::addWayPoint(WayPoint* wp)
 {
 	WPNode* node            = new WPNode();
 	node->mWayPoint         = wp;
@@ -3126,442 +1784,62 @@ void Game::EditorRouteMgr::addWayPoint(Game::WayPoint* wp)
 	mCount++;
 }
 
-/*
- * --INFO--
- * Address:	801748D4
- * Size:	000088
+/**
+ * @note Address: 0x801748D4
+ * @note Size: 0x88
  */
-void Game::EditorRouteMgr::delWayPoint(Game::WayPoint*)
+void EditorRouteMgr::delWayPoint(WayPoint* wp)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  stw       r0, 0x14(r1)
-	  stw       r31, 0xC(r1)
-	  stw       r30, 0x8(r1)
-	  mr        r30, r3
-	  lwz       r31, 0x30(r3)
-	  b         .loc_0x68
-
-	.loc_0x20:
-	  lwz       r0, 0x18(r31)
-	  cmplw     r0, r4
-	  bne-      .loc_0x64
-	  cmplwi    r4, 0
-	  beq-      .loc_0x4C
-	  mr        r3, r4
-	  li        r4, 0x1
-	  lwz       r12, 0x0(r3)
-	  lwz       r12, 0x8(r12)
-	  mtctr     r12
-	  bctrl
-
-	.loc_0x4C:
-	  mr        r3, r31
-	  bl        0x29CCAC
-	  lhz       r3, 0x1C(r30)
-	  subi      r0, r3, 0x1
-	  sth       r0, 0x1C(r30)
-	  b         .loc_0x70
-
-	.loc_0x64:
-	  lwz       r31, 0x4(r31)
-
-	.loc_0x68:
-	  cmplwi    r31, 0
-	  bne+      .loc_0x20
-
-	.loc_0x70:
-	  lwz       r0, 0x14(r1)
-	  lwz       r31, 0xC(r1)
-	  lwz       r30, 0x8(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
+	FOREACH_NODE(WPNode, mNode.mChild, node)
+	{
+		if (node->mWayPoint == wp) {
+			delete wp;
+			node->del();
+			mCount--;
+			return;
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	8017495C
- * Size:	000038
+/**
+ * @note Address: 0x8017495C
+ * @note Size: 0x38
  */
-Game::WayPoint* Game::EditorRouteMgr::getWayPoint(short index)
+WayPoint* EditorRouteMgr::getWayPoint(s16 index)
 {
+	FOREACH_NODE(WPNode, mNode.mChild, node)
+	{
+		WayPoint* wp = node->mWayPoint;
+		if (wp && wp->mIndex == index) {
+			return wp;
+		}
+	}
 
-	/*
-	.loc_0x0:
-	  lwz       r5, 0x30(r3)
-	  extsh     r0, r4
-	  b         .loc_0x28
-
-	.loc_0xC:
-	  lwz       r3, 0x18(r5)
-	  cmplwi    r3, 0
-	  beq-      .loc_0x24
-	  lha       r4, 0x36(r3)
-	  cmpw      r4, r0
-	  beqlr-
-
-	.loc_0x24:
-	  lwz       r5, 0x4(r5)
-
-	.loc_0x28:
-	  cmplwi    r5, 0
-	  bne+      .loc_0xC
-	  li        r3, 0
-	  blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	80174994
- * Size:	000008
- */
-Game::WayPoint* Game::EditorRouteMgr::get(void* node)
-{
-
-	/*
-	.loc_0x0:
-	  lwz       r3, 0x18(r4)
-	  blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	8017499C
- * Size:	000008
- */
-void* Game::EditorRouteMgr::getNext(void*)
-{
-	/*
-	.loc_0x0:
-	  lwz       r3, 0x4(r4)
-	  blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	801749A4
- * Size:	000008
- */
-void* Game::EditorRouteMgr::getStart()
-{
-	/*
-	.loc_0x0:
-	  lwz       r3, 0x30(r3)
-	  blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	801749AC
- * Size:	000008
- */
-void* Game::EditorRouteMgr::getEnd()
-{
 	return nullptr;
-	/*
-	.loc_0x0:
-	  li        r3, 0
-	  blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801749B4
- * Size:	0000B8
+/**
+ * @note Address: 0x80174994
+ * @note Size: 0x8
  */
-Game::EditorRouteMgr::~EditorRouteMgr()
-{
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  stw       r0, 0x14(r1)
-	  stw       r31, 0xC(r1)
-	  mr        r31, r4
-	  stw       r30, 0x8(r1)
-	  mr.       r30, r3
-	  beq-      .loc_0x9C
-	  lis       r3, 0x804B
-	  addic.    r0, r30, 0x20
-	  addi      r0, r3, 0x2300
-	  stw       r0, 0x0(r30)
-	  beq-      .loc_0x4C
-	  lis       r4, 0x804B
-	  addi      r3, r30, 0x20
-	  addi      r0, r4, 0x2338
-	  li        r4, 0
-	  stw       r0, 0x20(r30)
-	  bl        0x29CB8C
+WayPoint* EditorRouteMgr::get(void* node) { return static_cast<WPNode*>(node)->mWayPoint; }
 
-	.loc_0x4C:
-	  cmplwi    r30, 0
-	  beq-      .loc_0x8C
-	  lis       r3, 0x804B
-	  addi      r0, r3, 0x2398
-	  stw       r0, 0x0(r30)
-	  beq-      .loc_0x8C
-	  lis       r3, 0x804B
-	  addi      r0, r3, 0x23D0
-	  stw       r0, 0x0(r30)
-	  beq-      .loc_0x8C
-	  lis       r4, 0x804B
-	  mr        r3, r30
-	  subi      r0, r4, 0x5324
-	  li        r4, 0
-	  stw       r0, 0x0(r30)
-	  bl        0x29CB4C
-
-	.loc_0x8C:
-	  extsh.    r0, r31
-	  ble-      .loc_0x9C
-	  mr        r3, r30
-	  bl        -0x150998
-
-	.loc_0x9C:
-	  lwz       r0, 0x14(r1)
-	  mr        r3, r30
-	  lwz       r31, 0xC(r1)
-	  lwz       r30, 0x8(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	80174A6C
- * Size:	000038
+/**
+ * @note Address: 0x8017499C
+ * @note Size: 0x8
  */
-// template <> Game::WayPoint* Iterator<Game::WayPoint>::operator*()
-// {
-// 	/*
-// 	.loc_0x0:
-// 	  stwu      r1, -0x10(r1)
-// 	  mflr      r0
-// 	  mr        r4, r3
-// 	  stw       r0, 0x14(r1)
-// 	  lwz       r3, 0x8(r3)
-// 	  lwz       r4, 0x4(r4)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x20(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  lwz       r0, 0x14(r1)
-// 	  mtlr      r0
-// 	  addi      r1, r1, 0x10
-// 	  blr
-// 	*/
-// }
+void* EditorRouteMgr::getNext(void* node) { return (void*)(static_cast<WPNode*>(node)->mNext); }
 
-// /*
-//  * --INFO--
-//  * Address:	80174AA4
-//  * Size:	0000E4
-//  */
-// template<> Game::WayPoint* Iterator<Game::WayPoint>::next()
-// {
-// 	/*
-// 	.loc_0x0:
-// 	  stwu      r1, -0x10(r1)
-// 	  mflr      r0
-// 	  stw       r0, 0x14(r1)
-// 	  stw       r31, 0xC(r1)
-// 	  mr        r31, r3
-// 	  lwz       r0, 0xC(r3)
-// 	  cmplwi    r0, 0
-// 	  bne-      .loc_0x40
-// 	  lwz       r3, 0x8(r31)
-// 	  lwz       r4, 0x4(r31)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x14(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  stw       r3, 0x4(r31)
-// 	  b         .loc_0xD0
+/**
+ * @note Address: 0x801749A4
+ * @note Size: 0x8
+ */
+void* EditorRouteMgr::getStart() { return (void*)(mNode.mChild); }
 
-// 	.loc_0x40:
-// 	  lwz       r3, 0x8(r31)
-// 	  lwz       r4, 0x4(r31)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x14(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  stw       r3, 0x4(r31)
-// 	  b         .loc_0xB4
+/**
+ * @note Address: 0x801749AC
+ * @note Size: 0x8
+ */
+void* EditorRouteMgr::getEnd() { return nullptr; }
 
-// 	.loc_0x60:
-// 	  lwz       r3, 0x8(r31)
-// 	  lwz       r4, 0x4(r31)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x20(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  mr        r4, r3
-// 	  lwz       r3, 0xC(r31)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x8(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  rlwinm.   r0,r3,0,24,31
-// 	  bne-      .loc_0xD0
-// 	  lwz       r3, 0x8(r31)
-// 	  lwz       r4, 0x4(r31)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x14(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  stw       r3, 0x4(r31)
-
-// 	.loc_0xB4:
-// 	  mr        r3, r31
-// 	  lwz       r12, 0x0(r31)
-// 	  lwz       r12, 0x10(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  rlwinm.   r0,r3,0,24,31
-// 	  beq+      .loc_0x60
-
-// 	.loc_0xD0:
-// 	  lwz       r0, 0x14(r1)
-// 	  lwz       r31, 0xC(r1)
-// 	  mtlr      r0
-// 	  addi      r1, r1, 0x10
-// 	  blr
-// 	*/
-// }
-
-// /*
-//  * --INFO--
-//  * Address:	80174B88
-//  * Size:	0000DC
-//  */
-// template<> Game::WayPoint* Iterator<Game::WayPoint>::first()
-// {
-// 	/*
-// 	.loc_0x0:
-// 	  stwu      r1, -0x10(r1)
-// 	  mflr      r0
-// 	  stw       r0, 0x14(r1)
-// 	  stw       r31, 0xC(r1)
-// 	  mr        r31, r3
-// 	  lwz       r0, 0xC(r3)
-// 	  cmplwi    r0, 0
-// 	  bne-      .loc_0x3C
-// 	  lwz       r3, 0x8(r31)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x18(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  stw       r3, 0x4(r31)
-// 	  b         .loc_0xC8
-
-// 	.loc_0x3C:
-// 	  lwz       r3, 0x8(r31)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x18(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  stw       r3, 0x4(r31)
-// 	  b         .loc_0xAC
-
-// 	.loc_0x58:
-// 	  lwz       r3, 0x8(r31)
-// 	  lwz       r4, 0x4(r31)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x20(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  mr        r4, r3
-// 	  lwz       r3, 0xC(r31)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x8(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  rlwinm.   r0,r3,0,24,31
-// 	  bne-      .loc_0xC8
-// 	  lwz       r3, 0x8(r31)
-// 	  lwz       r4, 0x4(r31)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x14(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  stw       r3, 0x4(r31)
-
-// 	.loc_0xAC:
-// 	  mr        r3, r31
-// 	  lwz       r12, 0x0(r31)
-// 	  lwz       r12, 0x10(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  rlwinm.   r0,r3,0,24,31
-// 	  beq+      .loc_0x58
-
-// 	.loc_0xC8:
-// 	  lwz       r0, 0x14(r1)
-// 	  lwz       r31, 0xC(r1)
-// 	  mtlr      r0
-// 	  addi      r1, r1, 0x10
-// 	  blr
-// 	*/
-// }
-
-// /*
-//  * --INFO--
-//  * Address:	80174C64
-//  * Size:	00002C
-//  */
-// template <> Game::WayPoint* Container<Game::WayPoint>::getObject(void*)
-// {
-// 	/*
-// 	.loc_0x0:
-// 	  stwu      r1, -0x10(r1)
-// 	  mflr      r0
-// 	  stw       r0, 0x14(r1)
-// 	  lwz       r12, 0x0(r3)
-// 	  lwz       r12, 0x20(r12)
-// 	  mtctr     r12
-// 	  bctrl
-// 	  lwz       r0, 0x14(r1)
-// 	  mtlr      r0
-// 	  addi      r1, r1, 0x10
-// 	  blr
-// 	*/
-// }
-
-// /*
-//  * --INFO--
-//  * Address:	80174C90
-//  * Size:	000008
-//  */
-// template<> Game::WayPoint* Container<Game::WayPoint>::getAt(int)
-// {
-// 	/*
-// 	.loc_0x0:
-// 	  li        r3, 0
-// 	  blr
-// 	*/
-// }
-
-// /*
-//  * --INFO--
-//  * Address:	80174C98
-//  * Size:	000008
-//  */
-// template<> int Container<Game::WayPoint>::getTo()
-// {
-// 	/*
-// 	.loc_0x0:
-// 	  li        r3, 0
-// 	  blr
-// 	*/
-// }
+} // namespace Game

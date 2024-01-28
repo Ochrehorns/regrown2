@@ -2,7 +2,7 @@
 #define _PSSYSTEM_PSBGMTASK_H
 
 #include "Dolphin/os.h"
-#include "JSystem/JUtility/JUTException.h"
+#include "P2Macros.h"
 #include "JSystem/JSupport/JSUList.h"
 #include "PSSystem/BankRandPrm.h"
 #include "PSSystem/MutexList.h"

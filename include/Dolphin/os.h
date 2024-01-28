@@ -114,8 +114,10 @@ void OSSetArenaHi(void* addr);
 void OSSetArenaLo(void* addr);
 
 // targsupp
-extern void TRKAccessFile(void);
-extern void TRKCloseFile(void);
+extern u32 TRKAccessFile(u32, u32, u32*, u8*);
+extern u32 TRKOpenFile(u32, u32, u32*, u8*);
+extern u32 TRKCloseFile(u32, u32);
+extern u32 TRKPositionFile(u32, u32, u32*, u8*);
 
 #define OS_SYS_CALL_HANDLER  ((void*)0x80000C00)
 #define OS_HANDLER_SLOT_SIZE (0x100)
@@ -126,6 +128,7 @@ void __OSSystemCallVectorEnd();
 void OSFillFPUContext(OSContext*);
 extern u32 __OSFpscrEnableBits; /** TODO: find a wrapper for this. Symbol is defined in OSError.c. */
 
+u16 __OSWirelessPadFixMode AT_ADDRESS(OS_BASE_CACHED | 0x30E0);
 u8 GameChoice AT_ADDRESS(OS_BASE_CACHED | 0x30E3);
 
 volatile int __OSTVMode AT_ADDRESS(OS_BASE_CACHED | 0xCC);
@@ -177,6 +180,7 @@ typedef struct SramControlBlock {
 // SRAM functions.
 OSSram* __OSLockSram();
 OSSramEx* __OSLockSramEx();
+BOOL __OSUnlockSram(BOOL commit);
 BOOL __OSUnlockSramEx(BOOL commit);
 void OSSetWirelessID(s32 channel, u16 id);
 u16 OSGetWirelessID(s32 channel);
@@ -198,8 +202,69 @@ u16 OSGetGbsMode();
 extern OSThreadQueue __DVDThreadQueue;
 extern u8 _stack_addr[];
 extern u8 _stack_end[];
+extern BOOL __OSInIPL;
 
 //////////////////////////////////
+
+#ifdef _DEBUG
+
+#ifndef ASSERT
+#define ASSERT(exp) (void)((exp) || (OSPanic(__FILE__, __LINE__, "Failed assertion " #exp), 0))
+#endif
+
+#ifndef ASSERTMSG
+#if defined(__STDC_VERSION__) && (199901L <= __STDC_VERSION__) || defined(__MWERKS__) || defined(__SN__)
+#define ASSERTMSG(exp, ...) (void)((exp) || (OSPanic(__FILE__, __LINE__, __VA_ARGS__), 0))
+#else
+#define ASSERTMSG(exp, msg) (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg)), 0))
+#endif
+#endif
+
+#ifndef ASSERTMSG1
+#define ASSERTMSG1(exp, msg, param1) (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg), (param1)), 0))
+#endif
+
+#ifndef ASSERTMSG2
+#define ASSERTMSG2(exp, msg, param1, param2) (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg), (param1), (param2)), 0))
+#endif
+
+#ifndef ASSERTMSG3
+#define ASSERTMSG3(exp, msg, param1, param2, param3) (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg), (param1), (param2), (param3)), 0))
+#endif
+
+#ifndef ASSERTMSG4
+#define ASSERTMSG4(exp, msg, param1, param2, param3, param4) \
+	(void)((exp) || (OSPanic(__FILE__, __LINE__, (msg), (param1), (param2), (param3), (param4)), 0))
+#endif
+
+#else // _DEBUG
+
+#ifndef ASSERT
+#define ASSERT(exp) ((void)0)
+#endif
+
+#ifndef ASSERTMSG
+#if defined(__STDC_VERSION__) && (199901L <= __STDC_VERSION__) || defined(__MWERKS__) || defined(__SN__)
+#define ASSERTMSG(exp, ...) ((void)0)
+#else
+#define ASSERTMSG(exp, msg) ((void)0)
+#endif
+#endif
+
+#ifndef ASSERTMSG1
+#define ASSERTMSG1(exp, msg, param1) ((void)0)
+#endif
+#ifndef ASSERTMSG2
+#define ASSERTMSG2(exp, msg, param1, param2) ((void)0)
+#endif
+#ifndef ASSERTMSG3
+#define ASSERTMSG3(exp, msg, param1, param2, param3) ((void)0)
+#endif
+#ifndef ASSERTMSG4
+#define ASSERTMSG4(exp, msg, param1, param2, param3, param4) ((void)0)
+#endif
+
+#endif // _DEBUG
 
 #ifdef __cplusplus
 };

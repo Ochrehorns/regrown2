@@ -8,10 +8,9 @@ namespace PikiAI {
 
 static const char breakGateName[] = "actBreakWall";
 
-/*
- * --INFO--
- * Address:	801D04E8
- * Size:	0000F8
+/**
+ * @note Address: 0x801D04E8
+ * @note Size: 0xF8
  */
 ActBreakGate::ActBreakGate(Game::Piki* parent)
     : Action(parent)
@@ -23,10 +22,9 @@ ActBreakGate::ActBreakGate(Game::Piki* parent)
 	mName = "BreakGate";
 }
 
-/*
- * --INFO--
- * Address:	801D05E0
- * Size:	0000C8
+/**
+ * @note Address: 0x801D05E0
+ * @note Size: 0xC8
  */
 void ActBreakGate::init(ActionArg* actionArg)
 {
@@ -42,16 +40,15 @@ void ActBreakGate::init(ActionArg* actionArg)
 
 	Game::GameStat::workPikis.inc(mParent);
 
-	mGate = static_cast<ActBreakGateArg*>(actionArg)->mGate;
-	_24   = 0;
+	mGate            = static_cast<ActBreakGateArg*>(actionArg)->mGate;
+	mResetStateAfter = 0;
 
 	initFollow();
 }
 
-/*
- * --INFO--
- * Address:	801D06A8
- * Size:	000068
+/**
+ * @note Address: 0x801D06A8
+ * @note Size: 0x68
  */
 void ActBreakGate::initFollow()
 {
@@ -60,43 +57,48 @@ void ActBreakGate::initFollow()
 	mState = 1;
 }
 
-static const char stickAttackArgName[] = "StickAttackActionArg";
-static const char gotoPosArgName[]     = "GotoPosActionArg";
-static const char followFieldArgName[] = "FollowVectorFieldActionArg"; // delete this when linking aiBreakGate.cpp
+/**
+ * @note Address: N/A
+ * @note Size: 0x9C
+ */
+void ActBreakGate::initGoto()
+{
+	GotoPosActionArg gotoArg;
+	mGotoPos->init(&gotoArg);
+	mState = 1;
+}
 
-/*
- * --INFO--
- * Address:	--------
- * Size:	000114
+/**
+ * @note Address: 0x--------
+ * @note Size: 0x114
  * --INLINE--
  */
-// StickAttackActionArg is generating slightly wrong
 void ActBreakGate::initStickAttack()
 {
-	u8 type = 1;
-	if (mGate->_27C == 1) {
-		type = 2;
+	u8 type = STICKATK_WhiteGate;
+	if (mGate->mColor == GATECOLOR_Black) {
+		type = STICKATK_BlackGate;
 	} else if (mGate->mIsElectric) {
-		type = 3;
+		type = STICKATK_ElecGate;
 	}
 
-	if (_24 == 0) {
+	if (mResetStateAfter == 0) {
 		f32 attackDamage = mParent->getAttackDamage();
-		StickAttackActionArg stickAttackArg(attackDamage, mGate, -1, type);
+		StickAttackActionArg stickAttackArg(attackDamage, mGate, Game::IPikiAnims::NULLANIM, type);
 		mStickAttack->init(&stickAttackArg);
+
 	} else {
 		f32 attackDamage = mParent->getAttackDamage();
-		StickAttackActionArg stickAttackArg(attackDamage, mGate, 25, type);
+		StickAttackActionArg stickAttackArg(attackDamage, mGate, Game::IPikiAnims::JOB2, type);
 		mStickAttack->init(&stickAttackArg);
 	}
 
 	mState = 2;
 }
 
-/*
- * --INFO--
- * Address:	801D0710
- * Size:	000498
+/**
+ * @note Address: 0x801D0710
+ * @note Size: 0x498
  */
 int ActBreakGate::exec()
 {
@@ -482,10 +484,9 @@ lbl_801D0B90:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801D0BA8
- * Size:	00005C
+/**
+ * @note Address: 0x801D0BA8
+ * @note Size: 0x5C
  */
 void ActBreakGate::cleanup()
 {
@@ -497,10 +498,9 @@ void ActBreakGate::cleanup()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801D0C04
- * Size:	000044
+/**
+ * @note Address: 0x801D0C04
+ * @note Size: 0x44
  */
 void ActBreakGate::emotion_success()
 {
@@ -508,17 +508,16 @@ void ActBreakGate::emotion_success()
 	mParent->mFsm->transit(mParent, Game::PIKISTATE_Emotion, &emotionArg);
 }
 
-/*
- * --INFO--
- * Address:	801D0C48
- * Size:	000144
+/**
+ * @note Address: 0x801D0C48
+ * @note Size: 0x144
  */
 void ActBreakGate::platCallback(Game::Piki* p, Game::PlatEvent& platEvent)
 {
-	if (platEvent._08 > 0.7f) {
-		_24 = 1;
+	if (platEvent.mPosition.y > 0.7f) {
+		mResetStateAfter = 1;
 	} else {
-		_24 = 0;
+		mResetStateAfter = 0;
 	}
 
 	if (mState == 1) {
@@ -623,24 +622,21 @@ lbl_801D0D74:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801D0D8C
- * Size:	000004
+/**
+ * @note Address: 0x801D0D8C
+ * @note Size: 0x4
  */
 void ActBreakGate::collisionCallback(Game::Piki*, Game::CollEvent&) { }
 
-/*
- * --INFO--
- * Address:	801D0D90
- * Size:	000004
+/**
+ * @note Address: 0x801D0D90
+ * @note Size: 0x4
  */
 void ActBreakGate::bounceCallback(Game::Piki*, Sys::Triangle*) { }
 
-/*
- * --INFO--
- * Address:	801D0D94
- * Size:	000004
+/**
+ * @note Address: 0x801D0D94
+ * @note Size: 0x4
  */
 void ActBreakGate::onKeyEvent(const SysShape::KeyEvent&) { }
 

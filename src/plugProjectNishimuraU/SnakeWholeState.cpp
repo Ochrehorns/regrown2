@@ -14,10 +14,9 @@
 namespace Game {
 namespace SnakeWhole {
 
-/*
- * --INFO--
- * Address:	802CB94C
- * Size:	0003D0
+/**
+ * @note Address: 0x802CB94C
+ * @note Size: 0x3D0
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -35,19 +34,18 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateStruggle);
 }
 
-/*
- * --INFO--
- * Address:	802CBD1C
- * Size:	0000C4
+/**
+ * @note Address: 0x802CBD1C
+ * @note Size: 0xC4
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	snagret->deathProcedure();
 	snagret->disableEvent(0, EB_Cullable);
 	snagret->mTargetVelocity = Vector3f(0.0f);
 	snagret->setEmotionCaution();
-	snagret->startMotion(0, nullptr);
+	snagret->startMotion(SNAKEWHOLEANIM_Dead, nullptr);
 	snagret->createDeadStartEffect();
 
 	Vector3f position = snagret->getPosition();
@@ -55,14 +53,13 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	rumbleMgr->startRumble(13, position, 2);
 }
 
-/*
- * --INFO--
- * Address:	802CBDE0
- * Size:	0001C0
+/**
+ * @note Address: 0x802CBDE0
+ * @note Size: 0x1C0
  */
 void StateDead::exec(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	if (snagret->mCurAnim->mIsPlaying) {
 		if ((u32)snagret->mCurAnim->mType == KEYEVENT_2) {
 			snagret->deleteJointShadow();
@@ -92,21 +89,19 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CBFA0
- * Size:	000004
+/**
+ * @note Address: 0x802CBFA0
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802CBFA4
- * Size:	00012C
+/**
+ * @note Address: 0x802CBFA4
+ * @note Size: 0x12C
  */
 void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* snagret         = static_cast<Obj*>(enemy);
+	Obj* snagret         = OBJ(enemy);
 	snagret->mStateTimer = 0.0f;
 	snagret->finishJointShadow();
 
@@ -122,7 +117,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	snagret->disableEvent(0, EB_LifegaugeVisible);
 
 	snagret->mTargetVelocity = Vector3f(0.0f);
-	snagret->startMotion(1, nullptr);
+	snagret->startMotion(SNAKEWHOLEANIM_Appear1, nullptr);
 	snagret->stopMotion();
 
 	if (snagret->mWaterBox) {
@@ -130,16 +125,15 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CC0D0
- * Size:	000618
+/**
+ * @note Address: 0x802CC0D0
+ * @note Size: 0x618
  */
 void StateStay::exec(EnemyBase* enemy)
 {
-	Obj* snagret     = static_cast<Obj*>(enemy);
+	Obj* snagret     = OBJ(enemy);
 	Creature* target = nullptr;
-	Parms* parms     = static_cast<Parms*>(snagret->mParms);
+	Parms* parms     = CG_PARMS(snagret);
 	if (snagret->mStateTimer > parms->mProperParms.mUndergroundTime.mValue) {
 		f32 territory    = parms->mGeneral.mTerritoryRadius.mValue;
 		Vector3f homePos = Vector3f(snagret->mHomePosition);
@@ -153,8 +147,7 @@ void StateStay::exec(EnemyBase* enemy)
 			Piki* piki = (*pikiIterator);
 			if (piki->isAlive() && piki->isPikmin() && !piki->isStickToMouth()) {
 				Vector3f pikiPos = piki->getPosition();
-				Vector3f diff    = homePos - pikiPos;
-				f32 sqrDist      = SQUARE(diff.x) + SQUARE(diff.y) + SQUARE(diff.z);
+				f32 sqrDist      = homePos.sqrDistance(pikiPos);
 				if (sqrDist < tSqr) {
 					target         = piki;
 					targetNotFound = false;
@@ -177,8 +170,7 @@ void StateStay::exec(EnemyBase* enemy)
 				Navi* navi = (*naviIterator);
 				if (navi->isAlive()) {
 					Vector3f naviPos = navi->getPosition();
-					Vector3f diff    = homePos - naviPos;
-					f32 sqrDist      = SQUARE(diff.x) + SQUARE(diff.y) + SQUARE(diff.z);
+					f32 sqrDist      = homePos.sqrDistance(naviPos);
 					if (sqrDist < tSqr) {
 						target         = navi;
 						targetNotFound = false;
@@ -204,465 +196,21 @@ void StateStay::exec(EnemyBase* enemy)
 		snagret->mTargetCreature = target;
 		snagret->appearNearByTarget(target);
 		snagret->setBossAppearBGM();
-		Parms* parms = static_cast<Parms*>(snagret->mParms);
-		if (randWeightFloat(1.0f) < parms->mProperParms.mFastAppearChance.mValue) {
+		if (randWeightFloat(1.0f) < CG_PROPERPARMS(snagret).mFastAppearChance()) {
 			transit(snagret, SNAKEWHOLE_Appear1, nullptr);
 		} else {
 			transit(snagret, SNAKEWHOLE_Appear2, nullptr);
 		}
 	}
-	/*
-	stwu     r1, -0xa0(r1)
-	mflr     r0
-	stw      r0, 0xa4(r1)
-	stfd     f31, 0x90(r1)
-	psq_st   f31, 152(r1), 0, qr0
-	stfd     f30, 0x80(r1)
-	psq_st   f30, 136(r1), 0, qr0
-	stfd     f29, 0x70(r1)
-	psq_st   f29, 120(r1), 0, qr0
-	stfd     f28, 0x60(r1)
-	psq_st   f28, 104(r1), 0, qr0
-	stmw     r27, 0x4c(r1)
-	mr       r28, r3
-	lwz      r3, 0xc0(r4)
-	lfs      f1, 0x2c4(r4)
-	mr       r31, r4
-	lfs      f0, 0x86c(r3)
-	li       r30, 0
-	fcmpo    cr0, f1, f0
-	ble      lbl_802CC5FC
-	lfs      f0, 0x35c(r3)
-	lis      r3, "__vt__22Iterator<Q24Game4Piki>"@ha
-	li       r0, 0
-	lfs      f31, 0x198(r31)
-	lfs      f30, 0x19c(r31)
-	cmplwi   r0, 0
-	lfs      f29, 0x1a0(r31)
-	addi     r4, r3, "__vt__22Iterator<Q24Game4Piki>"@l
-	lwz      r3, pikiMgr__4Game@sda21(r13)
-	fmuls    f28, f0, f0
-	stw      r4, 0x30(r1)
-	li       r29, 1
-	stw      r0, 0x3c(r1)
-	stw      r0, 0x34(r1)
-	stw      r3, 0x38(r1)
-	bne      lbl_802CC178
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x34(r1)
-	b        lbl_802CC384
-
-lbl_802CC178:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x34(r1)
-	b        lbl_802CC1E4
-
-lbl_802CC190:
-	lwz      r3, 0x38(r1)
-	lwz      r4, 0x34(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x3c(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_802CC384
-	lwz      r3, 0x38(r1)
-	lwz      r4, 0x34(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x34(r1)
-
-lbl_802CC1E4:
-	lwz      r12, 0x30(r1)
-	addi     r3, r1, 0x30
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_802CC190
-	b        lbl_802CC384
-
-lbl_802CC204:
-	lwz      r3, 0x38(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	lwz      r12, 0(r3)
-	mr       r27, r3
-	lwz      r12, 0xa8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_802CC2C0
-	mr       r3, r27
-	lwz      r12, 0(r27)
-	lwz      r12, 0x1c0(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_802CC2C0
-	mr       r3, r27
-	bl       isStickToMouth__Q24Game8CreatureFv
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_802CC2C0
-	mr       r4, r27
-	addi     r3, r1, 0x14
-	lwz      r12, 0(r27)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f0, 0x18(r1)
-	lfs      f1, 0x14(r1)
-	fsubs    f2, f30, f0
-	lfs      f0, 0x1c(r1)
-	fsubs    f3, f31, f1
-	fsubs    f1, f29, f0
-	fmuls    f0, f2, f2
-	fmadds   f0, f3, f3, f0
-	fmadds   f1, f1, f1, f0
-	fcmpo    cr0, f1, f28
-	bge      lbl_802CC2B0
-	mr       r30, r27
-	li       r29, 0
-	b        lbl_802CC2C0
-
-lbl_802CC2B0:
-	lfs      f0, lbl_8051C820@sda21(r2)
-	fcmpo    cr0, f1, f0
-	bge      lbl_802CC2C0
-	li       r29, 0
-
-lbl_802CC2C0:
-	cmplwi   r30, 0
-	bne      lbl_802CC3A4
-	lwz      r0, 0x3c(r1)
-	cmplwi   r0, 0
-	bne      lbl_802CC2F4
-	lwz      r3, 0x38(r1)
-	lwz      r4, 0x34(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x34(r1)
-	b        lbl_802CC384
-
-lbl_802CC2F4:
-	lwz      r3, 0x38(r1)
-	lwz      r4, 0x34(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x34(r1)
-	b        lbl_802CC368
-
-lbl_802CC314:
-	lwz      r3, 0x38(r1)
-	lwz      r4, 0x34(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x3c(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_802CC384
-	lwz      r3, 0x38(r1)
-	lwz      r4, 0x34(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x34(r1)
-
-lbl_802CC368:
-	lwz      r12, 0x30(r1)
-	addi     r3, r1, 0x30
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_802CC314
-
-lbl_802CC384:
-	lwz      r3, 0x38(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0x34(r1)
-	cmplw    r4, r3
-	bne      lbl_802CC204
-
-lbl_802CC3A4:
-	cmplwi   r30, 0
-	bne      lbl_802CC5EC
-	li       r0, 0
-	lwz      r3, naviMgr__4Game@sda21(r13)
-	lis      r4, "__vt__22Iterator<Q24Game4Navi>"@ha
-	stw      r0, 0x2c(r1)
-	addi     r4, r4, "__vt__22Iterator<Q24Game4Navi>"@l
-	cmplwi   r0, 0
-	stw      r4, 0x20(r1)
-	stw      r0, 0x24(r1)
-	stw      r3, 0x28(r1)
-	bne      lbl_802CC3EC
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x24(r1)
-	b        lbl_802CC5CC
-
-lbl_802CC3EC:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x24(r1)
-	b        lbl_802CC458
-
-lbl_802CC404:
-	lwz      r3, 0x28(r1)
-	lwz      r4, 0x24(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x2c(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_802CC5CC
-	lwz      r3, 0x28(r1)
-	lwz      r4, 0x24(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x24(r1)
-
-lbl_802CC458:
-	lwz      r12, 0x20(r1)
-	addi     r3, r1, 0x20
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_802CC404
-	b        lbl_802CC5CC
-
-lbl_802CC478:
-	lwz      r3, 0x28(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	lwz      r12, 0(r3)
-	mr       r27, r3
-	lwz      r12, 0xa8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_802CC508
-	mr       r4, r27
-	addi     r3, r1, 8
-	lwz      r12, 0(r27)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f0, 0xc(r1)
-	lfs      f1, 8(r1)
-	fsubs    f2, f30, f0
-	lfs      f0, 0x10(r1)
-	fsubs    f3, f31, f1
-	fsubs    f1, f29, f0
-	fmuls    f0, f2, f2
-	fmadds   f0, f3, f3, f0
-	fmadds   f1, f1, f1, f0
-	fcmpo    cr0, f1, f28
-	bge      lbl_802CC4F8
-	mr       r30, r27
-	li       r29, 0
-	b        lbl_802CC508
-
-lbl_802CC4F8:
-	lfs      f0, lbl_8051C820@sda21(r2)
-	fcmpo    cr0, f1, f0
-	bge      lbl_802CC508
-	li       r29, 0
-
-lbl_802CC508:
-	cmplwi   r30, 0
-	bne      lbl_802CC5EC
-	lwz      r0, 0x2c(r1)
-	cmplwi   r0, 0
-	bne      lbl_802CC53C
-	lwz      r3, 0x28(r1)
-	lwz      r4, 0x24(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x24(r1)
-	b        lbl_802CC5CC
-
-lbl_802CC53C:
-	lwz      r3, 0x28(r1)
-	lwz      r4, 0x24(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x24(r1)
-	b        lbl_802CC5B0
-
-lbl_802CC55C:
-	lwz      r3, 0x28(r1)
-	lwz      r4, 0x24(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x2c(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_802CC5CC
-	lwz      r3, 0x28(r1)
-	lwz      r4, 0x24(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0x24(r1)
-
-lbl_802CC5B0:
-	lwz      r12, 0x20(r1)
-	addi     r3, r1, 0x20
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_802CC55C
-
-lbl_802CC5CC:
-	lwz      r3, 0x28(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0x24(r1)
-	cmplw    r4, r3
-	bne      lbl_802CC478
-
-lbl_802CC5EC:
-	clrlwi.  r0, r29, 0x18
-	beq      lbl_802CC5FC
-	mr       r3, r31
-	bl       resetBossAppearBGM__Q34Game10SnakeWhole3ObjFv
-
-lbl_802CC5FC:
-	lwz      r3, sys@sda21(r13)
-	cmplwi   r30, 0
-	lfs      f1, 0x2c4(r31)
-	lfs      f0, 0x54(r3)
-	fadds    f0, f1, f0
-	stfs     f0, 0x2c4(r31)
-	beq      lbl_802CC6B4
-	stw      r30, 0x230(r31)
-	mr       r3, r31
-	mr       r4, r30
-	bl       appearNearByTarget__Q34Game10SnakeWhole3ObjFPQ24Game8Creature
-	mr       r3, r31
-	bl       setBossAppearBGM__Q34Game10SnakeWhole3ObjFv
-	lwz      r29, 0xc0(r31)
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0x44(r1)
-	lfd      f3, lbl_8051C830@sda21(r2)
-	stw      r0, 0x40(r1)
-	lfs      f2, lbl_8051C824@sda21(r2)
-	lfd      f0, 0x40(r1)
-	lfs      f1, lbl_8051C828@sda21(r2)
-	fsubs    f3, f0, f3
-	lfs      f0, 0x81c(r29)
-	fmuls    f2, f2, f3
-	fdivs    f1, f2, f1
-	fcmpo    cr0, f1, f0
-	bge      lbl_802CC694
-	mr       r3, r28
-	mr       r4, r31
-	lwz      r12, 0(r28)
-	li       r5, 2
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_802CC6B4
-
-lbl_802CC694:
-	mr       r3, r28
-	mr       r4, r31
-	lwz      r12, 0(r28)
-	li       r5, 3
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_802CC6B4:
-	psq_l    f31, 152(r1), 0, qr0
-	lfd      f31, 0x90(r1)
-	psq_l    f30, 136(r1), 0, qr0
-	lfd      f30, 0x80(r1)
-	psq_l    f29, 120(r1), 0, qr0
-	lfd      f29, 0x70(r1)
-	psq_l    f28, 104(r1), 0, qr0
-	lfd      f28, 0x60(r1)
-	lmw      r27, 0x4c(r1)
-	lwz      r0, 0xa4(r1)
-	mtlr     r0
-	addi     r1, r1, 0xa0
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	802CC6E8
- * Size:	000098
+/**
+ * @note Address: 0x802CC6E8
+ * @note Size: 0x98
  */
 void StateStay::cleanup(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	snagret->setAtari(true);
 	snagret->disableEvent(0, EB_Invulnerable);
 	snagret->mIsUnderground = false;
@@ -674,20 +222,19 @@ void StateStay::cleanup(EnemyBase* enemy)
 	snagret->lifeIncrement();
 }
 
-/*
- * --INFO--
- * Address:	802CC780
- * Size:	0000D4
+/**
+ * @note Address: 0x802CC780
+ * @note Size: 0xD4
  */
 void StateAppear1::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	snagret->enableEvent(0, EB_NoInterrupt);
 	snagret->disableEvent(0, EB_Cullable);
 	snagret->hardConstraintOn();
 	snagret->mTargetVelocity = Vector3f(0.0f);
 	snagret->setEmotionExcitement();
-	snagret->startMotion(1, nullptr);
+	snagret->startMotion(SNAKEWHOLEANIM_Appear1, nullptr);
 	snagret->createAppearEffect(0);
 
 	Vector3f position = snagret->getPosition();
@@ -695,14 +242,13 @@ void StateAppear1::init(EnemyBase* enemy, StateArg* stateArg)
 	rumbleMgr->startRumble(15, position, 2);
 }
 
-/*
- * --INFO--
- * Address:	802CC854
- * Size:	0002F8
+/**
+ * @note Address: 0x802CC854
+ * @note Size: 0x2F8
  */
 void StateAppear1::exec(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	if (snagret->mCurAnim->mIsPlaying) {
 		if ((u32)snagret->mCurAnim->mType == KEYEVENT_2) {
 			snagret->disableEvent(0, EB_NoInterrupt);
@@ -752,14 +298,13 @@ void StateAppear1::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CCB4C
- * Size:	000068
+/**
+ * @note Address: 0x802CCB4C
+ * @note Size: 0x68
  */
 void StateAppear1::cleanup(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	snagret->disableEvent(0, EB_NoInterrupt);
 	snagret->enableEvent(0, EB_Cullable);
 	snagret->hardConstraintOff();
@@ -769,20 +314,19 @@ void StateAppear1::cleanup(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CCBB4
- * Size:	0000D4
+/**
+ * @note Address: 0x802CCBB4
+ * @note Size: 0xD4
  */
 void StateAppear2::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	snagret->enableEvent(0, EB_NoInterrupt);
 	snagret->disableEvent(0, EB_Cullable);
 	snagret->hardConstraintOn();
 	snagret->mTargetVelocity = Vector3f(0.0f);
 	snagret->setEmotionExcitement();
-	snagret->startMotion(2, nullptr);
+	snagret->startMotion(SNAKEWHOLEANIM_Appear2, nullptr);
 	snagret->createAppearEffect(1);
 
 	Vector3f position = snagret->getPosition();
@@ -790,14 +334,13 @@ void StateAppear2::init(EnemyBase* enemy, StateArg* stateArg)
 	rumbleMgr->startRumble(12, position, 2);
 }
 
-/*
- * --INFO--
- * Address:	802CCC88
- * Size:	000318
+/**
+ * @note Address: 0x802CCC88
+ * @note Size: 0x318
  */
 void StateAppear2::exec(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	if (snagret->mCurAnim->mIsPlaying) {
 		if ((u32)snagret->mCurAnim->mType == KEYEVENT_2) {
 			snagret->disableEvent(0, EB_NoInterrupt);
@@ -852,14 +395,13 @@ void StateAppear2::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CCFA0
- * Size:	000068
+/**
+ * @note Address: 0x802CCFA0
+ * @note Size: 0x68
  */
 void StateAppear2::cleanup(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	snagret->disableEvent(0, EB_NoInterrupt);
 	snagret->enableEvent(0, EB_Cullable);
 	snagret->hardConstraintOff();
@@ -869,10 +411,9 @@ void StateAppear2::cleanup(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CD008
- * Size:	000064
+/**
+ * @note Address: 0x802CD008
+ * @note Size: 0x64
  */
 void StateDisappear::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -880,30 +421,29 @@ void StateDisappear::init(EnemyBase* enemy, StateArg* stateArg)
 	enemy->disableEvent(0, EB_Cullable);
 	enemy->mTargetVelocity = Vector3f(0.0f);
 	enemy->setEmotionCaution();
-	enemy->startMotion(3, nullptr);
+	enemy->startMotion(SNAKEWHOLEANIM_Dive, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802CD06C
- * Size:	000214
+/**
+ * @note Address: 0x802CD06C
+ * @note Size: 0x214
  */
 void StateDisappear::exec(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 
 	if (snagret->mCurAnim->mIsPlaying) {
 		if ((u32)snagret->mCurAnim->mType == KEYEVENT_2) {
-			Parms* parms1 = static_cast<Parms*>(snagret->mParms);
+			Parms* parms1 = CG_PARMS(snagret);
 			EnemyFunc::flickNearbyNavi(snagret, parms1->mGeneral.mShakeRange.mValue, parms1->mGeneral.mShakeKnockback.mValue,
-			                           parms1->mGeneral.mShakeDamage.mValue, -1000.0f, nullptr);
-			Parms* parms2 = static_cast<Parms*>(snagret->mParms);
+			                           parms1->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
+			Parms* parms2 = CG_PARMS(snagret);
 			EnemyFunc::flickNearbyPikmin(snagret, parms2->mGeneral.mShakeRange.mValue, parms2->mGeneral.mShakeKnockback.mValue,
-			                             parms2->mGeneral.mShakeDamage.mValue, -1000.0f, nullptr);
+			                             parms2->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
 
-			Parms* parms3 = static_cast<Parms*>(snagret->mParms);
-			EnemyFunc::flickStickPikmin(snagret, parms3->mGeneral.mShakeRateMaybe.mValue, parms3->mGeneral.mShakeKnockback.mValue,
-			                            parms3->mGeneral.mShakeDamage.mValue, -1000.0f, nullptr);
+			Parms* parms3 = CG_PARMS(snagret);
+			EnemyFunc::flickStickPikmin(snagret, parms3->mGeneral.mShakeChance.mValue, parms3->mGeneral.mShakeKnockback.mValue,
+			                            parms3->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
 			snagret->enableEvent(0, EB_NoInterrupt);
 			snagret->startBossFlickBGM();
 
@@ -922,7 +462,7 @@ void StateDisappear::exec(EnemyBase* enemy)
 		} else if ((u32)snagret->mCurAnim->mType == KEYEVENT_5) {
 			snagret->mIsUnderground = true;
 			snagret->enableEvent(0, EB_BitterImmune);
-			snagret->mToFlick = 0.0f;
+			snagret->mFlickTimer = 0.0f;
 			snagret->finishJointShadow();
 
 		} else if ((u32)snagret->mCurAnim->mType == KEYEVENT_END) {
@@ -931,15 +471,14 @@ void StateDisappear::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CD280
- * Size:	000078
+/**
+ * @note Address: 0x802CD280
+ * @note Size: 0x78
  */
 void StateDisappear::cleanup(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
-	EnemyFunc::flickStickPikmin(snagret, 1.0f, 10.0f, 0.0f, -1000.0f, nullptr);
+	Obj* snagret = OBJ(enemy);
+	EnemyFunc::flickStickPikmin(snagret, 1.0f, 10.0f, 0.0f, FLICK_BACKWARD_ANGLE, nullptr);
 	snagret->mIsUnderground = false;
 	snagret->disableEvent(0, EB_BitterImmune);
 	snagret->disableEvent(0, EB_NoInterrupt);
@@ -947,35 +486,32 @@ void StateDisappear::cleanup(EnemyBase* enemy)
 	snagret->hardConstraintOff();
 }
 
-/*
- * --INFO--
- * Address:	802CD2F8
- * Size:	000068
+/**
+ * @note Address: 0x802CD2F8
+ * @note Size: 0x68
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* snagret         = static_cast<Obj*>(enemy);
+	Obj* snagret         = OBJ(enemy);
 	snagret->mStateTimer = 0.0f;
 	snagret->mNextState  = SNAKEWHOLE_NULL;
 	snagret->setAttackPosition();
 	snagret->mTargetCreature = nullptr;
 	snagret->mTargetVelocity = Vector3f(0.0f);
-	snagret->startMotion(9, nullptr);
+	snagret->startMotion(SNAKEWHOLEANIM_Wait, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802CD360
- * Size:	000198
+/**
+ * @note Address: 0x802CD360
+ * @note Size: 0x198
  */
 void StateWait::exec(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	if (snagret->mHealth <= 0.0f) {
 		snagret->mNextState = SNAKEWHOLE_Dead;
 		snagret->finishMotion();
-	} else if (EnemyFunc::isStartFlick(snagret, false)
-	           || snagret->mStateTimer > static_cast<Parms*>(snagret->mParms)->mProperParms.mWaitTime.mValue) {
+	} else if (EnemyFunc::isStartFlick(snagret, false) || snagret->mStateTimer > CG_PROPERPARMS(snagret).mWaitTime.mValue) {
 		snagret->mNextState = SNAKEWHOLE_Disappear;
 		snagret->finishMotion();
 	} else if (snagret->isOutTerritory()) {
@@ -1002,35 +538,32 @@ void StateWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CD4F8
- * Size:	000004
+/**
+ * @note Address: 0x802CD4F8
+ * @note Size: 0x4
  */
 void StateWait::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802CD4FC
- * Size:	000048
+/**
+ * @note Address: 0x802CD4FC
+ * @note Size: 0x48
  */
 void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* snagret             = static_cast<Obj*>(enemy);
+	Obj* snagret             = OBJ(enemy);
 	snagret->mIsJumping      = false;
 	snagret->mFaceDirOffset  = 0.0f;
 	snagret->mTargetVelocity = Vector3f(0.0f);
-	snagret->startMotion(12, nullptr);
+	snagret->startMotion(SNAKEWHOLEANIM_Jump, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802CD544
- * Size:	000288
+/**
+ * @note Address: 0x802CD544
+ * @note Size: 0x288
  */
 void StateWalk::exec(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	snagret->setAttackPosition();
 	if (snagret->mHealth <= 0.0f) {
 		snagret->mNextState = SNAKEWHOLE_Dead;
@@ -1088,35 +621,32 @@ void StateWalk::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CD7CC
- * Size:	000010
+/**
+ * @note Address: 0x802CD7CC
+ * @note Size: 0x10
  */
 void StateWalk::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInterrupt); }
 
-/*
- * --INFO--
- * Address:	802CD7DC
- * Size:	000048
+/**
+ * @note Address: 0x802CD7DC
+ * @note Size: 0x48
  */
 void StateHome::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* snagret             = static_cast<Obj*>(enemy);
+	Obj* snagret             = OBJ(enemy);
 	snagret->mIsJumping      = false;
 	snagret->mFaceDirOffset  = 0.0f;
 	snagret->mTargetVelocity = Vector3f(0.0f);
-	snagret->startMotion(12, nullptr);
+	snagret->startMotion(SNAKEWHOLEANIM_Jump, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802CD824
- * Size:	0001A4
+/**
+ * @note Address: 0x802CD824
+ * @note Size: 0x1A4
  */
 void StateHome::exec(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	snagret->setAttackPosition();
 	if (snagret->mHealth <= 0.0f) {
 		snagret->mNextState = SNAKEWHOLE_Dead;
@@ -1157,34 +687,31 @@ void StateHome::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CD9C8
- * Size:	000010
+/**
+ * @note Address: 0x802CD9C8
+ * @note Size: 0x10
  */
 void StateHome::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInterrupt); }
 
-/*
- * --INFO--
- * Address:	802CD9D8
- * Size:	00004C
+/**
+ * @note Address: 0x802CD9D8
+ * @note Size: 0x4C
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	snagret->disableEvent(0, EB_Cullable);
 	snagret->mTargetVelocity = Vector3f(0.0f);
-	snagret->startMotion(snagret->mAttackAnimIdx + 4, nullptr);
+	snagret->startMotion(snagret->mAttackAnimIdx + SNAKEWHOLEANIM_AttackOffset, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802CDA24
- * Size:	0003D0
+/**
+ * @note Address: 0x802CDA24
+ * @note Size: 0x3D0
  */
 void StateAttack::exec(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	if (!snagret->isFinishMotion()) {
 		snagret->setAttackPosition();
 	}
@@ -1210,7 +737,7 @@ void StateAttack::exec(EnemyBase* enemy)
 				Navi* navi = snagret->getAttackNavi(idx);
 
 				if (navi) {
-					Parms* parms = static_cast<Parms*>(snagret->mParms);
+					Parms* parms = CG_PARMS(snagret);
 					InteractAttack attack(snagret, parms->mGeneral.mAttackDamage.mValue, nullptr);
 					navi->stimulate(attack);
 				}
@@ -1225,7 +752,7 @@ void StateAttack::exec(EnemyBase* enemy)
 			if (!snagret->isFinishMotion() && snagret->getSwallowSlot()) {
 
 				if (snagret->getAttackPiki(5) != nullptr || snagret->getAttackNavi(5)) {
-					snagret->startMotion(snagret->mAttackAnimIdx + 4, nullptr);
+					snagret->startMotion(snagret->mAttackAnimIdx + SNAKEWHOLEANIM_AttackOffset, nullptr);
 					snagret->setMotionFrame(snagret->getFirstKeyFrame());
 					snagret->startJointCallBack();
 
@@ -1279,35 +806,32 @@ void StateAttack::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CDDF4
- * Size:	000010
+/**
+ * @note Address: 0x802CDDF4
+ * @note Size: 0x10
  */
 void StateAttack::cleanup(EnemyBase* enemy) { enemy->enableEvent(0, EB_Cullable); }
 
-/*
- * --INFO--
- * Address:	802CDE04
- * Size:	00003C
+/**
+ * @note Address: 0x802CDE04
+ * @note Size: 0x3C
  */
 void StateEat::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mTargetVelocity = Vector3f(0.0f);
-	enemy->startMotion(10, nullptr);
+	enemy->startMotion(SNAKEWHOLEANIM_Eat, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802CDE40
- * Size:	0001F0
+/**
+ * @note Address: 0x802CDE40
+ * @note Size: 0x1F0
  */
 void StateEat::exec(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	if (snagret->mCurAnim->mIsPlaying) {
 		if ((u32)snagret->mCurAnim->mType == KEYEVENT_2) {
-			Parms* parms = static_cast<Parms*>(snagret->mParms);
+			Parms* parms = CG_PARMS(snagret);
 			EnemyFunc::swallowPikmin(snagret, parms->mProperParms.mPoisonDamage.mValue, nullptr);
 
 		} else if ((u32)snagret->mCurAnim->mType == KEYEVENT_END) {
@@ -1349,34 +873,31 @@ void StateEat::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CE030
- * Size:	000004
+/**
+ * @note Address: 0x802CE030
+ * @note Size: 0x4
  */
 void StateEat::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802CE034
- * Size:	000040
+/**
+ * @note Address: 0x802CE034
+ * @note Size: 0x40
  */
 void StateStruggle::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* snagret             = static_cast<Obj*>(enemy);
+	Obj* snagret             = OBJ(enemy);
 	snagret->mStateTimer     = 0.0f;
 	snagret->mTargetVelocity = Vector3f(0.0f);
-	snagret->startMotion(11, nullptr);
+	snagret->startMotion(SNAKEWHOLEANIM_Struggle, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802CE074
- * Size:	0001C8
+/**
+ * @note Address: 0x802CE074
+ * @note Size: 0x1C8
  */
 void StateStruggle::exec(EnemyBase* enemy)
 {
-	Obj* snagret = static_cast<Obj*>(enemy);
+	Obj* snagret = OBJ(enemy);
 	if (snagret->mStateTimer > 1.5f) {
 		snagret->finishMotion();
 	}
@@ -1414,10 +935,9 @@ void StateStruggle::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802CE23C
- * Size:	000004
+/**
+ * @note Address: 0x802CE23C
+ * @note Size: 0x4
  */
 void StateStruggle::cleanup(EnemyBase* enemy) { }
 

@@ -15,20 +15,20 @@
 // probably have this somewhere easy to find
 #define MAX_LEVELS 4
 
-static const int unusedArray[] = { 0, 0, 0 };
-static const char name[]       = "SingleGS_Game";
+static const u32 padding[]    = { 0, 0, 0 };
+static const char className[] = "SingleGS_Game";
 
 static int sParentHeapFreeSize;
 static int sParentHeapFreeSize_Last;
 
 namespace Game {
+namespace SingleGame {
 
-/*
- * --INFO--
- * Address:	8021B94C
- * Size:	0000E4
+/**
+ * @note Address: 0x8021B94C
+ * @note Size: 0xE4
  */
-SingleGame::SelectState::SelectState()
+SelectState::SelectState()
     : State(SGS_Select)
 {
 	mController       = new Controller(JUTGamePad::PORT_0);
@@ -36,12 +36,11 @@ SingleGame::SelectState::SelectState()
 	mPreviousCourseID = -1;
 }
 
-/*
- * --INFO--
- * Address:	8021BA30
- * Size:	000098
+/**
+ * @note Address: 0x8021BA30
+ * @note Size: 0x98
  */
-void SingleGame::SelectState::init(SingleGameSection*, StateArg*)
+void SelectState::init(SingleGameSection*, StateArg*)
 {
 	moviePlayer->reset();
 	mState      = SELECTSTATE_Init;
@@ -57,12 +56,11 @@ void SingleGame::SelectState::init(SingleGameSection*, StateArg*)
 	mNewLevelOpen = false;
 }
 
-/*
- * --INFO--
- * Address:	8021BAC8
- * Size:	000260
+/**
+ * @note Address: 0x8021BAC8
+ * @note Size: 0x260
  */
-void SingleGame::SelectState::initNext(SingleGameSection* section)
+void SelectState::initNext(SingleGameSection* section)
 {
 	sys->setFrameRate(1);
 	mState = SELECTSTATE_Load;
@@ -119,12 +117,11 @@ void SingleGame::SelectState::initNext(SingleGameSection* section)
 	sys->dvdLoadUseCallBack(&section->mDvdThread, mDvdLoadCallback);
 }
 
-/*
- * --INFO--
- * Address:	8021BD2C
- * Size:	00030C
+/**
+ * @note Address: 0x8021BD2C
+ * @note Size: 0x30C
  */
-void SingleGame::SelectState::dvdload()
+void SelectState::dvdload()
 {
 	PSGame::SceneInfo info;
 	if (mNewLevelOpen) {
@@ -164,12 +161,11 @@ void SingleGame::SelectState::dvdload()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8021C03C
- * Size:	0002AC
+/**
+ * @note Address: 0x8021C03C
+ * @note Size: 0x2AC
  */
-void SingleGame::SelectState::exec(SingleGameSection* game)
+void SelectState::exec(SingleGameSection* game)
 {
 	switch (mState) {
 	case SELECTSTATE_Init: {
@@ -263,12 +259,11 @@ void SingleGame::SelectState::exec(SingleGameSection* game)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8021C2EC
- * Size:	0002D0
+/**
+ * @note Address: 0x8021C2EC
+ * @note Size: 0x2D0
  */
-void SingleGame::SelectState::draw(SingleGameSection* game, Graphics& gfx)
+void SelectState::draw(SingleGameSection* game, Graphics& gfx)
 {
 	if (mWMapHeap && mState == SELECTSTATE_Draw) {
 		gfx.mOrthoGraph.setPort();
@@ -314,12 +309,11 @@ void SingleGame::SelectState::draw(SingleGameSection* game, Graphics& gfx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8021C5CC
- * Size:	0000F4
+/**
+ * @note Address: 0x8021C5CC
+ * @note Size: 0xF4
  */
-void SingleGame::SelectState::cleanup(SingleGameSection* game)
+void SelectState::cleanup(SingleGameSection* game)
 {
 	PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
 	PSSystem::checkSceneMgr(mgr);
@@ -336,4 +330,5 @@ void SingleGame::SelectState::cleanup(SingleGameSection* game)
 	JUT_ASSERTLINE(732, sParentHeapFreeSize == (int)mParentHeap->getFreeSize(), "damek\n");
 }
 
+} // namespace SingleGame
 } // namespace Game

@@ -1,23 +1,20 @@
 #include "Game/gameGenerator.h"
-#include "Game/itemMgr.h"
 #include "Game/BaseItem.h"
 #include "Game/itemMgr.h"
 #include "types.h"
 
-/*
- * --INFO--
- * Address:	801ACD20
- * Size:	00009C
+/**
+ * @note Address: 0x801ACD20
+ * @note Size: 0x9C
  */
 
 Game::GenObject* makeItem() { return new Game::GenItem; }
 
 namespace Game {
 
-/*
- * --INFO--
- * Address:	801ACDBC
- * Size:	00008C
+/**
+ * @note Address: 0x801ACDBC
+ * @note Size: 0x8C
  */
 void GenItem::initialise()
 {
@@ -35,10 +32,9 @@ void GenItem::initialise()
 
 void GenItem::updateUseList(Generator* gen, int i) { mItemMgr = itemMgr->getMgrByIndex(mMgrIndex); }
 
-/*
- * --INFO--
- * Address:	801ACE80
- * Size:	00006C
+/**
+ * @note Address: 0x801ACE80
+ * @note Size: 0x6C
  */
 void GenItem::doEvent(u32 idx)
 {
@@ -51,25 +47,23 @@ void GenItem::doEvent(u32 idx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801ACEEC
- * Size:	000068
+/**
+ * @note Address: 0x801ACEEC
+ * @note Size: 0x68
  */
-void GenItem::generatorMakeMatrix(Matrixf& matrix, Vector3f& vec)
+void GenItem::generatorMakeMatrix(Matrixf& matrix, Vector3f& pos)
 {
-	float x           = mRotation.x * DEG2RAD * PI;
-	float y           = mRotation.y * DEG2RAD * PI;
-	float z           = mRotation.z * DEG2RAD * PI;
+	f32 x             = mRotation.x * DEG2RAD * PI;
+	f32 y             = mRotation.y * DEG2RAD * PI;
+	f32 z             = mRotation.z * DEG2RAD * PI;
 	Vector3f rotation = Vector3f(x, y, z);
 
-	matrix.makeTR(vec, rotation);
+	matrix.makeTR(pos, rotation);
 }
 
-/*
- * --INFO--
- * Address:	801ACF54
- * Size:	000050
+/**
+ * @note Address: 0x801ACF54
+ * @note Size: 0x50
  */
 J3DModelData* GenItem::getShape()
 {
@@ -80,10 +74,9 @@ J3DModelData* GenItem::getShape()
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	801ACFA4
- * Size:	000154
+/**
+ * @note Address: 0x801ACFA4
+ * @note Size: 0x154
  */
 void GenItem::doWrite(Stream& stream)
 {
@@ -109,10 +102,9 @@ void GenItem::doWrite(Stream& stream)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801AD108
- * Size:	000148
+/**
+ * @note Address: 0x801AD108
+ * @note Size: 0x148
  */
 void GenItem::doRead(Stream& stream)
 {
@@ -139,24 +131,21 @@ void GenItem::doRead(Stream& stream)
 	mItemMgr->generatorRead(stream, mParm, version);
 }
 
-/*
- * --INFO--
- * Address:	801AD254
- * Size:	000004
+/**
+ * @note Address: 0x801AD254
+ * @note Size: 0x4
  */
 void GenItem::ramSaveParameters(Stream&) { }
 
-/*
- * --INFO--
- * Address:	801AD258
- * Size:	000004
+/**
+ * @note Address: 0x801AD258
+ * @note Size: 0x4
  */
 void GenItem::ramLoadParameters(Stream&) { }
 
-/*
- * --INFO--
- * Address:	801AD25C
- * Size:	000078
+/**
+ * @note Address: 0x801AD25C
+ * @note Size: 0x78
  */
 Creature* GenItem::generate(Game::Generator* generator)
 {
@@ -166,10 +155,9 @@ Creature* GenItem::generate(Game::Generator* generator)
 	birth(&arg);
 }
 
-/*
- * --INFO--
- * Address:	801AD2D4
- * Size:	0000A4
+/**
+ * @note Address: 0x801AD2D4
+ * @note Size: 0xA4
  */
 Creature* GenItem::birth(Game::GenArg* arg)
 {
@@ -177,9 +165,9 @@ Creature* GenItem::birth(Game::GenArg* arg)
 	BaseItemMgr* baseItemMgr = mItemMgr;
 	if (baseItemMgr) {
 		Vector3f pos      = arg->mPosition;
-		float z           = mRotation.z * DEG2RAD * PI;
-		float y           = mRotation.y * DEG2RAD * PI;
-		float x           = mRotation.x * DEG2RAD * PI;
+		f32 z             = mRotation.z * DEG2RAD * PI;
+		f32 y             = mRotation.y * DEG2RAD * PI;
+		f32 x             = mRotation.x * DEG2RAD * PI;
 		Vector3f rotation = Vector3f(x, y, z);
 		baseItem          = baseItemMgr->generatorBirth(pos, rotation, mParm);
 	}

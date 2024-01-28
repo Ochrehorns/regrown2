@@ -1,16 +1,13 @@
-#include "types.h"
 #include "stdio.h"
-
 #include "P2JME/TReference.h"
 
 namespace P2JME {
 
-/*
- * --INFO--
- * Address:	8043DB18
- * Size:	000074
+/**
+ * @note Address: 0x8043DB18
+ * @note Size: 0x74
  */
-char* TReference::do_word(unsigned long arg) const
+char* TReference::do_word(u32 arg) const
 {
 	static u8 frm = 34;
 	static char str[256];
@@ -23,13 +20,5 @@ char* TReference::do_word(unsigned long arg) const
 	sprintf(str, "%d", frm);
 	return str;
 }
-
-/*
- * --INFO--
- * Address:	8043DB8C
- * Size:	000060
- * TReference::~TReference(){};
- * Weak function. Defined in TReference.h
- */
 
 } // namespace P2JME

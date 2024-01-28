@@ -4,10 +4,9 @@
 namespace Game {
 namespace Cave {
 
-/*
- * --INFO--
- * Address:	8024C878
- * Size:	0000A8
+/**
+ * @note Address: 0x8024C878
+ * @note Size: 0xA8
  */
 RandMapScore::RandMapScore(MapUnitGenerator* generator)
 {
@@ -23,10 +22,9 @@ RandMapScore::RandMapScore(MapUnitGenerator* generator)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024C920
- * Size:	00006C
+/**
+ * @note Address: 0x8024C920
+ * @note Size: 0x6C
  */
 void RandMapScore::setMapUnitScore()
 {
@@ -41,10 +39,9 @@ void RandMapScore::setMapUnitScore()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024C98C
- * Size:	000038
+/**
+ * @note Address: 0x8024C98C
+ * @note Size: 0x38
  */
 void RandMapScore::setStartSlot()
 {
@@ -55,10 +52,9 @@ void RandMapScore::setStartSlot()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024C9C4
- * Size:	000058
+/**
+ * @note Address: 0x8024C9C4
+ * @note Size: 0x58
  */
 void RandMapScore::setGoalSlot()
 {
@@ -71,10 +67,9 @@ void RandMapScore::setGoalSlot()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024CA1C
- * Size:	00018C
+/**
+ * @note Address: 0x8024CA1C
+ * @note Size: 0x18C
  */
 void RandMapScore::makeObjectLayout(MapNode* mapNode, ObjectLayout* layout)
 {
@@ -96,24 +91,21 @@ void RandMapScore::makeObjectLayout(MapNode* mapNode, ObjectLayout* layout)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024CBA8
- * Size:	000010
+/**
+ * @note Address: 0x8024CBA8
+ * @note Size: 0x10
  */
 MapNode* RandMapScore::getFixObjNode(int idx) { return mFixObjNodes[idx]; }
 
-/*
- * --INFO--
- * Address:	8024CBB8
- * Size:	000010
+/**
+ * @note Address: 0x8024CBB8
+ * @note Size: 0x10
  */
 BaseGen* RandMapScore::getFixObjGen(int idx) { return mFixObjGens[idx]; }
 
-/*
- * --INFO--
- * Address:	8024CBC8
- * Size:	000064
+/**
+ * @note Address: 0x8024CBC8
+ * @note Size: 0x64
  */
 void RandMapScore::getGlobalPosition(int idx, Vector3f& position)
 {
@@ -123,24 +115,21 @@ void RandMapScore::getGlobalPosition(int idx, Vector3f& position)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024CC2C
- * Size:	000008
+/**
+ * @note Address: 0x8024CC2C
+ * @note Size: 0x8
  */
 int RandMapScore::getVersusHighScore() { return mVersusHighScore; }
 
-/*
- * --INFO--
- * Address:	8024CC34
- * Size:	000008
+/**
+ * @note Address: 0x8024CC34
+ * @note Size: 0x8
  */
 int RandMapScore::getVersusLowScore() { return mVersusLowScore; }
 
-/*
- * --INFO--
- * Address:	8024CC3C
- * Size:	000084
+/**
+ * @note Address: 0x8024CC3C
+ * @note Size: 0x84
  */
 bool RandMapScore::isScoreSetDone()
 {
@@ -156,10 +145,9 @@ bool RandMapScore::isScoreSetDone()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	8024CCC0
- * Size:	0000C4
+/**
+ * @note Address: 0x8024CCC0
+ * @note Size: 0xC4
  */
 void RandMapScore::clearRoomAndDoorScore()
 {
@@ -184,10 +172,9 @@ void RandMapScore::clearRoomAndDoorScore()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024CD84
- * Size:	000154
+/**
+ * @note Address: 0x8024CD84
+ * @note Size: 0x154
  */
 void RandMapScore::setUnitAndDoorScore()
 {
@@ -333,83 +320,27 @@ lbl_8024CEC4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8024CED8
- * Size:	0000B0
+/**
+ * @note Address: 0x8024CED8
+ * @note Size: 0xB0
  */
 void RandMapScore::setStartMapNodeScore(MapNode* mapNode)
 {
 	setMapNodeScore(mapNode, 0);
 	for (int i = 0; i < mapNode->getNumDoors(); i++) {
 		if (!mapNode->isDoorScoreSetDone(i)) {
-			int score = mapNode->getGateScore(i);
-
+			int score     = mapNode->getGateScore(i);
 			int nodeScore = mapNode->getNodeScore();
-			score++;
-			score += nodeScore;
-			mapNode->setDoorScore(i, score);
-			setMapNodeScore(mapNode->mAdjustInfo[i].mMapTile, score);
+			int doorScore = nodeScore + score + 1;
+			mapNode->setDoorScore(i, doorScore);
+			setMapNodeScore(mapNode->mAdjustInfo[i].mMapTile, doorScore);
 		}
 	}
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	li       r5, 0
-	stw      r0, 0x24(r1)
-	stmw     r27, 0xc(r1)
-	mr       r27, r3
-	mr       r28, r4
-	bl       setMapNodeScore__Q34Game4Cave12RandMapScoreFPQ34Game4Cave7MapNodei
-	li       r29, 0
-	li       r30, 0
-	b        lbl_8024CF64
-
-lbl_8024CF04:
-	mr       r3, r28
-	mr       r4, r29
-	bl       isDoorScoreSetDone__Q34Game4Cave7MapNodeFi
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8024CF5C
-	mr       r3, r28
-	mr       r4, r29
-	bl       getGateScore__Q34Game4Cave7MapNodeFi
-	mr       r31, r3
-	mr       r3, r28
-	bl       getNodeScore__Q34Game4Cave7MapNodeFv
-	addi     r31, r31, 1
-	mr       r4, r29
-	add      r31, r3, r31
-	mr       r3, r28
-	mr       r5, r31
-	bl       setDoorScore__Q34Game4Cave7MapNodeFii
-	lwz      r4, 0x28(r28)
-	mr       r3, r27
-	mr       r5, r31
-	lwzx     r4, r4, r30
-	bl       setMapNodeScore__Q34Game4Cave12RandMapScoreFPQ34Game4Cave7MapNodei
-
-lbl_8024CF5C:
-	addi     r30, r30, 0xc
-	addi     r29, r29, 1
-
-lbl_8024CF64:
-	mr       r3, r28
-	bl       getNumDoors__Q34Game4Cave7MapNodeFv
-	cmpw     r29, r3
-	blt      lbl_8024CF04
-	lmw      r27, 0xc(r1)
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000DC
+/**
+ * @note Address: N/A
+ * @note Size: 0xDC
  */
 MapNode* RandMapScore::getRandRoomMapNode()
 {
@@ -425,16 +356,15 @@ MapNode* RandMapScore::getRandRoomMapNode()
 
 	MapNode* targetNode;
 	if (counter) {
-		return mapList[(int)(counter * randFloat())];
+		return mapList[randInt(counter)];
 	}
 
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8024CF88
- * Size:	00013C
+/**
+ * @note Address: 0x8024CF88
+ * @note Size: 0x13C
  */
 void RandMapScore::setChallengePod()
 {
@@ -455,7 +385,7 @@ void RandMapScore::setChallengePod()
 
 				FOREACH_NODE(BaseGen, gen->mChild, currGen)
 				{
-					if (currGen->mSpawnType == BaseGen::Start) {
+					if (currGen->mSpawnType == BaseGen::CGT_Start) {
 						genList[counter] = currGen;
 						counter++;
 					}
@@ -463,17 +393,16 @@ void RandMapScore::setChallengePod()
 			}
 
 			if (counter) {
-				int randIdx              = counter * randFloat();
+				int randIdx              = randInt(counter);
 				mFixObjGens[FIXNODE_Pod] = genList[randIdx];
 			}
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024D0C4
- * Size:	0001B8
+/**
+ * @note Address: 0x8024D0C4
+ * @note Size: 0x1B8
  */
 void RandMapScore::setVersusOnyon()
 {
@@ -505,10 +434,9 @@ void RandMapScore::setVersusOnyon()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024D27C
- * Size:	0000FC
+/**
+ * @note Address: 0x8024D27C
+ * @note Size: 0xFC
  */
 MapNode* RandMapScore::getMaxScoreRoomMapNode(MapNode* mapNode, BaseGen** maxScoreGen)
 {
@@ -522,7 +450,7 @@ MapNode* RandMapScore::getMaxScoreRoomMapNode(MapNode* mapNode, BaseGen** maxSco
 			if (gen) {
 				FOREACH_NODE(BaseGen, gen->mChild, currGen)
 				{
-					if (currGen->mSpawnType == BaseGen::Start) {
+					if (currGen->mSpawnType == BaseGen::CGT_Start) {
 						if (nodeScore > maxScore || (nodeScore == maxScore && randWeightFloat(1.0f) < 0.5f)) {
 							*maxScoreGen = currGen;
 							maxScoreNode = currNode;
@@ -537,10 +465,9 @@ MapNode* RandMapScore::getMaxScoreRoomMapNode(MapNode* mapNode, BaseGen** maxSco
 	return maxScoreNode;
 }
 
-/*
- * --INFO--
- * Address:	8024D378
- * Size:	0003B0
+/**
+ * @note Address: 0x8024D378
+ * @note Size: 0x3B0
  */
 void RandMapScore::calcNodeScore(MapNode* mapNode)
 {
@@ -856,20 +783,18 @@ lbl_8024D714:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8024D728
- * Size:	000048
+/**
+ * @note Address: 0x8024D728
+ * @note Size: 0x48
  */
 void RandMapScore::copyNodeScore()
 {
 	FOREACH_NODE(MapNode, mGenerator->mPlacedMapNodes->mChild, currNode) { currNode->copyNodeScoreToVersusScore(); }
 }
 
-/*
- * --INFO--
- * Address:	8024D770
- * Size:	00008C
+/**
+ * @note Address: 0x8024D770
+ * @note Size: 0x8C
  */
 void RandMapScore::subNodeScore()
 {
@@ -884,10 +809,9 @@ void RandMapScore::subNodeScore()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024D7FC
- * Size:	000064
+/**
+ * @note Address: 0x8024D7FC
+ * @note Size: 0x64
  */
 void RandMapScore::setMapNodeScore(MapNode* mapNode, int score)
 {
@@ -898,10 +822,9 @@ void RandMapScore::setMapNodeScore(MapNode* mapNode, int score)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8024D860
- * Size:	0003BC
+/**
+ * @note Address: 0x8024D860
+ * @note Size: 0x3BC
  */
 void RandMapScore::setChallengeFixObjNormal()
 {
@@ -950,7 +873,7 @@ void RandMapScore::setChallengeFixObjNormal()
 								if (gen) {
 									FOREACH_NODE(BaseGen, gen->mChild, currGen)
 									{
-										if (currGen->mSpawnType == BaseGen::HoleOrGeyser && isFixObjSet(currNode, currGen)) {
+										if (currGen->mSpawnType == BaseGen::CGT_HoleOrGeyser && isFixObjSet(currNode, currGen)) {
 											scoreList[counter] = score;
 											tally += scoreList[counter];
 											mapList[counter] = currNode;
@@ -981,7 +904,7 @@ void RandMapScore::setChallengeFixObjNormal()
 			}
 
 			if (tally) {
-				int randIdx  = tally * randFloat();
+				int randIdx  = randInt(tally);
 				int newTally = 0;
 				for (int k = 0; k < counter; k++) {
 					newTally += scoreList[k];
@@ -1282,10 +1205,9 @@ lbl_8024DC08:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8024DC1C
- * Size:	000324
+/**
+ * @note Address: 0x8024DC1C
+ * @note Size: 0x324
  */
 void RandMapScore::setChallengeFixObjHard()
 {
@@ -1326,7 +1248,7 @@ void RandMapScore::setChallengeFixObjHard()
 								if (gen) {
 									FOREACH_NODE(BaseGen, gen->mChild, currGen)
 									{
-										if (currGen->mSpawnType == BaseGen::HoleOrGeyser && isFixObjSet(currNode, currGen)) {
+										if (currGen->mSpawnType == BaseGen::CGT_HoleOrGeyser && isFixObjSet(currNode, currGen)) {
 											if (score >= maxScore) {
 												if (score > maxScore) {
 													counter  = 0;
@@ -1369,7 +1291,7 @@ void RandMapScore::setChallengeFixObjHard()
 			}
 
 			if (counter) {
-				int randIdx                = counter * randFloat();
+				int randIdx                = randInt(counter);
 				mFixObjNodes[fixObjIdx[i]] = mapList[randIdx];
 				mFixObjGens[fixObjIdx[i]]  = genList[randIdx];
 			}
@@ -1623,10 +1545,9 @@ lbl_8024DF2C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8024DF40
- * Size:	000064
+/**
+ * @note Address: 0x8024DF40
+ * @note Size: 0x64
  */
 bool RandMapScore::isGoalSetHard()
 {
@@ -1650,17 +1571,16 @@ bool RandMapScore::isGoalSetHard()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8024DFA4
- * Size:	000128
+/**
+ * @note Address: 0x8024DFA4
+ * @note Size: 0x128
  */
-bool RandMapScore::isFixObjSet(MapNode* mapNode, BaseGen* baseGen)
+bool RandMapScore::isFixObjSet(MapNode* node, BaseGen* spawner)
 {
 	// test 0 (pod/ship) separately
-	if (mapNode == getFixObjNode(FIXNODE_Pod) && baseGen && getFixObjGen(FIXNODE_Pod)) {
+	if (node == getFixObjNode(FIXNODE_Pod) && spawner && getFixObjGen(FIXNODE_Pod)) {
 		Vector3f fixPos  = getFixObjGen(FIXNODE_Pod)->mPosition;
-		Vector3f testPos = baseGen->mPosition;
+		Vector3f testPos = spawner->mPosition;
 		Vector3f sep     = Vector3f(fixPos.y - testPos.y, fixPos.z - testPos.z, fixPos.x - testPos.x);
 		if (_length2(sep) < 150.0f) {
 			return false;
@@ -1669,7 +1589,7 @@ bool RandMapScore::isFixObjSet(MapNode* mapNode, BaseGen* baseGen)
 
 	// test remaining fix obj nodes
 	for (int i = 1; i < FIXNODE_Count; i++) {
-		if (mapNode == getFixObjNode(i) && baseGen == getFixObjGen(i)) {
+		if (node == getFixObjNode(i) && spawner == getFixObjGen(i)) {
 			return false;
 		}
 	}

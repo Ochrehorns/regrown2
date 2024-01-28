@@ -3,130 +3,14 @@
 #include "JSystem/JStudio/data.h"
 #include "JSystem/JParticle/JPAEmitter.h"
 #include "JSystem/JStudio_JParticle.h"
+#include "JSystem/JStudio_JStage.h"
+#include "math.h"
 #include "float.h"
 #include "types.h"
 
-/*
-    Generated from dpostproc
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_804732E0
-    lbl_804732E0:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__Q317JStudio_JParticle17TAdaptor_particle13TJPACallback_
-    __vt__Q317JStudio_JParticle17TAdaptor_particle13TJPACallback_:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q317JStudio_JParticle17TAdaptor_particle13TJPACallback_Fv
-        .4byte
-   execute__Q317JStudio_JParticle17TAdaptor_particle13TJPACallback_FP14JPABaseEmitter
-        .4byte executeAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-    .global __vt__Q217JStudio_JParticle17TAdaptor_particle
-    __vt__Q217JStudio_JParticle17TAdaptor_particle:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q217JStudio_JParticle17TAdaptor_particleFv
-        .4byte
-   adaptor_do_prepare__Q217JStudio_JParticle17TAdaptor_particleFPCQ27JStudio7TObject
-        .4byte adaptor_do_begin__Q27JStudio8TAdaptorFPCQ27JStudio7TObject
-        .4byte
-   adaptor_do_end__Q217JStudio_JParticle17TAdaptor_particleFPCQ27JStudio7TObject
-        .4byte
-   adaptor_do_update__Q217JStudio_JParticle17TAdaptor_particleFPCQ27JStudio7TObjectUl
-        .4byte
-   adaptor_do_data__Q27JStudio8TAdaptorFPCQ27JStudio7TObjectPCvUlPCvUl .4byte
-   adaptor_do_PARTICLE__Q217JStudio_JParticle17TAdaptor_particleFQ37JStudio4data15TEOperationDataPCvUl
-        .4byte
-   adaptor_do_BEGIN__Q217JStudio_JParticle17TAdaptor_particleFQ37JStudio4data15TEOperationDataPCvUl
-        .4byte
-   adaptor_do_BEGIN_FADE_IN__Q217JStudio_JParticle17TAdaptor_particleFQ37JStudio4data15TEOperationDataPCvUl
-        .4byte
-   adaptor_do_END__Q217JStudio_JParticle17TAdaptor_particleFQ37JStudio4data15TEOperationDataPCvUl
-        .4byte
-   adaptor_do_END_FADE_OUT__Q217JStudio_JParticle17TAdaptor_particleFQ37JStudio4data15TEOperationDataPCvUl
-        .4byte
-   adaptor_do_PARENT__Q217JStudio_JParticle17TAdaptor_particleFQ37JStudio4data15TEOperationDataPCvUl
-        .4byte
-   adaptor_do_PARENT_NODE__Q217JStudio_JParticle17TAdaptor_particleFQ37JStudio4data15TEOperationDataPCvUl
-        .4byte
-   adaptor_do_PARENT_ENABLE__Q217JStudio_JParticle17TAdaptor_particleFQ37JStudio4data15TEOperationDataPCvUl
-    .global __vt__18JPAEmitterCallBack
-    __vt__18JPAEmitterCallBack:
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte execute__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte executeAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-    .global __vt__Q27JStudio17TAdaptor_particle
-    __vt__Q27JStudio17TAdaptor_particle:
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte adaptor_do_prepare__Q27JStudio8TAdaptorFPCQ27JStudio7TObject
-        .4byte adaptor_do_begin__Q27JStudio8TAdaptorFPCQ27JStudio7TObject
-        .4byte adaptor_do_end__Q27JStudio8TAdaptorFPCQ27JStudio7TObject
-        .4byte adaptor_do_update__Q27JStudio8TAdaptorFPCQ27JStudio7TObjectUl
-        .4byte
-   adaptor_do_data__Q27JStudio8TAdaptorFPCQ27JStudio7TObjectPCvUlPCvUl .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global init$1233
-    init$1233:
-        .skip 0x8
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80516360
-    lbl_80516360:
-        .4byte 0x00000000
-    .global lbl_80516364
-    lbl_80516364:
-        .float 1.0
-    .global lbl_80516368
-    lbl_80516368:
-        .4byte 0x437F0000
-        .4byte 0x00000000
-    .global lbl_80516370
-    lbl_80516370:
-        .4byte 0x3FF00000
-        .4byte 0x00000000
-    .global lbl_80516378
-    lbl_80516378:
-        .4byte 0x40F00000
-        .4byte 0x00000000
-    .global lbl_80516380
-    lbl_80516380:
-        .4byte 0x40768000
-        .4byte 0x00000000
-    .global lbl_80516388
-    lbl_80516388:
-        .4byte 0x406FE000
-        .4byte 0x00000000
-    .global lbl_80516390
-    lbl_80516390:
-        .4byte 0x43300000
-        .4byte 0x00000000
-*/
-
-/*
- * --INFO--
- * Address:	800056C0
- * Size:	0000E8
+/**
+ * @note Address: 0x800056C0
+ * @note Size: 0xE8
  */
 JStudio_JParticle::TAdaptor_particle::TAdaptor_particle(JPAEmitterManager* emitterManager, const JStage::TSystem* system)
     : mEmitterManager(emitterManager)
@@ -143,40 +27,9 @@ JStudio_JParticle::TAdaptor_particle::TAdaptor_particle(JPAEmitterManager* emitt
 {
 }
 
-/*
- * --INFO--
- * Address:	800057A8
- * Size:	000060
- * __dt__Q317JStudio_JParticle17TAdaptor_particle13TJPACallback_Fv
- */
-JStudio_JParticle::TAdaptor_particle::TJPACallback_::~TJPACallback_() { }
-
-namespace JStudio {
-
-/*
- * --INFO--
- * Address:	80005808
- * Size:	000018
- * __ct__Q27JStudio14TVariableValueFv
- */
-// TVariableValue::TVariableValue()
-// {
-// 	/*
-// 	li       r4, 0
-// 	addi     r0, r13, soOutput_none___Q27JStudio14TVariableValue@sda21
-// 	stw      r4, 4(r3)
-// 	stw      r4, 8(r3)
-// 	stw      r0, 0x10(r3)
-// 	blr
-// 	*/
-// }
-
-} // namespace JStudio
-
-/*
- * --INFO--
- * Address:	80005820
- * Size:	000098
+/**
+ * @note Address: 0x80005820
+ * @note Size: 0x98
  * __dt__Q217JStudio_JParticle17TAdaptor_particleFv
  */
 JStudio_JParticle::TAdaptor_particle::~TAdaptor_particle()
@@ -186,126 +39,35 @@ JStudio_JParticle::TAdaptor_particle::~TAdaptor_particle()
 	}
 }
 
-/*
- * --INFO--
- * Address:	800058B8
- * Size:	000144
+/**
+ * @note Address: 0x800058B8
+ * @note Size: 0x144
  */
 void JStudio_JParticle::TAdaptor_particle::adaptor_do_prepare(const JStudio::TObject* p1)
 {
-	static TSetVariableValue_immediate aoData[18]
-	    = { TSetVariableValue_immediate(0, 0.0f),    TSetVariableValue_immediate(1, 0.0f),
-		    TSetVariableValue_immediate(2, 0.0f),    TSetVariableValue_immediate(3, 0.0f),
-		    TSetVariableValue_immediate(4, 0.0f),    TSetVariableValue_immediate(5, 0.0f),
-		    TSetVariableValue_immediate(6, 1.0f),    TSetVariableValue_immediate(7, 1.0f),
-		    TSetVariableValue_immediate(8, 1.0f),    TSetVariableValue_immediate(9, 255.0f),
-		    TSetVariableValue_immediate(10, 255.0f), TSetVariableValue_immediate(11, 255.0f),
-		    TSetVariableValue_immediate(12, 255.0f), TSetVariableValue_immediate(13, 255.0f),
-		    TSetVariableValue_immediate(14, 255.0f), TSetVariableValue_immediate(15, 255.0f),
-		    TSetVariableValue_immediate(16, 255.0f), TSetVariableValue_immediate(0xFFFFFFFF, __float_nan) };
+	static TSetVariableValue_immediate aoData[18] = {
+		TSetVariableValue_immediate(0, 0.0f),    TSetVariableValue_immediate(1, 0.0f),    TSetVariableValue_immediate(2, 0.0f),
+		TSetVariableValue_immediate(3, 0.0f),    TSetVariableValue_immediate(4, 0.0f),    TSetVariableValue_immediate(5, 0.0f),
+		TSetVariableValue_immediate(6, 1.0f),    TSetVariableValue_immediate(7, 1.0f),    TSetVariableValue_immediate(8, 1.0f),
+		TSetVariableValue_immediate(9, 255.0f),  TSetVariableValue_immediate(10, 255.0f), TSetVariableValue_immediate(11, 255.0f),
+		TSetVariableValue_immediate(12, 255.0f), TSetVariableValue_immediate(13, 255.0f), TSetVariableValue_immediate(14, 255.0f),
+		TSetVariableValue_immediate(15, 255.0f), TSetVariableValue_immediate(16, 255.0f), TSetVariableValue_immediate(0xFFFFFFFF, NAN)
+	};
 	adaptor_setVariableValue_immediate(aoData);
 	mCallback.mObject = p1;
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x30(r1)
-	  mflr      r0
-	  stw       r0, 0x34(r1)
-	  stmw      r22, 0x8(r1)
-	  mr        r30, r3
-	  mr        r31, r4
-	  lbz       r0, -0x7900(r13)
-	  extsb.    r0, r0
-	  bne-      .loc_0x11C
-	  lis       r3, 0x8051
-	  lis       r4, 0x804F
-	  lfs       f3, 0x48B0(r3)
-	  subi      r23, r4, 0x3E0
-	  lfs       f0, -0x7FF8(r2)
-	  li        r24, 0x1
-	  lfs       f2, -0x8000(r2)
-	  li        r22, 0
-	  lfs       f1, -0x7FFC(r2)
-	  li        r25, 0x2
-	  li        r26, 0x3
-	  li        r27, 0x4
-	  li        r28, 0x5
-	  li        r29, 0x6
-	  li        r12, 0x7
-	  li        r11, 0x8
-	  li        r10, 0x9
-	  li        r9, 0xA
-	  li        r8, 0xB
-	  li        r7, 0xC
-	  li        r6, 0xD
-	  li        r5, 0xE
-	  li        r4, 0xF
-	  li        r3, 0x10
-	  li        r0, -0x1
-	  stw       r22, 0x0(r23)
-	  stfs      f2, 0x4(r23)
-	  stw       r24, 0x8(r23)
-	  stfs      f2, 0xC(r23)
-	  stw       r25, 0x10(r23)
-	  stfs      f2, 0x14(r23)
-	  stw       r26, 0x18(r23)
-	  stfs      f2, 0x1C(r23)
-	  stw       r27, 0x20(r23)
-	  stfs      f2, 0x24(r23)
-	  stw       r28, 0x28(r23)
-	  stfs      f2, 0x2C(r23)
-	  stw       r29, 0x30(r23)
-	  stfs      f1, 0x34(r23)
-	  stw       r12, 0x38(r23)
-	  stfs      f1, 0x3C(r23)
-	  stw       r11, 0x40(r23)
-	  stfs      f1, 0x44(r23)
-	  stw       r10, 0x48(r23)
-	  stfs      f0, 0x4C(r23)
-	  stw       r9, 0x50(r23)
-	  stfs      f0, 0x54(r23)
-	  stw       r8, 0x58(r23)
-	  stfs      f0, 0x5C(r23)
-	  stw       r7, 0x60(r23)
-	  stfs      f0, 0x64(r23)
-	  stw       r6, 0x68(r23)
-	  stfs      f0, 0x6C(r23)
-	  stw       r5, 0x70(r23)
-	  stfs      f0, 0x74(r23)
-	  stw       r4, 0x78(r23)
-	  stfs      f0, 0x7C(r23)
-	  stw       r3, 0x80(r23)
-	  stfs      f0, 0x84(r23)
-	  stw       r0, 0x88(r23)
-	  stfs      f3, 0x8C(r23)
-	  stb       r24, -0x7900(r13)
-
-	.loc_0x11C:
-	  lis       r4, 0x804F
-	  mr        r3, r30
-	  subi      r4, r4, 0x3E0
-	  bl        0x7898
-	  stw       r31, 0x184(r30)
-	  lmw       r22, 0x8(r1)
-	  lwz       r0, 0x34(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x30
-	  blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	800059FC
- * Size:	000004
+/**
+ * @note Address: 0x800059FC
+ * @note Size: 0x4
  */
 void JStudio_JParticle::TAdaptor_particle::adaptor_do_end(const JStudio::TObject*) { }
 
-/*
- * --INFO--
- * Address:	80005A00
- * Size:	0000B0
+/**
+ * @note Address: 0x80005A00
+ * @note Size: 0xB0
  */
-void JStudio_JParticle::TAdaptor_particle::adaptor_do_update(const JStudio::TObject* p1, unsigned long p2)
+void JStudio_JParticle::TAdaptor_particle::adaptor_do_update(const JStudio::TObject* p1, u32 p2)
 {
 	if (_190 == 0) {
 		return;
@@ -330,12 +92,11 @@ void JStudio_JParticle::TAdaptor_particle::adaptor_do_update(const JStudio::TObj
 	_194 = 0;
 }
 
-/*
- * --INFO--
- * Address:	80005AB0
- * Size:	000030
+/**
+ * @note Address: 0x80005AB0
+ * @note Size: 0x30
  */
-void JStudio_JParticle::TAdaptor_particle::adaptor_do_BEGIN(JStudio::data::TEOperationData operation, const void* p2, unsigned long p3)
+void JStudio_JParticle::TAdaptor_particle::adaptor_do_BEGIN(JStudio::data::TEOperationData operation, const void* p2, u32 p3)
 {
 	switch (operation) {
 	case JStudio::data::TEOD_Unknown_01:
@@ -344,13 +105,11 @@ void JStudio_JParticle::TAdaptor_particle::adaptor_do_BEGIN(JStudio::data::TEOpe
 	}
 }
 
-/*
- * --INFO--
- * Address:	80005AE0
- * Size:	000048
+/**
+ * @note Address: 0x80005AE0
+ * @note Size: 0x48
  */
-void JStudio_JParticle::TAdaptor_particle::adaptor_do_BEGIN_FADE_IN(JStudio::data::TEOperationData operation, const void* p2,
-                                                                    unsigned long p3)
+void JStudio_JParticle::TAdaptor_particle::adaptor_do_BEGIN_FADE_IN(JStudio::data::TEOperationData operation, const void* p2, u32 p3)
 {
 	switch (operation) {
 	case JStudio::data::TEOD_Unknown_02:
@@ -359,12 +118,11 @@ void JStudio_JParticle::TAdaptor_particle::adaptor_do_BEGIN_FADE_IN(JStudio::dat
 	}
 }
 
-/*
- * --INFO--
- * Address:	80005B28
- * Size:	00002C
+/**
+ * @note Address: 0x80005B28
+ * @note Size: 0x2C
  */
-void JStudio_JParticle::TAdaptor_particle::adaptor_do_END(JStudio::data::TEOperationData operation, const void* p2, unsigned long p3)
+void JStudio_JParticle::TAdaptor_particle::adaptor_do_END(JStudio::data::TEOperationData operation, const void* p2, u32 p3)
 {
 	if (operation != JStudio::data::TEOD_Unknown_01) {
 		return;
@@ -373,17 +131,15 @@ void JStudio_JParticle::TAdaptor_particle::adaptor_do_END(JStudio::data::TEOpera
 	if (emitter == nullptr) {
 		return;
 	}
-	emitter->_F4 |= 1;
-	emitter->_24 = 1;
+	emitter->mFlags |= 1;
+	emitter->mMaxFrame = 1;
 }
 
-/*
- * --INFO--
- * Address:	80005B54
- * Size:	000048
+/**
+ * @note Address: 0x80005B54
+ * @note Size: 0x48
  */
-void JStudio_JParticle::TAdaptor_particle::adaptor_do_END_FADE_OUT(JStudio::data::TEOperationData operation, const void* p2,
-                                                                   unsigned long p3)
+void JStudio_JParticle::TAdaptor_particle::adaptor_do_END_FADE_OUT(JStudio::data::TEOperationData operation, const void* p2, u32 p3)
 {
 	switch (operation) {
 	case JStudio::data::TEOD_Unknown_02:
@@ -392,12 +148,11 @@ void JStudio_JParticle::TAdaptor_particle::adaptor_do_END_FADE_OUT(JStudio::data
 	}
 }
 
-/*
- * --INFO--
- * Address:	80005B9C
- * Size:	000014
+/**
+ * @note Address: 0x80005B9C
+ * @note Size: 0x14
  */
-void JStudio_JParticle::TAdaptor_particle::adaptor_do_PARTICLE(JStudio::data::TEOperationData operation, const void* p2, unsigned long p3)
+void JStudio_JParticle::TAdaptor_particle::adaptor_do_PARTICLE(JStudio::data::TEOperationData operation, const void* p2, u32 p3)
 {
 	switch (operation) {
 	case JStudio::data::TEOD_Unknown_19:
@@ -406,12 +161,11 @@ void JStudio_JParticle::TAdaptor_particle::adaptor_do_PARTICLE(JStudio::data::TE
 	}
 }
 
-/*
- * --INFO--
- * Address:	80005BB0
- * Size:	000068
+/**
+ * @note Address: 0x80005BB0
+ * @note Size: 0x68
  */
-void JStudio_JParticle::TAdaptor_particle::adaptor_do_PARENT(JStudio::data::TEOperationData operation, const void* p2, unsigned long p3)
+void JStudio_JParticle::TAdaptor_particle::adaptor_do_PARENT(JStudio::data::TEOperationData operation, const void* p2, u32 p3)
 {
 	switch (operation) {
 	case JStudio::data::TEOD_Unknown_18:
@@ -424,13 +178,11 @@ void JStudio_JParticle::TAdaptor_particle::adaptor_do_PARENT(JStudio::data::TEOp
 	}
 }
 
-/*
- * --INFO--
- * Address:	80005C18
- * Size:	000080
+/**
+ * @note Address: 0x80005C18
+ * @note Size: 0x80
  */
-void JStudio_JParticle::TAdaptor_particle::adaptor_do_PARENT_NODE(JStudio::data::TEOperationData operation, const void* p2,
-                                                                  unsigned long p3)
+void JStudio_JParticle::TAdaptor_particle::adaptor_do_PARENT_NODE(JStudio::data::TEOperationData operation, const void* p2, u32 p3)
 {
 	switch (operation) {
 	case JStudio::data::TEOD_Unknown_18:
@@ -447,13 +199,11 @@ void JStudio_JParticle::TAdaptor_particle::adaptor_do_PARENT_NODE(JStudio::data:
 	}
 }
 
-/*
- * --INFO--
- * Address:	80005C98
- * Size:	000020
+/**
+ * @note Address: 0x80005C98
+ * @note Size: 0x20
  */
-void JStudio_JParticle::TAdaptor_particle::adaptor_do_PARENT_ENABLE(JStudio::data::TEOperationData operation, const void* p2,
-                                                                    unsigned long p3)
+void JStudio_JParticle::TAdaptor_particle::adaptor_do_PARENT_ENABLE(JStudio::data::TEOperationData operation, const void* p2, u32 p3)
 {
 	switch (operation) {
 	case JStudio::data::TEOD_Unknown_02:
@@ -462,13 +212,92 @@ void JStudio_JParticle::TAdaptor_particle::adaptor_do_PARENT_ENABLE(JStudio::dat
 	}
 }
 
-/*
- * --INFO--
- * Address:	80005CB8
- * Size:	00035C
+/**
+ * @note Address: 0x80005CB8
+ * @note Size: 0x35C
  */
 void JStudio_JParticle::TAdaptor_particle::TJPACallback_::execute(JPABaseEmitter* emitter)
 {
+	bool check = false;
+	if (emitter->isFlag(JPAEMIT_Unk4) && (emitter->mAlivePtclBase.getNum() + emitter->mAlivePtclChld.getNum()) == 0) {
+		check = true;
+	}
+
+	if (check) {
+		mAdaptor->mEmitterManager->forceDeleteEmitter(emitter);
+		mAdaptor->mEmitter = nullptr;
+		mAdaptor->_18C     = 0;
+		mAdaptor->_190     = 0;
+		mAdaptor->_194     = 0;
+		return;
+	}
+
+	f64 val1 = mAdaptor->_190; // u32 stored as f64
+	f64 val2 = mAdaptor->_194; // u32 stored as f64
+
+	f64 alpha = 1.0;
+	switch (mAdaptor->_18C) {
+	case 1:
+		alpha = val2 / val1;
+		break;
+	case 3:
+		alpha = (val1 - val2) / val1;
+		break;
+	}
+
+	JStudio::TControl* ctrl = static_cast<JStudio::TControl*>(mObject->mControl); // r28
+
+	Vec srts[3]; // 0x64
+	mAdaptor->adaptor_getVariableValue_Vec(&srts[2], sauVariableValue_3_TRANSLATION_XYZ);
+	mAdaptor->adaptor_getVariableValue_Vec(&srts[1], sauVariableValue_3_ROTATION_XYZ);
+	mAdaptor->adaptor_getVariableValue_Vec(&srts[0], sauVariableValue_3_SCALING_XYZ);
+
+	Vec* pos; // r29
+
+	if (!mAdaptor->_1A4) {
+		if (!ctrl->_74) {
+			pos = srts;
+		} else {
+			Vec outVec[3];
+			PSMTXMultVec(ctrl->_98, &srts[2], &outVec[0]);
+			outVec[1].x = srts[1].x;
+			outVec[1].y = ctrl->_90 + srts[1].y;
+			outVec[1].z = srts[1].z;
+			pos         = outVec;
+		}
+		emitter->mGlobalTrs = pos[0];
+
+		JPAGetXYZRotateMtx(65536.0 * (pos[1].x / 360.0), 65536.0 * (pos[1].y / 360.0), 65536.0 * (pos[1].z / 360.0), emitter->mGlobalRot);
+		JGeometry::TVec3f scaleVec(pos[2]);
+		emitter->setScale(scaleVec);
+	} else {
+		Mtx mtx;
+		if (!JStudio_JStage::transform_toGlobalFromLocal(mtx, *(JStudio::TControl::TTransform_position*)(&srts[0]), mAdaptor->_19C,
+		                                                 mAdaptor->_1A0)) {
+			if (emitter) {
+				emitter->setFlag(JPAEMIT_IsDemoOn);
+			}
+			return;
+		}
+
+		JPASetRMtxSTVecfromMtx(mtx, emitter->mGlobalRot, &emitter->mGlobalScl, &emitter->mGlobalTrs);
+		emitter->setGlobalScale(emitter->mGlobalScl.x, emitter->mGlobalScl.y);
+	}
+
+	GXColor color;
+	mAdaptor->adaptor_getVariableValue_GXColor(&color, sauVariableValue_4_COLOR_RGBA);
+	emitter->setGlobalPrmColor(color.r, color.g, color.b);
+
+	u8 emitAlpha = 255;
+	alpha *= (f64)color.a;
+	if (alpha < 255.0) {
+		emitAlpha = (u8)alpha;
+	}
+
+	emitter->mGlobalPrmClr.a = emitAlpha;
+
+	mAdaptor->adaptor_getVariableValue_GXColor(&color, sauVariableValue_4_COLOR1_RGBA);
+	emitter->setGlobalEnvColor(color.r, color.g, color.b);
 	/*
 	.loc_0x0:
 	  stwu      r1, -0xC0(r1)
@@ -715,13 +544,32 @@ void JStudio_JParticle::TAdaptor_particle::TJPACallback_::execute(JPABaseEmitter
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80006014
- * Size:	0000E4
+/**
+ * @note Address: 0x80006014
+ * @note Size: 0xE4
  */
-void JStudio_JParticle::TAdaptor_particle::beginParticle_fadeIn_(unsigned long p1)
+void JStudio_JParticle::TAdaptor_particle::beginParticle_fadeIn_(u32 p1)
 {
+	if (mEmitter) {
+		mEmitterManager->forceDeleteEmitter(mEmitter);
+	}
+
+	JGeometry::TVec3f vec = (JGeometry::TVec3f) { 0.0f, 0.0f, 0.0f };
+
+	mEmitter = mEmitterManager->createSimpleEmitterID(vec, _188, (_188 >> 24) & 0xff, (_188 >> 16) & 0xff, &mCallback,
+	                                                  nullptr); // instruction order swap
+
+	if (mEmitter) {
+		mEmitter->setFlag(JPAEMIT_Unk7);
+		_18C = 1;
+
+		if (!p1) {
+			_18C = 2;
+		}
+
+		_190 = p1;
+		_194 = 0;
+	}
 	/*
 	stwu     r1, -0x30(r1)
 	mflr     r0
@@ -790,12 +638,11 @@ lbl_800060E0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800060F8
- * Size:	000118
+/**
+ * @note Address: 0x800060F8
+ * @note Size: 0x118
  */
-void JStudio_JParticle::TAdaptor_particle::endParticle_fadeOut_(unsigned long p1)
+void JStudio_JParticle::TAdaptor_particle::endParticle_fadeOut_(u32 p1)
 {
 	if (mEmitter == nullptr) {
 		return;
@@ -826,31 +673,3 @@ void JStudio_JParticle::TAdaptor_particle::endParticle_fadeOut_(unsigned long p1
 	_190 = (f64)p1 * (f64)_190 / (f64)v2;
 	_194 = _190 - p1;
 }
-
-/*
- * --INFO--
- * Address:	80006210
- * Size:	000004
- */
-void JPAEmitterCallBack::executeAfter(JPABaseEmitter*) { }
-
-/*
- * --INFO--
- * Address:	80006214
- * Size:	000004
- */
-void JPAEmitterCallBack::draw(JPABaseEmitter*) { }
-
-/*
- * --INFO--
- * Address:	80006218
- * Size:	000004
- */
-void JPAEmitterCallBack::drawAfter(JPABaseEmitter*) { }
-
-/*
- * --INFO--
- * Address:	8000621C
- * Size:	000004
- */
-void JPAEmitterCallBack::execute(JPABaseEmitter*) { }

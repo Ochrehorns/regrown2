@@ -1,20 +1,9 @@
 #include "types.h"
 #include "SweepPrune.h"
 
-/*
-    Generated from dpostproc
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_8051A5D0
-    lbl_8051A5D0:
-        .4byte 0x00000000
-        .4byte 0x00000000
-*/
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
 inline void SweepPrune::Node::insertBefore(SweepPrune::Node* prev)
 {
@@ -31,10 +20,9 @@ inline void SweepPrune::Node::insertBefore(SweepPrune::Node* prev)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000020
+/**
+ * @note Address: N/A
+ * @note Size: 0x20
  */
 inline void SweepPrune::Node::insertAfter(SweepPrune::Node* next)
 {
@@ -48,13 +36,12 @@ inline void SweepPrune::Node::insertAfter(SweepPrune::Node* next)
 	}
 }
 
-/*
+/**
  * Inserts `this` into the node chain `chain` according to its
  * radius. The chain is assumed to be pre-sorted as such.
  *
- * --INFO--
- * Address:	8023C5B0
- * Size:	0001C8
+ * @note Address: 0x8023C5B0
+ * @note Size: 0x1C8
  */
 void SweepPrune::Node::insertSort(SweepPrune::Node& chain)
 {
@@ -75,29 +62,11 @@ void SweepPrune::Node::insertSort(SweepPrune::Node& chain)
 				}
 			}
 			return;
-			// Interesting differences between the above loop and this one:
-			// Node* iNode = mNext;
-			// while (true) {
-			// 	if (iNode == nullptr) {
-			// 		return;
-			// 	}
-			// 	if (iNode->mRadius <= mRadius) break;
-			// 	iNode = iNode->mNext;
-			// }
-			// if (mNext ) {
-			// 	mNext->mPrev = mPrev;
-			// }
-			// if (mPrev ) {
-			// 	mPrev->mNext = mNext;
-			// }
-			// mNext = nullptr;
-			// mPrev = nullptr;
-			// insertAfter(iNode);
-			// return;
 		}
 		if (mPrev == nullptr) {
 			return;
 		}
+
 		if (mPrev->mRadius < mRadius) {
 			for (Node* iNode = mPrev; iNode != nullptr; iNode = iNode->mPrev) {
 				if (iNode->mRadius >= mRadius) {
@@ -114,12 +83,15 @@ void SweepPrune::Node::insertSort(SweepPrune::Node& chain)
 				}
 			}
 		}
+
 		return;
 	}
+
 	if (chain.mPrev == nullptr) {
 		insertAfter(&chain);
 		return;
 	}
+
 	Node* next = nullptr;
 	for (Node* prev = chain.mPrev; prev != nullptr; prev = prev->mPrev) {
 		next = prev;
@@ -128,18 +100,19 @@ void SweepPrune::Node::insertSort(SweepPrune::Node& chain)
 			return;
 		}
 	}
+
 	if (next == nullptr) {
 		return;
 	}
+
 	insertAfter(next);
 }
 
-/*
+/**
  * __ct
  *
- * --INFO--
- * Address:	8023C778
- * Size:	000070
+ * @note Address: 0x8023C778
+ * @note Size: 0x70
  */
 SweepPrune::Object::Object()
 {
@@ -169,12 +142,11 @@ SweepPrune::Object::Object()
 	mMinX.mObject = this;
 }
 
-/*
+/**
  * __ct__Q210SweepPrune5WorldFv
  *
- * --INFO--
- * Address:	8023C7E8
- * Size:	00002C
+ * @note Address: 0x8023C7E8
+ * @note Size: 0x2C
  */
 SweepPrune::World::World()
 {
@@ -188,25 +160,23 @@ SweepPrune::World::World()
 	mZNode.mPrev   = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00003C
+/**
+ * @note Address: N/A
+ * @note Size: 0x3C
  */
 SweepPrune::World::~World()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8023C814
- * Size:	000148
+/**
+ * @note Address: 0x8023C814
+ * @note Size: 0x148
  */
 void SweepPrune::World::resolve(SweepPrune::World::ResolveArg& arg)
 {
-	arg._08 = 0;
-	arg._04 = 0;
+	arg.mCollisionCount  = 0;
+	arg.mComparisonCount = 0;
 
 	Object* o1;
 	Node* n1 = mXNode.mPrev;
@@ -216,7 +186,7 @@ void SweepPrune::World::resolve(SweepPrune::World::ResolveArg& arg)
 		prev = nullptr;
 		o1   = n1->mObject;
 		for (Node* n2 = n1->mPrev; n2 != nullptr; n2 = n2->mPrev) {
-			arg._04++;
+			arg.mComparisonCount++;
 			Object* o2 = n2->mObject;
 			if ((o1 == o2) && (n2->mFlags == 1))
 				break;
@@ -224,14 +194,14 @@ void SweepPrune::World::resolve(SweepPrune::World::ResolveArg& arg)
 				if (prev == nullptr) {
 					prev = n2;
 				}
-				float min1 = o1->mMinZ.mRadius;
-				float max1 = o1->mMaxZ.mRadius;
-				float min2 = o2->mMinZ.mRadius;
-				float max2 = o2->mMaxZ.mRadius;
+				f32 min1 = o1->mMinZ.mRadius;
+				f32 max1 = o1->mMaxZ.mRadius;
+				f32 min2 = o2->mMinZ.mRadius;
+				f32 max2 = o2->mMaxZ.mRadius;
 				if (((((min1 <= min2) && (min2 <= max1)) || ((min1 <= max2 && (max2 <= max1)))) || ((min2 <= min1 && (min1 <= max2))))
 				    || ((min2 <= max1 && (max1 <= max2)))) {
 					arg.mCallback->invoke(o1, o2);
-					arg._08++;
+					arg.mCollisionCount++;
 				}
 			}
 		}

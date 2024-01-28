@@ -2,57 +2,15 @@
 #include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JKernel/JKRDisposer.h"
 #include "JSystem/JUtility/JUTTexture.h"
-#include "JSystem/JUtility/JUTException.h"
 #include "JSystem/ResTIMG.h"
 #include "LoadResource.h"
-#include "types.h"
-
-/*
-    Generated from dpostproc
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_804839F0
-    lbl_804839F0:
-        .4byte 0x67616D65
-        .4byte 0x49636F6E
-        .4byte 0x54657874
-        .4byte 0x7572652E
-        .4byte 0x63707000
-    .global lbl_80483A04
-    lbl_80483A04:
-        .4byte 0x6661696C
-        .4byte 0x65642074
-        .4byte 0x6F206F70
-        .4byte 0x656E205B
-        .4byte 0x25735D0A
-        .4byte 0x00000000
-    .global lbl_80483A1C
-    lbl_80483A1C:
-        .asciz "P2Assert"
-        .skip 3
-    .global lbl_80483A28
-    lbl_80483A28:
-        .asciz "illegal index [%d] [0..%d)\n"
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__Q34Game11IconTexture3Mgr
-    __vt__Q34Game11IconTexture3Mgr:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q34Game11IconTexture3MgrFv
-    .global __vt__Q34Game11IconTexture6Loader
-    __vt__Q34Game11IconTexture6Loader:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q34Game11IconTexture6LoaderFv
-*/
+#include "P2Macros.h"
 
 namespace Game {
 
-/*
- * --INFO--
- * Address:	80233484
- * Size:	000048
+/**
+ * @note Address: 0x80233484
+ * @note Size: 0x48
  */
 IconTexture::Loader::Loader()
     : JKRDisposer()
@@ -61,10 +19,9 @@ IconTexture::Loader::Loader()
 	mNode    = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	802334CC
- * Size:	00008C
+/**
+ * @note Address: 0x802334CC
+ * @note Size: 0x8C
  */
 IconTexture::Loader::~Loader()
 {
@@ -76,10 +33,9 @@ IconTexture::Loader::~Loader()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80233558
- * Size:	000084
+/**
+ * @note Address: 0x80233558
+ * @note Size: 0x84
  */
 void IconTexture::Loader::loadResource(char* path)
 {
@@ -92,17 +48,15 @@ void IconTexture::Loader::loadResource(char* path)
 	JUT_PANICLINE(45, "failed to open [%s]\n", path);
 }
 
-/*
- * --INFO--
- * Address:	802335DC
- * Size:	000030
+/**
+ * @note Address: 0x802335DC
+ * @note Size: 0x30
  */
 ResTIMG* IconTexture::Loader::getResTIMG(char* path) { return (ResTIMG*)mArchive->getResource(path); }
 
-/*
- * --INFO--
- * Address:	8023360C
- * Size:	000048
+/**
+ * @note Address: 0x8023360C
+ * @note Size: 0x48
  */
 IconTexture::Mgr::Mgr()
     : JKRDisposer()
@@ -112,9 +66,8 @@ IconTexture::Mgr::Mgr()
 }
 
 /* __dt__Q34Game11IconTexture3MgrFv
- * --INFO--
- * Address:	80233654
- * Size:	00008C
+ * @note Address: 0x80233654
+ * @note Size: 0x8C
  */
 IconTexture::Mgr::~Mgr()
 {
@@ -125,10 +78,9 @@ IconTexture::Mgr::~Mgr()
 	mCount = 0;
 }
 
-/*
- * --INFO--
- * Address:	802336E0
- * Size:	000084
+/**
+ * @note Address: 0x802336E0
+ * @note Size: 0x84
  */
 void IconTexture::Mgr::create(int count)
 {
@@ -137,10 +89,9 @@ void IconTexture::Mgr::create(int count)
 	mCount    = count;
 }
 
-/*
- * --INFO--
- * Address:	80233764
- * Size:	00008C
+/**
+ * @note Address: 0x80233764
+ * @note Size: 0x8C
  */
 void IconTexture::Mgr::setTexture(int index, ResTIMG* resource)
 {
@@ -148,10 +99,9 @@ void IconTexture::Mgr::setTexture(int index, ResTIMG* resource)
 	mTextures[index].storeTIMG(resource, (u8)'\0');
 }
 
-/*
- * --INFO--
- * Address:	802337F0
- * Size:	00002C
+/**
+ * @note Address: 0x802337F0
+ * @note Size: 0x2C
  */
 JUTTexture* IconTexture::Mgr::getTexture(int index)
 {

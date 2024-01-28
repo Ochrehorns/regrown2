@@ -7,10 +7,9 @@ namespace OtakaraBase {
 
 const char basestatename[] = "246-OtakaraBaseState";
 
-/*
- * --INFO--
- * Address:	802B37A8
- * Size:	0004D4
+/**
+ * @note Address: 0x802B37A8
+ * @note Size: 0x4D4
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -34,23 +33,21 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateBombTurn);
 }
 
-/*
- * --INFO--
- * Address:	802B3C7C
- * Size:	00005C
+/**
+ * @note Address: 0x802B3C7C
+ * @note Size: 0x5C
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mTargetVelocity = Vector3f(0.0f);
 	enemy->deathProcedure();
 	enemy->disableEvent(0, EB_Cullable);
-	enemy->startMotion(10, nullptr);
+	enemy->startMotion(OTAKARAANIM_Dead, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B3CD8
- * Size:	000044
+/**
+ * @note Address: 0x802B3CD8
+ * @note Size: 0x44
  */
 void StateDead::exec(EnemyBase* enemy)
 {
@@ -59,41 +56,38 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B3D1C
- * Size:	000004
+/**
+ * @note Address: 0x802B3D1C
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase*) { }
 
-/*
- * --INFO--
- * Address:	802B3D20
- * Size:	00007C
+/**
+ * @note Address: 0x802B3D20
+ * @note Size: 0x7C
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = static_cast<Obj*>(enemy);
+	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->_2C4            = 0.0f;
 	ota->mEscapeSfxTimer = 0.0f;
 	ota->mTargetVelocity = Vector3f(0.0f);
 
 	ota->setEmotionExcitement();
-	ota->startMotion(3, nullptr);
+	ota->startMotion(OTAKARAANIM_Attack, nullptr);
 	ota->_2D0 = 1;
 	ota->startChargeEffect();
 }
 
-/*
- * --INFO--
- * Address:	802B3DA0
- * Size:	000290
+/**
+ * @note Address: 0x802B3DA0
+ * @note Size: 0x290
  */
 void StateFlick::exec(EnemyBase* enemy)
 {
-	Obj* ota = static_cast<Obj*>(enemy);
-	if (ota->_2C4 > static_cast<Parms*>(ota->mParms)->mProperParms.mFp10.mValue) {
+	Obj* ota = OBJ(enemy);
+	if (ota->_2C4 > CG_PROPERPARMS(ota).mNormalAttack.mValue) {
 		ota->finishMotion();
 	}
 	ota->_2C4 += sys->mDeltaTime;
@@ -105,10 +99,10 @@ void StateFlick::exec(EnemyBase* enemy)
 	EnemyAnimKeyEvent* event = ota->mCurAnim;
 	if (event->mIsPlaying) {
 		if ((u32)event->mType == 2) {
-			Parms* parms = static_cast<Parms*>(ota->mParms);
-			EnemyFunc::flickStickPikmin(ota, parms->mGeneral.mShakeRateMaybe.mValue, parms->mGeneral.mShakeKnockback.mValue,
-			                            parms->mGeneral.mShakeDamage.mValue, -1000.0f, nullptr);
-			ota->mToFlick = 0.0f;
+			Parms* parms = CG_PARMS(ota);
+			EnemyFunc::flickStickPikmin(ota, parms->mGeneral.mShakeChance.mValue, parms->mGeneral.mShakeKnockback.mValue,
+			                            parms->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
+			ota->mFlickTimer = 0.0f;
 
 		} else if ((u32)event->mType == 3) {
 			ota->_2C8 = 0.0f;
@@ -139,36 +133,33 @@ void StateFlick::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B4038
- * Size:	000024
+/**
+ * @note Address: 0x802B4038
+ * @note Size: 0x24
  */
 void StateFlick::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802B405C
- * Size:	000050
+/**
+ * @note Address: 0x802B405C
+ * @note Size: 0x50
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = static_cast<Obj*>(enemy);
+	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->mEscapeSfxTimer = 0.0f;
 	ota->mTargetVelocity = Vector3f(0.0f);
 	ota->mTargetCreature = nullptr;
-	ota->startMotion(0, nullptr);
+	ota->startMotion(OTAKARAANIM_Wait, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B40AC
- * Size:	0001CC
+/**
+ * @note Address: 0x802B40AC
+ * @note Size: 0x1CC
  */
 void StateWait::exec(EnemyBase* enemy)
 {
-	Obj* ota = static_cast<Obj*>(enemy);
+	Obj* ota = OBJ(enemy);
 	if (ota->isMovePositionSet(false)) {
 		Vector3f movePos = ota->mMovePosition;
 		Vector3f pos     = ota->getPosition();
@@ -202,42 +193,39 @@ void StateWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B4278
- * Size:	000004
+/**
+ * @note Address: 0x802B4278
+ * @note Size: 0x4
  */
 void StateWait::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802B427C
- * Size:	000048
+/**
+ * @note Address: 0x802B427C
+ * @note Size: 0x48
  */
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota        = static_cast<Obj*>(enemy);
+	Obj* ota        = OBJ(enemy);
 	ota->mNextState = OTA_Null;
 	ota->setEmotionExcitement();
-	ota->startMotion(1, nullptr);
+	ota->startMotion(OTAKARAANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B42C4
- * Size:	000244
+/**
+ * @note Address: 0x802B42C4
+ * @note Size: 0x244
  */
 void StateMove::exec(EnemyBase* enemy)
 {
-	Obj* ota = static_cast<Obj*>(enemy);
+	Obj* ota = OBJ(enemy);
 	if (ota->isMovePositionSet(false)) {
 		Vector3f movePos = Vector3f(ota->mMovePosition);
 		Vector3f pos     = ota->getPosition();
 		f32 angle        = angXZ(movePos.x, movePos.z, pos);
 		if (FABS(angDist(angle, ota->getFaceDir())) <= THIRD_PI) {
-			Parms* parms = static_cast<Parms*>(ota->mParms);
-			EnemyFunc::walkToTarget(ota, movePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mRotationalAccel.mValue,
-			                        parms->mGeneral.mRotationalSpeed.mValue);
+			Parms* parms = CG_PARMS(ota);
+			EnemyFunc::walkToTarget(ota, movePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
+			                        parms->mGeneral.mMaxTurnAngle.mValue);
 			if (ota->isTakeTreasure()) {
 				ota->mNextState      = OTA_Take;
 				ota->mTargetVelocity = Vector3f(0.0f);
@@ -273,35 +261,32 @@ void StateMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B4508
- * Size:	000024
+/**
+ * @note Address: 0x802B4508
+ * @note Size: 0x24
  */
 void StateMove::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802B452C
- * Size:	000058
+/**
+ * @note Address: 0x802B452C
+ * @note Size: 0x58
  */
 void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = static_cast<Obj*>(enemy);
+	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->mTargetVelocity = Vector3f(0.0f);
 	ota->setEmotionExcitement();
-	ota->startMotion(2, nullptr);
+	ota->startMotion(OTAKARAANIM_Turn, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B4584
- * Size:	000264
+/**
+ * @note Address: 0x802B4584
+ * @note Size: 0x264
  */
 void StateTurn::exec(EnemyBase* enemy)
 {
-	Obj* ota = static_cast<Obj*>(enemy);
+	Obj* ota = OBJ(enemy);
 	if (ota->isMovePositionSet(false)) {
 		Vector2f XZ;
 		XZ.x          = ota->mMovePosition.x;
@@ -340,39 +325,36 @@ void StateTurn::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B47E8
- * Size:	000024
+/**
+ * @note Address: 0x802B47E8
+ * @note Size: 0x24
  */
 void StateTurn::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802B480C
- * Size:	000050
+/**
+ * @note Address: 0x802B480C
+ * @note Size: 0x50
  */
 void StateTake::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = static_cast<Obj*>(enemy);
+	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->mEscapeSfxTimer = 0.0f;
 	ota->setEmotionExcitement();
-	ota->startMotion(4, nullptr);
+	ota->startMotion(OTAKARAANIM_TakeItem, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B485C
- * Size:	000154
+/**
+ * @note Address: 0x802B485C
+ * @note Size: 0x154
  */
 void StateTake::exec(EnemyBase* enemy)
 {
-	Obj* ota         = static_cast<Obj*>(enemy);
+	Obj* ota         = OBJ(enemy);
 	Vector3f movePos = Vector3f(ota->mMovePosition);
-	Parms* parms     = static_cast<Parms*>(ota->mParms);
-	EnemyFunc::walkToTarget(ota, movePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mRotationalAccel.mValue,
-	                        parms->mGeneral.mRotationalSpeed.mValue);
+	Parms* parms     = CG_PARMS(ota);
+	EnemyFunc::walkToTarget(ota, movePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
+	                        parms->mGeneral.mMaxTurnAngle.mValue);
 	EnemyAnimKeyEvent* event = ota->mCurAnim;
 	if (event->mIsPlaying) {
 		if ((u32)event->mType == 2) {
@@ -393,35 +375,32 @@ void StateTake::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B49B0
- * Size:	000024
+/**
+ * @note Address: 0x802B49B0
+ * @note Size: 0x24
  */
 void StateTake::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802B49D4
- * Size:	000048
+/**
+ * @note Address: 0x802B49D4
+ * @note Size: 0x48
  */
 void StateItemWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = static_cast<Obj*>(enemy);
+	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->mEscapeSfxTimer = 0.0f;
 	ota->mTargetVelocity = Vector3f(0.0f);
-	ota->startMotion(5, nullptr);
+	ota->startMotion(OTAKARAANIM_ItemWait, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B4A1C
- * Size:	0001D8
+/**
+ * @note Address: 0x802B4A1C
+ * @note Size: 0x1D8
  */
 void StateItemWait::exec(EnemyBase* enemy)
 {
-	Obj* ota = static_cast<Obj*>(enemy);
+	Obj* ota = OBJ(enemy);
 	if (ota->isMovePositionSet(true)) {
 		Vector3f movePos = ota->mMovePosition;
 		Vector3f pos     = ota->getPosition();
@@ -455,43 +434,40 @@ void StateItemWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B4BF4
- * Size:	000004
+/**
+ * @note Address: 0x802B4BF4
+ * @note Size: 0x4
  */
 void StateItemWait::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802B4BF8
- * Size:	000048
+/**
+ * @note Address: 0x802B4BF8
+ * @note Size: 0x48
  */
 void StateItemMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota        = static_cast<Obj*>(enemy);
+	Obj* ota        = OBJ(enemy);
 	ota->mNextState = OTA_Null;
 	ota->setEmotionExcitement();
-	ota->startMotion(6, nullptr);
+	ota->startMotion(OTAKARAANIM_ItemMove, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B4C40
- * Size:	000260
+/**
+ * @note Address: 0x802B4C40
+ * @note Size: 0x260
  */
 void StateItemMove::exec(EnemyBase* enemy)
 {
-	Obj* ota = static_cast<Obj*>(enemy);
+	Obj* ota = OBJ(enemy);
 
 	if (ota->isMovePositionSet(true)) {
 		Vector3f movePos = Vector3f(ota->mMovePosition);
 		Vector3f pos     = ota->getPosition();
 		f32 angle        = angXZ(movePos.x, movePos.z, pos);
 		if (FABS(angDist(angle, ota->getFaceDir())) <= THIRD_PI) {
-			Parms* parms = static_cast<Parms*>(ota->mParms);
-			EnemyFunc::walkToTarget(ota, movePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mRotationalAccel.mValue,
-			                        parms->mGeneral.mRotationalSpeed.mValue);
+			Parms* parms = CG_PARMS(ota);
+			EnemyFunc::walkToTarget(ota, movePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
+			                        parms->mGeneral.mMaxTurnAngle.mValue);
 		} else {
 			ota->mNextState      = OTA_ItemTurn;
 			ota->mTargetVelocity = Vector3f(0.0f);
@@ -530,35 +506,32 @@ void StateItemMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B4EA0
- * Size:	000024
+/**
+ * @note Address: 0x802B4EA0
+ * @note Size: 0x24
  */
 void StateItemMove::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802B4EC4
- * Size:	000058
+/**
+ * @note Address: 0x802B4EC4
+ * @note Size: 0x58
  */
 void StateItemTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = static_cast<Obj*>(enemy);
+	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->mTargetVelocity = Vector3f(0.0f);
 	ota->setEmotionExcitement();
-	ota->startMotion(7, nullptr);
+	ota->startMotion(OTAKARAANIM_ItemTurn, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B4F1C
- * Size:	000270
+/**
+ * @note Address: 0x802B4F1C
+ * @note Size: 0x270
  */
 void StateItemTurn::exec(EnemyBase* enemy)
 {
-	Obj* ota = static_cast<Obj*>(enemy);
+	Obj* ota = OBJ(enemy);
 
 	if (ota->isMovePositionSet(true)) {
 		Vector2f XZ;
@@ -599,40 +572,37 @@ void StateItemTurn::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B518C
- * Size:	000024
+/**
+ * @note Address: 0x802B518C
+ * @note Size: 0x24
  */
 void StateItemTurn::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802B51B0
- * Size:	00007C
+/**
+ * @note Address: 0x802B51B0
+ * @note Size: 0x7C
  */
 void StateItemFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = static_cast<Obj*>(enemy);
+	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->_2C4            = 0.0f;
 	ota->mEscapeSfxTimer = 0.0f;
 	ota->mTargetVelocity = Vector3f(0.0f);
 	ota->setEmotionExcitement();
-	ota->startMotion(8, nullptr);
+	ota->startMotion(OTAKARAANIM_ItemAttack, nullptr);
 	ota->_2D0 = 1;
 	ota->startChargeEffect();
 }
 
-/*
- * --INFO--
- * Address:	802B522C
- * Size:	000254
+/**
+ * @note Address: 0x802B522C
+ * @note Size: 0x254
  */
 void StateItemFlick::exec(EnemyBase* enemy)
 {
-	Obj* ota = static_cast<Obj*>(enemy);
-	if (ota->_2C4 > static_cast<Parms*>(ota->mParms)->mProperParms.mFp11.mValue) {
+	Obj* ota = OBJ(enemy);
+	if (ota->_2C4 > CG_PROPERPARMS(ota).mOtakaraAttack.mValue) {
 		ota->finishMotion();
 	}
 	ota->_2C4 += sys->mDeltaTime;
@@ -640,10 +610,10 @@ void StateItemFlick::exec(EnemyBase* enemy)
 	EnemyAnimKeyEvent* event = ota->mCurAnim;
 	if (event->mIsPlaying) {
 		if ((u32)event->mType == 2) {
-			Parms* parms = static_cast<Parms*>(ota->mParms);
-			EnemyFunc::flickStickPikmin(ota, parms->mGeneral.mShakeRateMaybe.mValue, parms->mGeneral.mShakeKnockback.mValue,
-			                            parms->mGeneral.mShakeDamage.mValue, -1000.0f, nullptr);
-			ota->mToFlick = 0.0f;
+			Parms* parms = CG_PARMS(ota);
+			EnemyFunc::flickStickPikmin(ota, parms->mGeneral.mShakeChance.mValue, parms->mGeneral.mShakeKnockback.mValue,
+			                            parms->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
+			ota->mFlickTimer = 0.0f;
 
 		} else if ((u32)event->mType == 3) {
 			ota->_2C8 = 0.0f;
@@ -674,36 +644,33 @@ void StateItemFlick::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B5480
- * Size:	000024
+/**
+ * @note Address: 0x802B5480
+ * @note Size: 0x24
  */
 void StateItemFlick::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802B54A4
- * Size:	00005C
+/**
+ * @note Address: 0x802B54A4
+ * @note Size: 0x5C
  */
 void StateItemDrop::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = static_cast<Obj*>(enemy);
+	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->mEscapeSfxTimer = 0.0f;
 	ota->mTargetVelocity = Vector3f(0.0f);
 	ota->setEmotionExcitement();
-	ota->startMotion(9, nullptr);
+	ota->startMotion(OTAKARAANIM_DropItem, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B5500
- * Size:	0001F8
+/**
+ * @note Address: 0x802B5500
+ * @note Size: 0x1F8
  */
 void StateItemDrop::exec(EnemyBase* enemy)
 {
-	Obj* ota = static_cast<Obj*>(enemy);
+	Obj* ota = OBJ(enemy);
 
 	EnemyAnimKeyEvent* event = ota->mCurAnim;
 	if (event->mIsPlaying) {
@@ -736,40 +703,37 @@ void StateItemDrop::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B56F8
- * Size:	00002C
+/**
+ * @note Address: 0x802B56F8
+ * @note Size: 0x2C
  */
 void StateItemDrop::cleanup(EnemyBase* enemy)
 {
-	Obj* ota  = static_cast<Obj*>(enemy);
+	Obj* ota  = OBJ(enemy);
 	ota->_2E8 = 0.0f;
 	ota->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	802B5724
- * Size:	000048
+/**
+ * @note Address: 0x802B5724
+ * @note Size: 0x48
  */
 void StateBombWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = static_cast<Obj*>(enemy);
+	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->_2E8            = 0.0f;
 	ota->mTargetVelocity = Vector3f(0.0f);
-	ota->startMotion(5, nullptr);
+	ota->startMotion(OTAKARAANIM_ItemWait, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B576C
- * Size:	0001C0
+/**
+ * @note Address: 0x802B576C
+ * @note Size: 0x1C0
  */
 void StateBombWait::exec(EnemyBase* enemy)
 {
-	Obj* ota = static_cast<Obj*>(enemy);
+	Obj* ota = OBJ(enemy);
 
 	if (ota->mTargetCreature == nullptr) {
 		ota->kill(nullptr);
@@ -798,34 +762,31 @@ void StateBombWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B592C
- * Size:	000004
+/**
+ * @note Address: 0x802B592C
+ * @note Size: 0x4
  */
 void StateBombWait::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802B5930
- * Size:	000048
+/**
+ * @note Address: 0x802B5930
+ * @note Size: 0x48
  */
 void StateBombMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota        = static_cast<Obj*>(enemy);
+	Obj* ota        = OBJ(enemy);
 	ota->mNextState = OTA_Null;
 	ota->setEmotionExcitement();
-	ota->startMotion(6, nullptr);
+	ota->startMotion(OTAKARAANIM_ItemMove, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B5978
- * Size:	0001E8
+/**
+ * @note Address: 0x802B5978
+ * @note Size: 0x1E8
  */
 void StateBombMove::exec(EnemyBase* enemy)
 {
-	Obj* ota = static_cast<Obj*>(enemy);
+	Obj* ota = OBJ(enemy);
 
 	if (ota->mTargetCreature == nullptr) {
 		ota->kill(nullptr);
@@ -840,9 +801,9 @@ void StateBombMove::exec(EnemyBase* enemy)
 		Vector3f pos         = ota->getPosition();
 		f32 angle            = angXZ(creaturePos.x, creaturePos.z, pos);
 		if (FABS(angDist(angle, ota->getFaceDir())) <= THIRD_PI) {
-			Parms* parms = static_cast<Parms*>(ota->mParms);
-			EnemyFunc::walkToTarget(ota, creaturePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mRotationalAccel.mValue,
-			                        parms->mGeneral.mRotationalSpeed.mValue);
+			Parms* parms = CG_PARMS(ota);
+			EnemyFunc::walkToTarget(ota, creaturePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
+			                        parms->mGeneral.mMaxTurnAngle.mValue);
 		} else {
 			ota->mNextState      = OTA_BombTurn;
 			ota->mTargetVelocity = Vector3f(0.0f);
@@ -861,35 +822,32 @@ void StateBombMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B5B60
- * Size:	000024
+/**
+ * @note Address: 0x802B5B60
+ * @note Size: 0x24
  */
 void StateBombMove::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802B5B84
- * Size:	000058
+/**
+ * @note Address: 0x802B5B84
+ * @note Size: 0x58
  */
 void StateBombTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = static_cast<Obj*>(enemy);
+	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->mTargetVelocity = Vector3f(0.0f);
 	ota->setEmotionExcitement();
-	ota->startMotion(7, nullptr);
+	ota->startMotion(OTAKARAANIM_ItemTurn, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B5BDC
- * Size:	000224
+/**
+ * @note Address: 0x802B5BDC
+ * @note Size: 0x224
  */
 void StateBombTurn::exec(EnemyBase* enemy)
 {
-	Obj* ota = static_cast<Obj*>(enemy);
+	Obj* ota = OBJ(enemy);
 
 	if (ota->mTargetCreature == nullptr) {
 		ota->kill(nullptr);
@@ -923,10 +881,9 @@ void StateBombTurn::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B5E00
- * Size:	000024
+/**
+ * @note Address: 0x802B5E00
+ * @note Size: 0x24
  */
 void StateBombTurn::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 } // namespace OtakaraBase

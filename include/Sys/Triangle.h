@@ -18,12 +18,19 @@ struct VertexTable;
 
 struct Triangle {
 	struct SphereSweep {
-		Vector3f _00;        // _00
-		Sys::Sphere mSphere; // _0C
-		u8 _1C;              // _1C
-		Vector3f mNormal;    // _20
-		f32 _2C;             // _2C
-		Vector3f _30;        // _30
+		enum SweepType { ST_SphereInsidePlane = 0, ST_SphereIntersectPlane = 1, ST_EdgeIntersect = 2 };
+
+		inline SphereSweep()
+		    : mSweepType(ST_SphereInsidePlane)
+		{
+		}
+
+		Vector3f mStartPos;          // _00
+		Sys::Sphere mSphere;         // _0C
+		u8 mSweepType;               // _1C
+		Vector3f mNormal;            // _20
+		f32 mDistanceFromRadius;     // _2C
+		Vector3f mIntersectionPoint; // _30
 	};
 
 	Triangle();
@@ -49,6 +56,8 @@ struct Triangle {
 	bool intersect(VertexTable&, BoundBox2d&);
 	bool intersect(Edge&, Vector3f&);
 	bool intersectOptimistic(Sphere&, Vector3f&);
+
+	static bool debug;
 
 	Vector3i mVertices;   // _00, _04, _08 	- addresses of each vertex in vertex table
 	Plane mTrianglePlane; // _0C				- ax + by + cz + d form of plane triangle lies in

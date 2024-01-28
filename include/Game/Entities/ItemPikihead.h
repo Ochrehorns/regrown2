@@ -10,43 +10,53 @@ namespace Game {
 namespace ItemPikihead {
 struct Item;
 
-enum cState {
-	PIKIHEADSTATE_Fall = 0,
-	PIKIHEADSTATE_Bury,
-	PIKIHEADSTATE_Wait,
-	PIKIHEADSTATE_Tane,
-	PIKIHEADSTATE_Hatuga,
-	PIKIHEADSTATE_Grow,
-	PIKIHEADSTATE_Siore,
-	PIKIHEADSTATE_COUNT
+enum StateID {
+	PIKIHEAD_Fall   = 0,
+	PIKIHEAD_Bury   = 1,
+	PIKIHEAD_Wait   = 2,
+	PIKIHEAD_Tane   = 3,
+	PIKIHEAD_Hatuga = 4,
+	PIKIHEAD_Grow   = 5,
+	PIKIHEAD_Siore  = 6,
+	PIKIHEAD_StateCount, // 7
 };
 
 struct InitArg : public ItemInitArg {
-	inline InitArg(EPikiKind pikiKind, Vector3f& vec)
+
+	inline InitArg()
 	{
-		mPikminType = pikiKind;
-		_08         = vec;
-		_14         = 0;
-		_18         = 0;
-		_1C         = -1.0f;
+		mPikminType      = (EPikiKind)-1;
+		mVelocity        = Vector3f::zero;
+		mIsAlreadyBuried = false;
+		mHeadType        = Leaf;
+		_1C              = -1.0f;
 	}
 
-	inline InitArg(EPikiKind pikiKind, Vector3f& vec, u8 p3, int p4, f32 p5)
+	inline InitArg(EPikiKind pikiKind, Vector3f& vel)
 	{
-		mPikminType = pikiKind;
-		_08         = vec;
-		_14         = p3;
-		_18         = p4;
-		_1C         = -1.0f;
+		mPikminType      = pikiKind;
+		mVelocity        = vel;
+		mIsAlreadyBuried = false;
+		mHeadType        = Leaf;
+		_1C              = -1.0f;
+	}
+
+	inline InitArg(EPikiKind pikiKind, Vector3f& vel, bool isAlreadyBuried, int headType, f32 p5)
+	{
+		mPikminType      = pikiKind;
+		mVelocity        = vel;
+		mIsAlreadyBuried = isAlreadyBuried;
+		mHeadType        = headType;
+		_1C              = -1.0f;
 	}
 
 	virtual const char* getName() { return "ItemPikiHead::InitArg"; } // _08 (weak)
 
 	// _00     = VTBL
-	EPikiKind mPikminType; // _04, enum?
-	Vector3f _08;          // _08
-	u8 _14;                // _14
-	int _18;               // _18
+	EPikiKind mPikminType; // _04
+	Vector3f mVelocity;    // _08
+	bool mIsAlreadyBuried; // _14
+	int mHeadType;         // _18
 	f32 _1C;               // _1C
 };
 
@@ -67,127 +77,122 @@ struct State : public ItemState<Item> {
 
 	// _00     = VTBL
 	// _00-_0C = ItemState
+	char* mName; // _0C, unused but educated guess
 };
 
 struct BuryState : public State {
 	inline BuryState()
-	    : State(PIKIHEADSTATE_Bury)
+	    : State(PIKIHEAD_Bury)
 	{
 	}
 
-	virtual void init(Item* item, StateArg* arg);                            // _08
+	virtual void init(Item* item, StateArg* settings);                       // _08
 	virtual void exec(Item* item);                                           // _0C
 	virtual void cleanup(Item* item);                                        // _10
 	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24
 
 	// _00     = VTBL
-	// _00-_0C = State
-	u32 _0C;        // _0C
+	// _00-_10 = State
 	bool mAnimDone; // _10
 	f32 mTimer;     // _14
 };
 
 struct FallState : public State {
 	inline FallState()
-	    : State(PIKIHEADSTATE_Fall)
+	    : State(PIKIHEAD_Fall)
 	{
 	}
 
-	virtual void init(Item* item, StateArg* arg);                   // _08
+	virtual void init(Item* item, StateArg* settings);              // _08
 	virtual void exec(Item* item);                                  // _0C
 	virtual void cleanup(Item* item);                               // _10
 	virtual void onBounce(Item*, Sys::Triangle*);                   // _28
 	virtual void onPlatCollision(Item* item, PlatEvent& platEvent); // _2C
 
 	// _00     = VTBL
-	// _00-_0C = State
-	u32 _0C; // _0C
+	// _00-_10 = State
 	f32 _10; // _10
 	f32 _14; // _14
 };
 
 struct GrowState : public State {
 	inline GrowState()
-	    : State(PIKIHEADSTATE_Grow)
+	    : State(PIKIHEAD_Grow)
 	{
 	}
 
-	virtual void init(Item* item, StateArg* arg);                            // _08
+	virtual void init(Item* item, StateArg* settings);                       // _08
 	virtual void exec(Item* item);                                           // _0C
 	virtual void cleanup(Item* item);                                        // _10
 	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24
 
 	// _00     = VTBL
-	// _00-_0C = State
-	u32 _0C; // _0C
+	// _00-_10 = State
 };
 
 struct HatugaState : public State {
 	inline HatugaState()
-	    : State(PIKIHEADSTATE_Hatuga)
+	    : State(PIKIHEAD_Hatuga)
 	{
 	}
 
-	virtual void init(Item* item, StateArg* arg);                            // _08
+	virtual void init(Item* item, StateArg* settings);                       // _08
 	virtual void exec(Item* item);                                           // _0C
 	virtual void cleanup(Item* item);                                        // _10
 	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24
 
 	// _00     = VTBL
-	// _00-_0C = State
-	u32 _0C; // _0C
+	// _00-_10 = State
 };
 
 struct SioreState : public State {
 	inline SioreState()
-	    : State(PIKIHEADSTATE_Siore)
+	    : State(PIKIHEAD_Siore)
 	{
 	}
 
-	virtual void init(Item* item, StateArg* arg);                            // _08
+	virtual void init(Item* item, StateArg* settings);                       // _08
 	virtual void exec(Item* item);                                           // _0C
 	virtual void cleanup(Item* item);                                        // _10
 	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24
 
 	// _00     = VTBL
-	// _00-_0C = State
-	u32 _0C;        // _0C
+	// _00-_10 = State
 	f32 mTimer;     // _10
 	bool mAnimDone; // _14
 };
 
 struct TaneState : public State {
 	inline TaneState()
-	    : State(PIKIHEADSTATE_Tane)
+	    : State(PIKIHEAD_Tane)
 	{
 	}
 
-	virtual void init(Item* item, StateArg* arg);                            // _08
+	virtual void init(Item* item, StateArg* settings);                       // _08
 	virtual void exec(Item* item);                                           // _0C
 	virtual void cleanup(Item* item);                                        // _10
 	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24
 
 	// _00     = VTBL
-	// _00-_0C = State
-	u32 _0C;        // _0C
+	// _00-_10 = State
 	bool mAnimDone; // _10
 	f32 mTimer;     // _14
 };
 
 struct WaitState : public State {
 	inline WaitState()
-	    : State(PIKIHEADSTATE_Wait)
+	    : State(PIKIHEAD_Wait)
 	{
 	}
 
-	virtual void init(Item* item, StateArg* arg);                            // _08
+	virtual void init(Item* item, StateArg* settings);                       // _08
 	virtual void exec(Item* item);                                           // _0C
 	virtual void cleanup(Item* item);                                        // _10
 	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24
 
 	// _00     = VTBL
 	// _00-_0C = State
-	u32 _0C[2]; // _0C
+	f32 mTimer; // _10
 };
 
 struct Item : public FSMItem<Item, FSM, State> {
@@ -197,14 +202,14 @@ struct Item : public FSMItem<Item, FSM, State> {
 	virtual void onKill(CreatureKillArg* settings);              // _34
 	virtual void doSimulation(f32);                              // _4C
 	virtual void getLODSphere(Sys::Sphere& lodSphere);           // _140
-	virtual char* getCreatureName();                             // _1A8 (weak)
+	virtual char* getCreatureName() { return "Pikihead"; }       // _1A8 (weak)
 	virtual void makeTrMatrix();                                 // _1C4
 	virtual void doAI();                                         // _1C8
 	virtual void changeMaterial();                               // _1D0
 	virtual bool interactFue(InteractFue&);                      // _1F4
 	virtual void updateBoundSphere();                            // _210
 	virtual void onSetPosition();                                // _21C
-	virtual void onKeyEvent(const SysShape::KeyEvent& keyEvent); // _220 (weak)
+	virtual void onKeyEvent(const SysShape::KeyEvent& keyEvent); // _220
 
 	bool needSave();
 	void cacheSave(Stream& output);
@@ -215,7 +220,7 @@ struct Item : public FSMItem<Item, FSM, State> {
 	// _00-_1E0 = FSMItem
 	efx::TPkEffectTane* mEfxTane; // _1E0
 	f32 _1E4;                     // _1E4
-	Vector3f _1E8;                // _1E8
+	Vector3f mEfxPosition;        // _1E8
 	u16 mColor;                   // _1F4
 	u16 mHeadType;                // _1F6
 };
@@ -225,7 +230,7 @@ struct Mgr : public FixedSizeItemMgr<Item> {
 
 	virtual void doSimpleDraw(Viewport*);                                             // _20
 	virtual void onLoadResources();                                                   // _48
-	virtual u32 generatorGetID();                                                     // _58 (weak)
+	virtual u32 generatorGetID() { return 'pkhd'; }                                   // _58 (weak)
 	virtual Item* generatorBirth(Vector3f& pos, Vector3f& rot, GenItemParm* genParm); // _5C
 	virtual void onCreateModel(SysShape::Model* model);                               // _A0
 	virtual Item* birth();                                                            // _A4
@@ -233,11 +238,9 @@ struct Mgr : public FixedSizeItemMgr<Item> {
 	virtual void* getNext(void*);                                                     // _B0 (weak, thunk at _88)
 	virtual void* getStart();                                                         // _B4 (weak, thunk at _8C)
 	virtual void* getEnd();                                                           // _B8 (weak, thunk at _90)
-	virtual ~Mgr();                                                                   // _BC (weak)
 
 	// _00     = VTBL
 	// _00-_7C = FixedSizeItemMgr
-	u8 _7C[0x4]; // _7C, unknown
 };
 
 extern Mgr* mgr;

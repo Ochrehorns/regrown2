@@ -1,13 +1,12 @@
-#include "Dolphin/math.h"
+#include "math.h"
 #include "JSystem/JMath.h"
 #include "types.h"
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000D4
+/**
+ * @note Address: N/A
+ * @note Size: 0xD4
  */
-// void atan___Q25JMath18TAtanTable<1024, float> CFf()
+// void atan___Q25JMath18TAtanTable<1024, f32> CFf()
 f32 JMath::TAtanTable<1024, f32>::atan_(f32) const
 {
 	// UNUSED FUNCTION
@@ -26,12 +25,11 @@ f32 orderfloats(f32 x)
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	80035108
- * Size:	000258
+/**
+ * @note Address: 0x80035108
+ * @note Size: 0x258
  */
-// void atan2___Q25JMath18TAtanTable<1024, float> CFff()
+// void atan2___Q25JMath18TAtanTable<1024, f32> CFff()
 f32 JMath::TAtanTable<1024, f32>::atan2_(f32 y, f32 x) const { return (y >= 0.0f ? calc(y, x) : calcInverse(y, x)); }
 
 namespace JMath {

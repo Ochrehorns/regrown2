@@ -11,10 +11,9 @@
 namespace Game {
 namespace BlackMan {
 
-/*
- * --INFO--
- * Address:	803A3AF0
- * Size:	000174
+/**
+ * @note Address: 0x803A3AF0
+ * @note Size: 0x174
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -30,10 +29,9 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateTired(WRAITH_Tired));
 }
 
-/*
- * --INFO--
- * Address:	803A3C64
- * Size:	00003C
+/**
+ * @note Address: 0x803A3C64
+ * @note Size: 0x3C
  */
 StateWalk::StateWalk(int stateID)
     : State(stateID)
@@ -41,38 +39,36 @@ StateWalk::StateWalk(int stateID)
 	mName = "walk";
 }
 
-/*
- * --INFO--
- * Address:	803A3CA0
- * Size:	000080
+/**
+ * @note Address: 0x803A3CA0
+ * @note Size: 0x80
  */
 void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	bool check;
-	if (wraith->mTyre == nullptr || wraith->_2E0 == 2) {
+	if (wraith->mTyre == nullptr || wraith->mEscapePhase == 2) {
 		check = false;
 	} else {
 		check = true;
 	}
 
 	if (check) {
-		wraith->startMotion(6, nullptr);
+		wraith->startMotion(WRAITHANIM_Move, nullptr);
 	} else {
-		wraith->startMotion(8, nullptr);
+		wraith->startMotion(WRAITHANIM_Run, nullptr);
 	}
 
 	wraith->createTraceEffect();
 }
 
-/*
- * --INFO--
- * Address:	803A3D20
- * Size:	0001D4
+/**
+ * @note Address: 0x803A3D20
+ * @note Size: 0x1D4
  */
 void StateWalk::exec(EnemyBase* enemy)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	wraith->walkFunc();
 	if (wraith->mHealth <= 0.0f) {
 		transit(wraith, WRAITH_Dead, nullptr);
@@ -100,35 +96,33 @@ void StateWalk::exec(EnemyBase* enemy)
 		case KEYEVENT_2:
 		case KEYEVENT_3:
 			Vector3f position = wraith->getPosition();
-			if (wraith->getCurrAnimIndex() == 11) {
+			if (wraith->getCurrAnimIndex() == WRAITHANIM_Walk) {
 				cameraMgr->startVibration(3, position, 2);
-				rumbleMgr->startRumble(8, position, 2);
+				rumbleMgr->startRumble(8, position, RUMBLEID_Both);
 			}
 
-			if (wraith->getCurrAnimIndex() == 8) {
+			if (wraith->getCurrAnimIndex() == WRAITHANIM_Run) {
 				cameraMgr->startVibration(6, position, 2);
-				rumbleMgr->startRumble(8, position, 2);
+				rumbleMgr->startRumble(8, position, RUMBLEID_Both);
 			}
 			break;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A3EF4
- * Size:	000024
+/**
+ * @note Address: 0x803A3EF4
+ * @note Size: 0x24
  */
 void StateWalk::cleanup(EnemyBase* enemy)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	wraith->fadeTraceEffect();
 }
 
-/*
- * --INFO--
- * Address:	803A3F18
- * Size:	00003C
+/**
+ * @note Address: 0x803A3F18
+ * @note Size: 0x3C
  */
 StateDead::StateDead(int stateID)
     : State(stateID)
@@ -136,30 +130,28 @@ StateDead::StateDead(int stateID)
 	mName = "dead";
 }
 
-/*
- * --INFO--
- * Address:	803A3F54
- * Size:	000064
+/**
+ * @note Address: 0x803A3F54
+ * @note Size: 0x64
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mCurrentVelocity = Vector3f(0.0f);
 	enemy->mTargetVelocity  = Vector3f(0.0f);
-	enemy->startMotion(2, nullptr);
+	enemy->startMotion(WRAITHANIM_Dead, nullptr);
 
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	wraith->deadTraceEffect();
 	wraith->deathProcedure();
 }
 
-/*
- * --INFO--
- * Address:	803A3FB8
- * Size:	0000FC
+/**
+ * @note Address: 0x803A3FB8
+ * @note Size: 0xFC
  */
 void StateDead::exec(EnemyBase* enemy)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	if (wraith->mCurAnim->mIsPlaying) {
 		Vector3f position = wraith->getPosition();
 		switch (wraith->mCurAnim->mType) {
@@ -167,24 +159,23 @@ void StateDead::exec(EnemyBase* enemy)
 		case KEYEVENT_3:
 		case KEYEVENT_4:
 			cameraMgr->startVibration(12, position, 2);
-			rumbleMgr->startRumble(14, position, 2);
+			rumbleMgr->startRumble(14, position, RUMBLEID_Both);
 			break;
 		case KEYEVENT_5:
 			wraith->deadEffect();
 			break;
 		case KEYEVENT_END:
 			cameraMgr->startVibration(17, position, 2);
-			rumbleMgr->startRumble(15, position, 2);
+			rumbleMgr->startRumble(15, position, RUMBLEID_Both);
 			wraith->kill(nullptr);
 			break;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A40B4
- * Size:	00003C
+/**
+ * @note Address: 0x803A40B4
+ * @note Size: 0x3C
  */
 StateFreeze::StateFreeze(int stateID)
     : State(stateID)
@@ -192,21 +183,20 @@ StateFreeze::StateFreeze(int stateID)
 	mName = "freeze";
 }
 
-/*
- * --INFO--
- * Address:	803A40F0
- * Size:	000090
+/**
+ * @note Address: 0x803A40F0
+ * @note Size: 0x90
  */
 void StateFreeze::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	wraith->collisionStOn();
 
 	bool check = false;
-	if (enemy->getCurrAnimIndex() == 4) {
+	if (enemy->getCurrAnimIndex() == WRAITHANIM_Flick2) {
 		check = true;
 	}
-	enemy->startMotion(1, nullptr);
+	enemy->startMotion(WRAITHANIM_Bend2, nullptr);
 	if (check) {
 		enemy->setMotionFrame(3.0f);
 	}
@@ -215,14 +205,13 @@ void StateFreeze::init(EnemyBase* enemy, StateArg* stateArg)
 	enemy->mTargetVelocity  = Vector3f(0.0f);
 }
 
-/*
- * --INFO--
- * Address:	803A4180
- * Size:	0002F4
+/**
+ * @note Address: 0x803A4180
+ * @note Size: 0x2F4
  */
 void StateFreeze::exec(EnemyBase* enemy)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	wraith->mFreezeTimer++;
 	if (wraith->mHealth <= 0.0f) {
 		transit(wraith, WRAITH_Dead, nullptr);
@@ -239,11 +228,11 @@ void StateFreeze::exec(EnemyBase* enemy)
 		if ((u32)wraith->mCurAnim->mType == KEYEVENT_2) {
 			Vector3f position = wraith->getPosition();
 			cameraMgr->startVibration(12, position, 2);
-			rumbleMgr->startRumble(14, position, 2);
+			rumbleMgr->startRumble(14, position, RUMBLEID_Both);
 
 			f32 faceDir = wraith->getFaceDir();
-			position.x += 32.0f * pikmin2_sinf(faceDir) - 4.0f * pikmin2_cosf(faceDir);
-			position.z += 32.0f * pikmin2_cosf(faceDir) - 4.0f * pikmin2_sinf(faceDir);
+			position.x += 32.0f * sinf(faceDir) - 4.0f * cosf(faceDir);
+			position.z += 32.0f * cosf(faceDir) - 4.0f * sinf(faceDir);
 			wraith->createBounceEffect(position, 0.42f);
 
 		} else if ((u32)wraith->mCurAnim->mType == KEYEVENT_END) {
@@ -255,21 +244,19 @@ void StateFreeze::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A4474
- * Size:	000024
+/**
+ * @note Address: 0x803A4474
+ * @note Size: 0x24
  */
 void StateFreeze::cleanup(EnemyBase* enemy)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	wraith->collisionStOff();
 }
 
-/*
- * --INFO--
- * Address:	803A4498
- * Size:	00003C
+/**
+ * @note Address: 0x803A4498
+ * @note Size: 0x3C
  */
 StateBend::StateBend(int stateID)
     : State(stateID)
@@ -277,36 +264,34 @@ StateBend::StateBend(int stateID)
 	mName = "bend";
 }
 
-/*
- * --INFO--
- * Address:	803A44D4
- * Size:	000074
+/**
+ * @note Address: 0x803A44D4
+ * @note Size: 0x74
  */
 void StateBend::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	wraith->collisionStOn();
 
 	bool check = false;
-	if (enemy->getCurrAnimIndex() == 3) {
+	if (enemy->getCurrAnimIndex() == WRAITHANIM_Flick) {
 		check = true;
 	}
 
-	enemy->startMotion(0, nullptr);
+	enemy->startMotion(WRAITHANIM_Bend, nullptr);
 
 	if (check) {
 		enemy->setMotionFrame(5.0f);
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A4548
- * Size:	0001E8
+/**
+ * @note Address: 0x803A4548
+ * @note Size: 0x1E8
  */
 void StateBend::exec(EnemyBase* enemy)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	if (wraith->mHealth <= 0.0f) {
 		transit(wraith, WRAITH_Dead, nullptr);
 		return;
@@ -328,7 +313,7 @@ void StateBend::exec(EnemyBase* enemy)
 			wraith->bendEffect();
 			Vector3f position = wraith->getPosition();
 			cameraMgr->startVibration(12, position, 2);
-			rumbleMgr->startRumble(14, position, 2);
+			rumbleMgr->startRumble(14, position, RUMBLEID_Both);
 
 		} else if ((u32)wraith->mCurAnim->mType == KEYEVENT_END) {
 			wraith->collisionStOff();
@@ -347,21 +332,19 @@ void StateBend::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A4730
- * Size:	000024
+/**
+ * @note Address: 0x803A4730
+ * @note Size: 0x24
  */
 void StateBend::cleanup(EnemyBase* enemy)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	wraith->collisionStOff();
 }
 
-/*
- * --INFO--
- * Address:	803A4754
- * Size:	00003C
+/**
+ * @note Address: 0x803A4754
+ * @note Size: 0x3C
  */
 StateEscape::StateEscape(int stateID)
     : State(stateID)
@@ -369,34 +352,32 @@ StateEscape::StateEscape(int stateID)
 	mName = "escape";
 }
 
-/*
- * --INFO--
- * Address:	803A4790
- * Size:	0000B0
+/**
+ * @note Address: 0x803A4790
+ * @note Size: 0xB0
  */
 void StateEscape::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->startMotion(5, nullptr);
+	enemy->startMotion(WRAITHANIM_GetOff, nullptr);
 
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	wraith->escape();
 	wraith->collisionStOff();
 
 	PSM::EnemyMidBoss* soundObj = static_cast<PSM::EnemyMidBoss*>(wraith->mSoundObj);
 	PSM::checkMidBoss(soundObj);
 	if (soundObj != nullptr && soundObj->mAppearFlag) {
-		soundObj->jumpRequest(11);
+		soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_WaterwraithEscape);
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A4840
- * Size:	0002B4
+/**
+ * @note Address: 0x803A4840
+ * @note Size: 0x2B4
  */
 void StateEscape::exec(EnemyBase* enemy)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	Vector3f position;
 	if (wraith->mCurAnim->mIsPlaying) {
 		switch (wraith->mCurAnim->mType) {
@@ -408,18 +389,18 @@ void StateEscape::exec(EnemyBase* enemy)
 		case KEYEVENT_4:
 			position = wraith->getPosition();
 			cameraMgr->startVibration(17, position, 2);
-			rumbleMgr->startRumble(16, position, 2);
+			rumbleMgr->startRumble(16, position, RUMBLEID_Both);
 
 			f32 faceDir = wraith->getFaceDir();
-			position.x += -22.0f * pikmin2_sinf(faceDir) - 30.0f * pikmin2_cosf(faceDir);
-			position.z += -22.0f * pikmin2_cosf(faceDir) - 30.0f * pikmin2_sinf(faceDir);
+			position.x += -22.0f * sinf(faceDir) - 30.0f * cosf(faceDir);
+			position.z += -22.0f * cosf(faceDir) - 30.0f * sinf(faceDir);
 			wraith->createBounceEffect(position, 0.85f);
 			break;
 
 		case KEYEVENT_5:
 			position = wraith->getPosition();
 			cameraMgr->startVibration(17, position, 2);
-			rumbleMgr->startRumble(16, position, 2);
+			rumbleMgr->startRumble(16, position, RUMBLEID_Both);
 			break;
 
 		case KEYEVENT_END:
@@ -429,10 +410,9 @@ void StateEscape::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A4AF4
- * Size:	00003C
+/**
+ * @note Address: 0x803A4AF4
+ * @note Size: 0x3C
  */
 StateFall::StateFall(int stateID)
     : State(stateID)
@@ -440,34 +420,32 @@ StateFall::StateFall(int stateID)
 	mName = "fall";
 }
 
-/*
- * --INFO--
- * Address:	803A4B30
- * Size:	00004C
+/**
+ * @note Address: 0x803A4B30
+ * @note Size: 0x4C
  */
 void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->startMotion(13, nullptr);
+	enemy->startMotion(WRAITHANIM_Land, nullptr);
 	enemy->hardConstraintOn();
 	enemy->enableEvent(0, EB_NoInterrupt);
 }
 
-/*
- * --INFO--
- * Address:	803A4B7C
- * Size:	000178
+/**
+ * @note Address: 0x803A4B7C
+ * @note Size: 0x178
  */
 void StateFall::exec(EnemyBase* enemy)
 {
 	if (enemy->mCurAnim->mIsPlaying) {
 		if ((u32)enemy->mCurAnim->mType == KEYEVENT_2) {
-			static_cast<Obj*>(enemy)->appearFanfare();
+			OBJ(enemy)->appearFanfare();
 			Vector3f position = enemy->getPosition();
 			cameraMgr->startVibration(17, position, 2);
-			rumbleMgr->startRumble(14, position, 2);
+			rumbleMgr->startRumble(14, position, RUMBLEID_Both);
 
 		} else if ((u32)enemy->mCurAnim->mType == KEYEVENT_END) {
-			if (static_cast<Obj*>(enemy)->isFallEnd()) {
+			if (OBJ(enemy)->isFallEnd()) {
 				enemy->disableEvent(0, EB_NoInterrupt);
 				transit(enemy, WRAITH_Recover, nullptr);
 			}
@@ -479,7 +457,7 @@ void StateFall::exec(EnemyBase* enemy)
 	position.y += 20.0f;
 
 	f32 minY     = mapMgr->getMinY(position);
-	f32 someParm = static_cast<Obj*>(enemy)->getParms()->_A48;
+	f32 someParm = OBJ(enemy)->getParms()->_A48;
 	someParm += minY;
 
 	if (initY < someParm) {
@@ -487,10 +465,9 @@ void StateFall::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A4CF4
- * Size:	00003C
+/**
+ * @note Address: 0x803A4CF4
+ * @note Size: 0x3C
  */
 StateRecover::StateRecover(int stateID)
     : State(stateID)
@@ -498,36 +475,34 @@ StateRecover::StateRecover(int stateID)
 	mName = "recover";
 }
 
-/*
- * --INFO--
- * Address:	803A4D30
- * Size:	0000C8
+/**
+ * @note Address: 0x803A4D30
+ * @note Size: 0xC8
  */
 void StateRecover::init(EnemyBase* enemy, StateArg* stateArg)
 {
 
-	if (enemy->getCurrAnimIndex() != 13) {
+	if (enemy->getCurrAnimIndex() != WRAITHANIM_Land) {
 		PSM::EnemyMidBoss* soundObj = static_cast<PSM::EnemyMidBoss*>(enemy->mSoundObj);
 		PSM::checkMidBoss(soundObj);
 		if (soundObj != nullptr && soundObj->mAppearFlag) {
-			soundObj->jumpRequest(3);
+			soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_Attack);
 		}
 	}
 
-	enemy->startMotion(7, nullptr);
-	Obj* wraith = static_cast<Obj*>(enemy);
+	enemy->startMotion(WRAITHANIM_Recover, nullptr);
+	Obj* wraith = OBJ(enemy);
 	wraith->recoverFlick();
 	wraith->tyreUpEffect();
 }
 
-/*
- * --INFO--
- * Address:	803A4DF8
- * Size:	00016C
+/**
+ * @note Address: 0x803A4DF8
+ * @note Size: 0x16C
  */
 void StateRecover::exec(EnemyBase* enemy)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	wraith->recover();
 	if (wraith->isTyreDead()) {
 		transit(wraith, WRAITH_Escape, nullptr);
@@ -566,10 +541,9 @@ void StateRecover::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A4F64
- * Size:	00003C
+/**
+ * @note Address: 0x803A4F64
+ * @note Size: 0x3C
  */
 StateFlick::StateFlick(int stateID)
     : State(stateID)
@@ -577,76 +551,72 @@ StateFlick::StateFlick(int stateID)
 	mName = "flick";
 }
 
-/*
- * --INFO--
- * Address:	803A4FA0
- * Size:	000158
+/**
+ * @note Address: 0x803A4FA0
+ * @note Size: 0x158
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	bool check;
-	if (static_cast<Obj*>(enemy)->mTyre == nullptr || static_cast<Obj*>(enemy)->_2E0 == 2) {
+	if (OBJ(enemy)->mTyre == nullptr || OBJ(enemy)->mEscapePhase == 2) {
 		check = false;
 	} else {
 		check = true;
 	}
 
 	if (check) {
-		enemy->startMotion(3, nullptr);
+		enemy->startMotion(WRAITHANIM_Flick, nullptr);
 		PSM::EnemyMidBoss* soundObj = static_cast<PSM::EnemyMidBoss*>(enemy->mSoundObj);
 		PSM::checkMidBoss(soundObj);
 		if (soundObj != nullptr && soundObj->mAppearFlag) {
-			soundObj->jumpRequest(4);
+			soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_Flick);
 		}
 	} else {
-		enemy->startMotion(4, nullptr);
+		enemy->startMotion(WRAITHANIM_Flick2, nullptr);
 		PSM::EnemyMidBoss* soundObj = static_cast<PSM::EnemyMidBoss*>(enemy->mSoundObj);
 		PSM::checkMidBoss(soundObj);
 		if (soundObj != nullptr && soundObj->mAppearFlag) {
-			soundObj->jumpRequest(12);
+			soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_WaterwraithFlick);
 		}
 	}
 
-	static_cast<Obj*>(enemy)->createFlickEffect();
+	OBJ(enemy)->createFlickEffect();
 }
 
-/*
- * --INFO--
- * Address:	803A50F8
- * Size:	0000B8
+/**
+ * @note Address: 0x803A50F8
+ * @note Size: 0xB8
  */
 void StateFlick::exec(EnemyBase* enemy)
 {
-	if (static_cast<Obj*>(enemy)->isTyreDead()) {
+	if (OBJ(enemy)->isTyreDead()) {
 		transit(enemy, WRAITH_Escape, nullptr);
 		return;
 	}
 
 	if (enemy->mCurAnim->mIsPlaying) {
 		if ((u32)enemy->mCurAnim->mType == KEYEVENT_2) {
-			static_cast<Obj*>(enemy)->flick();
+			OBJ(enemy)->flick();
 
 		} else if ((u32)enemy->mCurAnim->mType == KEYEVENT_END) {
-			transit(enemy, static_cast<Obj*>(enemy)->mPostFlickState, nullptr);
+			transit(enemy, OBJ(enemy)->mPostFlickState, nullptr);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	803A51B0
- * Size:	000024
+/**
+ * @note Address: 0x803A51B0
+ * @note Size: 0x24
  */
 void StateFlick::cleanup(EnemyBase* enemy)
 {
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	wraith->fadeFlickEffect();
 }
 
-/*
- * --INFO--
- * Address:	803A51D4
- * Size:	00003C
+/**
+ * @note Address: 0x803A51D4
+ * @note Size: 0x3C
  */
 StateTired::StateTired(int stateID)
     : State(stateID)
@@ -654,22 +624,20 @@ StateTired::StateTired(int stateID)
 	mName = "tired";
 }
 
-/*
- * --INFO--
- * Address:	803A5210
- * Size:	00005C
+/**
+ * @note Address: 0x803A5210
+ * @note Size: 0x5C
  */
 void StateTired::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->startMotion(10, nullptr);
+	enemy->startMotion(WRAITHANIM_Wait2, nullptr);
 	enemy->mTargetVelocity = Vector3f(0.0f);
 	_10                    = 0;
 }
 
-/*
- * --INFO--
- * Address:	803A526C
- * Size:	0000C0
+/**
+ * @note Address: 0x803A526C
+ * @note Size: 0xC0
  */
 void StateTired::exec(EnemyBase* enemy)
 {
@@ -678,14 +646,14 @@ void StateTired::exec(EnemyBase* enemy)
 
 	if (enemy->mCurAnim->mIsPlaying) {
 		if ((u32)enemy->mCurAnim->mType == KEYEVENT_END) {
-			static_cast<Obj*>(enemy)->flick();
+			OBJ(enemy)->flick();
 			transit(enemy, WRAITH_Walk, nullptr);
 		}
 		return;
 	}
 
 	_10++;
-	Obj* wraith = static_cast<Obj*>(enemy);
+	Obj* wraith = OBJ(enemy);
 	if (_10 > wraith->getParms()->mProperParms.mStandStillTimerLength.mValue) {
 		enemy->finishMotion();
 	}

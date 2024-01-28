@@ -3,23 +3,22 @@
 
 namespace Game {
 
-/*
- * --INFO--
- * Address:	803019EC
- * Size:	00025C
+/**
+ * @note Address: 0x803019EC
+ * @note Size: 0x25C
  */
 void TyreTubeShadowNode::makeShadowSRT(JointShadowParm& shadowParm, Matrixf* mat)
 {
 	Vector3f matVecs[4];
-	mat->getBasis(0, matVecs[0]);
-	mat->getBasis(3, matVecs[3]);
+	matVecs[0] = Vector3f(mat->getColumn(0));
+	matVecs[3] = mat->getColumn(3);
 
-	Vector3f xVec = Vector3f(matVecs[0]);
+	Vector3f xVec = Vector3f(mat->getColumn(0));
 	xVec.normalise();
 	xVec       = xVec * shadowParm._18;
 	matVecs[0] = xVec;
 
-	matVecs[2] = cross(matVecs[0], shadowParm._0C);
+	matVecs[2] = cross(matVecs[0], shadowParm.mRotation);
 	matVecs[2].normalise();
 	matVecs[2].x = matVecs[2].x * shadowParm._1C;
 	matVecs[2].y = matVecs[2].y * shadowParm._1C;
@@ -34,11 +33,11 @@ void TyreTubeShadowNode::makeShadowSRT(JointShadowParm& shadowParm, Matrixf* mat
 		matVecs[1].y = (matVecs[3].y - minY) * 5.0f;
 	}
 
-	_1C->setBasis(0, matVecs[0]);
+	mMainMtx->setColumn(0, matVecs[0]);
 
-	_1C->setBasis(1, matVecs[1]);
-	_1C->setBasis(2, matVecs[2]);
-	_1C->setBasis(3, matVecs[3]);
+	mMainMtx->setColumn(1, matVecs[1]);
+	mMainMtx->setColumn(2, matVecs[2]);
+	mMainMtx->setColumn(3, matVecs[3]);
 	/*
 	stwu     r1, -0x40(r1)
 	mflr     r0
@@ -212,30 +211,28 @@ lbl_80301BC4:
 
 namespace Tyre {
 
-/*
- * --INFO--
- * Address:	80301C48
- * Size:	0000E4
+/**
+ * @note Address: 0x80301C48
+ * @note Size: 0xE4
  */
 TyreShadowMgr::TyreShadowMgr(Obj* obj)
 {
-	mObj      = obj;
-	_00       = 1.0f;
-	mRootNode = new JointShadowRootNode(obj);
+	mObj         = obj;
+	mGlobalScale = 1.0f;
+	mRootNode    = new JointShadowRootNode(obj);
 
-	mFrontShadow      = new TyreTubeShadowNode;
-	mFrontShadow->_18 = 2;
+	mFrontShadow              = new TyreTubeShadowNode;
+	mFrontShadow->mCylinderID = 2;
 	mRootNode->add(mFrontShadow);
 
-	mBackShadow      = new TyreTubeShadowNode;
-	mBackShadow->_18 = 2;
+	mBackShadow              = new TyreTubeShadowNode;
+	mBackShadow->mCylinderID = 2;
 	mRootNode->add(mBackShadow);
 }
 
-/*
- * --INFO--
- * Address:	80301D2C
- * Size:	000068
+/**
+ * @note Address: 0x80301D2C
+ * @note Size: 0x68
  */
 void TyreShadowMgr::init()
 {
@@ -244,25 +241,19 @@ void TyreShadowMgr::init()
 	mBackMatrix            = model->getJoint("tyreback")->getWorldMatrix();
 }
 
-/*
- * --INFO--
- * Address:	80301D94
- * Size:	0000B4
+/**
+ * @note Address: 0x80301D94
+ * @note Size: 0xB4
  */
 void TyreShadowMgr::update()
 {
 	JointShadowParm parm;
 	parm.mPosition = mObj->getPosition();
-	parm._0C       = Vector3f(0.0f, 1.0f, 0.0f);
+	parm.mRotation = Vector3f(0.0f, 1.0f, 0.0f);
 
-	f32 scale1 = 31.5f * _00;
-	f32 scale2 = 17.5f * _00;
-
-	parm.mShadowScale = 0.0f;
-	parm._24          = -17.5f;
-	parm._18          = scale1;
-	parm._1C          = scale2;
-
+	f32 scale1 = 31.5f * mGlobalScale;
+	f32 scale2 = 17.5f * mGlobalScale;
+	parm.setBoth(scale1, scale2);
 	mFrontShadow->makeShadowSRT(parm, mFrontMatrix);
 	mBackShadow->makeShadowSRT(parm, mBackMatrix);
 	/*

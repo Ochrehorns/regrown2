@@ -1,6 +1,7 @@
 #include "types.h"
 #include "stream.h"
 #include "string.h"
+#include "P2Macros.h"
 
 /*
  * --INFO--

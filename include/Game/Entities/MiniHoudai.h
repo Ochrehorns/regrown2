@@ -45,38 +45,38 @@ struct Obj : public EnemyBase {
 	Obj();
 
 	////////// VTABLE
-	virtual void onInit(CreatureInitArg* settings);                            // _30
-	virtual void onKill(CreatureKillArg* settings);                            // _34
-	virtual void doDirectDraw(Graphics& gfx);                                  // _50
-	virtual void getShadowParam(ShadowParam& settings);                        // _134
-	virtual ~Obj() { }                                                         // _1BC (weak)
-	virtual void setInitialSetting(EnemyInitialParamBase* params);             // _1C4
-	virtual void doUpdate();                                                   // _1CC
-	virtual void doUpdateCommon();                                             // _1D0
-	virtual void doUpdateCarcass();                                            // _1D4
-	virtual void doAnimationCullingOff();                                      // _1DC
-	virtual void doDebugDraw(Graphics& gfx);                                   // _1EC
-	virtual void initWalkSmokeEffect();                                        // _230
-	virtual WalkSmokeEffect::Mgr* getWalkSmokeEffectMgr();                     // _234
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID();                        // _258 (weak)
-	virtual void doGetLifeGaugeParam(LifeGaugeParam&);                         // _260
-	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part); // _278
-	virtual void doStartStoneState();                                          // _2A4
-	virtual void doFinishStoneState();                                         // _2A8
-	virtual void doStartEarthquakeFitState();                                  // _2B8
-	virtual void doFinishEarthquakeFitState();                                 // _2BC
-	virtual void startCarcassMotion();                                         // _2C4
-	virtual bool doBecomeCarcass();                                            // _2D0
-	virtual void doStartWaitingBirthTypeDrop();                                // _2E0
-	virtual void doFinishWaitingBirthTypeDrop();                               // _2E4
-	virtual f32 getDownSmokeScale();                                           // _2EC (weak)
-	virtual void doStartMovie();                                               // _2F0
-	virtual void doEndMovie();                                                 // _2F4
-	virtual void setFSM(FSM* fsm);                                             // _2F8
+	virtual void onInit(CreatureInitArg* settings);                                                // _30
+	virtual void onKill(CreatureKillArg* settings);                                                // _34
+	virtual void doDirectDraw(Graphics& gfx);                                                      // _50
+	virtual void getShadowParam(ShadowParam& settings);                                            // _134
+	virtual ~Obj() { }                                                                             // _1BC (weak)
+	virtual void setInitialSetting(EnemyInitialParamBase* params);                                 // _1C4
+	virtual void doUpdate();                                                                       // _1CC
+	virtual void doUpdateCommon();                                                                 // _1D0
+	virtual void doUpdateCarcass();                                                                // _1D4
+	virtual void doAnimationCullingOff();                                                          // _1DC
+	virtual void doDebugDraw(Graphics& gfx);                                                       // _1EC
+	virtual void initWalkSmokeEffect();                                                            // _230
+	virtual WalkSmokeEffect::Mgr* getWalkSmokeEffectMgr();                                         // _234
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() { return EnemyTypeID::EnemyID_MiniHoudai; } // _258 (weak)
+	virtual void doGetLifeGaugeParam(LifeGaugeParam&);                                             // _260
+	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part);                     // _278
+	virtual void doStartStoneState();                                                              // _2A4
+	virtual void doFinishStoneState();                                                             // _2A8
+	virtual void doStartEarthquakeFitState();                                                      // _2B8
+	virtual void doFinishEarthquakeFitState();                                                     // _2BC
+	virtual void startCarcassMotion();                                                             // _2C4
+	virtual bool doBecomeCarcass();                                                                // _2D0
+	virtual void doStartWaitingBirthTypeDrop();                                                    // _2E0
+	virtual void doFinishWaitingBirthTypeDrop();                                                   // _2E4
+	virtual f32 getDownSmokeScale() { return 0.9f; }                                               // _2EC (weak)
+	virtual void doStartMovie();                                                                   // _2F0
+	virtual void doEndMovie();                                                                     // _2F4
+	virtual void setFSM(FSM* fsm);                                                                 // _2F8
 	////////// VTABLE END
 
 	void updateCaution();
-	void getViewAngle();
+	f32 getViewAngle();
 	void resetWayPoint();
 	void setNearestWayPoint();
 	void setLinkWayPoint();
@@ -110,18 +110,21 @@ struct Obj : public EnemyBase {
 	void effectDrawOn();
 	void effectDrawOff();
 
+	void shotGunDoDebugDraw(Graphics&);
+	void setShotGunTarget(Vector3f&);
+
 	// _00 		= VTBL
 	// _00-_2B8	= EnemyBase
 	FSM* mFsm;                           // _2BC
 	WalkSmokeEffect::Mgr mWalkSmokeMgr;  // _2C0
-	f32 _2C8;                            // _2C8, caution?
+	f32 mHealthGaugeTimer;               // _2C8
 	f32 _2CC;                            // _2CC
-	f32 _2D0;                            // _2D0
+	f32 mUpdateTimer;                    // _2D0
 	StateID mNextState;                  // _2D4
 	Vector3f mTargetPosition;            // _2D8
-	Vector3f _2E4;                       // _2E4, shotgun target distance maybe?
-	WayPoint* _2F0;                      // _2F0
-	WayPoint* _2F4;                      // _2F4
+	Vector3f mWalkTargetPosition;        // _2E4, next point to walk to, either waypoint or home position
+	WayPoint* mNearestWaypoint;          // _2F0
+	WayPoint* mOldNearestWaypoint;       // _2F4
 	MiniHoudaiShotGunMgr* mShotgunMgr;   // _2F8
 	u8 _2FC[0x4];                        // _2FC, unknown
 	efx::TChibiCharge* mEfxCharge;       // _300
@@ -151,13 +154,15 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		inline ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mFp11(this, 'fp11', "Ž€–S ` ƒQ[ƒWoŒ»", 30.0f, 1.0f, 500.0f) // 'death ~ appearance of gauge'
-		    , mFp12(this, 'fp12', "ƒQ[ƒWoŒ» ` •œŠˆ", 10.0f, 1.0f, 500.0f) // 'appearance of gauge ~ resurrection'
+		    , mHealthGaugeTimer(this, 'fp11', "Ž€–S ` ƒQ[ƒWoŒ»", 30.0f, 1.0f,
+		                        500.0f) // 'death ~ appearance of gauge' (Time from death -> health gauge)
+		    , mRespawnRate(this, 'fp12', "ƒQ[ƒWoŒ» ` •œŠˆ", 10.0f, 1.0f,
+		                   500.0f) // 'appearance of gauge ~ resurrection' (Time from health gauge -> alive)
 		{
 		}
 
-		Parm<f32> mFp11; // _804
-		Parm<f32> mFp12; // _82C
+		Parm<f32> mHealthGaugeTimer; // _804
+		Parm<f32> mRespawnRate;      // _82C
 	};
 
 	Parms() { }
@@ -173,6 +178,18 @@ struct Parms : public EnemyParmsBase {
 	ProperParms mProperParms; // _7F8
 };
 
+enum AnimID {
+	MINIHOUDAIANIM_Walk    = 0,
+	MINIHOUDAIANIM_Search  = 1, // 'search1'
+	MINIHOUDAIANIM_Turn    = 2, // 'turn1'
+	MINIHOUDAIANIM_Attack  = 3, // 'attack1'
+	MINIHOUDAIANIM_Flick   = 4, // 'flick1'
+	MINIHOUDAIANIM_Dead    = 5, // 'dead1'
+	MINIHOUDAIANIM_Carry   = 6, // 'type5'
+	MINIHOUDAIANIM_Rebirth = 7,
+	MINIHOUDAIANIM_AnimCount, // 8
+};
+
 struct ProperAnimator : public EnemyAnimatorBase {
 	virtual ~ProperAnimator() { }                                   // _08 (weak)
 	virtual void setAnimMgr(SysShape::AnimMgr* mgr);                // _0C
@@ -185,17 +202,26 @@ struct ProperAnimator : public EnemyAnimatorBase {
 };
 
 struct MiniHoudaiShotGunNode : public CNode {
-	virtual ~MiniHoudaiShotGunNode(); // _08 (weak)
+	MiniHoudaiShotGunNode(Obj*);
 
-	void update();
+	virtual ~MiniHoudaiShotGunNode() { } // _08 (weak)
+
+	bool update();
+	void create();
+	void setPosition(Vector3f&);
+	void setVelocity(Vector3f&);
+	void startShotGun(bool);
+	void effectDrawOn();
+	void effectDrawOff();
+	void doDebugDraw(Graphics&);
 
 	// _00		= VTBL
 	// _00-_18 	= CNode
 	u8 _18;                      // _18
 	Obj* mOwner;                 // _1C
 	efx::TChibiShell* mEfxShell; // _20
-	Vector3f _24;                // _24
-	Vector3f _30;                // _30
+	Vector3f mPosition;          // _24
+	Vector3f mVelocity;          // _30
 };
 
 struct MiniHoudaiShotGunMgr {
@@ -215,25 +241,30 @@ struct MiniHoudaiShotGunMgr {
 	void doUpdateCommon();
 	void forceFinishShotGun();
 	Vector3f getShotGunPosition();
-	void searchShotGunRotation();
-	void returnShotGunRotation();
+	bool searchShotGunRotation();
+	bool returnShotGunRotation();
 	void rotateVertical(J3DJoint*);
 	void effectDrawOn();
 	void effectDrawOff();
+	void doDebugDraw(Graphics&);
 
-	Obj* mOwner;                // _00
-	u8 _04[0xC];                // _04, unknown
-	Matrixf* _10;               // _10
-	Vector3f mTargetPosition;   // _14
-	u8 _20[0xC];                // _20, unknown
-	MiniHoudaiShotGunNode* _2C; // _2C
-	MiniHoudaiShotGunNode* _30; // _30
+	Obj* mOwner;                           // _00
+	bool mIsShotGunRotation;               // _04
+	bool mIsShotGunLockedOn;               // _05
+	bool mIsShotGunFinished;               // _06
+	f32 mShellSpeed;                       // _08
+	f32 mAngle;                            // _0C
+	Matrixf* mHeadMtx;                     // _10
+	Vector3f mTargetPosition;              // _14
+	u8 _20[0xC];                           // _20, unknown
+	MiniHoudaiShotGunNode* mActiveNodes;   // _2C
+	MiniHoudaiShotGunNode* mInactiveNodes; // _30
 };
 
 /////////////////////////////////////////////////////////////////
 // STATE MACHINE DEFINITIONS
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -256,9 +287,9 @@ struct StateAttack : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -270,9 +301,9 @@ struct StateDead : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -284,9 +315,9 @@ struct StateFlick : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -298,9 +329,9 @@ struct StateLost : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -312,9 +343,9 @@ struct StateRebirth : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -326,9 +357,9 @@ struct StateTurn : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -340,9 +371,9 @@ struct StateTurnHome : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -354,9 +385,9 @@ struct StateTurnPath : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -368,9 +399,9 @@ struct StateWalk : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -382,9 +413,9 @@ struct StateWalkHome : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -396,9 +427,9 @@ struct StateWalkPath : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -425,7 +456,7 @@ struct Mgr : public MiniHoudai::Mgr {
 	Mgr(int objLimit, u8 modelType);
 
 	// virtual ~Mgr();                                     // _58 (weak)
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual void doAlloc();                            // _A8
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
@@ -459,7 +490,7 @@ struct Mgr : public MiniHoudai::Mgr {
 
 	// virtual ~Mgr();                                     // _58 (weak)
 	virtual void doAlloc();                            // _A8
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
 	{

@@ -12,6 +12,13 @@ struct J3DMaterial;
 struct J3DTextureSRTInfo;
 
 struct J3DMatColorAnm {
+	J3DMatColorAnm(J3DAnmColor* anm, u16 index, u16 flag)
+	{
+		mIndex   = index;
+		mAnmFlag = flag;
+		mAnm     = anm;
+	}
+
 	J3DMatColorAnm();
 
 	~J3DMatColorAnm() { }
@@ -37,7 +44,7 @@ struct J3DMatColorAnm {
 struct J3DTexNoAnm {
 	J3DTexNoAnm();
 
-	virtual void calc(u16* data) const { mAnm->getTexNo(mIndex, data); } // _08 (weak)
+	virtual void calc(u16* data) const { getAnmTexPattern()->getTexNo(mIndex, data); } // _08 (weak) // nonmatching
 
 	void operator=(J3DTexNoAnm const& other)
 	{
@@ -50,7 +57,8 @@ struct J3DTexNoAnm {
 
 	void setAnmFlag(bool flag) { mAnmFlag = flag; }
 	bool getAnmFlag() const { return mAnmFlag; }
-	J3DAnmTexPattern* getAnmTexPattern() { return mAnm; }
+	J3DAnmTexPattern* getAnmTexPattern() const { return mAnm; }
+	u16 getIndex() const { return mIndex; }
 
 	// _00 = VTBL
 	u16 mIndex;             // _04
@@ -59,6 +67,13 @@ struct J3DTexNoAnm {
 };
 
 struct J3DTexMtxAnm {
+	J3DTexMtxAnm(J3DAnmTextureSRTKey* anm, u16 index, u16 flag)
+	{
+		mIndex   = index;
+		mAnmFlag = flag;
+		mAnm     = anm;
+	}
+
 	J3DTexMtxAnm();
 
 	~J3DTexMtxAnm() { }
@@ -80,6 +95,13 @@ struct J3DTexMtxAnm {
 };
 
 struct J3DTevColorAnm {
+	J3DTevColorAnm(J3DAnmTevRegKey* anm, u16 index, u16 flag)
+	{
+		mIndex   = index;
+		mAnmFlag = flag;
+		mAnm     = anm;
+	}
+
 	J3DTevColorAnm();
 
 	~J3DTevColorAnm() { }
@@ -93,7 +115,7 @@ struct J3DTevColorAnm {
 
 	void setAnmFlag(bool flag) { mAnmFlag = flag; }
 	bool getAnmFlag() const { return mAnmFlag; }
-	void calc(GXColorS10* pColor) const { mAnm->getTevColorReg(mIndex, pColor); }
+	void calc(GXColorS10* color) const { mAnm->getTevColorReg(mIndex, color); }
 
 	u16 mIndex;            // _00
 	u16 mAnmFlag;          // _02
@@ -101,6 +123,13 @@ struct J3DTevColorAnm {
 };
 
 struct J3DTevKColorAnm {
+	J3DTevKColorAnm(J3DAnmTevRegKey* anm, u16 index, u16 flag)
+	{
+		mIndex   = index;
+		mAnmFlag = flag;
+		mAnm     = anm;
+	}
+
 	J3DTevKColorAnm();
 
 	~J3DTevKColorAnm() { }

@@ -1,1442 +1,405 @@
-#include "Game/Creature.h"
 #include "Game/Stickers.h"
-#include "types.h"
+#include "CollInfo.h"
 
-/*
-    Generated from dpostproc
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_8047F218
-    lbl_8047F218:
-        .4byte 0x63726561
-        .4byte 0x74757265
-        .4byte 0x53746963
-        .4byte 0x6B000000
-    .global lbl_8047F228
-    lbl_8047F228:
-        .4byte 0x63726561
-        .4byte 0x74757265
-        .4byte 0x53746963
-        .4byte 0x6B2E6370
-        .4byte 0x70000000
-    .global lbl_8047F23C
-    lbl_8047F23C:
-        .asciz "P2Assert"
-        .skip 3
-        .4byte 0x746F6F20
-        .4byte 0x6D616E79
-        .4byte 0x20737469
-        .4byte 0x636B6572
-        .4byte 0x7320210A
-        .4byte 0x00000000
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__Q24Game8Stickers
-    __vt__Q24Game8Stickers:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q24Game8StickersFv
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__27Container<Q24Game8Creature>FPv"
-        .4byte getNext__Q24Game8StickersFPv
-        .4byte getStart__Q24Game8StickersFv
-        .4byte getEnd__Q24Game8StickersFv
-        .4byte get__Q24Game8StickersFPv
-        .4byte "getAt__27Container<Q24Game8Creature>Fi"
-        .4byte "getTo__27Container<Q24Game8Creature>Fv"
-        .4byte 0
-
-    .section .sdata, "wa"  # 0x80514680 - 0x80514D80
-    .global maxBuffer__Q24Game8Stickers
-    maxBuffer__Q24Game8Stickers:
-        .4byte 0x0000006E
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global numBuffer__Q24Game8Stickers
-    numBuffer__Q24Game8Stickers:
-        .skip 0x4
-    .global mutex__Q24Game8Stickers
-    mutex__Q24Game8Stickers:
-        .skip 0x4
-    .global buffer__Q24Game8Stickers
-    buffer__Q24Game8Stickers:
-        .skip 0x8
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80519040
-    lbl_80519040:
-        .float 1.0
-    .global lbl_80519044
-    lbl_80519044:
-        .4byte 0x3FA66666
-    .global lbl_80519048
-    lbl_80519048:
-        .4byte 0x3FC00000
-    .global lbl_8051904C
-    lbl_8051904C:
-        .4byte 0x00000000
-    .global lbl_80519050
-    lbl_80519050:
-        .4byte 0x3FC90FDB
-        .4byte 0x00000000
-*/
+static const char className[] = "creatureStick";
 
 namespace Game {
 
-/*
- * --INFO--
- * Address:	8019EE94
- * Size:	000024
+int Stickers::numBuffer     = 0;
+bool Stickers::mutex        = false;
+Creature** Stickers::buffer = nullptr;
+
+int Stickers::maxBuffer = 110;
+
+/**
+ * @note Address: 0x8019EE94
+ * @note Size: 0x24
  */
 void Creature::clearStick()
 {
-	/*
-	li       r4, 0
-	li       r0, -1
-	stw      r4, 0x100(r3)
-	stw      r4, 0xfc(r3)
-	stw      r4, 0xf4(r3)
-	stw      r4, 0xf0(r3)
-	stw      r4, 0xf8(r3)
-	sth      r0, 0x110(r3)
-	blr
-	*/
+	mCapture       = nullptr;
+	mCaptured      = nullptr;
+	mSticker       = nullptr;
+	mSticked       = nullptr;
+	mStuckCollPart = nullptr;
+	mStickSlot     = -1;
 }
 
-/*
- * --INFO--
- * Address:	8019EEB8
- * Size:	00003C
+/**
+ * @note Address: 0x8019EEB8
+ * @note Size: 0x3C
  */
 void Creature::releaseAllStickers()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	b        lbl_8019EED4
-
-lbl_8019EED0:
-	bl       endStick__Q24Game8CreatureFv
-
-lbl_8019EED4:
-	lwz      r3, 0xf0(r31)
-	cmplwi   r3, 0
-	bne      lbl_8019EED0
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	while (mSticked) {
+		mSticked->endStick();
+	}
 }
 
-/*
- * --INFO--
- * Address:	8019EEF4
- * Size:	000174
+/**
+ * @note Address: 0x8019EEF4
+ * @note Size: 0x174
  */
-void Creature::startStick(Game::Creature*, CollPart*)
+bool Creature::startStick(Creature* obj, CollPart* part)
 {
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stw      r31, 0x2c(r1)
-	mr       r31, r5
-	stw      r30, 0x28(r1)
-	mr       r30, r4
-	stw      r29, 0x24(r1)
-	mr       r29, r3
-	bl       isStickTo__Q24Game8CreatureFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019EF64
-	mr       r3, r29
-	bl       isStickToMouth__Q24Game8CreatureFv
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8019EF5C
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019EF5C
-	mr       r3, r29
-	bl       endStick__Q24Game8CreatureFv
-	b        lbl_8019EF64
+	// If already sticking
+	if (isStickTo()) {
+		// If isn't stuck to mouth and part is a mouth
+		if (!isStickToMouth() && part->isMouth()) {
+			// End current stick so we can start a new one (mouth is higher priority)
+			endStick();
+		} else {
+			// Stick couldn't happen again
+			return false;
+		}
+	}
 
-lbl_8019EF5C:
-	li       r3, 0
-	b        lbl_8019F04C
+	// Set the creature and part we're sticking to
+	mSticker       = obj;
+	mStuckCollPart = part;
 
-lbl_8019EF64:
-	stw      r30, 0xf4(r29)
-	stw      r31, 0xf8(r29)
-	lwz      r3, 0xf8(r29)
-	cmplwi   r3, 0
-	beq      lbl_8019EF98
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019EF98
-	lwz      r3, 0xf8(r29)
-	stw      r29, 0x64(r3)
+	// If sticking to a mouth part, update stuck creature
+	if (mStuckCollPart && mStuckCollPart->isMouth()) {
+		static_cast<MouthCollPart*>(mStuckCollPart)->mStuckCreature = this;
+	}
 
-lbl_8019EF98:
-	lwz      r3, 0xf0(r30)
-	cmplwi   r3, 0
-	bne      lbl_8019EFB8
-	stw      r29, 0xf0(r30)
-	li       r0, 0
-	stw      r0, 0x100(r29)
-	stw      r0, 0xfc(r29)
-	b        lbl_8019EFCC
+	// Update the creature this object is sticking to, and handle any previously stuck creature
+	Creature* stick = obj->mSticked;
+	if (!stick) {
+		obj->mSticked = this;
+		mCapture      = nullptr;
+		mCaptured     = nullptr;
+	} else {
+		obj->mSticked   = this;
+		mCapture        = nullptr;
+		mCaptured       = stick;
+		stick->mCapture = this;
+	}
 
-lbl_8019EFB8:
-	stw      r29, 0xf0(r30)
-	li       r0, 0
-	stw      r0, 0x100(r29)
-	stw      r3, 0xfc(r29)
-	stw      r29, 0x100(r3)
+	// If sticking to a part, calculate the local position for the creature to stick to
+	if (mStuckCollPart) {
+		Vector3f pos = getPosition();
+		mStuckCollPart->calcStickLocal(pos, mClimbingPosition);
+	}
 
-lbl_8019EFCC:
-	lwz      r0, 0xf8(r29)
-	cmplwi   r0, 0
-	beq      lbl_8019F018
-	mr       r4, r29
-	addi     r3, r1, 8
-	lwz      r12, 0(r29)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f2, 8(r1)
-	addi     r4, r1, 0x14
-	lfs      f1, 0xc(r1)
-	addi     r5, r29, 0x104
-	lfs      f0, 0x10(r1)
-	stfs     f2, 0x14(r1)
-	stfs     f1, 0x18(r1)
-	stfs     f0, 0x1c(r1)
-	lwz      r3, 0xf8(r29)
-	bl       "calcStickLocal__8CollPartFR10Vector3<f>R10Vector3<f>"
+	// Notify the creature and the object about the start of the sticking process
+	mSticker->onStickStart(this);
+	onStickStartSelf(mSticker);
 
-lbl_8019F018:
-	lwz      r3, 0xf4(r29)
-	mr       r4, r29
-	lwz      r12, 0(r3)
-	lwz      r12, 0x158(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r29
-	lwz      r4, 0xf4(r29)
-	lwz      r12, 0(r29)
-	lwz      r12, 0x160(r12)
-	mtctr    r12
-	bctrl
-	li       r3, 1
-
-lbl_8019F04C:
-	lwz      r0, 0x34(r1)
-	lwz      r31, 0x2c(r1)
-	lwz      r30, 0x28(r1)
-	lwz      r29, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
+	return true;
 }
 
-/*
- * --INFO--
- * Address:	8019F068
- * Size:	0001B0
+/**
+ * @note Address: 0x8019F068
+ * @note Size: 0x1B0
  */
-void Creature::startStickMouth(Game::Creature*, CollPart*)
+bool Creature::startStickMouth(Creature* obj, CollPart* part)
 {
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stw      r31, 0x2c(r1)
-	mr       r31, r3
-	stw      r30, 0x28(r1)
-	mr       r30, r5
-	mr       r3, r30
-	stw      r29, 0x24(r1)
-	mr       r29, r4
-	lwz      r12, 0(r30)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8019F0C4
-	lis      r3, lbl_8047F228@ha
-	lis      r5, lbl_8047F23C@ha
-	addi     r3, r3, lbl_8047F228@l
-	li       r4, 0xca
-	addi     r5, r5, lbl_8047F23C@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8019F0C4:
-	mr       r3, r31
-	bl       isStickTo__Q24Game8CreatureFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F114
-	mr       r3, r31
-	bl       isStickToMouth__Q24Game8CreatureFv
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8019F10C
-	mr       r3, r30
-	lwz      r12, 0(r30)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F10C
-	mr       r3, r31
-	bl       endStick__Q24Game8CreatureFv
-	b        lbl_8019F114
-
-lbl_8019F10C:
-	li       r3, 0
-	b        lbl_8019F1FC
-
-lbl_8019F114:
-	stw      r29, 0xf4(r31)
-	stw      r30, 0xf8(r31)
-	lwz      r3, 0xf8(r31)
-	cmplwi   r3, 0
-	beq      lbl_8019F148
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F148
-	lwz      r3, 0xf8(r31)
-	stw      r31, 0x64(r3)
-
-lbl_8019F148:
-	lwz      r3, 0xf0(r29)
-	cmplwi   r3, 0
-	bne      lbl_8019F168
-	stw      r31, 0xf0(r29)
-	li       r0, 0
-	stw      r0, 0x100(r31)
-	stw      r0, 0xfc(r31)
-	b        lbl_8019F17C
-
-lbl_8019F168:
-	stw      r31, 0xf0(r29)
-	li       r0, 0
-	stw      r0, 0x100(r31)
-	stw      r3, 0xfc(r31)
-	stw      r31, 0x100(r3)
-
-lbl_8019F17C:
-	lwz      r0, 0xf8(r31)
-	cmplwi   r0, 0
-	beq      lbl_8019F1C8
-	mr       r4, r31
-	addi     r3, r1, 0x14
-	lwz      r12, 0(r31)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f2, 0x14(r1)
-	addi     r4, r1, 8
-	lfs      f1, 0x18(r1)
-	addi     r5, r31, 0x104
-	lfs      f0, 0x1c(r1)
-	stfs     f2, 8(r1)
-	stfs     f1, 0xc(r1)
-	stfs     f0, 0x10(r1)
-	lwz      r3, 0xf8(r31)
-	bl       "calcStickLocal__8CollPartFR10Vector3<f>R10Vector3<f>"
-
-lbl_8019F1C8:
-	lwz      r3, 0xf4(r31)
-	mr       r4, r31
-	lwz      r12, 0(r3)
-	lwz      r12, 0x158(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r31
-	lwz      r4, 0xf4(r31)
-	lwz      r12, 0(r31)
-	lwz      r12, 0x160(r12)
-	mtctr    r12
-	bctrl
-	li       r3, 1
-
-lbl_8019F1FC:
-	lwz      r0, 0x34(r1)
-	lwz      r31, 0x2c(r1)
-	lwz      r30, 0x28(r1)
-	lwz      r29, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
+	P2ASSERTLINE(202, part->isMouth());
+	return startStick(obj, part);
 }
 
-/*
- * --INFO--
- * Address:	8019F218
- * Size:	00020C
+/**
+ * @note Address: 0x8019F218
+ * @note Size: 0x20C
  */
-void Creature::startStick(Game::Creature*, short)
+bool Creature::startStick(Creature* obj, s16 id)
 {
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stw      r31, 0x2c(r1)
-	mr       r31, r5
-	stw      r30, 0x28(r1)
-	mr       r30, r4
-	stw      r29, 0x24(r1)
-	mr       r29, r3
-	bl       isStickTo__Q24Game8CreatureFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F250
-	li       r3, 0
-	b        lbl_8019F408
+	// Ignore if already sticking
+	if (isStickTo()) {
+		return false;
+	}
 
-lbl_8019F250:
-	mr       r3, r29
-	bl       isStickTo__Q24Game8CreatureFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F2A0
-	mr       r3, r29
-	bl       isStickToMouth__Q24Game8CreatureFv
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8019F298
-	li       r3, 0
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F298
-	mr       r3, r29
-	bl       endStick__Q24Game8CreatureFv
-	b        lbl_8019F2A0
+	// If we can start sticking
+	if (startStick(obj, (CollPart*)nullptr)) {
+		// Check if the stick slot is free
+		if (obj->isSlotFree(id)) {
+			// Take the stick slot and activate
+			obj->onSlotStickStart(this, id);
+			mStickSlot = id;
+			onStickStartSelf(obj);
 
-lbl_8019F298:
-	li       r0, 0
-	b        lbl_8019F38C
+			return true;
+		} else {
+			// Not free, stop trying to stick
+			endStick();
+			return false;
+		}
+	}
 
-lbl_8019F2A0:
-	stw      r30, 0xf4(r29)
-	li       r0, 0
-	stw      r0, 0xf8(r29)
-	lwz      r3, 0xf8(r29)
-	cmplwi   r3, 0
-	beq      lbl_8019F2D8
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F2D8
-	lwz      r3, 0xf8(r29)
-	stw      r29, 0x64(r3)
-
-lbl_8019F2D8:
-	lwz      r3, 0xf0(r30)
-	cmplwi   r3, 0
-	bne      lbl_8019F2F8
-	stw      r29, 0xf0(r30)
-	li       r0, 0
-	stw      r0, 0x100(r29)
-	stw      r0, 0xfc(r29)
-	b        lbl_8019F30C
-
-lbl_8019F2F8:
-	stw      r29, 0xf0(r30)
-	li       r0, 0
-	stw      r0, 0x100(r29)
-	stw      r3, 0xfc(r29)
-	stw      r29, 0x100(r3)
-
-lbl_8019F30C:
-	lwz      r0, 0xf8(r29)
-	cmplwi   r0, 0
-	beq      lbl_8019F358
-	mr       r4, r29
-	addi     r3, r1, 0x14
-	lwz      r12, 0(r29)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f2, 0x14(r1)
-	addi     r4, r1, 8
-	lfs      f1, 0x18(r1)
-	addi     r5, r29, 0x104
-	lfs      f0, 0x1c(r1)
-	stfs     f2, 8(r1)
-	stfs     f1, 0xc(r1)
-	stfs     f0, 0x10(r1)
-	lwz      r3, 0xf8(r29)
-	bl       "calcStickLocal__8CollPartFR10Vector3<f>R10Vector3<f>"
-
-lbl_8019F358:
-	lwz      r3, 0xf4(r29)
-	mr       r4, r29
-	lwz      r12, 0(r3)
-	lwz      r12, 0x158(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r29
-	lwz      r4, 0xf4(r29)
-	lwz      r12, 0(r29)
-	lwz      r12, 0x160(r12)
-	mtctr    r12
-	bctrl
-	li       r0, 1
-
-lbl_8019F38C:
-	clrlwi.  r0, r0, 0x18
-	beq      lbl_8019F404
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	lwz      r12, 0x168(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F3F4
-	mr       r3, r30
-	mr       r4, r29
-	lwz      r12, 0(r30)
-	mr       r5, r31
-	lwz      r12, 0x178(r12)
-	mtctr    r12
-	bctrl
-	sth      r31, 0x110(r29)
-	mr       r3, r29
-	mr       r4, r30
-	lwz      r12, 0(r29)
-	lwz      r12, 0x160(r12)
-	mtctr    r12
-	bctrl
-	li       r3, 1
-	b        lbl_8019F408
-
-lbl_8019F3F4:
-	mr       r3, r29
-	bl       endStick__Q24Game8CreatureFv
-	li       r3, 0
-	b        lbl_8019F408
-
-lbl_8019F404:
-	li       r3, 0
-
-lbl_8019F408:
-	lwz      r0, 0x34(r1)
-	lwz      r31, 0x2c(r1)
-	lwz      r30, 0x28(r1)
-	lwz      r29, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
+	return false;
 }
 
-/*
- * --INFO--
- * Address:	8019F424
- * Size:	000150
+/**
+ * @note Address: 0x8019F424
+ * @note Size: 0x150
  */
 void Creature::endStick()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	bl       isStickTo__Q24Game8CreatureFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F560
-	mr       r3, r31
-	lwz      r4, 0xf4(r31)
-	lwz      r12, 0(r31)
-	lwz      r12, 0x164(r12)
-	mtctr    r12
-	bctrl
-	lha      r5, 0x110(r31)
-	cmpwi    r5, -1
-	beq      lbl_8019F48C
-	lwz      r3, 0xf4(r31)
-	mr       r4, r31
-	lwz      r12, 0(r3)
-	lwz      r12, 0x17c(r12)
-	mtctr    r12
-	bctrl
-	li       r0, -1
-	sth      r0, 0x110(r31)
-	b        lbl_8019F4A4
+	if (!isStickTo()) {
+		return;
+	}
 
-lbl_8019F48C:
-	lwz      r3, 0xf4(r31)
-	mr       r4, r31
-	lwz      r12, 0(r3)
-	lwz      r12, 0x15c(r12)
-	mtctr    r12
-	bctrl
+	onStickEndSelf(mSticker);
 
-lbl_8019F4A4:
-	lwz      r3, 0xf8(r31)
-	cmplwi   r3, 0
-	beq      lbl_8019F4D4
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F4D4
-	lwz      r3, 0xf8(r31)
-	li       r0, 0
-	stw      r0, 0x64(r3)
+	// Reset stick slot
+	if (mStickSlot != -1) {
+		mSticker->onSlotStickEnd(this, mStickSlot);
+		mStickSlot = -1;
+	} else {
+		mSticker->onStickEnd(this);
+	}
 
-lbl_8019F4D4:
-	lwz      r3, 0x100(r31)
-	cmplwi   r3, 0
-	bne      lbl_8019F504
-	lwz      r0, 0xfc(r31)
-	cmplwi   r0, 0
-	bne      lbl_8019F504
-	lwz      r3, 0xf4(r31)
-	li       r0, 0
-	stw      r0, 0xf0(r3)
-	stw      r0, 0xf4(r31)
-	stw      r0, 0xf8(r31)
-	b        lbl_8019F560
+	// Reset stuck creature
+	if (mStuckCollPart && mStuckCollPart->isMouth()) {
+		static_cast<MouthCollPart*>(mStuckCollPart)->mStuckCreature = nullptr;
+	}
 
-lbl_8019F504:
-	cmplwi   r3, 0
-	bne      lbl_8019F538
-	lwz      r4, 0xfc(r31)
-	li       r0, 0
-	lwz      r3, 0xf4(r31)
-	stw      r4, 0xf0(r3)
-	lwz      r3, 0xfc(r31)
-	stw      r0, 0x100(r3)
-	stw      r0, 0xf4(r31)
-	stw      r0, 0xf8(r31)
-	stw      r0, 0x100(r31)
-	stw      r0, 0xfc(r31)
-	b        lbl_8019F560
-
-lbl_8019F538:
-	li       r0, 0
-	stw      r0, 0xf4(r31)
-	lwz      r0, 0xfc(r31)
-	lwz      r3, 0x100(r31)
-	stw      r0, 0xfc(r3)
-	lwz      r3, 0xfc(r31)
-	cmplwi   r3, 0
-	beq      lbl_8019F560
-	lwz      r0, 0x100(r31)
-	stw      r0, 0x100(r3)
-
-lbl_8019F560:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (!mCapture && !mCaptured) {
+		mSticker->mSticked = nullptr;
+		mSticker           = nullptr;
+		mStuckCollPart     = nullptr;
+	} else if (!mCapture) {
+		mSticker->mSticked  = mCaptured;
+		mCaptured->mCapture = nullptr;
+		mSticker            = nullptr;
+		mStuckCollPart      = nullptr;
+		mCapture            = nullptr;
+		mCaptured           = nullptr;
+	} else {
+		mSticker            = nullptr;
+		mCapture->mCaptured = mCaptured;
+		if (mCaptured) {
+			mCaptured->mCapture = mCapture;
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	8019F574
- * Size:	000014
+/**
+ * @note Address: 0x8019F574
+ * @note Size: 0x14
  * Returns whether the creature is stuck to anything
  */
-bool Creature::isStickTo()
-{
-	/*
-	lwz      r3, 0xf4(r3)
-	neg      r0, r3
-	or       r0, r0, r3
-	srwi     r3, r0, 0x1f
-	blr
-	*/
-}
+bool Creature::isStickTo() { return mSticker != nullptr; }
 
-/*
- * --INFO--
- * Address:	8019F588
- * Size:	000060
+/**
+ * @note Address: 0x8019F588
+ * @note Size: 0x60
  */
-bool Creature::isStickToMouth()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	li       r31, 0
-	lwz      r0, 0xf4(r3)
-	cmplwi   r0, 0
-	beq      lbl_8019F5D0
-	lwz      r3, 0xf8(r3)
-	cmplwi   r3, 0
-	beq      lbl_8019F5D0
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F5D0
-	li       r31, 1
+bool Creature::isStickToMouth() { return mSticker && mStuckCollPart && mStuckCollPart->isMouth(); }
 
-lbl_8019F5D0:
-	lwz      r0, 0x14(r1)
-	mr       r3, r31
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
 bool Creature::isStickLeader()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8019F5E8
- * Size:	0004B4
+#include "Game/enemyInfo.h"
+
+/**
+ * @note Address: 0x8019F5E8
+ * @note Size: 0x4B4
  */
-void Creature::updateStick(Vector3f&)
+void Creature::updateStick(Vector3f& pos)
 {
-	/*
-	stwu     r1, -0x110(r1)
-	mflr     r0
-	stw      r0, 0x114(r1)
-	stfd     f31, 0x100(r1)
-	psq_st   f31, 264(r1), 0, qr0
-	stw      r31, 0xfc(r1)
-	mr       r31, r3
-	lwz      r0, 0xf4(r3)
-	cmplwi   r0, 0
-	bne      lbl_8019F62C
-	lis      r3, lbl_8047F228@ha
-	lis      r5, lbl_8047F23C@ha
-	addi     r3, r3, lbl_8047F228@l
-	li       r4, 0x127
-	addi     r5, r5, lbl_8047F23C@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
+	P2ASSERTLINE(295, mSticker);
 
-lbl_8019F62C:
-	lwz      r12, 0(r31)
-	lis      r4, "zero__10Vector3<f>"@ha
-	mr       r3, r31
-	lwz      r12, 0x68(r12)
-	addi     r4, r4, "zero__10Vector3<f>"@l
-	mtctr    r12
-	bctrl
-	lwz      r3, 0xf8(r31)
-	cmplwi   r3, 0
-	beq      lbl_8019F774
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F774
-	lwz      r3, 0xf8(r31)
-	addi     r4, r1, 0xbc
-	bl       copyMatrixTo__13MouthCollPartFR7Matrixf
-	lwz      r3, 0xf8(r31)
-	lfs      f31, lbl_80519040@sda21(r2)
-	lbz      r0, 0x6c(r3)
-	cmplwi   r0, 0
-	beq      lbl_8019F708
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F6D0
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x1ac(r12)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 0
-	bne      lbl_8019F6CC
-	lfs      f31, lbl_80519044@sda21(r2)
-	b        lbl_8019F6D0
+	setVelocity(Vector3f::zero);
 
-lbl_8019F6CC:
-	lfs      f31, lbl_80519048@sda21(r2)
+	// If stuck to a mouth part
+	if (mStuckCollPart && mStuckCollPart->isMouth()) {
+		Matrixf stuckMtx, resultMtx;
 
-lbl_8019F6D0:
-	lfs      f0, lbl_8051904C@sda21(r2)
-	addi     r3, r1, 0x8c
-	stfs     f31, 0x80(r1)
-	addi     r4, r1, 0x80
-	addi     r5, r1, 0x74
-	stfs     f31, 0x84(r1)
-	stfs     f31, 0x88(r1)
-	stfs     f0, 0x74(r1)
-	stfs     f0, 0x78(r1)
-	stfs     f0, 0x7c(r1)
-	lwz      r6, 0xf8(r31)
-	addi     r6, r6, 0x20
-	bl       "makeSRT__7MatrixfFR10Vector3<f>R10Vector3<f>R10Vector3<f>"
-	b        lbl_8019F738
+		static_cast<MouthCollPart*>(mStuckCollPart)->copyMatrixTo(stuckMtx);
 
-lbl_8019F708:
-	lfs      f1, lbl_8051904C@sda21(r2)
-	addi     r3, r1, 0x8c
-	lfs      f0, lbl_80519050@sda21(r2)
-	addi     r4, r1, 0x68
-	stfs     f31, 0x68(r1)
-	addi     r5, r1, 0x5c
-	stfs     f31, 0x6c(r1)
-	stfs     f31, 0x70(r1)
-	stfs     f1, 0x5c(r1)
-	stfs     f1, 0x60(r1)
-	stfs     f0, 0x64(r1)
-	bl       "makeSR__7MatrixfFR10Vector3<f>R10Vector3<f>"
+		// Set the scale factor if the creature is a Navi
+		f32 scale = 1.0f;
+		if (static_cast<MouthCollPart*>(mStuckCollPart)->_6C) {
+			if (isNavi()) {
+				if (getCreatureID() == Game::EnemyTypeID::EnemyID_Pelplant) {
+					scale = 1.3f;
+				} else {
+					scale = 1.5f;
+				}
+			}
 
-lbl_8019F738:
-	addi     r3, r1, 0xbc
-	addi     r4, r1, 0x8c
-	addi     r5, r31, 0x138
-	bl       PSMTXConcat
-	lfs      f0, 0x144(r31)
-	mr       r3, r31
-	addi     r4, r1, 0x50
-	li       r5, 1
-	stfs     f0, 0x50(r1)
-	lfs      f0, 0x154(r31)
-	stfs     f0, 0x54(r1)
-	lfs      f0, 0x164(r31)
-	stfs     f0, 0x58(r1)
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-	b        lbl_8019FA80
+			Vector3f scalevec(scale);
+			Vector3f rotate(0.0f);
+			resultMtx.makeSRT(scalevec, rotate, mStuckCollPart->mOffset);
+		} else {
+			Vector3f scalevec(scale);
+			Vector3f rotate(0.0f, 0.0f, HALF_PI);
+			resultMtx.makeSR(scalevec, rotate);
+		}
 
-lbl_8019F774:
-	lwz      r0, 0xf8(r31)
-	cmplwi   r0, 0
-	beq      lbl_8019F994
-	mr       r4, r31
-	addi     r3, r1, 0x14
-	lwz      r12, 0(r31)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f2, 0x14(r1)
-	addi     r4, r31, 0x104
-	lfs      f1, 0x18(r1)
-	addi     r5, r1, 0x44
-	lfs      f0, 0x1c(r1)
-	stfs     f2, 0x44(r1)
-	stfs     f1, 0x48(r1)
-	stfs     f0, 0x4c(r1)
-	lwz      r3, 0xf8(r31)
-	bl       "calcStickGlobal__8CollPartFR10Vector3<f>R10Vector3<f>"
-	lwz      r3, 0xf8(r31)
-	lbz      r0, 0x58(r3)
-	cmplwi   r0, 2
-	bne      lbl_8019F8B0
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	stfs     f1, 0x38(r1)
-	addi     r4, r1, 0x38
-	addi     r5, r31, 0x138
-	lfs      f0, 0x108(r31)
-	stfs     f0, 0x3c(r1)
-	lwz      r3, 0xf8(r31)
-	bl       "calcPoseMatrix__8CollPartFR10Vector3<f>R7Matrixf"
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F968
-	lfs      f1, 0x138(r31)
-	lfs      f0, 0x168(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x138(r31)
-	lfs      f1, 0x148(r31)
-	lfs      f0, 0x168(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x148(r31)
-	lfs      f1, 0x158(r31)
-	lfs      f0, 0x168(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x158(r31)
-	lfs      f1, 0x13c(r31)
-	lfs      f0, 0x16c(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x13c(r31)
-	lfs      f1, 0x14c(r31)
-	lfs      f0, 0x16c(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x14c(r31)
-	lfs      f1, 0x15c(r31)
-	lfs      f0, 0x16c(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x15c(r31)
-	lfs      f1, 0x140(r31)
-	lfs      f0, 0x170(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x140(r31)
-	lfs      f1, 0x150(r31)
-	lfs      f0, 0x170(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x150(r31)
-	lfs      f1, 0x160(r31)
-	lfs      f0, 0x170(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x160(r31)
-	b        lbl_8019F968
+		PSMTXConcat(stuckMtx.mMatrix.mtxView, resultMtx.mMatrix.mtxView, mBaseTrMatrix.mMatrix.mtxView);
 
-lbl_8019F8B0:
-	addi     r4, r1, 0x44
-	addi     r5, r31, 0x138
-	bl       "calcPoseMatrix__8CollPartFR10Vector3<f>R7Matrixf"
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8019F968
-	lfs      f1, 0x138(r31)
-	lfs      f0, 0x168(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x138(r31)
-	lfs      f1, 0x148(r31)
-	lfs      f0, 0x168(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x148(r31)
-	lfs      f1, 0x158(r31)
-	lfs      f0, 0x168(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x158(r31)
-	lfs      f1, 0x13c(r31)
-	lfs      f0, 0x16c(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x13c(r31)
-	lfs      f1, 0x14c(r31)
-	lfs      f0, 0x16c(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x14c(r31)
-	lfs      f1, 0x15c(r31)
-	lfs      f0, 0x16c(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x15c(r31)
-	lfs      f1, 0x140(r31)
-	lfs      f0, 0x170(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x140(r31)
-	lfs      f1, 0x150(r31)
-	lfs      f0, 0x170(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x150(r31)
-	lfs      f1, 0x160(r31)
-	lfs      f0, 0x170(r31)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x160(r31)
+		Vector3f pos;
+		mBaseTrMatrix.getTranslation(pos);
+		setPosition(pos, true);
+	} else { // If the creature is sticking to a non-mouth part
+		if (mStuckCollPart) {
+			// Calculate the global sticking position of the creature
+			Vector3f pos = getPosition();
+			mStuckCollPart->calcStickGlobal(mClimbingPosition, pos);
 
-lbl_8019F968:
-	mr       r3, r31
-	addi     r4, r1, 0x44
-	li       r5, 1
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-	lfs      f0, 0x44(r1)
-	stfs     f0, 0x144(r31)
-	lfs      f0, 0x48(r1)
-	stfs     f0, 0x154(r31)
-	lfs      f0, 0x4c(r1)
-	stfs     f0, 0x164(r31)
-	b        lbl_8019FA80
+			// Calculate the pose matrix based on part type (tubetree == climbing)
+			if (mStuckCollPart->mPartType == COLLTYPE_TUBETREE) {
+				Vector3f rotate;
+				rotate.x = getFaceDir();
+				rotate.y = mClimbingPosition.y;
+				mStuckCollPart->calcPoseMatrix(rotate, mBaseTrMatrix);
 
-lbl_8019F994:
-	lha      r4, 0x110(r31)
-	cmpwi    r4, -1
-	beq      lbl_8019FA80
-	lwz      r3, 0xf4(r31)
-	addi     r5, r1, 0x2c
-	lwz      r12, 0(r3)
-	lwz      r12, 0x180(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0xf4(r31)
-	addi     r3, r1, 8
-	lwz      r12, 0(r4)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f1, 0xc(r1)
-	lfs      f0, 0x30(r1)
-	lfs      f2, 0x10(r1)
-	fsubs    f3, f1, f0
-	lfs      f0, 0x34(r1)
-	lfs      f1, 8(r1)
-	fsubs    f2, f2, f0
-	lfs      f0, 0x2c(r1)
-	fmuls    f3, f3, f3
-	fsubs    f1, f1, f0
-	lfs      f0, lbl_8051904C@sda21(r2)
-	fmuls    f4, f2, f2
-	fmadds   f3, f1, f1, f3
-	fadds    f3, f4, f3
-	fcmpo    cr0, f3, f0
-	ble      lbl_8019FA20
-	ble      lbl_8019FA24
-	frsqrte  f0, f3
-	fmuls    f3, f0, f3
-	b        lbl_8019FA24
+				if (isPiki()) {
+					mBaseTrMatrix *= mScale;
+				}
+			} else {
+				mStuckCollPart->calcPoseMatrix(pos, mBaseTrMatrix);
+				if (isPiki()) {
+					mBaseTrMatrix *= mScale;
+				}
+			}
 
-lbl_8019FA20:
-	fmr      f3, f0
+			setPosition(pos, true);
+			mBaseTrMatrix.setTranslation(pos);
+		} else if (mStickSlot != -1) { // If the creature isn't stuck to any part, but stuck in a slot
+			Vector3f position;
+			mSticker->calcStickSlotGlobal(mStickSlot, position);
 
-lbl_8019FA24:
-	lfs      f0, lbl_8051904C@sda21(r2)
-	fcmpo    cr0, f3, f0
-	ble      lbl_8019FA40
-	lfs      f0, lbl_80519040@sda21(r2)
-	fdivs    f0, f0, f3
-	fmuls    f1, f1, f0
-	fmuls    f2, f2, f0
+			// Get direction from creature to slot, then calculate the angle on the Y axis
+			Vector3f direction = mSticker->getPosition() - position;
+			_normaliseXZ(direction);
+			f32 angleBetween = JMath::atanTable_.atan2_(direction.x, direction.z);
 
-lbl_8019FA40:
-	lis      r3, atanTable___5JMath@ha
-	addi     r3, r3, atanTable___5JMath@l
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	fmr      f31, f1
-	mr       r3, r31
-	addi     r4, r1, 0x2c
-	li       r5, 1
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-	lfs      f0, lbl_8051904C@sda21(r2)
-	addi     r3, r31, 0x138
-	stfs     f31, 0x24(r1)
-	addi     r4, r1, 0x2c
-	addi     r5, r1, 0x20
-	stfs     f0, 0x20(r1)
-	stfs     f0, 0x28(r1)
-	bl       "makeTR__7MatrixfFR10Vector3<f>R10Vector3<f>"
+			setPosition(position, true);
 
-lbl_8019FA80:
-	psq_l    f31, 264(r1), 0, qr0
-	lwz      r0, 0x114(r1)
-	lfd      f31, 0x100(r1)
-	lwz      r31, 0xfc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x110
-	blr
-	*/
+			Vector3f rotation(0.0f, angleBetween, 0.0f);
+
+			// Rotate towards the slot position, and maintain positioning
+			mBaseTrMatrix.makeTR(position, rotation);
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	8019FA9C
- * Size:	00000C
+/**
+ * @note Address: 0x8019FA9C
+ * @note Size: 0xC
  */
-void Creature::clearCapture()
+void Creature::clearCapture() { mCaptureMatrix = nullptr; }
+
+/**
+ * @note Address: 0x8019FAA8
+ * @note Size: 0x54
+ */
+void Creature::startCapture(Matrixf* mtx)
 {
-	// Generated from stw r0, 0xB8(r3)
-	mCaptureMatrix = 0;
+	mCaptureMatrix = mtx;
+	setAtari(false);
+	onStartCapture();
 }
 
-/*
- * --INFO--
- * Address:	8019FAA8
- * Size:	000054
+/**
+ * @note Address: 0x8019FAFC
+ * @note Size: 0xA0
  */
-void Creature::startCapture(Matrixf*)
+void Creature::updateCapture(Matrixf& mtx)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	stw      r4, 0xb8(r3)
-	li       r4, 0
-	lwz      r12, 0(r3)
-	lwz      r12, 0xa4(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x94(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (mCaptureMatrix) {
+		PSMTXConcat(mCaptureMatrix->mMatrix.mtxView, mtx.mMatrix.mtxView, mBaseTrMatrix.mMatrix.mtxView);
+
+		Mtx newmtx;
+		PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, newmtx);
+
+		Vector3f pos;
+		mBaseTrMatrix.getTranslation(pos);
+
+		setPosition(pos, false);
+		PSMTXCopy(newmtx, mBaseTrMatrix.mMatrix.mtxView);
+		onUpdateCapture(mtx);
+	}
 }
 
-/*
- * --INFO--
- * Address:	8019FAFC
- * Size:	0000A0
- */
-void Creature::updateCapture(Matrixf&)
-{
-	/*
-	stwu     r1, -0x50(r1)
-	mflr     r0
-	stw      r0, 0x54(r1)
-	stw      r31, 0x4c(r1)
-	mr       r31, r4
-	stw      r30, 0x48(r1)
-	mr       r30, r3
-	lwz      r3, 0xb8(r3)
-	cmplwi   r3, 0
-	beq      lbl_8019FB84
-	addi     r5, r30, 0x138
-	bl       PSMTXConcat
-	addi     r3, r30, 0x138
-	addi     r4, r1, 0x14
-	bl       PSMTXCopy
-	lfs      f0, 0x144(r30)
-	mr       r3, r30
-	addi     r4, r1, 8
-	li       r5, 0
-	stfs     f0, 8(r1)
-	lfs      f0, 0x154(r30)
-	stfs     f0, 0xc(r1)
-	lfs      f0, 0x164(r30)
-	stfs     f0, 0x10(r1)
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-	addi     r3, r1, 0x14
-	addi     r4, r30, 0x138
-	bl       PSMTXCopy
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	lwz      r12, 0x98(r12)
-	mtctr    r12
-	bctrl
-
-lbl_8019FB84:
-	lwz      r0, 0x54(r1)
-	lwz      r31, 0x4c(r1)
-	lwz      r30, 0x48(r1)
-	mtlr     r0
-	addi     r1, r1, 0x50
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	8019FB9C
- * Size:	000058
+/**
+ * @note Address: 0x8019FB9C
+ * @note Size: 0x58
  */
 void Creature::endCapture()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	li       r4, 1
-	stw      r0, 0x14(r1)
-	li       r0, 0
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	stw      r0, 0xb8(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0xa4(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x9c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mCaptureMatrix = nullptr;
+	setAtari(true);
+	onEndCapture();
 }
 
-/*
- * --INFO--
- * Address:	8019FBF4
- * Size:	000068
+/**
+ * @note Address: 0x8019FBF4
+ * @note Size: 0x68
  */
 void Stickers::initialise()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	li       r4, 0
-	li       r3, 0x1b8
-	stw      r0, 0x14(r1)
-	li       r0, 0x6e
-	stb      r4, mutex__Q24Game8Stickers@sda21(r13)
-	stw      r0, maxBuffer__Q24Game8Stickers@sda21(r13)
-	stw      r4, numBuffer__Q24Game8Stickers@sda21(r13)
-	bl       __nwa__FUl
-	li       r5, 0
-	stw      r3, buffer__Q24Game8Stickers@sda21(r13)
-	mr       r4, r5
-	li       r6, 0
-	b        lbl_8019FC40
-
-lbl_8019FC30:
-	lwz      r3, buffer__Q24Game8Stickers@sda21(r13)
-	addi     r6, r6, 1
-	stwx     r4, r3, r5
-	addi     r5, r5, 4
-
-lbl_8019FC40:
-	lwz      r0, maxBuffer__Q24Game8Stickers@sda21(r13)
-	cmpw     r6, r0
-	blt      lbl_8019FC30
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mutex     = false;
+	maxBuffer = MAX_STICKERS;
+	numBuffer = 0;
+	buffer    = new Creature*[MAX_STICKERS];
+	for (int i = 0; i < maxBuffer; i++) {
+		buffer[i] = nullptr;
+	}
 }
 
-/*
- * --INFO--
- * Address:	8019FC5C
- * Size:	000108
+/**
+ * @note Address: 0x8019FC5C
+ * @note Size: 0x108
  */
-Stickers::Stickers(Game::Creature*)
+Stickers::Stickers(Creature* obj)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lis      r5, lbl_8047F218@ha
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r3
-	mr       r0, r31
-	stw      r30, 0x18(r1)
-	addi     r30, r5, lbl_8047F218@l
-	stw      r29, 0x14(r1)
-	mr       r29, r4
-	stw      r28, 0x10(r1)
-	mr       r28, r0
-	bl       __ct__5CNodeFv
-	lis      r3, __vt__16GenericContainer@ha
-	lis      r4, "__vt__27Container<Q24Game8Creature>"@ha
-	addi     r0, r3, __vt__16GenericContainer@l
-	lis      r3, __vt__Q24Game8Stickers@ha
-	stw      r0, 0(r28)
-	addi     r5, r4, "__vt__27Container<Q24Game8Creature>"@l
-	li       r4, 0
-	addi     r0, r3, __vt__Q24Game8Stickers@l
-	stw      r5, 0(r28)
-	stb      r4, 0x18(r28)
-	stw      r0, 0(r31)
-	lbz      r0, mutex__Q24Game8Stickers@sda21(r13)
-	cmplwi   r0, 0
-	beq      lbl_8019FCE0
-	addi     r3, r30, 0x10
-	addi     r5, r30, 0x24
-	li       r4, 0x200
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8019FCE0:
-	li       r3, 1
-	li       r0, 0
-	stb      r3, mutex__Q24Game8Stickers@sda21(r13)
-	lwz      r29, 0xf0(r29)
-	stw      r0, numBuffer__Q24Game8Stickers@sda21(r13)
-	b        lbl_8019FD38
-
-lbl_8019FCF8:
-	lwz      r3, numBuffer__Q24Game8Stickers@sda21(r13)
-	lwz      r0, maxBuffer__Q24Game8Stickers@sda21(r13)
-	cmpw     r3, r0
-	blt      lbl_8019FD1C
-	addi     r3, r30, 0x10
-	addi     r5, r30, 0x30
-	li       r4, 0x207
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8019FD1C:
-	lwz      r4, numBuffer__Q24Game8Stickers@sda21(r13)
-	lwz      r5, buffer__Q24Game8Stickers@sda21(r13)
-	addi     r3, r4, 1
-	slwi     r0, r4, 2
-	stw      r3, numBuffer__Q24Game8Stickers@sda21(r13)
-	stwx     r29, r5, r0
-	lwz      r29, 0xfc(r29)
-
-lbl_8019FD38:
-	cmplwi   r29, 0
-	bne      lbl_8019FCF8
-	lwz      r0, 0x24(r1)
-	mr       r3, r31
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	lwz      r28, 0x10(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	P2ASSERTLINE(512, !mutex);
+	mutex       = true;
+	Creature* c = obj->mSticked;
+	numBuffer   = 0;
+	for (; c; c = c->mCaptured) {
+		JUT_ASSERTLINE(519, numBuffer < maxBuffer, "too many stickers !\n");
+		buffer[numBuffer++] = c;
+	}
 }
 
-/*
- * --INFO--
- * Address:	8019FD64
- * Size:	00008C
+/**
+ * @note Address: 0x8019FD64
+ * @note Size: 0x8C
  */
 Stickers::~Stickers()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	or.      r30, r3, r3
-	beq      lbl_8019FDD4
-	lis      r4, __vt__Q24Game8Stickers@ha
-	li       r0, 0
-	addi     r4, r4, __vt__Q24Game8Stickers@l
-	stw      r4, 0(r30)
-	stb      r0, mutex__Q24Game8Stickers@sda21(r13)
-	stw      r0, numBuffer__Q24Game8Stickers@sda21(r13)
-	beq      lbl_8019FDC4
-	lis      r4, "__vt__27Container<Q24Game8Creature>"@ha
-	addi     r0, r4, "__vt__27Container<Q24Game8Creature>"@l
-	stw      r0, 0(r30)
-	beq      lbl_8019FDC4
-	lis      r5, __vt__16GenericContainer@ha
-	li       r4, 0
-	addi     r0, r5, __vt__16GenericContainer@l
-	stw      r0, 0(r30)
-	bl       __dt__5CNodeFv
-
-lbl_8019FDC4:
-	extsh.   r0, r31
-	ble      lbl_8019FDD4
-	mr       r3, r30
-	bl       __dl__FPv
-
-lbl_8019FDD4:
-	lwz      r0, 0x14(r1)
-	mr       r3, r30
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mutex     = false;
+	numBuffer = 0;
 }
 
-/*
- * --INFO--
- * Address:	8019FDF0
- * Size:	000070
+/**
+ * @note Address: 0x8019FDF0
+ * @note Size: 0x70
  */
-Creature* Stickers::get(void*)
+Creature* Stickers::get(void* id)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	li       r3, 0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	or.      r31, r4, r4
-	blt      lbl_8019FE1C
-	lwz      r0, numBuffer__Q24Game8Stickers@sda21(r13)
-	cmpw     r31, r0
-	bge      lbl_8019FE1C
-	li       r3, 1
-
-lbl_8019FE1C:
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8019FE40
-	lis      r3, lbl_8047F228@ha
-	lis      r5, lbl_8047F23C@ha
-	addi     r3, r3, lbl_8047F228@l
-	li       r4, 0x217
-	addi     r5, r5, lbl_8047F23C@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8019FE40:
-	lwz      r3, buffer__Q24Game8Stickers@sda21(r13)
-	slwi     r0, r31, 2
-	lwzx     r3, r3, r0
-	lwz      r31, 0xc(r1)
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	P2ASSERTBOUNDSLINE(535, 0, (int)id, (int)numBuffer);
+	return buffer[(int)id];
 }
 
-/*
- * --INFO--
- * Address:	8019FE60
- * Size:	000008
+/**
+ * @note Address: 0x8019FE60
+ * @note Size: 0x8
  */
-void* Stickers::getNext(void*)
-{
-	/*
-	addi     r3, r4, 1
-	blr
-	*/
-}
+void* Stickers::getNext(void* in) { return (void*)((int)in + 1); }
 
-/*
- * --INFO--
- * Address:	8019FE68
- * Size:	000008
+/**
+ * @note Address: 0x8019FE68
+ * @note Size: 0x8
  */
 void* Stickers::getStart() { return nullptr; }
 
-/*
- * --INFO--
- * Address:	8019FE70
- * Size:	000008
+/**
+ * @note Address: 0x8019FE70
+ * @note Size: 0x8
  */
-void* Stickers::getEnd()
-{
-	/*
-	lwz      r3, numBuffer__Q24Game8Stickers@sda21(r13)
-	blr
-	*/
-}
+void* Stickers::getEnd() { return (void*)numBuffer; }
+
 } // namespace Game

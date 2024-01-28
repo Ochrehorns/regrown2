@@ -90,7 +90,7 @@ struct TChasePosPos : public TSync {
 };
 
 struct TChasePosPosLocalYScale : public TSync {
-	TChasePosPosLocalYScale();
+	TChasePosPosLocalYScale() { }
 
 	inline TChasePosPosLocalYScale(u16 effectID)
 	    : TSync()
@@ -148,13 +148,20 @@ struct TChasePosPosLocalYScale3 : public TSyncGroup3<TChasePosPosLocalYScale> {
 };
 
 struct TChasePosPosLocalZScale : public TSync {
-	TChasePosPosLocalZScale();
+	TChasePosPosLocalZScale() { }
 
 	inline TChasePosPosLocalZScale(u16 effectID) // probably
-	    : TSync()
-	    , _10(nullptr)
-	    , _14(nullptr)
+	    : mPosPtrA(nullptr)
+	    , mPosPtrB(nullptr)
 	    , _18(0.0f)
+	{
+		mEffectID = effectID;
+	}
+
+	inline TChasePosPosLocalZScale(u16 effectID, f32 scale) // probably
+	    : mPosPtrA(nullptr)
+	    , mPosPtrB(nullptr)
+	    , _18(scale)
 	{
 		mEffectID = effectID;
 	}
@@ -164,11 +171,17 @@ struct TChasePosPosLocalZScale : public TSync {
 	virtual void doExecuteEmitterOperation(JPABaseEmitter*); // _38
 	virtual ~TChasePosPosLocalZScale() { }                   // _48 (weak, thunk at _1C)
 
+	inline void setPosPtrs(Vector3f* posA, Vector3f* posB)
+	{
+		mPosPtrA = posA;
+		mPosPtrB = posB;
+	}
+
 	// _00		= VTBL
 	// _00-_10	= TSync
-	Vector3f* _10; // _10
-	Vector3f* _14; // _14
-	f32 _18;       // _18
+	Vector3f* mPosPtrA; // _10
+	Vector3f* mPosPtrB; // _14
+	f32 _18;            // _18
 };
 
 struct TChasePosPosLocalZScale2 : public TSyncGroup2<TChasePosPosLocalZScale> {
@@ -190,7 +203,7 @@ struct TChasePosPosLocalZScale3 : public TSyncGroup3<TChasePosPosLocalZScale> {
 };
 
 struct TChasePosYRot : public TSync {
-	TChasePosYRot();
+	TChasePosYRot() { }
 
 	inline TChasePosYRot(Vector3f* position, f32* rotation, u16 effectID)
 	    : TSync()

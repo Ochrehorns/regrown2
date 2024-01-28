@@ -1,11 +1,10 @@
 #include "Dolphin/gba.h"
 
-/*
- * --INFO--
- * Address:	800FED70
- * Size:	000060
+/**
+ * @note Address: 0x800FED70
+ * @note Size: 0x60
  */
-void ReadProc(int chan)
+void ReadProc(s32 chan)
 {
 	GBAControl* gba = &__GBA[chan];
 	if (gba->ret == 0) {
@@ -14,12 +13,11 @@ void ReadProc(int chan)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00006C
+/**
+ * @note Address: N/A
+ * @note Size: 0x6C
  */
-int GBAReadAsync(int chan, u8* ptr, u8* statusPtr)
+int GBAReadAsync(s32 chan, u8* ptr, u8* statusPtr)
 {
 	GBAControl* gba = &__GBA[chan];
 	if (gba->callback) {
@@ -32,12 +30,11 @@ int GBAReadAsync(int chan, u8* ptr, u8* statusPtr)
 	return __GBATransfer(chan, 1, 5, ReadProc);
 }
 
-/*
- * --INFO--
- * Address:	800FEDD0
- * Size:	000094
+/**
+ * @note Address: 0x800FEDD0
+ * @note Size: 0x94
  */
-int GBARead(int chan, u8* ptr, u8* statusPtr)
+int GBARead(s32 chan, u8* ptr, u8* statusPtr)
 {
 	int _unused; // for stack size, probably commented out code
 	int status = GBAReadAsync(chan, ptr, statusPtr);

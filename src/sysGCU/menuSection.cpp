@@ -2,36 +2,33 @@
 #include "RootMenuSection.h"
 #include "System.h"
 
-/*
- * --INFO--
- * Address:	804245CC
- * Size:	000048
+/**
+ * @note Address: 0x804245CC
+ * @note Size: 0x48
  */
 MenuSection::MenuSection(JFWDisplay* display, JKRHeap* heap, bool b)
     : Section(display, heap, b)
 {
 	mCurrentSection = nullptr;
-	_3C             = false;
+	mIsDone         = false;
 }
 
-/*
- * --INFO--
- * Address:	80424614
- * Size:	000054
+/**
+ * @note Address: 0x80424614
+ * @note Size: 0x54
  */
 void MenuSection::run()
 {
-	_3C = false;
+	mIsDone = false;
 	do {
 		mIsMainActive = true;
 		MenuSection::runChildSection();
-	} while (!_3C);
+	} while (!mIsDone);
 }
 
-/*
- * --INFO--
- * Address:	80424668
- * Size:	000148
+/**
+ * @note Address: 0x80424668
+ * @note Size: 0x148
  */
 bool MenuSection::runChildSection()
 {
@@ -47,7 +44,7 @@ bool MenuSection::runChildSection()
 		mCurrentSection->init();
 
 		sys->heapStatusEnd("ChildSection::init");
-		sys->mDeltaTime = sys->mFpsFactor / 60.0f;
+		sys->mDeltaTime = sys->mFrameRate / 60.0f;
 		mCurrentSection->run();
 		mCurrentSection->exit();
 

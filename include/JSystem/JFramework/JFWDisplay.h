@@ -1,6 +1,7 @@
 #ifndef _JSYSTEM_JFW_JFWDISPLAY_H
 #define _JSYSTEM_JFW_JFWDISPLAY_H
 
+#include "types.h"
 #include "JSystem/JUtility/TColor.h"
 #include "JSystem/JUtility/JUTFader.h"
 #include "JSystem/JUtility/JUTXfb.h"
@@ -31,7 +32,7 @@ struct JFWDisplay {
 	static JFWDisplay* createManager(const _GXRenderModeObj*, JKRHeap*, JUTXfb::EXfbNumber, bool);
 	static void destroyManager();
 	void waitBlanking(int);
-	void threadSleep(long long);
+	void threadSleep(s64);
 	void clearEfb_init();
 	void clearEfb(GXColor);
 	void clearEfb(int, int, int, int, GXColor);
@@ -81,8 +82,8 @@ struct JFWDisplay {
 
 	void setTickRate(u32 rate)
 	{
-		mTickRate           = rate;
-		mSecondsPer60Frames = 0;
+		mTickRate  = rate;
+		mFrameRate = 0;
 	}
 
 	static JFWDisplay* sManager;
@@ -94,7 +95,7 @@ struct JFWDisplay {
 	JUTXfb* mXfb;                 // _10
 	u16 mGamma;                   // _14
 	EDrawDone mDrawDoneMethod;    // _18
-	u16 mSecondsPer60Frames;      // _1C
+	u16 mFrameRate;               // _1C
 	u32 mTickRate;                // _20
 	bool mIsAlphaEnabled;         // _24
 	u16 mClamp;                   // _26

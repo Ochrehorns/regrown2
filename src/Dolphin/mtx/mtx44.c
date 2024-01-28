@@ -1,382 +1,319 @@
+#include "Dolphin/mtx.h"
+#include "math.h"
 
-
-/*
- * --INFO--
- * Address:	........
- * Size:	00009C
+/**
+ * @note Address: N/A
+ * @note Size: 0x9C
  */
-void C_MTXFrustum(void)
+void C_MTXFrustum(Mtx44 m, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6)
 {
-	// UNUSED FUNCTION
+	f32 tmp = 1.0f / (arg4 - arg3);
+	m[0][0] = (2 * arg5) * tmp;
+	m[0][1] = 0.0f;
+	m[0][2] = (arg4 + arg3) * tmp;
+	m[0][3] = 0.0f;
+	tmp     = 1.0f / (arg1 - arg2);
+	m[1][0] = 0.0f;
+	m[1][1] = (2 * arg5) * tmp;
+	m[1][2] = (arg1 + arg2) * tmp;
+	m[1][3] = 0.0f;
+	m[2][0] = 0.0f;
+	m[2][1] = 0.0f;
+	tmp     = 1.0f / (arg6 - arg5);
+	m[2][2] = -(arg5)*tmp;
+	m[2][3] = -(arg6 * arg5) * tmp;
+	m[3][0] = 0.0f;
+	m[3][1] = 0.0f;
+	m[3][2] = -1.0f;
+	m[3][3] = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	800EAD08
- * Size:	0000D0
+/**
+ * @note Address: 0x800EAD08
+ * @note Size: 0xD0
  */
-void C_MTXPerspective(void)
+void C_MTXPerspective(Mtx44 m, f32 fovY, f32 aspect, f32 n, f32 f)
 {
-	/*
-	.loc_0x0:
-	  mflr      r0
-	  stw       r0, 0x4(r1)
-	  stwu      r1, -0x40(r1)
-	  stfd      f31, 0x38(r1)
-	  fmr       f31, f4
-	  stfd      f30, 0x30(r1)
-	  fmr       f30, f3
-	  stfd      f29, 0x28(r1)
-	  fmr       f29, f2
-	  stw       r31, 0x24(r1)
-	  mr        r31, r3
-	  lfs       f5, -0x6C20(r2)
-	  lfs       f0, -0x6C1C(r2)
-	  fmuls     f1, f5, f1
-	  fmuls     f1, f0, f1
-	  bl        -0x1B0F4
-	  lfs       f3, -0x6C30(r2)
-	  fsubs     f2, f31, f30
-	  fmuls     f0, f31, f30
-	  fdivs     f4, f3, f1
-	  fdivs     f1, f4, f29
-	  stfs      f1, 0x0(r31)
-	  fdivs     f3, f3, f2
-	  lfs       f2, -0x6C28(r2)
-	  stfs      f2, 0x4(r31)
-	  stfs      f2, 0x8(r31)
-	  stfs      f2, 0xC(r31)
-	  stfs      f2, 0x10(r31)
-	  fneg      f1, f30
-	  fneg      f0, f0
-	  stfs      f4, 0x14(r31)
-	  fmuls     f1, f1, f3
-	  stfs      f2, 0x18(r31)
-	  fmuls     f0, f3, f0
-	  stfs      f2, 0x1C(r31)
-	  stfs      f2, 0x20(r31)
-	  stfs      f2, 0x24(r31)
-	  stfs      f1, 0x28(r31)
-	  stfs      f0, 0x2C(r31)
-	  stfs      f2, 0x30(r31)
-	  stfs      f2, 0x34(r31)
-	  lfs       f0, -0x6C24(r2)
-	  stfs      f0, 0x38(r31)
-	  stfs      f2, 0x3C(r31)
-	  lwz       r0, 0x44(r1)
-	  lfd       f31, 0x38(r1)
-	  lfd       f30, 0x30(r1)
-	  lfd       f29, 0x28(r1)
-	  lwz       r31, 0x24(r1)
-	  addi      r1, r1, 0x40
-	  mtlr      r0
-	  blr
-	*/
+	f32 angle = fovY * 0.5f;
+	f32 cot;
+	f32 tmp;
+	angle   = MTXDegToRad(angle);
+	cot     = 1.0f / tanf(angle);
+	m[0][0] = cot / aspect;
+	m[0][1] = 0.0f;
+	m[0][2] = 0.0f;
+	m[0][3] = 0.0f;
+	m[1][0] = 0.0f;
+	m[1][1] = cot;
+	m[1][2] = 0.0f;
+	m[1][3] = 0.0f;
+	m[2][0] = 0.0f;
+	m[2][1] = 0.0f;
+	tmp     = 1.0f / (f - n);
+	m[2][2] = -(n)*tmp;
+	m[2][3] = -(f * n) * tmp;
+	m[3][0] = 0.0f;
+	m[3][1] = 0.0f;
+	m[3][2] = -1.0f;
+	m[3][3] = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	800EADD8
- * Size:	000098
+/**
+ * @note Address: 0x800EADD8
+ * @note Size: 0x98
  */
-void C_MTXOrtho(void)
+void C_MTXOrtho(Mtx44 m, f32 t, f32 b, f32 l, f32 r, f32 n, f32 f)
 {
-	/*
-	.loc_0x0:
-	  fsubs     f8, f4, f3
-	  lfs       f9, -0x6C30(r2)
-	  fsubs     f0, f1, f2
-	  lfs       f7, -0x6C2C(r2)
-	  fadds     f3, f4, f3
-	  fdivs     f10, f9, f8
-	  fdivs     f8, f9, f0
-	  fmuls     f4, f7, f10
-	  fneg      f3, f3
-	  fsubs     f0, f6, f5
-	  stfs      f4, 0x0(r3)
-	  fadds     f1, f1, f2
-	  fmuls     f2, f10, f3
-	  lfs       f3, -0x6C28(r2)
-	  fneg      f1, f1
-	  stfs      f3, 0x4(r3)
-	  fdivs     f4, f9, f0
-	  stfs      f3, 0x8(r3)
-	  stfs      f2, 0xC(r3)
-	  stfs      f3, 0x10(r3)
-	  fmuls     f2, f7, f8
-	  fneg      f0, f6
-	  fmuls     f1, f8, f1
-	  stfs      f2, 0x14(r3)
-	  fmuls     f0, f0, f4
-	  stfs      f3, 0x18(r3)
-	  stfs      f1, 0x1C(r3)
-	  stfs      f3, 0x20(r3)
-	  stfs      f3, 0x24(r3)
-	  lfs       f1, -0x6C24(r2)
-	  fmuls     f1, f1, f4
-	  stfs      f1, 0x28(r3)
-	  stfs      f0, 0x2C(r3)
-	  stfs      f3, 0x30(r3)
-	  stfs      f3, 0x34(r3)
-	  stfs      f3, 0x38(r3)
-	  stfs      f9, 0x3C(r3)
-	  blr
-	*/
+	f32 tmp = 1.0f / (r - l);
+	m[0][0] = 2.0f * tmp;
+	m[0][1] = 0.0f;
+	m[0][2] = 0.0f;
+	m[0][3] = -(r + l) * tmp;
+	tmp     = 1.0f / (t - b);
+	m[1][0] = 0.0f;
+	m[1][1] = 2.0f * tmp;
+	m[1][2] = 0.0f;
+	m[1][3] = -(t + b) * tmp;
+	m[2][0] = 0.0f;
+	m[2][1] = 0.0f;
+	tmp     = 1.0f / (f - n);
+	m[2][2] = -(1.0f) * tmp;
+	m[2][3] = -(f)*tmp;
+	m[3][0] = 0.0f;
+	m[3][1] = 0.0f;
+	m[3][2] = 0.0f;
+	m[3][3] = 1.0f;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00004C
+/**
+ * @note Address: N/A
+ * @note Size: 0x4C
  */
 void C_MTX44Identity(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000034
+/**
+ * @note Address: N/A
+ * @note Size: 0x34
  */
 void PSMTX44Identity(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00008C
+/**
+ * @note Address: N/A
+ * @note Size: 0x8C
  */
 void C_MTX44Copy(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800EAE70
- * Size:	000044
+/**
+ * @note Address: 0x800EAE70
+ * @note Size: 0x44
  */
-void PSMTX44Copy(void)
+ASM void PSMTX44Copy(register Mtx44 src, register Mtx44 dest)
 {
-	/*
-	.loc_0x0:
-	  psq_l     f1,0x0(r3),0,0
-	  psq_st    f1,0x0(r4),0,0
-	  psq_l     f1,0x8(r3),0,0
-	  psq_st    f1,0x8(r4),0,0
-	  psq_l     f1,0x10(r3),0,0
-	  psq_st    f1,0x10(r4),0,0
-	  psq_l     f1,0x18(r3),0,0
-	  psq_st    f1,0x18(r4),0,0
-	  psq_l     f1,0x20(r3),0,0
-	  psq_st    f1,0x20(r4),0,0
-	  psq_l     f1,0x28(r3),0,0
-	  psq_st    f1,0x28(r4),0,0
-	  psq_l     f1,0x30(r3),0,0
-	  psq_st    f1,0x30(r4),0,0
-	  psq_l     f1,0x38(r3),0,0
-	  psq_st    f1,0x38(r4),0,0
-	  blr
-	*/
+#ifdef __MWERKS__ // clang-format off
+	nofralloc;
+	psq_l fp1, 0(src), 0, 0;
+	psq_st fp1, 0(dest), 0, 0;
+	psq_l fp1, 8(src), 0, 0;
+	psq_st fp1, 8(dest), 0, 0;
+	psq_l fp1, 0x10(src), 0, 0;
+	psq_st fp1, 0x10(dest), 0, 0;
+	psq_l fp1, 0x18(src), 0, 0;
+	psq_st fp1, 0x18(dest), 0, 0;
+	psq_l fp1, 0x20(src), 0, 0;
+	psq_st fp1, 0x20(dest), 0, 0;
+	psq_l fp1, 0x28(src), 0, 0;
+	psq_st fp1, 0x28(dest), 0, 0;
+	psq_l fp1, 0x30(src), 0, 0;
+	psq_st fp1, 0x30(dest), 0, 0;
+	psq_l fp1, 0x38(src), 0, 0;
+	psq_st fp1, 0x38(dest), 0, 0;
+	blr;
+#endif // clang-format on
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000450
+/**
+ * @note Address: N/A
+ * @note Size: 0x450
  */
 void C_MTX44Concat(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000104
+/**
+ * @note Address: N/A
+ * @note Size: 0x104
  */
 void PSMTX44Concat(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000C4
+/**
+ * @note Address: N/A
+ * @note Size: 0xC4
  */
 void C_MTX44Transpose(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000064
+/**
+ * @note Address: N/A
+ * @note Size: 0x64
  */
 void PSMTX44Transpose(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0003F0
+/**
+ * @note Address: N/A
+ * @note Size: 0x3F0
  */
 void C_MTX44Inverse(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00004C
+/**
+ * @note Address: N/A
+ * @note Size: 0x4C
  */
 void C_MTX44Trans(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00003C
+/**
+ * @note Address: N/A
+ * @note Size: 0x3C
  */
 void PSMTX44Trans(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000098
+/**
+ * @note Address: N/A
+ * @note Size: 0x98
  */
 void C_MTX44TransApply(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00005C
+/**
+ * @note Address: N/A
+ * @note Size: 0x5C
  */
 void PSMTX44TransApply(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00004C
+/**
+ * @note Address: N/A
+ * @note Size: 0x4C
  */
 void C_MTX44Scale(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000034
+/**
+ * @note Address: N/A
+ * @note Size: 0x34
  */
 void PSMTX44Scale(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000B4
+/**
+ * @note Address: N/A
+ * @note Size: 0xB4
  */
 void C_MTX44ScaleApply(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000068
+/**
+ * @note Address: N/A
+ * @note Size: 0x68
  */
 void PSMTX44ScaleApply(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000070
+/**
+ * @note Address: N/A
+ * @note Size: 0x70
  */
 void C_MTX44RotRad(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000070
+/**
+ * @note Address: N/A
+ * @note Size: 0x70
  */
 void PSMTX44RotRad(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00011C
+/**
+ * @note Address: N/A
+ * @note Size: 0x11C
  */
 void C_MTX44RotTrig(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000D4
+/**
+ * @note Address: N/A
+ * @note Size: 0xD4
  */
 void PSMTX44RotTrig(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00012C
+/**
+ * @note Address: N/A
+ * @note Size: 0x12C
  */
 void C_MTX44RotAxisRad(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000BC
+/**
+ * @note Address: N/A
+ * @note Size: 0xBC
  */
 void __PSMTX44RotAxisRadInternal(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000070
+/**
+ * @note Address: N/A
+ * @note Size: 0x70
  */
 void PSMTX44RotAxisRad(void)
 {

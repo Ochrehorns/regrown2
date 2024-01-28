@@ -6,10 +6,9 @@
 namespace Game {
 namespace ElecHiba {
 
-/*
- * --INFO--
- * Address:	8026DFD8
- * Size:	00017C
+/**
+ * @note Address: 0x8026DFD8
+ * @note Size: 0x17C
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -20,14 +19,13 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateAttack);
 }
 
-/*
- * --INFO--
- * Address:	8026E154
- * Size:	0002CC
+/**
+ * @note Address: 0x8026E154
+ * @note Size: 0x2CC
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* elecHiba = static_cast<Obj*>(enemy);
+	Obj* elecHiba = OBJ(enemy);
 
 	elecHiba->enableEvent(0, EB_Untargetable);
 	elecHiba->disableEvent(0, EB_LifegaugeVisible);
@@ -36,7 +34,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 
 	elecHiba->mIsLivingThing = 0;
 	elecHiba->generatorKill();
-	elecHiba->startMotion(0, nullptr);
+	elecHiba->startMotion(ELECHIBAANIM_Wait, nullptr);
 	elecHiba->getJAIObject()->startSound(PSSE_EN_HIBA_STOP, 0);
 	PSStartEnemyFatalHitSE(elecHiba, 0.0f);
 
@@ -57,7 +55,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 
 		childHiba->mIsLivingThing = 0;
 		childHiba->generatorKill();
-		childHiba->startMotion(0, nullptr);
+		childHiba->startMotion(ELECHIBAANIM_Wait, nullptr);
 		childHiba->getJAIObject()->startSound(PSSE_EN_HIBA_STOP, 0);
 		PSStartEnemyFatalHitSE(childHiba, 0.0f);
 
@@ -72,28 +70,25 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8026E428
- * Size:	000004
+/**
+ * @note Address: 0x8026E428
+ * @note Size: 0x4
  */
 void StateDead::exec(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8026E42C
- * Size:	000004
+/**
+ * @note Address: 0x8026E42C
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8026E430
- * Size:	000070
+/**
+ * @note Address: 0x8026E430
+ * @note Size: 0x70
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* elecHiba     = static_cast<Obj*>(enemy);
+	Obj* elecHiba     = OBJ(enemy);
 	WaitStateArg* arg = static_cast<WaitStateArg*>(stateArg);
 
 	if (arg) {
@@ -102,22 +97,21 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 		elecHiba->mWaitTimer = 0.0f;
 	}
 
-	elecHiba->startMotion(0, nullptr);
+	elecHiba->startMotion(ELECHIBAANIM_Wait, nullptr);
 
 	Obj* childHiba = elecHiba->getChildObjPtr();
 	if (childHiba) {
-		childHiba->startMotion(0, nullptr);
+		childHiba->startMotion(ELECHIBAANIM_Wait, nullptr);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8026E4A0
- * Size:	0000E4
+/**
+ * @note Address: 0x8026E4A0
+ * @note Size: 0xE4
  */
 void StateWait::exec(EnemyBase* enemy)
 {
-	Obj* elecHiba = static_cast<Obj*>(enemy);
+	Obj* elecHiba = OBJ(enemy);
 
 	elecHiba->mWaitTimer += sys->mDeltaTime;
 
@@ -132,42 +126,39 @@ void StateWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8026E584
- * Size:	000004
+/**
+ * @note Address: 0x8026E584
+ * @note Size: 0x4
  */
 void StateWait::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8026E588
- * Size:	000088
+/**
+ * @note Address: 0x8026E588
+ * @note Size: 0x88
  */
 void StateSign::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* elecHiba = static_cast<Obj*>(enemy);
+	Obj* elecHiba = OBJ(enemy);
 
 	elecHiba->mWaitTimer = 0.0f;
 	elecHiba->disableEvent(0, EB_Cullable);
-	elecHiba->startMotion(0, nullptr);
+	elecHiba->startMotion(ELECHIBAANIM_Wait, nullptr);
 
 	Obj* childHiba = elecHiba->getChildObjPtr();
 	if (childHiba) {
 		childHiba->disableEvent(0, EB_Cullable);
-		childHiba->startMotion(0, nullptr);
+		childHiba->startMotion(ELECHIBAANIM_Wait, nullptr);
 		elecHiba->startChargeEffect(childHiba);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8026E610
- * Size:	0000F8
+/**
+ * @note Address: 0x8026E610
+ * @note Size: 0xF8
  */
 void StateSign::exec(EnemyBase* enemy)
 {
-	Obj* elecHiba = static_cast<Obj*>(enemy);
+	Obj* elecHiba = OBJ(enemy);
 
 	elecHiba->mWaitTimer += sys->mDeltaTime;
 	elecHiba->getJAIObject()->startSound(PSSE_EN_ELEC_HIBA_CHARGE, 0);
@@ -184,14 +175,13 @@ void StateSign::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8026E708
- * Size:	000044
+/**
+ * @note Address: 0x8026E708
+ * @note Size: 0x44
  */
 void StateSign::cleanup(EnemyBase* enemy)
 {
-	Obj* elecHiba = static_cast<Obj*>(enemy);
+	Obj* elecHiba = OBJ(enemy);
 
 	elecHiba->enableEvent(0, EB_Cullable);
 
@@ -201,36 +191,34 @@ void StateSign::cleanup(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8026E74C
- * Size:	000084
+/**
+ * @note Address: 0x8026E74C
+ * @note Size: 0x84
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* elecHiba = static_cast<Obj*>(enemy);
+	Obj* elecHiba = OBJ(enemy);
 
 	elecHiba->mWaitTimer = 0.0f;
 	elecHiba->disableEvent(0, EB_Cullable);
-	elecHiba->startMotion(0, nullptr);
+	elecHiba->startMotion(ELECHIBAANIM_Wait, nullptr);
 	elecHiba->setVersusHibaType();
 
 	Obj* childHiba = elecHiba->getChildObjPtr();
 	if (childHiba) {
 		childHiba->disableEvent(0, EB_Cullable);
-		childHiba->startMotion(0, nullptr);
+		childHiba->startMotion(ELECHIBAANIM_Wait, nullptr);
 		elecHiba->startDisChargeEffect();
 	}
 }
 
-/*
- * --INFO--
- * Address:	8026E7D0
- * Size:	000164
+/**
+ * @note Address: 0x8026E7D0
+ * @note Size: 0x164
  */
 void StateAttack::exec(EnemyBase* enemy)
 {
-	Obj* elecHiba = static_cast<Obj*>(enemy);
+	Obj* elecHiba = OBJ(enemy);
 
 	elecHiba->mWaitTimer += sys->mDeltaTime;
 
@@ -254,14 +242,13 @@ void StateAttack::exec(EnemyBase* enemy)
 	elecHiba->getJAIObject()->startSound(PSSE_EN_ELEC_HIBA_SPARK, 0);
 }
 
-/*
- * --INFO--
- * Address:	8026E934
- * Size:	000060
+/**
+ * @note Address: 0x8026E934
+ * @note Size: 0x60
  */
 void StateAttack::cleanup(EnemyBase* enemy)
 {
-	Obj* elecHiba = static_cast<Obj*>(enemy);
+	Obj* elecHiba = OBJ(enemy);
 
 	elecHiba->enableEvent(0, EB_Cullable);
 

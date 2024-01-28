@@ -2,57 +2,55 @@
 #include "JSystem/JGadget/list.h"
 #include "types.h"
 
-/*
-    Generated from dpostproc
-*/
-
-/*
- * --INFO--
- * Address:	80027484
- * Size:	000020
+/**
+ * @note Address: 0x80027484
+ * @note Size: 0x20
  */
 // void __ct__Q27JGadget18TList_pointer_voidFRCQ27JGadget14TAllocator<void*>()
-JGadget::TList_pointer_void::TList_pointer_void(const JGadget::TAllocator<void*>& allocator)
+JGadget::TList_pointer_void::TList_pointer_void(const JGadget::TVoidAllocator& allocator)
 {
-	/*
-	lbz      r0, 0(r4)
-	li       r4, 0
-	stb      r0, 0(r3)
-	addi     r0, r3, 8
-	stw      r4, 4(r3)
-	stw      r0, 8(r3)
-	stw      r0, 0xc(r3)
-	blr
-	*/
+	_00         = allocator._00;
+	mChildCount = 0;
+	mNext       = &mNext;
+	mPrev       = &mNext;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000BC
+/**
+ * @note Address: N/A
+ * @note Size: 0xBC
  */
 // JGadget::TList<void*, JGadget::TAllocator<void*>>::~TList()
 // {
 // 	// UNUSED FUNCTION
 // }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000BC
+/**
+ * @note Address: N/A
+ * @note Size: 0xBC
  */
 // JGadget::TList_pointer_void::TList_pointer_void(u32, const void*&, const TAllocator<void*>&)
 // {
 // 	// UNUSED FUNCTION
 // }
 
-/*
- * --INFO--
- * Address:	800274A4
- * Size:	0000C0
+/**
+ * @note Address: 0x800274A4
+ * @note Size: 0xC0
  */
 JGadget::TList_pointer_void::~TList_pointer_void()
 {
+	TList_object* current = static_cast<TList_object*>(mNext);
+	TList_object* next    = current->mNext;
+	while (next != current) {
+		TList_object* tempNext = static_cast<TList_object*>(mNext);
+		next->mPrev->mNext     = next->mNext;
+		tempNext->mPrev        = next->mPrev;
+
+		delete next;
+		next = tempNext;
+		mChildCount--;
+	}
+
 	/*
 	stwu     r1, -0x40(r1)
 	mflr     r0
@@ -113,10 +111,9 @@ lbl_80027540:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80027564
- * Size:	000098
+/**
+ * @note Address: 0x80027564
+ * @note Size: 0x98
  */
 void JGadget::TList_pointer_void::insert(JGadget::TList_pointer_void::iterator, void* const&)
 {
@@ -171,135 +168,131 @@ void JGadget::TList_pointer_void::insert(JGadget::TList_pointer_void::iterator, 
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00009C
+/**
+ * @note Address: N/A
+ * @note Size: 0x9C
  */
 void JGadget::TList_pointer_void::insert(JGadget::TList_pointer_void::iterator, u32, void* const&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800275FC
- * Size:	000070
+/**
+ * @note Address: 0x800275FC
+ * @note Size: 0x70
  */
-void JGadget::TList_pointer_void::erase(JGadget::TList_pointer_void::iterator)
+void JGadget::TList_pointer_void::erase(JGadget::TList_pointer_void::iterator it)
 {
+	// what the FUCK
+	TList_object** element   = reinterpret_cast<TList_object**>(it.mElement);
+	TList_object* next       = (*element)->mNext;
+	(*element)->mPrev->mNext = next;
+	next->mPrev              = (*element)->mPrev;
+	delete *element;
 	/*
-	.loc_0x0:
-	  stwu      r1, -0x20(r1)
-	  mflr      r0
-	  lwz       r5, 0x0(r5)
-	  stw       r0, 0x24(r1)
-	  stw       r31, 0x1C(r1)
-	  stw       r30, 0x18(r1)
-	  mr        r30, r4
-	  stw       r29, 0x14(r1)
-	  mr        r29, r3
-	  mr        r3, r5
-	  lwz       r31, 0x0(r5)
-	  lwz       r4, 0x4(r5)
-	  stw       r5, 0x8(r1)
-	  stw       r31, 0x0(r4)
-	  lwz       r0, 0x4(r5)
-	  stw       r0, 0x4(r31)
-	  bl        -0x3588
-	  lwz       r3, 0x4(r30)
-	  subi      r0, r3, 0x1
-	  stw       r0, 0x4(r30)
-	  stw       r31, 0x0(r29)
-	  lwz       r0, 0x24(r1)
-	  lwz       r31, 0x1C(r1)
-	  lwz       r30, 0x18(r1)
-	  lwz       r29, 0x14(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x20
-	  blr
-	*/
+.loc_0x0:
+  stwu      r1, -0x20(r1)
+  mflr      r0
+  lwz       r5, 0x0(r5)
+  stw       r0, 0x24(r1)
+  stw       r31, 0x1C(r1)
+  stw       r30, 0x18(r1)
+  mr        r30, r4
+  stw       r29, 0x14(r1)
+  mr        r29, r3
+  mr        r3, r5
+  lwz       r31, 0x0(r5)
+  lwz       r4, 0x4(r5)
+  stw       r5, 0x8(r1)
+  stw       r31, 0x0(r4)
+  lwz       r0, 0x4(r5)
+  stw       r0, 0x4(r31)
+  bl        -0x3588
+  lwz       r3, 0x4(r30)
+  subi      r0, r3, 0x1
+  stw       r0, 0x4(r30)
+  stw       r31, 0x0(r29)
+  lwz       r0, 0x24(r1)
+  lwz       r31, 0x1C(r1)
+  lwz       r30, 0x18(r1)
+  lwz       r29, 0x14(r1)
+  mtlr      r0
+  addi      r1, r1, 0x20
+  blr
+*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000A0
+/**
+ * @note Address: N/A
+ * @note Size: 0xA0
  */
 void JGadget::TList_pointer_void::erase(JGadget::TList_pointer_void::iterator, JGadget::TList_pointer_void::iterator)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E4
+/**
+ * @note Address: N/A
+ * @note Size: 0xE4
  */
 void JGadget::TList_pointer_void::remove(void* const&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000020
+/**
+ * @note Address: N/A
+ * @note Size: 0x20
  */
-void JGadget::TList_pointer_void::assign(unsigned long, void* const&)
+void JGadget::TList_pointer_void::assign(u32, void* const&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000100
+/**
+ * @note Address: N/A
+ * @note Size: 0x100
  */
 template <>
-void JGadget::TList<void*, JGadget::TAllocator<void*>>::assign(u32, void* const&)
+void JGadget::TList<void*, JGadget::TVoidAllocator>::assign(u32, void* const&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000FC
+/**
+ * @note Address: N/A
+ * @note Size: 0xFC
  */
-void JGadget::TList_pointer_void::resize(unsigned long, void* const&)
+void JGadget::TList_pointer_void::resize(u32, void* const&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000DC
+/**
+ * @note Address: N/A
+ * @note Size: 0xDC
  */
 void JGadget::TList_pointer_void::unique()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000030
+/**
+ * @note Address: N/A
+ * @note Size: 0x30
  */
 JGadget::TList_pointer_void& JGadget::TList_pointer_void::operator=(JGadget::TList_pointer_void const&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000194
+/**
+ * @note Address: N/A
+ * @note Size: 0x194
  */
 template <>
-JGadget::TList<void*, JGadget::TAllocator<void*>>&
-JGadget::TList<void*, JGadget::TAllocator<void*>>::operator=(const TList<void*, JGadget::TAllocator<void*>>& other)
+JGadget::TList<void*, JGadget::TVoidAllocator>&
+JGadget::TList<void*, JGadget::TVoidAllocator>::operator=(const TList<void*, JGadget::TVoidAllocator>& other)
 // void __as__Q27JGadget36TList<void*, JGadget::TAllocator<void*>> FRCQ27JGadget36TList<void*, JGadget::TAllocator<void*>>()
 {
 	// UNUSED FUNCTION

@@ -7,10 +7,9 @@
 namespace Game {
 namespace Tadpole {
 
-/*
- * --INFO--
- * Address:	802785D0
- * Size:	000130
+/**
+ * @note Address: 0x802785D0
+ * @note Size: 0x130
  */
 Obj::Obj()
 {
@@ -18,17 +17,15 @@ Obj::Obj()
 	setFSM(new FSM);
 }
 
-/*
- * --INFO--
- * Address:	80278700
- * Size:	000004
+/**
+ * @note Address: 0x80278700
+ * @note Size: 0x4
  */
 void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-/*
- * --INFO--
- * Address:	80278704
- * Size:	000064
+/**
+ * @note Address: 0x80278704
+ * @note Size: 0x64
  */
 void Obj::onInit(CreatureInitArg* initArg)
 {
@@ -39,31 +36,27 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mFsm->start(this, TADPOLE_Wait, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80278768
- * Size:	000034
+/**
+ * @note Address: 0x80278768
+ * @note Size: 0x34
  */
 void Obj::doUpdate() { mFsm->exec(this); }
 
-/*
- * --INFO--
- * Address:	8027879C
- * Size:	000004
+/**
+ * @note Address: 0x8027879C
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	802787A0
- * Size:	000020
+/**
+ * @note Address: 0x802787A0
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	802787C0
- * Size:	00004C
+/**
+ * @note Address: 0x802787C0
+ * @note Size: 0x4C
  */
 void Obj::setFSM(FSM* fsm)
 {
@@ -72,10 +65,9 @@ void Obj::setFSM(FSM* fsm)
 	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8027880C
- * Size:	0000B0
+/**
+ * @note Address: 0x8027880C
+ * @note Size: 0xB0
  */
 void Obj::getShadowParam(ShadowParam& param)
 {
@@ -90,10 +82,9 @@ void Obj::getShadowParam(ShadowParam& param)
 	param.mSize = 7.5f;
 }
 
-/*
- * --INFO--
- * Address:	802788BC
- * Size:	000068
+/**
+ * @note Address: 0x802788BC
+ * @note Size: 0x68
  */
 bool Obj::hipdropCallBack(Creature* creature, f32 damage, CollPart* collpart)
 {
@@ -105,38 +96,35 @@ bool Obj::hipdropCallBack(Creature* creature, f32 damage, CollPart* collpart)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80278924
- * Size:	000028
+/**
+ * @note Address: 0x80278924
+ * @note Size: 0x28
  */
-void Obj::startCarcassMotion() { startMotion(5, nullptr); }
+void Obj::startCarcassMotion() { startMotion(TADPOLEANIM_Carry, nullptr); }
 
-/*
- * --INFO--
- * Address:	8027894C
- * Size:	0001E4
+/**
+ * @note Address: 0x8027894C
+ * @note Size: 0x1E4
  */
 void Obj::setRandTarget(bool check)
 {
 	f32 p1 = 0.0f;
 	if (!check) {
-		p1 = C_PARMS->mGeneral.mTerritoryRadius.mValue - C_PARMS->mGeneral.mHomeRadius.mValue;
+		p1 = C_GENERALPARMS.mTerritoryRadius.mValue - C_GENERALPARMS.mHomeRadius.mValue;
 	}
 
-	f32 radius          = randWeightFloat(p1) + C_PARMS->mGeneral.mHomeRadius.mValue;
+	f32 radius          = randWeightFloat(p1) + C_GENERALPARMS.mHomeRadius.mValue;
 	Vector3f tadpolePos = getPosition();
 	Vector3f homePos    = mHomePosition;
 	f32 angle           = JMath::atanTable_.atan2_(tadpolePos.x - homePos.x, tadpolePos.z - homePos.z);
 	angle               = randWeightFloat(PI) + angle + HALF_PI;
 
-	mTargetPosition = Vector3f(radius * pikmin2_sinf(angle) + homePos.x, homePos.y, radius * pikmin2_cosf(angle) + homePos.z);
+	mTargetPosition = Vector3f(radius * sinf(angle) + homePos.x, homePos.y, radius * cosf(angle) + homePos.z);
 }
 
-/*
- * --INFO--
- * Address:	80278B30
- * Size:	0001C8
+/**
+ * @note Address: 0x80278B30
+ * @note Size: 0x1C8
  */
 Vector3f Obj::getTargetPosition(Creature* target)
 {
@@ -148,24 +136,21 @@ Vector3f Obj::getTargetPosition(Creature* target)
 	sep.y        = 0.0f;
 	sep.normalise();
 
-	sep *= C_PARMS->mGeneral.mMoveSpeed.mValue;
+	sep *= C_GENERALPARMS.mMoveSpeed.mValue;
 	sep += tadpolePos;
 
-	f32 territory = C_PARMS->mGeneral.mTerritoryRadius.mValue;
+	f32 territory = C_GENERALPARMS.mTerritoryRadius.mValue;
 	if (sqrDistanceXZ(sep, homePos) > SQUARE(territory)) {
-		sep -= homePos;
-		sep.y = 0.0f;
-		sep.normalise();
+		Vector3f::getFlatDirectionFromTo(homePos, sep);
 		sep *= territory;
 		sep += homePos;
 	}
 	return sep;
 }
 
-/*
- * --INFO--
- * Address:	80278CF8
- * Size:	000188
+/**
+ * @note Address: 0x80278CF8
+ * @note Size: 0x188
  */
 void Obj::createLeapEffect()
 {

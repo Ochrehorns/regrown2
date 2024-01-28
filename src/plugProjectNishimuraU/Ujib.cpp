@@ -7,10 +7,9 @@
 namespace Game {
 namespace Ujib {
 
-/*
- * --INFO--
- * Address:	80259B4C
- * Size:	000138
+/**
+ * @note Address: 0x80259B4C
+ * @note Size: 0x138
  */
 Obj::Obj()
 {
@@ -18,17 +17,15 @@ Obj::Obj()
 	setFSM(new FSM);
 }
 
-/*
- * --INFO--
- * Address:	80259C84
- * Size:	000004
+/**
+ * @note Address: 0x80259C84
+ * @note Size: 0x4
  */
 void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-/*
- * --INFO--
- * Address:	80259C88
- * Size:	000098
+/**
+ * @note Address: 0x80259C88
+ * @note Size: 0x98
  */
 void Obj::onInit(CreatureInitArg* initArg)
 {
@@ -43,10 +40,9 @@ void Obj::onInit(CreatureInitArg* initArg)
 	doAnimationCullingOff();
 }
 
-/*
- * --INFO--
- * Address:	80259D20
- * Size:	000048
+/**
+ * @note Address: 0x80259D20
+ * @note Size: 0x48
  */
 void Obj::doUpdate()
 {
@@ -54,24 +50,21 @@ void Obj::doUpdate()
 	mMouthSlots.update();
 }
 
-/*
- * --INFO--
- * Address:	80259D68
- * Size:	000004
+/**
+ * @note Address: 0x80259D68
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	80259D6C
- * Size:	000020
+/**
+ * @note Address: 0x80259D6C
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	80259D8C
- * Size:	00004C
+/**
+ * @note Address: 0x80259D8C
+ * @note Size: 0x4C
  */
 void Obj::setFSM(FSM* fsm)
 {
@@ -80,14 +73,13 @@ void Obj::setFSM(FSM* fsm)
 	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80259DD8
- * Size:	0000A8
+/**
+ * @note Address: 0x80259DD8
+ * @note Size: 0xA8
  */
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
-	shadowParam.mPosition = mModel->getJoint("kosijnt")->getWorldMatrix()->getBasis(3);
+	shadowParam.mPosition = mModel->getJoint("kosijnt")->getWorldMatrix()->getColumn(3);
 	shadowParam.mPosition.y -= 2.5f;
 	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
 	if (isEvent(1, EB2_Earthquake)) {
@@ -99,10 +91,9 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 	shadowParam.mSize = 8.0f;
 }
 
-/*
- * --INFO--
- * Address:	80259E80
- * Size:	000094
+/**
+ * @note Address: 0x80259E80
+ * @note Size: 0x94
  */
 bool Obj::pressCallBack(Creature* creature, f32 damage, CollPart* part)
 {
@@ -115,24 +106,21 @@ bool Obj::pressCallBack(Creature* creature, f32 damage, CollPart* part)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80259F14
- * Size:	00002C
+/**
+ * @note Address: 0x80259F14
+ * @note Size: 0x2C
  */
 bool Obj::hipdropCallBack(Creature* creature, f32 damage, CollPart* part) { return pressCallBack(creature, damage, part); }
 
-/*
- * --INFO--
- * Address:	80259F40
- * Size:	000028
+/**
+ * @note Address: 0x80259F40
+ * @note Size: 0x28
  */
-void Obj::startCarcassMotion() { startMotion(8, nullptr); }
+void Obj::startCarcassMotion() { startMotion(UJIBANIM_Carry, nullptr); }
 
-/*
- * --INFO--
- * Address:	80259F68
- * Size:	00008C
+/**
+ * @note Address: 0x80259F68
+ * @note Size: 0x8C
  */
 void Obj::initMouthSlots()
 {
@@ -143,10 +131,9 @@ void Obj::initMouthSlots()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80259FF4
- * Size:	000030
+/**
+ * @note Address: 0x80259FF4
+ * @note Size: 0x30
  */
 void Obj::lifeIncrement()
 {
@@ -157,10 +144,9 @@ void Obj::lifeIncrement()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025A024
- * Size:	000034
+/**
+ * @note Address: 0x8025A024
+ * @note Size: 0x34
  */
 void Obj::setInWaterDamage()
 {
@@ -169,14 +155,13 @@ void Obj::setInWaterDamage()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025A058
- * Size:	0000B4
+/**
+ * @note Address: 0x8025A058
+ * @note Size: 0xB4
  */
 void Obj::resetAppearCheck()
 {
-	if (Game::gameSystem && Game::gameSystem->mMode == GSM_PIKLOPEDIA) {
+	if (Game::gameSystem && Game::gameSystem->isZukanMode()) {
 		int weight = (rand() / RAND_MAX) * 30.0f; // does not match with inline
 		SET_APPCHECK_MAX(mAppearCheck, weight + 5 * getCreatureID());
 
@@ -185,10 +170,9 @@ void Obj::resetAppearCheck()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025A10C
- * Size:	000048
+/**
+ * @note Address: 0x8025A10C
+ * @note Size: 0x48
  */
 bool Obj::isAppearCheck()
 {
@@ -204,10 +188,9 @@ bool Obj::isAppearCheck()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	8025A154
- * Size:	000020
+/**
+ * @note Address: 0x8025A154
+ * @note Size: 0x20
  */
 void Obj::resetBridgeSearch()
 {
@@ -217,10 +200,9 @@ void Obj::resetBridgeSearch()
 	_2D0    = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	8025A174
- * Size:	000048
+/**
+ * @note Address: 0x8025A174
+ * @note Size: 0x48
  */
 void Obj::setBridgeSearch()
 {
@@ -231,10 +213,9 @@ void Obj::setBridgeSearch()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025A1BC
- * Size:	0002C0
+/**
+ * @note Address: 0x8025A1BC
+ * @note Size: 0x2C0
  */
 void Obj::setNearestBridge()
 {
@@ -243,7 +224,7 @@ void Obj::setNearestBridge()
 	_2D0    = 0.0f;
 
 	if (ItemBridge::mgr) {
-		f32 radius = C_PARMS->mGeneral.mTerritoryRadius.mValue;
+		f32 radius = C_GENERALPARMS.mTerritoryRadius.mValue;
 		radius     = SQUARE(radius);
 		Iterator<BaseItem> iter(ItemBridge::mgr);
 		CI_LOOP(iter)
@@ -264,17 +245,15 @@ void Obj::setNearestBridge()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025A47C
- * Size:	000004
+/**
+ * @note Address: 0x8025A47C
+ * @note Size: 0x4
  */
 void Obj::setCullingCheck() { }
 
-/*
- * --INFO--
- * Address:	8025A480
- * Size:	0001B4
+/**
+ * @note Address: 0x8025A480
+ * @note Size: 0x1B4
  */
 int Obj::checkBreakOrMove()
 {
@@ -314,10 +293,9 @@ int Obj::checkBreakOrMove()
 	return UJIB_MoveCentre;
 }
 
-/*
- * --INFO--
- * Address:	8025A634
- * Size:	000028
+/**
+ * @note Address: 0x8025A634
+ * @note Size: 0x28
  */
 bool Obj::isBreakBridge()
 {
@@ -328,10 +306,9 @@ bool Obj::isBreakBridge()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8025A65C
- * Size:	0002A8
+/**
+ * @note Address: 0x8025A65C
+ * @note Size: 0x2A8
  */
 bool Obj::moveBridgeSide()
 {
@@ -346,7 +323,7 @@ bool Obj::moveBridgeSide()
 	startPos += zVec;
 
 	if (sqrDistanceXZ(mPosition, startPos) < 250.0f) {
-		f32 speed    = 0.75f * C_PARMS->mGeneral.mMoveSpeed.mValue;
+		f32 speed    = 0.75f * C_GENERALPARMS.mMoveSpeed.mValue;
 		f32 sinTheta = sin(getFaceDir());
 		f32 y        = getTargetVelocity().y;
 		f32 cosTheta = cos(getFaceDir());
@@ -360,7 +337,7 @@ bool Obj::moveBridgeSide()
 	} else {
 		changeFaceDir(startPos);
 
-		f32 speed    = C_PARMS->mGeneral.mMoveSpeed.mValue;
+		f32 speed    = C_GENERALPARMS.mMoveSpeed.mValue;
 		f32 sinTheta = sin(getFaceDir());
 		f32 y        = getTargetVelocity().y;
 		f32 cosTheta = cos(getFaceDir());
@@ -553,10 +530,9 @@ lbl_8025A8D0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8025A904
- * Size:	000288
+/**
+ * @note Address: 0x8025A904
+ * @note Size: 0x288
  */
 bool Obj::moveBridgeCentre()
 {
@@ -568,7 +544,7 @@ bool Obj::moveBridgeCentre()
 	startPos += xVec;
 
 	if (sqrDistanceXZ(mPosition, startPos) < 250.0f) {
-		f32 speed    = 0.75f * C_PARMS->mGeneral.mMoveSpeed.mValue;
+		f32 speed    = 0.75f * C_GENERALPARMS.mMoveSpeed.mValue;
 		f32 sinTheta = sin(getFaceDir());
 		f32 y        = getTargetVelocity().y;
 		f32 cosTheta = cos(getFaceDir());
@@ -582,7 +558,7 @@ bool Obj::moveBridgeCentre()
 	} else {
 		changeFaceDir(startPos);
 
-		f32 speed    = C_PARMS->mGeneral.mMoveSpeed.mValue;
+		f32 speed    = C_GENERALPARMS.mMoveSpeed.mValue;
 		f32 sinTheta = sin(getFaceDir());
 		f32 y        = getTargetVelocity().y;
 		f32 cosTheta = cos(getFaceDir());
@@ -767,10 +743,9 @@ lbl_8025AB58:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8025AB8C
- * Size:	0002F0
+/**
+ * @note Address: 0x8025AB8C
+ * @note Size: 0x2F0
  */
 bool Obj::moveBridgeTop()
 {
@@ -797,7 +772,7 @@ bool Obj::moveBridgeTop()
 		return true;
 
 	} else if (dist < 250.0f) {
-		f32 speed    = C_PARMS->mGeneral.mMoveSpeed.mValue;
+		f32 speed    = C_GENERALPARMS.mMoveSpeed.mValue;
 		f32 sinTheta = sin(getFaceDir());
 		f32 y        = getTargetVelocity().y;
 		f32 cosTheta = cos(getFaceDir());
@@ -809,7 +784,7 @@ bool Obj::moveBridgeTop()
 		return true;
 
 	} else {
-		f32 speed    = C_PARMS->mGeneral.mMoveSpeed.mValue;
+		f32 speed    = C_GENERALPARMS.mMoveSpeed.mValue;
 		f32 sinTheta = sin(getFaceDir());
 		f32 y        = getTargetVelocity().y;
 		f32 cosTheta = cos(getFaceDir());
@@ -1024,10 +999,9 @@ lbl_8025AE3C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8025AE7C
- * Size:	00005C
+/**
+ * @note Address: 0x8025AE7C
+ * @note Size: 0x5C
  */
 void Obj::breakTargetBridge()
 {
@@ -1035,10 +1009,9 @@ void Obj::breakTargetBridge()
 	mBridge->stimulate(breakBridge);
 }
 
-/*
- * --INFO--
- * Address:	8025AED8
- * Size:	00008C
+/**
+ * @note Address: 0x8025AED8
+ * @note Size: 0x8C
  */
 void Obj::createAppearEffect()
 {
@@ -1047,10 +1020,9 @@ void Obj::createAppearEffect()
 	appearFX.create(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8025AF64
- * Size:	00008C
+/**
+ * @note Address: 0x8025AF64
+ * @note Size: 0x8C
  */
 void Obj::createDisAppearEffect()
 {
@@ -1059,58 +1031,29 @@ void Obj::createDisAppearEffect()
 	hideFX.create(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8025AFF0
- * Size:	000090
+/**
+ * @note Address: 0x8025AFF0
+ * @note Size: 0x90
  */
 void Obj::createBridgeEffect()
 {
-	Vector3f fxPos = mModel->getJoint("kamujnt")->getWorldMatrix()->getBasis(3);
+	Vector3f fxPos = mModel->getJoint("kamujnt")->getWorldMatrix()->getColumn(3);
 	efx::Arg fxArg(fxPos);
 	efx::TUjinkoEat eatFX;
 	eatFX.create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	8025B080
- * Size:	000090
+/**
+ * @note Address: 0x8025B080
+ * @note Size: 0x90
  */
 void Obj::createEatEffect()
 {
-	Vector3f fxPos = mModel->getJoint("kamujnt")->getWorldMatrix()->getBasis(3);
+	Vector3f fxPos = mModel->getJoint("kamujnt")->getWorldMatrix()->getColumn(3);
 	efx::Arg fxArg(fxPos);
 	efx::TUjinkoPkate eatFX;
 	eatFX.create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	8025B110
- * Size:	000008
- */
-bool Obj::isUnderground() { return mIsUnderground; }
-
-/*
- * --INFO--
- * Address:	8025B118
- * Size:	000008
- */
-MouthSlots* Obj::getMouthSlots() { return &mMouthSlots; }
-
-/*
- * --INFO--
- * Address:	8025B120
- * Size:	000008
- */
-f32 Obj::getDownSmokeScale() { return 0.35f; }
-
-/*
- * --INFO--
- * Address:	8025B128
- * Size:	000008
- */
-EnemyTypeID::EEnemyTypeID Obj::getEnemyTypeID() { return EnemyTypeID::EnemyID_UjiB; }
 } // namespace Ujib
 } // namespace Game

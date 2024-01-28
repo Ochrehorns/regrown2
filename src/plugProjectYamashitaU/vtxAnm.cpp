@@ -2,50 +2,43 @@
 
 namespace Game {
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000044
+/**
+ * @note Address: N/A
+ * @note Size: 0x44
  */
 FieldVtxColorControl::FieldVtxColorControl()
 {
-	mNext     = nullptr;
-	mPosition = Vector3f::zero;
-	_10       = 10.0f;
-	mPower    = 0.0f;
-	_18       = 1.0f;
-	_1C       = 0;
+	mNext         = nullptr;
+	mPosition     = Vector3f::zero;
+	mRadius       = 10.0f;
+	mPower        = 0.0f;
+	mCurrentPower = 1.0f;
+	mControlInfo  = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80122450
- * Size:	0000B0
+/**
+ * @note Address: 0x80122450
+ * @note Size: 0xB0
  */
 FieldVtxColorMgr::FieldVtxColorMgr(J3DModelData* modelData)
     : CNode("FieldVtxColorMgr")
     , mModelData(nullptr)
     , mInfo(nullptr)
     , mControl(nullptr)
-    , _34(0.01f)
-    , _38(0)
-    , _39(0)
-    , _3A(0)
-    , _3B(0)
+    , mSmoothingRate(0.01f)
 {
 	mModelData = modelData;
 	createFieldVtxColorInfo();
 }
 
-/*
- * --INFO--
- * Address:	80122500
- * Size:	0001F8
+/**
+ * @note Address: 0x80122500
+ * @note Size: 0x1F8
  */
 void FieldVtxColorMgr::createFieldVtxColorInfo()
 {
 	GXColor* color = mModelData->getVtxColorArray(0);
-	_2C            = 0;
+	mInfoCount     = 0;
 	u32 vtxNum     = mModelData->getVertexNum();
 
 	mInfo = new (-4) FieldVtxColorInfo[vtxNum];
@@ -61,9 +54,9 @@ void FieldVtxColorMgr::createFieldVtxColorInfo()
 	}
 
 	for (u16 i = 0; i < mModelData->getVertexNum(); i++) {
-		GXColor& thisColor = color[getColorInfo(i)._00];
+		GXColor& thisColor = color[getColorInfo(i).mColorIdx];
 		if (thisColor.a) {
-			_2C++;
+			mInfoCount++;
 		}
 
 		thisColor.b = 255;
@@ -71,12 +64,13 @@ void FieldVtxColorMgr::createFieldVtxColorInfo()
 		thisColor.r = 255;
 	}
 
-	FieldVtxColorInfo* newInfos = new FieldVtxColorInfo[_2C];
+	FieldVtxColorInfo* newInfos = new FieldVtxColorInfo[mInfoCount];
 
 	int infoCount = 0;
 	for (u16 i = 0; i < mModelData->getVertexNum(); i++) {
 		FieldVtxColorInfo& oldInfo = getColorInfo(i);
-		if (color[oldInfo._00].a) {
+
+		if (color[oldInfo.mColorIdx].a) {
 			newInfos[infoCount++] = oldInfo;
 		}
 	}
@@ -236,30 +230,53 @@ lbl_801226D4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80122714
- * Size:	0001C8
+/**
+ * Updates the field vertex color control based on the given control information.
+ * The control's current power is smoothly adjusted towards the target power using the smoothing rate.
+ * The alpha value of each field vertex color info is updated based on the control's current power.
+ *
+ * @param control The field vertex color control to update.
+ *
+ * @note Address: N/A
+ * @note Size: 0xE0
+ */
+void FieldVtxColorMgr::updateFieldVtxColorControl(FieldVtxColorControl* control)
+{
+	FieldVtxColorControlInfo* controlInfo = control->mControlInfo;
+	if (FABS(control->mCurrentPower - control->mPower) < mSmoothingRate) {
+		control->mCurrentPower = control->mPower;
+	} else {
+		control->mCurrentPower += (control->mCurrentPower < control->mPower) ? mSmoothingRate : -mSmoothingRate;
+	}
+
+	f32 alphaFlt = 255.0f * control->mCurrentPower;
+	u8 alpha     = (u8)ROUND_F32_TO_U8(alphaFlt);
+	for (controlInfo; controlInfo; controlInfo = controlInfo->mNext) {
+		FieldVtxColorInfo* info = controlInfo->mInfo;
+		if (controlInfo->mAlphaThreshold <= alpha) {
+			if (info->mAlpha < 255) {
+				info->mAlpha = 255;
+			}
+		} else if ((int)info->mAlpha < 0) { // idk how to get this to check below zero but also be cmplwi (not cmpwi)
+			info->mAlpha = 0;
+		}
+	}
+}
+
+/**
+ * @note Address: 0x80122714
+ * @note Size: 0x1C8
  */
 void FieldVtxColorMgr::initVtxColor()
 {
-	f32 oldFloat = _34;
+	f32 oldFloat = mSmoothingRate;
 
-	_34 = 1.0f;
-	for (int i = 0; i < _2C; i++) {
-		mInfo[i]._04 = 0;
+	mSmoothingRate = 1.0f;
+	for (int i = 0; i < mInfoCount; i++) {
+		mInfo[i].mAlpha = 0;
 	}
 
-	FOREACH_NODE(FieldVtxColorControl, mControl, currControl)
-	{
-		if (FABS(currControl->_18 - currControl->mPower) < _34) {
-			currControl->_18 = currControl->mPower;
-		} else {
-			currControl->_18 += (currControl->_18 < currControl->mPower) ? _34 : -_34;
-		}
-
-		// some nonsense
-	}
+	FOREACH_NODE(FieldVtxColorControl, mControl, currControl) { updateFieldVtxColorControl(currControl); }
 
 	GXColor newColor;
 	newColor.b     = 255;
@@ -267,16 +284,15 @@ void FieldVtxColorMgr::initVtxColor()
 	newColor.r     = 255;
 	GXColor* color = mModelData->getVtxColorArray(0);
 
-	for (int i = 0; i < _2C; i++) {
-		FieldVtxColorInfo& info = mInfo[i];
-		newColor.a              = info._04;
-		int idx                 = info._00;
-		*((u32*)&color[idx])    = *(u32*)(&newColor);
+	for (int i = 0; i < mInfoCount; i++) {
+		newColor.a           = mInfo[i].mAlpha;
+		int idx              = mInfo[i].mColorIdx;
+		*((u32*)&color[idx]) = *(u32*)(&newColor);
 	}
 
-	DCStoreRange(color, mModelData->getVertexColorNum() << 2);
+	DCStoreRange(color, mModelData->getVertexColorNum() * 4);
 
-	_34 = oldFloat;
+	mSmoothingRate = oldFloat;
 	/*
 	stwu     r1, -0x30(r1)
 	mflr     r0
@@ -427,13 +443,60 @@ lbl_801228A0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801228DC
- * Size:	000280
+/**
+ * @note Address: 0x801228DC
+ * @note Size: 0x280
  */
-void FieldVtxColorMgr::calc(J3DVertexBuffer*)
+void FieldVtxColorMgr::calc(J3DVertexBuffer* buffer)
 {
+	if (isFlag(1)) {
+		GXColor* colorList = *buffer->mVtxColor; // r31
+		bool check         = true;               // r30
+
+		for (int i = 0; i < mInfoCount; i++) {
+			mInfo[i].mAlpha = 0;
+		}
+
+		FOREACH_NODE(FieldVtxColorControl, mControl, currControl) { updateFieldVtxColorControl(currControl); }
+
+		for (int i = 0; i < mInfoCount; i++) {
+			int idx  = mInfo[i].mColorIdx;
+			u8 alpha = mInfo[i].mAlpha;
+
+			GXColor& color = colorList[idx];
+			if (color.a == alpha) {
+				continue;
+			}
+
+			if (fabs(color.a - alpha) < 7.0) {
+				color.a = mInfo[i].mAlpha;
+			} else {
+				int offset = -7;
+				if (color.a < mInfo[i].mAlpha) {
+					offset = 7;
+				}
+
+				color.a += offset;
+			}
+
+			check = false;
+		}
+
+		DCStoreRange(colorList, buffer->getVertexData()->getColNum() * 4);
+		buffer->mCurrentVtxColor = colorList;
+		if (check) {
+			resetFlag(1);
+		}
+		return;
+	}
+
+	FOREACH_NODE(FieldVtxColorControl, mControl, control)
+	{
+		if (control->mPower != control->mCurrentPower) {
+			setFlag(1);
+			return;
+		}
+	}
 	/*
 	stwu     r1, -0x20(r1)
 	mflr     r0
@@ -648,13 +711,78 @@ lbl_80122B3C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80122B5C
- * Size:	000158
+/**
+ * @note Address: N/A
+ * @note Size: 0xA4
  */
-void FieldVtxColorMgr::setupFieldVtxColorInfoFromStrip(void*, int, int, int, int)
+void FieldVtxColorMgr::setupFieldVtxColorInfoFromFan(void*, int, int, int, int)
 {
+	// UNUSED FUNCTION
+}
+
+/**
+ * @note Address: 0x80122B5C
+ * @note Size: 0x158
+ */
+void FieldVtxColorMgr::setupFieldVtxColorInfoFromStrip(void* strip, int p1, int p2, int p3, int p4)
+{
+	u16* ptr1 = (u16*)((u16*)strip + p1);
+	u16* ptr2 = (u16*)((u16*)strip + p1 * 2);
+
+	u16 val1 = ptr1[p2];          // r11
+	u16 val2 = ptr2[p2];          // r12
+	u16 val3 = ((u16*)strip)[p2]; // r0
+
+	u16 val4 = ((u16*)strip)[p3]; // r31
+	u16 val5 = ptr1[p3];          // r9
+	u16 val6 = ptr2[p3];          // r10
+
+	if (p4 <= 3) {
+		switch (mInfo[val3].mColorIdx) {
+		case 0xFFFF:
+			((FieldVtxColorInfo*)strip)[val3].mColorIdx = val4;
+		}
+
+		switch (mInfo[val1].mColorIdx) {
+		case 0xFFFF:
+			((FieldVtxColorInfo*)strip)[val1].mColorIdx = val5;
+		}
+
+		switch (mInfo[val2].mColorIdx) {
+		case 0xFFFF:
+			((FieldVtxColorInfo*)strip)[val2].mColorIdx = val6;
+		}
+		return;
+	}
+
+	for (int i = 0, j = 0; i < p4 - 2; i++, j++) {
+		u16* ptr1 = (u16*)((u16*)strip + p1);
+		u16* ptr2 = (u16*)((u16*)strip + p1 * 2);
+
+		u16 val1 = ptr1[p2];          // r11
+		u16 val2 = ptr2[p2];          // r12
+		u16 val3 = ((u16*)strip)[p2]; // r0
+
+		u16 val4 = ((u16*)strip)[p3]; // r31
+		u16 val5 = ptr1[p3];          // r9
+		u16 val6 = ptr2[p3];          // r10
+
+		switch (mInfo[val3].mColorIdx) {
+		case 0xFFFF:
+			((FieldVtxColorInfo*)strip)[val3].mColorIdx = val4;
+		}
+
+		switch (mInfo[val1].mColorIdx) {
+		case 0xFFFF:
+			((FieldVtxColorInfo*)strip)[val1].mColorIdx = val5;
+		}
+
+		switch (mInfo[val2].mColorIdx) {
+		case 0xFFFF:
+			((FieldVtxColorInfo*)strip)[val2].mColorIdx = val6;
+		}
+		return;
+	}
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x20(r1)
@@ -774,13 +902,60 @@ void FieldVtxColorMgr::setupFieldVtxColorInfoFromStrip(void*, int, int, int, int
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80122CB4
- * Size:	000210
+/**
+ * @note Address: 0x80122CB4
+ * @note Size: 0x210
  */
-void FieldVtxColorMgr::setupFieldVtxColorInfo(J3DShape*)
+void FieldVtxColorMgr::setupFieldVtxColorInfo(J3DShape* shape)
 {
+	int p1                  = -1;
+	int p2                  = -1;
+	int p3                  = 0;
+	const int indices[]     = { 0, 1, 1, 2 };
+	GXVtxDescList* descList = shape->mVtxDesc;
+
+	while (descList->mAttr != GX_VA_NULL) {
+		switch (descList->mAttr) {
+		case GX_VA_POS:
+			p1 = p3;
+			if (descList->mType != GX_INDEX16) {
+				return;
+			}
+			break;
+		case GX_VA_CLR0:
+			p2 = p3;
+			if (descList->mType != GX_INDEX16) {
+				return;
+			}
+			break;
+		}
+		p3 += indices[descList->mType];
+		descList++;
+	}
+
+	for (u16 i = 0; i < shape->getMtxGroupNum(); i++) {
+		u8* dispList = const_cast<u8*>(shape->getShapeDraw(i)->mDisplayList);
+		u8* ptr      = dispList;
+		while ((u32)dispList - (u32)ptr < shape->getShapeDraw(i)->mDlSize) {
+			if (ptr[0] == 0) {
+				return;
+			}
+
+			int val = (s16)(ptr[1]);
+			if (ptr[0] == 152) {
+				setupFieldVtxColorInfoFromStrip(&ptr[3], p3, p1, p2, val);
+
+			} else {
+				if (ptr[0] != 160) {
+					return;
+				}
+
+				// probably setupFieldVtxColorInfoFromFan
+			}
+			ptr += p3 * val;
+			ptr += 3;
+		}
+	}
 	/*
 	stwu     r1, -0x40(r1)
 	mflr     r0
@@ -957,17 +1132,16 @@ lbl_80122EB0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80122EC4
- * Size:	000128
+/**
+ * @note Address: 0x80122EC4
+ * @note Size: 0x1288
  */
-FieldVtxColorControl* FieldVtxColorMgr::createNewControl(Vector3f& position, f32 p1, f32 p2)
+FieldVtxColorControl* FieldVtxColorMgr::createNewControl(Vector3f& position, f32 radius, f32 power)
 {
 	FieldVtxColorControl* newControl = new FieldVtxColorControl;
 
 	if (newControl) {
-		setupFieldVtxColorControl(newControl, position, p1, p2);
+		setupFieldVtxColorControl(newControl, position, radius, power);
 
 		FieldVtxColorControl* oldControl = mControl;
 		if (!oldControl) {
@@ -992,7 +1166,6 @@ FieldVtxColorControl* FieldVtxColorMgr::createNewControl(Vector3f& position, f32
 		}
 	}
 
-end:
 	return newControl;
 	/*
 	stwu     r1, -0x40(r1)
@@ -1085,13 +1258,47 @@ lbl_80122FBC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80122FEC
- * Size:	000204
+/**
+ * @note Address: 0x80122FEC
+ * @note Size: 0x204
  */
-void FieldVtxColorMgr::setupFieldVtxColorControl(Game::FieldVtxColorControl*, Vector3f&, float, float)
+void FieldVtxColorMgr::setupFieldVtxColorControl(Game::FieldVtxColorControl* control, Vector3f& pos, f32 radius, f32 power)
 {
+	Vector3f* vtxPosArray = (Vector3f*)mModelData->getVtxPosArray();
+	control->mPosition    = pos;
+	control->mRadius      = radius;
+	control->mPower       = power;
+
+	for (u16 i = 0; i < mInfoCount; i++) {
+		FieldVtxColorInfo* info = &mInfo[i];
+		Vector3f* vtxPos        = &vtxPosArray[info->_02];
+		f32 dist                = pos.distance(*vtxPos);
+		if (dist < radius) {
+			FieldVtxColorControlInfo* ctrlInfo = new FieldVtxColorControlInfo(info, dist / radius);
+			FieldVtxColorControlInfo* currInfo = control->mControlInfo;
+			if (!currInfo) {
+				control->mControlInfo = ctrlInfo;
+				continue;
+			}
+
+			ctrlInfo->mNext = nullptr;
+
+			FieldVtxColorControlInfo* nextInfo = currInfo->mNext;
+			if (!nextInfo) {
+				currInfo->mNext = ctrlInfo;
+				continue;
+			}
+
+			while (nextInfo) {
+				if (!nextInfo->mNext) {
+					break;
+				}
+				nextInfo = nextInfo->mNext;
+			}
+			nextInfo->mNext = ctrlInfo;
+		}
+	}
+
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x60(r1)

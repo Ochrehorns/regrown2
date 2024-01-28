@@ -1,80 +1,20 @@
 #include "JSystem/JAudio/JAI/JAIAnimeSound.h"
 #include "JSystem/JAudio/JAI/JAIBasic.h"
-#include "types.h"
 
-/*
-    Generated from dpostproc
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__13JAIAnimeSound
-    __vt__13JAIAnimeSound:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__13JAIAnimeSoundFv
-        .4byte startSound__Q27JAInter6ObjectFUlUl
-        .4byte startSound__Q27JAInter10ObjectBaseFUcUlUl
-        .4byte startSound__Q27JAInter10ObjectBaseFPP8JAISoundUlUl
-        .4byte stopAllSound__Q27JAInter10ObjectBaseFv
-        .4byte stopSound__Q27JAInter10ObjectBaseFUlUl
-        .4byte enable__Q27JAInter10ObjectBaseFv
-        .4byte disable__Q27JAInter6ObjectFv
-        .4byte dispose__Q27JAInter10ObjectBaseFv
-        .4byte getFreeSoundHandlePointer__Q27JAInter10ObjectBaseFv
-        .4byte getUseSoundHandlePointer__Q27JAInter10ObjectBaseFUl
-        .4byte handleStop__13JAIAnimeSoundFUcUl
-        .4byte loop__Q27JAInter6ObjectFv
-        .4byte playActorAnimSound__13JAIAnimeSoundFPQ27JAInter5ActorfUc
-        .4byte startAnimSound__13JAIAnimeSoundFUlPP8JAISoundPQ27JAInter5ActorUc
-        .4byte
-   setSpeedModifySound__13JAIAnimeSoundFP8JAISoundP22JAIAnimeFrameSoundDataf
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80516ED8
-    lbl_80516ED8:
-        .4byte 0x00000000
-    .global lbl_80516EDC
-    lbl_80516EDC:
-        .float -1.0
-    .global lbl_80516EE0
-    lbl_80516EE0:
-        .4byte 0x42FE0000
-    .global lbl_80516EE4
-    lbl_80516EE4:
-        .float 1.0
-    .global lbl_80516EE8
-    lbl_80516EE8:
-        .4byte 0x3D000000
-        .4byte 0x00000000
-    .global lbl_80516EF0
-    lbl_80516EF0:
-        .4byte 0x43300000
-        .4byte 0x00000000
-    .global lbl_80516EF8
-    lbl_80516EF8:
-        .4byte 0x43300000
-        .4byte 0x80000000
-    .global lbl_80516F00
-    lbl_80516F00:
-        .4byte 0x40000000
-        .4byte 0x00000000
-*/
-
-/*
- * --INFO--
- * Address:	800AB0EC
- * Size:	00003C
+/**
+ * @note Address: 0x800AB0EC
+ * @note Size: 0x3C
  */
 void JAIAnimeSound::handleStop(u8 handleNo, u32 p2)
 {
-	_40[handleNo] = 0;
-	_44[handleNo] = nullptr;
+	_40[handleNo]         = 0;
+	mBasEntries[handleNo] = nullptr;
 	ObjectBase::handleStop(handleNo, p2);
 }
 
-/*
- * --INFO--
- * Address:	800AB128
- * Size:	000188
+/**
+ * @note Address: 0x800AB128
+ * @note Size: 0x188
  */
 JAIAnimeSound::JAIAnimeSound(Vec* p1, JKRHeap* heap, u8 p3)
     : Object(p1, heap, p3)
@@ -82,297 +22,84 @@ JAIAnimeSound::JAIAnimeSound(Vec* p1, JKRHeap* heap, u8 p3)
     , _4C(0)
     , _50(0)
     , _54(0)
-    , _58(_4C ? 1 : 0)
-    , _68(0)
-    , _6C(0)
-    , mSoundData(nullptr)
 {
-	_40 = new (heap, 0) u8[p3];
-	_44 = new (heap, 0) void*[p3];
-	for (u32 i = 0; i < p3; i++) {
-		_44[i] = nullptr;
+	if (!_4C) {
+		_58 = true;
+	} else {
+		_58 = false;
 	}
-	// if (_4C) {
-	// 	_58 = 1;
-	// } else {
-	// 	_58 = 0;
-	// }
-	// _68 = 0;
-	// _6C = 0;
 
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r6
-	stw      r30, 0x18(r1)
-	mr       r30, r3
-	stw      r29, 0x14(r1)
-	stw      r28, 0x10(r1)
-	mr       r28, r5
-	bl       __ct__Q27JAInter6ObjectFP3VecP7JKRHeapUc
-	lis      r4, __vt__13JAIAnimeSound@ha
-	li       r3, 0
-	addi     r0, r4, __vt__13JAIAnimeSound@l
-	stw      r0, 0(r30)
-	stw      r3, 0x48(r30)
-	stw      r3, 0x4c(r30)
-	stw      r3, 0x50(r30)
-	stw      r3, 0x54(r30)
-	lwz      r0, 0x4c(r30)
-	cmplwi   r0, 0
-	bne      lbl_800AB18C
-	li       r0, 1
-	stb      r0, 0x58(r30)
-	b        lbl_800AB190
+	mAnimID     = 0;
+	mCounter    = 0;
+	mSoundData  = nullptr;
+	_40         = new (heap, 0) u8[p3];
+	mBasEntries = new (heap, 0) JAIAnimeFrameSoundData*[p3];
 
-lbl_800AB18C:
-	stb      r3, 0x58(r30)
-
-lbl_800AB190:
-	li       r0, 0
-	clrlwi   r29, r31, 0x18
-	stw      r0, 0x68(r30)
-	mr       r3, r29
-	mr       r4, r28
-	li       r5, 0
-	stw      r0, 0x6c(r30)
-	stw      r0, 0x78(r30)
-	bl       __nwa__FUlP7JKRHeapi
-	stw      r3, 0x40(r30)
-	mr       r4, r28
-	slwi     r3, r29, 2
-	li       r5, 0
-	bl       __nwa__FUlP7JKRHeapi
-	mr       r0, r29
-	stw      r3, 0x44(r30)
-	cmplwi   r0, 0
-	li       r3, 0
-	ble      lbl_800AB28C
-	cmplwi   r0, 8
-	addi     r0, r31, -8
-	ble      lbl_800AB264
-	clrlwi   r0, r0, 0x18
-	b        lbl_800AB258
-
-lbl_800AB1F0:
-	lwz      r4, 0x44(r30)
-	rlwinm   r12, r3, 2, 0x16, 0x1d
-	li       r11, 0
-	addi     r3, r3, 8
-	stwx     r11, r4, r12
-	addi     r4, r12, 4
-	addi     r9, r12, 8
-	addi     r8, r12, 0xc
-	lwz      r10, 0x44(r30)
-	addi     r7, r12, 0x10
-	addi     r6, r12, 0x14
-	addi     r5, r12, 0x18
-	stwx     r11, r10, r4
-	addi     r4, r12, 0x1c
-	lwz      r10, 0x44(r30)
-	stwx     r11, r10, r9
-	lwz      r9, 0x44(r30)
-	stwx     r11, r9, r8
-	lwz      r8, 0x44(r30)
-	stwx     r11, r8, r7
-	lwz      r7, 0x44(r30)
-	stwx     r11, r7, r6
-	lwz      r6, 0x44(r30)
-	stwx     r11, r6, r5
-	lwz      r5, 0x44(r30)
-	stwx     r11, r5, r4
-
-lbl_800AB258:
-	clrlwi   r4, r3, 0x18
-	cmplw    r4, r0
-	blt      lbl_800AB1F0
-
-lbl_800AB264:
-	clrlwi   r0, r31, 0x18
-	li       r6, 0
-	b        lbl_800AB280
-
-lbl_800AB270:
-	lwz      r5, 0x44(r30)
-	rlwinm   r4, r3, 2, 0x16, 0x1d
-	addi     r3, r3, 1
-	stwx     r6, r5, r4
-
-lbl_800AB280:
-	clrlwi   r4, r3, 0x18
-	cmplw    r4, r0
-	blt      lbl_800AB270
-
-lbl_800AB28C:
-	lwz      r0, 0x24(r1)
-	mr       r3, r30
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	lwz      r28, 0x10(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	for (u8 i = 0; i < p3; i++) {
+		mBasEntries[i] = nullptr;
+	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00004C
+/**
+ * @note Address: N/A
+ * @note Size: 0x4C
  */
-void JAIAnimeSound::initActorAnimSound(JAIAnimeSoundData*, JAInter::Actor, unsigned long, float, float)
+void JAIAnimeSound::initActorAnimSound(JAIAnimeSoundData*, JAInter::Actor, u32, f32, f32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800AB2B0
- * Size:	000194
+/**
+ * @note Address: 0x800AB2B0
+ * @note Size: 0x194
  */
-void JAIAnimeSound::initActorAnimSound(JAIAnimeSoundData*, unsigned long, float, float)
+void JAIAnimeSound::initActorAnimSound(JAIAnimeSoundData* sndData, u32 flag, f32 loopStart, f32 loopEnd)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x30(r1)
-	  mflr      r0
-	  stw       r0, 0x34(r1)
-	  stfd      f31, 0x20(r1)
-	  psq_st    f31,0x28(r1),0,0
-	  stw       r31, 0x1C(r1)
-	  stw       r30, 0x18(r1)
-	  stw       r29, 0x14(r1)
-	  mr        r30, r3
-	  fmr       f31, f2
-	  stw       r4, 0x78(r3)
-	  mr        r29, r5
-	  lwz       r0, 0x78(r3)
-	  cmplwi    r0, 0
-	  beq-      .loc_0xA0
-	  li        r0, 0
-	  stw       r0, 0x68(r30)
-	  stw       r29, 0x5C(r30)
-	  lwz       r4, 0x78(r30)
-	  lhz       r31, 0x0(r4)
-	  bl        .loc_0x194
-	  fmr       f1, f31
-	  stw       r3, 0x60(r30)
-	  mr        r3, r30
-	  bl        0x174
-	  cmplwi    r29, 0x1
-	  stw       r3, 0x64(r30)
-	  bne-      .loc_0x88
-	  li        r0, 0
-	  lfs       f0, -0x7488(r2)
-	  stw       r0, 0x68(r30)
-	  stfs      f0, 0x70(r30)
-	  stw       r0, 0x6C(r30)
-	  b         .loc_0xA0
+	mSoundData = sndData;
+	if (mSoundData) {
+		mAnimID      = 0;
+		_5C          = flag;
+		int entries  = mSoundData->mEntryNum;
+		mLoopStartID = checkLoopStartCount(loopStart);
+		mLoopEndID   = checkLoopEndCount(loopEnd);
 
-	.loc_0x88:
-	  subi      r0, r31, 0x1
-	  lfs       f0, -0x7484(r2)
-	  stw       r0, 0x68(r30)
-	  li        r0, -0x1
-	  stfs      f0, 0x70(r30)
-	  stw       r0, 0x6C(r30)
+		if (flag == 1) {
+			mAnimID  = 0;
+			mTimer   = 0.0f;
+			mCounter = 0;
+		} else {
+			mAnimID  = entries - 1;
+			mTimer   = -1.0f;
+			mCounter = -1;
+		}
+	}
 
-	.loc_0xA0:
-	  li        r31, 0
-	  b         .loc_0x160
-
-	.loc_0xA8:
-	  lwz       r4, 0x1C(r30)
-	  rlwinm    r5,r31,2,22,29
-	  lwz       r3, 0x44(r30)
-	  rlwinm    r6,r31,0,24,31
-	  lwzx      r4, r4, r5
-	  lwzx      r3, r3, r5
-	  cmplwi    r4, 0
-	  bne-      .loc_0xE0
-	  lwz       r3, 0x40(r30)
-	  li        r0, 0
-	  stbx      r0, r3, r6
-	  lwz       r3, 0x44(r30)
-	  stwx      r0, r3, r5
-	  b         .loc_0x15C
-
-	.loc_0xE0:
-	  cmplwi    r3, 0
-	  beq-      .loc_0x114
-	  lwz       r0, 0x10(r3)
-	  rlwinm.   r0,r0,0,29,29
-	  beq-      .loc_0x114
-	  mr        r3, r30
-	  mr        r4, r31
-	  lwz       r12, 0x0(r30)
-	  li        r5, 0
-	  lwz       r12, 0x34(r12)
-	  mtctr     r12
-	  bctrl
-	  b         .loc_0x15C
-
-	.loc_0x114:
-	  lwz       r0, 0x20(r4)
-	  rlwinm.   r0,r0,0,20,21
-	  bne-      .loc_0x150
-	  lwz       r3, 0x40(r30)
-	  lbzx      r0, r3, r6
-	  cmplwi    r0, 0
-	  beq-      .loc_0x150
-	  mr        r3, r30
-	  mr        r4, r31
-	  lwz       r12, 0x0(r30)
-	  li        r5, 0
-	  lwz       r12, 0x34(r12)
-	  mtctr     r12
-	  bctrl
-	  b         .loc_0x15C
-
-	.loc_0x150:
-	  lwz       r3, 0x40(r30)
-	  li        r0, 0x2
-	  stbx      r0, r3, r6
-
-	.loc_0x15C:
-	  addi      r31, r31, 0x1
-
-	.loc_0x160:
-	  lbz       r0, 0x19(r30)
-	  rlwinm    r3,r31,0,24,31
-	  cmplw     r3, r0
-	  blt+      .loc_0xA8
-	  psq_l     f31,0x28(r1),0,0
-	  lwz       r0, 0x34(r1)
-	  lfd       f31, 0x20(r1)
-	  lwz       r31, 0x1C(r1)
-	  lwz       r30, 0x18(r1)
-	  lwz       r29, 0x14(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x30
-	  blr
-
-	.loc_0x194:
-	*/
+	for (u8 i = 0; i < mHandleCount; i++) {
+		JAISound* sound               = mSounds[i];
+		JAIAnimeFrameSoundData* entry = mBasEntries[i];
+		if (!sound) {
+			_40[i]         = 0;
+			mBasEntries[i] = nullptr;
+		} else if (entry && entry->_10 & 4) {
+			handleStop(i, 0);
+		} else if (!(sound->mSoundID & 0xc00) && _40[i]) {
+			handleStop(i, 0);
+		} else {
+			_40[i] = 2;
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	800AB444
- * Size:	000040
+/**
+ * @note Address: 0x800AB444
+ * @note Size: 0x40
  */
-int JAIAnimeSound::checkLoopStartCount(float p1)
+int JAIAnimeSound::checkLoopStartCount(f32 startFrame)
 {
 	u32 i = 0;
-	// if (mSoundData->_00 == 0) {
-	// 	return i;
-	// }
-	for (; i < mSoundData->_00; i++) {
-		if (p1 <= mSoundData->_0C[i]._00) {
-			return i;
+	for (; i < mSoundData->mEntryNum; i++) {
+		if (mSoundData->mSndEntries[i].mTime >= startFrame) {
+			break;
 		}
 	}
 	return i;
@@ -398,13 +125,23 @@ lbl_800AB460:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800AB484
- * Size:	000048
+/**
+ * @note Address: 0x800AB484
+ * @note Size: 0x48
  */
-void JAIAnimeSound::checkLoopEndCount(float)
+int JAIAnimeSound::checkLoopEndCount(f32 endFrame)
 {
+	u32 i = 0;
+	for (; i < mSoundData->mEntryNum; i++) {
+		if (mSoundData->mSndEntries[i].mTime > endFrame) {
+			break;
+		}
+	}
+
+	if (i != 0) {
+		return mSoundData->mEntryNum;
+	}
+	return i;
 	/*
 	lwz      r5, 0x78(r3)
 	li       r3, 0
@@ -431,93 +168,184 @@ lbl_800AB4BC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00004C
+/**
+ * @note Address: N/A
+ * @note Size: 0x4C
  */
-void JAIAnimeSound::setLoopStartFrame(float)
+void JAIAnimeSound::setLoopStartFrame(f32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000054
+/**
+ * @note Address: N/A
+ * @note Size: 0x54
  */
-void JAIAnimeSound::setLoopEndFrame(float)
+void JAIAnimeSound::setLoopEndFrame(f32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000094
+/**
+ * @note Address: N/A
+ * @note Size: 0x94
  */
-void JAIAnimeSound::setLoopFrame(float, float)
+void JAIAnimeSound::setLoopFrame(f32, f32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
-void JAIAnimeSound::setAnimSound(float, float, unsigned char)
+void JAIAnimeSound::setAnimSound(f32, f32, u8)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000024
+/**
+ * @note Address: N/A
+ * @note Size: 0x24
  */
-void JAIAnimeSound::setAnimSound(JAIBasic*, float, float, unsigned char)
+void JAIAnimeSound::setAnimSound(JAIBasic*, f32, f32, u8)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
-void JAIAnimeSound::setAnimObjectSound(float, float, unsigned char)
+void JAIAnimeSound::setAnimObjectSound(f32, f32, u8)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000074
+/**
+ * @note Address: N/A
+ * @note Size: 0x74
  */
-void JAIAnimeSound::setAnimSoundVec(Vec*, float, float, unsigned long, unsigned char)
+void JAIAnimeSound::setAnimSoundVec(Vec*, f32, f32, u32, u8)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000074
+/**
+ * @note Address: N/A
+ * @note Size: 0x74
  */
-void JAIAnimeSound::setAnimSoundVec(JAIBasic*, Vec*, float, float, unsigned long, unsigned char)
+void JAIAnimeSound::setAnimSoundVec(JAIBasic*, Vec*, f32, f32, u32, u8)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800AB4CC
- * Size:	000504
+/**
+ * @note Address: 0x800AB4CC
+ * @note Size: 0x504
  */
-void JAIAnimeSound::setAnimSoundActor(JAInter::Actor*, float, float, unsigned char)
+void JAIAnimeSound::setAnimSoundActor(JAInter::Actor* actor, f32 time, f32 time2, u8 players)
 {
+	if (!mSoundData) {
+		return;
+	}
+
+	if (mTimer < 0.0f) {
+		mTimer = time;
+	}
+
+	_74         = time2;
+	int entries = mSoundData->mEntryNum;
+
+	if (_5C == 1) {
+		if (mTimer > time) {
+			while (mAnimID < mLoopEndID) {
+				playActorAnimSound(actor, time2, players);
+			}
+			mAnimID = mLoopStartID;
+			mTimer  = time;
+			if (mCounter < 256) {
+				mCounter++;
+			}
+		}
+
+		// this loop here is probably an unused function from above
+		for (u8 i = 0; i < mHandleCount; i++) {
+			JAISound** se = &mSounds[i];
+			if (_40[i] == 1) {
+				JAIAnimeFrameSoundData* entry = mBasEntries[i];
+				if (!(entry->mSoundID & 0xc00)) {
+					if (time2 != 0.0f && entry->_10 & 0x20) {
+						if (entry->mStartTime == entry->_08
+						    || (entry->mStartTime > entry->_08 && entry->mStartTime < time && entry->_08 >= time)
+						    || (entry->mStartTime < entry->_08 && !(entry->mStartTime < time) && entry->_08 > time)) {
+							startAnimSound(entry->mSoundID, &mSounds[i], actor, players);
+						} else {
+							handleStop(i, 0);
+						}
+					}
+				} else if (!*se) {
+					_40[i]         = 0;
+					mBasEntries[i] = nullptr;
+				}
+
+				if (*se) {
+					setSpeedModifySound(*se, entry, time);
+					if (entry->_10 & 4 && entry->_08 >= time) {
+						handleStop(i, 0);
+					}
+				}
+			}
+		}
+
+		while (mAnimID < entries && (mSoundData->mSndEntries[mAnimID].mTime) >= time) {
+			playActorAnimSound(actor, time, players);
+		}
+	} else {
+		if (mTimer > time) {
+			while (mAnimID < mLoopStartID || mAnimID == -1 || mSoundData->mSndEntries[mAnimID].mTime != mTimer) {
+				playActorAnimSound(actor, time, players);
+			}
+			mAnimID = mLoopEndID - 1;
+			mTimer  = time;
+			if (mCounter == -1 || mCounter < 256) {
+				mCounter++;
+			}
+
+			for (u8 i = 0; i < mHandleCount; i++) {
+				JAISound** se = &mSounds[i];
+				if (_40[i] == 1) {
+					JAIAnimeFrameSoundData* entry = mBasEntries[i];
+					if (!(entry->mSoundID & 0xc00)) {
+						if (time2 != 0.0f && entry->_10 & 0x20) {
+							if (entry->mStartTime == entry->_08
+							    || (entry->mStartTime > entry->_08 && entry->mStartTime < time && entry->_08 >= time)
+							    || (entry->mStartTime < entry->_08 && !(entry->mStartTime < time) && entry->_08 > time)) {
+								startAnimSound(entry->mSoundID, &mSounds[i], actor, players);
+							} else {
+								handleStop(i, 0);
+							}
+						}
+					} else if (!*se) {
+						_40[i]         = 0;
+						mBasEntries[i] = nullptr;
+					}
+
+					if (*se) {
+						setSpeedModifySound(*se, entry, time);
+						if (entry->_10 & 4 && entry->_08 >= time) {
+							handleStop(i, 0);
+						}
+					}
+				}
+			}
+
+			while (mAnimID < entries && (mSoundData->mSndEntries[mAnimID].mTime) >= time) {
+				playActorAnimSound(actor, time, players);
+			}
+		}
+	}
+	mTimer = time;
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x50(r1)
@@ -912,13 +740,46 @@ void JAIAnimeSound::setAnimSoundActor(JAInter::Actor*, float, float, unsigned ch
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800AB9D0
- * Size:	000280
+/**
+ * @note Address: 0x800AB9D0
+ * @note Size: 0x280
  */
-void JAIAnimeSound::playActorAnimSound(JAInter::Actor*, float, unsigned char)
+void JAIAnimeSound::playActorAnimSound(JAInter::Actor* actor, f32 pitch, u8 a)
 {
+	JAIAnimeFrameSoundData* entry = (JAIAnimeFrameSoundData*)&mSoundData->mSndEntries[mAnimID]; // something dumb here
+
+	u8 i = 0;
+	for (; i < mHandleCount; i++) {
+		if (_40[i] == 0) {
+			// if (mUseHandleFlag & 1 << i) {
+			//	continue;
+			//}
+		}
+		if (mSounds[i]) {
+			_40[i]         = 0;
+			mBasEntries[i] = nullptr;
+		}
+		if (entry->mSoundID == mSounds[i]->mSoundID) {
+			if (!(entry->mSoundID & 0xc00)) {
+				return;
+			}
+		}
+	}
+
+	if ((entry->_10 & 8 && entry->_16 == mCounter) || (_54 == 1 && entry->_10 & 2) && (_54 == -1 && entry->_10 & 1)) {
+		JAISound** se = &mSounds[i];
+		startAnimSound(entry->mSoundID, se, actor, a);
+		if (*se) {
+			mBasEntries[i] = entry;
+			_40[i]         = 1;
+			(*se)->setVolume(entry->mPanning / 127.0f, 0, 5);
+			(*se)->setPitch((entry->_15 * (pitch - 1.0f)) / 32 + entry->mPitch, 0, 5);
+			(*se)->setPan(entry->mVelocity / 127.0f, 0, 5);
+		}
+	}
+
+	mAnimID += _5C;
+
 	/*
 	stwu     r1, -0x50(r1)
 	mflr     r0
@@ -1105,184 +966,40 @@ lbl_800ABC34:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800ABC50
- * Size:	00004C
+/**
+ * @note Address: 0x800ABC50
+ * @note Size: 0x4C
  */
-void JAIAnimeSound::startAnimSound(unsigned long id, JAISound** handlePtr, JAInter::Actor* actor, unsigned char p4)
+void JAIAnimeSound::startAnimSound(u32 id, JAISound** handlePtr, JAInter::Actor* actor, u8 p4)
 {
 	JAIBasic::msBasic->startSoundActorT(id, handlePtr, actor, 0, p4);
-	if (*handlePtr != nullptr) {
+	if (*handlePtr) {
 		(*handlePtr)->_1A = 1;
 	}
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  mr        r8, r7
-	  li        r7, 0
-	  stw       r0, 0x14(r1)
-	  stw       r31, 0xC(r1)
-	  mr        r31, r5
-	  lwz       r3, -0x7498(r13)
-	  bl        -0x963A4
-	  lwz       r3, 0x0(r31)
-	  cmplwi    r3, 0
-	  beq-      .loc_0x38
-	  li        r0, 0x1
-	  stb       r0, 0x1A(r3)
-
-	.loc_0x38:
-	  lwz       r0, 0x14(r1)
-	  lwz       r31, 0xC(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	800ABC9C
- * Size:	00013C
+/**
+ * @note Address: 0x800ABC9C
+ * @note Size: 0x13C
  */
-void JAIAnimeSound::setSpeedModifySound(JAISound*, JAIAnimeFrameSoundData*, float)
+void JAIAnimeSound::setSpeedModifySound(JAISound* sound, JAIAnimeFrameSoundData* data, f32 speed)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x30(r1)
-	  mflr      r0
-	  stw       r0, 0x34(r1)
-	  stfd      f31, 0x20(r1)
-	  psq_st    f31,0x28(r1),0,0
-	  stw       r31, 0x1C(r1)
-	  stw       r30, 0x18(r1)
-	  mr        r31, r5
-	  fmr       f31, f1
-	  lbz       r3, 0x15(r5)
-	  mr        r30, r4
-	  lfs       f1, 0xC(r5)
-	  extsb.    r0, r3
-	  beq-      .loc_0x6C
-	  extsb     r3, r3
-	  lis       r0, 0x4330
-	  xoris     r3, r3, 0x8000
-	  lfs       f0, -0x747C(r2)
-	  stw       r3, 0xC(r1)
-	  lfd       f4, -0x7468(r2)
-	  fsubs     f2, f31, f0
-	  stw       r0, 0x8(r1)
-	  lfs       f0, -0x7478(r2)
-	  lfd       f3, 0x8(r1)
-	  fsubs     f3, f3, f4
-	  fmuls     f2, f3, f2
-	  fmadds    f1, f2, f0, f1
+	f32 pitch = data->mPitch;
+	if (data->_15) {
+		f32 val = speed - 1.0f;
+		pitch += ((f32)data->_15 * val) / 32;
+	}
+	sound->setPitch(pitch, 0, 5);
 
-	.loc_0x6C:
-	  lwz       r12, 0x10(r30)
-	  mr        r3, r30
-	  li        r4, 0
-	  li        r5, 0x5
-	  lwz       r12, 0x2C(r12)
-	  mtctr     r12
-	  bctrl
-	  lbz       r3, 0x18(r31)
-	  lbz       r4, 0x14(r31)
-	  extsb.    r0, r3
-	  beq-      .loc_0xFC
-	  extsb     r3, r3
-	  lis       r0, 0x4330
-	  xoris     r3, r3, 0x8000
-	  lfs       f0, -0x747C(r2)
-	  stw       r3, 0xC(r1)
-	  lfd       f2, -0x7468(r2)
-	  fsubs     f0, f31, f0
-	  stw       r0, 0x8(r1)
-	  lfs       f3, -0x7460(r2)
-	  lfd       f1, 0x8(r1)
-	  fsubs     f1, f1, f2
-	  fmuls     f1, f3, f1
-	  fmuls     f0, f1, f0
-	  fctiwz    f0, f0
-	  stfd      f0, 0x10(r1)
-	  lwz       r0, 0x14(r1)
-	  add       r4, r4, r0
-	  extsh     r0, r4
-	  cmpwi     r0, 0x7F
-	  ble-      .loc_0xF0
-	  li        r4, 0x7F
-	  b         .loc_0xFC
-
-	.loc_0xF0:
-	  extsh.    r0, r4
-	  bge-      .loc_0xFC
-	  li        r4, 0
-
-	.loc_0xFC:
-	  mr        r3, r30
-	  rlwinm    r4,r4,0,24,31
-	  lwz       r12, 0x10(r30)
-	  li        r5, 0
-	  li        r6, 0x5
-	  lwz       r12, 0x4C(r12)
-	  mtctr     r12
-	  bctrl
-	  psq_l     f31,0x28(r1),0,0
-	  lwz       r0, 0x34(r1)
-	  lfd       f31, 0x20(r1)
-	  lwz       r31, 0x1C(r1)
-	  lwz       r30, 0x18(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x30
-	  blr
-	*/
+	s16 pan = data->mPanning;
+	if (data->_18) {
+		s16 test = (f32)data->_18 * 2 * (speed - 1.0f);
+		pan += test;
+		if (pan > 127) {
+			pan = 127;
+		} else if (pan < 0) {
+			pan = 0;
+		}
+	}
+	sound->setVolumeU7(pan, 0, 5);
 }
-
-/*
- * --INFO--
- * Address:	800ABDD8
- * Size:	000060
- */
-// JAIAnimeSound::~JAIAnimeSound()
-// {
-// 	/*
-// 	stwu     r1, -0x10(r1)
-// 	mflr     r0
-// 	stw      r0, 0x14(r1)
-// 	stw      r31, 0xc(r1)
-// 	mr       r31, r4
-// 	stw      r30, 8(r1)
-// 	or.      r30, r3, r3
-// 	beq      lbl_800ABE1C
-// 	lis      r5, __vt__13JAIAnimeSound@ha
-// 	li       r4, 0
-// 	addi     r0, r5, __vt__13JAIAnimeSound@l
-// 	stw      r0, 0(r30)
-// 	bl       __dt__Q27JAInter6ObjectFv
-// 	extsh.   r0, r31
-// 	ble      lbl_800ABE1C
-// 	mr       r3, r30
-// 	bl       __dl__FPv
-
-// lbl_800ABE1C:
-// 	lwz      r0, 0x14(r1)
-// 	mr       r3, r30
-// 	lwz      r31, 0xc(r1)
-// 	lwz      r30, 8(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x10
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	800ABE38
- * Size:	00000C
- */
-// void JAInter::ObjectBase::enable()
-// {
-// 	// Generated from stb r0, 0x18(r3)
-// 	_18 = 1;
-// }

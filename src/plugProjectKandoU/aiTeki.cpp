@@ -1,29 +1,28 @@
 #include "PikiAI.h"
 #include "Game/EnemyBase.h"
-#include "Game/enemyInfo.h"
 #include "Game/gameStat.h"
 #include "Game/PikiState.h"
 #include "Game/Footmark.h"
 #include "Dolphin/rand.h"
 
+#define FOLLOW_DISTANCE 100.0f
+
 namespace PikiAI {
-/*
- * --INFO--
- * Address:	8021295C
- * Size:	000090
+/**
+ * @note Address: 0x8021295C
+ * @note Size: 0x90
  */
 ActTeki::ActTeki(Game::Piki* piki)
     : Action(piki)
 {
-	mName          = "Teki";
-	mFollowingTeki = 0;
-	mFollowMark    = nullptr;
+	mName            = "Teki";
+	mFollowingTeki   = 0;
+	mTargetFootprint = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	802129EC
- * Size:	00010C
+/**
+ * @note Address: 0x802129EC
+ * @note Size: 0x10C
  */
 void ActTeki::init(PikiAI::ActionArg* arg)
 {
@@ -32,18 +31,18 @@ void ActTeki::init(PikiAI::ActionArg* arg)
 
 	mFollowingTeki = static_cast<Game::EnemyBase*>(cArg->mCreature);
 
-	_2C = Vector3f(0.0f, 0.0f, 0.0f);
+	mUnusedZeroVector = Vector3f(0.0f, 0.0f, 0.0f);
 
-	_38 = 0.0f;
-	_3C = 0.0f;
-	_40 = 0.0f;
+	mUnused1 = 0.0f;
+	mUnused2 = 0.0f;
+	mUnused3 = 0.0f;
 
-	_44         = 0.0f;
-	mFollowMark = 0;
-	_20         = 0.0f;
+	mUnusedDotProduct  = 0.0f;
+	mTargetFootprint   = 0;
+	mParentFollowTimer = 0.0f;
 
-	_28 = 1;
-	_1C = -1;
+	mFollowState = TFS_Parent;
+	mUnused0     = -1;
 
 	mMoveSpeed = 0.0f;
 
@@ -56,10 +55,9 @@ void ActTeki::init(PikiAI::ActionArg* arg)
 	mParent->startMotion(30, 30, nullptr, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80212AF8
- * Size:	000178
+/**
+ * @note Address: 0x80212AF8
+ * @note Size: 0x178
  */
 int ActTeki::exec()
 {
@@ -79,32 +77,32 @@ int ActTeki::exec()
 			mParent->mFsm->transit(mParent, Game::PIKISTATE_Panic, &arg);
 		}
 
-		return 1;
+		return ACTEXEC_Continue;
 	}
 
 	// If the beetle is flying, we will just wait around until he comes back
 	if (mFollowingTeki->isFlying()) {
 		mToEmote = true;
-		return 0;
+		return ACTEXEC_Success;
 	}
+
 	// If the beetle is bittered, just wait until he comes back
 	else if (mFollowingTeki->isTeki() && mFollowingTeki->isEvent(0, Game::EB_Bittered)
 	         && mFollowingTeki->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Fuefuki) {
 		mToEmote = true;
-		return 0;
+		return ACTEXEC_Success;
 	}
 
 	// Reset the timer
 	Game::InteractFuefukiTimerReset timerReset(mParent);
 	mFollowingTeki->stimulate(timerReset);
 	test_0();
-	return 1;
+	return ACTEXEC_Continue;
 }
 
-/*
- * --INFO--
- * Address:	80212C70
- * Size:	000050
+/**
+ * @note Address: 0x80212C70
+ * @note Size: 0x50
  */
 void ActTeki::emotion_success()
 {
@@ -114,114 +112,124 @@ void ActTeki::emotion_success()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80212CC0
- * Size:	000314
- * TODO
+/**
+ * @note Address: 0x80212CC0
+ * @note Size: 0x314
  */
 void ActTeki::makeTarget()
 {
-	Vector3f sourcePos = mParent->getPosition();
-	Vector3f destPos   = mFollowingTeki->getPosition();
+	Vector3f sourcePos    = mParent->getPosition();
+	Vector3f followingPos = mFollowingTeki->getPosition();
 
-	f32 distance = destPos.distance(sourcePos);
+	f32 distance = (followingPos - sourcePos).length();
 	distance     = distance > 0.0f ? distance : 0.0f;
 
+	// Can't make a target if there are no footprints to follow
 	Game::Footmarks* fm = mFollowingTeki->getFootmarks();
 	if (fm == nullptr) {
 		return;
 	}
 
-	Game::Footmark* currentFm = mFollowMark;
-	float dist                = 12800.0f;
+	Game::Footmark* currentFm = mTargetFootprint;
+	f32 distanceToFootstep    = 12800.0f;
 	if (currentFm) {
-		dist = destPos.distance(currentFm->mPosition);
+		distanceToFootstep = (followingPos - currentFm->mPosition).length();
 	}
 
-	mFollowMark = fm->get(0);
-	for (int i = fm->_08 - 1; i >= 0; i--) {
+	// Find the closest footprint to the destination within a 100 unit distance, then follow and move toward it.
+	mTargetFootprint = fm->get(0);
+	for (int i = fm->mCapacity - 1; i >= 0; i--) {
 		Game::Footmark* curMark = fm->get(i);
 
-		f32 curDist2 = curMark->mPosition.distance(destPos); // sure.
-		f32 curDist  = destPos.distance(curMark->mPosition);
-		curDist      = (curDist > 0.0f) ? curDist : 0.0f;
+		Vector3f fromSourceToMark = curMark->mPosition - sourcePos;
+		Vector3f fromMarkToDest   = followingPos - curMark->mPosition;
 
-		if (dist > curDist && curDist < 100.0f) {
-			mFollowMark = curMark;
+		fromSourceToMark.length();
+		f32 curDist = fromMarkToDest.length();
+		curDist     = (curDist > 0.0f) ? curDist : 0.0f;
+
+		if (distanceToFootstep > curDist && curDist < FOLLOW_DISTANCE) {
+			mTargetFootprint = curMark;
 			break;
 		}
 	}
 
-	if (!mFollowMark) {
+	// We couldn't find a closest footprint, so there's no target!
+	if (!mTargetFootprint) {
 		return;
 	}
 
-	_28 = 0;
+	// We found a target footprint, so change state
+	mFollowState = TFS_Footprint;
 
-	if (distance > 100.0f) {
+	if (distance > FOLLOW_DISTANCE) {
+		// If we're far away, go at max speed
 		mMoveSpeed = 1.0f;
 	} else {
+		// If we're close, go at a random speed between 0.5 and 1.0
 		mMoveSpeed = (0.5f * randFloat()) + 0.5f;
 	}
 }
 
-/*
- * --INFO--
- * Address:	80212FD4
- * Size:	000344
- * TODO
+/**
+ * @note Address: 0x80212FD4
+ * @note Size: 0x344
  */
 void ActTeki::test_0()
 {
-	switch (_28) {
-	case 1: {
+	switch (mFollowState) {
+	case TFS_Parent: {
 		Vector3f sourcePos = mParent->getPosition();
 		Vector3f destPos   = mFollowingTeki->getPosition();
 
 		f32 distance = destPos.distance(sourcePos);
 
-		_20 -= sys->mDeltaTime;
+		mParentFollowTimer -= sys->mDeltaTime;
 
-		Game::Piki* piki = mParent;
-		piki->mVelocity  = Vector3f(0.0f);
+		// We've reached the parent, so stop moving and wait for them to move again.
+		mParent->mVelocity = Vector3f(0.0f);
 
-		if (_20 <= 0.0f || distance > 100.0f) {
+		// If we've gone out of reach of follow distance, or the follow timer has fallen below 0, we need to find a new target.
+		if (mParentFollowTimer <= 0.0f || distance > FOLLOW_DISTANCE) {
 			makeTarget();
 		}
 
 		break;
 	}
 
-	case 0: {
-		Vector3f sourcePos = mParent->getPosition();
-		Vector3f destPos   = mFollowMark->mPosition;
+	case TFS_Footprint: {
+		Vector3f currentPos   = mParent->getPosition();
+		Vector3f footprintPos = mTargetFootprint->mPosition;
 
-		Vector3f dir = destPos - sourcePos;
-		f32 dist     = dir.normalise();
+		Vector3f dirToFootprint = footprintPos - currentPos;
+		f32 distToFootprint     = dirToFootprint.normalise();
 
-		if (dist > 100.0f) {
+		// If we've gone out of reach of follow distance, we need to find a new target.
+		if (distToFootprint > FOLLOW_DISTANCE) {
 			makeTarget();
-		} else if (dist < 50.0f) {
-			Game::Piki* piki = mParent;
-			piki->mVelocity  = Vector3f(0, 0, 0);
-			_28              = 1;
+		}
+		// If we've reached the footprint destination, we'll follow the parent next.
+		else if (distToFootprint < (FOLLOW_DISTANCE / 2)) {
+			mParent->mVelocity = Vector3f(0, 0, 0);
+			mFollowState       = TFS_Parent;
 			setTimer();
 			return;
 		}
 
-		if (dist < 50.0f) {
-			Vector3f velDir = mFollowingTeki->getVelocity();
+		// If we're close to the footprint, we'll factor in the current direction to the footprint.
+		if (distToFootprint < (FOLLOW_DISTANCE / 2)) {
+			Vector3f currentMoveDir = mFollowingTeki->getVelocity();
+			currentMoveDir.normalise();
 
-			velDir.normalise();
+			// Factor in 50% of the current direction and 50% of the direction to the footprint (smooth movement)
+			dirToFootprint = dirToFootprint * 0.5f + currentMoveDir * 0.5f;
 
-			dir = dir * 0.5f + velDir * 0.5f;
-
-			mParent->setSpeed(mMoveSpeed, dir);
+			mParent->setSpeed(mMoveSpeed, dirToFootprint);
 			return;
 		}
 
-		mParent->setSpeed(mMoveSpeed, dir);
+		// Move towards the footprint.
+		mParent->setSpeed(mMoveSpeed, dirToFootprint);
 		break;
 	}
 
@@ -230,65 +238,66 @@ void ActTeki::test_0()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80213318
- * Size:	000058
+/**
+ * @note Address: 0x80213318
+ * @note Size: 0x58
  */
 void ActTeki::doDirectDraw(Graphics& gfx)
 {
-	if (mFollowMark) {
-		gfx._084 = Color4(255, 100, 10, 255);
-		gfx.drawSphere(mFollowMark->mPosition, 10.0f);
+	if (mTargetFootprint) {
+		gfx.mDrawColor = Color4(255, 100, 10, 255);
+		gfx.drawSphere(mTargetFootprint->mPosition, 10.0f);
 	}
 }
 
-/*
- * --INFO--
- * Address:	80213370
- * Size:	000130
+/**
+ * @note Address: 0x80213370
+ * @note Size: 0x130
  */
 void ActTeki::setTimer()
 {
-	Vector3f thisPos = mParent->getPosition();
-	Vector3f themPos = mFollowingTeki->getPosition();
+	Vector3f currentPos   = mParent->getPosition();
+	Vector3f followingPos = mFollowingTeki->getPosition();
 
-	f32 dist = themPos.distance(thisPos);
+	f32 dist = followingPos.distance(currentPos);
 
 	f32 weight;
-	if (dist < 100.0f) {
+	if (dist < FOLLOW_DISTANCE) {
 		weight = 0.3f;
 	} else {
 		weight = 0.1f;
 	}
 
-	_20 = weight * (0.5f * randFloat() + 1.0f);
+	mParentFollowTimer = weight * (0.5f * randFloat() + 1.0f);
 }
 
-/*
- * --INFO--
- * Address:	802134A0
- * Size:	000004
+/**
+ * @note Address: 0x802134A0
+ * @note Size: 0x4
  */
 void ActTeki::cleanup() { }
 
-/*
- * --INFO--
- * Address:	802134A4
- * Size:	0000E8
+/**
+ * @note Address: 0x802134A4
+ * @note Size: 0xE8
  */
 void ActTeki::collisionCallback(Game::Piki* piki, Game::CollEvent& event)
 {
-	Vector3f creaturePos = event.mCollidingCreature->getPosition();
-	Vector3f parentPos   = mParent->getPosition();
+	Vector3f collidedPos = event.mCollidingCreature->getPosition();
+	Vector3f currentPos  = mParent->getPosition();
 
-	Vector3f sep = parentPos - creaturePos;
-	f32 dotProd  = dot(_2C, sep);
-	_44          = dotProd;
+	// Unfortunately, this code must've been a result of testing
+	// And doesn't logically make sense, mUnusedZeroVector is always Vector3f(0, 0, 0)
+	// Meaning the dot product is always 0, thus mUnusedDotProduct is always -0.1f
+	Vector3f sep      = currentPos - collidedPos;
+	f32 dotProd       = dot(mUnusedZeroVector, sep);
+	mUnusedDotProduct = dotProd;
 	if (dotProd > 0.0f) {
-		_44 = 0.1f;
+		mUnusedDotProduct = 0.1f;
 	} else {
-		_44 = -0.1f;
+		mUnusedDotProduct = -0.1f;
 	}
 }
+
+void ActTeki::onKeyEvent(const SysShape::KeyEvent& event) { }
 } // namespace PikiAI

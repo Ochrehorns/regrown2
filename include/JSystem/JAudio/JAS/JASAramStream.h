@@ -31,7 +31,7 @@ struct JASAramStream {
 	JASAramStream();
 
 	void init(u32, u32, JASAramStreamCallback, void*);
-	BOOL prepare(long inode, int p2);
+	BOOL prepare(s32 inode, int p2);
 	BOOL start();
 	int stop(u16);
 	bool pause(bool);
@@ -49,8 +49,8 @@ struct JASAramStream {
 	static bool loadToAramTask(void*);
 	static void finishTask(void*);
 	static void prepareFinishTask(void*);
-	static long channelProcCallback(void*);
-	static long dvdErrorCheck(void*);
+	static s32 channelProcCallback(void*);
+	static s32 dvdErrorCheck(void*);
 	static void channelCallback(u32, JASChannel*, JASDsp::TChannel*, void*);
 
 	// unused/inlined:
@@ -76,7 +76,7 @@ struct JASAramStream {
 	u8 _1B0;                         // _1B0
 	u32 _1B4;                        // _1B4
 	f32 _1B8;                        // _1B8
-	DVDFileInfo _1BC;                // _1BC
+	DVDFileInfo mFileInfo;           // _1BC
 	u32 _1F8;                        // _1F8
 	int _1FC;                        // _1FC
 	int _200;                        // _200
@@ -90,7 +90,7 @@ struct JASAramStream {
 	u32 _23C;                        // _23C
 	JASAramStreamCallback mCallback; // _240
 	void* _244;                      // _244
-	s16 _248;                        // _248
+	u16 _248;                        // _248
 	u16 _24A;                        // _24A
 	u32 _24C;                        // _24C
 	int _250;                        // _250
@@ -101,7 +101,7 @@ struct JASAramStream {
 	f32 _264;                        // _264
 	f32 _268;                        // _268
 	f32 _26C[4][6];                  // _26C
-	s16 _2CC[6];                     // _2CC
+	u16 _2CC[6];                     // _2CC
 	u8 _2D8;                         // _2D8
 
 	static JASTaskThread* sLoadThread;

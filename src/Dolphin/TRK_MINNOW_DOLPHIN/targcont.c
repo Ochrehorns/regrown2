@@ -1,15 +1,14 @@
 #include "PowerPC_EABI_Support/MetroTRK/trk.h"
 
-/*
- * --INFO--
- * Address:	800C09BC
- * Size:	000034
+/**
+ * @note Address: 0x800C09BC
+ * @note Size: 0x34
  */
-TRKResult TRKTargetContinue(void)
+DSError TRKTargetContinue(void)
 {
 	TRKTargetSetStopped(0);
 	UnreserveEXI2Port();
 	TRKSwapAndGo();
 	ReserveEXI2Port();
-	return EXIT_SUCCESS;
+	return DS_NoError;
 }

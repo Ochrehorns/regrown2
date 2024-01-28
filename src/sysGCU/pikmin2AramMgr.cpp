@@ -1,9 +1,8 @@
-#include "types.h"
 #include "Pikmin2ARAM.h"
 #include "ARAM.h"
-#include "JSystem/JUtility/JUTException.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "og/newScreen/ogUtil.h"
+#include "P2Macros.h"
 #include "stream.h"
 
 Pikmin2ARAM::Mgr* gPikmin2AramMgr;
@@ -75,10 +74,9 @@ static const char unusedTDAnim[]        = "/enemy/data/BigTreasure/anim.szs";
 static const char unusedBabyModelSzs[]  = "/enemy/data/Baby/model.szs";
 static const char unusedBabyAnim[]      = "/enemy/data/Baby/anim.szs";
 
-/*
- * --INFO--
- * Address:	80455C30
- * Size:	000060
+/**
+ * @note Address: 0x80455C30
+ * @note Size: 0x60
  */
 void Mgr::init()
 {
@@ -86,34 +84,30 @@ void Mgr::init()
 	gPikmin2AramMgr = new Pikmin2ARAM::Mgr;
 }
 
-/*
- * --INFO--
- * Address:	80455C90
- * Size:	000018
+/**
+ * @note Address: 0x80455C90
+ * @note Size: 0x18
  */
 Mgr::Mgr() { mLoadPermission = false; }
 
-/*
- * --INFO--
- * Address:	80455CA8
- * Size:	000008
+/**
+ * @note Address: 0x80455CA8
+ * @note Size: 0x8
  */
 void Mgr::setLoadPermission(bool loadPermission) { mLoadPermission = loadPermission; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
  */
 bool Mgr::isEntryOnly()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80455CB0
- * Size:	000060
+/**
+ * @note Address: 0x80455CB0
+ * @note Size: 0x60
  */
 void Mgr::load()
 {
@@ -126,17 +120,15 @@ void Mgr::load()
 	heap->becomeCurrentHeap();
 }
 
-/*
- * --INFO--
- * Address:	80455D10
- * Size:	000024
+/**
+ * @note Address: 0x80455D10
+ * @note Size: 0x24
  */
 void Mgr::dump() { gAramMgr->dump(); }
 
-/*
- * --INFO--
- * Address:	80455D34
- * Size:	0001A4
+/**
+ * @note Address: 0x80455D34
+ * @note Size: 0x1A4
  * Just regswaps left.
  */
 void Mgr::loadEnemy()
@@ -179,10 +171,9 @@ void Mgr::loadEnemy()
 	OSRestoreInterrupts(interrupt2);
 }
 
-/*
- * --INFO--
- * Address:	80455ED8
- * Size:	0000B8
+/**
+ * @note Address: 0x80455ED8
+ * @note Size: 0xB8
  */
 void Mgr::load2D()
 {
@@ -199,10 +190,9 @@ void Mgr::load2D()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80455F90
- * Size:	000078
+/**
+ * @note Address: 0x80455F90
+ * @note Size: 0x78
  */
 void Mgr::loadDemo()
 {
@@ -213,10 +203,9 @@ void Mgr::loadDemo()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80456008
- * Size:	000078
+/**
+ * @note Address: 0x80456008
+ * @note Size: 0x78
  */
 void Mgr::loadItem()
 {

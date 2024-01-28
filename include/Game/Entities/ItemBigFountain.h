@@ -9,7 +9,7 @@
 #include "Condition.h"
 
 struct PikiCond_ExceptChappyPikmin : public Condition<Game::Piki> {
-	virtual bool satisfy(Game::Piki*); // _08 (weak)
+	virtual bool satisfy(Game::Piki* piki) { return piki->getKind() != Game::Bulbmin; } // _08 (weak)
 
 	// _00 = VTBL
 };
@@ -27,7 +27,7 @@ enum StateID {
 };
 
 struct InitArg : public CreatureInitArg {
-	virtual const char* getName(); // _08 (weak)
+	virtual const char* getName() { return "ItemBigFountain::InitArg"; } // _08 (weak)
 
 	// _00 = VTBL
 	int mInitState; // _04
@@ -59,9 +59,9 @@ struct AppearState : public State {
 	{
 	}
 
-	virtual void init(Item* item, StateArg* arg); // _08
-	virtual void exec(Item* item);                // _0C
-	virtual void cleanup(Item* item);             // _10
+	virtual void init(Item* item, StateArg* settings); // _08
+	virtual void exec(Item* item);                     // _0C
+	virtual void cleanup(Item* item);                  // _10
 
 	// _00     = VTBL
 	// _00-_0C = State
@@ -75,9 +75,9 @@ struct CloseState : public State {
 	{
 	}
 
-	virtual void init(Item* item, StateArg* arg); // _08
-	virtual void exec(Item* item);                // _0C
-	virtual void cleanup(Item* item);             // _10
+	virtual void init(Item* item, StateArg* settings); // _08
+	virtual void exec(Item* item);                     // _0C
+	virtual void cleanup(Item* item);                  // _10
 
 	// _00     = VTBL
 	// _00-_0C = State
@@ -90,10 +90,10 @@ struct OutState : public State {
 	{
 	}
 
-	virtual void init(Item* item, StateArg* arg); // _08
-	virtual void exec(Item* item);                // _0C
-	virtual void cleanup(Item* item);             // _10
-	virtual bool canRide() { return true; }       // _34 (weak)
+	virtual void init(Item* item, StateArg* settings); // _08
+	virtual void exec(Item* item);                     // _0C
+	virtual void cleanup(Item* item);                  // _10
+	virtual bool canRide() { return true; }            // _34 (weak)
 
 	// _00     = VTBL
 	// _00-_0C = State
@@ -106,7 +106,7 @@ struct WaitState : public State {
 	{
 	}
 
-	virtual void init(Item* item, StateArg* arg);                            // _08
+	virtual void init(Item* item, StateArg* settings);                       // _08
 	virtual void exec(Item* item);                                           // _0C
 	virtual void cleanup(Item* item);                                        // _10
 	virtual void onDamage(Item*, f32);                                       // _20
@@ -175,8 +175,9 @@ struct Item : public WorkItem<Item, FSM, State> {
 
 	inline void resetModelMass()
 	{
-		mModel->mJ3dModel->mModelScale.set(1.0f, 1.0f, 1.0f);
-		mMass = 0.0f;
+		// Dumb, but best I can do since mModelScale needs to be Vec
+		mModel->mJ3dModel->mModelScale.x = mModel->mJ3dModel->mModelScale.y = mModel->mJ3dModel->mModelScale.z = 1.0f;
+		mMass                                                                                                  = 0.0f;
 	}
 
 	// _00      = VTBL

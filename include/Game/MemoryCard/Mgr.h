@@ -58,7 +58,7 @@ struct Mgr : public MemoryCardMgr {
 
 	void loadResource(JKRHeap*);
 	void destroyResource();
-	u32 getCardStatus();
+	u32 getCardStatus(); // MemoryCardStatus
 	bool format();
 	bool checkBeforeSave();
 	bool checkError();
@@ -89,10 +89,10 @@ struct Mgr : public MemoryCardMgr {
 	bool getPlayerInfo(s8, PlayerInfoHeader*, bool*);
 	int getIndexPlayerInfo(s8, PlayerInfoHeader*, bool*);
 	bool commandLoadPlayer(s8);
-	bool loadPlayerForNoCard(signed char);
-	bool loadPlayerProc(s8, unsigned char*);
+	bool loadPlayerForNoCard(s8);
+	bool loadPlayerProc(s8, u8*);
 	bool commandDeletePlayer(s8);
-	bool savePlayerProc(s8, unsigned char*, bool);
+	bool savePlayerProc(s8, u8*, bool);
 	bool commandCheckSerialNo();
 	bool commandCopyPlayer(s8, s8);
 	void writePlayer(Stream&);
@@ -108,9 +108,9 @@ struct Mgr : public MemoryCardMgr {
 	bool writeInvalidPlayerInfoAll();
 	bool writeInvalidPlayerInfo(int, s8);
 	bool checkPlayerNoPlayerInfo(int, s8, PlayerInfoHeader*);
-	bool getIndexInvalidPlayerInfo(int*, s8*, s8, unsigned long, bool);
+	bool getIndexInvalidPlayerInfo(int*, s8*, s8, u32, bool);
 	bool modifyPlayerInfo(s8, bool*);
-	bool verifyCardSerialNo(unsigned long long*, MemoryCardMgr::ECardSlot);
+	bool verifyCardSerialNo(u64*, MemoryCardMgr::ECardSlot);
 	bool resetError();
 
 	inline void setFlag(u32 flag) { mFlags.typeView |= flag; }
@@ -120,9 +120,11 @@ struct Mgr : public MemoryCardMgr {
 	inline bool checkCheckSum(u32* buffer);
 	inline bool checkInfo(u32* buffer);
 
-	inline bool isCardReady() { return (int)getCardStatus() == 0; }
+	inline bool isCardReady() { return (int)getCardStatus() == MCS_Ready; }
 
-	inline bool isCardNotReady() { return (int)getCardStatus() != 0; }
+	inline bool isCardNotReady() { return (int)getCardStatus() != MCS_Ready; }
+
+	inline bool isCardInvalid() { return !mIsCard && checkStatus() != MCS_11; }
 
 	// _00-_E8 = MemoryCardMgr
 	u32 _D8;                // _D8

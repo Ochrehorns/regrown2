@@ -5,10 +5,9 @@ namespace Jigumo {
 
 static const char jigumoMgrName[] = "jigumoMgr";
 
-/*
- * --INFO--
- * Address:	803688CC
- * Size:	000050
+/**
+ * @note Address: 0x803688CC
+ * @note Size: 0x50
  */
 Mgr::Mgr(int objLimit, u8 modelType)
     : EnemyMgrBase(objLimit, modelType)
@@ -16,32 +15,29 @@ Mgr::Mgr(int objLimit, u8 modelType)
 	mName = "ジグモマネージャ"; // jigumo manager
 }
 
-/*
- * --INFO--
- * Address:	8036891C
- * Size:	000048
+/**
+ * @note Address: 0x8036891C
+ * @note Size: 0x48
  */
 void Mgr::doAlloc() { init(new Parms); }
 
-/*
- * --INFO--
- * Address:	80368BB0
- * Size:	000020
+/**
+ * @note Address: 0x80368BB0
+ * @note Size: 0x20
  */
 EnemyBase* Mgr::birth(EnemyBirthArg& birthArg) { return EnemyMgrBase::birth(birthArg); }
 
-/*
- * --INFO--
- * Address:	80368BD0
- * Size:	000068
+/**
+ * @note Address: 0x80368BD0
+ * @note Size: 0x68
  */
 void Mgr::loadModelData()
 {
 	EnemyMgrBase::loadModelData();
 	J3DShape* shape;
 	for (u16 j = 0; j < mModelData->getShapeNum(); j++) {
-		shape         = mModelData->mShapeTable.mItems[j];
-		shape->mFlags = (shape->mFlags & (~0xF000)) | 0x2000;
+		shape = mModelData->mShapeTable.mItems[j];
+		shape->setTexMtxLoadType(0x2000);
 	}
 }
 

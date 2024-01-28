@@ -45,12 +45,17 @@ struct EnemyNumInfo {
 	{
 		EnemyTypeID* enemyNumList = mEnemyNumList;
 		if (enemyNumList) {
-			getEnemyNumData(enemyID)->mCount += num;
+			for (int i = 0; i < gEnemyInfoNum; i++) {
+				if (enemyID == mEnemyNumList[i].mEnemyID) {
+					mEnemyNumList[i].mCount += num;
+					return;
+				}
+			}
 		}
 	}
-	inline u8 getEnemyNum(int enemyID, bool check)
+	inline u8 getEnemyNum(int enemyID, bool doFullCount)
 	{
-		if (check) {
+		if (doFullCount) {
 			u8 num = 0;
 			if (mEnemyNumList) {
 				int mgrID = getEnemyMgrID(enemyID);
@@ -65,16 +70,16 @@ struct EnemyNumInfo {
 			}
 			return num;
 		}
-		return getEnemyNumData(enemyID)->mCount;
+		// return getEnemyNumData(enemyID)->mCount;
 	}
-	inline EnemyTypeID* getEnemyNumData(int enemyID)
+	inline u8 getEnemyNumData(int enemyID)
 	{
+		// mr vs li issue here
 		for (int i = 0; i < gEnemyInfoNum; i++) {
-			if (enemyID == mEnemyNumList[i].mEnemyID) {
-				return mEnemyNumList + i;
+			if (mEnemyNumList[i].mEnemyID == enemyID) {
+				return mEnemyNumList[i].mCount;
 			}
 		}
-		return nullptr;
 	}
 
 	u8 _44[4];                  // _00
@@ -202,6 +207,24 @@ struct GeneralEnemyMgr : public GenericObjectMgr, public CNode {
 	// unused/inlined:
 	void birth(char*, EnemyBirthArg&);
 	inline char getEnemyMember(int id, int flags) { return EnemyInfoFunc::getEnemyMember(id, flags); }
+	inline u8 getEnemyCount(int enemyID, int mgrID)
+	{
+		// clrlwi issue here
+		u8 num = enemyID;
+
+		for (int i = 0; i < gEnemyInfoNum; i++) {
+			EnemyTypeID& typeID = mEnemyNumInfo.mEnemyNumList[i];
+
+			bool eq = (u8)(enemyID == mgrID);
+			int id  = eq ? getEnemyMgrID(typeID.mEnemyID) : typeID.mEnemyID;
+
+			if (id == enemyID) {
+				num += typeID.mCount;
+			}
+		}
+
+		return num;
+	}
 	void setParmsDebugNameAndID();
 	void resetParmsDebugNameAndID();
 	void setParmsDebugSoundInfo();
@@ -209,7 +232,7 @@ struct GeneralEnemyMgr : public GenericObjectMgr, public CNode {
 
 	// _00		= (GenericObjectMgr) VTABLE
 	// _04-_1C	= CNode
-	u8 _1C;                     // _1C
+	u8 _1C;                     // _1C, BitFlag
 	EnemyMgrNode mEnemyMgrNode; // _20
 	EnemyNumInfo mEnemyNumInfo; // _44
 	JKRHeap* mHeap;             // _4C

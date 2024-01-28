@@ -7,12 +7,11 @@ GBAControl __GBA[4];
 static BOOL Initialized;
 BOOL __GBAReset;
 
-/*
- * --INFO--
- * Address:	800FEB2C
- * Size:	000054
+/**
+ * @note Address: 0x800FEB2C
+ * @note Size: 0x54
  */
-static void ShortCommandProc(int chan)
+static void ShortCommandProc(s32 chan)
 {
 	GBAControl* port = &__GBA[chan];
 	if (port->ret != 0) {
@@ -25,15 +24,14 @@ static void ShortCommandProc(int chan)
 	*port->status = port->input[2] & 0x3A;
 }
 
-/*
- * --INFO--
- * Address:	800FEB80
- * Size:	0000C0
+/**
+ * @note Address: 0x800FEB80
+ * @note Size: 0xC0
  */
 void GBAInit(void)
 {
 	GBAControl* gba;
-	int chan;
+	s32 chan;
 
 	if (Initialized == FALSE) {
 		Initialized = TRUE;
@@ -53,12 +51,11 @@ void GBAInit(void)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000064
+/**
+ * @note Address: N/A
+ * @note Size: 0x64
  */
-int GBAGetStatusAsync(int chan, u8* statusPtr)
+int GBAGetStatusAsync(s32 chan, u8* statusPtr)
 {
 	GBAControl* gba = &__GBA[chan];
 	if (gba->callback) {
@@ -71,23 +68,21 @@ int GBAGetStatusAsync(int chan, u8* statusPtr)
 	return __GBATransfer(chan, 1, 3, ShortCommandProc);
 }
 
-/*
- * --INFO--
- * Address:	800FEC40
- * Size:	000090
+/**
+ * @note Address: 0x800FEC40
+ * @note Size: 0x90
  */
-int GBAGetStatus(int chan, u8* statusPtr)
+int GBAGetStatus(s32 chan, u8* statusPtr)
 {
 	int status = GBAGetStatusAsync(chan, statusPtr);
 	return (status != 0) ? status : __GBASync(chan);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000064
+/**
+ * @note Address: N/A
+ * @note Size: 0x64
  */
-int GBAResetAsync(int chan, u8* statusPtr)
+int GBAResetAsync(s32 chan, u8* statusPtr)
 {
 	GBAControl* gba = &__GBA[chan];
 	if (gba->callback) {
@@ -100,21 +95,19 @@ int GBAResetAsync(int chan, u8* statusPtr)
 	return __GBATransfer(chan, 1, 3, ShortCommandProc);
 }
 
-/*
- * --INFO--
- * Address:	800FECD0
- * Size:	000090
+/**
+ * @note Address: 0x800FECD0
+ * @note Size: 0x90
  */
-int GBAReset(int chan, u8* statusPtr)
+int GBAReset(s32 chan, u8* statusPtr)
 {
 	int status = GBAResetAsync(chan, statusPtr);
 	return (status != 0) ? status : __GBASync(chan);
 }
 
-/*
- * --INFO--
- * Address:	800FED60
- * Size:	000010
+/**
+ * @note Address: 0x800FED60
+ * @note Size: 0x10
  */
 static int OnReset(void)
 {

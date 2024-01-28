@@ -1,92 +1,42 @@
-#include "types.h"
-
-/*
-    Generated from dpostproc
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_8049A628
-    lbl_8049A628:
-        .4byte 0x6172616D
-        .4byte 0x4D67722E
-        .4byte 0x63707000
-    .global lbl_8049A634
-    lbl_8049A634:
-        .asciz "P2Assert"
-        .skip 3
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__Q24ARAM4Node
-    __vt__Q24ARAM4Node:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q24ARAM4NodeFv
-        .4byte getChildCount__5CNodeFv
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global gAramMgr
-    gAramMgr:
-        .skip 0x8
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80520770
-    lbl_80520770:
-        .4byte 0x00000000
-    .global lbl_80520774
-    lbl_80520774:
-        .4byte 0x726F6F74
-        .4byte 0x00000000
-        .4byte 0x00000000
-*/
-
 #include "JSystem/JKernel/JKRAram.h"
-#include "JSystem/JKernel/JKRDvdRipper.h"
 #include "JSystem/JKernel/JKRDvdAramRipper.h"
-#include "JSystem/JUtility/JUTException.h"
-#include "JSystem/JKernel/JKRHeap.h"
-#include "CNode.h"
+#include "P2Macros.h"
 #include "string.h"
 #include "ARAM.h"
 
 ARAM::Mgr* gAramMgr;
 
+#ifdef MATCHING
+static const char* SDATA2_FIX = "";
+#endif
+
 namespace ARAM {
-/*
- * --INFO--
- * Address:	........
- * Size:	00003C
+/**
+ * @note Address: N/A
+ * @note Size: 0x3C
  */
 inline Node::Node()
     : CNode("")
 {
-	mStatus = 0;
+	mMemoryBlock = 0;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000A8
- */
-inline u32 Node::dvdToAram(char const* name, bool useNull)
+inline u32 Node::dvdToAram(char const* name, bool forceFail)
 {
 	P2ASSERTLINE(105, name);
-	mName = (char*)name;
+	mName = const_cast<char*>(name);
 
-	if (!mStatus) {
-		if (useNull) {
-			mStatus = 0;
+	if (!mMemoryBlock) {
+		if (forceFail) {
+			mMemoryBlock = nullptr;
 		} else {
-			mStatus = (JKRAramBlock*)JKRDvdAramRipper::loadToAram(mName, 0, Switch_0, 0, 0, 0);
+			mMemoryBlock = (JKRAramBlock*)JKRDvdAramRipper::loadToAram(mName, 0, Switch_0, 0, 0, 0);
 		}
 	}
 
-	return (u32)mStatus;
+	return reinterpret_cast<u32>(mMemoryBlock);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000140
- */
 void* Node::aramToMainRam(u8* buf, u32 address, u32 offset, JKRExpandSwitch expandSwitch, u32 maxExpandSize, JKRHeap* heap,
                           JKRDvdRipper::EAllocDirection allocDir, int id, u32* byteCnt)
 {
@@ -100,14 +50,14 @@ void* Node::aramToMainRam(u8* buf, u32 address, u32 offset, JKRExpandSwitch expa
 		byteCnt = &tempByteVal;
 	}
 
-	if (!mStatus) {
+	if (!mMemoryBlock) {
 		dvdToAram(mName, false);
 	}
 
-	if (mStatus) {
-		addr = JKRAram::aramToMainRam(mStatus, buf, address, offset, expandSwitch, maxExpandSize, heap, id, byteCnt);
+	if (mMemoryBlock) {
+		addr = JKRAram::aramToMainRam(mMemoryBlock, buf, address, offset, expandSwitch, maxExpandSize, heap, id, byteCnt);
 		DCFlushRange(addr, *byteCnt);
-		if ((s32)allocDir == JKRDvdRipper::ALLOC_DIR_BOTTOM) {
+		if (allocDir == JKRDvdRipper::ALLOC_DIR_BOTTOM) {
 			char* newAddr = new (heap, -0x20) char[*byteCnt];
 			memcpy(newAddr, addr, *byteCnt);
 			delete addr;
@@ -118,38 +68,34 @@ void* Node::aramToMainRam(u8* buf, u32 address, u32 offset, JKRExpandSwitch expa
 	return addr;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000004
+/**
+ * @note Address: N/A
+ * @note Size: 0x4
  */
 inline void Node::dump() { }
 
-/*
- * --INFO--
- * Address:	80432B18
- * Size:	000030
+/**
+ * @note Address: 0x80432B18
+ * @note Size: 0x30
  */
 void Mgr::init() { new Mgr(); }
 
-/*
- * --INFO--
- * Address:	80432B48
- * Size:	000080
+/**
+ * @note Address: 0x80432B48
+ * @note Size: 0x80
  */
 Mgr::Mgr()
-    : mNode("root")
+    : mRootNode("root")
 {
 	P2ASSERTLINE(248, gAramMgr == nullptr);
 	gAramMgr = this;
 }
-/*
- * --INFO--
- * Address:	80432BC8
- * Size:	00024C
- */
 
-u32 Mgr::dvdToAram(char const* name, bool a2)
+/**
+ * @note Address: 0x80432BC8
+ * @note Size: 0x24C
+ */
+u32 Mgr::dvdToAram(char const* name, bool forceAddNode)
 {
 	u32 success = 0;
 	Node* found = search(name);
@@ -160,33 +106,33 @@ u32 Mgr::dvdToAram(char const* name, bool a2)
 		Node* newNode     = new (sysHeap1, 0) Node;
 
 		JKRHeap* sysHeap2 = JKRHeap::sSystemHeap;
-		size_t length     = strlen((char*)name) + 1;
+		size_t length     = strlen(const_cast<char*>(name)) + 1;
 		char* newName     = new (sysHeap2, 0) char[length];
 		strcpy(newName, name);
 
-		if (a2) {
-			newNode->dvdToAram(newName, a2);
-			mNode.add(newNode);
+		if (forceAddNode) {
+			newNode->dvdToAram(newName, forceAddNode);
+			mRootNode.add(newNode);
 		} else {
 			success = newNode->dvdToAram(newName, false);
 
 			if (success) {
-				mNode.add(newNode);
+				mRootNode.add(newNode);
 			} else {
 				delete newName;
 				delete newNode;
 			}
 		}
 	} else {
-		success = found->dvdToAram(found->mName, a2);
+		success = found->dvdToAram(found->mName, forceAddNode);
 	}
+
 	return success;
 }
 
-/*
- * --INFO--
- * Address:	80432E74
- * Size:	000154
+/**
+ * @note Address: 0x80432E74
+ * @note Size: 0x154
  * TODO: Match
  */
 inline u32* validPointer(u32* p)
@@ -194,6 +140,7 @@ inline u32* validPointer(u32* p)
 	u32 zero = 0;
 	return !p ? &zero : p;
 }
+
 void* Mgr::aramToMainRam(char const* name, u8* buf, u32 address, u32 offset, JKRExpandSwitch expandSwitch, u32 maxExpandSize, JKRHeap* heap,
                          JKRDvdRipper::EAllocDirection allocDir, int id, u32* byteCnt)
 {
@@ -212,10 +159,9 @@ void* Mgr::aramToMainRam(char const* name, u8* buf, u32 address, u32 offset, JKR
 	return mem;
 }
 
-/*
- * --INFO--
- * Address:	80432FC8
- * Size:	0000A0
+/**
+ * @note Address: 0x80432FC8
+ * @note Size: 0xA0
  */
 void ARAM::Mgr::dump()
 {
@@ -224,30 +170,29 @@ void ARAM::Mgr::dump()
 	JKRAram::sAramObject->mAramHeap->getFreeSize();
 	JKRAram::sAramObject->mAramHeap->getFreeSize();
 	JKRAramBlock* status;
-	FOREACH_NODE(Node, mNode.mChild, node)
+	FOREACH_NODE(Node, mRootNode.mChild, node)
 	{
-		status = node->mStatus;
-		u32 v1 = (status) ? status->mSize : 0;
-		if (max > v1) {
-			max = v1;
-		} else if (min < v1) {
-			min = v1;
+		status   = node->mMemoryBlock;
+		u32 size = (status) ? status->mSize : 0;
+		if (max > size) {
+			max = size;
+		} else if (min < size) {
+			min = size;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	80433068
- * Size:	000070
+/**
+ * @note Address: 0x80433068
+ * @note Size: 0x70
  */
 Node* ARAM::Mgr::search(char const* str)
 {
 	Node* result = nullptr;
-	CNode* node  = mNode.mChild;
+	CNode* node  = mRootNode.mChild;
 	while (node) {
 		if (strcmp(str, node->mName) == 0) {
-			result = (Node*)node;
+			result = static_cast<Node*>(node);
 			break;
 		}
 		node = node->mNext;

@@ -9,22 +9,22 @@
 #include "efx/TEnemyBomb.h"
 #include "efx/TEnemyApsmoke.h"
 #include "efx/TEnemyHamon.h"
+#include "P2Macros.h"
 
 namespace efx {
 
 static void _Print(char* format, ...) { OSReport(format, __FILE__); }
 
-/*
- * --INFO--
- * Address:	803C7834
- * Size:	000274
+/**
+ * @note Address: 0x803C7834
+ * @note Size: 0x274
  */
-bool TEnemyPiyo::create(efx::Arg* arg)
+bool TEnemyPiyo::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgEnemyType", arg->getName()) == 0;
 	P2ASSERTLINE(17, nameCheck);
 
-	efx::ArgEnemyType* argt = static_cast<efx::ArgEnemyType*>(arg);
+	ArgEnemyType* argt = static_cast<ArgEnemyType*>(arg);
 
 	bool docreate;
 	f32 scale;
@@ -206,6 +206,7 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 		scale = 2.45f;
 		break;
 
+
 	case Game::EnemyTypeID::EnemyID_Kogane:
 	case Game::EnemyTypeID::EnemyID_Wealthy:
 	case Game::EnemyTypeID::EnemyID_Fart:
@@ -260,17 +261,16 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C7AA8
- * Size:	0000DC
+/**
+ * @note Address: 0x803C7AA8
+ * @note Size: 0xDC
  */
-bool TEnemyPoisonL::create(efx::Arg* arg)
+bool TEnemyPoisonL::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(199, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -289,17 +289,16 @@ bool TEnemyPoisonL::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C7B84
- * Size:	0000DC
+/**
+ * @note Address: 0x803C7B84
+ * @note Size: 0xDC
  */
-bool TEnemyPoisonS::create(efx::Arg* arg)
+bool TEnemyPoisonS::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(214, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -317,17 +316,16 @@ bool TEnemyPoisonS::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C7C60
- * Size:	0000DC
+/**
+ * @note Address: 0x803C7C60
+ * @note Size: 0xDC
  */
-bool TSekikaLOff::create(efx::Arg* arg)
+bool TSekikaLOff::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(231, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -345,17 +343,16 @@ bool TSekikaLOff::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C7D3C
- * Size:	0000DC
+/**
+ * @note Address: 0x803C7D3C
+ * @note Size: 0xDC
  */
-bool TSekikaLOn::create(efx::Arg* arg)
+bool TSekikaLOn::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(246, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -373,17 +370,16 @@ bool TSekikaLOn::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C7E18
- * Size:	0000DC
+/**
+ * @note Address: 0x803C7E18
+ * @note Size: 0xDC
  */
-bool TSekikaSOff::create(efx::Arg* arg)
+bool TSekikaSOff::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(261, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -401,17 +397,16 @@ bool TSekikaSOff::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C7EF4
- * Size:	0000DC
+/**
+ * @note Address: 0x803C7EF4
+ * @note Size: 0xDC
  */
-bool TSekikaSOn::create(efx::Arg* arg)
+bool TSekikaSOn::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(276, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -429,17 +424,16 @@ bool TSekikaSOn::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C7FD0
- * Size:	0000DC
+/**
+ * @note Address: 0x803C7FD0
+ * @note Size: 0xDC
  */
-bool TEnemyDead_ArgScale::create(efx::Arg* arg)
+bool TEnemyDead_ArgScale::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(295, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -457,18 +451,17 @@ bool TEnemyDead_ArgScale::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C80AC
- * Size:	00024C
+/**
+ * @note Address: 0x803C80AC
+ * @note Size: 0x24C
  */
-bool TEnemyDead::create(efx::Arg* arg)
+bool TEnemyDead::create(Arg* arg)
 {
 	bool docreate;
 	bool nameCheck = strcmp("ArgEnemyType", arg->getName()) == 0;
 	P2ASSERTLINE(312, nameCheck);
 
-	efx::ArgEnemyType* argt = static_cast<efx::ArgEnemyType*>(arg);
+	ArgEnemyType* argt = static_cast<ArgEnemyType*>(arg);
 
 	f32 scale;
 	switch (argt->mTypeID) {
@@ -593,7 +586,7 @@ bool TEnemyDead::create(efx::Arg* arg)
 		docreate = false;
 		return docreate;
 
-	case Game::EnemyTypeID::EnemyID_ShijimiChou:
+	case Game::EnemyTypeID::EnemyID_ShijimiChou: // unused due to bug in Game::ShijimiChou::StateDead::exec; UjiA is used instead
 		scale = 0.55f;
 		break;
 
@@ -696,19 +689,18 @@ bool TEnemyDead::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C82F8
- * Size:	000318
+/**
+ * @note Address: 0x803C82F8
+ * @note Size: 0x318
  */
-bool TEnemyWalkSmoke::create(efx::Arg* arg)
+bool TEnemyWalkSmoke::create(Arg* arg)
 {
 	int isSmall;
 	bool nameCheck = strcmp("ArgEnemyType", arg->getName()) == 0;
 	P2ASSERTLINE(491, nameCheck);
 
-	efx::ArgEnemyType* argt = static_cast<efx::ArgEnemyType*>(arg);
-	Vector3f pos            = arg->mPosition;
+	ArgEnemyType* argt = static_cast<ArgEnemyType*>(arg);
+	Vector3f pos       = arg->mPosition;
 
 	f32 scale;
 	switch (argt->mTypeID) {
@@ -908,29 +900,28 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 	}
 
 	scale *= argt->mScale;
-	efx::ArgScale args(pos, scale);
+	ArgScale args(pos, scale);
 	if (isSmall == 0) {
-		efx::TEnemyWalkSmokeM effect(PID_EnemyWalkSmokeM);
+		TEnemyWalkSmokeM effect(PID_EnemyWalkSmokeM);
 		return effect.create(&args);
 	} else if (isSmall == 1) {
-		efx::TEnemyWalkSmokeS effect(PID_EnemyWalkSmokeS);
+		TEnemyWalkSmokeS effect(PID_EnemyWalkSmokeS);
 		return effect.create(&args);
 	} else {
 		return false;
 	}
 }
 
-/*
- * --INFO--
- * Address:	803C8610
- * Size:	0000DC
+/**
+ * @note Address: 0x803C8610
+ * @note Size: 0xDC
  */
-bool TEnemyWalkSmokeM::create(efx::Arg* arg)
+bool TEnemyWalkSmokeM::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(686, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -948,15 +939,14 @@ bool TEnemyWalkSmokeM::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C86EC
- * Size:	000078
+/**
+ * @note Address: 0x803C86EC
+ * @note Size: 0x78
  */
-bool TEnemyWalkSmokeS::create(efx::Arg* arg)
+bool TEnemyWalkSmokeS::create(Arg* arg)
 {
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
-	f32 scale           = args->mScale;
+	ArgScale* args = static_cast<ArgScale*>(arg);
+	f32 scale      = args->mScale;
 	bool docreate;
 
 	if (TSimple1::create(arg)) {
@@ -972,12 +962,11 @@ bool TEnemyWalkSmokeS::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C8764
- * Size:	000068
+/**
+ * @note Address: 0x803C8764
+ * @note Size: 0x68
  */
-bool TEnemyDownSmoke::create(efx::Arg* arg)
+bool TEnemyDownSmoke::create(Arg* arg)
 {
 	bool docreate;
 	if (TSimple1::create(arg)) {
@@ -994,17 +983,16 @@ bool TEnemyDownSmoke::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C87CC
- * Size:	00010C
+/**
+ * @note Address: 0x803C87CC
+ * @note Size: 0x10C
  */
-bool TEnemyDownWat::create(efx::Arg* arg)
+bool TEnemyDownWat::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(734, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -1024,17 +1012,16 @@ bool TEnemyDownWat::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C88D8
- * Size:	0000F4
+/**
+ * @note Address: 0x803C88D8
+ * @note Size: 0xF4
  */
-bool TEnemyDive::create(efx::Arg* arg)
+bool TEnemyDive::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(750, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -1053,10 +1040,9 @@ bool TEnemyDive::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C89CC
- * Size:	0003B8
+/**
+ * @note Address: 0x803C89CC
+ * @note Size: 0x3B8
  */
 TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 {
@@ -1334,32 +1320,31 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803C8D84
- * Size:	0001EC
+/**
+ * @note Address: 0x803C8D84
+ * @note Size: 0x1EC
  */
-bool TEnemyBomb::create(efx::Arg* arg)
+bool TEnemyBomb::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgEnemyType", arg->getName()) == 0;
 	P2ASSERTLINE(987, nameCheck);
 
-	efx::ArgEnemyType* argt = static_cast<efx::ArgEnemyType*>(arg);
+	ArgEnemyType* argt = static_cast<ArgEnemyType*>(arg);
 
 	Vector3f pos = arg->mPosition;
 	TEnemyBombScaleTable data(argt->mTypeID);
 	f32 scale = argt->mScale * data.mScale;
 
-	efx::ArgScale args(pos, scale);
+	ArgScale args(pos, scale);
 
 	if (data.mType == 0) {
 		return false;
 	} else {
 		if (data.mType == 1) {
-			efx::TEnemyBombM effect;
+			TEnemyBombM effect;
 			return effect.create(&args);
 		} else if (data.mType == 2) {
-			efx::TEnemyBombS effect;
+			TEnemyBombS effect;
 			return effect.create(&args);
 		} else {
 			return false;
@@ -1367,17 +1352,16 @@ bool TEnemyBomb::create(efx::Arg* arg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803C8F70
- * Size:	000124
+/**
+ * @note Address: 0x803C8F70
+ * @note Size: 0x124
  */
-bool TEnemyBombM::create(efx::Arg* arg)
+bool TEnemyBombM::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(1012, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -1398,17 +1382,16 @@ bool TEnemyBombM::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C9094
- * Size:	000124
+/**
+ * @note Address: 0x803C9094
+ * @note Size: 0x124
  */
-bool TEnemyBombS::create(efx::Arg* arg)
+bool TEnemyBombS::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(1029, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -1429,32 +1412,31 @@ bool TEnemyBombS::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C91B8
- * Size:	0001A4
+/**
+ * @note Address: 0x803C91B8
+ * @note Size: 0x1A4
  */
-bool TEnemyApsmoke::create(efx::Arg* arg)
+bool TEnemyApsmoke::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgEnemyType", arg->getName()) == 0;
 	P2ASSERTLINE(1047, nameCheck);
 
-	efx::ArgEnemyType* argt = static_cast<efx::ArgEnemyType*>(arg);
+	ArgEnemyType* argt = static_cast<ArgEnemyType*>(arg);
 
 	Vector3f pos = arg->mPosition;
 	TEnemyBombScaleTable data(argt->mTypeID);
 	f32 scale = argt->mScale * data.mScale;
 
-	efx::ArgScale args(pos, scale);
+	ArgScale args(pos, scale);
 
 	if (data.mType == 0) {
 		return false;
 	} else {
 		if (data.mType == 1) {
-			efx::TEnemyApsmokeM effect;
+			TEnemyApsmokeM effect;
 			return effect.create(&args);
 		} else if (data.mType == 2) {
-			efx::TEnemyApsmokeS effect;
+			TEnemyApsmokeS effect;
 			return effect.create(&args);
 		} else {
 			return false;
@@ -1462,17 +1444,16 @@ bool TEnemyApsmoke::create(efx::Arg* arg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803C935C
- * Size:	0000DC
+/**
+ * @note Address: 0x803C935C
+ * @note Size: 0xDC
  */
-bool TEnemyApsmokeM::create(efx::Arg* arg)
+bool TEnemyApsmokeM::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(1072, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -1491,17 +1472,16 @@ bool TEnemyApsmokeM::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C9438
- * Size:	0000DC
+/**
+ * @note Address: 0x803C9438
+ * @note Size: 0xDC
  */
-bool TEnemyApsmokeS::create(efx::Arg* arg)
+bool TEnemyApsmokeS::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(1089, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -1520,17 +1500,16 @@ bool TEnemyApsmokeS::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C9514
- * Size:	0000DC
+/**
+ * @note Address: 0x803C9514
+ * @note Size: 0xDC
  */
-bool TEnemyHamonM::create(efx::Arg* arg)
+bool TEnemyHamonM::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(1108, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -1548,17 +1527,16 @@ bool TEnemyHamonM::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C95F0
- * Size:	0000DC
+/**
+ * @note Address: 0x803C95F0
+ * @note Size: 0xDC
  */
-bool TEnemyHamonMInd::create(efx::Arg* arg)
+bool TEnemyHamonMInd::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
 	P2ASSERTLINE(1122, nameCheck);
 
-	efx::ArgScale* args = static_cast<efx::ArgScale*>(arg);
+	ArgScale* args = static_cast<ArgScale*>(arg);
 
 	f32 scale = args->mScale;
 	bool docreate;
@@ -1576,17 +1554,16 @@ bool TEnemyHamonMInd::create(efx::Arg* arg)
 	return docreate;
 }
 
-/*
- * --INFO--
- * Address:	803C96CC
- * Size:	0002FC
+/**
+ * @note Address: 0x803C96CC
+ * @note Size: 0x2FC
  */
-bool TEnemyHamonChasePos::create(efx::Arg* arg)
+bool TEnemyHamonChasePos::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgEnemyType", arg->getName()) == 0;
 	P2ASSERTLINE(1136, nameCheck);
 
-	efx::ArgEnemyType* argt = static_cast<efx::ArgEnemyType*>(arg);
+	ArgEnemyType* argt = static_cast<ArgEnemyType*>(arg);
 
 	Vector3f pos = arg->mPosition;
 
@@ -1832,10 +1809,9 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803C99C8
- * Size:	000138
+/**
+ * @note Address: 0x803C99C8
+ * @note Size: 0x138
  */
 void TEnemyHamon::update(Vector3f& pos)
 {
@@ -1845,7 +1821,7 @@ void TEnemyHamon::update(Vector3f& pos)
 
 		if ((0.0f <= y) && y < y2) {
 			mPosition = Vector3f(pos.x, *mSeaHeightPtr, pos.z);
-			efx::ArgEnemyType arg(Vector3f::zero, mEnemyID, mScale);
+			ArgEnemyType arg(Vector3f::zero, mEnemyID, mScale);
 			mHamonChasePos.create(&arg);
 		} else {
 			mHamonChasePos.fade();
@@ -1853,17 +1829,16 @@ void TEnemyHamon::update(Vector3f& pos)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803C9B00
- * Size:	0000A0
+/**
+ * @note Address: 0x803C9B00
+ * @note Size: 0xA0
  */
-bool TEnemyHamon::create(efx::Arg* arg)
+bool TEnemyHamon::create(Arg* arg)
 {
 	bool nameCheck = strcmp("ArgEnemyType", arg->getName()) == 0;
 	P2ASSERTLINE(1351, nameCheck);
 
-	efx::ArgEnemyType* argt = static_cast<efx::ArgEnemyType*>(arg);
+	ArgEnemyType* argt = static_cast<ArgEnemyType*>(arg);
 
 	mEnemyID = argt->mTypeID;
 	mScale   = argt->mScale;
@@ -1871,10 +1846,9 @@ bool TEnemyHamon::create(efx::Arg* arg)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803C9BA0
- * Size:	000140
+/**
+ * @note Address: 0x803C9BA0
+ * @note Size: 0x140
  */
 f32 TEnemyHamon::getLimitDepth_()
 {

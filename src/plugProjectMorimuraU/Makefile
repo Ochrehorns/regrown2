@@ -6,7 +6,7 @@ MORIMURA_FILES:=\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/bombState.o\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/bombAnimator.o\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/bombMgr.o\
-	$(BUILD_DIR)/asm/plugProjectMorimuraU/bomb.o\
+	$(BUILD_DIR)/src/plugProjectMorimuraU/bomb.o\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/eggState.o\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/eggAnimator.o\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/eggMgr.o\
@@ -25,7 +25,7 @@ MORIMURA_FILES:=\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/miulinAnimator.o\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/miulinMgr.o\
 	$(BUILD_DIR)/asm/plugProjectMorimuraU/miulin.o\
-	$(BUILD_DIR)/asm/plugProjectMorimuraU/jigumoState.o\
+	$(BUILD_DIR)/src/plugProjectMorimuraU/jigumoState.o\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/jigumoAnimator.o\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/jigumoMgr.o\
 	$(BUILD_DIR)/asm/plugProjectMorimuraU/jigumo.o\
@@ -33,9 +33,9 @@ MORIMURA_FILES:=\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/enemyNest.o\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/tamagoMushiState.o\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/tamagoMushiAnimator.o\
-	$(BUILD_DIR)/asm/plugProjectMorimuraU/tamagoMushiMgr.o\
+	$(BUILD_DIR)/src/plugProjectMorimuraU/tamagoMushiMgr.o\
 	$(BUILD_DIR)/asm/plugProjectMorimuraU/tamagoMushi.o\
-	$(BUILD_DIR)/src/plugProjectMorimuraU/zukan2D.o\
+	$(BUILD_DIR)/asm/plugProjectMorimuraU/zukan2D.o\
 	$(BUILD_DIR)/asm/plugProjectMorimuraU/hiScore2D.o\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/umiMushiState.o\
 	$(BUILD_DIR)/src/plugProjectMorimuraU/umiMushiAnimator.o\

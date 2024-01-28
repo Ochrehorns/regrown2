@@ -1,4 +1,4 @@
-#include "trigNoInline.h"
+#include "trig.h"
 #include "Game/generalEnemyMgr.h"
 
 #include "Game/Entities/Pelplant.h"
@@ -13,17 +13,15 @@ namespace Game {
 
 static const char unusedGenEnemyName[] = "genEnemy";
 
-/*
- * --INFO--
- * Address:	80124778
- * Size:	00003C
+/**
+ * @note Address: 0x80124778
+ * @note Size: 0x3C
  */
 static GenObject* makeObjectEnemy() { return new GenObjectEnemy; }
 
-/*
- * --INFO--
- * Address:	801247B4
- * Size:	0000D0
+/**
+ * @note Address: 0x801247B4
+ * @note Size: 0xD0
  */
 GenObjectEnemy::GenObjectEnemy()
     : GenObject('teki', "object type", "敵をセット")
@@ -36,16 +34,15 @@ GenObjectEnemy::GenObjectEnemy()
     , mEnemySize(0)
     , mOtakaraItemCode(0)
     , mEnemyGenerator(nullptr)
-    , _4C(false)
+    , mFlagBit()
 {
 	createEnemyGenerator();
-	_4C |= true;
+	mFlagBit.set(1);
 }
 
-/*
- * --INFO--
- * Address:	80124884
- * Size:	00008C
+/**
+ * @note Address: 0x80124884
+ * @note Size: 0x8C
  */
 void GenObjectEnemy::initialise()
 {
@@ -64,24 +61,21 @@ void GenObjectEnemy::initialise()
 	metafactory->mCount++;
 }
 
-/*
- * --INFO--
- * Address:	80124910
- * Size:	000004
+/**
+ * @note Address: 0x80124910
+ * @note Size: 0x4
  */
 void GenObjectEnemy::ramSaveParameters(Stream&) { }
 
-/*
- * --INFO--
- * Address:	80124914
- * Size:	000004
+/**
+ * @note Address: 0x80124914
+ * @note Size: 0x4
  */
 void GenObjectEnemy::ramLoadParameters(Stream&) { }
 
-/*
- * --INFO--
- * Address:	80124918
- * Size:	0006B4
+/**
+ * @note Address: 0x80124918
+ * @note Size: 0x6B4
  */
 Creature* GenObjectEnemy::generate(Game::Generator* gen)
 {
@@ -98,7 +92,7 @@ Creature* GenObjectEnemy::generate(Game::Generator* gen)
 	startpos.z = z;
 
 	// Grab the number of tekis we're spawning
-	int tekicount = mTekiNum - gen->_74;
+	int tekicount = mTekiNum - gen->mDeathCount;
 
 	Vector3f posVector[10];  // holds initial positions
 	Vector3f corrVector[10]; // holds corrections if too close to other tekis
@@ -150,7 +144,7 @@ Creature* GenObjectEnemy::generate(Game::Generator* gen)
 		for (int i = 0; i < tekicount; i++) {
 			for (int k = i + 1; k < tekicount; k++) {
 				// loop over all unique pairings of teki
-				Vector3f& position            = posVector[i];  // position of teki  i
+				Vector3f& position            = posVector[i];  // position of teki i
 				Vector3f& position2           = posVector[k];  // position of teki k
 				Vector3f& positionCorrection  = corrVector[i]; // correction for teki i
 				Vector3f& positionCorrection2 = corrVector[k]; // correction for teki k
@@ -217,10 +211,9 @@ Creature* GenObjectEnemy::generate(Game::Generator* gen)
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80124FCC
- * Size:	0000E0
+/**
+ * @note Address: 0x80124FCC
+ * @note Size: 0xE0
  */
 Creature* GenObjectEnemy::birth(Game::GenArg* genArg)
 {
@@ -243,10 +236,9 @@ Creature* GenObjectEnemy::birth(Game::GenArg* genArg)
 	return enemy;
 }
 
-/*
- * --INFO--
- * Address:	801250AC
- * Size:	000218
+/**
+ * @note Address: 0x801250AC
+ * @note Size: 0x218
  */
 void GenObjectEnemy::doWrite(Stream& stream)
 {
@@ -293,10 +285,9 @@ void GenObjectEnemy::doWrite(Stream& stream)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801252D4
- * Size:	0001E4
+/**
+ * @note Address: 0x801252D4
+ * @note Size: 0x1E4
  */
 void GenObjectEnemy::doRead(Stream& stream)
 {
@@ -342,10 +333,9 @@ void GenObjectEnemy::doRead(Stream& stream)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801254BC
- * Size:	000470
+/**
+ * @note Address: 0x801254BC
+ * @note Size: 0x470
  */
 void GenObjectEnemy::doReadOldVersion(Stream& stream)
 {
@@ -470,10 +460,9 @@ void GenObjectEnemy::doReadOldVersion(Stream& stream)
 		break;                                          \
 	}
 
-/*
- * --INFO--
- * Address:	8012592C
- * Size:	000E38
+/**
+ * @note Address: 0x8012592C
+ * @note Size: 0xE38
  * TODO: The EnemyGeneratorBase ctor shouldn't be inlined
  */
 EnemyGeneratorBase* GenObjectEnemy::createEnemyGenerator()
@@ -500,7 +489,6 @@ EnemyGeneratorBase* GenObjectEnemy::createEnemyGenerator()
 		GENERATOR_CASE(EnemyTypeID::EnemyID_Fart, "ババコガネ")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_Frog, "イモガエル")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_MaroFrog, "マロガエル")
-		GENERATOR_CASE(EnemyTypeID::EnemyID_SmokyFrog, "SmokyFrogMgr")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_UjiA, "ウジンコ♀")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_Tobi, "トビンコ")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_UjiB, "ウジンコ♂")
@@ -531,11 +519,9 @@ EnemyGeneratorBase* GenObjectEnemy::createEnemyGenerator()
 		GENERATOR_CASE(EnemyTypeID::EnemyID_Queen, "クイーンチャッピー")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_Baby, "ベビーチャッピー")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_Demon, "オニサライ")
-		GENERATOR_CASE(EnemyTypeID::EnemyID_Usuba, "UsubaMgr")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_FireChappy, "ヤキチャッピー")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_SnakeCrow, "ヘビガラス")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_KumaChappy, "クマチャッピー")
-		GENERATOR_CASE(EnemyTypeID::EnemyID_SleepyBulbear, "SleepyBulbearMgr")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_Bomb, "バクダン")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_Egg, "ハテナタマゴ")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_PanModoki, "パンモドキ")
@@ -574,7 +560,6 @@ EnemyGeneratorBase* GenObjectEnemy::createEnemyGenerator()
 		GENERATOR_CASE(EnemyTypeID::EnemyID_JigumoNest, "ジグモ巣")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_Imomushi, "イモムシ")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_Houdai, "ホウダイダマグモ")
-		GENERATOR_CASE(EnemyTypeID::EnemyID_Hydrant, "HydrantMgr")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_LeafChappy, "ハッパチャッピー")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_TamagoMushi, "タマゴムシ")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_BigFoot, "オオアシダマグモ")
@@ -595,7 +580,6 @@ EnemyGeneratorBase* GenObjectEnemy::createEnemyGenerator()
 		GENERATOR_CASE(EnemyTypeID::EnemyID_BlackMan, "黒い人")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_Tyre, "黒い人タイヤ")
 		GENERATOR_CASE(EnemyTypeID::EnemyID_DangoMushi, "ダンゴムシ")
-		GENERATOR_CASE(EnemyTypeID::EnemyID_HallowMushi, "ElecMushiMgr")
 
 	case EnemyTypeID::EnemyID_Pom:
 	case EnemyTypeID::EnemyID_PanHouse:
@@ -609,17 +593,15 @@ EnemyGeneratorBase* GenObjectEnemy::createEnemyGenerator()
 	return mEnemyGenerator;
 }
 
-/*
- * --INFO--
- * Address:	801267D0
- * Size:	00002C
+/**
+ * @note Address: 0x801267D0
+ * @note Size: 0x2C
  */
 J3DModelData* GenObjectEnemy::getShape() { return generalEnemyMgr->getJ3DModelData((int)mEnemyID); }
 
-/*
- * --INFO--
- * Address:	801267FC
- * Size:	000040
+/**
+ * @note Address: 0x801267FC
+ * @note Size: 0x40
  */
 void GenObjectEnemy::updateUseList(Game::Generator* gen, int listIdx)
 {
@@ -628,23 +610,22 @@ void GenObjectEnemy::updateUseList(Game::Generator* gen, int listIdx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8012683C
- * Size:	00031C
+/**
+ * @note Address: 0x8012683C
+ * @note Size: 0x31C
  * TODO
  */
 void GenObjectEnemy::render(Graphics& gfx, Game::Generator* gen)
 {
-	if (IS_FLAG(_4C, 1)) {
+	if (mFlagBit.isSet(1)) {
 		Vector3f position = gen->mPosition + gen->mOffset;
 
 		gfx.initPrimDraw(nullptr);
 		GXSetLineWidth(18, GX_TO_ZERO);
 
-		gfx._084 = Color4(115, 16, 16, 255);
+		gfx.mDrawColor = Color4(115, 16, 16, 255);
 
-		float dirRadians = mDirection * DEG2RAD * PI;
+		f32 dirRadians = mDirection * DEG2RAD * PI;
 		Vector3f rotation(0.0f, dirRadians, 0.0f);
 
 		Matrixf rotationMtx;
@@ -673,7 +654,7 @@ void GenObjectEnemy::render(Graphics& gfx, Game::Generator* gen)
 		rotationMtx.makeT(position);
 
 		if (mSpawnType == 2) { // Circle spawn type
-			gfx._084 = Color4(255, 255, 255, 155);
+			gfx.mDrawColor = Color4(255, 255, 255, 155);
 			gfx.drawSphere(mAppearRadius, &rotationMtx);
 		}
 

@@ -18,6 +18,13 @@ struct MeloArrArg {
 
 // this has some funky inheritance going on I think?
 struct MeloArrBase : public JSULink<MeloArrBase>, JADHioNode {
+	MeloArrBase(char* name)
+	    : JSULink<MeloArrBase>(this)
+	    , JADHioNode(name)
+	{
+		_18 = 1;
+		_19 = 0;
+	}
 	// JADHioNode vtable:
 	// virtual void ~MeloArrBase() = 0;     // _08
 	// virtual void _0C() = 0;              // _0C - might just be gap
@@ -46,24 +53,29 @@ struct MeloArrMgr : public JADHioNode {
 	    : JADHioNode(nullptr)
 	    , mList()
 	    , _10(0)
-	    , _12(0)
+	    , mIsActive(0)
 	{
 	}
 
-	virtual ~MeloArrMgr(); // _08 (weak)
+	virtual ~MeloArrMgr() { } // _08 (weak)
 
 	bool isToAvoid(MeloArrArg&);
 
 	// _00 = VTABLE
-	JSUPtrList mList; // _04
-	u16 _10;          // _10
-	u8 _12;           // _12
+	JSUList<MeloArrBase> mList; // _04
+	u16 _10;                    // _10
+	u8 mIsActive;               // _12
 };
 
 /**
  * @size = 0x20
  */
 struct MeloArr_RandomAvoid : public MeloArrBase {
+	MeloArr_RandomAvoid(char* name)
+	    : MeloArrBase(name)
+	{
+		_1C = 0.6f;
+	}
 	// JADHioNode vtable:
 	// virtual void ~MeloArr_RandomAvoid() = 0; // _08
 	// virtual void _0C() = 0;                  // _0C - might just be gap

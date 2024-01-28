@@ -33,15 +33,17 @@
 #define FindSpicySprayTriggerSize    40.0f
 #define FindBitterSprayTriggerSize   40.0f
 
+static const int padding[]    = { 0, 0, 0 };
+static const char className[] = "naviDemoCheck";
+
 namespace Game {
-/*
- * --INFO--
- * Address:	8021F3D0
- * Size:	001790
+/**
+ * @note Address: 0x8021F3D0
+ * @note Size: 0x1790
  */
 bool Navi::demoCheck()
 {
-	if (gameSystem->mMode != GSM_STORY_MODE || cameraMgr->isChangePlayer()) {
+	if (!gameSystem->isStoryMode() || cameraMgr->isChangePlayer()) {
 		return false;
 	}
 
@@ -60,11 +62,11 @@ bool Navi::demoCheck()
 	}
 
 	Pom::Mgr* pommgr = static_cast<Pom::Mgr*>(generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_Pom));
-	bool purpleflag  = playData->isDemoFlag(DEMO_Purple_Candypop);
 	bool whiteflag   = playData->isDemoFlag(DEMO_White_Candypop);
+	bool purpleflag  = playData->isDemoFlag(DEMO_Purple_Candypop);
 	if (pommgr && (purpleflag || whiteflag)) {
 		// help this is broken
-		EnemyIterator<Pom::Obj> iter((Container<Pom::Obj>*)pommgr, 0, 0);
+		EnemyIterator<Pom::Obj> iter((Container<Pom::Obj>*)pommgr);
 		CI_LOOP(iter)
 		{
 			Pom::Obj* cPom = *iter;
@@ -101,7 +103,7 @@ bool Navi::demoCheck()
 	if (ItemOnyon::mgr) {
 
 		// find red onion cutscene, only Louie can trigger it
-		if (!playData->isDemoFlag(DEMO_Louie_Finds_Red_Onion) && mNaviIndex == 1) {
+		if (!playData->isDemoFlag(DEMO_Louie_Finds_Red_Onion) && mNaviIndex == NAVIID_Louie) {
 			Onyon* onyon = ItemOnyon::mgr->getOnyon(ONYON_TYPE_RED);
 			if (onyon) {
 				Vector3f onyonpos = onyon->getPosition();
@@ -135,7 +137,7 @@ bool Navi::demoCheck()
 					CI_LOOP(pikiIter)
 					{
 						cPiki = *pikiIter;
-						if (cPiki->mPikiKind == Yellow) {
+						if (cPiki->getKind() == Yellow) {
 							break;
 						}
 					}
@@ -176,7 +178,7 @@ bool Navi::demoCheck()
 					CI_LOOP(pikiIter)
 					{
 						Piki* temp = *pikiIter;
-						if (temp->mPikiKind == Blue) {
+						if (temp->getKind() == Blue) {
 							cPiki = temp;
 							cPiki->movie_begin(false);
 						}
@@ -204,7 +206,7 @@ bool Navi::demoCheck()
 					MoviePlayArg arg("g04_find_treasure", nullptr, nullptr, 0);
 					arg.mOrigin = pelt->getPosition();
 					Vector3f test;
-					pelt->mObjMatrix.getBasis(2, test);
+					pelt->mBaseTrMatrix.getColumn(2, test);
 					arg.mAngle                 = JMath::atanTable_.atan2_(test.x, test.z);
 					moviePlayer->mTargetObject = pelt;
 					moviePlayer->play(arg);
@@ -240,7 +242,7 @@ bool Navi::demoCheck()
 					MoviePlayArg arg(path, nullptr, nullptr, 0);
 					arg.mOrigin = pelt->getPosition();
 					Vector3f test;
-					pelt->mObjMatrix.getBasis(2, test);
+					pelt->mBaseTrMatrix.getColumn(2, test);
 					arg.mAngle                 = JMath::atanTable_.atan2_(test.x, test.z);
 					moviePlayer->mTargetObject = pelt;
 					moviePlayer->play(arg);
@@ -264,7 +266,7 @@ bool Navi::demoCheck()
 					MoviePlayArg arg("g37_get_louie", nullptr, nullptr, 0);
 					arg.mOrigin = pelt->getPosition();
 					Vector3f test;
-					pelt->mObjMatrix.getBasis(2, test);
+					pelt->mBaseTrMatrix.getColumn(2, test);
 					arg.mAngle                 = JMath::atanTable_.atan2_(test.x, test.z);
 					moviePlayer->mTargetObject = pelt;
 					moviePlayer->play(arg);
@@ -400,7 +402,7 @@ bool Navi::demoCheck()
 		CI_LOOP(honeyIt)
 		{
 			ItemHoney::Item* temp = *honeyIt;
-			if (temp->demoOK() && temp->mHoneyType == 1 && temp->isAlive()) {
+			if (temp->demoOK() && temp->mHoneyType == HONEY_R && temp->isAlive()) {
 				Sys::Sphere bounds;
 				cHoney->getBoundingSphere(bounds);
 				Vector3f naviPos = cHoney->mPosition - mPosition;
@@ -430,7 +432,7 @@ bool Navi::demoCheck()
 		f32 checkrad = FindBitterSprayTriggerSize;
 		for (honeyIt.first(); !honeyIt.isDone(); honeyIt.next()) {
 			ItemHoney::Item* temp = *honeyIt;
-			if (temp->demoOK() && temp->mHoneyType == 2 && temp->isAlive()) {
+			if (temp->demoOK() && temp->mHoneyType == HONEY_B && temp->isAlive()) {
 				Sys::Sphere bounds;
 				cHoney->getBoundingSphere(bounds);
 				Vector3f naviPos = cHoney->mPosition - mPosition;
@@ -2147,14 +2149,13 @@ lbl_80220B34:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80220E04
- * Size:	0001C4
+/**
+ * @note Address: 0x80220E04
+ * @note Size: 0x1C4
  */
 FakePiki* Navi::checkDemoNaviAndPiki(Sys::Sphere& bounds)
 {
-	if (!(gameSystem->mFlags & GAMESYS_IsGameWorldActive)) {
+	if (!(gameSystem->isFlag(GAMESYS_IsGameWorldActive))) {
 		return nullptr;
 	}
 
@@ -2174,139 +2175,6 @@ FakePiki* Navi::checkDemoNaviAndPiki(Sys::Sphere& bounds)
 		}
 	}
 	return nullptr;
-	/*
-	stwu     r1, -0x90(r1)
-	mflr     r0
-	stw      r0, 0x94(r1)
-	stw      r31, 0x8c(r1)
-	stw      r30, 0x88(r1)
-	mr       r30, r4
-	lwz      r3, gameSystem__4Game@sda21(r13)
-	lbz      r0, 0x3c(r3)
-	rlwinm.  r0, r0, 0, 0x1a, 0x1a
-	bne      lbl_80220E34
-	li       r3, 0
-	b        lbl_80220FB0
-
-lbl_80220E34:
-	addi     r3, r1, 0x14
-	bl       __ct__Q24Game15CellIteratorArgFv
-	lfs      f0, 0(r30)
-	li       r0, 1
-	addi     r3, r1, 0x34
-	addi     r4, r1, 0x14
-	stfs     f0, 0x14(r1)
-	lfs      f0, 4(r30)
-	stfs     f0, 0x18(r1)
-	lfs      f0, 8(r30)
-	stfs     f0, 0x1c(r1)
-	lfs      f0, 0xc(r30)
-	stfs     f0, 0x20(r1)
-	stw      r0, 0x28(r1)
-	bl       __ct__Q24Game12CellIteratorFRQ24Game15CellIteratorArg
-	addi     r3, r1, 0x34
-	bl       first__Q24Game12CellIteratorFv
-	b        lbl_80220F9C
-
-lbl_80220E7C:
-	addi     r3, r1, 0x34
-	bl       __ml__Q24Game12CellIteratorFv
-	lwz      r12, 0(r3)
-	mr       r31, r3
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_80220EBC
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_80220F94
-
-lbl_80220EBC:
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0xa8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_80220F94
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_80220F10
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x1c0(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_80220F94
-
-lbl_80220F10:
-	mr       r4, r31
-	addi     r3, r1, 8
-	lwz      r12, 0(r31)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f1, 0xc(r1)
-	lfs      f0, 4(r30)
-	lfs      f3, 8(r1)
-	fsubs    f4, f1, f0
-	lfs      f2, 0(r30)
-	lfs      f1, 0x10(r1)
-	lfs      f0, 8(r30)
-	fsubs    f3, f3, f2
-	fmuls    f4, f4, f4
-	fsubs    f2, f1, f0
-	lfs      f0, lbl_8051A0F8@sda21(r2)
-	fmadds   f1, f3, f3, f4
-	fmuls    f2, f2, f2
-	fadds    f1, f2, f1
-	fcmpo    cr0, f1, f0
-	ble      lbl_80220F78
-	ble      lbl_80220F7C
-	frsqrte  f0, f1
-	fmuls    f1, f0, f1
-	b        lbl_80220F7C
-
-lbl_80220F78:
-	fmr      f1, f0
-
-lbl_80220F7C:
-	lfs      f0, 0xc(r30)
-	fcmpo    cr0, f1, f0
-	cror     2, 0, 2
-	bne      lbl_80220F94
-	mr       r3, r31
-	b        lbl_80220FB0
-
-lbl_80220F94:
-	addi     r3, r1, 0x34
-	bl       next__Q24Game12CellIteratorFv
-
-lbl_80220F9C:
-	addi     r3, r1, 0x34
-	bl       isDone__Q24Game12CellIteratorFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_80220E7C
-	li       r3, 0
-
-lbl_80220FB0:
-	lwz      r0, 0x94(r1)
-	lwz      r31, 0x8c(r1)
-	lwz      r30, 0x88(r1)
-	mtlr     r0
-	addi     r1, r1, 0x90
-	blr
-	*/
 }
 
 } // namespace Game

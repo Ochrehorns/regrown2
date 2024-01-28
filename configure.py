@@ -1362,7 +1362,7 @@ LIBS = [
         "host": True,
         "objects": [
             "plugProjectHikinoU/PSSeq",
-            "plugProjectHikinoU/PSGame",
+            ["plugProjectHikinoU/PSGame", True],
             "plugProjectHikinoU/PSSystemIF",
             "plugProjectHikinoU/PSAutoBgm",
             "plugProjectHikinoU/PSBnkMgr",

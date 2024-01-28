@@ -10,30 +10,26 @@
 struct JASCmdHeap;
 
 namespace JASKernel {
-void setupRootHeap(JKRSolidHeap*, unsigned long);
+void setupRootHeap(JKRSolidHeap*, u32);
 JKRExpHeap* getSystemHeap();
 JASCmdHeap* getCommandHeap();
 JASHeap* getAramHeap();
-void setupAramHeap(unsigned long, unsigned long);
+void setupAramHeap(u32, u32);
 
-void probeFinish(long);
-void probeStart(long, char*);
+void probeFinish(s32);
+void probeStart(s32, char*);
 
 // unused/inlined:
-void getRootHeap();
+JKRSolidHeap* getRootHeap();
 int getAramFreeSize();
 int getAramSize();
-void initProbe(long);
+void initProbe(s32);
 void resetProbe();
-const char* getProbeName(long);
-void getProbeLast(long);
-void getProbeAvg(long);
-void getProbeTotalAvg(long);
-void getProbeMax(long);
-
-extern JKRExpHeap* sSystemHeap;
-extern JASCmdHeap* sCommandHeap;
-extern JASHeap* audioAramHeap;
+const char* getProbeName(s32);
+void getProbeLast(s32);
+void getProbeAvg(s32);
+void getProbeTotalAvg(s32);
+void getProbeMax(s32);
 
 }; // namespace JASKernel
 
@@ -44,6 +40,13 @@ extern JASHeap* audioAramHeap;
  * It's more like a stack...
  */
 struct JASCmdHeap {
+	JASCmdHeap()
+	    : mHead(nullptr)
+	{
+		OSInitMutex(&mMutex); // this might be JASMutexLock
+		grow();
+	}
+
 	typedef void (*Command)(void*);
 	struct Header {
 		Command mCommand; // _00
@@ -79,7 +82,7 @@ struct JASCmdHeap {
 	{
 		JASCmdHeap::Block* previousHead = mHead;
 
-		if (previousHead != nullptr && previousHead->mMsgCount == 0) {
+		if (previousHead != nullptr && (u32)previousHead->mMsgCount == 0) {
 			// No need!
 			previousHead->mUsedLength = 0;
 			return true;

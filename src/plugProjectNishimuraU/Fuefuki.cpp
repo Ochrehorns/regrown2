@@ -11,15 +11,14 @@
 
 namespace Game {
 
-/*
- * --INFO--
- * Address:	8029C1C4
- * Size:	000058
+/**
+ * @note Address: 0x8029C1C4
+ * @note Size: 0x58
  */
 bool InteractFuefukiTimerReset::actEnemy(EnemyBase* enemy)
 {
 	if (enemy->getEnemyTypeID() == EnemyTypeID::EnemyID_Fuefuki) {
-		static_cast<Fuefuki::Obj*>(enemy)->mTurnTimer = 5.0f;
+		static_cast<Fuefuki::Obj*>(enemy)->mSquadTimer = 5.0f;
 		return true;
 	}
 
@@ -28,10 +27,9 @@ bool InteractFuefukiTimerReset::actEnemy(EnemyBase* enemy)
 
 namespace Fuefuki {
 
-/*
- * --INFO--
- * Address:	8029C21C
- * Size:	000140
+/**
+ * @note Address: 0x8029C21C
+ * @note Size: 0x140
  */
 Obj::Obj()
 {
@@ -41,17 +39,15 @@ Obj::Obj()
 	createEffect();
 }
 
-/*
- * --INFO--
- * Address:	8029C35C
- * Size:	000004
+/**
+ * @note Address: 0x8029C35C
+ * @note Size: 0x4
  */
 void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-/*
- * --INFO--
- * Address:	8029C360
- * Size:	000030
+/**
+ * @note Address: 0x8029C360
+ * @note Size: 0x30
  */
 void Obj::birth(Vector3f& position, f32 angle)
 {
@@ -61,30 +57,28 @@ void Obj::birth(Vector3f& position, f32 angle)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029C390
- * Size:	000088
+/**
+ * @note Address: 0x8029C390
+ * @note Size: 0x88
  */
 void Obj::onInit(CreatureInitArg* initArg)
 {
 	EnemyBase::onInit(initArg);
-	mDropGroup = 0;
-	_2C0       = 0;
+	mDropGroup   = 0;
+	mCanStruggle = false;
 	resetAppearTimer();
 	mStateTimer = 0.0f;
 	resetWhisleTimer(true);
-	mTurnTimer             = 0.0f;
+	mSquadTimer            = 0.0f;
 	mWhistleRadiusModifier = 0.0f;
 
 	mNextState = FUEFUKI_NULL;
 	mFsm->start(this, FUEFUKI_Land, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8029C418
- * Size:	000054
+/**
+ * @note Address: 0x8029C418
+ * @note Size: 0x54
  */
 void Obj::onKill(CreatureKillArg* killArg)
 {
@@ -96,40 +90,36 @@ void Obj::onKill(CreatureKillArg* killArg)
 	EnemyBase::onKill(killArg);
 }
 
-/*
- * --INFO--
- * Address:	8029C46C
- * Size:	000078
+/**
+ * @note Address: 0x8029C46C
+ * @note Size: 0x78
  */
 void Obj::doUpdate()
 {
 	mFsm->exec(this);
 	mAppearTimer += sys->mDeltaTime;
-	if (mTurnTimer > 0.0f) {
-		mTurnTimer--;
+	if (mSquadTimer > 0.0f) {
+		mSquadTimer--;
 	}
 
 	updateFootmarks();
 }
 
-/*
- * --INFO--
- * Address:	8029C4E4
- * Size:	000004
+/**
+ * @note Address: 0x8029C4E4
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	8029C4E8
- * Size:	000020
+/**
+ * @note Address: 0x8029C4E8
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	8029C508
- * Size:	00004C
+/**
+ * @note Address: 0x8029C508
+ * @note Size: 0x4C
  */
 void Obj::setFSM(FSM* fsm)
 {
@@ -138,10 +128,9 @@ void Obj::setFSM(FSM* fsm)
 	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8029C554
- * Size:	0000A4
+/**
+ * @note Address: 0x8029C554
+ * @note Size: 0xA4
  */
 void Obj::getShadowParam(ShadowParam& param)
 {
@@ -160,14 +149,13 @@ void Obj::getShadowParam(ShadowParam& param)
 	param.mSize = 15.0f;
 }
 
-/*
- * --INFO--
- * Address:	8029C5F8
- * Size:	000068
+/**
+ * @note Address: 0x8029C5F8
+ * @note Size: 0x68
  */
 bool Obj::pressCallBack(Creature* creature, f32 damage, CollPart* collpart)
 {
-	if (creature && _2C0 && !isEvent(0, EB_Bittered)) {
+	if (creature && mCanStruggle && !isEvent(0, EB_Bittered)) {
 		mFsm->transit(this, FUEFUKI_Struggle, nullptr);
 		return false;
 	}
@@ -175,14 +163,13 @@ bool Obj::pressCallBack(Creature* creature, f32 damage, CollPart* collpart)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	8029C660
- * Size:	000068
+/**
+ * @note Address: 0x8029C660
+ * @note Size: 0x68
  */
 bool Obj::hipdropCallBack(Creature* creature, f32 damage, CollPart* collpart)
 {
-	if (creature && _2C0 && !isEvent(0, EB_Bittered)) {
+	if (creature && mCanStruggle && !isEvent(0, EB_Bittered)) {
 		mFsm->transit(this, FUEFUKI_Struggle, nullptr);
 		return false;
 	}
@@ -190,10 +177,9 @@ bool Obj::hipdropCallBack(Creature* creature, f32 damage, CollPart* collpart)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	8029C6C8
- * Size:	000044
+/**
+ * @note Address: 0x8029C6C8
+ * @note Size: 0x44
  */
 void Obj::doStartStoneState()
 {
@@ -203,10 +189,9 @@ void Obj::doStartStoneState()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029C70C
- * Size:	000044
+/**
+ * @note Address: 0x8029C70C
+ * @note Size: 0x44
  */
 void Obj::doFinishStoneState()
 {
@@ -216,10 +201,9 @@ void Obj::doFinishStoneState()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029C750
- * Size:	000044
+/**
+ * @note Address: 0x8029C750
+ * @note Size: 0x44
  */
 void Obj::doStartEarthquakeFitState()
 {
@@ -229,10 +213,9 @@ void Obj::doStartEarthquakeFitState()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029C794
- * Size:	000044
+/**
+ * @note Address: 0x8029C794
+ * @note Size: 0x44
  */
 void Obj::doFinishEarthquakeFitState()
 {
@@ -242,10 +225,9 @@ void Obj::doFinishEarthquakeFitState()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029C7D8
- * Size:	000034
+/**
+ * @note Address: 0x8029C7D8
+ * @note Size: 0x34
  */
 void Obj::doStartWaitingBirthTypeDrop()
 {
@@ -253,10 +235,9 @@ void Obj::doStartWaitingBirthTypeDrop()
 	effectDrawOff();
 }
 
-/*
- * --INFO--
- * Address:	8029C80C
- * Size:	000034
+/**
+ * @note Address: 0x8029C80C
+ * @note Size: 0x34
  */
 void Obj::doFinishWaitingBirthTypeDrop()
 {
@@ -264,31 +245,27 @@ void Obj::doFinishWaitingBirthTypeDrop()
 	effectDrawOn();
 }
 
-/*
- * --INFO--
- * Address:	8029C840
- * Size:	000028
+/**
+ * @note Address: 0x8029C840
+ * @note Size: 0x28
  */
-void Obj::startCarcassMotion() { startMotion(9, nullptr); }
+void Obj::startCarcassMotion() { startMotion(FUEFUKIANIM_Carry, nullptr); }
 
-/*
- * --INFO--
- * Address:	8029C868
- * Size:	000020
+/**
+ * @note Address: 0x8029C868
+ * @note Size: 0x20
  */
 void Obj::doStartMovie() { effectDrawOff(); }
 
-/*
- * --INFO--
- * Address:	8029C888
- * Size:	000020
+/**
+ * @note Address: 0x8029C888
+ * @note Size: 0x20
  */
 void Obj::doEndMovie() { effectDrawOn(); }
 
-/*
- * --INFO--
- * Address:	8029C8A8
- * Size:	0000C0
+/**
+ * @note Address: 0x8029C8A8
+ * @note Size: 0xC0
  */
 Vector3f Obj::getOffsetForMapCollision()
 {
@@ -306,10 +283,9 @@ Vector3f Obj::getOffsetForMapCollision()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029C968
- * Size:	000078
+/**
+ * @note Address: 0x8029C968
+ * @note Size: 0x78
  */
 void Obj::resetAppearTimer()
 {
@@ -317,46 +293,43 @@ void Obj::resetAppearTimer()
 	mAppearTimer = randWeightFloat(weight);
 }
 
-/*
- * --INFO--
- * Address:	8029C9E0
- * Size:	00002C
+/**
+ * @note Address: 0x8029C9E0
+ * @note Size: 0x2C
  */
 void Obj::resetWhisleTimer(bool check)
 {
 	if (check) {
-		mWhistleTimer = C_PROPERPARMS.mFp12.mValue - C_PROPERPARMS.mFp11.mValue;
+		mWhistleTimer = C_PROPERPARMS.mMaxWhistleTimeNoSquad.mValue - C_PROPERPARMS.mMinWhistleTime.mValue;
 	} else {
 		mWhistleTimer = 0.0f;
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029CA0C
- * Size:	000078
+/**
+ * @note Address: 0x8029CA0C
+ * @note Size: 0x78
  */
 bool Obj::isWhisleTimeMax()
 {
-	if (mTurnTimer > 0.0f) {
+	if (mSquadTimer > 0.0f) {
 		if (mStuckPikminCount != 0) {
-			if (mWhistleTimer > C_PROPERPARMS.mFp12.mValue) {
+			if (mWhistleTimer > C_PROPERPARMS.mMaxWhistleTimeNoSquad.mValue) {
 				return true;
 			}
-		} else if (mWhistleTimer > C_PROPERPARMS.mFp13.mValue) {
+		} else if (mWhistleTimer > C_PROPERPARMS.mMaxWhistleTimeWithSquad.mValue) {
 			return true;
 		}
-	} else if (mWhistleTimer > C_PROPERPARMS.mFp12.mValue) {
+	} else if (mWhistleTimer > C_PROPERPARMS.mMaxWhistleTimeNoSquad.mValue) {
 		return true;
 	}
 
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8029CA84
- * Size:	000038
+/**
+ * @note Address: 0x8029CA84
+ * @note Size: 0x38
  */
 void Obj::startWhisle()
 {
@@ -366,10 +339,9 @@ void Obj::startWhisle()
 	startWhisleEffect();
 }
 
-/*
- * --INFO--
- * Address:	8029CABC
- * Size:	000324
+/**
+ * @note Address: 0x8029CABC
+ * @note Size: 0x324
  */
 void Obj::updateWhisle()
 {
@@ -378,7 +350,7 @@ void Obj::updateWhisle()
 		mWhistleRadiusModifier = 1.0f;
 	}
 
-	f32 whistleRadius = mWhistleRadiusModifier * C_PARMS->mGeneral.mAttackRadius.mValue;
+	f32 whistleRadius = mWhistleRadiusModifier * C_GENERALPARMS.mAttackRadius.mValue;
 	updateWhisleEffect(whistleRadius);
 
 	f32 whistleDiameter = whistleRadius * whistleRadius;
@@ -401,10 +373,9 @@ void Obj::updateWhisle()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029CDE0
- * Size:	000038
+/**
+ * @note Address: 0x8029CDE0
+ * @note Size: 0x38
  */
 void Obj::finishWhisle()
 {
@@ -414,10 +385,9 @@ void Obj::finishWhisle()
 	finishWhisleEffect();
 }
 
-/*
- * --INFO--
- * Address:	8029CE18
- * Size:	0002A0
+/**
+ * @note Address: 0x8029CE18
+ * @note Size: 0x2A0
  */
 void Obj::setTargetPosition(bool check)
 {
@@ -428,30 +398,28 @@ void Obj::setTargetPosition(bool check)
 		if (gameSystem && gameSystem->mIsInCave) {
 			randDist = randWeightFloat(25.0f) + 50.0f;
 		} else {
-			f32 range = (C_PARMS->mGeneral.mTerritoryRadius.mValue - C_PARMS->mGeneral.mHomeRadius.mValue);
-			randDist  = C_PARMS->mGeneral.mHomeRadius.mValue + randWeightFloat(range);
+			f32 range = (C_GENERALPARMS.mTerritoryRadius.mValue - C_GENERALPARMS.mHomeRadius.mValue);
+			randDist  = C_GENERALPARMS.mHomeRadius.mValue + randWeightFloat(range);
 		}
 	} else {
-		f32 range = (C_PARMS->mGeneral.mTerritoryRadius.mValue - C_PARMS->mGeneral.mHomeRadius.mValue);
-		randDist  = C_PARMS->mGeneral.mHomeRadius.mValue + randWeightFloat(range);
+		f32 range = (C_GENERALPARMS.mTerritoryRadius.mValue - C_GENERALPARMS.mHomeRadius.mValue);
+		randDist  = C_GENERALPARMS.mHomeRadius.mValue + randWeightFloat(range);
 		f32 ang1  = randWeightFloat(PI);
 		f32 ang2  = JMath::atanTable_.atan2_(mPosition.x - mHomePosition.x, mPosition.z - mHomePosition.z);
 		f32 ang3  = HALF_PI;
 		randAngle = ang2 + ang1 + ang3; // dumb fix for regswap
 	}
 
-	mTargetPosition = Vector3f(randDist * pikmin2_sinf(randAngle) + mHomePosition.x, mHomePosition.y,
-	                           randDist * pikmin2_cosf(randAngle) + mHomePosition.z);
+	mTargetPosition = Vector3f(randDist * sinf(randAngle) + mHomePosition.x, mHomePosition.y, randDist * cosf(randAngle) + mHomePosition.z);
 
 	if (check) {
 		mTargetPosition.y = mapMgr->getMinY(mTargetPosition);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029D0B8
- * Size:	0001E0
+/**
+ * @note Address: 0x8029D0B8
+ * @note Size: 0x1E0
  */
 bool Obj::isJumpAway()
 {
@@ -459,13 +427,13 @@ bool Obj::isJumpAway()
 		return true;
 	}
 
-	if (!(mTurnTimer > 0.0f)) {
-		f32 privRad = C_PARMS->mGeneral.mPrivateRadius.mValue;
+	if (!(mSquadTimer > 0.0f)) {
+		f32 privRad = C_GENERALPARMS.mPrivateRadius.mValue;
 		Sys::Sphere sphere(mPosition, privRad);
 		f32 privateDiameter = privRad * privRad;
 
 		CellIteratorArg iterArg(sphere);
-		iterArg.mIsSphereCollisionDisabled = true;
+		iterArg.mOptimise = true;
 
 		CellIterator iter(iterArg);
 
@@ -495,10 +463,9 @@ bool Obj::isJumpAway()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8029D298
- * Size:	000048
+/**
+ * @note Address: 0x8029D298
+ * @note Size: 0x48
  */
 bool Obj::isArriveTarget()
 {
@@ -509,10 +476,9 @@ bool Obj::isArriveTarget()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8029D2E0
- * Size:	000050
+/**
+ * @note Address: 0x8029D2E0
+ * @note Size: 0x50
  */
 void Obj::createFootmarks()
 {
@@ -520,14 +486,13 @@ void Obj::createFootmarks()
 	mFootmarks->alloc(10);
 }
 
-/*
- * --INFO--
- * Address:	8029D330
- * Size:	0000BC
+/**
+ * @note Address: 0x8029D330
+ * @note Size: 0xBC
  */
 void Obj::updateFootmarks()
 {
-	f32 timer = (mFootmarks->_10 - (int)gameSystem->mFrameTimer);
+	f32 timer = (mFootmarks->mLastUpdateTime - (int)gameSystem->mFrameTimer);
 
 	timer = (timer > 0.0f) ? timer : -timer;
 
@@ -538,10 +503,9 @@ void Obj::updateFootmarks()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029D3EC
- * Size:	00019C
+/**
+ * @note Address: 0x8029D3EC
+ * @note Size: 0x19C
  */
 void Obj::createEffect()
 {
@@ -550,10 +514,9 @@ void Obj::createEffect()
 	mEfxOnpa = new efx::TFuebugOnpa;
 }
 
-/*
- * --INFO--
- * Address:	8029D588
- * Size:	00009C
+/**
+ * @note Address: 0x8029D588
+ * @note Size: 0x9C
  */
 void Obj::startWhisleEffect()
 {
@@ -564,22 +527,20 @@ void Obj::startWhisleEffect()
 	mEfxOnpa->create(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8029D624
- * Size:	000078
+/**
+ * @note Address: 0x8029D624
+ * @note Size: 0x78
  */
 void Obj::updateWhisleEffect(f32 scale)
 {
 	efx::ArgCursor argCursor(mPosition, scale);
 	mEfxWhistle->update(&argCursor);
-	mEfxWhistle->mAngleSpeed = C_PARMS->mGeneral.mAttackHitAngle.mValue;
+	mEfxWhistle->mAngleSpeed = C_GENERALPARMS.mAttackHitAngle.mValue;
 }
 
-/*
- * --INFO--
- * Address:	8029D69C
- * Size:	000050
+/**
+ * @note Address: 0x8029D69C
+ * @note Size: 0x50
  */
 void Obj::finishWhisleEffect()
 {
@@ -587,10 +548,9 @@ void Obj::finishWhisleEffect()
 	mEfxOnpa->fade();
 }
 
-/*
- * --INFO--
- * Address:	8029D718
- * Size:	000078
+/**
+ * @note Address: 0x8029D718
+ * @note Size: 0x78
  */
 void Obj::createDownEffect(f32 scale)
 {
@@ -600,10 +560,9 @@ void Obj::createDownEffect(f32 scale)
 	createBounceEffect(position, scale);
 }
 
-/*
- * --INFO--
- * Address:	8029D790
- * Size:	000048
+/**
+ * @note Address: 0x8029D790
+ * @note Size: 0x48
  */
 void Obj::createEfxHamon()
 {
@@ -612,10 +571,9 @@ void Obj::createEfxHamon()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029D7D8
- * Size:	000050
+/**
+ * @note Address: 0x8029D7D8
+ * @note Size: 0x50
  */
 void Obj::effectDrawOn()
 {
@@ -623,10 +581,9 @@ void Obj::effectDrawOn()
 	mEfxOnpa->endDemoDrawOn();
 }
 
-/*
- * --INFO--
- * Address:	8029D844
- * Size:	000050
+/**
+ * @note Address: 0x8029D844
+ * @note Size: 0x50
  */
 void Obj::effectDrawOff()
 {

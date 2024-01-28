@@ -39,6 +39,36 @@ enum FallEnemyTypes {
 	DANGOFALL_Egg  = 1,
 };
 
+struct Parms : public EnemyParmsBase {
+	struct ProperParms : public Parameters {
+		inline ProperParms()
+		    : Parameters(nullptr, "EnemyParmsBase")
+		    , mRollingMoveSpeed(this, 'fp01', "ローリング移動速度", 200.0f, 0.0f, 500.0f)    // 'rolling movement speed'
+		    , mRollingTurnAccel(this, 'fp02', "ローリング回転速度率", 0.1f, 0.0f, 1.0f)      // 'rolling rotation speed rate'
+		    , mRollingTurnSpeed(this, 'fp03', "ローリング回転最大速度", 10.0f, 0.0f, 360.0f) // 'rolling rotation maximum speed'
+		    , mFlipTime(this, 'fp10', "ひっくり返り時間", 7.5f, 0.0f, 30.0f)                 // 'flip time'
+		{
+		}
+
+		Parm<f32> mRollingMoveSpeed; // _804
+		Parm<f32> mRollingTurnAccel; // _82C
+		Parm<f32> mRollingTurnSpeed; // _854
+		Parm<f32> mFlipTime;         // _87C
+	};
+
+	Parms() { }
+
+	virtual void read(Stream& stream) // _08 (weak)
+	{
+		CreatureParms::read(stream);
+		mGeneral.read(stream);
+		mProperParms.read(stream);
+	}
+
+	// _00-_7F8	= EnemyParmsBase
+	ProperParms mProperParms; // _7F8
+};
+
 struct Obj : public EnemyBase {
 	Obj();
 
@@ -123,7 +153,7 @@ struct Obj : public EnemyBase {
 	bool mIsRolling;                        // _2C0
 	bool mIsArmSwinging;                    // _2C1
 	bool mIsBall;                           // _2C2, set by StateAttack::init, used for map collision
-	bool _2C3;                              // _2C3, only used by createMoveHandEffect
+	bool mIsMoveHandEffectActive;           // _2C3
 	f32 mStateTimer;                        // _2C4, timer recycled by each state
 	f32 mShadowScale;                       // _2C8
 	StateID mNextState;                     // _2CC
@@ -141,7 +171,7 @@ struct Mgr : public EnemyMgrBase {
 	Mgr(int objLimit, u8 modelType);
 
 	// virtual ~Mgr();                                     // _58 (weak)
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual void doAlloc();                            // _A8
 	virtual SysShape::Model* createModel();            // _B0
@@ -162,34 +192,18 @@ struct Mgr : public EnemyMgrBase {
 	Obj* mObj;                                 // _48, array of Objs
 };
 
-struct Parms : public EnemyParmsBase {
-	struct ProperParms : public Parameters {
-		inline ProperParms()
-		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mRollingMoveSpeed(this, 'fp01', "ローリング移動速度", 200.0f, 0.0f, 500.0f)    // 'rolling movement speed'
-		    , mRollingTurnAccel(this, 'fp02', "ローリング回転速度率", 0.1f, 0.0f, 1.0f)      // 'rolling rotation speed rate'
-		    , mRollingTurnSpeed(this, 'fp03', "ローリング回転最大速度", 10.0f, 0.0f, 360.0f) // 'rolling rotation maximum speed'
-		    , mFlipTime(this, 'fp10', "ひっくり返り時間", 7.5f, 0.0f, 30.0f)                 // 'flip time'
-		{
-		}
-
-		Parm<f32> mRollingMoveSpeed; // _804
-		Parm<f32> mRollingTurnAccel; // _82C
-		Parm<f32> mRollingTurnSpeed; // _854
-		Parm<f32> mFlipTime;         // _87C
-	};
-
-	Parms() { }
-
-	virtual void read(Stream& stream) // _08 (weak)
-	{
-		CreatureParms::read(stream);
-		mGeneral.read(stream);
-		mProperParms.read(stream);
-	}
-
-	// _00-_7F8	= EnemyParmsBase
-	ProperParms mProperParms; // _7F8
+enum AnimID {
+	DANGOANIM_NULL    = -1,
+	DANGOANIM_Fly     = 0,
+	DANGOANIM_Wait    = 1,
+	DANGOANIM_Move    = 2,
+	DANGOANIM_Attack  = 3,
+	DANGOANIM_Attack2 = 4, // flick anim
+	DANGOANIM_Turn    = 5,
+	DANGOANIM_Recover = 6,
+	DANGOANIM_Dead    = 7,
+	DANGOANIM_Carry   = 8,
+	DANGOANIM_AnimCount, // 9
 };
 
 struct ProperAnimator : public EnemyBlendAnimatorBase {
@@ -211,7 +225,7 @@ struct DangoStateArg : public StateArg {
 };
 
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -234,9 +248,9 @@ struct StateAppear : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -248,9 +262,9 @@ struct StateAttack : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -262,9 +276,9 @@ struct StateDead : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -276,9 +290,9 @@ struct StateFlick : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -290,9 +304,9 @@ struct StateMove : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -304,9 +318,9 @@ struct StateRecover : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -318,9 +332,9 @@ struct StateStay : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -332,9 +346,9 @@ struct StateTurn : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -346,9 +360,9 @@ struct StateWait : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

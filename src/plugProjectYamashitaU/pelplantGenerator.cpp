@@ -4,69 +4,65 @@
 namespace Game {
 namespace Pelplant {
 
-/*
- * --INFO--
- * Address:	801275B0
- * Size:	000098
+/**
+ * @note Address: 0x801275B0
+ * @note Size: 0x98
  */
 Generator::Generator()
     : EnemyGeneratorBase("ÉyÉåÉbÉgëê")
-    , mPelletType(0)
-    , mPelletSize(1)
-    , mSize(0)
 {
+	mInitialParam.mColor        = PELCOLOR_BLUE;
+	mInitialParam.mAmount       = PELLET_NUMBER_ONE;
+	mInitialParam.mInitialState = PELPLANTSIZE_Small;
 }
 
-/*
- * --INFO--
- * Address:	80127648
- * Size:	00008C
+/**
+ * @note Address: 0x80127648
+ * @note Size: 0x8C
  */
 void Generator::doRead(Stream& stream)
 {
 	// if latest version, do the following
 	if (mVersion == getLatestVersion()) {
-		mPelletType = stream.readByte();
-		mPelletSize = stream.readByte();
-		mSize       = stream.readByte();
+		mInitialParam.mColor        = stream.readByte();
+		mInitialParam.mAmount       = stream.readByte();
+		mInitialParam.mInitialState = stream.readByte();
 		return;
 	}
 	// if not latest version, use old read function
 	doReadOldVersion(stream);
 }
 
-/*
- * --INFO--
- * Address:	801276E0
- * Size:	000064
+/**
+ * @note Address: 0x801276E0
+ * @note Size: 0x64
  */
 void Generator::doReadOldVersion(Stream& stream)
 {
 	switch (mVersion.getID()) {
 	case '0000':
-		mPelletType = stream.readByte();
-		mSize       = stream.readByte();
+		mInitialParam.mColor        = stream.readByte();
+		mInitialParam.mInitialState = stream.readByte();
 		break;
 	default:
 		return;
 	}
 }
 
-/*
- * --INFO--
- * Address:	80127744
- * Size:	0000C8
+/**
+ * @note Address: 0x80127744
+ * @note Size: 0xC8
  */
 void Generator::doWrite(Stream& stream)
 {
 	stream.textWriteTab(stream.mTabCount);
-	stream.writeByte(mPelletType);
+	stream.writeByte(mInitialParam.mColor);
 	stream.textWriteText("\t\t# %s \r\n", "pellet type");
 	stream.textWriteTab(stream.mTabCount);
-	stream.writeByte(mPelletSize);
+	stream.writeByte(mInitialParam.mAmount);
 	stream.textWriteText("\t\t# %s \r\n", "pellet size");
 	stream.textWriteTab(stream.mTabCount);
-	stream.writeByte(mSize);
+	stream.writeByte(mInitialParam.mInitialState);
 	stream.textWriteText("\t\t# %s \r\n", "size");
 }
 

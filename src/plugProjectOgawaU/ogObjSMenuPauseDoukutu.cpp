@@ -8,20 +8,18 @@
 #include "Controller.h"
 #include "trig.h"
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E4
+/**
+ * @note Address: N/A
+ * @note Size: 0xE4
  */
 static void _Print(char* format, ...) { OSReport(format, __FILE__); }
 
 namespace og {
 namespace newScreen {
 
-/*
- * --INFO--
- * Address:	8032208C
- * Size:	0000B0
+/**
+ * @note Address: 0x8032208C
+ * @note Size: 0xB0
  */
 ObjSMenuPauseDoukutu::ObjSMenuPauseDoukutu(char const* name)
 {
@@ -52,17 +50,15 @@ ObjSMenuPauseDoukutu::ObjSMenuPauseDoukutu(char const* name)
 	mWarningTimer    = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	8032213C
- * Size:	0000C4
+/**
+ * @note Address: 0x8032213C
+ * @note Size: 0xC4
  */
 ObjSMenuPauseDoukutu::~ObjSMenuPauseDoukutu() { }
 
-/*
- * --INFO--
- * Address:	80322200
- * Size:	000574
+/**
+ * @note Address: 0x80322200
+ * @note Size: 0x574
  */
 void ObjSMenuPauseDoukutu::doCreate(JKRArchive* arc)
 {
@@ -124,10 +120,9 @@ void ObjSMenuPauseDoukutu::doCreate(JKRArchive* arc)
 	doCreateAfter(arc, mScreenPause);
 }
 
-/*
- * --INFO--
- * Address:	80322774
- * Size:	000094
+/**
+ * @note Address: 0x80322774
+ * @note Size: 0x94
  */
 void ObjSMenuPauseDoukutu::commonUpdate()
 {
@@ -139,36 +134,32 @@ void ObjSMenuPauseDoukutu::commonUpdate()
 	mScreenPause->update();
 }
 
-/*
- * --INFO--
- * Address:	80322808
- * Size:	0000B0
+/**
+ * @note Address: 0x80322808
+ * @note Size: 0xB0
  */
 bool ObjSMenuPauseDoukutu::doUpdate()
 {
 	bool ret = false;
 	commonUpdate();
+
 	if (mExiting) {
 		ret = true;
-	} else {
-		if (mState == MENUSTATE_Default) {
-			if (mMenuState == PAUSEMENU_Normal && !mMenuPause->mIsCursorActive) {
-				mMenuPause->startCursor(0.0f);
-			}
-			ret = menu();
-		} else {
-			if (mMenuPause->mIsCursorActive) {
-				mMenuPause->killCursor();
-			}
+	} else if (mState == MENUSTATE_Default) {
+		if (mMenuState == PAUSEMENU_Normal && !mMenuPause->mIsCursorActive) {
+			mMenuPause->startCursor(0.0f);
 		}
+		ret = menu();
+	} else if (mMenuPause->mIsCursorActive) {
+		mMenuPause->killCursor();
 	}
+
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803228B8
- * Size:	00008C
+/**
+ * @note Address: 0x803228B8
+ * @note Size: 0x8C
  */
 void ObjSMenuPauseDoukutu::doDraw(Graphics& gfx)
 {
@@ -181,10 +172,9 @@ void ObjSMenuPauseDoukutu::doDraw(Graphics& gfx)
 	drawYaji(gfx);
 }
 
-/*
- * --INFO--
- * Address:	80322944
- * Size:	0000A4
+/**
+ * @note Address: 0x80322944
+ * @note Size: 0xA4
  */
 bool ObjSMenuPauseDoukutu::doStart(::Screen::StartSceneArg const* arg)
 {
@@ -198,17 +188,15 @@ bool ObjSMenuPauseDoukutu::doStart(::Screen::StartSceneArg const* arg)
 	start_LR(arg);
 }
 
-/*
- * --INFO--
- * Address:	803229E8
- * Size:	000008
+/**
+ * @note Address: 0x803229E8
+ * @note Size: 0x8
  */
 bool ObjSMenuPauseDoukutu::doEnd(::Screen::EndSceneArg const*) { return true; }
 
-/*
- * --INFO--
- * Address:	803229F0
- * Size:	00003C
+/**
+ * @note Address: 0x803229F0
+ * @note Size: 0x3C
  */
 void ObjSMenuPauseDoukutu::doUpdateFinish()
 {
@@ -217,10 +205,9 @@ void ObjSMenuPauseDoukutu::doUpdateFinish()
 	mMenuGiveup->killCursor();
 }
 
-/*
- * --INFO--
- * Address:	80322A2C
- * Size:	00004C
+/**
+ * @note Address: 0x80322A2C
+ * @note Size: 0x4C
  */
 bool ObjSMenuPauseDoukutu::doUpdateFadeout()
 {
@@ -228,10 +215,9 @@ bool ObjSMenuPauseDoukutu::doUpdateFadeout()
 	return updateFadeOut();
 }
 
-/*
- * --INFO--
- * Address:	80322A78
- * Size:	000158
+/**
+ * @note Address: 0x80322A78
+ * @note Size: 0x158
  */
 void ObjSMenuPauseDoukutu::doUpdateFadeoutFinish()
 {
@@ -273,10 +259,9 @@ void ObjSMenuPauseDoukutu::doUpdateFadeoutFinish()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80322BD0
- * Size:	0001D8
+/**
+ * @note Address: 0x80322BD0
+ * @note Size: 0x1D8
  */
 bool ObjSMenuPauseDoukutu::menu_pause()
 {
@@ -334,44 +319,40 @@ bool ObjSMenuPauseDoukutu::menu_pause()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	80322DA8
- * Size:	000010
+/**
+ * @note Address: 0x80322DA8
+ * @note Size: 0x10
  */
 void ObjSMenuPauseDoukutu::doUpdateCancelAction() { mDisp->mExitStatus = 5; }
 
-/*
- * --INFO--
- * Address:	80322DB8
- * Size:	00006C
+/**
+ * @note Address: 0x80322DB8
+ * @note Size: 0x6C
  */
 void ObjSMenuPauseDoukutu::doUpdateLAction()
 {
-	::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_MAP, getDispMember(), 0, true);
+	::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_MAP, getDispMember());
 	jump_L(arg);
 }
 
-/*
- * --INFO--
- * Address:	80322E24
- * Size:	0000C8
+/**
+ * @note Address: 0x80322E24
+ * @note Size: 0xC8
  */
 void ObjSMenuPauseDoukutu::doUpdateRAction()
 {
 	if (msBaseVal.mUseController) {
-		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_CONTROLS, getDispMember(), 0, true);
+		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_CONTROLS, getDispMember());
 		jump_R(arg);
 	} else {
-		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_ITEMS, getDispMember(), 0, true);
+		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_ITEMS, getDispMember());
 		jump_R(arg);
 	}
 }
 
-/*
- * --INFO--
- * Address:	80322EEC
- * Size:	0001E8
+/**
+ * @note Address: 0x80322EEC
+ * @note Size: 0x1E8
  */
 bool ObjSMenuPauseDoukutu::menu_giveup()
 {
@@ -429,10 +410,9 @@ bool ObjSMenuPauseDoukutu::menu_giveup()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803230D4
- * Size:	000038
+/**
+ * @note Address: 0x803230D4
+ * @note Size: 0x38
  */
 void ObjSMenuPauseDoukutu::finishPause()
 {
@@ -440,10 +420,9 @@ void ObjSMenuPauseDoukutu::finishPause()
 	mMenuGiveup->killCursor();
 }
 
-/*
- * --INFO--
- * Address:	8032310C
- * Size:	0000A8
+/**
+ * @note Address: 0x8032310C
+ * @note Size: 0xA8
  */
 bool ObjSMenuPauseDoukutu::menu()
 {
@@ -468,10 +447,9 @@ bool ObjSMenuPauseDoukutu::menu()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803231B4
- * Size:	000014
+/**
+ * @note Address: 0x803231B4
+ * @note Size: 0x14
  */
 void ObjSMenuPauseDoukutu::in_L()
 {
@@ -479,10 +457,9 @@ void ObjSMenuPauseDoukutu::in_L()
 	mAngle = 15.0f;
 }
 
-/*
- * --INFO--
- * Address:	803231C8
- * Size:	000014
+/**
+ * @note Address: 0x803231C8
+ * @note Size: 0x14
  */
 void ObjSMenuPauseDoukutu::in_R()
 {
@@ -490,17 +467,15 @@ void ObjSMenuPauseDoukutu::in_R()
 	mAngle = 15.0f;
 }
 
-/*
- * --INFO--
- * Address:	803231DC
- * Size:	00000C
+/**
+ * @note Address: 0x803231DC
+ * @note Size: 0xC
  */
 void ObjSMenuPauseDoukutu::wait() { mState = MENUSTATE_Default; }
 
-/*
- * --INFO--
- * Address:	803231E8
- * Size:	00002C
+/**
+ * @note Address: 0x803231E8
+ * @note Size: 0x2C
  */
 void ObjSMenuPauseDoukutu::out_L()
 {
@@ -508,10 +483,9 @@ void ObjSMenuPauseDoukutu::out_L()
 	ogSound->setSMenuLR();
 }
 
-/*
- * --INFO--
- * Address:	80323214
- * Size:	00002C
+/**
+ * @note Address: 0x80323214
+ * @note Size: 0x2C
  */
 void ObjSMenuPauseDoukutu::out_R()
 {
@@ -519,10 +493,9 @@ void ObjSMenuPauseDoukutu::out_R()
 	ogSound->setSMenuLR();
 }
 
-/*
- * --INFO--
- * Address:	80323240
- * Size:	0000C4
+/**
+ * @note Address: 0x80323240
+ * @note Size: 0xC4
  */
 void ObjSMenuPauseDoukutu::set_Blink_Normal()
 {
@@ -544,10 +517,9 @@ void ObjSMenuPauseDoukutu::set_Blink_Normal()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80323304
- * Size:	000078
+/**
+ * @note Address: 0x80323304
+ * @note Size: 0x78
  */
 void ObjSMenuPauseDoukutu::set_Blink_YesNo()
 {
@@ -560,10 +532,9 @@ void ObjSMenuPauseDoukutu::set_Blink_YesNo()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8032337C
- * Size:	00010C
+/**
+ * @note Address: 0x8032337C
+ * @note Size: 0x10C
  */
 void ObjSMenuPauseDoukutu::set_Menu_Normal()
 {
@@ -578,10 +549,9 @@ void ObjSMenuPauseDoukutu::set_Menu_Normal()
 	mMenuPauseTimer = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	80323488
- * Size:	0000D4
+/**
+ * @note Address: 0x80323488
+ * @note Size: 0xD4
  */
 void ObjSMenuPauseDoukutu::set_Menu_YesNo()
 {

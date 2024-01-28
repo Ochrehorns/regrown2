@@ -41,14 +41,14 @@ typedef struct OSFontHeader {
 ///////// FONT FUNCTIONS /////////
 // Common functions.
 u16 OSGetFontEncode();
-char* OSGetFontWidth(char* string, s32* width);
+char* OSGetFontWidth(const char* string, s32* width);
 
 // High-level functions.
 BOOL OSInitFont(OSFontHeader* fontInfo);
-char* OSGetFontTexture(char* string, void** image, s32* x, s32* y, s32* width);
+char* OSGetFontTexture(const char* string, void** image, s32* x, s32* y, s32* width);
 
 // Low-level functions.
-u32 OSLoadFont(void* fontInfo, void* temp);
+u32 OSLoadFont(OSFontHeader* fontInfo, void* temp);
 
 // Unused/inlined in P2.
 char* OSGetFontTexel(char* string, void* image, s32 pos, s32 stride, s32* width);
@@ -56,6 +56,16 @@ char* OSGetFontTexel(char* string, void* image, s32 pos, s32 stride, s32* width)
 //////////////////////////////////
 
 ////////// FONT DEFINES //////////
+typedef enum {
+	OS_FONT_ENCODE_ANSI,  // 0
+	OS_FONT_ENCODE_SJIS,  // 1
+	OS_FONT_ENCODE_2,     // 2
+	OS_FONT_ENCODE_UTF8,  // 3
+	OS_FONT_ENCODE_UTF16, // 4
+	OS_FONT_ENCODE_UTF32, // 5
+	OS_FONT_ENCODE_MAX,   // 6
+} OSFontEncode;
+
 #define OS_FONT_ENCODE_NULL -1
 #define OS_FONT_ENCODE_ANSI 0
 #define OS_FONT_ENCODE_SJIS 1

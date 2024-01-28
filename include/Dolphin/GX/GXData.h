@@ -9,6 +9,7 @@ extern "C" {
 
 #include "Dolphin/GX/GXEnum.h"
 #include "Dolphin/GX/GXTypes.h"
+#include "Dolphin/GX/GXTexture.h"
 
 /////////////// CONTROL ENUMS //////////////
 typedef enum _CPStatus {
@@ -36,179 +37,218 @@ typedef enum _CPClear {
 ////////////////////////////////////////////
 
 ////////////// GXDATA STRUCTS //////////////
-// Could probably replace this with a u32 that gets &'d with the CPControl enum flags.
-typedef union _ControlRegister {
-	u32 value;
-	struct {
-		u32 bpEnable : 27;
-		u32 gpLinkEnable : 1;
-		u32 fifoUnderflowIRQEnable : 1;
-		u32 fifoOverflowIRQEnable : 1;
-		u32 cpIRQEnable : 1;
-		u32 gpFifoReadEnable : 1;
-	} bits;
-} ControlRegister;
-
 // size: 0x5B0
-// Wish we could steal names from SMG1 decomp, but GXData is bigger there.
 typedef struct _GXData {
-	union {
-		s16 s[2];
-		u32 w;
-	} _000;                          // _000
-	u8 _004[4];                      // _004
-	ControlRegister controlRegister; // _008
-	u32 _00C;                        // _00C, probably CPStatus
-	u8 _010[0x6C];                   // _010
-	u32 _07C;                        // _07C
-	u8 _080[0x28];                   // _080
-	GXColor _0A8[2];                 // _0A8
-	GXColor _0B0[2];                 // _0B0
-	u32 _0B8[2];                     // _0B8
-	u32 _0C0;                        // _0C0
-	u32 _0C4;                        // _0C4
-	u32 _0C8[2];                     // _0C8
-	u8 _0D0[0x18];                   // _0D0
-	u32 _0E8[2];                     // _0E8
-	u8 _0F0[0x18];                   // _0F0
-	u32 _108[2];                     // _108
-	u8 _110[0x10];                   // _110
-	u32 _120;                        // _120
-	u32 _124;                        // _124
-	u32 _128;                        // _128
-	u32 _12C;                        // _12C
-	u8 _130[0x40];                   // _130
-	u32 _170;                        // _170
-	u32 _174;                        // _174
-	u32 _178;                        // _178
-	u32 _17C;                        // _17C
-	u8 _180[0x50];                   // _180
-	u32 _1D0;                        // _1D0
-	u8 _1D4[0x30];                   // _1D4
-	u32 _204;                        // _204
-	u8 _208[0x4C];                   // _208
-	u32 _254;                        // _254
-	u8 _258[0x354];                  // _258
-	u32 _5AC;                        // _5AC
+	// Bypass and vertex info
+	u16 vNumNot;   // _000, !(# flush verts to send)
+	u16 bpSentNot; // _002, !(bypass reg sent last?)
+	u16 vNum;      // _004, # flush verts to send
+	u16 vLim;      // _006, max vert size
+
+	// Command process (CP) regs
+	u32 cpEnable; // _008
+	u32 cpStatus; // _00C
+	u32 cpClr;    // _010
+	u32 vcdLo;    // _014
+	u32 vcdHi;    // _018
+	u32 vatA[8];  // _01C
+	u32 vatB[8];  // _03C
+	u32 vatC[8];  // _05C
+	u32 lpSize;   // _07C
+	u32 matIdxA;  // _080
+	u32 matIdxB;  // _084
+
+	// Index loading base/stride regs (pos, nrm, tex, light)
+	u32 indexBase[4];   // _088
+	u32 indexStride[4]; // _098
+
+	// Transform and lighting regs
+	u32 ambColor[2]; // _0A8
+	u32 matColor[2]; // _0B0
+
+	// Setup regs
+	u32 suTs0[8]; // _0B8
+	u32 suTs1[8]; // _0D8
+	u32 suScis0;  // _0F8
+	u32 suScis1;  // _0FC
+
+	// Raster regs
+	u32 tref[8]; // _100
+	u32 iref;    // _120
+
+	// Bump/Indirect texture regs
+	u32 bpMask;       // _124
+	u32 IndTexScale0; // _128
+	u32 IndTexScale1; // _12C
+
+	// Tev regs
+	u32 tevc[16];   // _130
+	u32 teva[16];   // _170
+	u32 tevKsel[8]; // _1B0
+
+	// Performance regs
+	u32 cmode0; // _1D0
+	u32 cmode1; // _1D4
+	u32 zmode;  // _1D8
+	u32 peCtrl; // _1DC
+
+	// Display copy regs
+	u32 cpDispSrc;    // _1E0
+	u32 cpDispSize;   // _1E4
+	u32 cpDispStride; // _1E8
+	u32 cpDisp;       // _1EC
+
+	// Texture copy regs
+	u32 cpTexSrc;    // _1F0
+	u32 cpTexSize;   // _1F4
+	u32 cpTexStride; // _1F8
+	u32 cpTex;       // _1FC
+	GXBool cpTexZ;   // _200
+
+	// General raster mode
+	u32 genMode; // _204
+
+	// Texture regions
+	GXTexRegion TexRegions0[GX_MAX_TEXMAP]; // _208
+	GXTexRegion TexRegions1[GX_MAX_TEXMAP]; // _288
+	GXTexRegion TexRegions2[GX_MAX_TEXMAP]; // _308
+
+	// Texture lookup table regions
+	GXTlutRegion TlutRegions[GX_MAX_TLUT_ALL]; // _388
+	GXTexRegionCallback texRegionCallback;     // _4C8
+	GXTlutRegionCallback tlutRegionCallback;   // _4CC
+
+	// Command processor vars
+	GXAttrType nrmType; // _4D0
+	GXBool hasNrms;     // _4D4
+	GXBool hasBiNrms;   // _4D5
+	u32 projType;       // _4D8
+	f32 projMtx[6];     // _4DC
+
+	// Viewport parms
+	f32 vpLeft;  // _4F4
+	f32 vpTop;   // _4F8
+	f32 vpWd;    // _4FC
+	f32 vpHt;    // _500
+	f32 vpNearz; // _504
+	f32 vpFarz;  // _508
+	f32 zOffset; // _50C
+	f32 zScale;  // _510
+
+	// Texture regs
+	u32 tImage0[8];   // _514
+	u32 tMode0[8];    // _534
+	u32 texmapId[16]; // _554
+	u32 tcsManEnab;   // _594
+	u32 tevTcEnab;    // _598
+
+	// Performance metrics
+	GXPerf0 perf0; // _59C
+	GXPerf1 perf1; // _5A0
+	u32 perfSel;   // _5A4
+
+	// Flags
+	GXBool inDispList;    // _5A8
+	GXBool dlSaveContext; // _5A9
+	GXBool abtWaitPECopy; // _5AA
+	u8 dirtyVAT;          // _5AB
+	u32 dirtyState;       // _5AC
 } GXData;
-extern GXData* __GXData; // NB: this is const in SMG1 decomp.
+extern GXData* const __GXData; // NB: this is const in SMG1 decomp.
+
+#define gx __GXData
 
 ////////////////////////////////////////////
 
-///////////// REGISTER STRUCTS /////////////
-typedef struct _CPReg {
-	u16 statusRegister;        // _00 /* CPStatus */
-	u16 controlRegister;       // _02 /* CPControl */
-	u16 clearRegister;         // _04 /* CPClear */
-	u16 _06;                   // _06
-	u16 _08;                   // _08
-	u16 _0A;                   // _0A
-	u16 _0C;                   // _0C
-	u16 tokenRegister;         // _0E
-	u16 boundingBoxLeft;       // _10
-	u16 boundingBoxRight;      // _12
-	u16 boundingBoxTop;        // _14
-	u16 boundingBoxBottom;     // _16
-	u16 _18;                   // _18
-	u16 _1A;                   // _1A
-	u16 _1C;                   // _1C
-	u16 _1E;                   // _1E
-	u16 cpFIFOBaseLo;          // _20
-	u16 cpFIFOBaseHi;          // _22
-	u16 cpFIFOEndLo;           // _24
-	u16 cpFIFOEndHi;           // _26
-	u16 cpFIFOHighWatermarkLo; // _28
-	u16 cpFIFOHighWatermarkHi; // _2A
-	u16 cpFIFOLowWatermarkLo;  // _2C
-	u16 cpFIFOLowWatermarkHi;  // _2E
-	u16 cpFIFORWDistanceLo;    // _30
-	u16 cpFIFORWDistanceHi;    // _32
-	u16 cpFIFOWritePointerLo;  // _34
-	u16 cpFIFOWritePointerHi;  // _36
-	u16 cpFIFOReadPointerLo;   // _38
-	u16 cpFIFOReadPointerHi;   // _3A
-	u16 cpFIFOBPLo;            // _3C
-	u16 cpFIFOBPHi;            // _3E
-	u8 _40[0x40];              // _40
-} CPReg;
-extern CPReg* __cpReg;
+///////////// REGISTER DEFINES /////////////
+// Declare registers.
+extern void* __cpReg;
+extern void* __piReg;
+extern void* __memReg;
+extern void* __peReg;
 
-typedef struct _PIReg {
-	u32 INTSR;                       // _00
-	u32 INTMR;                       // _04
-	u32 _08;                         // _08
-	u32 fifoBase;                    // _0C
-	u32 fifoEnd;                     // _10
-	u32 cpuFIFOCurrentWritePtrMaybe; // _14
-	u32 _18;                         // _18
-	u32 _1C;                         // _1C
-	u32 _20;                         // _20
-	u32 resetMaybe;                  // _24
-	u32 _28;                         // _28
-	u32 _2C;                         // _2C
-	u32 _30;                         // _30
-	u32 _34;                         // _34
-	u32 _38;                         // _38
-	u32 _3C;                         // _3C
-	u32 _40;                         // _40
-	u32 _44;                         // _44
-	u32 _48;                         // _48
-	u32 _4C;                         // _4C
-	u32 _50;                         // _50
-	u32 _54;                         // _54
-	u32 _58;                         // _58
-	u32 _5C;                         // _5C
-	u32 _60;                         // _60
-	u32 _64;                         // _64
-	u32 _68;                         // _68
-	u32 _6C;                         // _6C
-	u32 _70;                         // _70
-	u32 _74;                         // _74
-	u32 _78;                         // _78
-	u32 _7C;                         // _7C
-	u32 _80;                         // _80
-	u32 _84;                         // _84
-	u32 _88;                         // _88
-	u32 _8C;                         // _8C
-	u32 _90;                         // _90
-	u32 _94;                         // _94
-	u32 _98;                         // _98
-	u32 _9C;                         // _9C
-	u32 _A0;                         // _A0
-	u32 _A4;                         // _A4
-	u32 _A8;                         // _A8
-	u32 _AC;                         // _AC
-	u32 _B0;                         // _B0
-	u32 _B4;                         // _B4
-	u32 _B8;                         // _B8
-	u32 _BC;                         // _BC
-	u32 _C0;                         // _C0
-	u32 _C4;                         // _C4
-	u32 _C8;                         // _C8
-	u32 _CC;                         // _CC
-	u32 _D0;                         // _D0
-	u32 _D4;                         // _D4
-	u32 _D8;                         // _D8
-	u32 _DC;                         // _DC
-	u32 _E0;                         // _E0
-	u32 _E4;                         // _E4
-	u32 _E8;                         // _E8
-	u32 _EC;                         // _EC
-	u32 _F0;                         // _F0
-	u32 _F4;                         // _F4
-	u32 _F8;                         // _F8
-	u32 _FC;                         // _FC
-} PIReg;
-extern PIReg* __piReg;
+// Define register addresses.
+#define GX_CP_ADDR  (0x0C000000)
+#define GX_PE_ADDR  (0x0C001000)
+#define GX_PI_ADDR  (0x0C003000)
+#define GX_MEM_ADDR (0x0C004000)
 
-////////////////////////////////////////////
+// i hate writing out the damn volatile shit so many times
+#define GX_GET_MEM_REG(offset) (*(vu16*)((vu16*)(__memReg) + (offset)))
+#define GX_GET_CP_REG(offset)  (*(vu16*)((vu16*)(__cpReg) + (offset)))
+#define GX_GET_PE_REG(offset)  (*(vu16*)((vu16*)(__peReg) + (offset)))
+#define GX_GET_PI_REG(offset)  (*(vu32*)((vu32*)(__piReg) + (offset)))
 
-static inline void GXSetWasteFlags()
+#define GX_SET_MEM_REG(offset, val) (*(vu16*)((vu16*)(__memReg) + (offset)) = val)
+#define GX_SET_CP_REG(offset, val)  (*(vu16*)((vu16*)(__cpReg) + (offset)) = val)
+#define GX_SET_PE_REG(offset, val)  (*(vu16*)((vu16*)(__peReg) + (offset)) = val)
+#define GX_SET_PI_REG(offset, val)  (*(vu32*)((vu32*)(__piReg) + (offset)) = val)
+
+// Useful reading register inlines
+static inline u32 GXReadMEMReg(u32 addrLo, u32 addrHi)
 {
-	GXData* data = __GXData;
-	data->_5AC |= 0x3;
-	data->_000.s[1] = 0;
+	u32 hiStart, hiNew, lo;
+	hiStart = GX_GET_MEM_REG(addrHi);
+	do {
+		hiNew   = hiStart;
+		lo      = GX_GET_MEM_REG(addrLo);
+		hiStart = GX_GET_MEM_REG(addrHi);
+	} while (hiStart != hiNew);
+
+	return ((hiStart << 16) | lo);
 }
+
+static inline u32 GXReadCPReg(u32 addrLo, u32 addrHi)
+{
+	u32 hiStart, hiNew, lo;
+	hiStart = GX_GET_CP_REG(addrHi);
+	do {
+		hiNew   = hiStart;
+		lo      = GX_GET_CP_REG(addrLo);
+		hiStart = GX_GET_CP_REG(addrHi);
+	} while (hiStart != hiNew);
+
+	return ((hiStart << 16) | lo);
+}
+
+static inline u32 GXReadPEReg(u32 addrLo, u32 addrHi)
+{
+	u32 hiStart, hiNew, lo;
+	hiStart = GX_GET_PE_REG(addrHi);
+	do {
+		hiNew   = hiStart;
+		lo      = GX_GET_PE_REG(addrLo);
+		hiStart = GX_GET_PE_REG(addrHi);
+	} while (hiStart != hiNew);
+
+	return ((hiStart << 16) | lo);
+}
+
+static inline u32 GXReadPIReg(u32 addrLo, u32 addrHi)
+{
+	u32 hiStart, hiNew, lo;
+	hiStart = GX_GET_PI_REG(addrHi);
+	do {
+		hiNew   = hiStart;
+		lo      = GX_GET_PI_REG(addrLo);
+		hiStart = GX_GET_PI_REG(addrHi);
+	} while (hiStart != hiNew);
+
+	return ((hiStart << 16) | lo);
+}
+
+////////////////////////////////////////////
+
+/////////// OTHER USEFUL DEFINES ///////////
+// useful define to check first two GXData members together
+// used in GXDisplayList, saves having a union in the struct
+#define GX_CHECK_FLUSH() (!(*(u32*)(&gx->vNumNot)))
+
+// do the damn rlwimi thing
+#define FAST_FLAG_SET(regOrg, newFlag, shift, size)                                                                \
+	do {                                                                                                           \
+		(regOrg) = (u32)__rlwimi((int)(regOrg), (int)(newFlag), (shift), (32 - (shift) - (size)), (31 - (shift))); \
+	} while (0);
 
 ////////////////////////////////////////////
 

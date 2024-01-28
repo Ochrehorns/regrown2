@@ -8,10 +8,9 @@
 namespace Game {
 namespace DangoMushi {
 
-/*
- * --INFO--
- * Address:	802F9A8C
- * Size:	000320
+/**
+ * @note Address: 0x802F9A8C
+ * @note Size: 0x320
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -28,10 +27,9 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateFlick);
 }
 
-/*
- * --INFO--
- * Address:	802F9DAC
- * Size:	000088
+/**
+ * @note Address: 0x802F9DAC
+ * @note Size: 0x88
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -42,16 +40,15 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	crab->setEmotionCaution();
 
 	if (stateArg) {
-		crab->startBlendAnimation(7, true);
+		crab->startBlendAnimation(DANGOANIM_Dead, true);
 	} else {
-		crab->startBlendAnimation(7, false);
+		crab->startBlendAnimation(DANGOANIM_Dead, false);
 	}
 }
 
-/*
- * --INFO--
- * Address:	802F9E34
- * Size:	00013C
+/**
+ * @note Address: 0x802F9E34
+ * @note Size: 0x13C
  */
 void StateDead::exec(EnemyBase* enemy)
 {
@@ -80,17 +77,15 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802F9F70
- * Size:	000004
+/**
+ * @note Address: 0x802F9F70
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802F9F74
- * Size:	000094
+/**
+ * @note Address: 0x802F9F74
+ * @note Size: 0x94
  */
 void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -103,14 +98,13 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	crab->hardConstraintOn();
 	crab->enableEvent(0, EB_ModelHidden);
 	crab->mTargetVelocity = Vector3f(0.0f);
-	crab->startBlendAnimation(0, false);
+	crab->startBlendAnimation(DANGOANIM_Fly, false);
 	crab->stopMotion();
 }
 
-/*
- * --INFO--
- * Address:	802FA008
- * Size:	000144
+/**
+ * @note Address: 0x802FA008
+ * @note Size: 0x144
  */
 void StateStay::exec(EnemyBase* enemy)
 {
@@ -122,7 +116,7 @@ void StateStay::exec(EnemyBase* enemy)
 		return;
 	}
 
-	f32 privateRad = CG_PARMS(crab)->mGeneral.mPrivateRadius.mValue;
+	f32 privateRad = CG_GENERALPARMS(crab).mPrivateRadius.mValue;
 
 	bool isTarget;
 	if (EnemyFunc::isThereOlimar(crab, privateRad, nullptr)) {
@@ -142,17 +136,15 @@ void StateStay::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802FA14C
- * Size:	000004
+/**
+ * @note Address: 0x802FA14C
+ * @note Size: 0x4
  */
 void StateStay::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802FA150
- * Size:	00008C
+/**
+ * @note Address: 0x802FA150
+ * @note Size: 0x8C
  */
 void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -165,13 +157,12 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	crab->hardConstraintOn();
 	crab->disableEvent(0, EB_ModelHidden);
 	crab->mTargetVelocity = Vector3f(0.0f);
-	crab->startBlendAnimation(0, false);
+	crab->startBlendAnimation(DANGOANIM_Fly, false);
 }
 
-/*
- * --INFO--
- * Address:	802FA1DC
- * Size:	000400
+/**
+ * @note Address: 0x802FA1DC
+ * @note Size: 0x400
  */
 void StateAppear::exec(EnemyBase* enemy)
 {
@@ -196,13 +187,13 @@ void StateAppear::exec(EnemyBase* enemy)
 
 		} else if (crab->mCurAnim->mType == KEYEVENT_END) {
 			Creature* target = crab->getSearchedTarget();
-			if (target && gameSystem && gameSystem->mMode != GSM_PIKLOPEDIA) {
+			if (target && gameSystem && !gameSystem->isZukanMode()) {
 				f32 maxAttackRange, minAttackRange;
-				minAttackRange = *CG_PARMS(crab)->mGeneral.mMinAttackRange();
-				maxAttackRange = *CG_PARMS(crab)->mGeneral.mMaxAttackRange();
+				minAttackRange = CG_GENERALPARMS(crab).mMaxAttackAngle();
+				maxAttackRange = CG_GENERALPARMS(crab).mMaxAttackRange();
 
 				f32 viewAngle = crab->getCreatureViewAngle(target);
-				if (crab->checkDistAndAngle(target, viewAngle, maxAttackRange, minAttackRange)) {
+				if (crab->isTargetAttackable(target, viewAngle, maxAttackRange, minAttackRange)) {
 					transit(crab, DANGOMUSHI_Attack, nullptr);
 				} else {
 					crab->setRandTarget();
@@ -490,10 +481,9 @@ lbl_802FA58C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802FA5DC
- * Size:	000030
+/**
+ * @note Address: 0x802FA5DC
+ * @note Size: 0x30
  */
 void StateAppear::cleanup(EnemyBase* enemy)
 {
@@ -501,10 +491,9 @@ void StateAppear::cleanup(EnemyBase* enemy)
 	enemy->hardConstraintOff();
 }
 
-/*
- * --INFO--
- * Address:	802FA60C
- * Size:	00009C
+/**
+ * @note Address: 0x802FA60C
+ * @note Size: 0x9C
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -517,16 +506,15 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	crab->mTargetVelocity = Vector3f(0.0f);
 
 	if (stateArg) {
-		crab->startBlendAnimation(1, true);
+		crab->startBlendAnimation(DANGOANIM_Wait, true);
 	} else {
-		crab->startBlendAnimation(1, false);
+		crab->startBlendAnimation(DANGOANIM_Wait, false);
 	}
 }
 
-/*
- * --INFO--
- * Address:	802FA6A8
- * Size:	000364
+/**
+ * @note Address: 0x802FA6A8
+ * @note Size: 0x364
  */
 void StateWait::exec(EnemyBase* enemy)
 {
@@ -539,13 +527,13 @@ void StateWait::exec(EnemyBase* enemy)
 	}
 
 	Creature* target = crab->getSearchedTarget();
-	if (target && gameSystem && gameSystem->mMode != GSM_PIKLOPEDIA) {
+	if (target && gameSystem && !gameSystem->isZukanMode()) {
 		f32 maxAttackRange, minAttackRange;
-		minAttackRange = *CG_PARMS(crab)->mGeneral.mMinAttackRange();
-		maxAttackRange = *CG_PARMS(crab)->mGeneral.mMaxAttackRange();
+		minAttackRange = CG_GENERALPARMS(crab).mMaxAttackAngle();
+		maxAttackRange = CG_GENERALPARMS(crab).mMaxAttackRange();
 
 		f32 viewAngle = crab->getCreatureViewAngle(target);
-		if (crab->checkDistAndAngle(target, viewAngle, maxAttackRange, minAttackRange)) {
+		if (crab->isTargetAttackable(target, viewAngle, maxAttackRange, minAttackRange)) {
 			crab->mNextState = DANGOMUSHI_Attack;
 			crab->finishMotion();
 		} else {
@@ -802,17 +790,15 @@ lbl_802FA9BC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802FAA0C
- * Size:	000004
+/**
+ * @note Address: 0x802FAA0C
+ * @note Size: 0x4
  */
 void StateWait::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802FAA10
- * Size:	00005C
+/**
+ * @note Address: 0x802FAA10
+ * @note Size: 0x5C
  */
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -822,13 +808,12 @@ void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 	crab->mIsBall     = false;
 	crab->enableEvent(0, EB_Invulnerable);
 	crab->mTargetVelocity = Vector3f(0.0f);
-	crab->startBlendAnimation(2, false);
+	crab->startBlendAnimation(DANGOANIM_Move, false);
 }
 
-/*
- * --INFO--
- * Address:	802FAA6C
- * Size:	0007A8
+/**
+ * @note Address: 0x802FAA6C
+ * @note Size: 0x7A8
  */
 void StateMove::exec(EnemyBase* enemy)
 {
@@ -840,18 +825,17 @@ void StateMove::exec(EnemyBase* enemy)
 	}
 
 	Creature* target = crab->getSearchedTarget();
-	if (target && gameSystem && gameSystem->mMode != GSM_PIKLOPEDIA) {
+	if (target && gameSystem && !gameSystem->isZukanMode()) {
 		f32 viewAngle = crab->getCreatureViewAngle(target);
 
-		if (crab->checkDistAndAngle(target, viewAngle, *CG_PARMS(crab)->mGeneral.mMaxAttackRange(),
-		                            *CG_PARMS(crab)->mGeneral.mMinAttackRange())) {
+		if (crab->isTargetAttackable(target, viewAngle, CG_GENERALPARMS(crab).mMaxAttackRange(), CG_GENERALPARMS(crab).mMaxAttackAngle())) {
 			crab->mNextState = DANGOMUSHI_Attack;
 			crab->finishMotion();
 
 		} else {
-			crab->turnToTarget(target, *CG_PARMS(crab)->mGeneral.mRotationalAccel(), *CG_PARMS(crab)->mGeneral.mRotationalSpeed());
-			if (FABS(viewAngle) <= PI * (DEG2RAD * *CG_PARMS(crab)->mGeneral.mMinAttackRange())) {
-				f32 moveSpeed = *CG_PARMS(crab)->mGeneral.mMoveSpeed();
+			crab->turnToTarget(target, CG_GENERALPARMS(crab).mTurnSpeed(), CG_GENERALPARMS(crab).mMaxTurnAngle());
+			if (FABS(viewAngle) <= PI * (DEG2RAD * CG_GENERALPARMS(crab).mMaxAttackAngle())) {
+				f32 moveSpeed = CG_GENERALPARMS(crab).mMoveSpeed();
 				f32 x         = sin(crab->getFaceDir());
 				f32 y         = crab->getTargetVelocity().y;
 				f32 z         = cos(crab->getFaceDir());
@@ -872,10 +856,10 @@ void StateMove::exec(EnemyBase* enemy)
 	} else {
 		Vector3f targetPos = crab->mTargetPosition;
 		f32 viewAngle      = crab->getCreatureViewAngle(targetPos);
-		crab->turnToTarget(targetPos, *CG_PARMS(crab)->mGeneral.mRotationalAccel(), *CG_PARMS(crab)->mGeneral.mRotationalSpeed());
+		crab->turnToTarget(targetPos, CG_GENERALPARMS(crab).mTurnSpeed(), CG_GENERALPARMS(crab).mMaxTurnAngle());
 
 		if (FABS(viewAngle) <= HALF_PI) {
-			f32 moveSpeed = *CG_PARMS(crab)->mGeneral.mMoveSpeed();
+			f32 moveSpeed = CG_GENERALPARMS(crab).mMoveSpeed();
 			f32 x         = sin(crab->getFaceDir());
 			f32 y         = crab->getTargetVelocity().y;
 			f32 z         = cos(crab->getFaceDir());
@@ -1433,17 +1417,15 @@ lbl_802FB1C4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802FB214
- * Size:	000004
+/**
+ * @note Address: 0x802FB214
+ * @note Size: 0x4
  */
 void StateMove::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802FB218
- * Size:	000088
+/**
+ * @note Address: 0x802FB218
+ * @note Size: 0x88
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -1456,13 +1438,12 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	crab->enableEvent(0, EB_BitterImmune);
 	crab->setEmotionExcitement();
 	crab->mTargetVelocity = Vector3f(0.0f);
-	crab->startBlendAnimation(3, false);
+	crab->startBlendAnimation(DANGOANIM_Attack, false);
 }
 
-/*
- * --INFO--
- * Address:	802FB2A0
- * Size:	000288
+/**
+ * @note Address: 0x802FB2A0
+ * @note Size: 0x288
  */
 void StateAttack::exec(EnemyBase* enemy)
 {
@@ -1520,10 +1501,9 @@ void StateAttack::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802FB528
- * Size:	000058
+/**
+ * @note Address: 0x802FB528
+ * @note Size: 0x58
  */
 void StateAttack::cleanup(EnemyBase* enemy)
 {
@@ -1536,10 +1516,9 @@ void StateAttack::cleanup(EnemyBase* enemy)
 	crab->finishBossAttackLoopBGM();
 }
 
-/*
- * --INFO--
- * Address:	802FB580
- * Size:	0000D4
+/**
+ * @note Address: 0x802FB580
+ * @note Size: 0xD4
  */
 void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -1550,7 +1529,7 @@ void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 	crab->enableEvent(0, EB_NoInterrupt);
 	crab->enableEvent(0, EB_Invulnerable);
 	crab->mTargetVelocity = Vector3f(0.0f);
-	crab->startBlendAnimation(5, false);
+	crab->startBlendAnimation(DANGOANIM_Turn, false);
 	crab->createCrashEnemy();
 
 	Vector3f crabPos = crab->getPosition();
@@ -1558,10 +1537,9 @@ void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 	rumbleMgr->startRumble(15, crabPos, 2);
 }
 
-/*
- * --INFO--
- * Address:	802FB654
- * Size:	000270
+/**
+ * @note Address: 0x802FB654
+ * @note Size: 0x270
  */
 void StateTurn::exec(EnemyBase* enemy)
 {
@@ -1612,24 +1590,22 @@ void StateTurn::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802FB8C4
- * Size:	000068
+/**
+ * @note Address: 0x802FB8C4
+ * @note Size: 0x68
  */
 void StateTurn::cleanup(EnemyBase* enemy)
 {
 	Obj* crab = OBJ(enemy);
-	EnemyFunc::flickStickPikmin(crab, 1.0f, 10.0f, 0.0f, -1000.0f, nullptr);
+	EnemyFunc::flickStickPikmin(crab, 1.0f, 10.0f, 0.0f, FLICK_BACKWARD_ANGLE, nullptr);
 	crab->enableEvent(0, EB_Invulnerable);
 	crab->disableEvent(0, EB_NoInterrupt);
 	crab->setBodyCollision(true);
 }
 
-/*
- * --INFO--
- * Address:	802FB92C
- * Size:	000050
+/**
+ * @note Address: 0x802FB92C
+ * @note Size: 0x50
  */
 void StateRecover::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -1638,13 +1614,12 @@ void StateRecover::init(EnemyBase* enemy, StateArg* stateArg)
 	crab->mStateTimer     = 0.0f;
 	crab->mIsBall         = false;
 	crab->mTargetVelocity = Vector3f(0.0f);
-	crab->startBlendAnimation(6, false);
+	crab->startBlendAnimation(DANGOANIM_Recover, false);
 }
 
-/*
- * --INFO--
- * Address:	802FB97C
- * Size:	0000FC
+/**
+ * @note Address: 0x802FB97C
+ * @note Size: 0xFC
  */
 void StateRecover::exec(EnemyBase* enemy)
 {
@@ -1668,17 +1643,15 @@ void StateRecover::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802FBA78
- * Size:	000004
+/**
+ * @note Address: 0x802FBA78
+ * @note Size: 0x4
  */
 void StateRecover::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802FBA7C
- * Size:	00006C
+/**
+ * @note Address: 0x802FBA7C
+ * @note Size: 0x6C
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -1689,13 +1662,12 @@ void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	crab->mIsBall        = false;
 	crab->setEmotionExcitement();
 	crab->mTargetVelocity = Vector3f(0.0f);
-	crab->startBlendAnimation(4, false);
+	crab->startBlendAnimation(DANGOANIM_Attack2, false);
 }
 
-/*
- * --INFO--
- * Address:	802FBAE8
- * Size:	0001E0
+/**
+ * @note Address: 0x802FBAE8
+ * @note Size: 0x1E0
  */
 void StateFlick::exec(EnemyBase* enemy)
 {
@@ -1732,10 +1704,9 @@ void StateFlick::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802FBCC8
- * Size:	00002C
+/**
+ * @note Address: 0x802FBCC8
+ * @note Size: 0x2C
  */
 void StateFlick::cleanup(EnemyBase* enemy)
 {

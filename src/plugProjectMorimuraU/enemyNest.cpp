@@ -7,28 +7,26 @@
 
 namespace Game {
 namespace Nest {
-/*
- * --INFO--
- * Address:	8036CA94
- * Size:	000034
+/**
+ * @note Address: 0x8036CA94
+ * @note Size: 0x34
  */
 // void birth__Q34Game4Nest3ObjFR10Vector3f f()
-void Obj::birth(Vector3f& position, float p2)
+void Obj::birth(Vector3f& position, f32 p2)
 {
 	EnemyBase::birth(position, p2);
-	mHouseType = 1;
+	mHouseType = NEST_Breadbug;
 }
 
-/*
- * --INFO--
- * Address:	8036CAC8
- * Size:	00011C
+/**
+ * @note Address: 0x8036CAC8
+ * @note Size: 0x11C
  */
 void Obj::onInit(Game::CreatureInitArg* arg)
 {
 	EnemyBase::onInit(arg);
-	_2EE          = 0xFF;
-	_2F0          = 0;
+	mAlpha        = 255;
+	mDeathTimer   = 0;
 	mHomePosition = mPosition;
 	disableEvent(0, EB_LeaveCarcass);
 	disableEvent(0, EB_DamageAnimEnabled);
@@ -40,33 +38,31 @@ void Obj::onInit(Game::CreatureInitArg* arg)
 	if (shadowMgr) {
 		shadowMgr->killShadow(this);
 	}
-	_2BC                       = mObjMatrix;
-	_2BC.mMatrix.structView.ty = mPosition.y - 10.0f;
+	mHouseTrMatrix                       = mBaseTrMatrix;
+	mHouseTrMatrix.mMatrix.structView.ty = mPosition.y - 10.0f;
 }
 
-/*
+/**
  * ct__
- * --INFO--
- * Address:	8036CBE4
- * Size:	000098
+ * @note Address: 0x8036CBE4
+ * @note Size: 0x98
  */
 Obj::Obj()
     : EnemyBase()
-    , mHouseType(1)
+    , mHouseType(NEST_Breadbug)
 {
 }
 
-/*
- * --INFO--
- * Address:	8036CC7C
- * Size:	000020
+/**
+ * @note Address: 0x8036CC7C
+ * @note Size: 0x20
  */
 void Obj::setHouseType(int enemyID)
 {
 	if (enemyID == EnemyTypeID::EnemyID_Jigumo) {
-		mHouseType = 0;
+		mHouseType = NEST_Jigumo;
 	} else {
-		mHouseType = 1;
+		mHouseType = NEST_Breadbug;
 	}
 }
 } // namespace Nest

@@ -1,124 +1,47 @@
-#include "types.h"
-
-/*
-    Generated from dpostproc
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global
-   "cSphereShadowRadius__Q34Game10SnakeWhole30@unnamed@SnakeWholeShadow_cpp@"
-    "cSphereShadowRadius__Q34Game10SnakeWhole30@unnamed@SnakeWholeShadow_cpp@":
-        .float 7.5
-        .float 7.5
-        .float 20.0
-        .float 30.0
-        .float 25.0
-        .float 17.5
-        .float 11.0
-        .float 8.0
-        .float 22.5
-    .global
-   "cTubeShadowRadius__Q34Game10SnakeWhole30@unnamed@SnakeWholeShadow_cpp@"
-    "cTubeShadowRadius__Q34Game10SnakeWhole30@unnamed@SnakeWholeShadow_cpp@":
-        .float 7.5
-        .float 7.5
-        .float 20.0
-        .float 27.5
-        .float 22.5
-        .float 15.0
-        .float 9.0
-        .float 8.0
-        .float 10.0
-    .global lbl_8048D348
-    lbl_8048D348:
-        .asciz "foot_joint1"
-    .global lbl_8048D354
-    lbl_8048D354:
-        .asciz "leg_joint2"
-        .skip 1
-    .global lbl_8048D360
-    lbl_8048D360:
-        .asciz "leg_joint1"
-        .skip 1
-    .global lbl_8048D36C
-    lbl_8048D36C:
-        .asciz "bodyjnt4"
-        .skip 3
-    .global lbl_8048D378
-    lbl_8048D378:
-        .asciz "bodyjnt5"
-        .skip 3
-    .global lbl_8048D384
-    lbl_8048D384:
-        .asciz "bodyjnt6"
-        .skip 3
-    .global lbl_8048D390
-    lbl_8048D390:
-        .asciz "bodyjnt7"
-        .skip 3
-    .global lbl_8048D39C
-    lbl_8048D39C:
-        .asciz "bodyjnt8"
-        .skip 3
-    .global lbl_8048D3A8
-    lbl_8048D3A8:
-        .asciz "kutijnt1"
-        .skip 3
-    .global lbl_8048D3B4
-    lbl_8048D3B4:
-        .4byte lbl_8048D348
-        .4byte lbl_8048D354
-        .4byte lbl_8048D360
-        .4byte lbl_8048D36C
-        .4byte lbl_8048D378
-        .4byte lbl_8048D384
-        .4byte lbl_8048D390
-        .4byte lbl_8048D39C
-        .4byte lbl_8048D3A8
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__Q24Game26SnakeWholeSphereShadowNode
-    __vt__Q24Game26SnakeWholeSphereShadowNode:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q24Game26SnakeWholeSphereShadowNodeFv
-        .4byte getChildCount__5CNodeFv
-    .global __vt__Q24Game24SnakeWholeTubeShadowNode
-    __vt__Q24Game24SnakeWholeTubeShadowNode:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q24Game24SnakeWholeTubeShadowNodeFv
-        .4byte getChildCount__5CNodeFv
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_8051D2D8
-    lbl_8051D2D8:
-        .float 0.5
-    .global lbl_8051D2DC
-    lbl_8051D2DC:
-        .4byte 0x00000000
-    .global lbl_8051D2E0
-    lbl_8051D2E0:
-        .float 1.0
-    .global lbl_8051D2E4
-    lbl_8051D2E4:
-        .4byte 0x40200000
-    .global lbl_8051D2E8
-    lbl_8051D2E8:
-        .4byte 0x42480000
-    .global lbl_8051D2EC
-    lbl_8051D2EC:
-        .4byte 0x42C80000
-*/
+#include "Game/Entities/SnakeWhole.h"
+#include "Game/MapMgr.h"
 
 namespace Game {
+namespace SnakeWhole {
+namespace {
+const f32 cSphereShadowRadius[9] = { 7.5f, 7.5f, 20.0f, 30.0f, 25.0f, 17.5f, 11.0f, 8.0f, 22.5f };
+const f32 cTubeShadowRadius[9]   = { 7.5f, 7.5f, 20.0f, 27.5f, 22.5f, 15.0f, 9.0f, 8.0f, 10.0f };
+} // namespace
+} // namespace SnakeWhole
 
-/*
- * --INFO--
- * Address:	802F89AC
- * Size:	00022C
+/**
+ * @note Address: 0x802F89AC
+ * @note Size: 0x22C
  */
-void SnakeWholeTubeShadowNode::makeShadowSRT(Game::JointShadowParm&, Vector3f&, Vector3f&)
+void SnakeWholeTubeShadowNode::makeShadowSRT(JointShadowParm& parm, Vector3f& pos1, Vector3f& pos2)
 {
+	Vector3f mtx[4];
+	mtx[0].x = (pos2.x - pos1.x) * 0.5f;
+	mtx[0].y = 0.0f;
+	mtx[0].z = (pos2.z - pos1.z) * 0.5f;
+	mtx[2]   = cross(mtx[0], parm.mRotation);
+	mtx[2].normalise();
+
+	mtx[2].x *= parm.mShadowScale;
+	mtx[2].y *= parm.mShadowScale;
+	mtx[2].z *= parm.mShadowScale;
+
+	mtx[3].x = (pos2.x + pos1.x) * 0.5f;
+	mtx[3].y = 0.0f;
+	mtx[3].z = (pos2.z + pos1.z) * 0.5f;
+
+	mtx[3].y = mapMgr->getMinY(mtx[3]) + 2.5f;
+	mtx[1]   = Vector3f(0.0f, 50.0f, 0.0f);
+	if (mtx[3].y < parm.mPosition.y) {
+		f32 diff = parm.mPosition.y - mtx[3].y;
+		mtx[3].y = parm.mPosition.y;
+		mtx[1].y += diff;
+	}
+
+	mMainMtx->setColumn(0, mtx[0]);
+	mMainMtx->setColumn(1, mtx[1]);
+	mMainMtx->setColumn(2, mtx[2]);
+	mMainMtx->setColumn(3, mtx[3]);
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x10(r1)
@@ -269,328 +192,139 @@ void SnakeWholeTubeShadowNode::makeShadowSRT(Game::JointShadowParm&, Vector3f&, 
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802F8BD8
- * Size:	00012C
+/**
+ * @note Address: 0x802F8BD8
+ * @note Size: 0x12C
  */
-void SnakeWholeSphereShadowNode::makeShadowSRT(Game::JointShadowParm&, Vector3f&)
+void SnakeWholeSphereShadowNode::makeShadowSRT(JointShadowParm& parm, Vector3f& pos)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x40(r1)
-	  mflr      r0
-	  lfs       f1, -0x1084(r2)
-	  stw       r0, 0x44(r1)
-	  stw       r31, 0x3C(r1)
-	  mr        r31, r4
-	  stw       r30, 0x38(r1)
-	  mr        r30, r3
-	  lfs       f0, 0x20(r4)
-	  addi      r4, r1, 0x2C
-	  lwz       r3, -0x6CF8(r13)
-	  stfs      f0, 0x8(r1)
-	  stfs      f1, 0xC(r1)
-	  stfs      f1, 0x10(r1)
-	  stfs      f1, 0x20(r1)
-	  stfs      f1, 0x24(r1)
-	  stfs      f0, 0x28(r1)
-	  lfs       f0, 0x0(r5)
-	  stfs      f0, 0x2C(r1)
-	  stfs      f1, 0x30(r1)
-	  lfs       f0, 0x8(r5)
-	  stfs      f0, 0x34(r1)
-	  lwz       r12, 0x4(r3)
-	  lwz       r12, 0x28(r12)
-	  mtctr     r12
-	  bctrl
-	  lfs       f2, -0x107C(r2)
-	  lfs       f0, -0x1084(r2)
-	  fadds     f2, f2, f1
-	  lfs       f1, -0x1078(r2)
-	  stfs      f0, 0x14(r1)
-	  stfs      f2, 0x30(r1)
-	  stfs      f1, 0x18(r1)
-	  stfs      f0, 0x1C(r1)
-	  lfs       f3, 0x4(r31)
-	  fcmpo     cr0, f2, f3
-	  bge-      .loc_0xA4
-	  fsubs     f0, f3, f2
-	  stfs      f3, 0x30(r1)
-	  fadds     f0, f1, f0
-	  stfs      f0, 0x18(r1)
+	Vector3f mtx[4];
+	mtx[0] = Vector3f(parm.mShadowScale, 0.0f, 0.0f);
+	mtx[2] = Vector3f(0.0f, 0.0f, parm.mShadowScale);
 
-	.loc_0xA4:
-	  lwz       r3, 0x1C(r30)
-	  lfs       f0, 0x8(r1)
-	  stfs      f0, 0x0(r3)
-	  lfs       f0, 0xC(r1)
-	  stfs      f0, 0x10(r3)
-	  lfs       f0, 0x10(r1)
-	  stfs      f0, 0x20(r3)
-	  lwz       r3, 0x1C(r30)
-	  lfs       f0, 0x14(r1)
-	  stfs      f0, 0x4(r3)
-	  lfs       f0, 0x18(r1)
-	  stfs      f0, 0x14(r3)
-	  lfs       f0, 0x1C(r1)
-	  stfs      f0, 0x24(r3)
-	  lwz       r3, 0x1C(r30)
-	  lfs       f0, 0x20(r1)
-	  stfs      f0, 0x8(r3)
-	  lfs       f0, 0x24(r1)
-	  stfs      f0, 0x18(r3)
-	  lfs       f0, 0x28(r1)
-	  stfs      f0, 0x28(r3)
-	  lwz       r3, 0x1C(r30)
-	  lfs       f0, 0x2C(r1)
-	  stfs      f0, 0xC(r3)
-	  lfs       f0, 0x30(r1)
-	  stfs      f0, 0x1C(r3)
-	  lfs       f0, 0x34(r1)
-	  stfs      f0, 0x2C(r3)
-	  lwz       r31, 0x3C(r1)
-	  lwz       r30, 0x38(r1)
-	  lwz       r0, 0x44(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x40
-	  blr
-	*/
+	mtx[3].x = pos.x;
+	mtx[3].y = 0.0f;
+	mtx[3].z = pos.z;
+
+	mtx[3].y = mapMgr->getMinY(mtx[3]) + 2.5f;
+
+	mtx[1] = Vector3f(0.0f, 50.0f, 0.0f);
+
+	if (mtx[3].y < parm.mPosition.y) {
+		f32 diff = parm.mPosition.y - mtx[3].y;
+		mtx[3].y = parm.mPosition.y;
+		mtx[1].y += diff;
+	}
+
+	mMainMtx->setColumn(0, mtx[0]);
+	mMainMtx->setColumn(1, mtx[1]);
+	mMainMtx->setColumn(2, mtx[2]);
+	mMainMtx->setColumn(3, mtx[3]);
 }
 
-/*
- * --INFO--
- * Address:	802F8D04
- * Size:	0000EC
+namespace SnakeWhole {
+/**
+ * @note Address: 0x802F8D04
+ * @note Size: 0xEC
  */
-SnakeWhole::SnakeWholeShadowMgr::SnakeWholeShadowMgr(Game::SnakeWhole::Obj*)
+SnakeWholeShadowMgr::SnakeWholeShadowMgr(Obj* owner)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	mr       r29, r4
-	stw      r28, 0x10(r1)
-	mr       r28, r3
-	stw      r29, 0x24(r3)
-	li       r3, 0x20
-	bl       __nw__FUl
-	or.      r0, r3, r3
-	beq      lbl_802F8D48
-	mr       r4, r29
-	bl       __ct__Q24Game19JointShadowRootNodeFPQ24Game8Creature
-	mr       r0, r3
+	mOwner    = owner;
+	mRootNode = new JointShadowRootNode(owner);
 
-lbl_802F8D48:
-	stw      r0, 0x28(r28)
-	mr       r30, r28
-	li       r29, 0
+	for (int i = 0; i < 9; i++) {
+		mTubeNodes[i] = new SnakeWholeTubeShadowNode;
+		mRootNode->add(mTubeNodes[i]);
 
-lbl_802F8D54:
-	li       r3, 0x24
-	bl       __nw__FUl
-	or.      r31, r3, r3
-	beq      lbl_802F8D78
-	li       r4, 2
-	bl       __ct__Q24Game15JointShadowNodeFi
-	lis      r3, __vt__Q24Game24SnakeWholeTubeShadowNode@ha
-	addi     r0, r3, __vt__Q24Game24SnakeWholeTubeShadowNode@l
-	stw      r0, 0(r31)
-
-lbl_802F8D78:
-	stw      r31, 0x2c(r30)
-	lwz      r3, 0x28(r28)
-	lwz      r4, 0x2c(r30)
-	bl       add__5CNodeFP5CNode
-	li       r3, 0x24
-	bl       __nw__FUl
-	or.      r31, r3, r3
-	beq      lbl_802F8DAC
-	li       r4, 2
-	bl       __ct__Q24Game15JointShadowNodeFi
-	lis      r3, __vt__Q24Game26SnakeWholeSphereShadowNode@ha
-	addi     r0, r3, __vt__Q24Game26SnakeWholeSphereShadowNode@l
-	stw      r0, 0(r31)
-
-lbl_802F8DAC:
-	stw      r31, 0x50(r30)
-	lwz      r3, 0x28(r28)
-	lwz      r4, 0x50(r30)
-	bl       add__5CNodeFP5CNode
-	addi     r29, r29, 1
-	addi     r30, r30, 4
-	cmpwi    r29, 9
-	blt      lbl_802F8D54
-	lwz      r0, 0x24(r1)
-	mr       r3, r28
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	lwz      r28, 0x10(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+		mSphereNodes[i] = new SnakeWholeSphereShadowNode;
+		mRootNode->add(mSphereNodes[i]);
+	}
 }
 
-/*
- * --INFO--
- * Address:	802F8DF0
- * Size:	0000C8
+/**
+ * @note Address: 0x802F8DF0
+ * @note Size: 0xC8
  */
-void SnakeWhole::SnakeWholeShadowMgr::init()
+void SnakeWholeShadowMgr::init()
 {
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	lis      r4, lbl_8048D3B4@ha
-	stw      r0, 0x44(r1)
-	addi     r11, r4, lbl_8048D3B4@l
-	stw      r31, 0x3c(r1)
-	addi     r31, r1, 8
-	stw      r30, 0x38(r1)
-	mr       r30, r3
-	stw      r29, 0x34(r1)
-	stw      r28, 0x30(r1)
-	li       r28, 0
-	lwz      r12, 0x24(r3)
-	lwz      r10, 0(r11)
-	lwz      r9, 4(r11)
-	lwz      r8, 8(r11)
-	lwz      r7, 0xc(r11)
-	lwz      r6, 0x10(r11)
-	lwz      r5, 0x14(r11)
-	lwz      r4, 0x18(r11)
-	lwz      r3, 0x1c(r11)
-	lwz      r0, 0x20(r11)
-	stw      r10, 8(r1)
-	lwz      r29, 0x174(r12)
-	stw      r9, 0xc(r1)
-	stw      r8, 0x10(r1)
-	stw      r7, 0x14(r1)
-	stw      r6, 0x18(r1)
-	stw      r5, 0x1c(r1)
-	stw      r4, 0x20(r1)
-	stw      r3, 0x24(r1)
-	stw      r0, 0x28(r1)
+	SysShape::Model* model = mOwner->mModel;
+	char* jointNames[9]
+	    = { "foot_joint1", "leg_joint2", "leg_joint1", "bodyjnt4", "bodyjnt5", "bodyjnt6", "bodyjnt7", "bodyjnt8", "kutijnt1" };
 
-lbl_802F8E70:
-	lwz      r4, 0(r31)
-	mr       r3, r29
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	addi     r28, r28, 1
-	stw      r3, 0(r30)
-	cmpwi    r28, 9
-	addi     r31, r31, 4
-	addi     r30, r30, 4
-	blt      lbl_802F8E70
-	lwz      r0, 0x44(r1)
-	lwz      r31, 0x3c(r1)
-	lwz      r30, 0x38(r1)
-	lwz      r29, 0x34(r1)
-	lwz      r28, 0x30(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
+	for (int i = 0; i < 9; i++) {
+		mMatrices[i] = model->getJoint(jointNames[i])->getWorldMatrix();
+	}
 }
 
-/*
- * --INFO--
- * Address:	802F8EB8
- * Size:	000078
+/**
+ * @note Address: 0x802F8EB8
+ * @note Size: 0x78
  */
-void SnakeWhole::SnakeWholeShadowMgr::startJointShadow()
+void SnakeWholeShadowMgr::startJointShadow()
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	lwz      r3, 0x28(r3)
-	lwz      r0, 0x10(r3)
-	cmplwi   r0, 0
-	bne      lbl_802F8F14
-	li       r30, 0
-	mr       r31, r29
-
-lbl_802F8EEC:
-	lwz      r3, 0x28(r29)
-	lwz      r4, 0x2c(r31)
-	bl       add__5CNodeFP5CNode
-	lwz      r3, 0x28(r29)
-	lwz      r4, 0x50(r31)
-	bl       add__5CNodeFP5CNode
-	addi     r30, r30, 1
-	addi     r31, r31, 4
-	cmpwi    r30, 9
-	blt      lbl_802F8EEC
-
-lbl_802F8F14:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	if (!mRootNode->mChild) {
+		for (int i = 0; i < 9; i++) {
+			mRootNode->add(mTubeNodes[i]);
+			mRootNode->add(mSphereNodes[i]);
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	802F8F30
- * Size:	000064
+/**
+ * @note Address: 0x802F8F30
+ * @note Size: 0x64
  */
-void SnakeWhole::SnakeWholeShadowMgr::finishJointShadow()
+void SnakeWholeShadowMgr::finishJointShadow()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	stw      r30, 8(r1)
-	lwz      r4, 0x28(r3)
-	lwz      r0, 0x10(r4)
-	cmplwi   r0, 0
-	beq      lbl_802F8F7C
-	li       r30, 0
-	mr       r31, r3
-
-lbl_802F8F5C:
-	lwz      r3, 0x2c(r31)
-	bl       del__5CNodeFv
-	lwz      r3, 0x50(r31)
-	bl       del__5CNodeFv
-	addi     r30, r30, 1
-	addi     r31, r31, 4
-	cmpwi    r30, 9
-	blt      lbl_802F8F5C
-
-lbl_802F8F7C:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (mRootNode->mChild) {
+		for (int i = 0; i < 9; i++) {
+			mTubeNodes[i]->del();
+			mSphereNodes[i]->del();
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	802F8F94
- * Size:	00025C
+/**
+ * @note Address: 0x802F8F94
+ * @note Size: 0x25C
  */
-void SnakeWhole::SnakeWholeShadowMgr::update()
+void SnakeWholeShadowMgr::update()
 {
+	if (mOwner->isUnderground()) {
+		return;
+	}
+
+	JointShadowParm parm;
+	parm.mPosition = mOwner->getPosition();
+	parm.mRotation = Vector3f(0.0f, 1.0f, 0.0f);
+	parm._18       = 0.0f;
+	parm._1C       = 0.0f;
+
+	Vector3f positions[9];
+
+	for (int i = 0; i < 9; i++) {
+		positions[i] = mMatrices[i]->getColumn(3);
+	}
+
+	for (int i = 0; i < 9; i++) {
+		parm.mShadowScale = cTubeShadowRadius[i];
+		if (i < 8) {
+			mTubeNodes[i]->makeShadowSRT(parm, positions[i], positions[i + 1]);
+		} else {
+			Vector3f kutiPos1;
+			Vector3f kutiPos2;
+			mMatrices[i]->getColumn(0, kutiPos1);
+			mMatrices[i]->getColumn(0, kutiPos2);
+			kutiPos1 *= 80.0f;
+			kutiPos1 += positions[i];
+			kutiPos2 += positions[i];
+			mTubeNodes[i]->makeShadowSRT(parm, kutiPos1, kutiPos2);
+		}
+
+		parm.mShadowScale  = cSphereShadowRadius[i];
+		Vector3f spherePos = mMatrices[i]->getColumn(3);
+		mSphereNodes[i]->makeShadowSRT(parm, spherePos);
+	}
 	/*
 	stwu     r1, -0xf0(r1)
 	mflr     r0
@@ -760,90 +494,5 @@ lbl_802F91DC:
 	blr
 	*/
 }
-
-/*
- * --INFO--
- * Address:	802F91F0
- * Size:	000070
- */
-SnakeWholeSphereShadowNode::~SnakeWholeSphereShadowNode()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	or.      r30, r3, r3
-	beq      lbl_802F9244
-	lis      r4, __vt__Q24Game26SnakeWholeSphereShadowNode@ha
-	addi     r0, r4, __vt__Q24Game26SnakeWholeSphereShadowNode@l
-	stw      r0, 0(r30)
-	beq      lbl_802F9234
-	lis      r5, __vt__Q24Game15JointShadowNode@ha
-	li       r4, 0
-	addi     r0, r5, __vt__Q24Game15JointShadowNode@l
-	stw      r0, 0(r30)
-	bl       __dt__5CNodeFv
-
-lbl_802F9234:
-	extsh.   r0, r31
-	ble      lbl_802F9244
-	mr       r3, r30
-	bl       __dl__FPv
-
-lbl_802F9244:
-	lwz      r0, 0x14(r1)
-	mr       r3, r30
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802F9260
- * Size:	000070
- */
-SnakeWholeTubeShadowNode::~SnakeWholeTubeShadowNode()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	or.      r30, r3, r3
-	beq      lbl_802F92B4
-	lis      r4, __vt__Q24Game24SnakeWholeTubeShadowNode@ha
-	addi     r0, r4, __vt__Q24Game24SnakeWholeTubeShadowNode@l
-	stw      r0, 0(r30)
-	beq      lbl_802F92A4
-	lis      r5, __vt__Q24Game15JointShadowNode@ha
-	li       r4, 0
-	addi     r0, r5, __vt__Q24Game15JointShadowNode@l
-	stw      r0, 0(r30)
-	bl       __dt__5CNodeFv
-
-lbl_802F92A4:
-	extsh.   r0, r31
-	ble      lbl_802F92B4
-	mr       r3, r30
-	bl       __dl__FPv
-
-lbl_802F92B4:
-	lwz      r0, 0x14(r1)
-	mr       r3, r30
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
+} // namespace SnakeWhole
 } // namespace Game

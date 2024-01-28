@@ -60,19 +60,25 @@ PSSystem::StreamDataList* PSSystem::SingletonBase<PSSystem::StreamDataList>::sIn
 namespace Game {
 
 static const int _UNUSED[3] = { 0, 0, 0 };
-/*
+/**
  * Unused. Just here to make the rodata line up.
- * --INFO--
- * Address: ........
- * Size:  0000e4
+ * @note Address: N/A
+ * @note Size: 0xe4
  */
 static void _Print(char* format, ...) { OSReport(format, "enemyBase"); }
 
 namespace EnemyBaseFSM {
-/*
- * --INFO--
- * Address:	800FF26C
- * Size:	0000F8
+/**
+ * Performs animation for the given enemy.
+ * If the enemy is not alive, the function returns early.
+ * Updates the enemy's cell and level of detail (LOD).
+ * If the enemy is not culled, it checks if it is animating and performs the appropriate animation culling.
+ * If the enemy is culled, it performs animation culling and fades effects if they exist.
+ * Increments the total count of enemies and the cull count if the enemy is culled.
+ * @param enemy Pointer to the enemy object.
+ *
+ * @note Address: 0x800FF26C
+ * @note Size: 0xF8
  */
 void State::animation(EnemyBase* enemy)
 {
@@ -107,10 +113,14 @@ void State::animation(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	800FF364
- * Size:	0001E0
+/**
+ * Checks if the BirthTypeDropState is finishable for waiting birth type drop.
+ *
+ * @param enemy A pointer to the EnemyBase object.
+ * @return True if the waiting birth type drop is finishable, false otherwise.
+ *
+ * @note Address: 0x800FF364
+ * @note Size: 0x1E0
  */
 bool BirthTypeDropState::isFinishableWaitingBirthTypeDrop(EnemyBase* enemy)
 {
@@ -142,10 +152,16 @@ bool BirthTypeDropState::isFinishableWaitingBirthTypeDrop(EnemyBase* enemy)
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	800FF550
- * Size:	0001A8
+/**
+ * Initializes the BirthTypeDropState for an enemy.
+ * This function sets the initial position of the enemy, updates its cell, and starts the waiting birth type drop.
+ * If the enemy is not a specific type of Pom, it randomly adjusts its position within a radius of 50 units.
+ *
+ * @param enemy Pointer to the EnemyBase object.
+ * @param arg Pointer to the StateArg object.
+ *
+ * @note Address: 0x800FF550
+ * @note Size: 0x1A8
  */
 void BirthTypeDropState::init(EnemyBase* enemy, StateArg* arg)
 {
@@ -157,8 +173,8 @@ void BirthTypeDropState::init(EnemyBase* enemy, StateArg* arg)
 		    && typeID != EnemyTypeID::EnemyID_YellowPom && typeID != EnemyTypeID::EnemyID_BlackPom //
 		    && typeID != EnemyTypeID::EnemyID_WhitePom && typeID != EnemyTypeID::EnemyID_RandPom) {
 			f32 theta = randFloat() * TAU;
-			enemy->mPosition.x += pikmin2_sinf(theta) * 50.0f;
-			enemy->mPosition.z += pikmin2_cosf(theta) * 50.0f;
+			enemy->mPosition.x += sinf(theta) * 50.0f;
+			enemy->mPosition.z += cosf(theta) * 50.0f;
 		}
 	}
 
@@ -167,10 +183,14 @@ void BirthTypeDropState::init(EnemyBase* enemy, StateArg* arg)
 	enemy->startWaitingBirthTypeDrop();
 }
 
-/*
- * --INFO--
- * Address:	800FF6F8
- * Size:	00006C
+/**
+ * Updates the state of the BirthTypeDropState for the given enemy.
+ * If the enemy is in a finishable waiting birth type drop state, it transitions to the EBS_Appear state.
+ *
+ * @param enemy The enemy object to update.
+ *
+ * @note Address: 0x800FF6F8
+ * @note Size: 0x6C
  */
 void BirthTypeDropState::update(EnemyBase* enemy)
 {
@@ -179,17 +199,24 @@ void BirthTypeDropState::update(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	800FF764
- * Size:	000030
+/**
+ * Cleans up the BirthTypeDropState by finishing the waiting process for birth type drop of the enemy.
+ *
+ * @param enemy A pointer to the EnemyBase object.
+ *
+ * @note Address: 0x800FF764
+ * @note Size: 0x30
  */
 void BirthTypeDropState::cleanup(EnemyBase* enemy) { enemy->finishWaitingBirthTypeDrop(); }
 
-/*
- * --INFO--
- * Address:	800FF794
- * Size:	0001C4
+/**
+ * Checks if the BirthTypeDropPikminState is finishable for waiting birth type drop.
+ *
+ * @param enemy A pointer to the EnemyBase object.
+ * @return True if the BirthTypeDropPikminState is finishable for waiting birth type drop, false otherwise.
+ *
+ * @note Address: 0x800FF794
+ * @note Size: 0x1C4
  */
 bool BirthTypeDropPikminState::isFinishableWaitingBirthTypeDrop(EnemyBase* enemy)
 {
@@ -217,10 +244,14 @@ bool BirthTypeDropPikminState::isFinishableWaitingBirthTypeDrop(EnemyBase* enemy
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	800FF958
- * Size:	0001A8
+/**
+ * Checks if the BirthTypeDropOlimarState is finishable for waiting birth type drop.
+ *
+ * @param enemy A pointer to the EnemyBase object.
+ * @return True if the BirthTypeDropOlimarState is finishable for waiting birth type drop, false otherwise.
+ *
+ * @note Address: 0x800FF958
+ * @note Size: 0x1A8
  */
 bool BirthTypeDropOlimarState::isFinishableWaitingBirthTypeDrop(EnemyBase* enemy)
 {
@@ -262,10 +293,15 @@ bool BirthTypeDropAutoState::isFinishableWaitingBirthTypeDrop(EnemyBase*)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	800FFB00
- * Size:	00018C
+
+/**
+ * Checks if the BirthTypeDropTreasureState is finishable for waiting birth type drop.
+ *
+ * @param enemy The EnemyBase object.
+ * @return True if the waiting birth type drop is finishable, false otherwise.
+ *
+ * @note Address: 0x800FFB00
+ * @note Size: 0x18C
  */
 bool BirthTypeDropTreasureState::isFinishableWaitingBirthTypeDrop(EnemyBase* enemy)
 {
@@ -292,24 +328,27 @@ bool BirthTypeDropTreasureState::isFinishableWaitingBirthTypeDrop(EnemyBase* ene
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	800FFCA8
- * Size:	000008
+/**
+ * @note Address: 0x800FFCA8
+ * @note Size: 0x8
  */
 bool BirthTypeDropEarthquakeState::isFinishableWaitingBirthTypeDrop(EnemyBase*) { return false; }
 
-/*
- * --INFO--
- * Address:	800FFCB0
- * Size:	000024
+/**
+ * @note Address: 0x800FFCB0
+ * @note Size: 0x24
  */
 void AppearState::entry(EnemyBase* enemy) { enemy->doEntryLiving(); }
 
-/*
- * --INFO--
- * Address:	800FFCD4
- * Size:	0000FC
+/**
+ * Initializes the AppearState of an enemy.
+ * This function creates an "Appear Smoke" effect and sets the initial values for the enemy's scale and stun animation timer.
+ *
+ * @param enemy Pointer to the EnemyBase object.
+ * @param arg Pointer to the StateArg object.
+ *
+ * @note Address: 0x800FFCD4
+ * @note Size: 0xFC
  */
 void AppearState::init(EnemyBase* enemy, StateArg* arg)
 {
@@ -325,10 +364,19 @@ void AppearState::init(EnemyBase* enemy, StateArg* arg)
 	enemy->mStunAnimTimer = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	800FFDEC
- * Size:	000130
+/**
+ * @brief Updates the appearance state of an enemy.
+ *
+ * It increases a timer related to the enemy's stun animation.
+ * The increase is twice the amount of time that has passed since the last update.
+ * If this timer goes above 1.0, the enemy is no longer stunned and goes back to its normal state.
+ * The size of the enemy is also adjusted based on this timer.
+ * Lastly, it calls two other functions (doUpdate() and doUpdateCommon()) that handle other updates for the enemy.
+ *
+ * @param enemy Pointer to the EnemyBase object.
+ *
+ * @note Address: 0x800FFDEC
+ * @note Size: 0x130
  */
 void AppearState::update(EnemyBase* enemy)
 {
@@ -343,7 +391,7 @@ void AppearState::update(EnemyBase* enemy)
 		enemy->mScale.x = 1.0f;
 	}
 
-	enemy->mScale.x += 0.2f * pikmin2_sinf(TAU * enemy->mStunAnimTimer);
+	enemy->mScale.x += 0.2f * sinf(TAU * enemy->mStunAnimTimer);
 	f32 newScale    = enemy->mScale.x;
 	enemy->mScale.z = newScale;
 	enemy->mScale.y = newScale;
@@ -352,10 +400,15 @@ void AppearState::update(EnemyBase* enemy)
 	enemy->doUpdateCommon();
 }
 
-/*
- * --INFO--
- * Address:	800FFF1C
- * Size:	00001C
+/**
+ * @brief Cleans up the state of the enemy when it appears.
+ *
+ * This function resets the scale and stun animation timer of the enemy.
+ *
+ * @param enemy Pointer to the EnemyBase object.
+ *
+ * @note Address: 0x800FFF1C
+ * @note Size: 0x1C
  */
 void AppearState::cleanup(EnemyBase* enemy)
 {
@@ -363,10 +416,14 @@ void AppearState::cleanup(EnemyBase* enemy)
 	enemy->mStunAnimTimer = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	800FFF38
- * Size:	00010C
+/**
+ * Simulates the behavior of the enemy in the Living state.
+ *
+ * @param enemy The enemy object.
+ * @param frameRate The frame rate of the simulation.
+ *
+ * @note Address: 0x800FFF38
+ * @note Size: 0x10C
  */
 void EnemyBaseFSM::LivingState::simulation(EnemyBase* enemy, f32 frameRate)
 {
@@ -390,10 +447,9 @@ void EnemyBaseFSM::LivingState::simulation(EnemyBase* enemy, f32 frameRate)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80100084
- * Size:	000040
+/**
+ * @note Address: 0x80100084
+ * @note Size: 0x40
  */
 void LivingState::entry(EnemyBase* enemy)
 {
@@ -405,17 +461,15 @@ void LivingState::entry(EnemyBase* enemy)
 	enemy->doEntryLiving();
 }
 
-/*
- * --INFO--
- * Address:	801000C4
- * Size:	000030
+/**
+ * @note Address: 0x801000C4
+ * @note Size: 0x30
  */
 void LivingState::updateCullingOff(EnemyBase* enemy) { enemy->doUpdate(); }
 
-/*
- * --INFO--
- * Address:	801000F4
- * Size:	000030
+/**
+ * @note Address: 0x801000F4
+ * @note Size: 0x30
  */
 void LivingState::updateAlways(EnemyBase* enemy)
 {
@@ -424,10 +478,16 @@ void LivingState::updateAlways(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80100124
- * Size:	0001BC
+/**
+ * Updates the state of the enemy.
+ * This function is responsible for updating various aspects of the enemy's behavior,
+ * such as disabling events, executing sound effects, updating carcass, culling off,
+ * life recovery, injury, and damage animation.
+ * If the enemy's existence duration exceeds a certain threshold, it will be destroyed.
+ * @param enemy A pointer to the EnemyBase object.
+ *
+ * @note Address: 0x80100124
+ * @note Size: 0x1BC
  */
 void LivingState::update(EnemyBase* enemy)
 {
@@ -467,10 +527,9 @@ void LivingState::update(EnemyBase* enemy)
 	sys->mTimers->_stop("e-upd-do");
 }
 
-/*
- * --INFO--
- * Address:	801002E0
- * Size:	000048
+/**
+ * @note Address: 0x801002E0
+ * @note Size: 0x48
  */
 void EnemyBaseFSM::FitState::updateCullingOff(EnemyBase* enemy)
 {
@@ -479,10 +538,17 @@ void EnemyBaseFSM::FitState::updateCullingOff(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80100328
- * Size:	000150
+/**
+ * Initializes the FitState of the EnemyBase.
+ * This function updates the enemy, backs up events, enables specific events,
+ * stops motion, sets target and current velocity to 0, starts earthquake fit state,
+ * sets the position of the enemy's fit effect, creates the enemy's fit effect.
+ *
+ * @param enemy Pointer to the EnemyBase object.
+ * @param arg Pointer to the StateArg object.
+ *
+ * @note Address: 0x80100328
+ * @note Size: 0x150
  */
 void EnemyBaseFSM::FitState::init(EnemyBase* enemy, StateArg* arg)
 {
@@ -505,10 +571,16 @@ void EnemyBaseFSM::FitState::init(EnemyBase* enemy, StateArg* arg)
 	mEnemyPiyo.create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	80100478
- * Size:	000080
+/**
+ * @brief Cleans up the state of an enemy.
+ *
+ * This function restores the events of the enemy, disables a specific event,
+ * starts the motion, performs the finish earthquake fit state, and fades the enemy.
+ *
+ * @param enemy Pointer to the EnemyBase object.
+ *
+ * @note Address: 0x80100478
+ * @note Size: 0x80
  */
 void FitState::cleanup(EnemyBase* enemy)
 {
@@ -520,10 +592,17 @@ void FitState::cleanup(EnemyBase* enemy)
 	mEnemyPiyo.fade();
 }
 
-/*
- * --INFO--
- * Address:	801004F8
- * Size:	000204
+/**
+ * Updates the state of the enemy in the FitState.
+ * This function is called continuously to update the enemy's behavior.
+ * It updates the stun animation timer, checks if the stun duration has elapsed,
+ * and updates the stun animation rotation based on the timer.
+ * Finally, it updates the position of the enemy's FitEffect.
+ *
+ * @param enemy Pointer to the EnemyBase object.
+ *
+ * @note Address: 0x801004F8
+ * @note Size: 0x204
  */
 void FitState::updateAlways(EnemyBase* enemy)
 {
@@ -532,25 +611,24 @@ void FitState::updateAlways(EnemyBase* enemy)
 		enemy->mStunAnimTimer = 0.0f;
 		transit(enemy, EBS_Living, nullptr);
 	} else {
-		f32 sinStun = 4.0f * pikmin2_sinf((PI * enemy->mStunAnimTimer) / enemy->getParms().mPurplePikiStunDuration.mValue);
+		f32 sinStun = 4.0f * sinf((PI * enemy->mStunAnimTimer) / enemy->getParms().mPurplePikiStunDuration.mValue);
 		if (sinStun > 1.0f) {
 			sinStun = 1.0f;
 		}
 
 		f32 theta = (TAU * enemy->mStunAnimTimer) / 0.25f;
 
-		enemy->mStunAnimRotation.x = sinStun * ((PI * DEG2RAD) * pikmin2_sinf(theta));
+		enemy->mStunAnimRotation.x = sinStun * ((PI * DEG2RAD) * sinf(theta));
 		enemy->mStunAnimRotation.y = 0.0f;
-		enemy->mStunAnimRotation.z = sinStun * ((PI * DEG2RAD) * pikmin2_cosf(theta));
+		enemy->mStunAnimRotation.z = sinStun * ((PI * DEG2RAD) * cosf(theta));
 	}
 
 	mEnemyPiyo.mPosition = enemy->getFitEffectPos();
 }
 
-/*
- * --INFO--
- * Address:	801006FC
- * Size:	000088
+/**
+ * @note Address: 0x801006FC
+ * @note Size: 0x88
  */
 void EarthquakeState::init(EnemyBase* enemy, StateArg* arg)
 {
@@ -563,10 +641,9 @@ void EarthquakeState::init(EnemyBase* enemy, StateArg* arg)
 	mEarthquakeStepTimer = 0;
 }
 
-/*
- * --INFO--
- * Address:	80100784
- * Size:	000050
+/**
+ * @note Address: 0x80100784
+ * @note Size: 0x50
  */
 void EarthquakeState::cleanup(EnemyBase* enemy)
 {
@@ -575,10 +652,9 @@ void EarthquakeState::cleanup(EnemyBase* enemy)
 	enemy->doFinishEarthquakeState();
 }
 
-/*
- * --INFO--
- * Address:	801007D4
- * Size:	000158
+/**
+ * @note Address: 0x801007D4
+ * @note Size: 0x158
  */
 void EarthquakeState::updateCullingOff(EnemyBase* enemy)
 {
@@ -603,10 +679,9 @@ void EarthquakeState::updateCullingOff(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80100938
- * Size:	000064
+/**
+ * @note Address: 0x80100938
+ * @note Size: 0x64
  */
 void StoneState::bounceProcedure(EnemyBase* enemy, Sys::Triangle* triangle)
 {
@@ -615,10 +690,9 @@ void StoneState::bounceProcedure(EnemyBase* enemy, Sys::Triangle* triangle)
 	enemy->addDamage(0.0f, 1.0f);
 }
 
-/*
- * --INFO--
- * Address:	8010099C
- * Size:	000100
+/**
+ * @note Address: 0x8010099C
+ * @note Size: 0x100
  */
 void StoneState::init(EnemyBase* enemy, StateArg* arg)
 {
@@ -649,10 +723,9 @@ void StoneState::init(EnemyBase* enemy, StateArg* arg)
 	enemy->doStartStoneState();
 }
 
-/*
- * --INFO--
- * Address:	80100A9C
- * Size:	0000CC
+/**
+ * @note Address: 0x80100A9C
+ * @note Size: 0xCC
  */
 void StoneState::cleanup(EnemyBase* enemy)
 {
@@ -672,10 +745,9 @@ void StoneState::cleanup(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80100B68
- * Size:	000118
+/**
+ * @note Address: 0x80100B68
+ * @note Size: 0x118
  */
 void StoneState::updateAlways(EnemyBase* enemy)
 {
@@ -702,10 +774,9 @@ void StoneState::updateAlways(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80100C80
- * Size:	000074
+/**
+ * @note Address: 0x80100C80
+ * @note Size: 0x74
  */
 void StoneState::updateCullingOff(EnemyBase* enemy)
 {
@@ -714,10 +785,9 @@ void StoneState::updateCullingOff(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80100CF4
- * Size:	000484
+/**
+ * @note Address: 0x80100CF4
+ * @note Size: 0x484
  */
 void StateMachine::init(EnemyBase* enemy)
 {
@@ -734,35 +804,36 @@ void StateMachine::init(EnemyBase* enemy)
 	registerState(new StoneState);
 	registerState(new EarthquakeState);
 	registerState(new FitState);
-	registerState(new BirthTypeDropAutoState);
 }
 
-/*
- * --INFO--
- * Address:	80101304
- * Size:	000030
+/**
+ * @note Address: 0x80101304
+ * @note Size: 0x30
  */
 void StateMachine::update(EnemyBase* enemy) { mState->update(enemy); }
 
-/*
- * --INFO--
- * Address:	80101338
- * Size:	000030
+/**
+ * @note Address: 0x80101338
+ * @note Size: 0x30
  */
 void StateMachine::entry(EnemyBase* enemy) { mState->entry(enemy); }
 
-/*
- * --INFO--
- * Address:	8010136C
- * Size:	000030
+/**
+ * @note Address: 0x8010136C
+ * @note Size: 0x30
  */
 void StateMachine::simulation(EnemyBase* enemy, f32 frameRate) { mState->simulation(enemy, frameRate); }
 } // namespace EnemyBaseFSM
 
-/*
- * --INFO--
- * Address:	801013A0
- * Size:	000370
+/**
+ * @brief EnemyBase constructor.
+ *
+ * This constructor initializes the EnemyBase object with default values for its member variables.
+ * It sets the position, rotation, and animation properties to zero or null values.
+ * It also initializes various data structures and creates shadows and life gauges if the corresponding managers exist.
+ *
+ * @note Address: 0x801013A0
+ * @note Size: 0x370
  */
 EnemyBase::EnemyBase()
     : Creature()
@@ -814,7 +885,7 @@ EnemyBase::EnemyBase()
 	mCurAnim->mIsPlaying = false;
 	mInstantDamage       = 0.0f;
 	disableEvent(0, EB_TakingDamage);
-	mToFlick     = 0.0f;
+	mFlickTimer  = 0.0f;
 	mBitterTimer = 0.0f;
 
 	mEvents.clear();
@@ -831,10 +902,13 @@ EnemyBase::EnemyBase()
 	mHamonEffectRoot.clearRelations();
 }
 
-/*
- * --INFO--
- * Address:	80101788
- * Size:	000044
+/**
+ * @brief EnemyBase constructor.
+ *
+ * This function initializes the EnemyBase object by creating a sound object and an instance of the EfxHamon effect.
+ *
+ * @note Address: 0x80101788
+ * @note Size: 0x44
  */
 void EnemyBase::constructor()
 {
@@ -842,12 +916,16 @@ void EnemyBase::constructor()
 	createInstanceEfxHamon();
 }
 
-/*
- * --INFO--
- * Address:	801017CC
- * Size:	00005C
+/**
+ * @brief Creates the effects for the enemy base.
+ *
+ * This function iterates through the linked list of EnemyEffectNodeHamon objects
+ * and calls the create() function for each node, passing the current EnemyBase object.
+ *
+ * @note Address: 0x801017CC
+ * @note Size: 0x5C
  */
-inline void EnemyBase::createEffects()
+void EnemyBase::createEffects()
 {
 	EnemyEffectNodeHamon* next;
 
@@ -857,12 +935,16 @@ inline void EnemyBase::createEffects()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80101828
- * Size:	00005C
+/**
+ * @brief Fades the effects of the enemy base.
+ *
+ * This function iterates through the linked list of enemy effect nodes and calls the fade function on each node.
+ * The fade function is responsible for fading out the effect associated with the node.
+ *
+ * @note Address: 0x80101828
+ * @note Size: 0x5C
  */
-inline void EnemyBase::fadeEffects()
+void EnemyBase::fadeEffects()
 {
 	EnemyEffectNodeHamon* next;
 
@@ -872,10 +954,9 @@ inline void EnemyBase::fadeEffects()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80101884
- * Size:	000050
+/**
+ * @note Address: 0x80101884
+ * @note Size: 0x50
  */
 void EnemyBase::createInstanceEfxHamon()
 {
@@ -883,10 +964,9 @@ void EnemyBase::createInstanceEfxHamon()
 	mHamonEffectRoot.add(mEffectNodeHamon);
 }
 
-/*
- * --INFO--
- * Address:	801018D4
- * Size:	000030
+/**
+ * @note Address: 0x801018D4
+ * @note Size: 0x30
  */
 void EnemyBase::updateEfxHamon()
 {
@@ -895,10 +975,9 @@ void EnemyBase::updateEfxHamon()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80101904
- * Size:	00003C
+/**
+ * @note Address: 0x80101904
+ * @note Size: 0x3C
  */
 void EnemyBase::createEfxHamon()
 {
@@ -907,10 +986,9 @@ void EnemyBase::createEfxHamon()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80101940
- * Size:	00003C
+/**
+ * @note Address: 0x80101940
+ * @note Size: 0x3C
  */
 void EnemyBase::fadeEfxHamon()
 {
@@ -919,10 +997,9 @@ void EnemyBase::fadeEfxHamon()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010197C
- * Size:	000050
+/**
+ * @note Address: 0x8010197C
+ * @note Size: 0x50
  */
 void EnemyBase::setEmotionCaution()
 {
@@ -932,10 +1009,9 @@ void EnemyBase::setEmotionCaution()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801019CC
- * Size:	00003C
+/**
+ * @note Address: 0x801019CC
+ * @note Size: 0x3C
  */
 void EnemyBase::setEmotionExcitement()
 {
@@ -943,10 +1019,9 @@ void EnemyBase::setEmotionExcitement()
 	mSoundObj->battleOn();
 }
 
-/*
- * --INFO--
- * Address:	80101A08
- * Size:	000050
+/**
+ * @note Address: 0x80101A08
+ * @note Size: 0x50
  */
 void EnemyBase::setEmotionNone()
 {
@@ -956,10 +1031,14 @@ void EnemyBase::setEmotionNone()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80101A58
- * Size:	000104
+/**
+ * Initializes the EnemyBase object.
+ * This function is called when the EnemyBase is being initialized.
+ * It resets various variables and enables necessary events for the EnemyBase.
+ * @param arg A pointer to the CreatureInitArg object containing initialization arguments.
+ *
+ * @note Address: 0x80101A58
+ * @note Size: 0x104
  */
 void EnemyBase::onInit(CreatureInitArg* arg)
 {
@@ -967,7 +1046,7 @@ void EnemyBase::onInit(CreatureInitArg* arg)
 	mCurAnim->mIsPlaying = false;
 	mInstantDamage       = 0.0f;
 	disableEvent(0, EB_TakingDamage);
-	mToFlick     = 0.0f;
+	mFlickTimer  = 0.0f;
 	mBitterTimer = 0.0f;
 
 	resetEvents();
@@ -984,10 +1063,15 @@ void EnemyBase::onInit(CreatureInitArg* arg)
 	enableEvent(0, EB_Animating);
 }
 
-/*
- * --INFO--
- * Address:	80101B5C
- * Size:	000218
+/**
+ *  Initializes the EnemyBase object after creation.
+ * Determines the appropriate lifecycle state based on the drop group.
+ * If in Zukan mode, performs animation culling and sets the water box.
+ *
+ * @param arg The CreatureInitArg object containing initialization arguments.
+ *
+ * @note Address: 0x80101B5C
+ * @note Size: 0x218
  */
 void EnemyBase::onInitPost(CreatureInitArg* arg)
 {
@@ -1034,7 +1118,7 @@ void EnemyBase::onInitPost(CreatureInitArg* arg)
 		break;
 	}
 
-	if (gameSystem->mMode == GSM_PIKLOPEDIA) {
+	if (gameSystem->isZukanMode()) {
 		doAnimationCullingOff();
 
 		Sys::Sphere waterSphere;
@@ -1053,10 +1137,13 @@ void EnemyBase::onInitPost(CreatureInitArg* arg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80101D74
- * Size:	0000A0
+/**
+ * Sets the otakara code for the EnemyBase object.
+ *
+ * @param itemCode The otakara item code to set.
+ *
+ * @note Address: 0x80101D74
+ * @note Size: 0xA0
  */
 void EnemyBase::setOtakaraCode(PelletMgr::OtakaraItemCode& itemCode)
 {
@@ -1079,6 +1166,13 @@ void EnemyBase::setOtakaraCode(PelletMgr::OtakaraItemCode& itemCode)
 	}
 }
 
+/**
+ * @brief Forces the enemy base to perform kill effects.
+ *
+ * This function is responsible for performing the kill effects of the enemy base.
+ * If the enemy base is holding a pellet, it stimulates the pellet with an InteractMattuan object.
+ * After that, it sets the sound object as killed.
+ */
 void EnemyBase::forceKillEffects()
 {
 	if (mHeldPellet) {
@@ -1091,24 +1185,28 @@ void EnemyBase::forceKillEffects()
 	mSoundObj->setKilled();
 }
 
-/*
- * --INFO--
- * Address:	80101E18
- * Size:	0000C4
+/**
+ * @note Address: 0x80101E18
+ * @note Size: 0xC4
  */
 void EnemyBase::setCarcassArg(PelletViewArg& carcassArg)
 {
 	Vector3f pos          = getPosition();
 	carcassArg.mEnemyName = EnemyInfoFunc::getEnemyName(getEnemyTypeID(), 0xFFFF);
 	carcassArg.mPosition  = pos;
-	carcassArg.mMatrix    = &mObjMatrix;
+	carcassArg.mMatrix    = &mBaseTrMatrix;
 	carcassArg.mEnemy     = this;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000234
+/**
+ * @brief Transforms the enemy base into a carcass.
+ *
+ * This function is responsible for performing the necessary actions to transform the enemy base into a carcass.
+ * It deactivates the life gauge, removes the shadow, fades the effects, turns off the battle sound, sets the animation to nullptr,
+ * and finally kills the enemy base.
+ *
+ * @note Address: N/A
+ * @note Size: 0x234
  */
 void EnemyBase::becomeCarcass()
 {
@@ -1132,17 +1230,15 @@ void EnemyBase::becomeCarcass()
 	mMgr->kill(this);
 }
 
-/*
- * --INFO--
- * Address:	80101EDC
- * Size:	000008
+/**
+ * @note Address: 0x80101EDC
+ * @note Size: 0x8
  */
 bool EnemyBase::doBecomeCarcass() { return true; }
 
-/*
- * --INFO--
- * Address:	80101EE4
- * Size:	000004
+/**
+ * @note Address: 0x80101EE4
+ * @note Size: 0x4
  */
 void EnemyBase::doUpdateCarcass() { }
 
@@ -1152,10 +1248,16 @@ void EnemyBase::deathMethod()
 	becomeCarcass();
 }
 
-/*
- * --INFO--
- * Address:	80101EE8
- * Size:	0009EC
+/**
+ * @brief Handles the logic when an enemy is killed.
+ *
+ * This function is called when an enemy is killed. It performs various actions such as triggering death effects,
+ * dropping honey items, becoming a carcass, etc.
+ *
+ * @param inputArg Pointer to the CreatureKillArg object containing information about the kill.
+ *
+ * @note Address: 0x80101EE8
+ * @note Size: 0x9EC
  */
 void EnemyBase::onKill(CreatureKillArg* inputArg)
 {
@@ -1247,8 +1349,8 @@ void EnemyBase::onKill(CreatureKillArg* inputArg)
 						drop->setPosition(ball.mPosition, false);
 						f32 theta    = TAU * randFloat();
 						f32 scale    = 1.0f + ((f32)dropRolls / 10.0f);
-						f32 cosTheta = scale * (50.0f * pikmin2_cosf(theta));
-						f32 sinTheta = scale * (50.0f * pikmin2_sinf(theta));
+						f32 cosTheta = scale * (50.0f * cosf(theta));
+						f32 sinTheta = scale * (50.0f * sinf(theta));
 
 						Vector3f dropVelocity; // sp58
 						dropVelocity.x = sinTheta;
@@ -1295,10 +1397,15 @@ void EnemyBase::onKill(CreatureKillArg* inputArg)
 	becomeCarcass();
 }
 
-/*
- * --INFO--
- * Address:	80102920
- * Size:	0000E0
+/**
+ * Sets the visibility of the enemy in the Piklopedia.
+ *
+ * @param updateStats Flag indicating whether to update the enemy's statistics.
+ *                    If true, the enemy's kill count will be incremented.
+ *                    If false, the enemy's state will be set to updated.
+ *
+ * @note Address: 0x80102920
+ * @note Size: 0xE0
  */
 void EnemyBase::setZukanVisible(bool updateStats)
 {
@@ -1306,7 +1413,7 @@ void EnemyBase::setZukanVisible(bool updateStats)
 		return;
 	}
 
-	if ((gameSystem->mFlags & GAMESYS_Unk5) == FALSE) {
+	if ((gameSystem->isFlag(GAMESYS_DisableDeathCounter)) == FALSE) {
 		EnemyInfo* enemyInfo = EnemyInfoFunc::getEnemyInfo(getEnemyTypeID(), 0xFFFF);
 		if ((enemyInfo->mFlags & 0x200) == FALSE) {
 			TekiStat::Info* tekiInfo = playData->mTekiStatMgr.getTekiInfo(getEnemyTypeID());
@@ -1321,10 +1428,21 @@ void EnemyBase::setZukanVisible(bool updateStats)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80102A00
- * Size:	000160
+/**
+ * @brief Initializes the EnemyBase object with the given position and face direction.
+ *
+ * This function sets up the initial state of the EnemyBase object when it is created.
+ * It enables the "Alive" event, sets the position and home position, initializes the rotation
+ * and velocity vectors, and resets various member variables. It also calculates the model,
+ * updates the collision tree, and adds a shadow. If a life gauge manager is available, it
+ * activates the life gauge for this EnemyBase. Finally, it sets the initial emotion to "Caution"
+ * and initializes the timers for existence and stun animation.
+ *
+ * @param pos The initial position of the EnemyBase.
+ * @param faceDir The initial face direction of the EnemyBase.
+ *
+ * @note Address: 0x80102A00
+ * @note Size: 0x160
  */
 void EnemyBase::birth(Vector3f& pos, f32 faceDir)
 {
@@ -1371,21 +1489,19 @@ void EnemyBase::birth(Vector3f& pos, f32 faceDir)
 	mStunAnimTimer = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	80102B60
- * Size:	000078
+/**
+ * @note Address: 0x80102B60
+ * @note Size: 0x78
  */
 void EnemyBase::updateTrMatrix()
 {
 	Vector3f rot = mRotation + mDamageAnimRotation + mStunAnimRotation;
-	mObjMatrix.makeTR(mPosition, rot);
+	mBaseTrMatrix.makeTR(mPosition, rot);
 }
 
-/*
- * --INFO--
- * Address:	80102BD8
- * Size:	000078
+/**
+ * @note Address: 0x80102BD8
+ * @note Size: 0x78
  */
 void EnemyBase::setParameters()
 {
@@ -1400,17 +1516,18 @@ void EnemyBase::setParameters()
 	mCurLodSphere.mRadius   = getParms().mOffCameraRadius.mValue;
 }
 
-/*
- * --INFO--
- * Address:	80102C50
- * Size:	000034
+/**
+ * @note Address: 0x80102C50
+ * @note Size: 0x34
  */
 void EnemyBase::update() { static_cast<EnemyBaseFSM::StateMachine*>(mLifecycleFSM)->update(this); }
 
-/*
- * --INFO--
- * Address:	80102C84
- * Size:	0001E0
+/**
+ * Checks if the EnemyBase is in a finishable state for the waiting birth type drop.
+ * @return true if the EnemyBase is in a finishable state for the waiting birth type drop, false otherwise.
+ *
+ * @note Address: 0x80102C84
+ * @note Size: 0x1E0
  */
 bool EnemyBase::isFinishableWaitingBirthTypeDrop()
 {
@@ -1442,10 +1559,9 @@ bool EnemyBase::isFinishableWaitingBirthTypeDrop()
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	80102E64
- * Size:	000090
+/**
+ * @note Address: 0x80102E64
+ * @note Size: 0x90
  */
 void EnemyBase::startStoneState()
 {
@@ -1464,17 +1580,15 @@ void EnemyBase::startStoneState()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80102EF4
- * Size:	000014
+/**
+ * @note Address: 0x80102EF4
+ * @note Size: 0x14
  */
 void EnemyBase::doStartStoneState() { mTargetVelocity = Vector3f(0.0f); }
 
-/*
- * --INFO--
- * Address:	80102F08
- * Size:	000004
+/**
+ * @note Address: 0x80102F08
+ * @note Size: 0x4
  */
 void EnemyBase::doFinishStoneState() { }
 
@@ -1486,10 +1600,9 @@ void EnemyBase::updateEffects()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80102F14
- * Size:	000080
+/**
+ * @note Address: 0x80102F14
+ * @note Size: 0x80
  */
 void EnemyBase::doUpdateCommon()
 {
@@ -1501,17 +1614,18 @@ void EnemyBase::doUpdateCommon()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80102F94
- * Size:	000034
+/**
+ * @note Address: 0x80102F94
+ * @note Size: 0x34
  */
 void EnemyBase::doAnimation() { static_cast<EnemyBaseFSM::StateMachine*>(mLifecycleFSM)->animation(this); }
 
-/*
- * --INFO--
- * Address:	80102FF8
- * Size:	000088
+/**
+ * Updates the animator of the EnemyBase object by animating it based on the current speed and delta time.
+ * This function also updates the model's joint matrix calculation with the animator's calculated matrix.
+ *
+ * @note Address: 0x80102FF8
+ * @note Size: 0x88
  */
 void EnemyBase::doAnimationUpdateAnimator()
 {
@@ -1524,10 +1638,17 @@ void EnemyBase::doAnimationUpdateAnimator()
 	model->mJ3dModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = static_cast<J3DMtxCalcAnmBase*>(calc);
 }
 
-/*
- * --INFO--
- * Address:	80103080
- * Size:	0001E0
+/**
+ * Disables animation culling for the EnemyBase object.
+ * This function stops the current animation, updates the animator, and performs necessary transformations based on the object's state.
+ * If the object has a pellet, it applies scaling and translation to the base transformation matrix and updates the position.
+ * If the object is sticked to something, it performs the stick animation.
+ * Otherwise, it applies scaling, rotation, and translation to the base transformation matrix based on the object's properties.
+ * After updating the transformation matrix, it calculates the model's position matrix, updates the collision tree, and handles sound
+ * animation if necessary.
+ *
+ * @note Address: 0x80103080
+ * @note Size: 0x1E0
  */
 void EnemyBase::doAnimationCullingOff()
 {
@@ -1535,13 +1656,13 @@ void EnemyBase::doAnimationCullingOff()
 	doAnimationUpdateAnimator();
 
 	if (mPellet) {
-		viewMakeMatrix(mObjMatrix);
+		viewMakeMatrix(mBaseTrMatrix);
 		Matrixf mtx;
 		PSMTXScale(mtx.mMatrix.mtxView, mScale.x, mScale.y, mScale.z);
-		PSMTXConcat(mObjMatrix.mMatrix.mtxView, mtx.mMatrix.mtxView, mObjMatrix.mMatrix.mtxView);
+		PSMTXConcat(mBaseTrMatrix.mMatrix.mtxView, mtx.mMatrix.mtxView, mBaseTrMatrix.mMatrix.mtxView);
 
 		Vector3f pos;
-		mObjMatrix.getTranslation(pos);
+		mBaseTrMatrix.getTranslation(pos);
 		onSetPosition(pos);
 		onSetPositionPost(pos);
 
@@ -1550,11 +1671,11 @@ void EnemyBase::doAnimationCullingOff()
 
 	} else {
 		Vector3f rot = mRotation + mDamageAnimRotation + mStunAnimRotation;
-		mObjMatrix.makeSRT(mScale, rot, mPosition);
+		mBaseTrMatrix.makeSRT(mScale, rot, mPosition);
 	}
 
 	sys->mTimers->_start("e-calc", true);
-	PSMTXCopy(mObjMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
+	PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
 	mModel->mJ3dModel->calc();
 	sys->mTimers->_stop("e-calc");
 	mCollTree->update();
@@ -1564,28 +1685,25 @@ void EnemyBase::doAnimationCullingOff()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010329C
- * Size:	00007C
+/**
+ * @note Address: 0x8010329C
+ * @note Size: 0x7C
  */
 void EnemyBase::doAnimationStick()
 {
 	Vector3f rot = mRotation + mDamageAnimRotation + mStunAnimRotation;
-	mObjMatrix.makeSRT(mScale, rot, mPosition);
+	mBaseTrMatrix.makeSRT(mScale, rot, mPosition);
 }
 
-/*
- * --INFO--
- * Address:
- * Size:	000020
+/**
+ * @note Address: N/A
+ * @note Size: 0x20
  */
 void EnemyBase::doAnimationCullingOn() { mModel->mJ3dModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = nullptr; }
 
-/*
- * --INFO--
- * Address:	80103338
- * Size:	00007C
+/**
+ * @note Address: 0x80103338
+ * @note Size: 0x7C
  */
 void EnemyBase::show()
 {
@@ -1600,10 +1718,9 @@ void EnemyBase::show()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801033B4
- * Size:	000054
+/**
+ * @note Address: 0x801033B4
+ * @note Size: 0x54
  */
 void EnemyBase::hide()
 {
@@ -1614,10 +1731,9 @@ void EnemyBase::hide()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80103408
- * Size:	000108
+/**
+ * @note Address: 0x80103408
+ * @note Size: 0x108
  */
 void EnemyBase::doEntryCarcass()
 {
@@ -1633,10 +1749,9 @@ void EnemyBase::doEntryCarcass()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80103510
- * Size:	00013C
+/**
+ * @note Address: 0x80103510
+ * @note Size: 0x13C
  */
 void EnemyBase::doEntryLiving()
 {
@@ -1657,24 +1772,21 @@ void EnemyBase::doEntryLiving()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010364C
- * Size:	000034
+/**
+ * @note Address: 0x8010364C
+ * @note Size: 0x34
  */
 void EnemyBase::doEntry() { mLifecycleFSM->entry(this); }
 
-/*
- * --INFO--
- * Address:	80103680
- * Size:	000028
+/**
+ * @note Address: 0x80103680
+ * @note Size: 0x28
  */
 void EnemyBase::doSetView(int viewportNumber) { mModel->setCurrentViewNo((u16)viewportNumber); }
 
-/*
- * --INFO--
- * Address:	801036A8
- * Size:	000054
+/**
+ * @note Address: 0x801036A8
+ * @note Size: 0x54
  */
 bool EnemyBase::isCullingOff()
 {
@@ -1682,13 +1794,12 @@ bool EnemyBase::isCullingOff()
 		return true;
 	}
 
-	return !isEvent(0, EB_Cullable) || mLod.isFlag(AILOD_IsVisible) || mLod.isFlag(AILOD_Unk4) || isEvent(1, EB2_Dropping);
+	return !isEvent(0, EB_Cullable) || mLod.isFlag(AILOD_IsVisible) || mLod.isFlag(AILOD_PikiInCell) || isEvent(1, EB2_Dropping);
 }
 
-/*
- * --INFO--
- * Address:	801036FC
- * Size:	000078
+/**
+ * @note Address: 0x801036FC
+ * @note Size: 0x78
  */
 void EnemyBase::doViewCalc()
 {
@@ -1697,10 +1808,13 @@ void EnemyBase::doViewCalc()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80103774
- * Size:	0000AC
+/**
+ * Simulates the movement of the enemy on the ground.
+ *
+ * @param frameRate The frame rate of the simulation.
+ *
+ * @note Address: 0x80103774
+ * @note Size: 0xAC
  */
 void EnemyBase::doSimulationGround(f32 frameRate)
 {
@@ -1711,7 +1825,7 @@ void EnemyBase::doSimulationGround(f32 frameRate)
 	accel            = accel * getAccelerationScale(frameRate);
 	mCurrentVelocity = mCurrentVelocity + accel;
 
-	if (isDropping()) {
+	if (isEarthQuakeOrDropping()) {
 		mCurrentVelocity.y = -((3.0f * (frameRate * _aiConstants->mGravity.mData)) - mCurrentVelocity.y);
 		return;
 	}
@@ -1719,10 +1833,9 @@ void EnemyBase::doSimulationGround(f32 frameRate)
 	mCurrentVelocity.y = -((frameRate * _aiConstants->mGravity.mData) - mCurrentVelocity.y);
 }
 
-/*
- * --INFO--
- * Address:	80103820
- * Size:	000058
+/**
+ * @note Address: 0x80103820
+ * @note Size: 0x58
  */
 void EnemyBase::doSimulationFlying(f32 frameRate)
 {
@@ -1731,10 +1844,9 @@ void EnemyBase::doSimulationFlying(f32 frameRate)
 	mCurrentVelocity = mCurrentVelocity + accel;
 }
 
-/*
- * --INFO--
- * Address:	80103878
- * Size:	000058
+/**
+ * @note Address: 0x80103878
+ * @note Size: 0x58
  */
 void EnemyBase::doSimulationStick(f32 frameRate)
 {
@@ -1743,12 +1855,11 @@ void EnemyBase::doSimulationStick(f32 frameRate)
 	mCurrentVelocity = mCurrentVelocity + accel;
 }
 
-/*
- * --INFO--
- * Address:	801038D0
- * Size:	000070
+/**
+ * @note Address: 0x801038D0
+ * @note Size: 0x70
  */
-inline void EnemyBase::updateSpheres()
+void EnemyBase::updateSpheres()
 {
 	Sys::Sphere sphere;
 	mCollTree->mPart->getSphere(sphere);
@@ -1757,25 +1868,23 @@ inline void EnemyBase::updateSpheres()
 	mCurLodSphere.mPosition = mBoundingSphere.mPosition;
 }
 
-/*
- * --INFO--
- * Address:	80103940
- * Size:	0000B8
+/**
+ * @note Address: 0x80103940
+ * @note Size: 0xB8
  */
 void EnemyBase::createDropEffect(const Vector3f& position, f32 scale)
 {
 	efx::Arg enemyArg(position);
-	efx::TEnemyDownSmoke downSmoke;
+	efx::TEnemyDownSmoke downSmoke(1.0f);
 	downSmoke.mScale = scale;
 	downSmoke.create(&enemyArg);
 
 	PSStartEnemyDownSmokeSE(this, scale);
 }
 
-/*
- * --INFO--
- * Address:	801039F8
- * Size:	000158
+/**
+ * @note Address: 0x801039F8
+ * @note Size: 0x158
  */
 void EnemyBase::createSplashDownEffect(const Vector3f& position, f32 scale)
 {
@@ -1793,10 +1902,9 @@ void EnemyBase::createSplashDownEffect(const Vector3f& position, f32 scale)
 	PSStartEnemyDownWatSE(this, scale);
 }
 
-/*
- * --INFO--
- * Address:	80103B50
- * Size:	0001DC
+/**
+ * @note Address: 0x80103B50
+ * @note Size: 0x1DC
  */
 void EnemyBase::createBounceEffect(const Vector3f& position, f32 scale)
 {
@@ -1807,10 +1915,9 @@ void EnemyBase::createBounceEffect(const Vector3f& position, f32 scale)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80103D2C
- * Size:	000168
+/**
+ * @note Address: 0x80103D2C
+ * @note Size: 0x168
  */
 void EnemyBase::outWaterCallback()
 {
@@ -1820,10 +1927,9 @@ void EnemyBase::outWaterCallback()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80103E94
- * Size:	000168
+/**
+ * @note Address: 0x80103E94
+ * @note Size: 0x168
  */
 void EnemyBase::inWaterCallback(WaterBox* water)
 {
@@ -1833,10 +1939,18 @@ void EnemyBase::inWaterCallback(WaterBox* water)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80103FFC
- * Size:	00028C
+/**
+ * Finish dropping function for the EnemyBase class.
+ * This function is called when the enemy finishes dropping.
+ * If latchToMap is true, the enemy's position is adjusted to the minimum Y position on the map.
+ * It adds damage to the enemy, enables the squash on damage animation event,
+ * creates a bounce effect at the enemy's position, and disables the dropping event.
+ * Finally, it sets the current velocity of the enemy to 0.
+ *
+ * @param latchToMap If true, the enemy's position is adjusted to the minimum Y position on the map.
+ *
+ * @note Address: 0x80103FFC
+ * @note Size: 0x28C
  */
 void EnemyBase::finishDropping(bool latchToMap)
 {
@@ -1861,10 +1975,9 @@ void EnemyBase::finishDropping(bool latchToMap)
 	mCurrentVelocity = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	80104288
- * Size:	000080
+/**
+ * @note Address: 0x80104288
+ * @note Size: 0x80
  */
 void EnemyBase::bounceProcedure(Sys::Triangle* triangle)
 {
@@ -1877,10 +1990,19 @@ void EnemyBase::bounceProcedure(Sys::Triangle* triangle)
 	mLifecycleFSM->bounceProcedure(this, triangle);
 }
 
-/*
- * --INFO--
- * Address:	80104340
- * Size:	0006D4
+/**
+ * Applies collision detection and response for the EnemyBase object on the map and platforms.
+ * If the EnemyBase is not stuck, it applies simulation for ground or flying enemies based on their event status.
+ * If the EnemyBase is flying, it disables collision detection for floor and other objects.
+ * It calculates the collision sphere based on the position, height offset from the floor, and effect offset.
+ * It then checks the movement of the EnemyBase using the collision sphere and velocity, and applies bounce and wall triangle logic.
+ * If platform collisions are enabled, it also checks for platform collisions and applies bounce and wall triangle logic.
+ * Finally, it updates the position of the EnemyBase based on the collision result.
+ *
+ * @param frameRate The frame rate of the simulation.
+ *
+ * @note Address: 0x80104340
+ * @note Size: 0x6D4
  */
 void EnemyBase::collisionMapAndPlat(f32 frameRate)
 {
@@ -1907,7 +2029,7 @@ void EnemyBase::collisionMapAndPlat(f32 frameRate)
 		collSphere.mPosition = pos;
 		collSphere.mRadius   = yOffsetFromMap;
 
-		f32 bounceAmount = isDropping() ? 0.0f : static_cast<CreatureProperty*>(mParms)->mProps.mWallReflection.mValue;
+		f32 bounceAmount = isEarthQuakeOrDropping() ? 0.0f : static_cast<CreatureProperty*>(mParms)->mProps.mWallReflection.mValue;
 
 		mAcceleration.y = 0.0f;
 
@@ -1986,38 +2108,33 @@ void EnemyBase::collisionMapAndPlat(f32 frameRate)
 		return;
 	}
 
-	// Is stuck or has something
-	// NOTE: what does isStuckTo mean?
 	mAcceleration = 0.0f;
 
 	doSimulationStick(frameRate);
 
 	mPosition += mCurrentVelocity;
 
-	Vector3f stick(pikmin2_sinf(mFaceDir), 0.0f, pikmin2_cosf(mFaceDir));
+	Vector3f stick(sinf(mFaceDir), 0.0f, cosf(mFaceDir));
 	updateStick(stick);
 	updateSpheres();
 	updateCell();
 }
 
-/*
- * --INFO--
- * Address:	80104A38
- * Size:	000020
+/**
+ * @note Address: 0x80104A38
+ * @note Size: 0x20
  */
 void EnemyBase::doSimulationCarcass(f32 frameRate) { updateWaterBox(); }
 
-/*
- * --INFO--
- * Address:	80104A58
- * Size:	000034
+/**
+ * @note Address: 0x80104A58
+ * @note Size: 0x34
  */
 void EnemyBase::doSimulation(f32 frameRate) { mLifecycleFSM->simulation(this, frameRate); }
 
-/*
- * --INFO--
- * Address:	80104A8C
- * Size:	0000D8
+/**
+ * @note Address: 0x80104A8C
+ * @note Size: 0xD8
  */
 void EnemyBase::doSimulationConstraint(f32 frameRate)
 {
@@ -2039,10 +2156,9 @@ void EnemyBase::doSimulationConstraint(f32 frameRate)
 	updateWaterBox();
 }
 
-/*
- * --INFO--
- * Address:	80104B64
- * Size:	000070
+/**
+ * @note Address: 0x80104B64
+ * @note Size: 0x70
  */
 void EnemyBase::gotoHell()
 {
@@ -2056,17 +2172,20 @@ void EnemyBase::gotoHell()
 	kill(&killArg);
 }
 
-/*
- * --INFO--
- * Address:	80104BD4
- * Size:	000030
+/**
+ * @note Address: 0x80104BD4
+ * @note Size: 0x30
  */
 void EnemyBase::setAnimMgr(SysShape::AnimMgr* mgr) { mAnimator->setAnimMgr(mgr); }
 
-/*
- * --INFO--
- * Address:	80104C04
- * Size:	0001B4
+/**
+ * Sets the anime for the enemy base based on the current event.
+ * If the event is EB_PS1, it retrieves the animation information and sets the anime sound data accordingly.
+ * If the event is EB_PS2 or EB_PS3, it sets the anime sound data to -1.
+ * If the event is not EB_PS1, EB_PS2, or EB_PS3, it sets the anime sound data to nullptr.
+ *
+ * @note Address: 0x80104C04
+ * @note Size: 0x1B4
  */
 void EnemyBase::setPSEnemyBaseAnime()
 {
@@ -2108,10 +2227,17 @@ void EnemyBase::setPSEnemyBaseAnime()
 	mSoundObj->setAnime(nullptr, 1, 0.0f, 0.0f);
 }
 
-/*
- * --INFO--
- * Address:	80104DB8
- * Size:	0001F0
+/**
+ * Starts the blending animation for the EnemyBase object.
+ *
+ * @param start The starting frame of the blending animation.
+ * @param end The ending frame of the blending animation.
+ * @param blendFunc The blend function to be used for the animation.
+ * @param framerate The framerate of the animation.
+ * @param inputListener The motion listener for the animation. If null, the EnemyBase object itself will be used as the listener.
+ *
+ * @note Address: 0x80104DB8
+ * @note Size: 0x1F0
  */
 void EnemyBase::startBlend(int start, int end, SysShape::BlendFunction* blendFunc, f32 framerate, SysShape::MotionListener* inputListener)
 {
@@ -2162,10 +2288,9 @@ void EnemyBase::startBlend(int start, int end, SysShape::BlendFunction* blendFun
 	mSoundObj->setAnime(nullptr, 1, 0.0f, 0.0f);
 }
 
-/*
- * --INFO--
- * Address:	80104FA8
- * Size:	000050
+/**
+ * @note Address: 0x80104FA8
+ * @note Size: 0x50
  */
 void EnemyBase::endBlend()
 {
@@ -2174,12 +2299,11 @@ void EnemyBase::endBlend()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80105004
- * Size:	000224
+/**
+ * @note Address: 0x80105004
+ * @note Size: 0x224
  */
-void EnemyBase::startMotion(int p1, SysShape::MotionListener* inputListener)
+void EnemyBase::startMotion(int id, SysShape::MotionListener* inputListener)
 {
 	SysShape::MotionListener* listener;
 	if (!(listener = inputListener)) {
@@ -2187,10 +2311,10 @@ void EnemyBase::startMotion(int p1, SysShape::MotionListener* inputListener)
 	}
 
 	EnemyAnimatorBase* animator = mAnimator;
-	animator->mFlags.typeView &= ~(EANIM_FLAG_STOPPED | EANIM_FLAG_FINISHED);
+	animator->mFlags.unset(EANIM_FLAG_STOPPED | EANIM_FLAG_FINISHED);
 	animator->mNormalizedTime = 1.0f;
 
-	animator->getAnimator(0).startAnim(p1, inputListener);
+	animator->getAnimator(0).startAnim(id, inputListener);
 
 	disableEvent(0, EB_PS1 + EB_PS2 + EB_PS3 + EB_PS4);
 	enableEvent(0, EB_PS1);
@@ -2232,31 +2356,27 @@ void EnemyBase::startMotion(int p1, SysShape::MotionListener* inputListener)
 	mSoundObj->setAnime(nullptr, 1, 0.0f, 0.0f);
 }
 
-/*
- * --INFO--
- * Address:	80105228
- * Size:	000044
+/**
+ * @note Address: 0x80105228
+ * @note Size: 0x44
  */
 void EnemyBase::setMotionFrame(f32 frame) { mAnimator->getAnimator().setCurrFrame(frame); }
 
-/*
- * --INFO--
- * Address:	8010526C
- * Size:	000034
+/**
+ * @note Address: 0x8010526C
+ * @note Size: 0x34
  */
 f32 EnemyBase::getMotionFrame() { return mAnimator->getAnimator().mTimer; }
 
-/*
- * --INFO--
- * Address:	801052A0
- * Size:	000040
+/**
+ * @note Address: 0x801052A0
+ * @note Size: 0x40
  */
 void EnemyBase::finishMotion() { SET_FLAG(mAnimator->getAnimator(0).mFlags, EANIM_FLAG_FINISHED); }
 
-/*
- * --INFO--
- * Address:	801052E0
- * Size:	000020
+/**
+ * @note Address: 0x801052E0
+ * @note Size: 0x20
  */
 void EnemyBase::onKeyEvent(const SysShape::KeyEvent& event)
 {
@@ -2266,10 +2386,9 @@ void EnemyBase::onKeyEvent(const SysShape::KeyEvent& event)
 	animKeyEvent->mIsPlaying        = true;
 }
 
-/*
- * --INFO--
- * Address:	80105300
- * Size:	000080
+/**
+ * @note Address: 0x80105300
+ * @note Size: 0x80
  */
 bool EnemyBase::stimulate(Interaction& interaction)
 {
@@ -2282,10 +2401,9 @@ bool EnemyBase::stimulate(Interaction& interaction)
 	return success;
 }
 
-/*
- * --INFO--
- * Address:	80105390
- * Size:	000030
+/**
+ * @note Address: 0x80105390
+ * @note Size: 0x30
  */
 void EnemyBase::lifeRecover()
 {
@@ -2295,10 +2413,14 @@ void EnemyBase::lifeRecover()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801053C0
- * Size:	00033C
+/**
+ * Scales the damage animation of the enemy base.
+ * This function adjusts the scale and rotation of the enemy base
+ * based on the damage received. It applies various modifiers and
+ * animations to create a visual effect of damage.
+ *
+ * @note Address: 0x801053C0
+ * @note Size: 0x33C
  */
 void EnemyBase::scaleDamageAnim()
 {
@@ -2377,10 +2499,9 @@ void EnemyBase::scaleDamageAnim()
 	mScale.z = mScaleModifier - xzScale;
 }
 
-/*
- * --INFO--
- * Address:	801056FC
- * Size:	000024
+/**
+ * @note Address: 0x801056FC
+ * @note Size: 0x24
  */
 void EnemyBase::finishScaleDamageAnim()
 {
@@ -2389,10 +2510,9 @@ void EnemyBase::finishScaleDamageAnim()
 	disableEvent(0, EB_SquashOnDamageAnim);
 }
 
-/*
- * --INFO--
- * Address:	80105720
- * Size:	0000F8
+/**
+ * @note Address: 0x80105720
+ * @note Size: 0xF8
  */
 void EnemyBase::deathProcedure()
 {
@@ -2418,10 +2538,9 @@ void EnemyBase::deathProcedure()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80105874
- * Size:	0000D8
+/**
+ * @note Address: 0x80105874
+ * @note Size: 0xD8
  */
 void EnemyBase::createDeadBombEffect()
 {
@@ -2436,10 +2555,9 @@ void EnemyBase::createDeadBombEffect()
 	bombEffect.create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	8010594C
- * Size:	000054
+/**
+ * @note Address: 0x8010594C
+ * @note Size: 0x54
  */
 void EnemyBase::getThrowupItemPosition(Vector3f* throwupItemPosition)
 {
@@ -2448,17 +2566,15 @@ void EnemyBase::getThrowupItemPosition(Vector3f* throwupItemPosition)
 	*throwupItemPosition = sphere.mPosition;
 }
 
-/*
- * --INFO--
- * Address:	801059A0
- * Size:	000018
+/**
+ * @note Address: 0x801059A0
+ * @note Size: 0x18
  */
 void EnemyBase::getThrowupItemVelocity(Vector3f* throwupItemVelocity) { *throwupItemVelocity = Vector3f(0.0f, 200.0f, 0.0f); }
 
-/*
- * --INFO--
- * Address:	801059B8
- * Size:	0004B0
+/**
+ * @note Address: 0x801059B8
+ * @note Size: 0x4B0
  */
 void EnemyBase::throwupItem()
 {
@@ -2475,7 +2591,7 @@ void EnemyBase::throwupItem()
 		// should the treasure they emit have their carry weight
 		// adapted to the squads amount?
 		// (Allows squads that have been annihilated to recover treasures)
-		if (IS_ENEMY_BOSS(id) && gameSystem && gameSystem->mMode == GSM_STORY_MODE && gameSystem->mIsInCave && Cave::randMapMgr
+		if (IS_ENEMY_BOSS(id) && gameSystem && gameSystem->isStoryMode() && gameSystem->mIsInCave && Cave::randMapMgr
 		    && Cave::randMapMgr->isLastFloor()) {
 			pelletInitArg.mAdjustWeightForSquad = true;
 		}
@@ -2552,17 +2668,15 @@ void EnemyBase::throwupItem()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80105E6C
- * Size:	000004
+/**
+ * @note Address: 0x80105E6C
+ * @note Size: 0x4
  */
 void EnemyBase::doDebugDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	80105E70
- * Size:	000080
+/**
+ * @note Address: 0x80105E70
+ * @note Size: 0x80
  */
 void EnemyBase::getLifeGaugeParam(LifeGaugeParam& param)
 {
@@ -2577,10 +2691,9 @@ void EnemyBase::getLifeGaugeParam(LifeGaugeParam& param)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80105EF0
- * Size:	000040
+/**
+ * @note Address: 0x80105EF0
+ * @note Size: 0x40
  */
 void EnemyBase::doGetLifeGaugeParam(LifeGaugeParam& param)
 {
@@ -2593,10 +2706,9 @@ void EnemyBase::doGetLifeGaugeParam(LifeGaugeParam& param)
 	param.mRadius              = 10.0f;
 }
 
-/*
- * --INFO--
- * Address:	80105F30
- * Size:	000050
+/**
+ * @note Address: 0x80105F30
+ * @note Size: 0x50
  */
 void EnemyBase::onStickStart(Creature* other)
 {
@@ -2605,10 +2717,9 @@ void EnemyBase::onStickStart(Creature* other)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80105F80
- * Size:	000050
+/**
+ * @note Address: 0x80105F80
+ * @note Size: 0x50
  */
 void EnemyBase::onStickEnd(Creature* other)
 {
@@ -2617,10 +2728,9 @@ void EnemyBase::onStickEnd(Creature* other)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80105FD0
- * Size:	00005C
+/**
+ * @note Address: 0x80105FD0
+ * @note Size: 0x5C
  */
 bool EnemyBase::injure()
 {
@@ -2641,10 +2751,9 @@ bool EnemyBase::injure()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8010602C
- * Size:	000040
+/**
+ * @note Address: 0x8010602C
+ * @note Size: 0x40
  */
 void EnemyBase::addDamage(f32 damageAmt, f32 flickSpeed)
 {
@@ -2654,16 +2763,15 @@ void EnemyBase::addDamage(f32 damageAmt, f32 flickSpeed)
 
 	mInstantDamage += damageAmt;
 	if (isEvent(0, EB_FlickEnabled)) {
-		mToFlick += flickSpeed;
+		mFlickTimer += flickSpeed;
 	}
 
 	enableEvent(0, EB_TakingDamage);
 }
 
-/*
- * --INFO--
- * Address:	8010606C
- * Size:	000048
+/**
+ * @note Address: 0x8010606C
+ * @note Size: 0x48
  */
 bool EnemyBase::damageCallBack(Creature* sourceCreature, f32 damage, CollPart* p3)
 {
@@ -2671,7 +2779,7 @@ bool EnemyBase::damageCallBack(Creature* sourceCreature, f32 damage, CollPart* p
 		mInstantDamage += damage;
 
 		if (isEvent(0, EB_FlickEnabled)) {
-			mToFlick += 1.0f;
+			mFlickTimer += 1.0f;
 		}
 
 		enableEvent(0, EB_TakingDamage);
@@ -2680,24 +2788,21 @@ bool EnemyBase::damageCallBack(Creature* sourceCreature, f32 damage, CollPart* p
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	801060B4
- * Size:	000008
+/**
+ * @note Address: 0x801060B4
+ * @note Size: 0x8
  */
 bool EnemyBase::pressCallBack(Creature*, f32, CollPart*) { return false; }
 
-/*
- * --INFO--
- * Address:	801060BC
- * Size:	000008
+/**
+ * @note Address: 0x801060BC
+ * @note Size: 0x8
  */
 bool EnemyBase::flyCollisionCallBack(Creature*, f32, CollPart*) { return false; }
 
-/*
- * --INFO--
- * Address:	801060C4
- * Size:	000248
+/**
+ * @note Address: 0x801060C4
+ * @note Size: 0x248
  */
 bool EnemyBase::hipdropCallBack(Creature* sourceCreature, f32 damage, CollPart* p3)
 {
@@ -2707,7 +2812,7 @@ bool EnemyBase::hipdropCallBack(Creature* sourceCreature, f32 damage, CollPart* 
 		mInstantDamage += purpleDamage;
 
 		if (isEvent(0, EB_FlickEnabled)) {
-			mToFlick += 1.0f;
+			mFlickTimer += 1.0f;
 		}
 
 		enableEvent(0, EB_TakingDamage);
@@ -2722,24 +2827,21 @@ bool EnemyBase::hipdropCallBack(Creature* sourceCreature, f32 damage, CollPart* 
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8010630C
- * Size:	000008
+/**
+ * @note Address: 0x8010630C
+ * @note Size: 0x8
  */
 bool EnemyBase::dropCallBack(Creature*) { return false; }
 
-/*
- * --INFO--
- * Address:	80106314
- * Size:	000040
+/**
+ * @note Address: 0x80106314
+ * @note Size: 0x40
  */
 bool EnemyBase::isBeforeAppearState() { return mLifecycleFSM->getCurrID(this) < EnemyBaseFSM::EBS_Appear; }
 
-/*
- * --INFO--
- * Address:	80106354
- * Size:	000070
+/**
+ * @note Address: 0x80106354
+ * @note Size: 0x70
  */
 bool EnemyBase::checkBirthTypeDropEarthquake()
 {
@@ -2753,10 +2855,9 @@ bool EnemyBase::checkBirthTypeDropEarthquake()
 	return hasAppeared;
 }
 
-/*
- * --INFO--
- * Address:	801063C4
- * Size:	0000EC
+/**
+ * @note Address: 0x801063C4
+ * @note Size: 0xEC
  */
 bool EnemyBase::earthquakeCallBack(Creature* creature, f32 bounceFactor)
 {
@@ -2771,10 +2872,9 @@ bool EnemyBase::earthquakeCallBack(Creature* creature, f32 bounceFactor)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801064B0
- * Size:	000108
+/**
+ * @note Address: 0x801064B0
+ * @note Size: 0x108
  */
 bool EnemyBase::dopeCallBack(Creature* creature, int sprayType)
 {
@@ -2796,25 +2896,23 @@ bool EnemyBase::dopeCallBack(Creature* creature, int sprayType)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801065C0
- * Size:	000008
+/**
+ * @note Address: 0x801065C0
+ * @note Size: 0x8
  */
 bool EnemyBase::farmCallBack(Creature*, f32 power) { return false; }
 
-/*
- * --INFO--
- * Address:	801065C8
- * Size:	000048
+/**
+ * @note Address: 0x801065C8
+ * @note Size: 0x48
  */
-bool EnemyBase::bombCallBack(Creature* creature, Vector3f& vec, f32 damage)
+bool EnemyBase::bombCallBack(Creature* creature, Vector3f& direction, f32 damage)
 {
 	if (!(isEvent(0, EB_Invulnerable))) {
 		mInstantDamage += damage;
 
 		if (isEvent(0, EB_FlickEnabled)) {
-			mToFlick += 1.0f;
+			mFlickTimer += 1.0f;
 		}
 
 		enableEvent(0, EB_TakingDamage);
@@ -2823,10 +2921,9 @@ bool EnemyBase::bombCallBack(Creature* creature, Vector3f& vec, f32 damage)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80106610
- * Size:	000054
+/**
+ * @note Address: 0x80106610
+ * @note Size: 0x54
  */
 void EnemyBase::collisionCallback(CollEvent& coll)
 {
@@ -2834,10 +2931,9 @@ void EnemyBase::collisionCallback(CollEvent& coll)
 	setCollEvent(coll);
 }
 
-/*
- * --INFO--
- * Address:	80106664
- * Size:	000028
+/**
+ * @note Address: 0x80106664
+ * @note Size: 0x28
  */
 void EnemyBase::setCollEvent(CollEvent& event)
 {
@@ -2845,38 +2941,33 @@ void EnemyBase::setCollEvent(CollEvent& event)
 	enableEvent(0, EB_Colliding);
 }
 
-/*
- * --INFO--
- * Address:	8010668C
- * Size:	000010
+/**
+ * @note Address: 0x8010668C
+ * @note Size: 0x10
  */
 void EnemyBase::resetCollEvent() { disableEvent(0, EB_Colliding); }
 
-/*
- * --INFO--
- * Address:	8010669C
- * Size:	000004
+/**
+ * @note Address: 0x8010669C
+ * @note Size: 0x4
  */
 void EnemyBase::changeMaterial() { }
 
-/*
- * --INFO--
- * Address:	801066A0
- * Size:	000008
+/**
+ * @note Address: 0x801066A0
+ * @note Size: 0x8
  */
 SysShape::Model* EnemyBase::viewGetShape() { return mModel; }
 
-/*
- * --INFO--
- * Address:	801066A8
- * Size:	000020
+/**
+ * @note Address: 0x801066A8
+ * @note Size: 0x20
  */
 void EnemyBase::viewStartCarryMotion() { startMotion(); }
 
-/*
- * --INFO--
- * Address:	801066C8
- * Size:	000040
+/**
+ * @note Address: 0x801066C8
+ * @note Size: 0x40
  */
 void EnemyBase::viewStartPreCarryMotion()
 {
@@ -2884,10 +2975,9 @@ void EnemyBase::viewStartPreCarryMotion()
 	stopMotion();
 }
 
-/*
- * --INFO--
- * Address:	8010691C
- * Size:	000130
+/**
+ * @note Address: 0x8010691C
+ * @note Size: 0x130
  */
 void EnemyBase::viewOnPelletKilled()
 {
@@ -2917,24 +3007,21 @@ void EnemyBase::viewOnPelletKilled()
 	mMgr->kill(this);
 }
 
-/*
- * --INFO--
- * Address:	80106A4C
- * Size:	00002C
+/**
+ * @note Address: 0x80106A4C
+ * @note Size: 0x2C
  */
 void EnemyBase::view_start_carrymotion() { startCarcassMotion(); }
 
-/*
- * --INFO--
- * Address:	80106A78
- * Size:	000040
+/**
+ * @note Address: 0x80106A78
+ * @note Size: 0x40
  */
 void EnemyBase::view_finish_carrymotion() { mAnimator->getAnimator(0).mFlags |= 2; }
 
-/*
- * --INFO--
- * Address:	80106AB8
- * Size:	0000A8
+/**
+ * @note Address: 0x80106AB8
+ * @note Size: 0xA8
  */
 void EnemyBase::getCommonEffectPos(Vector3f& commonEffectPos)
 {
@@ -2945,12 +3032,11 @@ void EnemyBase::getCommonEffectPos(Vector3f& commonEffectPos)
 	commonEffectPos.y += getParms().mHeightOffsetFromFloor.mValue;
 }
 
-/*
- * --INFO--
- * Address:	80106B60
- * Size:	000040
+/**
+ * @note Address: 0x80106B60
+ * @note Size: 0x40
  */
-inline void EnemyBase::getWaterSphere(Sys::Sphere* sphere)
+void EnemyBase::getWaterSphere(Sys::Sphere* sphere)
 {
 	sphere->mPosition.x = mPosition.x + mEffectOffset.x;
 	sphere->mPosition.y = mPosition.y + mEffectOffset.y;
@@ -2958,10 +3044,9 @@ inline void EnemyBase::getWaterSphere(Sys::Sphere* sphere)
 	sphere->mRadius     = getParms().mHeightOffsetFromFloor.mValue;
 }
 
-/*
- * --INFO--
- * Address:	80106BA0
- * Size:	000148
+/**
+ * @note Address: 0x80106BA0
+ * @note Size: 0x148
  */
 void EnemyBase::updateWaterBox()
 {
@@ -2998,10 +3083,9 @@ void EnemyBase::updateWaterBox()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80106CF0
- * Size:	00027C
+/**
+ * @note Address: 0x80106CF0
+ * @note Size: 0x27C
  */
 PSM::EnemyBase* EnemyBase::createPSEnemyBase()
 {
@@ -3042,10 +3126,9 @@ PSM::EnemyBase* EnemyBase::createPSEnemyBase()
 	return base;
 }
 
-/*
- * --INFO--
- * Address:	80107204
- * Size:	00001C
+/**
+ * @note Address: 0x80107204
+ * @note Size: 0x1C
  */
 void EnemyBase::startMotion()
 {
@@ -3054,17 +3137,15 @@ void EnemyBase::startMotion()
 	animator->mNormalizedTime = 1.0f;
 }
 
-/*
- * --INFO--
- * Address:	80107220
- * Size:	000058
+/**
+ * @note Address: 0x80107220
+ * @note Size: 0x58
  */
-f32 EnemyBase::getMotionFrameMax() { return mAnimator->getAnimator().mAnimInfo->mAnm->mMaxFrame; }
+f32 EnemyBase::getMotionFrameMax() { return mAnimator->getAnimator().mAnimInfo->mAnm->mFrameLength; }
 
-/*
- * --INFO--
- * Address:	80107278
- * Size:	000068
+/**
+ * @note Address: 0x80107278
+ * @note Size: 0x68
  */
 f32 EnemyBase::getFirstKeyFrame()
 {
@@ -3076,10 +3157,9 @@ f32 EnemyBase::getFirstKeyFrame()
 	return 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	801072E0
- * Size:	000020
+/**
+ * @note Address: 0x801072E0
+ * @note Size: 0x20
  */
 void EnemyBase::stopMotion()
 {
@@ -3088,24 +3168,21 @@ void EnemyBase::stopMotion()
 	SET_FLAG(animator->mFlags.typeView, EANIM_FLAG_STOPPED);
 }
 
-/*
- * --INFO--
- * Address:	80107300
- * Size:	000038
+/**
+ * @note Address: 0x80107300
+ * @note Size: 0x38
  */
 bool EnemyBase::isFinishMotion() { return mAnimator->getAnimator().mFlags >> 1 & 1; }
 
-/*
- * --INFO--
- * Address:	80107338
- * Size:	000010
+/**
+ * @note Address: 0x80107338
+ * @note Size: 0x10
  */
-bool EnemyBase::isStopMotion() { return mAnimator->mFlags.typeView & EANIM_FLAG_STOPPED; }
+bool EnemyBase::isStopMotion() { return mAnimator->mFlags.isSet(EANIM_FLAG_STOPPED); }
 
-/*
- * --INFO--
- * Address:	80107348
- * Size:	000048
+/**
+ * @note Address: 0x80107348
+ * @note Size: 0x48
  */
 int EnemyBase::getCurrAnimIndex()
 {
@@ -3117,38 +3194,33 @@ int EnemyBase::getCurrAnimIndex()
 	return -1;
 }
 
-/*
- * --INFO--
- * Address:	80107390
- * Size:	00000C
+/**
+ * @note Address: 0x80107390
+ * @note Size: 0xC
  */
 void EnemyBase::setAnimSpeed(f32 speed) { mAnimator->mSpeed = speed; }
 
-/*
- * --INFO--
- * Address:	8010739C
- * Size:	000030
+/**
+ * @note Address: 0x8010739C
+ * @note Size: 0x30
  */
 void EnemyBase::resetAnimSpeed() { mAnimator->resetAnimSpeed(); }
 
-/*
- * --INFO--
- * Address:	801073D8
- * Size:	000014
+/**
+ * @note Address: 0x801073D8
+ * @note Size: 0x14
  */
 JAInter::Object* EnemyBase::getJAIObject() { return static_cast<JAInter::Object*>(mSoundObj); }
 
-/*
- * --INFO--
- * Address:	801073EC
- * Size:	000008
+/**
+ * @note Address: 0x801073EC
+ * @note Size: 0x8
  */
 PSM::Creature* EnemyBase::getPSCreature() { return static_cast<PSM::Creature*>(mSoundObj); }
 
-/*
- * --INFO--
- * Address:	801073F4
- * Size:	00001C
+/**
+ * @note Address: 0x801073F4
+ * @note Size: 0x1C
  */
 int EnemyBase::getStateID()
 {
@@ -3159,10 +3231,9 @@ int EnemyBase::getStateID()
 	return -1;
 }
 
-/*
- * --INFO--
- * Address:	80107410
- * Size:	0000AC
+/**
+ * @note Address: 0x80107410
+ * @note Size: 0xAC
  */
 bool EnemyBase::needShadow()
 {
@@ -3175,10 +3246,15 @@ bool EnemyBase::needShadow()
 	return mLod.isFlag(AILOD_IsVisible) && isEvent(0, EB_ModelHidden) == false;
 }
 
-/*
- * --INFO--
- * Address:	801074D0
- * Size:	000234
+/**
+ * @brief Callback function for eating white Pikmin.
+ *
+ * @param creature A pointer to the Creature object representing the white Pikmin.
+ * @param damage The amount of damage to be added to the EnemyBase object.
+ * @return true if the callback is successful, false otherwise.
+ *
+ * @note Address: 0x801074D0
+ * @note Size: 0x234
  */
 bool EnemyBase::eatWhitePikminCallBack(Creature* creature, f32 damage)
 {
@@ -3222,24 +3298,21 @@ bool EnemyBase::eatWhitePikminCallBack(Creature* creature, f32 damage)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80107764
- * Size:	000008
+/**
+ * @note Address: 0x80107764
+ * @note Size: 0x8
  */
 f32 EnemyBase::getDownSmokeScale() { return 0.0f; }
 
-/*
- * --INFO--
- * Address:	8010776C
- * Size:	000010
+/**
+ * @note Address: 0x8010776C
+ * @note Size: 0x10
  */
 void EnemyBase::constraintOff() { disableEvent(0, EB_Constrained); }
 
-/*
- * --INFO--
- * Address:	8010777C
- * Size:	000018
+/**
+ * @note Address: 0x8010777C
+ * @note Size: 0x18
  */
 void EnemyBase::hardConstraintOn()
 {
@@ -3247,10 +3320,9 @@ void EnemyBase::hardConstraintOn()
 	mMass = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	80107794
- * Size:	000028
+/**
+ * @note Address: 0x80107794
+ * @note Size: 0x28
  */
 void EnemyBase::hardConstraintOff()
 {
@@ -3259,10 +3331,9 @@ void EnemyBase::hardConstraintOff()
 	mAcceleration = Vector3f(0.0f);
 }
 
-/*
- * --INFO--
- * Address:	801077BC
- * Size:	000084
+/**
+ * @note Address: 0x801077BC
+ * @note Size: 0x84
  */
 void EnemyBase::startMovie()
 {
@@ -3272,10 +3343,9 @@ void EnemyBase::startMovie()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80107844
- * Size:	000084
+/**
+ * @note Address: 0x80107844
+ * @note Size: 0x84
  */
 void EnemyBase::endMovie()
 {
@@ -3285,18 +3355,16 @@ void EnemyBase::endMovie()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801078C8
- * Size:	000004
+/**
+ * @note Address: 0x801078C8
+ * @note Size: 0x4
  */
 // WEAK - in header
 // void EnemyBase::doEndMovie() { }
 
-/*
- * --INFO--
- * Address:	801078CC
- * Size:	000094
+/**
+ * @note Address: 0x801078CC
+ * @note Size: 0x94
  */
 void EnemyBase::doStartEarthquakeState(f32 yVelocityScale)
 {
@@ -3306,52 +3374,45 @@ void EnemyBase::doStartEarthquakeState(f32 yVelocityScale)
 	mCurrentVelocity.y = yVelocityScale * 200.0f + randFloat() * 100.0f;
 };
 
-/*
- * --INFO--
- * Address:	80107960
- * Size:	000004
+/**
+ * @note Address: 0x80107960
+ * @note Size: 0x4
  */
 void EnemyBase::doFinishEarthquakeState() { }
 
-/*
- * --INFO--
- * Address:	80107964
- * Size:	000004
+/**
+ * @note Address: 0x80107964
+ * @note Size: 0x4
  */
 void EnemyBase::doStartEarthquakeFitState() { }
 
-/*
- * --INFO--
- * Address:	80107968
- * Size:	000004
+/**
+ * @note Address: 0x80107968
+ * @note Size: 0x4
  */
 void EnemyBase::doFinishEarthquakeFitState() { }
 
-/*
- * --INFO--
- * Address:	8010796C
- * Size:	00002C
+/**
+ * @note Address: 0x8010796C
+ * @note Size: 0x2C
  */
 void EnemyBase::startWaitingBirthTypeDrop() { doStartWaitingBirthTypeDrop(); }
 
-/*
- * --INFO--
- * Address:	80107998
- * Size:	000004
+/**
+ * @note Address: 0x80107998
+ * @note Size: 0x4
  */
 void EnemyBase::doStartWaitingBirthTypeDrop() { }
 
-/*
- * --INFO--
- * Address:	8010799C
- * Size:	00002C
+/**
+ * @note Address: 0x8010799C
+ * @note Size: 0x2C
  */
 void EnemyBase::finishWaitingBirthTypeDrop() { doFinishWaitingBirthTypeDrop(); }
 
-/*
- * --INFO--
- * Address:	801079C8
- * Size:	000064
+/**
+ * @note Address: 0x801079C8
+ * @note Size: 0x64
  */
 void EnemyBase::doFinishWaitingBirthTypeDrop()
 {
@@ -3362,10 +3423,9 @@ void EnemyBase::doFinishWaitingBirthTypeDrop()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80107A2C
- * Size:	00003C
+/**
+ * @note Address: 0x80107A2C
+ * @note Size: 0x3C
  */
 bool EnemyBase::isBirthTypeDropGroup()
 {
@@ -3373,17 +3433,15 @@ bool EnemyBase::isBirthTypeDropGroup()
 	        || mDropGroup == EDG_Earthquake);
 }
 
-/*
- * --INFO--
- * Address:	80107A68
- * Size:	000008
+/**
+ * @note Address: 0x80107A68
+ * @note Size: 0x8
  */
 Vector3f* EnemyBase::getFitEffectPos() { return &mBoundingSphere.mPosition; }
 
-/*
- * --INFO--
- * Address:	80107A70
- * Size:	000018
+/**
+ * @note Address: 0x80107A70
+ * @note Size: 0x18
  */
 void EnemyBase::setDroppingMassZero()
 {
@@ -3391,10 +3449,9 @@ void EnemyBase::setDroppingMassZero()
 	mMass = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	80107A88
- * Size:	000018
+/**
+ * @note Address: 0x80107A88
+ * @note Size: 0x18
  */
 void EnemyBase::resetDroppingMassZero()
 {

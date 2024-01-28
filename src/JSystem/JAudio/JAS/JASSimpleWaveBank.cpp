@@ -1,38 +1,10 @@
 #include "JSystem/JAudio/JAS/JASHeap.h"
 #include "JSystem/JAudio/JAS/JASWave.h"
 #include "JSystem/JKernel/JKRHeap.h"
-#include "types.h"
 
-/*
-    Generated from dpostproc
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__Q217JASSimpleWaveBank11TWaveHandle
-    __vt__Q217JASSimpleWaveBank11TWaveHandle:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q217JASSimpleWaveBank11TWaveHandleFv
-        .4byte getWaveInfo__Q217JASSimpleWaveBank11TWaveHandleCFv
-        .4byte getWavePtr__Q217JASSimpleWaveBank11TWaveHandleCFv
-    .global __vt__17JASSimpleWaveBank
-    __vt__17JASSimpleWaveBank:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__17JASSimpleWaveBankFv
-        .4byte getWaveHandle__17JASSimpleWaveBankCFUl
-        .4byte getWaveArc__17JASSimpleWaveBankFi
-        .4byte 0
-        .4byte 0
-        .4byte onDispose__10JASWaveArcFv
-        .4byte onLoadDone__10JASWaveArcFv
-        .4byte onEraseDone__10JASWaveArcFv
-        .4byte 0
-*/
-
-/*
- * --INFO--
- * Address:	8009B6C4
- * Size:	000060
+/**
+ * @note Address: 0x8009B6C4
+ * @note Size: 0x60
  */
 JASSimpleWaveBank::JASSimpleWaveBank()
     : JASWaveBank()
@@ -42,48 +14,43 @@ JASSimpleWaveBank::JASSimpleWaveBank()
 {
 }
 
-/*
- * --INFO--
- * Address:	8009B724
- * Size:	0000D4
+/**
+ * @note Address: 0x8009B724
+ * @note Size: 0xD4
  * __dt__17JASSimpleWaveBankFv
  */
 JASSimpleWaveBank::~JASSimpleWaveBank() { delete[] mHandles; }
 
-/*
- * --INFO--
- * Address:	8009B7F8
- * Size:	00005C
+/**
+ * @note Address: 0x8009B7F8
+ * @note Size: 0x5C
  * __dt__Q217JASSimpleWaveBank11TWaveHandleFv
  */
 JASSimpleWaveBank::TWaveHandle::~TWaveHandle() { }
 
-/*
- * --INFO--
- * Address:	8009B854
- * Size:	000084
+/**
+ * @note Address: 0x8009B854
+ * @note Size: 0x84
  */
-void JASSimpleWaveBank::setWaveTableSize(unsigned long tableSize)
+void JASSimpleWaveBank::setWaveTableSize(u32 tableSize)
 {
 	delete[] mHandles;
 	mHandles     = new (getCurrentHeap(), 0) TWaveHandle[tableSize];
 	mHandleCount = tableSize;
 }
 
-/*
- * --INFO--
- * Address:	8009B8D8
- * Size:	000024
+/**
+ * @note Address: 0x8009B8D8
+ * @note Size: 0x24
  * __ct__Q217JASSimpleWaveBank11TWaveHandleFv
  */
 JASSimpleWaveBank::TWaveHandle::TWaveHandle() { mHeap = nullptr; }
 
-/*
- * --INFO--
- * Address:	8009B8FC
- * Size:	000024
+/**
+ * @note Address: 0x8009B8FC
+ * @note Size: 0x24
  */
-JASWaveHandle* JASSimpleWaveBank::getWaveHandle(unsigned long handleIndex) const
+JASWaveHandle* JASSimpleWaveBank::getWaveHandle(u32 handleIndex) const
 {
 	if (handleIndex >= mHandleCount) {
 		return nullptr;
@@ -91,22 +58,20 @@ JASWaveHandle* JASSimpleWaveBank::getWaveHandle(unsigned long handleIndex) const
 	return mHandles + handleIndex;
 }
 
-/*
- * --INFO--
- * Address:	8009B920
- * Size:	000094
+/**
+ * @note Address: 0x8009B920
+ * @note Size: 0x94
  */
-void JASSimpleWaveBank::setWaveInfo(unsigned long handleIndex, const JASWaveInfo& info)
+void JASSimpleWaveBank::setWaveInfo(u32 handleIndex, const JASWaveInfo& info)
 {
 	mHandles[handleIndex].mInfo     = info;
 	mHandles[handleIndex].mInfo._24 = &_48;
 	mHandles[handleIndex].mHeap     = &mHeap;
 }
 
-/*
- * --INFO--
- * Address:	8009B9B4
- * Size:	000020
+/**
+ * @note Address: 0x8009B9B4
+ * @note Size: 0x20
  */
 JASWaveArc* JASSimpleWaveBank::getWaveArc(int arcIndex)
 {
@@ -116,36 +81,32 @@ JASWaveArc* JASSimpleWaveBank::getWaveArc(int arcIndex)
 	return this;
 }
 
-/*
- * --INFO--
- * Address:	8009B9D4
- * Size:	000008
+/**
+ * @note Address: 0x8009B9D4
+ * @note Size: 0x8
  */
 const JASWaveInfo* JASSimpleWaveBank::TWaveHandle::getWaveInfo() const { return &mInfo; }
 
-/*
- * --INFO--
- * Address:	8009B9DC
- * Size:	000024
+/**
+ * @note Address: 0x8009B9DC
+ * @note Size: 0x24
  */
 void* JASSimpleWaveBank::TWaveHandle::getWavePtr() const
 {
-	if (mHeap->_38 == nullptr) {
+	if (mHeap->mBase == nullptr) {
 		return nullptr;
 	}
-	return mHeap->_38 + mInfo._08;
+	return mHeap->mBase + mInfo.mOffset;
 }
 
-/*
- * --INFO--
- * Address:	8009BA00
- * Size:	000004
+/**
+ * @note Address: 0x8009BA00
+ * @note Size: 0x4
  */
 void JASWaveArc::onLoadDone() { }
 
-/*
- * --INFO--
- * Address:	8009BA04
- * Size:	000004
+/**
+ * @note Address: 0x8009BA04
+ * @note Size: 0x4
  */
 void JASWaveArc::onEraseDone() { }

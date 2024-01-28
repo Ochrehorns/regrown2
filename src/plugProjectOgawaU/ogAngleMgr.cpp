@@ -1,14 +1,11 @@
-#include "types.h"
-
 #include "og/Screen/AngleMgr.h"
-#include "Dolphin/math.h"
+#include "math.h"
 
 namespace og {
 namespace Screen {
-/*
- * --INFO--
- * Address:	8033028C
- * Size:	00002C
+/**
+ * @note Address: 0x8033028C
+ * @note Size: 0x2C
  */
 AngleMgr::AngleMgr()
 {
@@ -20,10 +17,9 @@ AngleMgr::AngleMgr()
 	mState        = AGM_Start;
 }
 
-/*
- * --INFO--
- * Address:	803302B8
- * Size:	000010
+/**
+ * @note Address: 0x803302B8
+ * @note Size: 0x10
  */
 void AngleMgr::init(f32 curAngle, f32 interpRate, f32 scale)
 {
@@ -32,10 +28,9 @@ void AngleMgr::init(f32 curAngle, f32 interpRate, f32 scale)
 	mScale        = scale;
 }
 
-/*
- * --INFO--
- * Address:	803302C8
- * Size:	000080
+/**
+ * @note Address: 0x803302C8
+ * @note Size: 0x80
  */
 void AngleMgr::chase(f32 target, f32 step)
 {
@@ -61,10 +56,9 @@ void AngleMgr::chase(f32 target, f32 step)
 	mState = AGM_Chase;
 }
 
-/*
- * --INFO--
- * Address:	80330348
- * Size:	0001A8
+/**
+ * @note Address: 0x80330348
+ * @note Size: 0x1A8
  */
 f32 AngleMgr::calc()
 {

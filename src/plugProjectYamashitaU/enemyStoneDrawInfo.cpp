@@ -10,10 +10,9 @@ namespace EnemyStone {
 
 EnemyBase* DrawInfo::sOwnerEnemy;
 
-/*
- * --INFO--
- * Address:	80128280
- * Size:	0002D4
+/**
+ * @note Address: 0x80128280
+ * @note Size: 0x2D4
  */
 void StateMachine::init(DrawInfo* drawInfo)
 {
@@ -29,10 +28,9 @@ void StateMachine::init(DrawInfo* drawInfo)
 	registerState(new FSMStateDead);
 }
 
-/*
- * --INFO--
- * Address:	80128554
- * Size:	000038
+/**
+ * @note Address: 0x80128554
+ * @note Size: 0x38
  */
 void StateMachine::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx)
 {
@@ -41,34 +39,31 @@ void StateMachine::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8012858C
- * Size:	000024
+/**
+ * @note Address: 0x8012858C
+ * @note Size: 0x24
  */
 void FSMState::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx) { PSMTXIdentity(mtx->mMatrix.mtxView); }
 
-/*
- * --INFO--
- * Address:	801285B0
- * Size:	000014
+/**
+ * @note Address: 0x801285B0
+ * @note Size: 0x14
  */
 void FSMStateExpansion::init(DrawInfo* drawInfo, StateArg* stateArg)
 {
-	drawInfo->_3C = 0.1f;
-	_10           = 0;
+	drawInfo->mDrawTimeLimit = 0.1f;
+	_10                      = 0;
 }
 
-/*
- * --INFO--
- * Address:	801285C4
- * Size:	0001BC
+/**
+ * @note Address: 0x801285C4
+ * @note Size: 0x1BC
  */
 void FSMStateExpansion::exec(DrawInfo* drawInfo)
 {
-	drawInfo->_38 += sys->mDeltaTime;
+	drawInfo->mDrawTimer += sys->mDeltaTime;
 
-	if (!_10 && drawInfo->_38 > 0.0f) {
+	if (!_10 && drawInfo->mDrawTimer > 0.0f) {
 		_10 = 1;
 		Vector3f pos;
 		f32 scale;
@@ -89,16 +84,15 @@ void FSMStateExpansion::exec(DrawInfo* drawInfo)
 		}
 	}
 
-	if (drawInfo->_38 > drawInfo->_3C) {
-		drawInfo->_38 = drawInfo->_3C;
+	if (drawInfo->mDrawTimer > drawInfo->mDrawTimeLimit) {
+		drawInfo->mDrawTimer = drawInfo->mDrawTimeLimit;
 		transit(drawInfo, STONESTATE_ExpansionFull, nullptr);
 	}
 }
 
-/*
- * --INFO--
- * Address:	801287B0
- * Size:	000004
+/**
+ * @note Address: 0x801287B0
+ * @note Size: 0x4
  */
 void FSMStateExpansion::cleanup(DrawInfo* drawInfo) { }
 
@@ -120,123 +114,115 @@ f32 pikmin2_sinf(f32 x)
 	return JMath::sincosTable_.mTable[((int)(x *= 325.9493f) & 0x7ffU)].first;
 }
 
-/*
- * --INFO--
- * Address:	801287B4
- * Size:	000140
+/**
+ * @note Address: 0x801287B4
+ * @note Size: 0x140
  */
 void FSMStateExpansion::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx)
 {
-	f32 theta = drawInfo->_38 / drawInfo->_3C;
+	f32 theta = drawInfo->mDrawTimer / drawInfo->mDrawTimeLimit;
 	boundAngle(theta);
 
 	f32 sinTheta = pikmin2_sinf(theta * HALF_PI);
 
 	PSMTXIdentity(mtx->mMatrix.mtxView);
-	scaleMatrix(mtx, sinTheta);
+	mtx->scale(sinTheta);
 }
 
-/*
- * --INFO--
- * Address:	801288F4
- * Size:	0000A0
+/**
+ * @note Address: 0x801288F4
+ * @note Size: 0xA0
  */
 void FSMStateExpansionFull::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx)
 {
 	PSMTXIdentity(mtx->mMatrix.mtxView);
-	scaleMatrix(mtx, 1.0f);
+	mtx->scale(1.0f);
 }
 
-/*
- * --INFO--
- * Address:	80128994
- * Size:	000014
+/**
+ * @note Address: 0x80128994
+ * @note Size: 0x14
  */
 void FSMStateFit::init(DrawInfo* drawInfo, StateArg* stateArg)
 {
-	drawInfo->_38 = 0.0f;
-	drawInfo->_3C = 1.0f / 30.0f;
+	drawInfo->mDrawTimer     = 0.0f;
+	drawInfo->mDrawTimeLimit = 1.0f / 30.0f;
 }
 
-/*
- * --INFO--
- * Address:	801289A8
- * Size:	00005C
+/**
+ * @note Address: 0x801289A8
+ * @note Size: 0x5C
  */
 void FSMStateFit::exec(DrawInfo* drawInfo)
 {
-	drawInfo->_38 += sys->mDeltaTime;
-	if (drawInfo->_38 > drawInfo->_3C) {
-		drawInfo->_38 = drawInfo->_3C;
+	drawInfo->mDrawTimer += sys->mDeltaTime;
+	if (drawInfo->mDrawTimer > drawInfo->mDrawTimeLimit) {
+		drawInfo->mDrawTimer = drawInfo->mDrawTimeLimit;
 		transit(drawInfo, STONESTATE_BaseState4, nullptr);
 	}
 }
 
-/*
- * --INFO--
- * Address:	80128A04
- * Size:	000004
+/**
+ * @note Address: 0x80128A04
+ * @note Size: 0x4
  */
 void FSMStateFit::cleanup(DrawInfo* drawInfo) { }
 
-/*
- * --INFO--
- * Address:	80128A08
- * Size:	0000DC
+/**
+ * @note Address: 0x80128A08
+ * @note Size: 0xDC
  */
 void FSMStateFit::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx)
 {
-	f32 theta = drawInfo->_38 / drawInfo->_3C;
+	f32 theta = drawInfo->mDrawTimer / drawInfo->mDrawTimeLimit;
 	boundAngle(theta);
 
 	f32 cosTheta = cos(theta * HALF_PI); // ????? THIS DOESN'T EVEN GET USED, WTF YAMASHITA
 
 	PSMTXIdentity(mtx->mMatrix.mtxView);
-	scaleMatrix(mtx, 1.0f);
+	mtx->scale(1.0f);
 }
 
-/*
- * --INFO--
- * Address:	80128AE4
- * Size:	000024
+/**
+ * @note Address: 0x80128AE4
+ * @note Size: 0x24
  */
 void FSMStateShake::init(DrawInfo* drawInfo, StateArg* stateArg)
 {
-	_14           = 7.0f;
-	drawInfo->_3C = 0.07f * _14;
-	_10           = 0;
+	_14                      = 7.0f;
+	drawInfo->mDrawTimeLimit = 0.07f * _14;
+	_10                      = 0;
 }
 
-/*
- * --INFO--
- * Address:	80128B08
- * Size:	000278
+/**
+ * @note Address: 0x80128B08
+ * @note Size: 0x278
  */
 void FSMStateShake::exec(DrawInfo* drawInfo)
 {
-	drawInfo->_38 += sys->mDeltaTime;
-	if (drawInfo->_38 > drawInfo->_3C) {
-		drawInfo->_38 = drawInfo->_3C;
+	drawInfo->mDrawTimer += sys->mDeltaTime;
+	if (drawInfo->mDrawTimer > drawInfo->mDrawTimeLimit) {
+		drawInfo->mDrawTimer = drawInfo->mDrawTimeLimit;
 		switch (_10) {
 		case 0:
-			drawInfo->_38 = 0.0f;
-			drawInfo->_3C = 0.14f * _14;
-			_10           = 1;
+			drawInfo->mDrawTimer     = 0.0f;
+			drawInfo->mDrawTimeLimit = 0.14f * _14;
+			_10                      = 1;
 			break;
 		case 1:
-			drawInfo->_38 = 0.0f;
-			drawInfo->_3C = 0.14f * _14;
-			_10           = 2;
+			drawInfo->mDrawTimer     = 0.0f;
+			drawInfo->mDrawTimeLimit = 0.14f * _14;
+			_10                      = 2;
 			break;
 		case 2:
-			drawInfo->_38 = 0.0f;
-			drawInfo->_3C = 0.35f * _14;
-			_10           = 3;
+			drawInfo->mDrawTimer     = 0.0f;
+			drawInfo->mDrawTimeLimit = 0.35f * _14;
+			_10                      = 3;
 			break;
 		case 3:
-			drawInfo->_38 = 0.0f;
-			drawInfo->_3C = 0.3f * _14;
-			_10           = 4;
+			drawInfo->mDrawTimer     = 0.0f;
+			drawInfo->mDrawTimeLimit = 0.3f * _14;
+			_10                      = 4;
 			break;
 		case 4:
 			transit(drawInfo, STONESTATE_Breakable, nullptr);
@@ -244,7 +230,7 @@ void FSMStateShake::exec(DrawInfo* drawInfo)
 		}
 	}
 
-	f32 ratio = drawInfo->_38 / drawInfo->_3C;
+	f32 ratio = drawInfo->mDrawTimer / drawInfo->mDrawTimeLimit;
 
 	switch (_10) {
 	case 0:
@@ -267,21 +253,19 @@ void FSMStateShake::exec(DrawInfo* drawInfo)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80128D80
- * Size:	000004
+/**
+ * @note Address: 0x80128D80
+ * @note Size: 0x4
  */
 void FSMStateShake::cleanup(DrawInfo* drawInfo) { }
 
-/*
- * --INFO--
- * Address:	80128D84
- * Size:	0002E4
+/**
+ * @note Address: 0x80128D84
+ * @note Size: 0x2E4
  */
 void FSMStateShake::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx)
 {
-	f32 theta = drawInfo->_38 / drawInfo->_3C;
+	f32 theta = drawInfo->mDrawTimer / drawInfo->mDrawTimeLimit;
 	boundAngle(theta);
 
 	f32 p1;
@@ -289,7 +273,7 @@ void FSMStateShake::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx)
 	f32 p3;
 	switch (_10) {
 	case 0:
-		p1 = (1.0f - pikmin2_cosf(theta * TAU)) * 0.1f;
+		p1 = (1.0f - cosf(theta * TAU)) * 0.1f;
 		p2 = 62.83185577392578f;
 		p3 = p1 * 30.0f;
 		break;
@@ -305,13 +289,13 @@ void FSMStateShake::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx)
 		p3 = 0.0f;
 		break;
 	case 4:
-		p1 = (1.0f - pikmin2_cosf(theta * PI * 2.5f)) * 0.15f;
+		p1 = (1.0f - cosf(theta * PI * 2.5f)) * 0.15f;
 		p2 = 201.0619354248047f;
 		p3 = theta * 4.0f;
 		break;
 	}
 
-	Vector3f translation(p1 * pikmin2_sinf(p2 * theta), 0.0f, p1 * pikmin2_cosf(p2 * theta));
+	Vector3f translation(p1 * pikmin2_sinf(p2 * theta), 0.0f, p1 * cosf(p2 * theta));
 	f32 sinTheta = (f32)sin(p2 * theta);
 	Vector3f rotation(PI * (DEG2RAD * (p3 * sinTheta)), 0.0f, 0.0f);
 	mtx->makeTR(translation, rotation);
@@ -537,38 +521,34 @@ void FSMStateShake::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80129068
- * Size:	00011C
+/**
+ * @note Address: 0x80129068
+ * @note Size: 0x11C
  */
 void FSMStateBreakable::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx)
 {
-	f32 theta            = drawInfo->_38 * 15.2f * TAU;
-	Vector3f translation = Vector3f(0.2f * pikmin2_sinf(theta), 0.0f, 0.2f * pikmin2_cosf(theta));
+	f32 theta            = drawInfo->mDrawTimer * 15.2f * TAU;
+	Vector3f translation = Vector3f(0.2f * pikmin2_sinf(theta), 0.0f, 0.2f * cosf(theta));
 	f32 sinTheta         = (f32)sin(theta);
 	Vector3f rotation    = Vector3f(PI * (DEG2RAD * (4.0f * sinTheta)), 0.0f, 0.0f);
 	mtx->makeTR(translation, rotation);
 }
 
-/*
- * --INFO--
- * Address:	80129184
- * Size:	00000C
+/**
+ * @note Address: 0x80129184
+ * @note Size: 0xC
  */
-void FSMStateBreakable::init(DrawInfo* drawInfo, StateArg* stateArg) { drawInfo->_38 = 0.0f; }
+void FSMStateBreakable::init(DrawInfo* drawInfo, StateArg* stateArg) { drawInfo->mDrawTimer = 0.0f; }
 
-/*
- * --INFO--
- * Address:	80129190
- * Size:	000018
+/**
+ * @note Address: 0x80129190
+ * @note Size: 0x18
  */
-void FSMStateBreakable::exec(DrawInfo* drawInfo) { drawInfo->_38 += sys->mDeltaTime; }
+void FSMStateBreakable::exec(DrawInfo* drawInfo) { drawInfo->mDrawTimer += sys->mDeltaTime; }
 
-/*
- * --INFO--
- * Address:	801291A8
- * Size:	000144
+/**
+ * @note Address: 0x801291A8
+ * @note Size: 0x144
  */
 void FSMStateDisappear::init(DrawInfo* drawInfo, StateArg* stateArg)
 {
@@ -594,31 +574,27 @@ void FSMStateDisappear::init(DrawInfo* drawInfo, StateArg* stateArg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801292EC
- * Size:	000004
+/**
+ * @note Address: 0x801292EC
+ * @note Size: 0x4
  */
 void FSMStateDisappear::cleanup(DrawInfo* drawInfo) { }
 
-/*
- * --INFO--
- * Address:	801292F0
- * Size:	000004
+/**
+ * @note Address: 0x801292F0
+ * @note Size: 0x4
  */
 void FSMStateDisappear::exec(DrawInfo* drawInfo) { }
 
-/*
- * --INFO--
- * Address:	801292F4
- * Size:	000024
+/**
+ * @note Address: 0x801292F4
+ * @note Size: 0x24
  */
 void FSMStateDisappear::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx) { PSMTXIdentity(mtx->mMatrix.mtxView); }
 
-/*
- * --INFO--
- * Address:	80129318
- * Size:	000144
+/**
+ * @note Address: 0x80129318
+ * @note Size: 0x144
  */
 void FSMStateDead::init(DrawInfo* drawInfo, StateArg* stateArg)
 {
@@ -644,25 +620,23 @@ void FSMStateDead::init(DrawInfo* drawInfo, StateArg* stateArg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8012945C
- * Size:	000024
+/**
+ * @note Address: 0x8012945C
+ * @note Size: 0x24
  */
 void FSMStateDead::makeMatrix(DrawInfo* drawInfo, Matrixf* mtx) { PSMTXIdentity(mtx->mMatrix.mtxView); }
 
-/*
- * --INFO--
- * Address:	80129480
- * Size:	0000BC
+/**
+ * @note Address: 0x80129480
+ * @note Size: 0xBC
  */
 DrawInfo::DrawInfo(bool doInitFSM)
     : CNode("")
 {
-	_38      = 0.0f;
-	_3C      = 0.0f;
-	mObjInfo = nullptr;
-	mMatrix  = nullptr;
+	mDrawTimer     = 0.0f;
+	mDrawTimeLimit = 0.0f;
+	mObjInfo       = nullptr;
+	mMatrix        = nullptr;
 
 	if (doInitFSM) {
 		mFsm.init(this);
@@ -670,39 +644,23 @@ DrawInfo::DrawInfo(bool doInitFSM)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8012953C
- * Size:	000064
+/**
+ * @note Address: 0x8012953C
+ * @note Size: 0x64
  */
 void DrawInfo::reset()
 {
 	del();
-	mObjInfo = nullptr;
-	mMatrix  = nullptr;
-	_38      = 0.0f;
-	_3C      = 0.0f;
+	mObjInfo       = nullptr;
+	mMatrix        = nullptr;
+	mDrawTimer     = 0.0f;
+	mDrawTimeLimit = 0.0f;
 	mFsm.start(this, STONESTATE_BaseState0, nullptr);
 }
 
-} // namespace EnemyStone
-
-/*
- * --INFO--
- * Address:	801295A0
- * Size:	000034
- */
-void StateMachine<EnemyStone::DrawInfo>::start(EnemyStone::DrawInfo* drawInfo, int stateID, StateArg* stateArg)
-{
-	drawInfo->mCurrentState = nullptr;
-	transit(drawInfo, stateID, stateArg);
-}
-
-namespace EnemyStone {
-/*
- * --INFO--
- * Address:	801295D4
- * Size:	000044
+/**
+ * @note Address: 0x801295D4
+ * @note Size: 0x44
  */
 void DrawInfo::update(EnemyBase* enemy)
 {
@@ -711,10 +669,9 @@ void DrawInfo::update(EnemyBase* enemy)
 	sOwnerEnemy = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80129618
- * Size:	0000A8
+/**
+ * @note Address: 0x80129618
+ * @note Size: 0xA8
  */
 bool DrawInfo::makeMatrix(Matrixf* mtx, bool doFSMMatrix)
 {
@@ -733,17 +690,15 @@ bool DrawInfo::makeMatrix(Matrixf* mtx, bool doFSMMatrix)
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	801296C0
- * Size:	00000C
+/**
+ * @note Address: 0x801296C0
+ * @note Size: 0xC
  */
 int DrawInfo::getStateID() { return mCurrentState->mId; }
 
-/*
- * --INFO--
- * Address:	801296CC
- * Size:	000114
+/**
+ * @note Address: 0x801296CC
+ * @note Size: 0x114
  */
 bool DrawInfo::getPosAndScale(Vector3f* pos, f32* scale)
 {
@@ -751,17 +706,16 @@ bool DrawInfo::getPosAndScale(Vector3f* pos, f32* scale)
 	if (makeMatrix(&mtx, false)) {
 		*scale = 0.0f;
 
-		// this needs to not unroll somehow
-		f32* row1 = &mtx.mMatrix.structView.xx;
-		f32* row2 = &mtx.mMatrix.structView.yx;
-		f32* row3 = &mtx.mMatrix.structView.zx;
+		f32* row1 = &mtx.mMatrix.structView.xz;
+		f32* row2 = &mtx.mMatrix.structView.xy;
+		f32* row3 = &mtx.mMatrix.structView.xx;
 		for (int i = 0; i < 3; i++) {
-			Vector3f vec = Vector3f(row1[i], row2[i], row3[i]);
-			f32 length   = _length(vec);
+			Vector3f result = Vector3f(row1[i], row2[i], row3[i]);
+			f32 length      = result.length();
 			*scale += length;
 		}
 
-		*scale = *scale / 3.0f;
+		*scale /= 3.0f;
 		mtx.getTranslation(*pos);
 		return true;
 	}
@@ -853,23 +807,21 @@ lbl_801297C4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801297E0
- * Size:	00004C
+/**
+ * @note Address: 0x801297E0
+ * @note Size: 0x4C
  */
 void DrawInfo::appear(EnemyBase* enemy, f32 p1)
 {
 	sOwnerEnemy = enemy;
-	_38         = p1;
+	mDrawTimer  = p1;
 	mFsm.transit(this, STONESTATE_Expansion, nullptr);
 	sOwnerEnemy = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8012982C
- * Size:	00004C
+/**
+ * @note Address: 0x8012982C
+ * @note Size: 0x4C
  */
 void DrawInfo::fit(EnemyBase* enemy)
 {
@@ -878,23 +830,21 @@ void DrawInfo::fit(EnemyBase* enemy)
 	sOwnerEnemy = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80129878
- * Size:	00004C
+/**
+ * @note Address: 0x80129878
+ * @note Size: 0x4C
  */
 void DrawInfo::shake(EnemyBase* enemy, f32 p1)
 {
 	sOwnerEnemy = enemy;
-	_38         = p1;
+	mDrawTimer  = p1;
 	mFsm.transit(this, STONESTATE_Shake, nullptr);
 	sOwnerEnemy = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	801298C4
- * Size:	00004C
+/**
+ * @note Address: 0x801298C4
+ * @note Size: 0x4C
  */
 void DrawInfo::disappear(EnemyBase* enemy)
 {
@@ -903,10 +853,9 @@ void DrawInfo::disappear(EnemyBase* enemy)
 	sOwnerEnemy = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80129910
- * Size:	00004C
+/**
+ * @note Address: 0x80129910
+ * @note Size: 0x4C
  */
 void DrawInfo::dead(EnemyBase* enemy)
 {
@@ -915,123 +864,4 @@ void DrawInfo::dead(EnemyBase* enemy)
 	sOwnerEnemy = nullptr;
 }
 } // namespace EnemyStone
-
-// /*
-//  * --INFO--
-//  * Address:	8012995C
-//  * Size:	000004
-//  */
-// void FSMState<EnemyStone::DrawInfo>::init(EnemyStone::DrawInfo* drawInfo, StateArg* stateArg) { }
-
-// /*
-//  * --INFO--
-//  * Address:	80129960
-//  * Size:	000004
-//  */
-// void FSMState<EnemyStone::DrawInfo>::exec(EnemyStone::DrawInfo* drawInfo) { }
-
-// /*
-//  * --INFO--
-//  * Address:	80129964
-//  * Size:	000004
-//  */
-// void FSMState<EnemyStone::DrawInfo>::cleanup(EnemyStone::DrawInfo* drawInfo) { }
-
-// /*
-//  * --INFO--
-//  * Address:	80129968
-//  * Size:	000004
-//  */
-// void FSMState<EnemyStone::DrawInfo>::resume(EnemyStone::DrawInfo* drawInfo) { }
-
-// /*
-//  * --INFO--
-//  * Address:	8012996C
-//  * Size:	000004
-//  */
-// void FSMState<EnemyStone::DrawInfo>::restart(EnemyStone::DrawInfo* drawInfo) { }
-
-/*
- * --INFO--
- * Address:	80129970
- * Size:	000004
- */
-void StateMachine<EnemyStone::DrawInfo>::init(EnemyStone::DrawInfo* drawInfo) { }
-
-/*
- * --INFO--
- * Address:	80129974
- * Size:	000038
- */
-void StateMachine<EnemyStone::DrawInfo>::exec(EnemyStone::DrawInfo* drawInfo)
-{
-	if (drawInfo->mCurrentState) {
-		drawInfo->mCurrentState->exec(drawInfo);
-	}
-}
-
-/*
- * --INFO--
- * Address:	801299AC
- * Size:	000064
- */
-void StateMachine<EnemyStone::DrawInfo>::create(int limit)
-{
-	mLimit          = limit;
-	mCount          = 0;
-	mStates         = new FSMState<EnemyStone::DrawInfo>*[mLimit];
-	mIndexToIDArray = new int[mLimit];
-	mIdToIndexArray = new int[mLimit];
-}
-
-/*
- * --INFO--
- * Address:	80129A10
- * Size:	00009C
- */
-void StateMachine<EnemyStone::DrawInfo>::transit(EnemyStone::DrawInfo* drawInfo, int stateID, StateArg* stateArg)
-{
-	int stateIndex                  = mIdToIndexArray[stateID];
-	EnemyStone::FSMState* currState = drawInfo->mCurrentState;
-
-	if (currState) {
-		currState->cleanup(drawInfo);
-		mCurrentID = currState->mId;
-	}
-
-	if (stateIndex >= mLimit) {
-		while (true == true) { }
-	}
-
-	EnemyStone::FSMState* nextState = static_cast<EnemyStone::FSMState*>(mStates[stateIndex]);
-	drawInfo->mCurrentState         = nextState;
-	nextState->init(drawInfo, stateArg);
-}
-
-/*
- * --INFO--
- * Address:	80129AAC
- * Size:	000084
- */
-void StateMachine<EnemyStone::DrawInfo>::registerState(FSMState<EnemyStone::DrawInfo>* newState)
-{
-	bool check;
-	if (mCount >= mLimit) {
-		return;
-	}
-	mStates[mCount] = newState;
-	if (!(0 <= newState->mId && newState->mId < mLimit)) {
-		check = false;
-	} else {
-		check = true;
-	}
-	if (check == false) {
-		return;
-	}
-	newState->mStateMachine        = this;
-	mIndexToIDArray[mCount]        = newState->mId;
-	mIdToIndexArray[newState->mId] = mCount;
-	mCount++;
-}
-
 } // namespace Game

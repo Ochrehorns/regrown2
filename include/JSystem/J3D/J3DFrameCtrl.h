@@ -8,17 +8,17 @@ struct J3DFrameCtrl {
 
 	virtual ~J3DFrameCtrl() { } // _08 (weak)
 
-	void init(short);
+	void init(s16);
 	void update();
 
 	// _00 VTBL
-	u8 mAttr;        // _04
-	u8 _05;          // _05
-	s16 mStartFrame; // _06
-	s16 mEndFrame;   // _08
-	s16 _0A;         // _0A
-	f32 mAnimSpeed;  // _0C
-	f32 mCurrTime;   // _10
+	u8 mAttribute; // _04
+	u8 mState;     // _05
+	s16 mStart;    // _06
+	s16 mEnd;      // _08
+	s16 mLoop;     // _0A
+	f32 mRate;     // _0C
+	f32 mFrame;    // _10
 };
 
 #endif

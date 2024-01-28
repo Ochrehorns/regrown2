@@ -31,7 +31,7 @@ struct Obj : public EnemyBase {
 	virtual void doDebugDraw(Graphics& gfx);                                    // _1EC
 	virtual void changeMaterial();                                              // _200
 	virtual void initMouthSlots();                                              // _22C
-	virtual bool pressCallBack(Creature*, f32, CollPart*);                      // _27C
+	virtual bool pressCallBack(Creature* source, f32 damage, CollPart* part);   // _27C
 	virtual bool hipdropCallBack(Creature* source, f32 damage, CollPart* part); // _284
 	virtual void setFSM(FSM* fsm);                                              // _2F8
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID()                          // _258 (weak)
@@ -77,7 +77,7 @@ struct Mgr : public EnemyMgrBase {
 
 	// virtual ~Mgr();                                     // _58 (weak)
 	virtual EnemyBase* birth(EnemyBirthArg&);          // _70
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual void doAlloc();                            // _A8
 	virtual SysShape::Model* createModel();            // _B0
@@ -95,21 +95,21 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		inline ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mNormalMaxSlots(this, 'ip01', "吸い込みピキ数(pom)", 5, 1, 50)    // 'sucking piki number (pom)'
-		    , mQueenMaxSlots(this, 'ip11', "吸い込みピキ数(pop)", 1, 1, 50)     // 'sucking piki number (pop)'
-		    , mQueenShotMultiplier(this, 'ip13', "吐き出し倍数(pop)", 5, 1, 50) // 'spitting multiple (pop)'
-		    , mRemainOpenTime(this, 'fp01', "開花時間", 30.0f, 0.0f, 60.0f)     // 'flowering time'
-		    , mColorChangeTime(this, 'fp02', "色換え時間", 1.25f, 0.0f, 60.0f)  // 'color change time'
-		    , mFp03(this, 'fp03', "白黒出現率", 0.15f, 0.0f, 1.0f)              // 'black and white appearance rate'
+		    , mNormalMaxSlots(this, 'ip01', "吸い込みピキ数(pom)", 5, 1, 50)           // 'sucking piki number (pom)'
+		    , mQueenMaxSlots(this, 'ip11', "吸い込みピキ数(pop)", 1, 1, 50)            // 'sucking piki number (pop)'
+		    , mQueenShotMultiplier(this, 'ip13', "吐き出し倍数(pop)", 5, 1, 50)        // 'spitting multiple (pop)'
+		    , mRemainOpenTime(this, 'fp01', "開花時間", 30.0f, 0.0f, 60.0f)            // 'flowering time'
+		    , mColorChangeTime(this, 'fp02', "色換え時間", 1.25f, 0.0f, 60.0f)         // 'color change time'
+		    , mBlackWhiteAppearanceRate(this, 'fp03', "白黒出現率", 0.15f, 0.0f, 1.0f) // 'black and white appearance rate'
 		{
 		}
 
-		Parm<int> mNormalMaxSlots;      // _804, ip01
-		Parm<int> mQueenMaxSlots;       // _82C, ip11
-		Parm<int> mQueenShotMultiplier; // _854, ip13
-		Parm<f32> mRemainOpenTime;      // _87C, fp01
-		Parm<f32> mColorChangeTime;     // _8A4, fp02
-		Parm<f32> mFp03;                // _8CC
+		Parm<int> mNormalMaxSlots;           // _804, ip01
+		Parm<int> mQueenMaxSlots;            // _82C, ip11
+		Parm<int> mQueenShotMultiplier;      // _854, ip13
+		Parm<f32> mRemainOpenTime;           // _87C, fp01
+		Parm<f32> mColorChangeTime;          // _8A4, fp02
+		Parm<f32> mBlackWhiteAppearanceRate; // _8CC
 	};
 
 	Parms() { }
@@ -123,6 +123,16 @@ struct Parms : public EnemyParmsBase {
 
 	// _00-_7F8	= EnemyParmsBase
 	ProperParms mProperParms; // _7F8
+};
+
+enum AnimID {
+	POMANIM_Wait  = 0,
+	POMANIM_Dead  = 1,
+	POMANIM_Open  = 2, // 'type1'
+	POMANIM_Close = 3, // 'type2'
+	POMANIM_Shot  = 4, // 'type3'
+	POMANIM_Swing = 5, // 'type4'
+	POMANIM_AnimCount, // 6
 };
 
 struct ProperAnimator : public EnemyAnimatorBase {
@@ -149,7 +159,7 @@ enum StateID {
 };
 
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -172,9 +182,9 @@ struct StateClose : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -186,9 +196,9 @@ struct StateDead : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -200,9 +210,9 @@ struct StateOpen : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -214,9 +224,9 @@ struct StateShot : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -228,9 +238,9 @@ struct StateSwing : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -242,9 +252,9 @@ struct StateWait : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

@@ -6,30 +6,11 @@
 #include "JSystem/JAudio/JAS/JASTrack.h"
 #include "types.h"
 
-/*
-    Generated from dpostproc
-
-    .section .ctors, "wa"  # 0x80472F00 - 0x804732C0
-    .4byte __sinit_JAISystemInterface_cpp
-
-    .section .bss  # 0x804EFC20 - 0x8051467C
-    .global systemPortCmd__Q27JAInter15SystemInterface
-    systemPortCmd__Q27JAInter15SystemInterface:
-        .skip 0x18
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80517050
-    lbl_80517050:
-        .4byte 0x00000000
-        .4byte 0x00000000
-*/
-
 JASPortCmd JAInter::SystemInterface::systemPortCmd;
 
-/*
- * --INFO--
- * Address:	800B8EE4
- * Size:	000030
+/**
+ * @note Address: 0x800B8EE4
+ * @note Size: 0x30
  */
 BOOL JAInter::SystemInterface::checkFileExsistence(char* path)
 {
@@ -37,19 +18,20 @@ BOOL JAInter::SystemInterface::checkFileExsistence(char* path)
 	return (entryNum != -1);
 }
 
-/*
- * --INFO--
- * Address:	800B8F14
- * Size:	0000EC
+/**
+ * @note Address: 0x800B8F14
+ * @note Size: 0xEC
  */
 u8 JAInter::SystemInterface::checkSeqActiveFlag(JASTrack* track)
 {
 	if (track != nullptr && track->_35B != 0) {
 		// this looks like it should be a loop, but loops don't seem to unroll quite right (2 sets of 8 instead of 1 set of 16)
-		if (track->_2FC[0] != nullptr || track->_2FC[1] != nullptr || track->_2FC[2] != nullptr || track->_2FC[3] != nullptr
-		    || track->_2FC[4] != nullptr || track->_2FC[5] != nullptr || track->_2FC[6] != nullptr || track->_2FC[7] != nullptr
-		    || track->_2FC[8] != nullptr || track->_2FC[9] != nullptr || track->_2FC[10] != nullptr || track->_2FC[11] != nullptr
-		    || track->_2FC[12] != nullptr || track->_2FC[13] != nullptr || track->_2FC[14] != nullptr || track->_2FC[15] != nullptr) {
+		if (track->mChildList[0] != nullptr || track->mChildList[1] != nullptr || track->mChildList[2] != nullptr
+		    || track->mChildList[3] != nullptr || track->mChildList[4] != nullptr || track->mChildList[5] != nullptr
+		    || track->mChildList[6] != nullptr || track->mChildList[7] != nullptr || track->mChildList[8] != nullptr
+		    || track->mChildList[9] != nullptr || track->mChildList[10] != nullptr || track->mChildList[11] != nullptr
+		    || track->mChildList[12] != nullptr || track->mChildList[13] != nullptr || track->mChildList[14] != nullptr
+		    || track->mChildList[15] != nullptr) {
 			return track->_35B;
 		}
 		return 0;
@@ -57,82 +39,73 @@ u8 JAInter::SystemInterface::checkSeqActiveFlag(JASTrack* track)
 	return 0;
 }
 
-/*
- * --INFO--
- * Address:	800B9000
- * Size:	00004C
+/**
+ * @note Address: 0x800B9000
+ * @note Size: 0x4C
  */
-JASTrack* JAInter::SystemInterface::trackToSeqp(JAISequence* seq, unsigned char p2)
+JASTrack* JAInter::SystemInterface::trackToSeqp(JAISequence* seq, u8 p2)
 {
 	JASTrack* result = nullptr;
 	if ((seq->mSoundID & 0x800) != 0) {
-		if (seq->mSeqParameter.mTrack._2FC[p2 >> 4] != nullptr) {
-			result = seq->mSeqParameter.mTrack._2FC[p2 >> 4]->_2FC[p2 & 0xF];
+		if (seq->mSeqParameter.mTrack.mChildList[p2 >> 4] != nullptr) {
+			result = seq->mSeqParameter.mTrack.mChildList[p2 >> 4]->mChildList[p2 & 0xF];
 		}
 	} else {
-		result = seq->mSeqParameter.mTrack._2FC[p2 & 0xF];
+		result = seq->mSeqParameter.mTrack.mChildList[p2 & 0xF];
 	}
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000048
+/**
+ * @note Address: N/A
+ * @note Size: 0x48
  * trackToSeqp__Q27JAInter15SystemInterfaceFP8JASTrackUcUl
  */
-JASTrack* JAInter::SystemInterface::trackToSeqp(JASTrack* track, unsigned char p2, unsigned long p3)
+JASTrack* JAInter::SystemInterface::trackToSeqp(JASTrack* track, u8 p2, u32 p3)
 {
 	// UNUSED FUNCTION
 	JASTrack* result = nullptr;
 	if ((p3 & 0x800) != 0) {
-		if (track->_2FC[p2 >> 4] != nullptr) {
-			result = track->_2FC[p2 >> 4]->_2FC[p2 & 0xF];
+		if (track->mChildList[p2 >> 4] != nullptr) {
+			result = track->mChildList[p2 >> 4]->mChildList[p2 & 0xF];
 		}
 	} else {
-		result = track->_2FC[p2 & 0xF];
+		result = track->mChildList[p2 & 0xF];
 	}
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	800B904C
- * Size:	00001C
+/**
+ * @note Address: 0x800B904C
+ * @note Size: 0x1C
  */
-void JAInter::SystemInterface::setSeqPortargsF32(JAInter::SeqUpdateData* updateData, unsigned long playerParameterIndex,
-                                                 unsigned char portArgIndex, float value)
+void JAInter::SystemInterface::setSeqPortargsF32(JAInter::SeqUpdateData* updateData, u32 playerParameterIndex, u8 portArgIndex, f32 value)
 {
 	updateData->_4C[playerParameterIndex].mPortArgs.asArray[portArgIndex].f32 = value;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00001C
+/**
+ * @note Address: N/A
+ * @note Size: 0x1C
  */
-void JAInter::SystemInterface::setSeqPortargsPS16(JAInter::SeqUpdateData* updateData, unsigned long playerParameterIndex,
-                                                  unsigned char portArgIndex, short* value)
+void JAInter::SystemInterface::setSeqPortargsPS16(JAInter::SeqUpdateData* updateData, u32 playerParameterIndex, u8 portArgIndex, s16* value)
 {
 	// UNUSED FUNCTION
 	updateData->_4C[playerParameterIndex].mPortArgs.asArray[portArgIndex].ps16 = value;
 }
 
-/*
- * --INFO--
- * Address:	800B9068
- * Size:	00001C
+/**
+ * @note Address: 0x800B9068
+ * @note Size: 0x1C
  */
-void JAInter::SystemInterface::setSeqPortargsU32(JAInter::SeqUpdateData* updateData, unsigned long playerParameterIndex,
-                                                 unsigned char portArgIndex, unsigned long value)
+void JAInter::SystemInterface::setSeqPortargsU32(JAInter::SeqUpdateData* updateData, u32 playerParameterIndex, u8 portArgIndex, u32 value)
 {
 	updateData->_4C[playerParameterIndex].mPortArgs.asArray[portArgIndex].u32 = value;
 }
 
-/*
- * --INFO--
- * Address:	800B9084
- * Size:	000058
+/**
+ * @note Address: 0x800B9084
+ * @note Size: 0x58
  */
 void JAInter::SystemInterface::rootInit(JAInter::SeqUpdateData* updateData)
 {
@@ -140,10 +113,9 @@ void JAInter::SystemInterface::rootInit(JAInter::SeqUpdateData* updateData)
 	outerInit(updateData, track, JAIGlobalParameter::getParamSeqTrackMax(), 0xFFFF, 0);
 }
 
-/*
- * --INFO--
- * Address:	800B90DC
- * Size:	000088
+/**
+ * @note Address: 0x800B90DC
+ * @note Size: 0x88
  */
 void JAInter::SystemInterface::trackInit(JAInter::SeqUpdateData* updateData)
 {
@@ -159,13 +131,11 @@ void JAInter::SystemInterface::trackInit(JAInter::SeqUpdateData* updateData)
 	}
 }
 
-/*
- * --INFO--
- * Address:	800B9164
- * Size:	000288
+/**
+ * @note Address: 0x800B9164
+ * @note Size: 0x288
  */
-void JAInter::SystemInterface::outerInit(JAInter::SeqUpdateData* updateData, JASTrack* p2, unsigned long p3, unsigned short p4,
-                                         unsigned char p5)
+void JAInter::SystemInterface::outerInit(JAInter::SeqUpdateData* updateData, JASTrack* p2, u32 p3, u16 p4, u8 p5)
 {
 	JASTrack* seqP = p2;
 	if (p3 != JAIGlobalParameter::getParamSeqTrackMax()) {
@@ -208,11 +178,11 @@ void JAInter::SystemInterface::outerInit(JAInter::SeqUpdateData* updateData, JAS
 		// setSeqPortargsF32(updateData, p3, 7, seq->mSeqParameter._270[p3]._04);
 		// setSeqPortargsU32(updateData, p3, 9, 0);
 		// setSeqPortargsU32(updateData, p3, 2, 0x7F);
-		portArgs->_0C = seq->mSeqParameter._260[p3]._04;
-		portArgs->_10 = seq->mSeqParameter._268[p3]._04;
-		portArgs->_18 = seq->mSeqParameter._26C[p3]._04;
-		portArgs->_14 = seq->mSeqParameter._264[p3]._04;
-		portArgs->_1C = seq->mSeqParameter._270[p3]._04;
+		portArgs->_0C = seq->mSeqParameter._260[p3].mCurrentValue;
+		portArgs->_10 = seq->mSeqParameter._268[p3].mCurrentValue;
+		portArgs->_18 = seq->mSeqParameter.mTrackFxmixes[p3].mCurrentValue;
+		portArgs->_14 = seq->mSeqParameter._264[p3].mCurrentValue;
+		portArgs->_1C = seq->mSeqParameter.mTrackDolbys[p3].mCurrentValue;
 		portArgs->_24 = 0;
 		portArgs->_08 = 0x7F;
 		seqP->muteTrack(seq->mSeqParameter._2BC[p3]._0);
@@ -454,25 +424,23 @@ void JAInter::SystemInterface::outerInit(JAInter::SeqUpdateData* updateData, JAS
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000068
+/**
+ * @note Address: N/A
+ * @note Size: 0x68
  */
-void JAInter::SystemInterface::setPortParameter(JASPortArgs*, JASTrack*, unsigned long, unsigned long)
+void JAInter::SystemInterface::setPortParameter(JASPortArgs*, JASTrack*, u32, u32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800B93EC
- * Size:	0001BC
+/**
+ * @note Address: 0x800B93EC
+ * @note Size: 0x1BC
  */
 void JAInter::SystemInterface::setSePortParameter(JASPortArgs* args)
 {
 	u32 soundID    = args->_04 & 0x800;
-	u8 v1          = args->_04 & 0xFF;
+	u8 v1          = args->_04;
 	JASTrack* seqP = args->_00;
 	if (v1 != JAIGlobalParameter::getParamSeqTrackMax()) {
 		seqP = trackToSeqp(seqP, v1, soundID);
@@ -642,70 +610,63 @@ lbl_800B9588:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000018
+/**
+ * @note Address: N/A
+ * @note Size: 0x18
  */
 void JAInter::SystemInterface::JAIouterP(void*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000040
+/**
+ * @note Address: N/A
+ * @note Size: 0x40
  */
 void JAInter::SystemInterface::JAIouterSW(void*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000094
+/**
+ * @note Address: N/A
+ * @note Size: 0x94
  */
 void JAInter::SystemInterface::setAudioFrameParameter(JASPortArgs*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void* JAInterface::getAudioThreadPointer()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000020
+/**
+ * @note Address: N/A
+ * @note Size: 0x20
  */
 void* JAInterface::getDvdThreadPointer()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000020
+/**
+ * @note Address: N/A
+ * @note Size: 0x20
  */
 void JAInterface::setAudioThreadPauseFlag(bool)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800B95A8
- * Size:	000054
+/**
+ * @note Address: 0x800B95A8
+ * @note Size: 0x54
  */
 // void __sinit_JAISystemInterface_cpp()
 // {

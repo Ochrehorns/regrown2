@@ -1,14 +1,14 @@
 #include "nans.h"
+#include "sysMath.h"
 #include "Light.h"
 
 // Fix rodata mismatch with null bytes
 static const char _RODATA_FIX[0xC] = { '\0' };
 
 namespace TreasureLight {
-/*
- * --INFO--
- * Address:	8013286C
- * Size:	000150
+/**
+ * @note Address: 0x8013286C
+ * @note Size: 0x150
  */
 Mgr::Mgr()
     : LightMgr("お宝ライト")
@@ -16,29 +16,27 @@ Mgr::Mgr()
 	mRotationAngle  = 300.0f;
 	mElevationAngle = 330.0f;
 
-	mMainLight             = new LightObj("メインライト", GX_LIGHT0, TYPE_2, JUtility::TColor(0xFF, 0xFF, 0xFF, 0xFF));
+	mMainLight             = new LightObj("メインライト", GX_LIGHT0, TYPE_Spot, JUtility::TColor(0xFF, 0xFF, 0xFF, 0xFF));
 	mMainLight->mSpotFn    = 3;
 	mMainLight->mElevation = Vector3f(0.0f, -1.0f, 0.0f);
 	registLightObj(mMainLight);
 
-	mSpecLight          = new LightObj("スペキュラ-ライト", GX_LIGHT7, TYPE_4, JUtility::TColor(0xFF, 0xFF, 0xFF, 0xFF));
+	mSpecLight          = new LightObj("スペキュラ-ライト", GX_LIGHT7, TYPE_Spec, JUtility::TColor(0xFF, 0xFF, 0xFF, 0xFF));
 	mSpecLight->mKScale = 40.0f;
 	registLightObj(mSpecLight);
 
 	mAmbientLight.mColor = Color4(0x32, 0x32, 0x32, 0xFF);
 }
 
-/*
- * --INFO--
- * Address:	801329BC
- * Size:	000004
+/**
+ * @note Address: 0x801329BC
+ * @note Size: 0x4
  */
 void Mgr::update() { }
 
-/*
- * --INFO--
- * Address:	801329C0
- * Size:	000044
+/**
+ * @note Address: 0x801329C0
+ * @note Size: 0x44
  */
 void Mgr::set(Graphics& gfx)
 {
@@ -46,10 +44,9 @@ void Mgr::set(Graphics& gfx)
 	LightMgr::set(gfx);
 }
 
-/*
- * --INFO--
- * Address:	80132A04
- * Size:	000044
+/**
+ * @note Address: 0x80132A04
+ * @note Size: 0x44
  */
 void Mgr::set(Matrixf& mtx)
 {
@@ -57,10 +54,9 @@ void Mgr::set(Matrixf& mtx)
 	LightMgr::set(mtx);
 }
 
-/*
- * --INFO--
- * Address:	80132A48
- * Size:	000184
+/**
+ * @note Address: 0x80132A48
+ * @note Size: 0x184
  * Credits: Altafen
  *
  * https://en.wikipedia.org/wiki/Spherical_coordinate_system
@@ -68,21 +64,18 @@ void Mgr::set(Matrixf& mtx)
  * x = r * cos(θ)
  * y = r * sin(θ)
  *
- * So now imagine a line going in the direction of the 2D angle where
- * y is now height, x is now how far away it is from the center pole
+ * So now imagine a line going in the direction of the 2D angle
+ * where y is now height, x is now how far away it is from the center pole
  *
  * height   = r * sin(θ)
  * distance = r * cos(θ)
  *
- * Since the 2D x/y have to shrink a bit as the sphere gets smaller the
- * higher you go, use distance as the radius before putting them in the
- * 2D equations, and you get
+ * Since the 2D x/y have to shrink a bit as the sphere gets smaller the higher you go,
+ * use distance as the radius before putting them in the 2D equations, and you get
  *
  * x = (r * cos(θ)) * cos(θ)
  * y = (r * cos(θ)) * sin(θ)
  * z = r * sin(θ)
- *
- * For pikmin it's slightly different (y/z swap)
  */
 void Mgr::setCommonProc()
 {
@@ -96,14 +89,7 @@ void Mgr::setCommonProc()
 	rotation.z = pikmin2_cosf(elevation_angle) * radius * pikmin2_cosf(rotation_angle);
 
 	Vector3f elevation(-rotation.x, -rotation.y, -rotation.z);
-
-	// elevation.normalise();
-	f32 dist = pikmin2_sqrtf(VECTOR_SQUARE_MAG(elevation));
-	if (dist > 0.0f) {
-		elevation.x *= 1 / dist;
-		elevation.y *= 1 / dist;
-		elevation.z *= 1 / dist;
-	}
+	elevation.qNormalise();
 
 	mMainLight->mPosition      = rotation;
 	mMainLight->mElevation     = elevation;
@@ -113,10 +99,9 @@ void Mgr::setCommonProc()
 	mSpecLight->mElevation = elevation;
 }
 
-/*
- * --INFO--
- * Address:	80132BCC
- * Size:	000020
+/**
+ * @note Address: 0x80132BCC
+ * @note Size: 0x20
  */
 void Mgr::drawDebugInfo(Graphics& gfx) { LightMgr::drawDebugInfo(gfx); }
 } // namespace TreasureLight

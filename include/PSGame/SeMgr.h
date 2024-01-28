@@ -4,6 +4,7 @@
 #include "PSSystem/PSCommon.h"
 
 struct JAISound;
+struct JAISe;
 
 namespace JAInter {
 struct Object;
@@ -12,12 +13,14 @@ struct Object;
 namespace PSGame {
 struct RandId {
 	RandId();
-	void startSound(JAInter::Object*, u32, u32, u32);
+	JAISe* startSound(JAInter::Object*, u32, u32, u32);
 	void playSystemSe(u32, JAISound**, u32, u32);
 
-	f32 mId; // _00, notUsingMasterIDRatio according to ghidra
+	u32 getRandomId(u32, u32);
 
-	const static f32 cNotUsingMasterIdRatio;
+	static f32 cNotUsingMasterIdRatio;
+
+	f32 mId; // _00
 };
 
 struct SetSe {
@@ -57,6 +60,13 @@ struct SeMgr : public PSSystem::SingletonBase<SeMgr> {
 
 	void playMessageVoice(u32, bool);
 	void stopMessageVoice();
+
+	inline void execAllSe()
+	{
+		for (u8 i = 0; i < 8; i++) {
+			mSetSeList[i]->exec();
+		}
+	}
 
 	// _00 VTBL
 	SetSe* mSetSeList[8]; // _04

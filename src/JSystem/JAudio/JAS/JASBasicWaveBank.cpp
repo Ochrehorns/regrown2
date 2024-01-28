@@ -3,58 +3,14 @@
 #include "JSystem/JAudio/JAS/JASMutexLock.h"
 #include "JSystem/JAudio/JAS/JASWave.h"
 #include "JSystem/JKernel/JKRHeap.h"
-#include "types.h"
 
-/*
-    Generated from dpostproc
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__Q216JASBasicWaveBank10TWaveGroup
-    __vt__Q216JASBasicWaveBank10TWaveGroup:
-        .4byte 0
-        .4byte 0
-        .4byte onDispose__10JASWaveArcFv
-        .4byte onLoadDone__Q216JASBasicWaveBank10TWaveGroupFv
-        .4byte onEraseDone__Q216JASBasicWaveBank10TWaveGroupFv
-    .global __vt__13JASWaveHandle
-    __vt__13JASWaveHandle:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__13JASWaveHandleFv
-        .4byte 0
-        .4byte 0
-    .global __vt__Q216JASBasicWaveBank11TWaveHandle
-    __vt__Q216JASBasicWaveBank11TWaveHandle:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q216JASBasicWaveBank11TWaveHandleFv
-        .4byte getWaveInfo__Q216JASBasicWaveBank11TWaveHandleCFv
-        .4byte getWavePtr__Q216JASBasicWaveBank11TWaveHandleCFv
-    .global __vt__16JASBasicWaveBank
-    __vt__16JASBasicWaveBank:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__16JASBasicWaveBankFv
-        .4byte getWaveHandle__16JASBasicWaveBankCFUl
-        .4byte getWaveArc__16JASBasicWaveBankFi
-    .global __vt__11JASWaveBank
-    __vt__11JASWaveBank:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__11JASWaveBankFv
-        .4byte 0
-        .4byte 0
-        .4byte 0
-*/
-
-/*
- * --INFO--
- * Address:	80099E60
- * Size:	000060
+/**
+ * @note Address: 0x80099E60
+ * @note Size: 0x60
  */
 JASBasicWaveBank::JASBasicWaveBank()
     : JASWaveBank()
-    , mHandles(nullptr)
+    , mWaveTable(nullptr)
     , mTableSize(0)
     , mGroups(nullptr)
     , mGroupCount(0)
@@ -62,33 +18,23 @@ JASBasicWaveBank::JASBasicWaveBank()
 	OSInitMutex(&mMutex);
 }
 
-/*
- * --INFO--
- * Address:	80099EC0
- * Size:	000048
- * __dt__11JASWaveBankFv
- */
-// JASWaveBank::~JASWaveBank() { }
-
-/*
- * --INFO--
- * Address:	80099F08
- * Size:	0000BC
+/**
+ * @note Address: 0x80099F08
+ * @note Size: 0xBC
  * __dt__16JASBasicWaveBankFv
  */
 JASBasicWaveBank::~JASBasicWaveBank()
 {
-	delete[] mHandles;
+	delete[] mWaveTable;
 	for (u32 i = 0; i < mGroupCount; i++) {
 		delete mGroups[i];
 	}
 	delete[] mGroups;
 }
 
-/*
- * --INFO--
- * Address:	80099FC4
- * Size:	000024
+/**
+ * @note Address: 0x80099FC4
+ * @note Size: 0x24
  */
 JASBasicWaveBank::TWaveGroup* JASBasicWaveBank::getWaveGroup(int groupIndex)
 {
@@ -98,12 +44,11 @@ JASBasicWaveBank::TWaveGroup* JASBasicWaveBank::getWaveGroup(int groupIndex)
 	return mGroups[groupIndex];
 }
 
-/*
- * --INFO--
- * Address:	80099FE8
- * Size:	0000E8
+/**
+ * @note Address: 0x80099FE8
+ * @note Size: 0xE8
  */
-void JASBasicWaveBank::setGroupCount(unsigned long count)
+void JASBasicWaveBank::setGroupCount(u32 count)
 {
 	for (int i = 0; i < mGroupCount; i++) {
 		delete mGroups[i];
@@ -116,69 +61,85 @@ void JASBasicWaveBank::setGroupCount(unsigned long count)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8009A0D0
- * Size:	000064
+/**
+ * @note Address: 0x8009A0D0
+ * @note Size: 0x64
  */
-void JASBasicWaveBank::setWaveTableSize(unsigned long tableSize)
+void JASBasicWaveBank::setWaveTableSize(u32 tableSize)
 {
-	delete[] mHandles;
-	mHandles = new (JASWaveBank::getCurrentHeap(), 0) TWaveHandle*[tableSize];
-	JASCalc::bzero(mHandles, tableSize * sizeof(TWaveHandle*));
+	delete[] mWaveTable;
+	mWaveTable = new (JASWaveBank::getCurrentHeap(), 0) TWaveInfo*[tableSize];
+	JASCalc::bzero(mWaveTable, tableSize * sizeof(TWaveHandle*));
 	mTableSize = tableSize;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000A0
+/**
+ * @note Address: N/A
+ * @note Size: 0xA0
  */
-void JASBasicWaveBank::incWaveTable(const JASBasicWaveBank::TWaveGroup*)
+void JASBasicWaveBank::incWaveTable(const JASBasicWaveBank::TWaveGroup* wave)
 {
-	// UNUSED FUNCTION
+	JASMutexLock lock(&mMutex);
+	for (int i = 0; i < wave->mInfoCount; i++) {
+		TWaveInfo** table   = &mWaveTable[wave->getWaveID(i)];
+		TWaveInfo* currInfo = &wave->mInfo[i];
+		currInfo->mPrev     = nullptr;
+		currInfo->mNext     = (*table);
+		if ((*table) != nullptr) {
+			(*table)->mPrev = currInfo;
+		}
+		(*table) = currInfo;
+	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000054
+/**
+ * @note Address: N/A
+ * @note Size: 0xE8
  */
-// JASMutexLock::~JASMutexLock()
-// {
-// 	// UNUSED FUNCTION
-// }
-
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E8
- */
-void JASBasicWaveBank::decWaveTable(const JASBasicWaveBank::TWaveGroup*)
+void JASBasicWaveBank::decWaveTable(const JASBasicWaveBank::TWaveGroup* wave)
 {
-	// UNUSED FUNCTION
+	JASMutexLock lock(&mMutex);
+	for (int i = 0; i < wave->mInfoCount; i++) {
+		u32 id              = wave->getWaveID(i);
+		TWaveInfo* info     = mWaveTable[id];
+		TWaveInfo* currInfo = &wave->mInfo[i];
+		for (info; info; info = info->mNext) {
+			if (info != currInfo) {
+				continue;
+			}
+
+			if (!info->mPrev) {
+				mWaveTable[id] = info->mNext;
+			} else {
+				info->mPrev->mNext = info->mNext;
+			}
+
+			if (info->mNext) {
+				info->mNext->mPrev = info->mPrev;
+			}
+			break;
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	8009A134
- * Size:	000030
+/**
+ * @note Address: 0x8009A134
+ * @note Size: 0x30
  */
-JASWaveHandle* JASBasicWaveBank::getWaveHandle(unsigned long handleIndex) const
+JASWaveHandle* JASBasicWaveBank::getWaveHandle(u32 handleIndex) const
 {
 	if (handleIndex >= mTableSize) {
 		return nullptr;
 	}
-	if (mHandles[handleIndex] == nullptr) {
+	if (mWaveTable[handleIndex] == nullptr) {
 		return nullptr;
 	}
-	return mHandles[handleIndex];
+	return &mWaveTable[handleIndex]->mHandle;
 }
 
-/*
- * --INFO--
- * Address:	8009A164
- * Size:	000058
+/**
+ * @note Address: 0x8009A164
+ * @note Size: 0x58
  * __ct__Q216JASBasicWaveBank10TWaveGroupFP16JASBasicWaveBank
  */
 JASBasicWaveBank::TWaveGroup::TWaveGroup(JASBasicWaveBank* bank)
@@ -189,10 +150,9 @@ JASBasicWaveBank::TWaveGroup::TWaveGroup(JASBasicWaveBank* bank)
 {
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000090
+/**
+ * @note Address: N/A
+ * @note Size: 0x90
  * __dt__10JASWaveArcFv
  */
 // JASWaveArc::~JASWaveArc()
@@ -200,28 +160,18 @@ JASBasicWaveBank::TWaveGroup::TWaveGroup(JASBasicWaveBank* bank)
 // 	// UNUSED FUNCTION
 // }
 
-/*
- * --INFO--
- * Address:	8009A1BC
- * Size:	0000B4
+/**
+ * @note Address: 0x8009A1BC
+ * @note Size: 0xB4
  * __dt__Q216JASBasicWaveBank10TWaveGroupFv
  */
 JASBasicWaveBank::TWaveGroup::~TWaveGroup() { delete[] mInfo; }
 
-/*
- * --INFO--
- * Address:	8009A270
- * Size:	000060
- * __dt__Q216JASBasicWaveBank9TWaveInfoFv
+/**
+ * @note Address: 0x8009A2D0
+ * @note Size: 0x1BC
  */
-// JASBasicWaveBank::TWaveInfo::~TWaveInfo() { }
-
-/*
- * --INFO--
- * Address:	8009A2D0
- * Size:	0001BC
- */
-void JASBasicWaveBank::TWaveGroup::setWaveCount(unsigned long count)
+void JASBasicWaveBank::TWaveGroup::setWaveCount(u32 count)
 {
 	delete[] mInfo;
 	mInfoCount = count;
@@ -232,64 +182,24 @@ void JASBasicWaveBank::TWaveGroup::setWaveCount(unsigned long count)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8009A48C
- * Size:	000030
- * __ct__Q216JASBasicWaveBank9TWaveInfoFv
+/**
+ * @note Address: 0x8009A560
+ * @note Size: 0x90
  */
-JASBasicWaveBank::TWaveInfo::TWaveInfo()
-    : mHandle()
-    , _34(nullptr)
-    , _38(0)
+void JASBasicWaveBank::TWaveGroup::setWaveInfo(int infoIndex, u32 waveID, const JASWaveInfo& info)
 {
-}
-
-/*
- * --INFO--
- * Address:	8009A4BC
- * Size:	00005C
- * __dt__Q216JASBasicWaveBank11TWaveHandleFv
- */
-// JASBasicWaveBank::TWaveHandle::~TWaveHandle() { }
-
-/*
- * --INFO--
- * Address:	8009A518
- * Size:	000048
- * __dt__13JASWaveHandleFv
- */
-// JASWaveHandle::~JASWaveHandle() { }
-
-/*
- * --INFO--
- * Address:	8009A560
- * Size:	000090
- */
-void JASBasicWaveBank::TWaveGroup::setWaveInfo(int infoIndex, unsigned long p2, JASWaveInfo const& info)
-{
-	mInfo[infoIndex].mHandle._30       = p2;
+	mInfo[infoIndex].mHandle.mWaveID   = waveID;
 	mInfo[infoIndex].mHandle.mInfo     = info;
 	mInfo[infoIndex].mHandle.mInfo._24 = &_48; // TODO: Should _48 be the start of a struct?
 }
 
-/*
- * --INFO--
- * Address:	8009A5F0
- * Size:	0000A0
+/**
+ * @note Address: 0x8009A5F0
+ * @note Size: 0xA0
  */
 void JASBasicWaveBank::TWaveGroup::onLoadDone()
 {
-	JASMutexLock lock(&mBank->mMutex);
-	for (int i = 0; i < mInfoCount; i++) {
-		TWaveHandle* bankHandle = mBank->mHandles[getWaveID(i)];
-		TWaveInfo* infosInfo    = &mInfo[i];
-		infosInfo->_38          = 0;
-		infosInfo->_34          = bankHandle;
-		if (bankHandle != nullptr) {
-			// TODO: ???
-		}
-	}
+	mBank->incWaveTable(this);
 	/*
 	stwu     r1, -0x30(r1)
 	mflr     r0
@@ -340,127 +250,14 @@ lbl_8009A668:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8009A690
- * Size:	0000E8
+/**
+ * @note Address: 0x8009A690
+ * @note Size: 0xE8
  */
-void JASBasicWaveBank::TWaveGroup::onEraseDone()
-{
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	stw      r28, 0x10(r1)
-	mr       r28, r3
-	lwz      r30, 0x5c(r3)
-	addi     r3, r30, 4
-	stw      r3, 8(r1)
-	bl       OSLockMutex
-	li       r31, 0
-	mr       r29, r31
-	b        lbl_8009A744
+void JASBasicWaveBank::TWaveGroup::onEraseDone() { mBank->decWaveTable(this); }
 
-lbl_8009A6CC:
-	mr       r3, r28
-	mr       r4, r31
-	bl       getWaveID__Q216JASBasicWaveBank10TWaveGroupCFi
-	lwz      r4, 0x1c(r30)
-	slwi     r3, r3, 2
-	lwz      r0, 0x60(r28)
-	lwzx     r5, r4, r3
-	add      r0, r0, r29
-	b        lbl_8009A734
-
-lbl_8009A6F0:
-	cmplw    r5, r0
-	bne      lbl_8009A730
-	lwz      r6, 0x38(r5)
-	cmplwi   r6, 0
-	bne      lbl_8009A710
-	lwz      r0, 0x34(r5)
-	stwx     r0, r4, r3
-	b        lbl_8009A718
-
-lbl_8009A710:
-	lwz      r0, 0x34(r5)
-	stw      r0, 0x34(r6)
-
-lbl_8009A718:
-	lwz      r3, 0x34(r5)
-	cmplwi   r3, 0
-	beq      lbl_8009A73C
-	lwz      r0, 0x38(r5)
-	stw      r0, 0x38(r3)
-	b        lbl_8009A73C
-
-lbl_8009A730:
-	lwz      r5, 0x34(r5)
-
-lbl_8009A734:
-	cmplwi   r5, 0
-	bne      lbl_8009A6F0
-
-lbl_8009A73C:
-	addi     r29, r29, 0x3c
-	addi     r31, r31, 1
-
-lbl_8009A744:
-	lwz      r0, 0x64(r28)
-	cmplw    r31, r0
-	blt      lbl_8009A6CC
-	lwz      r3, 8(r1)
-	bl       OSUnlockMutex
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	lwz      r28, 0x10(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	8009A778
- * Size:	000014
+/**
+ * @note Address: 0x8009A778
+ * @note Size: 0x14
  */
-u32 JASBasicWaveBank::TWaveGroup::getWaveID(int infoIndex) const { return mInfo[infoIndex].mHandle._30; }
-
-/*
- * --INFO--
- * Address:	8009A78C
- * Size:	000008
- */
-// const JASWaveInfo* JASBasicWaveBank::TWaveHandle::getWaveInfo() const { return &mInfo; }
-
-/*
- * --INFO--
- * Address:	8009A794
- * Size:	000024
- */
-void* JASBasicWaveBank::TWaveHandle::getWavePtr() const
-{
-	if (mHeap->_38 == nullptr) {
-		return nullptr;
-	}
-	return mHeap->_38 + mInfo._08;
-}
-
-/*
- * --INFO--
- * Address:	8009A7B8
- * Size:	000024
- */
-JASWaveArc* JASBasicWaveBank::getWaveArc(int groupIndex)
-{
-	if (groupIndex >= mGroupCount) {
-		return nullptr;
-	}
-	return mGroups[groupIndex];
-}
+u32 JASBasicWaveBank::TWaveGroup::getWaveID(int infoIndex) const { return mInfo[infoIndex].mHandle.mWaveID; }

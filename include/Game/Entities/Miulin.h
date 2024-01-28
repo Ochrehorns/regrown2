@@ -31,7 +31,7 @@ enum StateID {
 };
 
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -50,8 +50,8 @@ struct State : public EnemyFSMState {
 struct StateAttackEnd : public State {
 	StateAttackEnd(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -60,19 +60,19 @@ struct StateAttackEnd : public State {
 struct StateAttacking : public State {
 	StateAttacking(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
-	u8 _10; // _10
+	bool mIsTransitioning; // _10
 };
 
 struct StateAttackStart : public State {
 	StateAttackStart(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -81,8 +81,8 @@ struct StateAttackStart : public State {
 struct StateDead : public State {
 	StateDead(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -91,8 +91,8 @@ struct StateDead : public State {
 struct StateFlick : public State {
 	StateFlick(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -101,8 +101,8 @@ struct StateFlick : public State {
 struct StateTurn : public State {
 	StateTurn(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -111,8 +111,8 @@ struct StateTurn : public State {
 struct StateWait : public State {
 	StateWait(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -121,13 +121,13 @@ struct StateWait : public State {
 struct StateWalk : public State {
 	StateWalk(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
-	int _10; // _10
-	int _14; // _14
+	int mReturnTimer; // _10
+	int mTurnTimer;   // _14
 };
 /////////////////////////////////////////////////////////////////
 
@@ -169,7 +169,7 @@ struct Obj : public EnemyBase {
 	void setReturnState();
 	void walkFunc();
 	f32 turnFunc(f32);
-	bool isReachToGoal(f32);
+	bool isReachToGoal(f32 distanceTo);
 	void setNextGoal();
 	bool nextTargetTurnCheck();
 	bool isNowCaution();
@@ -184,7 +184,7 @@ struct Obj : public EnemyBase {
 	int _2D0;                           // _2D0
 	Vector3f _2D4;                      // _2D4
 	int _2E0;                           // _2E0
-	bool _2E4;                          // _2E4
+	bool mIsSearching;                  // _2E4
 	f32 mAlertTimer;                    // _2E8
 	WalkSmokeEffect::Mgr mWalkSmokeMgr; // _2EC
 	FSM* mFsm;                          // _2F4
@@ -219,23 +219,23 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		inline ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mIp01(this, 'ip01', "リターンカウンタ", 100, 0, 1000)         // 'return counter'
-		    , mFp03(this, 'fp03', "連続プレス角度", 20.0f, 0.0f, 180.0f)    // 'continuous press angle'
-		    , mFp04(this, 'fp04', "ダッシュ速度倍率", 2.0f, 0.0f, 10.0f)    // 'dash speed multiplier'
-		    , mFp05(this, 'fp05', "ダッシュアニメ倍率", 2.0f, 0.0f, 10.0f)  // 'dash animation scale'
-		    , mFp06(this, 'fp06', "旋回終了角度", 10.0f, 0.0f, 180.0f)      // 'turning end angle'
-		    , mFp07(this, 'fp07', "ダッシュ可能\角度", 30.0f, 0.0f, 180.0f) // 'possible dash angle'
-		    , mFp08(this, 'fp08', "攻撃範囲最小", 25.0f, 0.0f, 100.0f)      // 'minimum attack range'
+		    , mReturnTime(this, 'ip01', "リターンカウンタ", 100, 0, 1000)                // 'return counter'
+		    , mContinuousPressAngle(this, 'fp03', "連続プレス角度", 20.0f, 0.0f, 180.0f) // 'continuous press angle'
+		    , mDashSpeedMultiplier(this, 'fp04', "ダッシュ速度倍率", 2.0f, 0.0f, 10.0f)  // 'dash speed multiplier'
+		    , mDashAnimationScale(this, 'fp05', "ダッシュアニメ倍率", 2.0f, 0.0f, 10.0f) // 'dash animation scale'
+		    , mMaxTurnAngle(this, 'fp06', "旋回終了角度", 10.0f, 0.0f, 180.0f)           // 'turning end angle'
+		    , mDashableAngle(this, 'fp07', "ダッシュ可能\角度", 30.0f, 0.0f, 180.0f)     // 'possible dash angle'
+		    , mMinAttackRange(this, 'fp08', "攻撃範囲最小", 25.0f, 0.0f, 100.0f)         // 'minimum attack range'
 		{
 		}
 
-		Parm<int> mIp01; // _804
-		Parm<f32> mFp03; // _82C
-		Parm<f32> mFp04; // _854
-		Parm<f32> mFp05; // _87C
-		Parm<f32> mFp06; // _8A4
-		Parm<f32> mFp07; // _8CC
-		Parm<f32> mFp08; // _8F4
+		Parm<int> mReturnTime;           // _804
+		Parm<f32> mContinuousPressAngle; // _82C
+		Parm<f32> mDashSpeedMultiplier;  // _854
+		Parm<f32> mDashAnimationScale;   // _87C
+		Parm<f32> mMaxTurnAngle;         // _8A4
+		Parm<f32> mDashableAngle;        // _8CC
+		Parm<f32> mMinAttackRange;       // _8F4
 	};
 
 	Parms() { }
@@ -249,6 +249,19 @@ struct Parms : public EnemyParmsBase {
 
 	// _00-_7F8	= EnemyParmsBase
 	ProperParms mProperParms; // _7F8
+};
+
+enum AnimID {
+	MIULINANIM_AttackStart = 0, // 'attack0'
+	MIULINANIM_Attacking   = 1, // 'attack1'
+	MIULINANIM_AttackEnd   = 2, // 'attack4'
+	MIULINANIM_Dead        = 3,
+	MIULINANIM_Flick       = 4,
+	MIULINANIM_Move        = 5,
+	MIULINANIM_Carry       = 6, // 'type5'
+	MIULINANIM_Wait        = 7,
+	MIULINANIM_Turn        = 8, // 'waitact'
+	MIULINANIM_AnimCount,       // 9
 };
 
 struct ProperAnimator : public EnemyAnimatorBase {

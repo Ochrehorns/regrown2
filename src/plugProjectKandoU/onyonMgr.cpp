@@ -38,10 +38,9 @@ namespace Game {
 static const char UNUSED_1[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 static const char UNUSED_2[] = "onyonMgr";
 
-/*
- * --INFO--
- * Address:	80174CA0
- * Size:	00080C
+/**
+ * @note Address: 0x80174CA0
+ * @note Size: 0x80C
  */
 void Onyon::movieUserCommand(u32 code, MoviePlayer* player)
 {
@@ -178,10 +177,9 @@ void Onyon::movieUserCommand(u32 code, MoviePlayer* player)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801754AC
- * Size:	0000E4
+/**
+ * @note Address: 0x801754AC
+ * @note Size: 0xE4
  */
 bool Onyon::isSuckReady()
 {
@@ -211,17 +209,15 @@ bool Onyon::isSuckReady()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80175590
- * Size:	000028
+/**
+ * @note Address: 0x80175590
+ * @note Size: 0x28
  */
 BOOL Onyon::isSuckArriveWait() { return mOnyonType == ONYON_TYPE_SHIP ? mSuckState == SUCKSTATE_Closing : FALSE; }
 
-/*
- * --INFO--
- * Address:	801755B8
- * Size:	00068C
+/**
+ * @note Address: 0x801755B8
+ * @note Size: 0x68C
  */
 void Onyon::setType(int type)
 {
@@ -271,10 +267,9 @@ void Onyon::setType(int type)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80175D4C
- * Size:	0000D0
+/**
+ * @note Address: 0x80175D4C
+ * @note Size: 0xD0
  */
 void Onyon::setupTevRegAnim(int type)
 {
@@ -288,17 +283,15 @@ void Onyon::setupTevRegAnim(int type)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80175E1C
- * Size:	000074
+/**
+ * @note Address: 0x80175E1C
+ * @note Size: 0x74
  */
 bool Onyon::stimulate(Interaction& act) { return act.actCommon(this) ? act.actOnyon(this) : false; }
 
-/*
- * --INFO--
- * Address:	80175E90
- * Size:	000158
+/**
+ * @note Address: 0x80175E90
+ * @note Size: 0x158
  */
 bool InteractSuckArrive::actOnyon(Onyon* item)
 {
@@ -335,17 +328,15 @@ bool InteractSuckArrive::actOnyon(Onyon* item)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80175FE8
- * Size:	000008
+/**
+ * @note Address: 0x80175FE8
+ * @note Size: 0x8
  */
 bool Onyon::needShadow() { return false; }
 
-/*
- * --INFO--
- * Address:	80175FF0
- * Size:	0000A4
+/**
+ * @note Address: 0x80175FF0
+ * @note Size: 0xA4
  */
 void Onyon::getShadowParam(ShadowParam& param)
 {
@@ -360,17 +351,15 @@ void Onyon::getShadowParam(ShadowParam& param)
 	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
 }
 
-/*
- * --INFO--
- * Address:	80176094
- * Size:	000034
+/**
+ * @note Address: 0x80176094
+ * @note Size: 0x34
  */
 bool Onyon::sound_culling() { return (mOnyonType <= ONYON_TYPE_YELLOW) ? Creature::sound_culling() : false; }
 
-/*
- * --INFO--
- * Address:	801760C8
- * Size:	000DBC
+/**
+ * @note Address: 0x801760C8
+ * @note Size: 0xDBC
  */
 bool InteractSuckDone::actOnyon(Onyon* item)
 {
@@ -418,7 +407,7 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 			Vector3f pos = item->getPosition();
 
 			const f32 theta = item->getFaceDir();
-			pos += Vector3f(20.0f * pikmin2_sinf(theta), 117.0f, 20.0f * pikmin2_cosf(theta));
+			pos += Vector3f(20.0f * sinf(theta), 117.0f, 20.0f * cosf(theta));
 			int money = pellet->mConfig->mParams.mMoney.mData;
 			if (money > 0) {
 				carryInfoMgr->appearPoko(pos, money);
@@ -492,7 +481,7 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 		}
 	}
 
-	if (gameSystem->mMode != GSM_VERSUS_MODE) {
+	if (!gameSystem->isVersusMode()) {
 		int money = pellet->getPokoValue();
 
 		if (gameSystem->mIsInCave) {
@@ -553,41 +542,38 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80176E84
- * Size:	00000C
+/**
+ * @note Address: 0x80176E84
+ * @note Size: 0xC
  */
 void Onyon::startPropera() { mPropera = 20.0f; }
 
-/*
- * --INFO--
- * Address:	80176E90
- * Size:	00000C
+/**
+ * @note Address: 0x80176E90
+ * @note Size: 0xC
  */
 void Onyon::stopPropera() { mPropera = -20.0f; }
 
-/*
- * --INFO--
- * Address:	80176E9C
- * Size:	00016C
+/**
+ * @note Address: 0x80176E9C
+ * @note Size: 0x16C
  */
 void Onyon::doDirectDraw(Graphics& gfx)
 {
 	if (mOnyonType == ONYON_TYPE_SHIP) {
 		gfx.initPrimDraw(0);
-		Vector3f pos = getInStart_UFO();
-		gfx._084     = Color4(0, 255, 0, 255);
+		Vector3f pos   = getInStart_UFO();
+		gfx.mDrawColor = Color4(0, 255, 0, 255);
 		gfx.drawSphere(pos, 5.0);
-		pos      = getOutStart_UFO();
-		gfx._084 = Color4(100, 255, 0, 255);
+		pos            = getOutStart_UFO();
+		gfx.mDrawColor = Color4(100, 255, 0, 255);
 		gfx.drawSphere(pos, 5.0);
 		SysShape::Joint* jnt = mModel->getJoint("start1");
 		Matrixf* mtx         = jnt->getWorldMatrix();
 		pos.x                = mtx->mMatrix.structView.tx;
 		pos.y                = mtx->mMatrix.structView.ty;
 		pos.z                = mtx->mMatrix.structView.tz;
-		gfx._084             = Color4(100, 255, 0, 255);
+		gfx.mDrawColor       = Color4(100, 255, 0, 255);
 		gfx.drawSphere(pos, 20.0);
 	}
 
@@ -595,10 +581,9 @@ void Onyon::doDirectDraw(Graphics& gfx)
 	drawLODInfo(gfx, orig);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000B0
+/**
+ * @note Address: N/A
+ * @note Size: 0xB0
  */
 Onyon::Onyon()
     : BaseItem(OBJTYPE_Onyon)
@@ -612,10 +597,9 @@ Onyon::Onyon()
 	mSpotbeamModel = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80177008
- * Size:	000034
+/**
+ * @note Address: 0x80177008
+ * @note Size: 0x34
  */
 void Onyon::onInit(CreatureInitArg*)
 {
@@ -630,24 +614,22 @@ void Onyon::onInit(CreatureInitArg*)
 	mSuckState         = SUCKSTATE_IdleClosed;
 }
 
-/*
- * --INFO--
- * Address:	8017703C
- * Size:	000004
+/**
+ * @note Address: 0x8017703C
+ * @note Size: 0x4
  */
 void Onyon::onKill(Game::CreatureKillArg*) { }
 
-/*
- * --INFO--
- * Address:	80177040
- * Size:	00023C
+/**
+ * @note Address: 0x80177040
+ * @note Size: 0x23C
  */
 void Onyon::onSetPosition()
 {
 	if (mapMgr) {
 		mPosition.y = mapMgr->getMinY(mPosition);
 	}
-	WPSearchArg wparg(mPosition, 0, 0, 10.0);
+	WPSearchArg wparg(mPosition, nullptr, false, 10.0);
 	if (mapMgr && mapMgr->mRouteMgr) {
 		mGoalWayPoint = mapMgr->mRouteMgr->getNearestWayPoint(wparg);
 	} else {
@@ -664,7 +646,7 @@ void Onyon::onSetPosition()
 		efx::OnyonSpotArg spotarg(mPosition, mOnyonType);
 		mSpotbeamModel = particleMgr->createModelEffect(&spotarg);
 		setSpotState(SPOTSTATE_Closed);
-		if (gameSystem->mMode == GSM_STORY_MODE) {
+		if (gameSystem->isStoryMode()) {
 			if (!playData->hasBootContainer(mOnyonType)) {
 				setSpotState(SPOTSTATE_Opened);
 				startWaitMotion();
@@ -695,10 +677,9 @@ void Onyon::onSetPosition()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8017727C
- * Size:	000110
+/**
+ * @note Address: 0x8017727C
+ * @note Size: 0x110
  */
 void Onyon::setSpotState(Onyon::cSpotState state)
 {
@@ -733,10 +714,9 @@ void Onyon::setSpotState(Onyon::cSpotState state)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000154
+/**
+ * @note Address: N/A
+ * @note Size: 0x154
  */
 void Onyon::updateSpot()
 {
@@ -774,10 +754,9 @@ void Onyon::updateSpot()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8017738C
- * Size:	0000AC
+/**
+ * @note Address: 0x8017738C
+ * @note Size: 0xAC
  */
 Vector3f Onyon::getSuckPos()
 {
@@ -797,25 +776,23 @@ Vector3f Onyon::getSuckPos()
 	return temp;
 }
 
-/*
- * --INFO--
- * Address:	80177438
- * Size:	0000D8
+/**
+ * @note Address: 0x80177438
+ * @note Size: 0xD8
  */
 Vector3f Onyon::getGoalPos()
 {
 	Vector3f goalPos = mPosition;
 	if (mObjectTypeID == OBJTYPE_Ufo) {
-		goalPos.x = 135.0f * pikmin2_sinf(mFaceDir) + goalPos.x;
-		goalPos.z = 135.0f * pikmin2_cosf(mFaceDir) + goalPos.z;
+		goalPos.x = 135.0f * sinf(mFaceDir) + goalPos.x;
+		goalPos.z = 135.0f * cosf(mFaceDir) + goalPos.z;
 	}
 	return goalPos;
 }
 
-/*
- * --INFO--
- * Address:	80177510
- * Size:	000318
+/**
+ * @note Address: 0x80177510
+ * @note Size: 0x318
  */
 void Onyon::doAI()
 {
@@ -862,10 +839,9 @@ void Onyon::doAI()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80177828
- * Size:	000078
+/**
+ * @note Address: 0x80177828
+ * @note Size: 0x78
  */
 void Onyon::forceClose()
 {
@@ -878,10 +854,9 @@ void Onyon::forceClose()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801778A0
- * Size:	000078
+/**
+ * @note Address: 0x801778A0
+ * @note Size: 0x78
  */
 void Onyon::do_updateLOD()
 {
@@ -895,10 +870,9 @@ void Onyon::do_updateLOD()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80177918
- * Size:	000064
+/**
+ * @note Address: 0x80177918
+ * @note Size: 0x64
  */
 void Onyon::getLODCylinder(Sys::Cylinder& cylinder)
 {
@@ -909,10 +883,9 @@ void Onyon::getLODCylinder(Sys::Cylinder& cylinder)
 	cylinder.set(vec1, vec2, 40.0f);
 }
 
-/*
- * --INFO--
- * Address:	8017797C
- * Size:	000470
+/**
+ * @note Address: 0x8017797C
+ * @note Size: 0x470
  */
 void Onyon::do_doAnimation()
 {
@@ -956,7 +929,7 @@ void Onyon::do_doAnimation()
 	update_pmotions();
 
 	u16 onyonType = mOnyonType;
-	if (gameSystem->mFlags & 2) {
+	if (gameSystem->isFlag(GAMESYS_IsPlaying)) {
 		if (onyonType == ONYON_TYPE_SHIP) {
 			SoundID soundid = PSSE_EV_UFO_PISTON;
 
@@ -1000,10 +973,9 @@ void Onyon::do_doAnimation()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E0
+/**
+ * @note Address: N/A
+ * @note Size: 0xE0
  */
 void Onyon::initTube()
 {
@@ -1029,10 +1001,9 @@ void Onyon::initTube()
 	JUT_ASSERTLINE(1690, part, "I\'am bikkuri-ed\n");
 }
 
-/*
- * --INFO--
- * Address:	80177DF4
- * Size:	000198
+/**
+ * @note Address: 0x80177DF4
+ * @note Size: 0x198
  */
 void Onyon::startWaitMotion()
 {
@@ -1071,10 +1042,9 @@ void Onyon::startWaitMotion()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80177F8C
- * Size:	000078
+/**
+ * @note Address: 0x80177F8C
+ * @note Size: 0x78
  */
 void Onyon::onKeyEvent_UFO(const SysShape::KeyEvent& event)
 {
@@ -1102,24 +1072,22 @@ void Onyon::onKeyEvent_UFO(const SysShape::KeyEvent& event)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80178004
- * Size:	00013C
+/**
+ * @note Address: 0x80178004
+ * @note Size: 0x13C
  */
 Vector3f Onyon::getFlagSetPos()
 {
 	const f32 dir   = getFaceDir();
-	Vector3f offset = Vector3f(100.0f * pikmin2_sinf(dir), 0.0f, 100.0f * pikmin2_cosf(dir));
+	Vector3f offset = Vector3f(100.0f * sinf(dir), 0.0f, 100.0f * cosf(dir));
 	Vector3f pos    = getPosition();
 	pos += offset;
 	return pos;
 }
 
-/*
- * --INFO--
- * Address:	80178140
- * Size:	00004C
+/**
+ * @note Address: 0x80178140
+ * @note Size: 0x4C
  */
 void Onyon::onKeyEvent(const SysShape::KeyEvent& event)
 {
@@ -1130,10 +1098,9 @@ void Onyon::onKeyEvent(const SysShape::KeyEvent& event)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8017818C
- * Size:	0000AC
+/**
+ * @note Address: 0x8017818C
+ * @note Size: 0xAC
  */
 void Onyon::vsChargePikmin()
 {
@@ -1153,10 +1120,9 @@ void Onyon::vsChargePikmin()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80178238
- * Size:	000648
+/**
+ * @note Address: 0x80178238
+ * @note Size: 0x648
  */
 void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 {
@@ -1219,7 +1185,7 @@ void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 							doEmit(obj, false);
 
 						} else { // returned pikihead is null, 100 pikmin limit must be reached
-							if (gameSystem->mFlags & 0x20 && !playData->isDemoFlag(DEMO_Max_Pikmin_On_Field)) {
+							if (gameSystem->isFlag(GAMESYS_IsGameWorldActive) && !playData->isDemoFlag(DEMO_Max_Pikmin_On_Field)) {
 								playData->setDemoFlag(DEMO_Max_Pikmin_On_Field);
 
 								// if wild pikmin exist, play 95 pikmin CS, otherwise play 100 pikmin CS
@@ -1255,10 +1221,9 @@ void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80178880
- * Size:	000298
+/**
+ * @note Address: 0x80178880
+ * @note Size: 0x298
  */
 void Onyon::doEmit(Creature* seed, bool isSetAngle)
 {
@@ -1271,7 +1236,7 @@ void Onyon::doEmit(Creature* seed, bool isSetAngle)
 	layFX.create(&arg);
 	seed->setPosition(onyonpos, false);
 
-	if (gameSystem->mMode == GSM_STORY_MODE && moviePlayer->mFlags.typeView & 1 && moviePlayer->isPlaying("x18_exp_pellet")) {
+	if (gameSystem->isStoryMode() && moviePlayer->mFlags.isSet(1) && moviePlayer->isPlaying("x18_exp_pellet")) {
 		seed->movie_begin(0);
 	}
 
@@ -1286,14 +1251,13 @@ void Onyon::doEmit(Creature* seed, bool isSetAngle)
 		angle = randFloat() * TAU;
 	}
 
-	Vector3f velocity(pikmin2_sinf(angle) * 130.0f, 700.0f, pikmin2_cosf(angle) * 130.0f);
+	Vector3f velocity(sinf(angle) * 130.0f, 700.0f, cosf(angle) * 130.0f);
 	seed->setVelocity(velocity);
 }
 
-/*
- * --INFO--
- * Address:	80178B18
- * Size:	0000A0
+/**
+ * @note Address: 0x80178B18
+ * @note Size: 0xA0
  */
 CollPart* Onyon::getLegPart(int id)
 {
@@ -1303,10 +1267,9 @@ CollPart* Onyon::getLegPart(int id)
 	return mCollTree->getCollPart(tags[id]);
 }
 
-/*
- * --INFO--
- * Address:	80178BB8
- * Size:	0000C0
+/**
+ * @note Address: 0x80178BB8
+ * @note Size: 0xC0
  */
 CollPart* Onyon::getFootPart(int id)
 {
@@ -1318,15 +1281,14 @@ CollPart* Onyon::getFootPart(int id)
 	return part;
 }
 
-/*
- * --INFO--
- * Address:	80178C78
- * Size:	00012C
+/**
+ * @note Address: 0x80178C78
+ * @note Size: 0x12C
  */
 void Onyon::makeTrMatrix()
 {
 	Vector3f angle(0.0f, mFaceDir, 0.0f);
-	mObjMatrix.makeTR(mPosition, angle);
+	mBaseTrMatrix.makeTR(mPosition, angle);
 	updateCollTree();
 	if (gameSystem->paused() || moviePlayer->mDemoState != 0) {
 		return;
@@ -1351,10 +1313,9 @@ void Onyon::makeTrMatrix()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80178DA4
- * Size:	000138
+/**
+ * @note Address: 0x80178DA4
+ * @note Size: 0x138
  */
 void Onyon::changeMaterial()
 {
@@ -1377,7 +1338,7 @@ void Onyon::changeMaterial()
 		if (animid == 4) {
 			f32 timer = mAnimator.mTimer;
 			if (mAnimator.mAnimInfo) {
-				anmtime = (f32)mAnimator.mAnimInfo->mAnm->mMaxFrame;
+				anmtime = (f32)mAnimator.mAnimInfo->mAnm->mFrameLength;
 			} else {
 				anmtime = 0.0f;
 			}
@@ -1402,10 +1363,9 @@ void Onyon::changeMaterial()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80178EDC
- * Size:	0001D4
+/**
+ * @note Address: 0x80178EDC
+ * @note Size: 0x1D4
  */
 void Onyon::setSpotEffect(bool flag)
 {
@@ -1437,14 +1397,13 @@ void Onyon::setSpotEffect(bool flag)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801790B0
- * Size:	000134
+/**
+ * @note Address: 0x801790B0
+ * @note Size: 0x134
  */
 void Onyon::setSpotEffectActive(bool flag)
 {
-	if (flag && gameSystem && !(gameSystem->mFlags & 0x20)) {
+	if (flag && gameSystem && !(gameSystem->isFlag(GAMESYS_IsGameWorldActive))) {
 		flag = false;
 	}
 
@@ -1466,15 +1425,14 @@ void Onyon::setSpotEffectActive(bool flag)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801791E4
- * Size:	000168
+/**
+ * @note Address: 0x801791E4
+ * @note Size: 0x168
  */
 void Onyon::efxSuikomi()
 {
 	if (mOnyonType <= ONYON_TYPE_YELLOW) {
-		efx::TOnyonEatC onyonFX(&mObjMatrix);
+		efx::TOnyonEatC onyonFX(&mBaseTrMatrix);
 		onyonFX.create(nullptr);
 		startSound(PSSE_EV_HOME_PELLET_BACUUM);
 
@@ -1490,16 +1448,15 @@ void Onyon::efxSuikomi()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8017934C
- * Size:	0001A0
+/**
+ * @note Address: 0x8017934C
+ * @note Size: 0x1A0
  */
 void Onyon::efxPafuPafu()
 {
 	if (!(randFloat() > 0.05f)) {
 		char* jntnames[3]      = { "kasi1jnt1", "kass2jnt1", "kasi3jnt1" };
-		int id                 = (int)(randFloat() * 3.0f);
+		int id                 = randInt(3);
 		SysShape::Joint* joint = mModel->getJoint(jntnames[id]);
 		if (joint && mLod.mFlags & 4) {
 			efx::TOnyonPuffPuff puffFX(joint->getWorldMatrix());
@@ -1515,10 +1472,9 @@ void Onyon::efxPafuPafu()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801794EC
- * Size:	0000B0
+/**
+ * @note Address: 0x801794EC
+ * @note Size: 0xB0
  */
 void Onyon::efxPafuKira()
 {
@@ -1534,17 +1490,15 @@ void Onyon::efxPafuKira()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8017959C
- * Size:	00002C
+/**
+ * @note Address: 0x8017959C
+ * @note Size: 0x2C
  */
 int Onyon::getStoreCount() { return playData->mPikiContainer.getColorSum(mOnyonType); }
 
-/*
- * --INFO--
- * Address:	801795C8
- * Size:	000244
+/**
+ * @note Address: 0x801795C8
+ * @note Size: 0x244
  */
 void Onyon::enterPiki(Piki* piki)
 {
@@ -1570,10 +1524,9 @@ void Onyon::enterPiki(Piki* piki)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8017980C
- * Size:	000048
+/**
+ * @note Address: 0x8017980C
+ * @note Size: 0x48
  */
 void Onyon::exitPikis(int add, int color)
 {
@@ -1588,14 +1541,13 @@ void Onyon::exitPikis(int add, int color)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80179854
- * Size:	000454
+/**
+ * @note Address: 0x80179854
+ * @note Size: 0x454
  */
 Creature* Onyon::exitPiki()
 {
-	if (!(gameSystem->mFlags & 0x20)) {
+	if (!(gameSystem->isFlag(GAMESYS_IsGameWorldActive))) {
 		return nullptr;
 	}
 
@@ -1686,10 +1638,9 @@ Creature* Onyon::exitPiki()
 	return piki;
 }
 
-/*
- * --INFO--
- * Address:	80179CA8
- * Size:	0000B8
+/**
+ * @note Address: 0x80179CA8
+ * @note Size: 0xB8
  */
 bool Onyon::insideAccessArea(Vector3f& navipos)
 {
@@ -1707,10 +1658,9 @@ bool Onyon::insideAccessArea(Vector3f& navipos)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80179D60
- * Size:	00011C
+/**
+ * @note Address: 0x80179D60
+ * @note Size: 0x11C
  */
 BaseItem* ItemOnyon::Mgr::generatorBirth(Vector3f& pos, Vector3f& angle, GenItemParm* parm)
 {
@@ -1756,17 +1706,15 @@ BaseItem* ItemOnyon::Mgr::generatorBirth(Vector3f& pos, Vector3f& angle, GenItem
 	return onyon;
 }
 
-/*
- * --INFO--
- * Address:	80179E7C
- * Size:	000004
+/**
+ * @note Address: 0x80179E7C
+ * @note Size: 0x4
  */
 void ItemOnyon::Mgr::setupSoundViewerAndBas() { }
 
-/*
- * --INFO--
- * Address:	80179E80
- * Size:	0000C4
+/**
+ * @note Address: 0x80179E80
+ * @note Size: 0xC4
  */
 Vector3f Onyon::getInEnd_UFO()
 {
@@ -1778,10 +1726,9 @@ Vector3f Onyon::getInEnd_UFO()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80179F44
- * Size:	000168
+/**
+ * @note Address: 0x80179F44
+ * @note Size: 0x168
  */
 Vector3f Onyon::getInStart_UFO()
 {
@@ -1794,10 +1741,9 @@ Vector3f Onyon::getInStart_UFO()
 	return (pos + (fixpos * 90.0f));
 }
 
-/*
- * --INFO--
- * Address:	8017A0AC
- * Size:	0000C4
+/**
+ * @note Address: 0x8017A0AC
+ * @note Size: 0xC4
  */
 Vector3f Onyon::getOutStart_UFO()
 {
@@ -1809,10 +1755,9 @@ Vector3f Onyon::getOutStart_UFO()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000124
+/**
+ * @note Address: N/A
+ * @note Size: 0x124
  */
 void Onyon::init_pmotions()
 {
@@ -1845,10 +1790,9 @@ void Onyon::init_pmotions()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8017A1A4
- * Size:	00007C
+/**
+ * @note Address: 0x8017A1A4
+ * @note Size: 0x7C
  */
 f32& Onyon::getPMotionSpeed(int i)
 {
@@ -1857,10 +1801,9 @@ f32& Onyon::getPMotionSpeed(int i)
 	return mPMotionSpeeds[i];
 }
 
-/*
- * --INFO--
- * Address:	8017A220
- * Size:	00007C
+/**
+ * @note Address: 0x8017A220
+ * @note Size: 0x7C
  */
 SysShape::Animator& Onyon::getPAnimator(int i)
 {
@@ -1869,10 +1812,9 @@ SysShape::Animator& Onyon::getPAnimator(int i)
 	return mPMotionList[i];
 }
 
-/*
- * --INFO--
- * Address:	8017A29C
- * Size:	000198
+/**
+ * @note Address: 0x8017A29C
+ * @note Size: 0x198
  */
 void Onyon::update_pmotions()
 {
@@ -1896,10 +1838,9 @@ void Onyon::update_pmotions()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8017A434
- * Size:	0001E8
+/**
+ * @note Address: 0x8017A434
+ * @note Size: 0x1E8
  */
 void ItemOnyon::Mgr::initDependency()
 {
@@ -1911,10 +1852,9 @@ void ItemOnyon::Mgr::initDependency()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8017A620
- * Size:	00004C
+/**
+ * @note Address: 0x8017A620
+ * @note Size: 0x4C
  */
 J3DModelData* ItemOnyon::Mgr::generatorGetShape(GenItemParm* parm)
 {
@@ -1938,17 +1878,15 @@ J3DModelData* ItemOnyon::Mgr::generatorGetShape(GenItemParm* parm)
 	return mModelData[objType];
 }
 
-/*
- * --INFO--
- * Address:	8017A66C
- * Size:	000054
+/**
+ * @note Address: 0x8017A66C
+ * @note Size: 0x54
  */
 GenItemParm* ItemOnyon::Mgr::generatorNewItemParm() { return new GenOnyonParm(); }
 
-/*
- * --INFO--
- * Address:	8017A6C0
- * Size:	00008C
+/**
+ * @note Address: 0x8017A6C0
+ * @note Size: 0x8C
  */
 void ItemOnyon::Mgr::generatorWrite(Stream& ram, Game::GenItemParm* parm)
 {
@@ -1962,12 +1900,11 @@ void ItemOnyon::Mgr::generatorWrite(Stream& ram, Game::GenItemParm* parm)
 	ram.textWriteText("\t# after boot? true==1\r\n");
 }
 
-/*
- * --INFO--
- * Address:	8017A74C
- * Size:	000078
+/**
+ * @note Address: 0x8017A74C
+ * @note Size: 0x78
  */
-void ItemOnyon::Mgr::generatorRead(Stream& ram, Game::GenItemParm* parm, unsigned long flag)
+void ItemOnyon::Mgr::generatorRead(Stream& ram, Game::GenItemParm* parm, u32 flag)
 {
 	GenOnyonParm* onyonparm = static_cast<GenOnyonParm*>(parm);
 	onyonparm->mOnyonIndex  = ram.readInt();
@@ -1976,10 +1913,9 @@ void ItemOnyon::Mgr::generatorRead(Stream& ram, Game::GenItemParm* parm, unsigne
 	}
 }
 
-/*
- * --INFO--
- * Address:	8017A7C4
- * Size:	000188
+/**
+ * @note Address: 0x8017A7C4
+ * @note Size: 0x188
  */
 ItemOnyon::Mgr::Mgr()
     : BaseItemMgr(1)
@@ -1996,17 +1932,15 @@ ItemOnyon::Mgr::Mgr()
 	mAnimMgrFiles[2]           = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8017A7C4
- * Size:	000188
+/**
+ * @note Address: 0x8017A7C4
+ * @note Size: 0x188
  */
 ItemOnyon::Mgr::~Mgr() { }
 
-/*
- * --INFO--
- * Address:	8017AC88
- * Size:	000254
+/**
+ * @note Address: 0x8017AC88
+ * @note Size: 0x254
  */
 void Onyon::on_movie_end(bool)
 {
@@ -2016,7 +1950,7 @@ void Onyon::on_movie_end(bool)
 		}
 	} else {
 		bool checkboot = false;
-		if (mOnyonType <= ONYON_TYPE_YELLOW && gameSystem->mMode == GSM_STORY_MODE) {
+		if (mOnyonType <= ONYON_TYPE_YELLOW && gameSystem->isStoryMode()) {
 			checkboot = true;
 		}
 		if (checkboot) {
@@ -2037,10 +1971,9 @@ void Onyon::on_movie_end(bool)
 	startWaitMotion();
 }
 
-/*
- * --INFO--
- * Address:	8017AEDC
- * Size:	000BC0
+/**
+ * @note Address: 0x8017AEDC
+ * @note Size: 0xBC0
  */
 Onyon* ItemOnyon::Mgr::birth(int objtype, int onyontype)
 {
@@ -2068,7 +2001,7 @@ Onyon* ItemOnyon::Mgr::birth(int objtype, int onyontype)
 		playData->hasBootContainer(onyontype);
 
 		// play boot animation if the onion isnt booted (glitched onion)
-		if (gameSystem->mMode == GSM_STORY_MODE && !playData->hasBootContainer(onyontype)) {
+		if (gameSystem->isStoryMode() && !playData->hasBootContainer(onyontype)) {
 			onyon->mAnimator.startAnim(4, nullptr);
 			onyon->mAnimSpeed = 0.0f;
 		}
@@ -2134,10 +2067,9 @@ Onyon* ItemOnyon::Mgr::birth(int objtype, int onyontype)
 	return resultOnyon;
 }
 
-/*
- * --INFO--
- * Address:	8017BA9C
- * Size:	000060
+/**
+ * @note Address: 0x8017BA9C
+ * @note Size: 0x60
  */
 Onyon* ItemOnyon::Mgr::getOnyon(int i)
 {
@@ -2149,17 +2081,15 @@ Onyon* ItemOnyon::Mgr::getOnyon(int i)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8017BAFC
- * Size:	000020
+/**
+ * @note Address: 0x8017BAFC
+ * @note Size: 0x20
  */
 void ItemOnyon::Mgr::init() { load(); }
 
-/*
- * --INFO--
- * Address:	8017BB1C
- * Size:	000528
+/**
+ * @note Address: 0x8017BB1C
+ * @note Size: 0x528
  */
 void ItemOnyon::Mgr::load()
 {
@@ -2179,7 +2109,7 @@ void ItemOnyon::Mgr::load()
 	mModelData[0] = J3DModelLoaderDataBase::load(file, 0x240000);
 
 	JKRArchive* podarc = nullptr;
-	if ((gameSystem->isChallengeMode() || gameSystem->mIsInCave) && gameSystem->mMode != GSM_VERSUS_MODE) {
+	if ((gameSystem->isChallengeMode() || gameSystem->mIsInCave) && !gameSystem->isVersusMode()) {
 		LoadResource::Arg loadpodarg(playData->isStoryFlag(STORY_DebtPaid) ? "user/Kando/pod_gold/arc.szs" : "user/Kando/pod/arc.szs");
 		loadpodarg.mHeap = JKRGetCurrentHeap();
 		node             = gLoadResourceMgr->mountArchive(loadpodarg);
@@ -2221,7 +2151,7 @@ void ItemOnyon::Mgr::load()
 	mCollFactories[ONYON_OBJECT_ONYON] = CollPartFactory::load(onyontextarc, "onyonColl.txt");
 	closeTextArc(onyontextarc);
 
-	if ((gameSystem->isChallengeMode() || gameSystem->mIsInCave) && gameSystem->mMode != GSM_VERSUS_MODE) {
+	if ((gameSystem->isChallengeMode() || gameSystem->mIsInCave) && !gameSystem->isVersusMode()) {
 		if (playData->mStoryFlags & STORY_DebtPaid) {
 			mObjectPathComponent = "user/Kando/pod_gold";
 		} else {

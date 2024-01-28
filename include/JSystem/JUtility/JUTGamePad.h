@@ -59,6 +59,11 @@ struct JUTGamePad : public JKRDisposer {
 		ANALOG_DOWN  = 0x4000000,
 		ANALOG_UP    = 0x8000000,
 
+		CSTICK_LEFT  = 0x10000,
+		CSTICK_RIGHT = 0x20000,
+		CSTICK_DOWN  = 0x40000,
+		CSTICK_UP    = 0x80000,
+
 		PRESS_LEFT  = (PRESS_DPAD_LEFT | ANALOG_LEFT),
 		PRESS_RIGHT = (PRESS_DPAD_RIGHT | ANALOG_RIGHT),
 		PRESS_DOWN  = (PRESS_DPAD_DOWN | ANALOG_DOWN),
@@ -196,7 +201,7 @@ struct JUTGamePad : public JKRDisposer {
 
 	static JUTGamePad* getGamePad(int);
 
-	inline bool isConnected() const { return (0 <= mPortNum && mPortNum < 4); }
+	inline bool isConnected() const { return (mPortNum >= 0 && mPortNum < 4); }
 	inline bool isButtonDown(u32 buttons) { return mButton.mButtonDown & buttons; }
 	inline bool isButton(u32 buttons) { return mButton.mButton & buttons; }
 
@@ -235,6 +240,7 @@ struct JUTGamePad : public JKRDisposer {
 
 	inline u32 getButton() const { return mButton.mButton; }
 	inline u32 getButtonDown() const { return mButton.mButtonDown; }
+	inline u32 getButtonUp() const { return mButton.mButtonUp; }
 	inline f32 getMainStickX() const { return mMStick.mXPos; }
 	inline f32 getMainStickY() const { return mMStick.mYPos; }
 	inline f32 getMainStickValue() const { return mMStick.mStickMag; }
@@ -260,6 +266,7 @@ struct JUTGamePad : public JKRDisposer {
 		if (mPortNum != -1 && mButtonReset.mIsReset != false) {
 			isPushingReset = true;
 		}
+
 		return isPushingReset;
 	}
 

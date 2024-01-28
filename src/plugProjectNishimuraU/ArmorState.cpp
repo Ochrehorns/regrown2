@@ -7,10 +7,9 @@
 namespace Game {
 namespace Armor {
 
-/*
- * --INFO--
- * Address:	80285ED8
- * Size:	0004CC
+/**
+ * @note Address: 0x80285ED8
+ * @note Size: 0x4CC
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -31,23 +30,21 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateFail);
 }
 
-/*
- * --INFO--
- * Address:	802863A4
- * Size:	00005C
+/**
+ * @note Address: 0x802863A4
+ * @note Size: 0x5C
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->deathProcedure();
 	enemy->disableEvent(0, EB_Cullable);
 	enemy->mTargetVelocity = Vector3f(0.0f);
-	enemy->startMotion(0, nullptr);
+	enemy->startMotion(ARMORANIM_Dead, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80286400
- * Size:	000090
+/**
+ * @note Address: 0x80286400
+ * @note Size: 0x90
  */
 void StateDead::exec(EnemyBase* enemy)
 {
@@ -56,24 +53,22 @@ void StateDead::exec(EnemyBase* enemy)
 		u32 animType = armor->mCurAnim->mType;
 		if (animType == KEYEVENT_2) {
 			Vector3f armorPos = armor->getPosition();
-			rumbleMgr->startRumble(9, armorPos, 2);
+			rumbleMgr->startRumble(9, armorPos, RUMBLEID_Both);
 		} else if (animType == KEYEVENT_END) {
 			armor->kill(nullptr);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	80286490
- * Size:	000004
+/**
+ * @note Address: 0x80286490
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	80286494
- * Size:	000070
+/**
+ * @note Address: 0x80286494
+ * @note Size: 0x70
  */
 void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -81,21 +76,20 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	enemy->disableEvent(0, EB_LifegaugeVisible);
 	enemy->disableEvent(0, EB_Animating);
 	enemy->mTargetVelocity = Vector3f(0.0f);
-	enemy->startMotion(1, nullptr);
+	enemy->startMotion(ARMORANIM_Appear, nullptr);
 	enemy->stopMotion();
 }
 
-/*
- * --INFO--
- * Address:	80286504
- * Size:	0000A0
+/**
+ * @note Address: 0x80286504
+ * @note Size: 0xA0
  */
 void StateStay::exec(EnemyBase* enemy)
 {
 	Obj* armor = OBJ(enemy);
 	armor->setBridgeSearch();
-	f32 viewAngle  = CG_PARMS(armor)->mGeneral.mViewAngle;
-	f32 viewRadius = CG_PARMS(armor)->mGeneral.mSightRadius;
+	f32 viewAngle  = CG_GENERALPARMS(armor).mViewAngle;
+	f32 viewRadius = CG_GENERALPARMS(armor).mSightRadius;
 
 	Creature* targetCreature = EnemyFunc::getNearestPikminOrNavi(armor, viewAngle, viewRadius, nullptr, nullptr, nullptr);
 
@@ -105,10 +99,9 @@ void StateStay::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802865A4
- * Size:	00003C
+/**
+ * @note Address: 0x802865A4
+ * @note Size: 0x3C
  */
 void StateStay::cleanup(EnemyBase* enemy)
 {
@@ -116,10 +109,9 @@ void StateStay::cleanup(EnemyBase* enemy)
 	enemy->enableEvent(0, EB_Animating);
 }
 
-/*
- * --INFO--
- * Address:	802865E0
- * Size:	0000B8
+/**
+ * @note Address: 0x802865E0
+ * @note Size: 0xB8
  */
 void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -129,17 +121,16 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	armor->enableEvent(0, EB_LifegaugeVisible);
 	armor->mTargetVelocity = Vector3f(0.0f);
 	armor->setEmotionExcitement();
-	armor->startMotion(1, nullptr);
+	armor->startMotion(ARMORANIM_Appear, nullptr);
 	armor->createAppearEffect();
 
 	Vector3f pos = armor->getPosition();
-	rumbleMgr->startRumble(10, pos, 2);
+	rumbleMgr->startRumble(10, pos, RUMBLEID_Both);
 }
 
-/*
- * --INFO--
- * Address:	80286698
- * Size:	0000CC
+/**
+ * @note Address: 0x80286698
+ * @note Size: 0xCC
  */
 void StateAppear::exec(EnemyBase* enemy)
 {
@@ -148,7 +139,7 @@ void StateAppear::exec(EnemyBase* enemy)
 		u32 animType = armor->mCurAnim->mType;
 		if (animType == KEYEVENT_2) {
 			Vector3f armorPos = armor->getPosition();
-			rumbleMgr->startRumble(9, armorPos, 2);
+			rumbleMgr->startRumble(9, armorPos, RUMBLEID_Both);
 		} else if (animType == KEYEVENT_END) {
 			if (armor->mHealth <= 0.0f) {
 				transit(armor, ARMOR_Dead, nullptr);
@@ -159,17 +150,15 @@ void StateAppear::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80286764
- * Size:	000024
+/**
+ * @note Address: 0x80286764
+ * @note Size: 0x24
  */
 void StateAppear::cleanup(EnemyBase* enemy) { enemy->hardConstraintOff(); }
 
-/*
- * --INFO--
- * Address:	80286788
- * Size:	000060
+/**
+ * @note Address: 0x80286788
+ * @note Size: 0x60
  */
 void StateDive::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -177,14 +166,13 @@ void StateDive::init(EnemyBase* enemy, StateArg* stateArg)
 	armor->hardConstraintOn();
 	armor->mTargetVelocity = Vector3f(0.0f);
 	armor->setEmotionCaution();
-	armor->startMotion(2, nullptr);
+	armor->startMotion(ARMORANIM_Dive, nullptr);
 	armor->createDisAppearEffect();
 }
 
-/*
- * --INFO--
- * Address:	802867E8
- * Size:	00009C
+/**
+ * @note Address: 0x802867E8
+ * @note Size: 0x9C
  */
 void StateDive::exec(EnemyBase* enemy)
 {
@@ -193,40 +181,88 @@ void StateDive::exec(EnemyBase* enemy)
 		u32 animType = armor->mCurAnim->mType;
 		if (animType == KEYEVENT_2) {
 			Vector3f armorPos = armor->getPosition();
-			rumbleMgr->startRumble(10, armorPos, 2);
+			rumbleMgr->startRumble(10, armorPos, RUMBLEID_Both);
 		} else if (animType == KEYEVENT_END) {
 			transit(armor, ARMOR_Stay, nullptr);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	80286884
- * Size:	000024
+/**
+ * @note Address: 0x80286884
+ * @note Size: 0x24
  */
 void StateDive::cleanup(EnemyBase* enemy) { enemy->hardConstraintOff(); }
 
-/*
- * --INFO--
- * Address:	802868A8
- * Size:	000034
+/**
+ * @note Address: 0x802868A8
+ * @note Size: 0x34
  */
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* armor        = OBJ(enemy);
 	armor->mNextState = ARMOR_NULL;
-	armor->startMotion(3, nullptr);
+	armor->startMotion(ARMORANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802868DC
- * Size:	0004F8
+/**
+ * @note Address: 0x802868DC
+ * @note Size: 0x4F8
  */
 void StateMove::exec(EnemyBase* enemy)
 {
-	// drought just skip this one lol
+	Obj* armor       = OBJ(enemy);
+	Creature* target = EnemyFunc::getNearestPikminOrNavi(armor, CG_GENERALPARMS(armor).mViewAngle(), CG_GENERALPARMS(armor).mSightRadius(),
+	                                                     nullptr, nullptr, nullptr);
+	if (target) {
+		armor->mTargetCreature = target;
+		f32 angleDist          = armor->changeFaceDir2(target);
+
+		armor->setTargetVelocity();
+
+		if (armor->isTargetAttackable(target, angleDist, CG_GENERALPARMS(armor).mMaxAttackRange(),
+		                              CG_GENERALPARMS(armor).mMaxAttackAngle())) {
+			armor->mNextState = ARMOR_Attack2;
+			armor->finishMotion();
+		} else {
+			Vector3f homePos = armor->mHomePosition;
+			Vector3f pos     = armor->getPosition();
+			f32 homeDist     = pos.distance(homePos);
+
+			if (homeDist > CG_GENERALPARMS(armor).mTerritoryRadius()) {
+				armor->mNextState = ARMOR_GoHome;
+				armor->finishMotion();
+			} else {
+				Creature* newTarget = EnemyFunc::getNearestPikminOrNavi(
+				    armor, CG_GENERALPARMS(armor).mMaxAttackAngle(), CG_GENERALPARMS(armor).mMaxAttackRange(), nullptr, nullptr, nullptr);
+				if (newTarget) {
+					armor->mNextState = ARMOR_Attack2;
+					armor->finishMotion();
+				}
+			}
+		}
+
+	} else if (armor->isBreakBridge()) {
+		armor->mNextState = armor->checkBreakOrMove();
+		armor->finishMotion();
+	} else {
+		armor->mNextState = ARMOR_GoHome;
+		armor->finishMotion();
+	}
+
+	if (armor->mHealth <= 0.0f) {
+		transit(armor, ARMOR_Dead, nullptr);
+		return;
+	}
+
+	if (EnemyFunc::isStartFlick(armor, true)) {
+		transit(armor, ARMOR_Flick, nullptr);
+		return;
+	}
+
+	if (armor->mCurAnim->mIsPlaying && armor->mCurAnim->mType == KEYEVENT_END) {
+		transit(armor, armor->mNextState, nullptr);
+	}
 	/*
 	stwu     r1, -0xf0(r1)
 	mflr     r0
@@ -577,35 +613,32 @@ lbl_80286D84:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80286DD4
- * Size:	000004
+/**
+ * @note Address: 0x80286DD4
+ * @note Size: 0x4
  */
 void StateMove::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	80286DD8
- * Size:	000034
+/**
+ * @note Address: 0x80286DD8
+ * @note Size: 0x34
  */
 void StateMoveSide::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* armor        = OBJ(enemy);
 	armor->mNextState = ARMOR_NULL;
-	armor->startMotion(3, nullptr);
+	armor->startMotion(ARMORANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80286E0C
- * Size:	000128
+/**
+ * @note Address: 0x80286E0C
+ * @note Size: 0x128
  */
 void StateMoveSide::exec(EnemyBase* enemy)
 {
 	Obj* armor     = OBJ(enemy);
-	f32 viewAngle  = CG_PARMS(armor)->mGeneral.mViewAngle;
-	f32 viewRadius = CG_PARMS(armor)->mGeneral.mSightRadius;
+	f32 viewAngle  = CG_GENERALPARMS(armor).mViewAngle;
+	f32 viewRadius = CG_GENERALPARMS(armor).mSightRadius;
 
 	Creature* targetCreature = EnemyFunc::getNearestPikminOrNavi(armor, viewAngle, viewRadius, nullptr, nullptr, nullptr);
 
@@ -634,35 +667,32 @@ void StateMoveSide::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80286F34
- * Size:	000004
+/**
+ * @note Address: 0x80286F34
+ * @note Size: 0x4
  */
 void StateMoveSide::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	80286F38
- * Size:	000034
+/**
+ * @note Address: 0x80286F38
+ * @note Size: 0x34
  */
 void StateMoveCentre::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* armor        = OBJ(enemy);
 	armor->mNextState = ARMOR_NULL;
-	armor->startMotion(3, nullptr);
+	armor->startMotion(ARMORANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80286F6C
- * Size:	000128
+/**
+ * @note Address: 0x80286F6C
+ * @note Size: 0x128
  */
 void StateMoveCentre::exec(EnemyBase* enemy)
 {
 	Obj* armor     = OBJ(enemy);
-	f32 viewAngle  = CG_PARMS(armor)->mGeneral.mViewAngle;
-	f32 viewRadius = CG_PARMS(armor)->mGeneral.mSightRadius;
+	f32 viewAngle  = CG_GENERALPARMS(armor).mViewAngle;
+	f32 viewRadius = CG_GENERALPARMS(armor).mSightRadius;
 
 	Creature* targetCreature = EnemyFunc::getNearestPikminOrNavi(armor, viewAngle, viewRadius, nullptr, nullptr, nullptr);
 	if (targetCreature) {
@@ -690,35 +720,32 @@ void StateMoveCentre::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80287094
- * Size:	000004
+/**
+ * @note Address: 0x80287094
+ * @note Size: 0x4
  */
 void StateMoveCentre::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	80287098
- * Size:	000034
+/**
+ * @note Address: 0x80287098
+ * @note Size: 0x34
  */
 void StateMoveTop::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* armor        = OBJ(enemy);
 	armor->mNextState = ARMOR_NULL;
-	armor->startMotion(3, nullptr);
+	armor->startMotion(ARMORANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802870CC
- * Size:	000128
+/**
+ * @note Address: 0x802870CC
+ * @note Size: 0x128
  */
 void StateMoveTop::exec(EnemyBase* enemy)
 {
 	Obj* armor     = OBJ(enemy);
-	f32 viewAngle  = CG_PARMS(armor)->mGeneral.mViewAngle;
-	f32 viewRadius = CG_PARMS(armor)->mGeneral.mSightRadius;
+	f32 viewAngle  = CG_GENERALPARMS(armor).mViewAngle;
+	f32 viewRadius = CG_GENERALPARMS(armor).mSightRadius;
 
 	Creature* targetCreature = EnemyFunc::getNearestPikminOrNavi(armor, viewAngle, viewRadius, nullptr, nullptr, nullptr);
 	if (targetCreature) {
@@ -746,29 +773,26 @@ void StateMoveTop::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802871F4
- * Size:	000004
+/**
+ * @note Address: 0x802871F4
+ * @note Size: 0x4
  */
 void StateMoveTop::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802871F8
- * Size:	000034
+/**
+ * @note Address: 0x802871F8
+ * @note Size: 0x34
  */
 void StateGoHome::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* armor        = OBJ(enemy);
 	armor->mNextState = ARMOR_NULL;
-	armor->startMotion(3, nullptr);
+	armor->startMotion(ARMORANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8028722C
- * Size:	00021C
+/**
+ * @note Address: 0x8028722C
+ * @note Size: 0x21C
  */
 void StateGoHome::exec(EnemyBase* enemy)
 {
@@ -776,11 +800,11 @@ void StateGoHome::exec(EnemyBase* enemy)
 	Vector3f pos     = armor->getPosition();
 	Vector3f homePos = Vector3f(armor->mHomePosition);
 
-	EnemyFunc::walkToTarget(armor, homePos, CG_PARMS(armor)->mGeneral.mMoveSpeed.mValue, CG_PARMS(armor)->mGeneral.mRotationalAccel.mValue,
-	                        CG_PARMS(armor)->mGeneral.mRotationalSpeed.mValue);
+	EnemyFunc::walkToTarget(armor, homePos, CG_GENERALPARMS(armor).mMoveSpeed.mValue, CG_GENERALPARMS(armor).mTurnSpeed.mValue,
+	                        CG_GENERALPARMS(armor).mMaxTurnAngle.mValue);
 
-	if (EnemyFunc::getNearestPikminOrNavi(armor, CG_PARMS(armor)->mGeneral.mMaxAttackRange.mValue,
-	                                      CG_PARMS(armor)->mGeneral.mMinAttackRange.mValue, nullptr, nullptr, nullptr)) {
+	if (EnemyFunc::getNearestPikminOrNavi(armor, CG_GENERALPARMS(armor).mMaxAttackRange.mValue,
+	                                      CG_GENERALPARMS(armor).mMaxAttackAngle.mValue, nullptr, nullptr, nullptr)) {
 		armor->mNextState = ARMOR_Attack2;
 		armor->finishMotion();
 	} else {
@@ -788,7 +812,7 @@ void StateGoHome::exec(EnemyBase* enemy)
 		Vector3f armorPos     = armor->getPosition();
 
 		f32 dist = armorPos.distance(armorHomePos);
-		if (dist < CG_PARMS(armor)->mGeneral.mHomeRadius.mValue) {
+		if (dist < CG_GENERALPARMS(armor).mHomeRadius.mValue) {
 			armor->mNextState = ARMOR_Dive;
 			armor->finishMotion();
 		}
@@ -808,37 +832,34 @@ void StateGoHome::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80287448
- * Size:	000004
+/**
+ * @note Address: 0x80287448
+ * @note Size: 0x4
  */
 void StateGoHome::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8028744C
- * Size:	000058
+/**
+ * @note Address: 0x8028744C
+ * @note Size: 0x58
  */
 void StateAttack1::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* armor             = OBJ(enemy);
 	armor->mTargetVelocity = Vector3f(0.0f);
-	armor->startMotion(4, nullptr);
+	armor->startMotion(ARMORANIM_Attack1, nullptr);
 	armor->mNextState = ARMOR_NULL;
 	armor->createBridgeEffect();
 }
 
-/*
- * --INFO--
- * Address:	802874A4
- * Size:	00013C
+/**
+ * @note Address: 0x802874A4
+ * @note Size: 0x13C
  */
 void StateAttack1::exec(EnemyBase* enemy)
 {
 	Obj* armor     = OBJ(enemy);
-	f32 viewAngle  = CG_PARMS(armor)->mGeneral.mViewAngle;
-	f32 viewRadius = CG_PARMS(armor)->mGeneral.mSightRadius;
+	f32 viewAngle  = CG_GENERALPARMS(armor).mViewAngle;
+	f32 viewRadius = CG_GENERALPARMS(armor).mSightRadius;
 
 	Creature* targetCreature = EnemyFunc::getNearestPikminOrNavi(armor, viewAngle, viewRadius, nullptr, nullptr, nullptr);
 	if (targetCreature) {
@@ -869,29 +890,26 @@ void StateAttack1::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802875E0
- * Size:	000004
+/**
+ * @note Address: 0x802875E0
+ * @note Size: 0x4
  */
 void StateAttack1::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802875E4
- * Size:	000040
+/**
+ * @note Address: 0x802875E4
+ * @note Size: 0x40
  */
 void StateAttack2::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	static_cast<Obj*>(enemy)->mAttackLoopTime = 0.0f;
-	enemy->mTargetVelocity                    = Vector3f(0.0f);
-	enemy->startMotion(5, nullptr);
+	OBJ(enemy)->mAttackLoopTime = 0.0f;
+	enemy->mTargetVelocity      = Vector3f(0.0f);
+	enemy->startMotion(ARMORANIM_Attack2, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80287624
- * Size:	0001B8
+/**
+ * @note Address: 0x80287624
+ * @note Size: 0x1B8
  */
 void StateAttack2::exec(EnemyBase* enemy)
 {
@@ -911,13 +929,13 @@ void StateAttack2::exec(EnemyBase* enemy)
 		if (armor->mCurAnim->mType == KEYEVENT_2) {
 			armor->createAttackEffect();
 		} else if (armor->mCurAnim->mType == KEYEVENT_3) {
-			f32 attackRadius = CG_PARMS(armor)->mGeneral.mAttackRadius;
-			f32 attackAngle  = CG_PARMS(armor)->mGeneral.mAttackHitAngle;
-			f32 attackDamage = CG_PARMS(armor)->mGeneral.mAttackDamage;
+			f32 attackRadius = CG_GENERALPARMS(armor).mAttackRadius;
+			f32 attackAngle  = CG_GENERALPARMS(armor).mAttackHitAngle;
+			f32 attackDamage = CG_GENERALPARMS(armor).mAttackDamage;
 			EnemyFunc::attackNavi(armor, attackRadius, attackAngle, attackDamage, nullptr, nullptr);
 
 			Vector3f armorPos = armor->getPosition();
-			rumbleMgr->startRumble(9, armorPos, 2);
+			rumbleMgr->startRumble(9, armorPos, RUMBLEID_Both);
 
 		} else if (armor->mCurAnim->mType == KEYEVENT_END) {
 			if (armor->mHealth <= 0.0f) {
@@ -933,28 +951,25 @@ void StateAttack2::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802877DC
- * Size:	000004
+/**
+ * @note Address: 0x802877DC
+ * @note Size: 0x4
  */
 void StateAttack2::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802877E0
- * Size:	00003C
+/**
+ * @note Address: 0x802877E0
+ * @note Size: 0x3C
  */
 void StateEat::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mTargetVelocity = Vector3f(0.0f);
-	enemy->startMotion(6, nullptr);
+	enemy->startMotion(ARMORANIM_Eat, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8028781C
- * Size:	000098
+/**
+ * @note Address: 0x8028781C
+ * @note Size: 0x98
  */
 void StateEat::exec(EnemyBase* enemy)
 {
@@ -972,28 +987,25 @@ void StateEat::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802878B4
- * Size:	000004
+/**
+ * @note Address: 0x802878B4
+ * @note Size: 0x4
  */
 void StateEat::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802878B8
- * Size:	00003C
+/**
+ * @note Address: 0x802878B8
+ * @note Size: 0x3C
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mTargetVelocity = Vector3f(0.0f);
-	enemy->startMotion(7, nullptr);
+	enemy->startMotion(ARMORANIM_Flick, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802878F4
- * Size:	000144
+/**
+ * @note Address: 0x802878F4
+ * @note Size: 0x144
  */
 void StateFlick::exec(EnemyBase* enemy)
 {
@@ -1006,16 +1018,13 @@ void StateFlick::exec(EnemyBase* enemy)
 
 	if (armor->mCurAnim->mIsPlaying) {
 		if (armor->mCurAnim->mType == KEYEVENT_2) {
-			EnemyFunc::flickNearbyNavi(armor, CG_PARMS(armor)->mGeneral.mShakeRange.mValue,
-			                           CG_PARMS(armor)->mGeneral.mShakeKnockback.mValue, CG_PARMS(armor)->mGeneral.mShakeDamage.mValue,
-			                           armor->getFaceDir(), nullptr);
-			EnemyFunc::flickNearbyPikmin(armor, CG_PARMS(armor)->mGeneral.mShakeRange.mValue,
-			                             CG_PARMS(armor)->mGeneral.mShakeKnockback.mValue, CG_PARMS(armor)->mGeneral.mShakeDamage.mValue,
-			                             armor->getFaceDir(), nullptr);
-			EnemyFunc::flickStickPikmin(armor, CG_PARMS(armor)->mGeneral.mShakeRateMaybe.mValue,
-			                            CG_PARMS(armor)->mGeneral.mShakeKnockback.mValue, CG_PARMS(armor)->mGeneral.mShakeDamage.mValue,
-			                            armor->getFaceDir(), nullptr);
-			armor->mToFlick = 0.0f;
+			EnemyFunc::flickNearbyNavi(armor, CG_GENERALPARMS(armor).mShakeRange.mValue, CG_GENERALPARMS(armor).mShakeKnockback.mValue,
+			                           CG_GENERALPARMS(armor).mShakeDamage.mValue, armor->getFaceDir(), nullptr);
+			EnemyFunc::flickNearbyPikmin(armor, CG_GENERALPARMS(armor).mShakeRange.mValue, CG_GENERALPARMS(armor).mShakeKnockback.mValue,
+			                             CG_GENERALPARMS(armor).mShakeDamage.mValue, armor->getFaceDir(), nullptr);
+			EnemyFunc::flickStickPikmin(armor, CG_GENERALPARMS(armor).mShakeChance.mValue, CG_GENERALPARMS(armor).mShakeKnockback.mValue,
+			                            CG_GENERALPARMS(armor).mShakeDamage.mValue, armor->getFaceDir(), nullptr);
+			armor->mFlickTimer = 0.0f;
 
 		} else if (armor->mCurAnim->mType == KEYEVENT_END) {
 			transit(armor, ARMOR_Move, nullptr);
@@ -1023,28 +1032,25 @@ void StateFlick::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80287A38
- * Size:	000004
+/**
+ * @note Address: 0x80287A38
+ * @note Size: 0x4
  */
 void StateFlick::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	80287A3C
- * Size:	00003C
+/**
+ * @note Address: 0x80287A3C
+ * @note Size: 0x3C
  */
 void StateFail::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mTargetVelocity = Vector3f(0.0f);
-	enemy->startMotion(8, nullptr);
+	enemy->startMotion(ARMORANIM_AttackFail, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	80287A78
- * Size:	000080
+/**
+ * @note Address: 0x80287A78
+ * @note Size: 0x80
  */
 void StateFail::exec(EnemyBase* enemy)
 {
@@ -1061,10 +1067,9 @@ void StateFail::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80287AF8
- * Size:	000004
+/**
+ * @note Address: 0x80287AF8
+ * @note Size: 0x4
  */
 void StateFail::cleanup(EnemyBase* enemy) { }
 

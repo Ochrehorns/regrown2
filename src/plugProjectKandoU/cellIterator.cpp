@@ -1,10 +1,9 @@
 #include "Game/cellPyramid.h"
 
 namespace Game {
-/*
- * --INFO--
- * Address:	8022E36C
- * Size:	000034
+/**
+ * @note Address: 0x8022E36C
+ * @note Size: 0x34
  * Matches
  */
 CellIteratorArg::CellIteratorArg()
@@ -17,38 +16,35 @@ CellIteratorArg::CellIteratorArg()
 
 	mCellMgr = cellMgr;
 
-	_1D                        = 0;
-	mIsSphereCollisionDisabled = false;
+	mUnused   = 0;
+	mOptimise = false;
 }
 
-/*
- * --INFO--
- * Address:	8022E3A0
- * Size:	000040
+/**
+ * @note Address: 0x8022E3A0
+ * @note Size: 0x40
  * Matches
  */
 CellIteratorArg::CellIteratorArg(Sys::Sphere& sphere)
 {
-	mSphere                    = sphere;
-	mCondition                 = nullptr;
-	mUseCustomRadius           = 0;
-	mCellMgr                   = Game::cellMgr;
-	_1D                        = 0;
-	mIsSphereCollisionDisabled = false;
+	mSphere          = sphere;
+	mCondition       = nullptr;
+	mUseCustomRadius = 0;
+	mCellMgr         = Game::cellMgr;
+	mUnused          = 0;
+	mOptimise        = false;
 }
 
-/*
- * --INFO--
- * Address:	8022E3E0
- * Size:	00007C
+/**
+ * @note Address: 0x8022E3E0
+ * @note Size: 0x7C
  * Matches
  */
 CellIterator::CellIterator(Game::CellIteratorArg& arg) { mArg = arg; }
 
-/*
- * --INFO--
- * Address:	8022E45C
- * Size:	0000A4
+/**
+ * @note Address: 0x8022E45C
+ * @note Size: 0xA4
  */
 void CellIterator::first()
 {
@@ -72,10 +68,9 @@ void CellIterator::first()
 	find();
 }
 
-/*
- * --INFO--
- * Address:	8022E500
- * Size:	000034
+/**
+ * @note Address: 0x8022E500
+ * @note Size: 0x34
  * Matches
  */
 bool CellIterator::next()
@@ -84,18 +79,16 @@ bool CellIterator::next()
 	return find();
 }
 
-/*
- * --INFO--
- * Address:	8022E534
- * Size:	000010
+/**
+ * @note Address: 0x8022E534
+ * @note Size: 0x10
  * Matches
  */
 bool CellIterator::isDone() { return mCurrLeg == nullptr; }
 
-/*
- * --INFO--
- * Address:	8022E544
- * Size:	00001C
+/**
+ * @note Address: 0x8022E544
+ * @note Size: 0x1C
  */
 CellObject* CellIterator::operator*()
 {
@@ -105,17 +98,15 @@ CellObject* CellIterator::operator*()
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8022E560
- * Size:	00001C
+/**
+ * @note Address: 0x8022E560
+ * @note Size: 0x1C
  */
 CellObject* CellIterator::getCellObject() { return *(*this); }
 
-/*
- * --INFO--
- * Address:	8022E57C
- * Size:	0000EC
+/**
+ * @note Address: 0x8022E57C
+ * @note Size: 0xEC
  */
 bool CellIterator::step()
 {
@@ -147,10 +138,9 @@ bool CellIterator::step()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	8022E668
- * Size:	000110
+/**
+ * @note Address: 0x8022E668
+ * @note Size: 0x110
  */
 bool CellIterator::find()
 {
@@ -163,10 +153,9 @@ bool CellIterator::find()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8022E778
- * Size:	00018C
+/**
+ * @note Address: 0x8022E778
+ * @note Size: 0x18C
  */
 bool CellIterator::satisfy()
 {
@@ -188,7 +177,7 @@ bool CellIterator::satisfy()
 	Sys::Sphere boundingSphere;
 	obj->getBoundingSphere(boundingSphere);
 
-	if (!mArg.mIsSphereCollisionDisabled) {
+	if (!mArg.mOptimise) {
 		if (!mArg.mUseCustomRadius) {
 			f32 radius = mArg.mSphere.mRadius + boundingSphere.mRadius;
 			radius *= radius;
@@ -323,10 +312,9 @@ lbl_8022E8DC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8022E904
- * Size:	00018C
+/**
+ * @note Address: 0x8022E904
+ * @note Size: 0x18C
  */
 void CellIterator::calcExtent()
 {
@@ -335,8 +323,8 @@ void CellIterator::calcExtent()
 	f32 z            = mArg.mSphere.mPosition.z;
 	f32 x            = mArg.mSphere.mPosition.x;
 
-	f32 a = mArg.mCellMgr->mRight;
-	f32 b = mArg.mCellMgr->mLeft;
+	f32 a = mArg.mCellMgr->mBounds.y;
+	f32 b = mArg.mCellMgr->mBounds.x;
 
 	f32 norm = 1.0f / (mgr->mScale * mgr->mLayers[mCurrLayerIdx].mLayerSize);
 
@@ -468,10 +456,9 @@ lbl_8022EA6C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8022EA90
- * Size:	000004
+/**
+ * @note Address: 0x8022EA90
+ * @note Size: 0x4
  */
 void CellIterator::dump() { }
 } // namespace Game

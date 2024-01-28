@@ -1,5 +1,5 @@
 #include "Dolphin/PPCArch.h"
-#include "Dolphin/math.h"
+#include "math.h"
 #include "Dolphin/os.h"
 #include "string.h"
 #include "Dolphin/vi.h"
@@ -7,11 +7,15 @@
 #include "JSystem/JKernel/JKRThread.h"
 #include "JSystem/JSupport/JSUList.h"
 #include "JSystem/JUtility/JUTConsole.h"
+#include "JSystem/JUtility/JUTDirectFile.h"
 #include "JSystem/JUtility/JUTDirectPrint.h"
 #include "JSystem/JUtility/JUTException.h"
 #include "JSystem/JUtility/JUTExternalFB.h"
 #include "JSystem/JUtility/JUTGamePad.h"
+#include "stl/stdlib.h"
 #include "types.h"
+
+static JUTException::ExCallbackObject exCallbackObject;
 
 JUTException* JUTException::sErrorManager;
 JUTExceptionHandler JUTException::sPreUserCallback;
@@ -25,8 +29,6 @@ OSMessageQueue JUTException::sMessageQueue = { 0 };
 void* JUTException::sMessageBuffer[1]      = { nullptr };
 JSUList<JUTException::JUTExMapFile> JUTException::sMapFileList(false);
 
-static JUTException::ExCallbackObject exCallbackObject;
-
 static OSTime c3bcnt[4] = { 0, 0, 0, 0 };
 
 const char* JUTException::sCpuExpName[OS_ERROR_MAX + 1]
@@ -34,10 +36,9 @@ const char* JUTException::sCpuExpName[OS_ERROR_MAX + 1]
 	    "FLOATING POINT",    "DECREMENTER",   "SYSTEM CALL",   "TRACE", "PERFORMACE MONITOR", "BREAK POINT", "SYSTEM INTERRUPT",
 	    "THERMAL INTERRUPT", "PROTECTION",    "FLOATING POINT" };
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E4
+/**
+ * @note Address: N/A
+ * @note Size: 0xE4
  */
 JUTException::JUTException(JUTDirectPrint* directPrint)
     : JKRThread(0x4000, 0x10, 0)
@@ -60,10 +61,9 @@ JUTException::JUTException(JUTDirectPrint* directPrint)
 	mPrintFlags       = EXPRINTFLAG_All;
 }
 
-/*
- * --INFO--
- * Address:	8002A30C
- * Size:	000110
+/**
+ * @note Address: 0x8002A30C
+ * @note Size: 0x110
  */
 JUTException* JUTException::create(JUTDirectPrint* directPrint)
 {
@@ -74,10 +74,9 @@ JUTException* JUTException::create(JUTDirectPrint* directPrint)
 	return sErrorManager;
 }
 
-/*
- * --INFO--
- * Address:	8002A41C
- * Size:	000120
+/**
+ * @note Address: 0x8002A41C
+ * @note Size: 0x120
  */
 void* JUTException::run()
 {
@@ -88,11 +87,13 @@ void* JUTException::run()
 		OSReceiveMessage(&sMessageQueue, (void**)&msg, OS_MESSAGE_BLOCK);
 		VISetPreRetraceCallback(nullptr);
 		VISetPostRetraceCallback(nullptr);
-		OSError error          = msg->mError;
-		OSErrorHandler handler = msg->mErrorHandler;
-		OSContext* context     = msg->mContext;
-		u32 v1                 = msg->_0C;
-		u32 v2                 = msg->_10;
+		OSErrorHandler handler;
+		OSError error;
+		error              = msg->mError;
+		handler            = msg->mErrorHandler;
+		OSContext* context = msg->mContext;
+		u32 v1             = msg->_0C;
+		u32 v2             = msg->_10;
 		if (error < OS_ERROR_MAX + 1) {
 			mStackPointer = (void*)context->gpr[1];
 		}
@@ -103,7 +104,7 @@ void* JUTException::run()
 		sErrorManager->mDirectPrint->changeFrameBuffer(mFrameMemory, sErrorManager->mDirectPrint->mFBWidth,
 		                                               sErrorManager->mDirectPrint->mFBHeight);
 		if (handler != nullptr) {
-			handler(error, context, v1, v2);
+			((OSErrorHandlerNoVARG)handler)(error, context, v1, v2);
 		}
 		OSDisableInterrupts();
 		mFrameMemory = (JUTExternalFB*)VIGetCurrentFrameBuffer();
@@ -111,94 +112,11 @@ void* JUTException::run()
 		                                               sErrorManager->mDirectPrint->mFBHeight);
 		sErrorManager->printContext(error, context, v1, v2);
 	}
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stmw     r25, 0x14(r1)
-	mr       r31, r3
-	bl       PPCMfmsr
-	li       r0, -2305
-	and      r3, r3, r0
-	bl       PPCMtmsr
-	lis      r3, sMessageQueue__12JUTException@ha
-	addi     r4, r13, sMessageBuffer__12JUTException@sda21
-	addi     r3, r3, sMessageQueue__12JUTException@l
-	li       r5, 1
-	bl       OSInitMessageQueue
-	lis      r3, sMessageQueue__12JUTException@ha
-	addi     r30, r3, sMessageQueue__12JUTException@l
-
-lbl_8002A45C:
-	mr       r3, r30
-	addi     r4, r1, 8
-	li       r5, 1
-	bl       OSReceiveMessage
-	li       r3, 0
-	bl       VISetPreRetraceCallback
-	li       r3, 0
-	bl       VISetPostRetraceCallback
-	lwz      r3, 8(r1)
-	lhz      r28, 4(r3)
-	lwz      r29, 0(r3)
-	cmplwi   r28, 0x11
-	lwz      r27, 8(r3)
-	lwz      r26, 0xc(r3)
-	lwz      r25, 0x10(r3)
-	bge      lbl_8002A4A4
-	lwz      r0, 4(r27)
-	stw      r0, 0xa0(r31)
-
-lbl_8002A4A4:
-	bl       VIGetCurrentFrameBuffer
-	stw      r3, 0x7c(r31)
-	lwz      r0, 0x7c(r31)
-	cmplwi   r0, 0
-	bne      lbl_8002A4C0
-	lwz      r3, sErrorManager__12JUTException@sda21(r13)
-	bl       createFB__12JUTExceptionFv
-
-lbl_8002A4C0:
-	lwz      r3, sErrorManager__12JUTException@sda21(r13)
-	lwz      r4, 0x7c(r31)
-	lwz      r3, 0x80(r3)
-	lhz      r5, 4(r3)
-	lhz      r6, 6(r3)
-	bl       changeFrameBuffer__14JUTDirectPrintFPvUsUs
-	cmplwi   r29, 0
-	beq      lbl_8002A4FC
-	mr       r12, r29
-	mr       r3, r28
-	mr       r4, r27
-	mr       r5, r26
-	mr       r6, r25
-	mtctr    r12
-	bctrl
-
-lbl_8002A4FC:
-	bl       OSDisableInterrupts
-	bl       VIGetCurrentFrameBuffer
-	stw      r3, 0x7c(r31)
-	lwz      r3, sErrorManager__12JUTException@sda21(r13)
-	lwz      r4, 0x7c(r31)
-	lwz      r3, 0x80(r3)
-	lhz      r5, 4(r3)
-	lhz      r6, 6(r3)
-	bl       changeFrameBuffer__14JUTDirectPrintFPvUsUs
-	lwz      r3, sErrorManager__12JUTException@sda21(r13)
-	mr       r4, r28
-	mr       r5, r27
-	mr       r6, r26
-	mr       r7, r25
-	bl       printContext__12JUTExceptionFUsP9OSContextUlUl
-	b        lbl_8002A45C
-	*/
 }
 
-/*
- * --INFO--
- * Address:	8002A53C
- * Size:	000104
+/**
+ * @note Address: 0x8002A53C
+ * @note Size: 0x104
  */
 void JUTException::errorHandler(OSError error, OSContext* context, u32 p3, u32 p4)
 {
@@ -217,20 +135,14 @@ void JUTException::errorHandler(OSError error, OSContext* context, u32 p3, u32 p
 	exCallbackObject.mContext      = context;
 	exCallbackObject._0C           = p3;
 	exCallbackObject._10           = p4;
-	// exCallbackObject[0] = (void*)sPreUserCallback;
-	// exCallbackObject[1] = (void*)error;
-	// exCallbackObject[2] = (void*)context;
-	// exCallbackObject[3] = (void*)p3;
-	// exCallbackObject[4] = (void*)p4;
 	OSSendMessage(&sMessageQueue, &exCallbackObject, OS_MESSAGE_BLOCK);
 	OSEnableScheduler();
 	OSYieldThread();
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000134
+/**
+ * @note Address: N/A
+ * @note Size: 0x134
  */
 void JUTException::panic_f_va(const char* fileName, int lineNumber, const char* format, va_list* args)
 {
@@ -259,10 +171,9 @@ void JUTException::panic_f_va(const char* fileName, int lineNumber, const char* 
 	OSSuspendThread(OSGetCurrentThread());
 }
 
-/*
- * --INFO--
- * Address:	8002A640
- * Size:	0001A0
+/**
+ * @note Address: 0x8002A640
+ * @note Size: 0x1A0
  */
 void JUTException::panic_f(const char* fileName, int lineNumber, const char* format, ...)
 {
@@ -273,9 +184,8 @@ void JUTException::panic_f(const char* fileName, int lineNumber, const char* for
 }
 
 /**
- * --INFO--
- * Address:	8002A7E0
- * Size:	000048
+ * @note Address: 0x8002A7E0
+ * @note Size: 0x48
  */
 void JUTException::setFPException(u32 enableBits)
 {
@@ -287,12 +197,11 @@ void JUTException::setFPException(u32 enableBits)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000184
+/**
+ * @note Address: N/A
+ * @note Size: 0x184
  */
-void JUTException::showFloatSub(int reg, float flt)
+void JUTException::showFloatSub(int reg, f32 flt)
 {
 	if (fpclassify(flt) == 1) {
 		sConsole->print_f("F%02d: Nan      ", reg);
@@ -309,10 +218,9 @@ void JUTException::showFloatSub(int reg, float flt)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8002A828
- * Size:	000770
+/**
+ * @note Address: 0x8002A828
+ * @note Size: 0x770
  * showFloat__12JUTExceptionFP9OSContext
  */
 void JUTException::showFloat(OSContext* context)
@@ -335,10 +243,9 @@ void JUTException::showFloat(OSContext* context)
 	sConsole->print("\n");
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000C0
+/**
+ * @note Address: N/A
+ * @note Size: 0xC0
  */
 bool JUTException::searchPartialModule(u32 address, u32* module_id, u32* section_id, u32* section_offset, u32* name_offset)
 {
@@ -372,37 +279,38 @@ bool JUTException::searchPartialModule(u32 address, u32* module_id, u32* section
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
 void search_name_part(u8* src, u8* dst, int dst_length)
 {
+	u8* p2 = src;
 	for (u8* p = src; *p; p++) {
 		if (*p == '\\') {
-			src = p;
+			p2 = p;
 		}
 	}
 
-	if (*src == '\\') {
-		src++;
+	if (*p2 == '\\') {
+		p2++;
 	}
 
-	for (int i = 0; (*src != 0) && (i < dst_length);) {
-		if (*src == '.')
+	int j;
+	int i = 0;
+	while ((*p2 != 0) && (i < dst_length)) {
+		if (*p2 == '.')
 			break;
-		*dst++ = *src++;
-		i++;
+		*dst++ = *p2++;
+		j      = i++;
 	}
 
 	*dst = '\0';
 }
 
-/*
- * --INFO--
- * Address:	8002AF98
- * Size:	0000FC
+/**
+ * @note Address: 0x8002AF98
+ * @note Size: 0xFC
  */
 void JUTException::showStack(OSContext* context)
 {
@@ -428,10 +336,9 @@ void JUTException::showStack(OSContext* context)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8002B094
- * Size:	000244
+/**
+ * @note Address: 0x8002B094
+ * @note Size: 0x244
  */
 void JUTException::showMainInfo(OSError error, OSContext* context, u32 dsisr, u32 dar)
 {
@@ -492,10 +399,9 @@ void JUTException::showMainInfo(OSError error, OSContext* context, u32 dsisr, u3
 	sConsole->print_f("DSISR:  %08XH   DAR: %08XH\n", dsisr, dar);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000BC
+/**
+ * @note Address: N/A
+ * @note Size: 0xBC
  */
 void JUTException::showGPR(OSContext* context)
 {
@@ -511,24 +417,24 @@ void JUTException::showGPR(OSContext* context)
 	sConsole->print_f("R%02d:%08XH  R%02d:%08XH\n", 10, context->gpr[10], 21, context->gpr[21]);
 }
 
-/*
- * --INFO--
- * Address:	8002B2D8
- * Size:	000258
+/**
+ * @note Address: 0x8002B2D8
+ * @note Size: 0x258
  */
 bool JUTException::showMapInfo_subroutine(u32 address, bool begin_with_newline)
 {
-	if ((address < 0x80000000) || (0x82ffffff < address)) {
-		return false;
-	}
-
+	const char* new_line;
 	u32 name_offset;
 	u32 module_id;
 	u32 section_id;
 	u32 section_offset;
 	u8 name_part[36];
 
-	const char* new_line = "\n";
+	if ((address < OS_BASE_CACHED) || (0x83000000 - 1 < address)) {
+		return false;
+	}
+
+	new_line = "\n";
 	if (begin_with_newline == false) {
 		new_line = "";
 	}
@@ -537,24 +443,25 @@ bool JUTException::showMapInfo_subroutine(u32 address, bool begin_with_newline)
 	if (result == true) {
 		search_name_part((u8*)name_offset, name_part, 32);
 		sConsole->print_f("%s %s:%x section:%d\n", new_line, name_part, section_offset, section_id);
+		new_line           = "";
 		begin_with_newline = false;
 	}
 
-	JSUListIterator<JUTException::JUTExMapFile> last  = sMapFileList.getEnd();
-	JSUListIterator<JUTException::JUTExMapFile> first = sMapFileList.getFirst();
-	if (first != last) {
+	if (sMapFileList.getFirst() != sMapFileList.getEnd()) {
 		u32 out_addr;
 		u32 out_size;
 		char out_line[256];
+		bool map_result;
 
 		if (result == true) {
-			result = queryMapAddress((char*)name_part, section_offset, section_id, &out_addr, &out_size, out_line, ARRAY_SIZE(out_line),
-			                         true, begin_with_newline);
+			map_result = queryMapAddress((char*)name_part, section_offset, section_id, &out_addr, &out_size, out_line, ARRAY_SIZE(out_line),
+			                             true, begin_with_newline);
 		} else {
-			result = queryMapAddress(nullptr, address, -1, &out_addr, &out_size, out_line, ARRAY_SIZE(out_line), true, begin_with_newline);
+			map_result
+			    = queryMapAddress(nullptr, address, -1, &out_addr, &out_size, out_line, ARRAY_SIZE(out_line), true, begin_with_newline);
 		}
 
-		if (result == true) {
+		if (map_result == true) {
 			return true;
 		}
 	}
@@ -562,10 +469,9 @@ bool JUTException::showMapInfo_subroutine(u32 address, bool begin_with_newline)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8002B530
- * Size:	0002F4
+/**
+ * @note Address: 0x8002B530
+ * @note Size: 0x2F4
  */
 void JUTException::showGPRMap(OSContext* context)
 {
@@ -576,17 +482,18 @@ void JUTException::showGPRMap(OSContext* context)
 	bool found_address_register = false;
 	sConsole->print("-------------------------------- GPRMAP\n");
 
-	for (int i = 0; i < 31; i++) {
+	for (int i = 0; i < 31; i++) { // GPR 0 to GPR 31
 		u32 address = context->gpr[i];
 
-		if (address >= 0x80000000 && address <= 0x83000000 - 1) {
+		if (address >= OS_BASE_CACHED && address <= 0x83000000 - 1) {
 			found_address_register = true;
 
 			sConsole->print_f("R%02d: %08XH", i, address);
-			if (!showMapInfo_subroutine(address, true)) {
+			bool res = showMapInfo_subroutine(address, true);
+			if (!res) { // inlined
 				sConsole->print("  no information\n");
 			}
-			JUTConsoleManager::sManager->drawDirect(true);
+			JUTConsoleManager::getManager()->drawDirect(true);
 			waitTime(mPrintWaitTime1);
 		}
 	}
@@ -594,261 +501,11 @@ void JUTException::showGPRMap(OSContext* context)
 	if (!found_address_register) {
 		sConsole->print("  no register which seem to address.\n");
 	}
-	/*
-	stwu     r1, -0x170(r1)
-	mflr     r0
-	lis      r5, lbl_80473C18@ha
-	stw      r0, 0x174(r1)
-	stmw     r24, 0x150(r1)
-	mr       r24, r3
-	mr       r25, r4
-	addi     r30, r5, lbl_80473C18@l
-	lwz      r0, sConsole__12JUTException@sda21(r13)
-	cmplwi   r0, 0
-	beq      lbl_8002B810
-	mr       r3, r0
-	addi     r4, r30, 0x3bc
-	li       r27, 0
-	bl       print__10JUTConsoleFPCc
-	mr       r28, r25
-	li       r26, 0
-	lis      r31, 0x8000
-
-lbl_8002B578:
-	lwz      r25, 0(r28)
-	cmplw    r25, r31
-	blt      lbl_8002B7EC
-	lis      r3, 0x82FFFFFF@ha
-	addi     r0, r3, 0x82FFFFFF@l
-	cmplw    r25, r0
-	bgt      lbl_8002B7EC
-	lwz      r3, sConsole__12JUTException@sda21(r13)
-	mr       r5, r26
-	mr       r6, r25
-	addi     r4, r30, 0x3e8
-	li       r27, 1
-	crclr    6
-	bl       print_f__10JUTConsoleFPCce
-	lis      r4, 0x8000
-	li       r6, 1
-	cmplw    r25, r4
-	blt      lbl_8002B5D0
-	lis      r3, 0x82FFFFFF@ha
-	addi     r0, r3, 0x82FFFFFF@l
-	cmplw    r25, r0
-	ble      lbl_8002B5D8
-
-lbl_8002B5D0:
-	li       r0, 0
-	b        lbl_8002B7C4
-
-lbl_8002B5D8:
-	cmplwi   r25, 0
-	addi     r5, r2, lbl_80516630@sda21
-	bne      lbl_8002B5EC
-	li       r29, 0
-	b        lbl_8002B694
-
-lbl_8002B5EC:
-	lwz      r8, 0x30c8(r4)
-	b        lbl_8002B688
-
-lbl_8002B5F4:
-	lwz      r0, 0xc(r8)
-	li       r4, 0
-	lwz      r7, 0x10(r8)
-	mtctr    r0
-	cmplwi   r0, 0
-	ble      lbl_8002B684
-
-lbl_8002B60C:
-	lwz      r9, 4(r7)
-	cmplwi   r9, 0
-	beq      lbl_8002B678
-	lwz      r0, 0(r7)
-	rlwinm   r3, r0, 0, 0, 0x1e
-	cmplw    r3, r25
-	bgt      lbl_8002B678
-	add      r0, r3, r9
-	cmplw    r25, r0
-	bge      lbl_8002B678
-	addic.   r0, r1, 0x14
-	beq      lbl_8002B644
-	lwz      r0, 0(r8)
-	stw      r0, 0x14(r1)
-
-lbl_8002B644:
-	addic.   r0, r1, 0x18
-	beq      lbl_8002B650
-	stw      r4, 0x18(r1)
-
-lbl_8002B650:
-	addic.   r0, r1, 0x1c
-	beq      lbl_8002B660
-	subf     r0, r3, r25
-	stw      r0, 0x1c(r1)
-
-lbl_8002B660:
-	addic.   r0, r1, 0x10
-	beq      lbl_8002B670
-	lwz      r0, 0x14(r8)
-	stw      r0, 0x10(r1)
-
-lbl_8002B670:
-	li       r29, 1
-	b        lbl_8002B694
-
-lbl_8002B678:
-	addi     r7, r7, 8
-	addi     r4, r4, 1
-	bdnz     lbl_8002B60C
-
-lbl_8002B684:
-	lwz      r8, 4(r8)
-
-lbl_8002B688:
-	cmplwi   r8, 0
-	bne      lbl_8002B5F4
-	li       r29, 0
-
-lbl_8002B694:
-	clrlwi   r0, r29, 0x18
-	cmplwi   r0, 1
-	bne      lbl_8002B73C
-	lwz      r4, 0x10(r1)
-	addi     r6, r1, 0x28
-	mr       r3, r4
-	b        lbl_8002B6C0
-
-lbl_8002B6B0:
-	cmpwi    r0, 0x5c
-	bne      lbl_8002B6BC
-	mr       r4, r3
-
-lbl_8002B6BC:
-	addi     r3, r3, 1
-
-lbl_8002B6C0:
-	lbz      r0, 0(r3)
-	cmplwi   r0, 0
-	bne      lbl_8002B6B0
-	lbz      r0, 0(r4)
-	cmpwi    r0, 0x5c
-	bne      lbl_8002B6DC
-	addi     r4, r4, 1
-
-lbl_8002B6DC:
-	li       r3, 0
-	b        lbl_8002B700
-
-lbl_8002B6E4:
-	cmpwi    r0, 0x2e
-	beq      lbl_8002B714
-	lbz      r0, 0(r4)
-	addi     r3, r3, 1
-	addi     r4, r4, 1
-	stb      r0, 0(r6)
-	addi     r6, r6, 1
-
-lbl_8002B700:
-	lbz      r0, 0(r4)
-	cmplwi   r0, 0
-	beq      lbl_8002B714
-	cmpwi    r3, 0x20
-	blt      lbl_8002B6E4
-
-lbl_8002B714:
-	li       r0, 0
-	lwz      r3, sConsole__12JUTException@sda21(r13)
-	stb      r0, 0(r6)
-	addi     r4, r30, 0x3a4
-	lwz      r7, 0x1c(r1)
-	addi     r6, r1, 0x28
-	lwz      r8, 0x18(r1)
-	crclr    6
-	bl       print_f__10JUTConsoleFPCce
-	li       r6, 0
-
-lbl_8002B73C:
-	lis      r3, sMapFileList__12JUTException@ha
-	lwz      r0, sMapFileList__12JUTException@l(r3)
-	cmplwi   r0, 0
-	beq      lbl_8002B7C0
-	clrlwi   r0, r29, 0x18
-	cmplwi   r0, 1
-	bne      lbl_8002B784
-	stw      r6, 8(r1)
-	addi     r3, r1, 0x28
-	lwz      r4, 0x1c(r1)
-	addi     r6, r1, 0x20
-	lwz      r5, 0x18(r1)
-	addi     r7, r1, 0x24
-	addi     r8, r1, 0x4c
-	li       r9, 0x100
-	li       r10, 1
-	bl       queryMapAddress__12JUTExceptionFPcUllPUlPUlPcUlbb
-	b        lbl_8002B7AC
-
-lbl_8002B784:
-	stw      r6, 8(r1)
-	mr       r4, r25
-	addi     r6, r1, 0x20
-	addi     r7, r1, 0x24
-	addi     r8, r1, 0x4c
-	li       r3, 0
-	li       r5, -1
-	li       r9, 0x100
-	li       r10, 1
-	bl       queryMapAddress__12JUTExceptionFPcUllPUlPUlPcUlbb
-
-lbl_8002B7AC:
-	clrlwi   r0, r3, 0x18
-	cmplwi   r0, 1
-	bne      lbl_8002B7C0
-	li       r0, 1
-	b        lbl_8002B7C4
-
-lbl_8002B7C0:
-	li       r0, 0
-
-lbl_8002B7C4:
-	clrlwi.  r0, r0, 0x18
-	bne      lbl_8002B7D8
-	lwz      r3, sConsole__12JUTException@sda21(r13)
-	addi     r4, r30, 0x3f8
-	bl       print__10JUTConsoleFPCc
-
-lbl_8002B7D8:
-	lwz      r3, sManager__17JUTConsoleManager@sda21(r13)
-	li       r4, 1
-	bl       drawDirect__17JUTConsoleManagerCFb
-	lwz      r3, 0x90(r24)
-	bl       waitTime__12JUTExceptionFl
-
-lbl_8002B7EC:
-	addi     r26, r26, 1
-	addi     r28, r28, 4
-	cmpwi    r26, 0x1f
-	blt      lbl_8002B578
-	clrlwi.  r0, r27, 0x18
-	bne      lbl_8002B810
-	lwz      r3, sConsole__12JUTException@sda21(r13)
-	addi     r4, r30, 0x40c
-	bl       print__10JUTConsoleFPCc
-
-lbl_8002B810:
-	lmw      r24, 0x150(r1)
-	lwz      r0, 0x174(r1)
-	mtlr     r0
-	addi     r1, r1, 0x170
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0002BC
+/**
+ * @note Address: N/A
+ * @note Size: 0x2BC
  */
 void JUTException::showSRR0Map(OSContext* context)
 {
@@ -858,7 +515,7 @@ void JUTException::showSRR0Map(OSContext* context)
 
 	sConsole->print("-------------------------------- SRR0MAP\n");
 	u32 address = context->srr0;
-	if (address >= 0x80000000 && address <= 0x83000000 - 1) {
+	if (address >= OS_BASE_CACHED && address <= 0x83000000 - 1) {
 		sConsole->print_f("SRR0: %08XH", address);
 		if (showMapInfo_subroutine(address, true) == false) {
 			sConsole->print("  no information\n");
@@ -867,10 +524,9 @@ void JUTException::showSRR0Map(OSContext* context)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8002B824
- * Size:	0003AC
+/**
+ * @note Address: 0x8002B824
+ * @note Size: 0x3AC
  */
 void JUTException::printDebugInfo(JUTException::EInfoPage page, OSError error, OSContext* context, u32 param_3, u32 param_4)
 {
@@ -892,10 +548,9 @@ void JUTException::printDebugInfo(JUTException::EInfoPage page, OSError error, O
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00003C
+/**
+ * @note Address: N/A
+ * @note Size: 0x3C
  */
 bool JUTException::isEnablePad() const
 {
@@ -911,10 +566,9 @@ bool JUTException::isEnablePad() const
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8002BBD0
- * Size:	000570
+/**
+ * @note Address: 0x8002BBD0
+ * @note Size: 0x570
  */
 bool JUTException::readPad(u32* out_trigger, u32* out_button)
 {
@@ -989,10 +643,9 @@ bool JUTException::readPad(u32* out_trigger, u32* out_button)
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	8002C140
- * Size:	0004E4
+/**
+ * @note Address: 0x8002C140
+ * @note Size: 0x4E4
  */
 void JUTException::printContext(OSError error, OSContext* context, u32 dsisr, u32 dar)
 {
@@ -1154,12 +807,11 @@ void JUTException::printContext(OSError error, OSContext* context, u32 dsisr, u3
 	}
 }
 
-/*
- * --INFO--
- * Address:	8002C624
- * Size:	000088
+/**
+ * @note Address: 0x8002C624
+ * @note Size: 0x88
  */
-void JUTException::waitTime(long timeout_ms)
+void JUTException::waitTime(s32 timeout_ms)
 {
 	if (timeout_ms) {
 		OSTime start_time = OSGetTime();
@@ -1172,10 +824,9 @@ void JUTException::waitTime(long timeout_ms)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8002C6AC
- * Size:	0000F4
+/**
+ * @note Address: 0x8002C6AC
+ * @note Size: 0xF4
  */
 void JUTException::createFB()
 {
@@ -1206,32 +857,27 @@ void JUTException::createFB()
 	mFrameMemory = (JUTExternalFB*)object;
 }
 
-static const char unusedExceptionStr[] = "  [%08X]: .%s [%08X: %XH]\n  %s\n";
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
 u32 JUTException::getFpscr()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000020
+/**
+ * @note Address: N/A
+ * @note Size: 0x20
  */
 void JUTException::setFpscr(u32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8002C7A0
- * Size:	000010
+/**
+ * @note Address: 0x8002C7A0
+ * @note Size: 0x10
  */
 JUTExceptionHandler JUTException::setPreUserCallback(JUTExceptionHandler handler)
 {
@@ -1240,10 +886,9 @@ JUTExceptionHandler JUTException::setPreUserCallback(JUTExceptionHandler handler
 	return oldCallback;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
  */
 JUTExceptionHandler JUTException::setPostUserCallback(JUTExceptionHandler handler)
 {
@@ -1253,10 +898,9 @@ JUTExceptionHandler JUTException::setPostUserCallback(JUTExceptionHandler handle
 	return oldCallback;
 }
 
-/*
- * --INFO--
- * Address:	8002C7B0
- * Size:	000094
+/**
+ * @note Address: 0x8002C7B0
+ * @note Size: 0x94
  */
 void JUTException::appendMapFile(const char* fileName)
 {
@@ -1273,22 +917,20 @@ void JUTException::appendMapFile(const char* fileName)
 	sMapFileList.append(&mapFile->mLink);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000054
+/**
+ * @note Address: N/A
+ * @note Size: 0x54
  */
 // void JSULink<JUTException::JUTExMapFile>::~JSULink()
 // {
 // 	// UNUSED FUNCTION
 // }
 
-/*
- * --INFO--
- * Address:	8002C844
- * Size:	0000E0
+/**
+ * @note Address: 0x8002C844
+ * @note Size: 0xE0
  */
-bool JUTException::queryMapAddress(char* p1, u32 p2, long p3, u32* p4, u32* p5, char* p6, u32 p7, bool p8, bool p9)
+bool JUTException::queryMapAddress(char* p1, u32 p2, s32 p3, u32* p4, u32* p5, char* p6, u32 p7, bool p8, bool p9)
 {
 	if (p1 != nullptr) {
 		char buffer[80];
@@ -1307,277 +949,137 @@ bool JUTException::queryMapAddress(char* p1, u32 p2, long p3, u32* p4, u32* p5, 
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8002C924
- * Size:	00033C
+/**
+ * @note Address: 0x8002C924
+ * @note Size: 0x33C
  */
-bool JUTException::queryMapAddress_single(char*, u32, long, u32*, u32*, char*, u32, bool, bool)
+bool JUTException::queryMapAddress_single(char* mapPath, u32 address, s32 section_id, u32* out_addr, u32* out_size, char* out_line,
+                                          u32 line_length, bool print, bool begin_with_newline)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0xAD0(r1)
-	  mflr      r0
-	  stw       r0, 0xAD4(r1)
-	  stmw      r16, 0xA90(r1)
-	  mr.       r16, r3
-	  lbz       r19, 0xADB(r1)
-	  mr        r26, r4
-	  mr        r27, r5
-	  mr        r28, r6
-	  mr        r29, r7
-	  mr        r30, r8
-	  mr        r18, r9
-	  mr        r31, r10
-	  bne-      .loc_0x40
-	  li        r3, 0
-	  b         .loc_0x328
+	if (!mapPath) {
+		return false;
+	}
 
-	.loc_0x40:
-	  addi      r3, r1, 0x218
-	  bl        -0x313C
-	  mr        r4, r16
-	  addi      r3, r1, 0x218
-	  li        r22, 0
-	  bl        -0x30E4
-	  rlwinm.   r0,r3,0,24,31
-	  bne-      .loc_0x74
-	  addi      r3, r1, 0x218
-	  li        r4, -0x1
-	  bl        -0x313C
-	  li        r3, 0
-	  b         .loc_0x328
+	char section_name[16];
+	char buffer[0x200];
+	JUTDirectFile file;
+	int section_idx = 0;
+	if (!file.fopen(mapPath)) {
+		return false;
+	}
 
-	.loc_0x74:
-	  addi      r25, r1, 0x19
-	  addi      r24, r1, 0x2B
-	  addi      r23, r1, 0x23
-	  addi      r16, r1, 0x36
-	  li        r17, 0
+	bool result = false;
+	bool found_section;
 
-	.loc_0x88:
-	  li        r20, 0
-	  addi      r22, r22, 0x1
+	while (true) {
+		section_idx++;
+		found_section = false;
+		while (true) {
+			char* src;
+			char* dst;
 
-	.loc_0x90:
-	  addi      r3, r1, 0x218
-	  addi      r4, r1, 0x18
-	  li        r5, 0x200
-	  bl        -0x3024
-	  cmpwi     r3, 0
-	  blt-      .loc_0x140
-	  lbz       r0, 0x18(r1)
-	  cmpwi     r0, 0x2E
-	  bne+      .loc_0x90
-	  mr        r3, r25
-	  addi      r4, r1, 0x8
-	  li        r6, 0
-	  b         .loc_0xE8
+			if (file.fgets(buffer, ARRAY_SIZE(buffer)) < 0)
+				break;
+			if (buffer[0] != '.')
+				continue;
 
-	.loc_0xC4:
-	  lbz       r0, 0x0(r3)
-	  stb       r5, 0x0(r4)
-	  cmpwi     r0, 0x20
-	  beq-      .loc_0xF4
-	  cmpwi     r6, 0xF
-	  beq-      .loc_0xF4
-	  addi      r4, r4, 0x1
-	  addi      r6, r6, 0x1
-	  addi      r3, r3, 0x1
+			int i = 0;
+			src   = buffer + 1;
+			while (*src != '\0') {
+				section_name[i] = *src;
+				if (*src == ' ' || i == 0xf)
+					break;
+				i++;
+				src++;
+			}
 
-	.loc_0xE8:
-	  lbz       r5, 0x0(r3)
-	  extsb.    r0, r5
-	  bne+      .loc_0xC4
+			section_name[i] = 0;
+			if (*src == 0)
+				break;
 
-	.loc_0xF4:
-	  lbz       r0, 0x0(r3)
-	  addi      r4, r1, 0x8
-	  li        r5, 0
-	  extsb.    r0, r0
-	  stbx      r5, r4, r6
-	  beq-      .loc_0x140
-	  lbz       r0, 0x1(r3)
-	  cmpwi     r0, 0x73
-	  bne+      .loc_0x90
-	  lbz       r0, 0x2(r3)
-	  cmpwi     r0, 0x65
-	  bne+      .loc_0x90
-	  lbz       r0, 0x3(r3)
-	  cmpwi     r0, 0x63
-	  bne+      .loc_0x90
-	  lbz       r0, 0x4(r3)
-	  cmpwi     r0, 0x74
-	  bne+      .loc_0x90
-	  li        r20, 0x1
+			if (src[1] == 's' && src[2] == 'e' && src[3] == 'c' && src[4] == 't') {
+				found_section = true;
+				break;
+			}
+		}
 
-	.loc_0x140:
-	  rlwinm.   r0,r20,0,24,31
-	  beq-      .loc_0x300
-	  cmpwi     r27, 0
-	  blt-      .loc_0x158
-	  cmpw      r27, r22
-	  bne+      .loc_0x88
+		if (!found_section)
+			break;
 
-	.loc_0x158:
-	  addi      r3, r1, 0x218
-	  addi      r4, r1, 0x18
-	  li        r5, 0x200
-	  bl        -0x30EC
-	  cmpwi     r3, 0x4
-	  ble-      .loc_0x2D4
-	  cmpwi     r3, 0x1C
-	  blt+      .loc_0x158
-	  lbz       r0, 0x34(r1)
-	  cmpwi     r0, 0x34
-	  bne+      .loc_0x158
-	  mr        r3, r24
-	  li        r4, 0
-	  li        r5, 0x10
-	  bl        0x9EE84
-	  lbz       r0, 0x2A(r1)
-	  li        r4, 0
-	  li        r5, 0x10
-	  extsb     r6, r0
-	  subi      r0, r6, 0x30
-	  rlwinm    r0,r0,28,0,3
-	  or        r21, r0, r3
-	  mr        r3, r23
-	  bl        0x9EE60
-	  cmplw     r21, r26
-	  mr        r20, r3
-	  bgt+      .loc_0x158
-	  add       r0, r21, r20
-	  cmplw     r26, r0
-	  bge+      .loc_0x158
-	  cmplwi    r28, 0
-	  beq-      .loc_0x1DC
-	  stw       r21, 0x0(r28)
+		if (section_id >= 0 && section_id != section_idx)
+			continue;
 
-	.loc_0x1DC:
-	  cmplwi    r29, 0
-	  beq-      .loc_0x1E8
-	  stw       r20, 0x0(r29)
+		int length;
 
-	.loc_0x1E8:
-	  cmplwi    r30, 0
-	  beq-      .loc_0x2D0
-	  mr        r5, r16
-	  mr        r6, r30
-	  subi      r0, r18, 0x1
-	  li        r7, 0
-	  li        r3, 0x20
-	  b         .loc_0x260
+		while (true) {
+			if ((length = file.fgets(buffer, ARRAY_SIZE(buffer))) <= 4)
+				break;
+			if ((length < 28))
+				continue;
+			if ((buffer[28] == '4')) {
+				u32 addr = ((buffer[18] - '0') << 28) | strtol(buffer + 19, nullptr, 16);
+				int size = strtol(buffer + 11, nullptr, 16);
+				if ((addr <= address && address < addr + size)) {
+					if (out_addr)
+						*out_addr = addr;
 
-	.loc_0x208:
-	  lbz       r4, 0x0(r5)
-	  cmplwi    r4, 0x20
-	  bge-      .loc_0x21C
-	  cmplwi    r4, 0x9
-	  bne-      .loc_0x268
+					if (out_size)
+						*out_size = size;
 
-	.loc_0x21C:
-	  cmpwi     r4, 0x20
-	  beq-      .loc_0x22C
-	  cmplwi    r4, 0x9
-	  bne-      .loc_0x250
+					if (out_line) {
+						const u8* src = (const u8*)&buffer[0x1e];
+						u8* dst       = (u8*)out_line;
+						u32 i         = 0;
 
-	.loc_0x22C:
-	  cmplwi    r7, 0
-	  beq-      .loc_0x250
-	  lbz       r4, -0x1(r6)
-	  cmpwi     r4, 0x20
-	  beq-      .loc_0x25C
-	  stb       r3, 0x0(r6)
-	  addi      r6, r6, 0x1
-	  addi      r7, r7, 0x1
-	  b         .loc_0x25C
+						for (i = 0; i < line_length - 1; ++src) {
+							if ((u32)(*src) < ' ' && (u32)*src != '\t')
+								break;
+							if ((*src == ' ' || (u32)*src == '\t') && (i != 0)) {
+								if (dst[-1] != ' ') {
+									*dst = ' ';
+									dst++;
+									++i;
+								}
+							} else {
+								*dst++ = *src;
+								i++;
+							}
+						}
+						if (i != 0 && dst[-1] == ' ') {
+							dst--;
+							i--;
+						}
+						*dst = 0;
+						if (print) {
+							if (begin_with_newline) {
+								sConsole->print("\n");
+							}
+							sConsole->print_f("  [%08X]: .%s [%08X: %XH]\n  %s\n", address, section_name, addr, size, out_line);
+							begin_with_newline = false;
+						}
+					}
+					result = true;
+					break;
+				}
+			}
+		}
 
-	.loc_0x250:
-	  stb       r4, 0x0(r6)
-	  addi      r6, r6, 0x1
-	  addi      r7, r7, 0x1
+		if ((section_id < 0 || section_id != section_idx)) {
+			continue;
+		}
+		if (print && begin_with_newline) {
+			sConsole->print("\n");
+		}
+		break;
+	}
 
-	.loc_0x25C:
-	  addi      r5, r5, 0x1
-
-	.loc_0x260:
-	  cmplw     r7, r0
-	  blt+      .loc_0x208
-
-	.loc_0x268:
-	  cmplwi    r7, 0
-	  beq-      .loc_0x280
-	  lbz       r0, -0x1(r6)
-	  cmpwi     r0, 0x20
-	  bne-      .loc_0x280
-	  subi      r6, r6, 0x1
-
-	.loc_0x280:
-	  li        r3, 0
-	  rlwinm.   r0,r31,0,24,31
-	  stb       r3, 0x0(r6)
-	  beq-      .loc_0x2D0
-	  rlwinm.   r0,r19,0,24,31
-	  beq-      .loc_0x2A4
-	  lwz       r3, -0x775C(r13)
-	  subi      r4, r2, 0x7D30
-	  bl        -0x4198
-
-	.loc_0x2A4:
-	  lis       r4, 0x8047
-	  lwz       r3, -0x775C(r13)
-	  addi      r4, r4, 0x412C
-	  mr        r5, r26
-	  mr        r7, r21
-	  mr        r8, r20
-	  mr        r9, r30
-	  addi      r6, r1, 0x8
-	  crclr     6, 0x6
-	  bl        -0x424C
-	  li        r19, 0
-
-	.loc_0x2D0:
-	  li        r17, 0x1
-
-	.loc_0x2D4:
-	  cmpwi     r27, 0
-	  blt+      .loc_0x88
-	  cmpw      r27, r22
-	  bne+      .loc_0x88
-	  rlwinm.   r0,r31,0,24,31
-	  beq-      .loc_0x300
-	  rlwinm.   r0,r19,0,24,31
-	  beq-      .loc_0x300
-	  lwz       r3, -0x775C(r13)
-	  subi      r4, r2, 0x7D30
-	  bl        -0x41F4
-
-	.loc_0x300:
-	  addi      r3, r1, 0x218
-	  bl        -0x32EC
-	  rlwinm    r5,r17,0,24,31
-	  addi      r3, r1, 0x218
-	  neg       r0, r5
-	  li        r4, -0x1
-	  or        r0, r0, r5
-	  rlwinm    r16,r0,1,31,31
-	  bl        -0x33F4
-	  mr        r3, r16
-
-	.loc_0x328:
-	  lmw       r16, 0xA90(r1)
-	  lwz       r0, 0xAD4(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0xAD0
-	  blr
-	*/
+	file.fclose();
+	return result ? true : false;
 }
 
-/*
- * --INFO--
- * Address:	8002CC60
- * Size:	0000E0
+/**
+ * @note Address: 0x8002CC60
+ * @note Size: 0xE0
  */
 void JUTException::createConsole(void* buffer, u32 bufferSize)
 {
@@ -1599,10 +1101,9 @@ void JUTException::createConsole(void* buffer, u32 bufferSize)
 	sConsole->setOutput(JUTConsole::CONSOLEOUT_OSReport | JUTConsole::CONSOLEOUT_Console);
 }
 
-/*
- * --INFO--
- * Address:	8002CD40
- * Size:	000020
+/**
+ * @note Address: 0x8002CD40
+ * @note Size: 0x20
  */
 JUTExternalFB::JUTExternalFB(GXRenderModeObj* renderModeObj, GXGamma gamma, void* p3, u32 p4)
     : mRenderModeObj(renderModeObj)
@@ -1613,30 +1114,20 @@ JUTExternalFB::JUTExternalFB(GXRenderModeObj* renderModeObj, GXGamma gamma, void
 {
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000034
+/**
+ * @note Address: N/A
+ * @note Size: 0x34
  */
 void JUTException::enableFpuException()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00002C
+/**
+ * @note Address: N/A
+ * @note Size: 0x2C
  */
 void JUTException::disableFpuException()
 {
 	// UNUSED FUNCTION
 }
-
-/*
- * --INFO--
- * Address:	8002CD60
- * Size:	000060
- * __dt__12JUTExceptionFv
- */
-JUTException::~JUTException() { }

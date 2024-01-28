@@ -23,10 +23,9 @@ namespace ItemTreasure {
 
 Mgr* mgr;
 
-/*
- * --INFO--
- * Address:	801F316C
- * Size:	000084
+/**
+ * @note Address: 0x801F316C
+ * @note Size: 0x84
  */
 void FSM::init(Item* item)
 {
@@ -34,36 +33,31 @@ void FSM::init(Item* item)
 	registerState(new NormalState);
 }
 
-/*
- * --INFO--
- * Address:	801F31F0
- * Size:	00000C
+/**
+ * @note Address: 0x801F31F0
+ * @note Size: 0xC
  */
 void NormalState::init(Item* item, StateArg*) { item->mAnimSpeed = 0.0f; }
 
-/*
- * --INFO--
- * Address:	801F31FC
- * Size:	000004
+/**
+ * @note Address: 0x801F31FC
+ * @note Size: 0x4
  */
 void NormalState::exec(Item*) { }
 
-/*
- * --INFO--
- * Address:	801F3200
- * Size:	000004
+/**
+ * @note Address: 0x801F3200
+ * @note Size: 0x4
  */
 void NormalState::cleanup(Item*) { }
 
-/*
- * --INFO--
- * Address:	801F3204
- * Size:	0003C8
+/**
+ * @note Address: 0x801F3204
+ * @note Size: 0x3C8
  */
 void NormalState::onDamage(Item* item, f32 damage)
 {
-	if (gameSystem->mFlags & GAMESYS_IsGameWorldActive && gameSystem->mMode == GSM_STORY_MODE
-	    && !playData->isDemoFlag(DEMO_Whites_Digging)) {
+	if (gameSystem->isFlag(GAMESYS_IsGameWorldActive) && gameSystem->isStoryMode() && !playData->isDemoFlag(DEMO_Whites_Digging)) {
 		f32 depth = item->mPellet->getBuryDepth();
 		f32 max   = item->mPellet->getBuryDepthMax();
 
@@ -75,7 +69,7 @@ void NormalState::onDamage(Item* item, f32 damage)
 			CI_LOOP(itPiki)
 			{
 				Piki* piki = *itPiki;
-				if ((int)piki->mPikiKind == White) {
+				if (piki->getKind() == White) {
 					piki->movie_begin(false);
 				}
 			}
@@ -107,10 +101,9 @@ void NormalState::onDamage(Item* item, f32 damage)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801F35CC
- * Size:	000298
+/**
+ * @note Address: 0x801F35CC
+ * @note Size: 0x298
  */
 void Item::releasePellet()
 {
@@ -155,30 +148,27 @@ void Item::releasePellet()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00010C
+/**
+ * @note Address: N/A
+ * @note Size: 0x10C
  */
 Item::Item()
     : WorkItem(OBJTYPE_Treasure)
 {
 	mMass               = 0.0f;
-	mDummyShape.mMatrix = &mObjMatrix;
+	mDummyShape.mMatrix = &mBaseTrMatrix;
 	mPellet             = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	801F3864
- * Size:	000048
+/**
+ * @note Address: 0x801F3864
+ * @note Size: 0x48
  */
 void Item::constructor() { mSoundObj = new PSM::WorkItem(this); }
 
-/*
- * --INFO--
- * Address:	801F38AC
- * Size:	000080
+/**
+ * @note Address: 0x801F38AC
+ * @note Size: 0x80
  */
 void Item::onInit(CreatureInitArg*)
 {
@@ -188,21 +178,19 @@ void Item::onInit(CreatureInitArg*)
 	mCollTree->createSingleSphere(&mDummyShape, 0, mBoundingSphere, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	801F3960
- * Size:	000044
+/**
+ * @note Address: 0x801F3960
+ * @note Size: 0x44
  */
 void Item::onSetPosition()
 {
 	updateBoundSphere();
-	mObjMatrix.makeT(mPosition);
+	mBaseTrMatrix.makeT(mPosition);
 }
 
-/*
- * --INFO--
- * Address:	801F39A4
- * Size:	000048
+/**
+ * @note Address: 0x801F39A4
+ * @note Size: 0x48
  */
 void Item::updateBoundSphere()
 {
@@ -211,10 +199,9 @@ void Item::updateBoundSphere()
 	mBoundingSphere.mRadius   = rad;
 }
 
-/*
- * --INFO--
- * Address:	801F39EC
- * Size:	000180
+/**
+ * @note Address: 0x801F39EC
+ * @note Size: 0x180
  */
 void Item::doAI()
 {
@@ -229,7 +216,7 @@ void Item::doAI()
 		f32 depth   = halfMax - mTotalLife;
 
 		Matrixf mtx;
-		PSMTXCopy(mPellet->mObjMatrix.mMatrix.mtxView, mtx.mMatrix.mtxView);
+		PSMTXCopy(mPellet->mBaseTrMatrix.mMatrix.mtxView, mtx.mMatrix.mtxView);
 		mtx.mMatrix.structView.ty = depth;
 		mtx.mMatrix.structView.tx = 0.0f;
 		mtx.mMatrix.structView.tz = 0.0f;
@@ -252,10 +239,9 @@ void Item::doAI()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801F3B6C
- * Size:	000050
+/**
+ * @note Address: 0x801F3B6C
+ * @note Size: 0x50
  */
 void Item::doDirectDraw(Graphics& gfx)
 {
@@ -263,10 +249,9 @@ void Item::doDirectDraw(Graphics& gfx)
 	gfx.drawSphere(mBoundingSphere.mPosition, mBoundingSphere.mRadius);
 }
 
-/*
- * --INFO--
- * Address:	801F3BBC
- * Size:	00011C
+/**
+ * @note Address: 0x801F3BBC
+ * @note Size: 0x11C
  */
 bool Item::getVectorField(Sys::Sphere& bounds, Vector3f& pos)
 {
@@ -281,10 +266,9 @@ bool Item::getVectorField(Sys::Sphere& bounds, Vector3f& pos)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	801F3CD8
- * Size:	000088
+/**
+ * @note Address: 0x801F3CD8
+ * @note Size: 0x88
  */
 f32 Item::getWorkDistance(Sys::Sphere& bounds)
 {
@@ -292,10 +276,9 @@ f32 Item::getWorkDistance(Sys::Sphere& bounds)
 	return dist - getWorkRadius();
 }
 
-/*
- * --INFO--
- * Address:	801F3D60
- * Size:	0000B8
+/**
+ * @note Address: 0x801F3D60
+ * @note Size: 0xB8
  */
 void Item::setTreasure(Pellet* pelt)
 {
@@ -305,7 +288,7 @@ void Item::setTreasure(Pellet* pelt)
 	if (mPellet) {
 		mPellet->startCapture(&mMatrix);
 		mTotalLife = mPellet->getBuryDepth();
-		if (gameSystem->mMode == GSM_VERSUS_MODE && mPellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_YELLOW) {
+		if (gameSystem->isVersusMode() && mPellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_YELLOW) {
 			mTotalLife = VsOtakaraName::cBedamaYellowDepth;
 		}
 		mPellet->mDepth = mTotalLife;
@@ -313,17 +296,15 @@ void Item::setTreasure(Pellet* pelt)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801F3E18
- * Size:	000030
+/**
+ * @note Address: 0x801F3E18
+ * @note Size: 0x30
  */
 void Item::setLife() { mCurrStageLife = getCurrMaxLife(); }
 
-/*
- * --INFO--
- * Address:	801F3E48
- * Size:	000098
+/**
+ * @note Address: 0x801F3E48
+ * @note Size: 0x98
  */
 f32 Item::getCurrMaxLife()
 {
@@ -331,20 +312,19 @@ f32 Item::getCurrMaxLife()
 	f32 test  = mTotalLife / depth;
 
 	if (test < 0.25f) {
-		return mgr->mParameters->mParms.mP003.mValue;
+		return mgr->mParameters->mParms.mLife3.mValue;
 	} else if (test < 0.5f) {
-		return mgr->mParameters->mParms.mP002.mValue;
+		return mgr->mParameters->mParms.mLife2.mValue;
 	} else if (test < 0.75f) {
-		return mgr->mParameters->mParms.mP001.mValue;
+		return mgr->mParameters->mParms.mLife1.mValue;
 	} else {
-		return mgr->mParameters->mParms.mP000.mValue;
+		return mgr->mParameters->mParms.mLife0.mValue;
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000144
+/**
+ * @note Address: N/A
+ * @note Size: 0x144
  */
 void Item::createTreasure()
 {
@@ -353,10 +333,9 @@ void Item::createTreasure()
 	pelletMgr->makePelletInitArg(initArg, 0);
 }
 
-/*
- * --INFO--
- * Address:	801F3EE0
- * Size:	00011C
+/**
+ * @note Address: 0x801F3EE0
+ * @note Size: 0x11C
  */
 bool Item::interactAttack(InteractAttack& act)
 {
@@ -379,10 +358,9 @@ bool Item::interactAttack(InteractAttack& act)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	801F4000
- * Size:	000058
+/**
+ * @note Address: 0x801F4000
+ * @note Size: 0x58
  */
 f32 Item::getWorkRadius()
 {
@@ -393,17 +371,15 @@ f32 Item::getWorkRadius()
 	return mPellet->getBuryRadius(1.0f - mTotalLife / mPellet->getBuryDepthMax());
 }
 
-/*
- * --INFO--
- * Address:	801F4058
- * Size:	000060
+/**
+ * @note Address: 0x801F4058
+ * @note Size: 0x60
  */
 bool Item::isVisible() { return (!mPellet) ? false : !(mTotalLife / mPellet->getBuryDepthMax() > 0.85f); }
 
-/*
- * --INFO--
- * Address:	801F40B8
- * Size:	0000B0
+/**
+ * @note Address: 0x801F40B8
+ * @note Size: 0xB0
  */
 bool Item::ignoreAtari(Creature* obj)
 {
@@ -418,7 +394,7 @@ bool Item::ignoreAtari(Creature* obj)
 
 	if (!check) {
 		Piki* piki = static_cast<Piki*>(obj);
-		if (piki->isPiki() && (int)piki->mPikiKind == White) {
+		if (piki->isPiki() && piki->getKind() == White) {
 			return false;
 		} else {
 			return true;
@@ -429,10 +405,9 @@ bool Item::ignoreAtari(Creature* obj)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801F4168
- * Size:	000114
+/**
+ * @note Address: 0x801F4168
+ * @note Size: 0x114
  */
 Mgr::Mgr()
 {
@@ -450,10 +425,9 @@ Mgr::Mgr()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801F4540
- * Size:	000130
+/**
+ * @note Address: 0x801F4540
+ * @note Size: 0x130
  */
 BaseItem* Mgr::birth()
 {
@@ -462,10 +436,9 @@ BaseItem* Mgr::birth()
 	return item;
 }
 
-/*
- * --INFO--
- * Address:	801F4670
- * Size:	000060
+/**
+ * @note Address: 0x801F4670
+ * @note Size: 0x60
  */
 BaseItem* Mgr::generatorBirth(Vector3f& pos, Vector3f&, GenItemParm*)
 {
@@ -475,10 +448,9 @@ BaseItem* Mgr::generatorBirth(Vector3f& pos, Vector3f&, GenItemParm*)
 	return item;
 }
 
-/*
- * --INFO--
- * Address:	801F46D0
- * Size:	000004
+/**
+ * @note Address: 0x801F46D0
+ * @note Size: 0x4
  */
 void Mgr::onLoadResources() { }
 } // namespace ItemTreasure

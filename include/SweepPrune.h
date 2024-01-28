@@ -34,8 +34,8 @@ struct World {
 
 	struct ResolveArg {
 		Callback* mCallback;
-		u32 _04;
-		u32 _08;
+		u32 mComparisonCount;
+		u32 mCollisionCount;
 	};
 
 	World();
@@ -47,11 +47,5 @@ struct World {
 	Node mZNode;
 };
 } // namespace SweepPrune
-
-struct SweepCallback : public SweepPrune::World::Callback {
-	virtual void invoke(SweepPrune::Object*, SweepPrune::Object*);
-
-	// vt _00
-};
 
 #endif

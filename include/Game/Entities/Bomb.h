@@ -20,7 +20,7 @@ struct Obj;
 
 namespace Bomb {
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -30,15 +30,39 @@ struct Obj : public EnemyBase {
 	Obj();
 
 	//////////////// VTABLE
-	virtual void onInit(CreatureInitArg* settings); // _30
-	virtual void onKill(CreatureKillArg* settings); // _34
-	virtual void doEntry();                         // _40
-	virtual void doSimulation(f32);                 // _4C
-	virtual void doDirectDraw(Graphics& gfx);       // _50
-	virtual void onStartCapture();                  // _94
-	virtual void onEndCapture();                    // _9C
-	virtual bool isUnderground();                   // _D0 (weak)
-	virtual bool isLivingThing()                    // _D4 (weak)
+	virtual void onInit(CreatureInitArg* settings);                               // _30
+	virtual void onKill(CreatureKillArg* settings);                               // _34
+	virtual void doEntry();                                                       // _40
+	virtual void doSimulation(f32);                                               // _4C
+	virtual void doDirectDraw(Graphics& gfx);                                     // _50
+	virtual void onStartCapture();                                                // _94
+	virtual void onEndCapture();                                                  // _9C
+	virtual void bounceCallback(Sys::Triangle* tri);                              // _E8
+	virtual void collisionCallback(CollEvent& event);                             // _EC
+	virtual void getShadowParam(ShadowParam& settings);                           // _134
+	virtual bool needShadow();                                                    // _138
+	virtual ~Obj() { }                                                            // _1BC (weak)
+	virtual void birth(Vector3f&, f32);                                           // _1C0
+	virtual void doUpdate();                                                      // _1CC
+	virtual void doAnimationCullingOff();                                         // _1DC
+	virtual void doAnimationCullingOn();                                          // _1E0
+	virtual void doDebugDraw(Graphics& gfx);                                      // _1EC
+	virtual void setParameters();                                                 // _228
+	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part);    // _278
+	virtual bool pressCallBack(Creature* source, f32 damage, CollPart* part);     // _27C
+	virtual bool bombCallBack(Creature* source, Vector3f& direction, f32 damage); // _294
+	virtual void doStartStoneState();                                             // _2A4
+	virtual void doFinishStoneState();                                            // _2A8
+	virtual void doStartMovie();                                                  // _2F0
+	virtual void doEndMovie();                                                    // _2F4
+	virtual void setFSM(FSM* fsm)                                                 // _2F8 (weak)
+	{
+		mFsm = fsm;
+		mFsm->init(this);
+		mCurrentLifecycleState = nullptr;
+	}
+	virtual void setInitialSetting(EnemyInitialParamBase*) { } // _1C4 (weak)
+	virtual bool isLivingThing()                               // _D4 (weak)
 	{
 		if (mCaptureMatrix || !isStopMotion()) {
 			return false;
@@ -46,34 +70,18 @@ struct Obj : public EnemyBase {
 			return true;
 		}
 	}
-	virtual void bounceCallback(Sys::Triangle* tri);           // _E8
-	virtual void collisionCallback(CollEvent& event);          // _EC
-	virtual void getShadowParam(ShadowParam& settings);        // _134
-	virtual bool needShadow();                                 // _138
-	virtual ~Obj() { }                                         // _1BC (weak)
-	virtual void birth(Vector3f&, f32);                        // _1C0
-	virtual void setInitialSetting(EnemyInitialParamBase*) { } // _1C4 (weak)
-	virtual void doUpdate();                                   // _1CC
-	virtual void doAnimationCullingOff();                      // _1DC
-	virtual void doAnimationCullingOn();                       // _1E0
-	virtual void doDebugDraw(Graphics& gfx);                   // _1EC
-	virtual void setParameters();                              // _228
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID()         // _258 (weak)
+	virtual bool isUnderground() // _D0 (weak)
+	{
+		bool result = false;
+		if (!isEvent(0, EB_Bittered) && !isStopMotion()) {
+			result = true;
+		}
+
+		return result;
+	}
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _258 (weak)
 	{
 		return EnemyTypeID::EnemyID_Bomb;
-	}
-	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part); // _278
-	virtual bool pressCallBack(Creature*, f32, CollPart*);                     // _27C
-	virtual bool bombCallBack(Creature*, Vector3f&, f32);                      // _294
-	virtual void doStartStoneState();                                          // _2A4
-	virtual void doFinishStoneState();                                         // _2A8
-	virtual void doStartMovie();                                               // _2F0
-	virtual void doEndMovie();                                                 // _2F4
-	virtual void setFSM(FSM* fsm)                                              // _2F8 (weak)
-	{
-		mFsm = fsm;
-		mFsm->init(this);
-		mCurrentLifecycleState = nullptr;
 	}
 	//////////////// VTABLE END
 
@@ -152,6 +160,12 @@ struct Parms : public EnemyParmsBase {
 	ProperParms mProperParms;
 };
 
+enum AnimID {
+	BOMBANIM_HitStart = 0,
+	BOMBANIM_HitLoop  = 1,
+	BOMBANIM_AnimCount, // 2
+};
+
 struct ProperAnimator : public EnemyAnimatorBase {
 	virtual ~ProperAnimator() { }                                   // _08
 	virtual void setAnimMgr(SysShape::AnimMgr* mgr);                // _0C
@@ -185,8 +199,8 @@ struct State : public EnemyFSMState {
 struct StateBomb : public State {
 	StateBomb(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -195,8 +209,8 @@ struct StateBomb : public State {
 struct StateWait : public State {
 	StateWait(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

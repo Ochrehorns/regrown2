@@ -11,17 +11,19 @@ struct JASHeap {
 	JASHeap(JASDisposer*);
 	~JASHeap() { }
 
-	bool alloc(JASHeap*, unsigned long);
-	bool allocTail(JASHeap*, unsigned long);
+	bool alloc(JASHeap*, u32);
+	bool allocTail(JASHeap*, u32);
 	bool free();
-	void insertChild(JASHeap*, JASHeap*, void*, unsigned long, bool);
-	void getTailHeap();
-	int getTailOffset();
-	int getCurOffset();
+	void insertChild(JASHeap*, JASHeap*, void*, u32, bool);
+	JASHeap* getTailHeap();
+	u32 getTailOffset();
+	u32 getCurOffset();
+
+	bool isAllocated() { return mBase; }
 
 	// unused/inlined:
 	void adjustSize();
-	void initRootHeap(void*, unsigned long);
+	void initRootHeap(void*, u32);
 	void* allocAll(JASHeap*);
 	void freeTail();
 	void freeAll();
@@ -31,18 +33,18 @@ struct JASHeap {
 	void dump(int);
 
 	JSUTree<JASHeap> mTree; // _00
-	OSMutex mMutexObject;   // _1C
+	OSMutex mMutex;         // _1C
 	JASDisposer* mDisposer; // _34
-	u8* _38;                // _38
-	u32 _3C;                // _3C
-	u32 _40;                // _40
+	u8* mBase;              // _38
+	u32 mSize;              // _3C
+	JASHeap* _40;           // _40
 };
 
 struct JASSolidHeap : public JASHeap {
 	// unused/inlined:
 	JASSolidHeap();
-	JASSolidHeap(unsigned char*, unsigned long);
-	void init(unsigned char*, unsigned long);
+	JASSolidHeap(u8*, u32);
+	void init(u8*, u32);
 	void* alloc(u32);
 	void freeLast();
 	void freeAll();

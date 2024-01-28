@@ -5,122 +5,10 @@
 #include "JSystem/JAudio/JAS/JASOscillator.h"
 #include "JSystem/JAudio/JAS/JASWave.h"
 #include "JSystem/JSupport/JSUList.h"
-#include "types.h"
 
-/*
-    Generated from dpostproc
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global calc_sw_table__10JASChannel
-    calc_sw_table__10JASChannel:
-        .4byte 0x00000000
-        .4byte 0x00010000
-        .4byte 0x01000100
-        .4byte 0x00010100
-        .4byte 0x01020001
-        .4byte 0x00000201
-        .4byte 0x00020201
-        .4byte 0x00000100
-        .4byte 0x01010002
-        .4byte 0x01010001
-        .4byte 0x01010101
-        .4byte 0x02010200
-        .4byte 0x01020101
-        .4byte 0x02020100
-        .4byte 0x00020001
-        .4byte 0x02000202
-        .4byte 0x01000201
-        .4byte 0x01020102
-        .4byte 0x02020002
-        .4byte 0x02010202
-        .4byte 0x02000000
-        .4byte 0x00000000
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804A43D8
-    lbl_804A43D8:
-        .4byte lbl_800A4580
-        .4byte lbl_800A4554
-        .4byte lbl_800A455C
-        .4byte lbl_800A4564
-        .4byte lbl_800A4580
-        .4byte lbl_800A456C
-        .4byte lbl_800A4574
-        .4byte lbl_800A457C
-    .global lbl_804A43F8
-    lbl_804A43F8:
-        .4byte lbl_800A44A0
-        .4byte lbl_800A4474
-        .4byte lbl_800A447C
-        .4byte lbl_800A4484
-        .4byte lbl_800A44A0
-        .4byte lbl_800A448C
-        .4byte lbl_800A4494
-        .4byte lbl_800A449C
-    .global __vt__10JASChannel
-    __vt__10JASChannel:
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte "@16@__dt__10JASChannelFv"
-        .4byte __dt__10JASChannelFv
-    .global
-   "__vt__109JASPoolAllocObject<10JASChannel,Q217JASCreationPolicy15NewFromRootHeap,Q217JASThreadingModel14SingleThreaded>"
-    "__vt__109JASPoolAllocObject<10JASChannel,Q217JASCreationPolicy15NewFromRootHeap,Q217JASThreadingModel14SingleThreaded>":
-        .4byte 0
-        .4byte 0
-        .4byte
-   "__dt__109JASPoolAllocObject<10JASChannel,Q217JASCreationPolicy15NewFromRootHeap,Q217JASThreadingModel14SingleThreaded>Fv"
-        .4byte 0
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80516E10
-    lbl_80516E10:
-        .float 1.0
-    .global lbl_80516E14
-    lbl_80516E14:
-        .float 0.5
-    .global lbl_80516E18
-    lbl_80516E18:
-        .4byte 0x00000000
-        .4byte 0x00000000
-    .global lbl_80516E20
-    lbl_80516E20:
-        .4byte 0x3FE00000
-        .4byte 0x00000000
-    .global lbl_80516E28
-    lbl_80516E28:
-        .4byte 0x45800000
-    .global lbl_80516E2C
-    lbl_80516E2C:
-        .4byte 0x42FF0000
-    .global lbl_80516E30
-    lbl_80516E30:
-        .4byte 0x43300000
-        .4byte 0x00000000
-    .global lbl_80516E38
-    lbl_80516E38:
-        .4byte 0xC3A2F983
-    .global lbl_80516E3C
-    lbl_80516E3C:
-        .4byte 0x43A2F983
-    .global lbl_80516E40
-    lbl_80516E40:
-        .4byte 0x3FC90FDB
-    .global lbl_80516E44
-    lbl_80516E44:
-        .4byte 0x3EA6F933
-    .global lbl_80516E48
-    lbl_80516E48:
-        .4byte 0x3EB20D99
-        .4byte 0x00000000
-*/
-
-/*
- * --INFO--
- * Address:	800A3204
- * Size:	000160
+/**
+ * @note Address: 0x800A3204
+ * @note Size: 0x160
  */
 JASChannel::JASChannel(Callback* callback, void* p2)
     : JSULink(this)
@@ -133,28 +21,28 @@ JASChannel::JASChannel(Callback* callback, void* p2)
     , _C0(1.0f)
     , _C4(0)
     , _C8(0)
-    , _F8(1.0f)
+    , mModifiedPitch(1.0f)
     , _FC(1.0f)
 {
-	_E8    = nullptr;
-	_E4    = 0;
-	_EC    = 0;
-	_CC    = 0.5f;
-	_D4    = 0.0f;
-	_DC    = 0.0f;
-	_D0    = 0.5f;
-	_D8    = 0.0f;
-	_E0    = 0.0f;
-	_B0[0] = 0x150;
-	_B2    = 0x210;
-	_B4    = 0x352;
-	_B6    = 0x412;
-	_B8    = 0;
-	_BA    = 0;
-	_BC    = 0x13F;
-	_108   = 0x1A;
-	_109   = 1;
-	_10A   = 1;
+	mWaveInfo   = nullptr;
+	mWaveFormat = 0;
+	_EC         = 0;
+	_CC         = 0.5f;
+	_D4         = 0.0f;
+	_DC         = 0.0f;
+	_D0         = 0.5f;
+	_D8         = 0.0f;
+	_E0         = 0.0f;
+	_B0[0]      = 0x150;
+	_B2         = 0x210;
+	_B4         = 0x352;
+	_B6         = 0x412;
+	_B8         = 0;
+	_BA         = 0;
+	_BC         = 0x13F;
+	_108        = 0x1A;
+	_109        = 1;
+	_10A        = 1;
 	for (u32 i = 0; i < 4; i++) {
 		_30[i].init();
 	}
@@ -163,88 +51,15 @@ JASChannel::JASChannel(Callback* callback, void* p2)
 	_1C  = 0;
 }
 
-/*
- * --INFO--
- * Address:	800A3364
- * Size:	000030
+/**
+ * @note Address: 0x800A3364
+ * @note Size: 0x30
  */
 JASOscillator::JASOscillator() { init(); }
 
-/*
- * --INFO--
- * Address:	800A3394
- * Size:	0000A4
- */
-// void JASPoolAllocObject<JASChannel, JASCreationPolicy::NewFromRootHeap, JASThreadingModel::SingleThreaded>::~JASPoolAllocObject()
-// {
-// 	/*
-// 	.loc_0x0:
-// 	  stwu      r1, -0x20(r1)
-// 	  mflr      r0
-// 	  stw       r0, 0x24(r1)
-// 	  stw       r31, 0x1C(r1)
-// 	  stw       r30, 0x18(r1)
-// 	  mr.       r30, r3
-// 	  beq-      .loc_0x88
-// 	  lis       r3, 0x804A
-// 	  extsh.    r0, r4
-// 	  addi      r0, r3, 0x4430
-// 	  stw       r0, 0x0(r30)
-// 	  ble-      .loc_0x88
-// 	  lwz       r0, -0x75DC(r13)
-// 	  cmplwi    r0, 0
-// 	  bne-      .loc_0x78
-// 	  bl        0x4B868
-// 	  lwz       r0, -0x75DC(r13)
-// 	  stw       r3, 0x8(r1)
-// 	  cmplwi    r0, 0
-// 	  bne-      .loc_0x70
-// 	  lwz       r4, -0x7548(r13)
-// 	  li        r3, 0xC
-// 	  li        r5, 0
-// 	  bl        -0x7F4B0
-// 	  mr.       r31, r3
-// 	  beq-      .loc_0x6C
-// 	  bl        0x3D88
-
-// 	.loc_0x6C:
-// 	  stw       r31, -0x75DC(r13)
-
-// 	.loc_0x70:
-// 	  lwz       r3, 0x8(r1)
-// 	  bl        0x4B858
-
-// 	.loc_0x78:
-// 	  lwz       r3, -0x75DC(r13)
-// 	  mr        r4, r30
-// 	  li        r5, 0x4
-// 	  bl        0x3E58
-
-// 	.loc_0x88:
-// 	  lwz       r0, 0x24(r1)
-// 	  mr        r3, r30
-// 	  lwz       r31, 0x1C(r1)
-// 	  lwz       r30, 0x18(r1)
-// 	  mtlr      r0
-// 	  addi      r1, r1, 0x20
-// 	  blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000054
- */
-// void JSULink<JASChannel>::~JSULink()
-// {
-// 	// UNUSED FUNCTION
-// }
-
-/*
- * --INFO--
- * Address:	800A3438
- * Size:	00010C
+/**
+ * @note Address: 0x800A3438
+ * @note Size: 0x10C
  */
 JASChannel::~JASChannel()
 {
@@ -341,45 +156,36 @@ lbl_800A3528:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A3544
- * Size:	000034
+/**
+ * @note Address: 0x800A3544
+ * @note Size: 0x34
  */
 void JASChannel::setOscInit(int index, const JASOscillator::Data* data) { _30[index].initStart(data); }
 
-/*
- * --INFO--
- * Address:	800A3578
- * Size:	000010
+/**
+ * @note Address: 0x800A3578
+ * @note Size: 0x10
  */
-void JASChannel::setMixConfig(int index, unsigned short mixConfig) { _B0[index] = mixConfig; }
+void JASChannel::setMixConfig(int index, u16 mixConfig) { _B0[index] = mixConfig; }
 
-/*
- * --INFO--
- * Address:	800A3588
- * Size:	000008
+/**
+ * @note Address: 0x800A3588
+ * @note Size: 0x8
  */
-void JASChannel::directReleaseOsc(unsigned short a1)
-{
-	// Generated from sth r4, 0x4A(r3)
-	_30[0]._1A = a1;
-}
+void JASChannel::directReleaseOsc(u16 a1) { _30[0].mRelease = a1; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000DC
+/**
+ * @note Address: N/A
+ * @note Size: 0xDC
  */
 void JASChannel::effectOsc(int index, EffectOscParam* param)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A3590
- * Size:	000048
+/**
+ * @note Address: 0x800A3590
+ * @note Size: 0x48
  */
 void JASChannel::copyOsc(int index, JASOscillator::Data* toData)
 {
@@ -387,59 +193,51 @@ void JASChannel::copyOsc(int index, JASOscillator::Data* toData)
 	if (!fromData) {
 		return;
 	}
-	toData->_00 = fromData->_00;
-	toData->_04 = fromData->_04;
-	toData->_08 = fromData->_08;
-	toData->_0C = fromData->_0C;
-	toData->_10 = fromData->_10;
-	toData->_14 = fromData->_14;
+	toData->mTarget  = fromData->mTarget;
+	toData->mRate    = fromData->mRate;
+	toData->mAttack  = fromData->mAttack;
+	toData->mRelease = fromData->mRelease;
+	toData->mWidth   = fromData->mWidth;
+	toData->mVertex  = fromData->mVertex;
 }
 
-/*
- * --INFO--
- * Address:	800A35D8
- * Size:	000034
+/**
+ * @note Address: 0x800A35D8
+ * @note Size: 0x34
  */
 void JASChannel::overwriteOsc(int index, JASOscillator::Data* data) { _30[index].initStart(data); }
 
-/*
- * --INFO--
- * Address:	800A360C
- * Size:	000088
+/**
+ * @note Address: 0x800A360C
+ * @note Size: 0x88
  */
-void JASChannel::setKeySweepTarget(unsigned char p1, unsigned long p2)
+void JASChannel::setKeySweepTarget(u8 p1, u32 p2)
 {
 	u32 v1;
-	if (_E4 == 2 || _E8 == nullptr) {
+	if (mWaveFormat == 2 || mWaveInfo == nullptr) {
 		v1 = p1;
 	} else {
-		v1 = p1 + 60 - _E8->_01;
+		v1 = p1 + 60 - mWaveInfo->mKey;
 	}
 	f32 pitch = JASDriver::key2pitch_c5(v1);
-	pitch *= _F0;
+	pitch *= mActivePitch;
 	if (p2 == 0) {
-		_F8 = pitch;
+		mModifiedPitch = pitch;
 	} else {
 		_C0 = pitch;
 	}
 	_C4 = p2;
 }
 
-/*
- * --INFO--
- * Address:	800A3694
- * Size:	000008
+/**
+ * @note Address: 0x800A3694
+ * @note Size: 0x8
  */
-void JASChannel::setPauseFlag(bool a1)
-{
-	// Generated from stb r4, 0x1C(r3)
-	_1C = a1;
-}
+void JASChannel::setPauseFlag(bool a1) { _1C = a1; }
 
-/*
- * --INFO--
- * Address:	800A369C
- * Size:	000024
+/**
+ * @note Address: 0x800A369C
+ * @note Size: 0x24
  */
 void JASChannel::setPanPower(f32 p1, f32 p2, f32 p3)
 {
@@ -449,54 +247,51 @@ void JASChannel::setPanPower(f32 p1, f32 p2, f32 p3)
 	_114        = p3 / divisor;
 }
 
-/*
- * --INFO--
- * Address:	800A36C0
- * Size:	000084
+/**
+ * @note Address: 0x800A36C0
+ * @note Size: 0x84
  */
-bool JASChannel::play()
+BOOL JASChannel::play()
 {
 	JASDSPChannel* dspChannel = JASDSPChannel::alloc(_BC, dspUpdateCallback, this);
 	if (dspChannel == nullptr) {
 		delete this;
-		return false;
+		return FALSE;
 	}
 	_20 = dspChannel;
 	dspChannel->start();
 	_18 = 1;
-	return true;
+	return TRUE;
 }
 
-/*
- * --INFO--
- * Address:	800A3744
- * Size:	000084
+/**
+ * @note Address: 0x800A3744
+ * @note Size: 0x84
  */
-bool JASChannel::playForce()
+BOOL JASChannel::playForce()
 {
 	JASDSPChannel* dspChannel = JASDSPChannel::allocForce(_BC, dspUpdateCallback, this);
 	if (dspChannel == nullptr) {
 		delete this;
-		return false;
+		return FALSE;
 	}
 	_20 = dspChannel;
 	dspChannel->start();
 	_18 = 1;
-	return true;
+	return TRUE;
 }
 
-/*
- * --INFO--
- * Address:	800A37C8
- * Size:	000098
+/**
+ * @note Address: 0x800A37C8
+ * @note Size: 0x98
  */
-void JASChannel::release(unsigned short p1)
+void JASChannel::release(u16 p1)
 {
 	if (_18 != 1) {
 		return;
 	}
 	if (p1 != 0) {
-		_30[0]._1A = p1;
+		_30[0].mRelease = p1;
 	}
 	for (u32 i = 0; i < 4; i++) {
 		if (_30[i].mData != nullptr) {
@@ -507,12 +302,11 @@ void JASChannel::release(unsigned short p1)
 	_18 = 2;
 }
 
-/*
- * --INFO--
- * Address:	800A3860
- * Size:	00025C
+/**
+ * @note Address: 0x800A3860
+ * @note Size: 0x25C
  */
-void JASChannel::updateEffectorParam(JASDsp::TChannel*, unsigned short*, const JASChannel::EffectOscParam&)
+void JASChannel::updateEffectorParam(JASDsp::TChannel*, u16*, const JASChannel::EffectOscParam&)
 {
 	/*
 	.loc_0x0:
@@ -710,12 +504,11 @@ void JASChannel::updateEffectorParam(JASDsp::TChannel*, unsigned short*, const J
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A3ABC
- * Size:	0000A0
+/**
+ * @note Address: 0x800A3ABC
+ * @note Size: 0xA0
  */
-long JASChannel::dspUpdateCallback(unsigned long p1, JASDsp::TChannel* p2, void* p3)
+s32 JASChannel::dspUpdateCallback(u32 p1, JASDsp::TChannel* p2, void* p3)
 {
 	JASChannel* channel = static_cast<JASChannel*>(p3);
 	switch (p1) {
@@ -734,10 +527,9 @@ long JASChannel::dspUpdateCallback(unsigned long p1, JASDsp::TChannel* p2, void*
 	return 0;
 }
 
-/*
- * --INFO--
- * Address:	800A3B5C
- * Size:	0002A4
+/**
+ * @note Address: 0x800A3B5C
+ * @note Size: 0x2A4
  */
 void JASChannel::initialUpdateDSPChannel(JASDsp::TChannel*)
 {
@@ -957,12 +749,11 @@ lbl_800A3D98:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A3E00
- * Size:	0002BC
+/**
+ * @note Address: 0x800A3E00
+ * @note Size: 0x2BC
  */
-long JASChannel::updateDSPChannel(JASDsp::TChannel*)
+s32 JASChannel::updateDSPChannel(JASDsp::TChannel*)
 {
 	/*
 	stwu     r1, -0x40(r1)
@@ -1178,12 +969,11 @@ lbl_800A409C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A40BC
- * Size:	0000C0
+/**
+ * @note Address: 0x800A40BC
+ * @note Size: 0xC0
  */
-f32 JASChannel::calcEffect(const JASChannel::PanVector* vectorA, const JASChannel::PanVector* vectorB, unsigned char p3)
+f32 JASChannel::calcEffect(const JASChannel::PanVector* vectorA, const JASChannel::PanVector* vectorB, u8 p3)
 {
 	f32 value     = 0.0f;
 	const u8* row = calc_sw_table[p3];
@@ -1300,12 +1090,11 @@ f32 JASChannel::calcEffect(const JASChannel::PanVector* vectorA, const JASChanne
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A417C
- * Size:	0000FC
+/**
+ * @note Address: 0x800A417C
+ * @note Size: 0xFC
  */
-f32 JASChannel::calcPan(const JASChannel::PanVector*, const JASChannel::PanVector*, unsigned char)
+f32 JASChannel::calcPan(const JASChannel::PanVector*, const JASChannel::PanVector*, u8)
 {
 	/*
 	.loc_0x0:
@@ -1399,10 +1188,9 @@ f32 JASChannel::calcPan(const JASChannel::PanVector*, const JASChannel::PanVecto
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A4278
- * Size:	000120
+/**
+ * @note Address: 0x800A4278
+ * @note Size: 0x120
  */
 void JASChannel::updateAutoMixer(JASDsp::TChannel* p1, f32 p2, f32 p3, f32 p4, f32 p5)
 {
@@ -1498,12 +1286,11 @@ lbl_800A42EC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A4398
- * Size:	0003D4
+/**
+ * @note Address: 0x800A4398
+ * @note Size: 0x3D4
  */
-void JASChannel::updateMixer(f32, f32, f32, f32, unsigned short*)
+void JASChannel::updateMixer(f32, f32, f32, f32, u16*)
 {
 	/*
 	stwu     r1, -0xc0(r1)
@@ -1836,17 +1623,16 @@ lbl_800A46F4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A476C
- * Size:	000054
+/**
+ * @note Address: 0x800A476C
+ * @note Size: 0x54
  */
 void JASChannel::sweepProc()
 {
 	if (_C4 == 0) {
 		return;
 	}
-	_F8 = _F8 + (_C0 - _F8) / _C4;
+	mModifiedPitch += (_C0 - mModifiedPitch) / _C4;
 	_C4--;
 	/*
 	stwu     r1, -0x10(r1)
@@ -1875,26 +1661,12 @@ lbl_800A47B8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A47C0
- * Size:	000010
+/**
+ * @note Address: 0x800A47C0
+ * @note Size: 0x10
  */
 void JASChannel::free()
 {
 	_24 = nullptr;
 	_28 = nullptr;
 }
-
-/*
- * --INFO--
- * Address:	800A47D0
- * Size:	000008
- */
-// void JASChannel::@16 @__dt()
-// {
-// 	/*
-// 	addi     r3, r3, -16
-// 	b        __dt__10JASChannelFv
-// 	*/
-// }

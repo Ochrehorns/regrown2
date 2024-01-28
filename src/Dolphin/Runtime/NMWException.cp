@@ -1,427 +1,275 @@
+#include "PowerPC_EABI_Support/Runtime/NMWException.h"
+#include "PowerPC_EABI_Support/Runtime/MWCPlusLib.h"
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000020
- */
-void std::dthandler()
-{
-	// UNUSED FUNCTION
+#define ARRAY_HEADER_SIZE 16
+
+extern "C" {
+extern void abort();
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+namespace std {
+/**
+ * @note Address: N/A
+ * @note Size: 0x20
  */
-void std::duhandler()
+static void dthandler() { abort(); }
+
+static terminate_handler thandler = dthandler;
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
+ */
+static void duhandler() { terminate(); }
+
+static unexpected_handler uhandler = duhandler;
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
+ */
+extern terminate_handler set_terminate(terminate_handler handler)
 {
-	// UNUSED FUNCTION
+	terminate_handler old = thandler;
+	thandler              = handler;
+	return old;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
-void std::set_terminate(void (*) ())
+extern void terminate() { thandler(); }
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
+ */
+extern unexpected_handler set_unexpected(unexpected_handler handler)
 {
-	// UNUSED FUNCTION
+	unexpected_handler old = uhandler;
+	uhandler               = handler;
+	return old;
 }
 
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
-void std::terminate()
+extern void unexpected() { uhandler(); }
+} // namespace std
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x22C
+ */
+extern char __throw_catch_compare(const char* throwtype, const char* catchtype, s32* offset_result)
 {
-	// UNUSED FUNCTION
+	const char *cptr1, *cptr2;
+
+	*offset_result = 0;
+
+	if ((cptr2 = catchtype) == 0) {
+		return true;
+	}
+
+	cptr1 = throwtype;
+
+	if (*cptr2 == 'P') {
+		cptr2++;
+		if (*cptr2 == 'C')
+			cptr2++;
+		if (*cptr2 == 'V')
+			cptr2++;
+		if (*cptr2 == 'v') {
+			if (*cptr1 == 'P' || *cptr1 == '*') {
+				return true;
+			}
+		}
+		cptr2 = catchtype;
+	}
+
+	switch (*cptr1) {
+	case '*':
+	case '!':
+		if (*cptr1++ != *cptr2++)
+			return false;
+		for (;;) {
+			if (*cptr1 == *cptr2++) {
+				if (*cptr1++ == '!') {
+					s32 offset;
+
+					for (offset = 0; *cptr1 != '!';) {
+						offset = offset * 10 + *cptr1++ - '0';
+					}
+					*offset_result = offset;
+					return true;
+				}
+			} else {
+				while (*cptr1++ != '!') { }
+				while (*cptr1++ != '!') { }
+				if (*cptr1 == 0)
+					return false;
+
+				cptr2 = catchtype + 1;
+			}
+		}
+		return false;
+	}
+
+	while ((*cptr1 == 'P' || *cptr1 == 'R') && *cptr1 == *cptr2) {
+		cptr1++;
+		cptr2++;
+
+		if (*cptr2 == 'C') {
+			if (*cptr1 == 'C')
+				cptr1++;
+			cptr2++;
+		}
+		if (*cptr1 == 'C')
+			return false;
+
+		if (*cptr2 == 'V') {
+			if (*cptr1 == 'V')
+				cptr1++;
+			cptr2++;
+		}
+		if (*cptr1 == 'V')
+			return false;
+	}
+
+	for (; *cptr1 == *cptr2; cptr1++, cptr2++) {
+		if (*cptr1 == 0)
+			return true;
+	}
+
+	return false;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+class __partial_array_destructor {
+private:
+	void* p;
+	size_t size;
+	size_t n;
+	ConstructorDestructor dtor;
+
+public:
+	size_t i;
+
+	__partial_array_destructor(void* array, size_t elementsize, size_t nelements, ConstructorDestructor destructor)
+	{
+		p    = array;
+		size = elementsize;
+		n    = nelements;
+		dtor = destructor;
+		i    = n;
+	}
+
+	~__partial_array_destructor()
+	{
+		char* ptr;
+
+		if (i < n && dtor) {
+			for (ptr = (char*)p + size * i; i > 0; i--) {
+				ptr -= size;
+				DTORCALL_COMPLETE(dtor, ptr);
+			}
+		}
+	}
+};
+
+/**
+ * @note Address: 0x800C19F0
+ * @note Size: 0x104
  */
-void std::set_unexpected(void (*) ())
+extern void* __construct_new_array(void* block, ConstructorDestructor ctor, ConstructorDestructor dtor, size_t size, size_t n)
 {
-	// UNUSED FUNCTION
+	char* ptr;
+
+	if ((ptr = (char*)block) != 0L) {
+		size_t* p = (size_t*)ptr;
+
+		p[0] = size;
+		p[1] = n;
+		ptr += ARRAY_HEADER_SIZE;
+
+		if (ctor) {
+			__partial_array_destructor pad(ptr, size, n, dtor);
+			char* p;
+
+			for (pad.i = 0, p = (char*)ptr; pad.i < n; pad.i++, p += size) {
+				CTORCALL_COMPLETE(ctor, p);
+			}
+		}
+	}
+	return ptr;
 }
 
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: 0x800C183C
+ * @note Size: 0xFC
  */
-void std::unexpected()
+extern void __construct_array(void* ptr, ConstructorDestructor ctor, ConstructorDestructor dtor, size_t size, size_t n)
 {
-	// UNUSED FUNCTION
+	__partial_array_destructor pad(ptr, size, n, dtor);
+	char* p;
+
+	for (pad.i = 0, p = (char*)ptr; pad.i < n; pad.i++, p += size) {
+		CTORCALL_COMPLETE(ctor, p);
+	}
 }
 
-
-/*
- * --INFO--
- * Address:	........
- * Size:	00022C
+/**
+ * @note Address: 0x800C17C4
+ * @note Size: 0x78
  */
-void __throw_catch_compare(void)
+extern void __destroy_arr(void* block, ConstructorDestructor* dtor, size_t size, size_t n)
 {
-	// UNUSED FUNCTION
+	char* p;
+
+	for (p = (char*)block + size * n; n > 0; n--) {
+		p -= size;
+		DTORCALL_COMPLETE(dtor, p);
+	}
 }
 
-/*
- * --INFO--
- * Address:	800C19F0
- * Size:	000104
+/**
+ * @note Address: 0x800C1748
+ * @note Size: 0x7C
  */
-void __construct_new_array(void)
+extern void __destroy_new_array(void* block, ConstructorDestructor dtor)
 {
-/*
-.loc_0x0:
-  stwu      r1, -0x40(r1)
-  mflr      r0
-  stw       r0, 0x44(r1)
-  stmw      r27, 0x2C(r1)
-  mr.       r30, r3
-  mr        r27, r4
-  mr        r28, r6
-  mr        r29, r7
-  beq-      .loc_0xEC
-  stw       r28, 0x0(r30)
-  cmplwi    r27, 0
-  stw       r29, 0x4(r30)
-  addi      r30, r30, 0x10
-  beq-      .loc_0xEC
-  stw       r29, 0x18(r1)
-  li        r0, 0
-  mr        r31, r30
-  stw       r30, 0x8(r1)
-  stw       r28, 0xC(r1)
-  stw       r29, 0x10(r1)
-  stw       r5, 0x14(r1)
-  stw       r0, 0x18(r1)
-  b         .loc_0x80
+	if (block) {
+		if (dtor) {
+			size_t i, objects, objectsize;
+			char* p;
 
-.loc_0x5C:
-  mr        r12, r27
-  mr        r3, r31
-  li        r4, 0x1
-  mtctr     r12
-  bctrl     
-  lwz       r3, 0x18(r1)
-  add       r31, r31, r28
-  addi      r0, r3, 0x1
-  stw       r0, 0x18(r1)
+			objectsize = *(size_t*)((char*)block - ARRAY_HEADER_SIZE);
+			objects    = ((size_t*)((char*)block - ARRAY_HEADER_SIZE))[1];
+			p          = (char*)block + (objectsize * objects);
 
-.loc_0x80:
-  lwz       r4, 0x18(r1)
-  cmplw     r4, r29
-  blt+      .loc_0x5C
-  lwz       r0, 0x10(r1)
-  cmplw     r4, r0
-  bge-      .loc_0xEC
-  lwz       r0, 0x14(r1)
-  cmplwi    r0, 0
-  beq-      .loc_0xEC
-  lwz       r0, 0xC(r1)
-  lwz       r3, 0x8(r1)
-  mullw     r0, r0, r4
-  add       r31, r3, r0
-  b         .loc_0xE0
+			for (i = 0; i < objects; i++) {
+				p -= objectsize;
+				DTORCALL_COMPLETE(dtor, p);
+			}
+		}
 
-.loc_0xB8:
-  lwz       r0, 0xC(r1)
-  li        r4, -0x1
-  lwz       r12, 0x14(r1)
-  sub       r31, r31, r0
-  mr        r3, r31
-  mtctr     r12
-  bctrl     
-  lwz       r3, 0x18(r1)
-  subi      r0, r3, 0x1
-  stw       r0, 0x18(r1)
-
-.loc_0xE0:
-  lwz       r0, 0x18(r1)
-  cmplwi    r0, 0
-  bne+      .loc_0xB8
-
-.loc_0xEC:
-  mr        r3, r30
-  lmw       r27, 0x2C(r1)
-  lwz       r0, 0x44(r1)
-  mtlr      r0
-  addi      r1, r1, 0x40
-  blr
-*/
+		::operator delete[]((char*)block - ARRAY_HEADER_SIZE);
+	}
 }
 
-/*
- * --INFO--
- * Address:	800C1938
- * Size:	0000B8
- */
-void __partial_array_destructor::~__partial_array_destructor()
-{
-/*
-.loc_0x0:
-  stwu      r1, -0x20(r1)
-  mflr      r0
-  stw       r0, 0x24(r1)
-  stw       r31, 0x1C(r1)
-  stw       r30, 0x18(r1)
-  mr        r30, r4
-  stw       r29, 0x14(r1)
-  mr.       r29, r3
-  beq-      .loc_0x98
-  lwz       r4, 0x10(r29)
-  lwz       r0, 0x8(r29)
-  cmplw     r4, r0
-  bge-      .loc_0x88
-  lwz       r0, 0xC(r29)
-  cmplwi    r0, 0
-  beq-      .loc_0x88
-  lwz       r0, 0x4(r29)
-  lwz       r3, 0x0(r29)
-  mullw     r0, r0, r4
-  add       r31, r3, r0
-  b         .loc_0x7C
-
-.loc_0x54:
-  lwz       r0, 0x4(r29)
-  li        r4, -0x1
-  lwz       r12, 0xC(r29)
-  sub       r31, r31, r0
-  mr        r3, r31
-  mtctr     r12
-  bctrl     
-  lwz       r3, 0x10(r29)
-  subi      r0, r3, 0x1
-  stw       r0, 0x10(r29)
-
-.loc_0x7C:
-  lwz       r0, 0x10(r29)
-  cmplwi    r0, 0
-  bne+      .loc_0x54
-
-.loc_0x88:
-  extsh.    r0, r30
-  ble-      .loc_0x98
-  mr        r3, r29
-  bl        -0x9D918
-
-.loc_0x98:
-  lwz       r0, 0x24(r1)
-  mr        r3, r29
-  lwz       r31, 0x1C(r1)
-  lwz       r30, 0x18(r1)
-  lwz       r29, 0x14(r1)
-  mtlr      r0
-  addi      r1, r1, 0x20
-  blr
-*/
-}
-
-/*
- * --INFO--
- * Address:	800C183C
- * Size:	0000FC
- */
-void __construct_array(void)
-{
-/*
-.loc_0x0:
-  stwu      r1, -0x30(r1)
-  mflr      r0
-  stw       r0, 0x34(r1)
-  li        r0, 0
-  stw       r31, 0x2C(r1)
-  mr        r31, r3
-  stw       r30, 0x28(r1)
-  mr        r30, r7
-  stw       r29, 0x24(r1)
-  mr        r29, r6
-  stw       r30, 0x18(r1)
-  stw       r28, 0x20(r1)
-  mr        r28, r4
-  stw       r3, 0x8(r1)
-  stw       r29, 0xC(r1)
-  stw       r30, 0x10(r1)
-  stw       r5, 0x14(r1)
-  stw       r0, 0x18(r1)
-  b         .loc_0x70
-
-.loc_0x4C:
-  mr        r12, r28
-  mr        r3, r31
-  li        r4, 0x1
-  mtctr     r12
-  bctrl     
-  lwz       r3, 0x18(r1)
-  add       r31, r31, r29
-  addi      r0, r3, 0x1
-  stw       r0, 0x18(r1)
-
-.loc_0x70:
-  lwz       r4, 0x18(r1)
-  cmplw     r4, r30
-  blt+      .loc_0x4C
-  lwz       r0, 0x10(r1)
-  cmplw     r4, r0
-  bge-      .loc_0xDC
-  lwz       r0, 0x14(r1)
-  cmplwi    r0, 0
-  beq-      .loc_0xDC
-  lwz       r0, 0xC(r1)
-  lwz       r3, 0x8(r1)
-  mullw     r0, r0, r4
-  add       r31, r3, r0
-  b         .loc_0xD0
-
-.loc_0xA8:
-  lwz       r0, 0xC(r1)
-  li        r4, -0x1
-  lwz       r12, 0x14(r1)
-  sub       r31, r31, r0
-  mr        r3, r31
-  mtctr     r12
-  bctrl     
-  lwz       r3, 0x18(r1)
-  subi      r0, r3, 0x1
-  stw       r0, 0x18(r1)
-
-.loc_0xD0:
-  lwz       r0, 0x18(r1)
-  cmplwi    r0, 0
-  bne+      .loc_0xA8
-
-.loc_0xDC:
-  lwz       r0, 0x34(r1)
-  lwz       r31, 0x2C(r1)
-  lwz       r30, 0x28(r1)
-  lwz       r29, 0x24(r1)
-  lwz       r28, 0x20(r1)
-  mtlr      r0
-  addi      r1, r1, 0x30
-  blr
-*/
-}
-
-
-/*
- * --INFO--
- * Address:	800C17C4
- * Size:	000078
- */
-void __destroy_arr(void)
-{
-/*
-.loc_0x0:
-  stwu      r1, -0x20(r1)
-  mflr      r0
-  stw       r0, 0x24(r1)
-  stw       r31, 0x1C(r1)
-  stw       r30, 0x18(r1)
-  mr        r30, r6
-  stw       r29, 0x14(r1)
-  mr        r29, r5
-  mullw     r0, r29, r30
-  stw       r28, 0x10(r1)
-  mr        r28, r4
-  add       r31, r3, r0
-  b         .loc_0x50
-
-.loc_0x34:
-  sub       r31, r31, r29
-  mr        r12, r28
-  mr        r3, r31
-  li        r4, -0x1
-  mtctr     r12
-  bctrl     
-  subi      r30, r30, 0x1
-
-.loc_0x50:
-  cmplwi    r30, 0
-  bne+      .loc_0x34
-  lwz       r0, 0x24(r1)
-  lwz       r31, 0x1C(r1)
-  lwz       r30, 0x18(r1)
-  lwz       r29, 0x14(r1)
-  lwz       r28, 0x10(r1)
-  mtlr      r0
-  addi      r1, r1, 0x20
-  blr
-*/
-}
-
-/*
- * --INFO--
- * Address:	800C1748
- * Size:	00007C
- */
-void __destroy_new_array(void)
-{
-/*
-.loc_0x0:
-  stwu      r1, -0x20(r1)
-  mflr      r0
-  stw       r0, 0x24(r1)
-  stmw      r26, 0x8(r1)
-  mr.       r26, r3
-  mr        r27, r4
-  beq-      .loc_0x68
-  cmplwi    r27, 0
-  beq-      .loc_0x60
-  lwz       r29, -0x10(r26)
-  li        r31, 0
-  lwz       r30, -0xC(r26)
-  mullw     r0, r29, r30
-  add       r28, r26, r0
-  b         .loc_0x58
-
-.loc_0x3C:
-  sub       r28, r28, r29
-  mr        r12, r27
-  mr        r3, r28
-  li        r4, -0x1
-  mtctr     r12
-  bctrl     
-  addi      r31, r31, 0x1
-
-.loc_0x58:
-  cmplw     r31, r30
-  blt+      .loc_0x3C
-
-.loc_0x60:
-  subi      r3, r26, 0x10
-  bl        -0x9D6D4
-
-.loc_0x68:
-  lmw       r26, 0x8(r1)
-  lwz       r0, 0x24(r1)
-  mtlr      r0
-  addi      r1, r1, 0x20
-  blr
-*/
-}
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000080
+/**
+ * @note Address: N/A
+ * @note Size: 0x80
  */
 void __destroy_new_array2(void)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000BC
+/**
+ * @note Address: N/A
+ * @note Size: 0xBC
  */
 void __destroy_new_array3(void)
 {

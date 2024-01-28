@@ -62,6 +62,13 @@ enum MoviePlayerFlags {
 	MVP_Unk32      = 0x80000000,
 };
 
+enum MoviePlayerDrawFlags {
+	MVDP_DrawPikmin = 0x1,
+	MVDP_DrawEnemy  = 0x2,
+	MVDP_DrawPellet = 0x4,
+	MVDP_DrawNavi   = 0x8,
+};
+
 struct MovieConfig : public CNode {
 	struct TParms : public TagParameters {
 		inline TParms()
@@ -86,6 +93,10 @@ struct MovieConfig : public CNode {
 	bool is(char*);
 	void read(Stream&);
 
+	inline void setDrawFlag(u32 flag) { mDrawFlags.typeView |= flag; }
+	inline void resetDrawFlag(u32 flag) { mDrawFlags.typeView &= ~flag; }
+	inline bool isDrawFlag(u32 flag) const { return mDrawFlags.typeView & flag; }
+
 	// _00     = VTBL
 	// _00-_18 = CNode
 	ID32 mId;                   // _18
@@ -98,13 +109,10 @@ struct MovieConfig : public CNode {
 	int mCourseIndex;           // _B4
 	char* mMapName;             // _B8
 	u16 mFlags;                 // _BC
-	union {
-		u8 bytesView[2];
-		u16 shortView;
-	} mDrawFlags;     // _BE
-	u16 mDrawType;    // _C0
-	s16 mFadeType;    // _C2
-	int mMsgPauseNum; // _C4
+	BitFlag<u16> mDrawFlags;    // _BE
+	u16 mDrawType;              // _C0
+	s16 mFadeType;              // _C2
+	int mMsgPauseNum;           // _C4
 };
 
 struct MoviePlayArg {
@@ -150,8 +158,8 @@ struct MoviePlayArg {
 	IDelegate3<MovieConfig*, u32, u32>* mDelegateEnd;   // _0C
 	IDelegate3<MovieConfig*, u32, u32>* mDelegateStart; // _10 /* Second type is unknown. */
 	u32 _14;                                            // _14
-	Vector3f mOrigin;                                   // _18 /* previously called mItemPosition */
-	f32 mAngle;                                         // _24 /* previously called mItemFaceDirection */
+	Vector3f mOrigin;                                   // _18
+	f32 mAngle;                                         // _24
 	u32 mNaviID;                                        // _28
 	u32 mStreamID;                                      // _2C
 	Vector3f* mSoundPosition;                           // _30
@@ -197,6 +205,8 @@ struct MoviePlayer : public JKRDisposer {
 #define MOVIEPLAYER_HEAP_SIZE     0x60400
 #define MOVIEPLAYER_CONTEXT_COUNT 8 // (max number of cutscenes that can be queued at once)
 
+	enum PlayStatus { MOVIEPLAY_SUCCESS, MOVIEPLAY_NOCONFIG, MOVIEPLAY_INQUEUE, MOVIEPLAY_QUEUEFAIL };
+
 	MoviePlayer();
 
 	virtual ~MoviePlayer() { mArchive = nullptr; } // _08
@@ -215,7 +225,7 @@ struct MoviePlayer : public JKRDisposer {
 	bool isPlaying(char*);
 	void loadResource();
 	bool parse(bool);
-	enum PlayStatus { MOVIEPLAY_SUCCESS, MOVIEPLAY_NOCONFIG, MOVIEPLAY_INQUEUE, MOVIEPLAY_QUEUEFAIL };
+
 	u8 play(MoviePlayArg&);
 	u8 play(MovieConfig*, MoviePlayArg&, bool);
 	void reset();
@@ -227,7 +237,7 @@ struct MoviePlayer : public JKRDisposer {
 	void skip();
 	bool start(Camera*);
 	bool stop();
-	void unsuspend(long, bool);
+	void unsuspend(s32, bool);
 	bool update(Controller*, Controller*);
 
 	// unused/inlined
@@ -239,13 +249,14 @@ struct MoviePlayer : public JKRDisposer {
 	void hasSuspendedContext();
 	void getSuspendedContext();
 	void do_stop();
-	void suspend(long);
+	void suspend(s32);
 	void isLoadingBlack();
 	void draw2d();
 
 	inline void setFlag(u32 flag) { mFlags.typeView |= flag; }
 	inline void resetFlag(u32 flag) { mFlags.typeView &= ~flag; }
 	inline bool isFlag(u32 flag) const { return mFlags.typeView & flag; }
+	inline bool isDrawLoad() { return mDemoState == 2 || mDemoState == 3 || mDemoState == 4; }
 
 	// _00     = VTBL
 	// _00-_18 = JKRDisposer

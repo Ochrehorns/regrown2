@@ -5,10 +5,9 @@
 namespace ebi {
 namespace title {
 
-/*
- * --INFO--
- * Address:	803C1F58
- * Size:	000094
+/**
+ * @note Address: 0x803C1F58
+ * @note Size: 0x94
  */
 void TTitleLightMgr::loadSettingFile(JKRArchive* arc, char* path)
 {
@@ -23,47 +22,44 @@ void TTitleLightMgr::loadSettingFile(JKRArchive* arc, char* path)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803C1FEC
- * Size:	00017C
+/**
+ * @note Address: 0x803C1FEC
+ * @note Size: 0x17C
  */
 void TTitleLightMgr::setParam_()
 {
 	mAmbientLight.mColor = Color4(mSetting.mAmbParms.mRed, mSetting.mAmbParms.mGreen, mSetting.mAmbParms.mBlue, mSetting.mAmbParms.mAlpha);
 
-	mLightObjMain.mColor
-	    = Color4(mSetting.mMainParms.mTl04, mSetting.mMainParms.mTl05, mSetting.mMainParms.mTl06, mSetting.mMainParms.mTl07);
+	mLightObjMain.mColor = Color4(mSetting.mMainParms.mLightColR, mSetting.mMainParms.mLightColG, mSetting.mMainParms.mLightColB,
+	                              mSetting.mMainParms.mLightColA);
 	mLightObjMain.mPosition
-	    = Vector3f(mSetting.mMainParms.mTl50.mValue, mSetting.mMainParms.mTl51.mValue, mSetting.mMainParms.mTl52.mValue);
+	    = Vector3f(mSetting.mMainParms.mPosX.mValue, mSetting.mMainParms.mPosY.mValue, mSetting.mMainParms.mPosZ.mValue);
 
-	Vector3f temp(mSetting.mMainParms.mTl53, mSetting.mMainParms.mTl54, mSetting.mMainParms.mTl55);
+	Vector3f temp(mSetting.mMainParms.mRotX, mSetting.mMainParms.mRotY, mSetting.mMainParms.mRotZ);
 	_normalise2(temp);
 	mLightObjMain.mElevation = temp;
 
-	setRefValues(mSetting.mMainParms.mTl56, mSetting.mMainParms.mTl57, mSetting.mMainParms.mTl58);
+	setRefValues(mSetting.mMainParms.mLightRange, mSetting.mMainParms.mLightBrightness, mSetting.mMainParms.mCutoffAngle);
 	mLightObjMain.mDistAttnFn = 1;
 	mLightObjMain.mSpotFn     = 3;
 
-	mLightObjSpec.mColor
-	    = Color4(mSetting.mSpecParms.mSp04, mSetting.mSpecParms.mSp05, mSetting.mSpecParms.mSp06, mSetting.mSpecParms.mSp07);
-	Vector3f temp2(mSetting.mSpecParms.mSp53, mSetting.mSpecParms.mSp54, mSetting.mSpecParms.mSp55);
+	mLightObjSpec.mColor = Color4(mSetting.mSpecParms.mLightColR, mSetting.mSpecParms.mLightColG, mSetting.mSpecParms.mLightColB,
+	                              mSetting.mSpecParms.mLightColA);
+	Vector3f temp2(mSetting.mSpecParms.mRotX, mSetting.mSpecParms.mRotY, mSetting.mSpecParms.mRotZ);
 	_normalise(temp2);
 	mLightObjSpec.mElevation = temp2;
-	mLightObjSpec.mKScale    = mSetting.mSpecParms.mSp56;
+	mLightObjSpec.mKScale    = mSetting.mSpecParms.mGlossAmount;
 }
 
-/*
- * --INFO--
- * Address:	803C2168
- * Size:	000020
+/**
+ * @note Address: 0x803C2168
+ * @note Size: 0x20
  */
 void TTitleLightMgr::update() { setParam_(); }
 
-/*
- * --INFO--
- * Address:	803C2188
- * Size:	000094
+/**
+ * @note Address: 0x803C2188
+ * @note Size: 0x94
  */
 void TTitleLightMgr::setCameraMtx(Mtx mtx)
 {

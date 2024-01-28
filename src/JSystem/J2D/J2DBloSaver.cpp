@@ -4,73 +4,53 @@
 #include "JSystem/J2D/J2DTypes.h"
 #include "types.h"
 
-/*
-    Generated from dpostproc
-
-    .section .ctors, "wa"  # 0x80472F00 - 0x804732C0
-    .4byte __sinit_J2DBloSaver_cpp
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global TextureNameConnect__11J2DBloSaver
-    TextureNameConnect__11J2DBloSaver:
-        .skip 0x8
-*/
-
 J2DBloSaver::CTextureNameConnect* J2DBloSaver::TextureNameConnect = nullptr;
 
-/*
- * --INFO--
- * Address:	800494E4
- * Size:	00000C
+/**
+ * @note Address: N/A
+ * @note Size: 0x1158
  */
-// u16 J2DTevBlock::getTexNo(unsigned long index) const { return 0xFFFF; }
+void J2DBloSaver::writeMaterialBlock(const MaterialName*, J2DMaterial**, u16, const ResTIMGName*, u16)
+{
+	// obviously much much more than this, but need to spawn weak functions
+	J2DTevBlock* block;
+	block->setTexNo(0, 0);
+	u16 texNo = block->getTexNo(0);
+}
 
-/*
- * --INFO--
- * Address:	800494F0
- * Size:	000004
+/**
+ * @note Address: N/A
+ * @note Size: 0x44C
  */
-// void J2DTevBlock::setTexNo(unsigned long index, unsigned short texNo) { }
+void J2DMaterial_SaveBlock::countParts(J2DMaterial**, u16)
+{
+	// obviously much much more than this, but need to spawn weak functions
+	J2DTevBlock* block;
+	block->getFontNo();
+	block->getTevOrder(0);
+	block->getTevSwapModeTable(0);
+}
 
-/*
- * --INFO--
- * Address:	800494F4
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x3FC
  */
-// J2DTevSwapModeTable* J2DTevBlock::getTevSwapModeTable(unsigned long index) { return nullptr; }
+void J2DMaterial_SaveBlock::setOffset(J2DMaterial**, u16, JUTNameTab*)
+{
+	// obviously much much more than this, but need to spawn weak functions
+	J2DIndBlock* block;
+	block->getIndTexStageNum();
+}
 
-/*
- * --INFO--
- * Address:	800494FC
- * Size:	000008
- */
-// J2DTevOrder* J2DTevBlock::getTevOrder(unsigned long index) { return nullptr; }
-
-/*
- * --INFO--
- * Address:	80049504
- * Size:	00000C
- */
-// u16 J2DTevBlock::getFontNo() const { return 0xFFFF; }
-
-/*
- * --INFO--
- * Address:	80049510
- * Size:	000008
- */
-// u8 J2DIndBlock::getIndTexStageNum() const { return 0; }
-
-/*
- * --INFO--
- * Address:	80049518
- * Size:	000050
+/**
+ * @note Address: 0x80049518
+ * @note Size: 0x50
  */
 J2DBloSaver::CTextureNameConnect::~CTextureNameConnect() { clear(); }
 
-/*
- * --INFO--
- * Address:	80049568
- * Size:	000070
+/**
+ * @note Address: 0x80049568
+ * @note Size: 0x70
  */
 void J2DBloSaver::CTextureNameConnect::clear()
 {
@@ -83,79 +63,56 @@ void J2DBloSaver::CTextureNameConnect::clear()
 	mElements = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	800495D8
- * Size:	000068
+/**
+ * @note Address: 0x800495D8
+ * @note Size: 0x68
  */
 J2DTevStage::J2DTevStage()
 {
 	setTevStageInfo(j2dDefaultTevStageInfo);
-	_04.asStruct._1 = j2dDefaultTevSwapMode._01 << 1;
-	_04.asStruct._0 = j2dDefaultTevSwapMode._00;
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	lis      r4, j2dDefaultTevStageInfo@ha
-	stw      r0, 0x14(r1)
-	addi     r4, r4, j2dDefaultTevStageInfo@l
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	bl       setTevStageInfo__11J2DTevStageFRC15J2DTevStageInfo
-	addi     r3, r2, j2dDefaultTevSwapMode@sda21
-	lbz      r4, 7(r31)
-	lbz      r0, 1(r3)
-	mr       r3, r31
-	rlwinm   r4, r4, 0, 0x1e, 0x1b
-	slwi     r0, r0, 2
-	or       r0, r4, r0
-	stb      r0, 7(r31)
-	lbz      r4, 7(r31)
-	lbz      r0, j2dDefaultTevSwapMode@sda21(r2)
-	rlwinm   r4, r4, 0, 0, 0x1d
-	or       r0, r4, r0
-	stb      r0, 7(r31)
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	u32 flag = _07;
+	flag &= ~0xC;
+	u32 swapMode = j2dDefaultTevSwapMode.mTexSel << 2;
+	_07          = flag | swapMode;
+
+	u32 flag2 = _07;
+	flag2 &= ~0x3;
+	u32 rasSel = j2dDefaultTevSwapMode.mRasSel;
+	_07        = flag2 | rasSel;
 }
 
-/*
- * --INFO--
- * Address:	80049640
- * Size:	0001E0
+/**
+ * @note Address: 0x80049640
+ * @note Size: 0x1E0
  */
 void J2DTevStage::setTevStageInfo(const J2DTevStageInfo& info)
 {
-	_02    = info._01 << 4 | info._02;
-	_03    = info._03 << 4 | info._04;
-	_01._2 = info._05 % 1;
-	if (info._05 < 2) {
-		_01._4 = info._07;
-		_01._0 = info._06;
+	_02 = info.mColorA << 4 | info.mColorB;
+	_03 = info.mColorC << 4 | info.mColorD;
+	_01 = info.mCOp % 1;
+	if (info.mCOp < 2) {
+		_05 = info.mCScale;
+		_01 = info.mCBias;
 	} else {
-		_01._4 = (info._05 & 6) / 2;
-		_01._0 = 3;
+		_05 = (info.mCOp & 6) / 2;
+		_01 = 3;
 	}
-	_01._3           = info._08;
-	_01._6           = info._09;
-	_04.asStruct._D  = info._0A;
-	_04.asStruct._A  = info._0B;
-	_04.asStruct._7  = info._0C;
-	_04.asStruct._4  = info._0D;
-	_04.asStruct._12 = info._0E;
-	if (info._0E < 2) {
-		_04.asStruct._10 = info._0F;
-		_04.asStruct._14 = info._10;
+	_04 = info.mCClamp;
+	_07 = info.mCReg;
+	_04 = info.mAlphaA;
+	_05 = info.mAlphaB;
+	_06 = info.mAlphaC;
+	_07 = info.mAlphaD;
+	_01 = info.mAOp;
+	if (info.mAOp < 2) {
+		_05 = info.mABias;
+		_02 = info.mAScale;
 	} else {
-		_04.asStruct._14 = (info._0E & 6) / 2;
-		_04.asStruct._10 = 3;
+		_05 = (info.mAOp & 6) / 2;
+		_02 = 3;
 	}
-	_04.asStruct._13 = info._11;
-	_04.asStruct._16 = info._12;
+	_07 = info.mAClamp;
+	_05 = info.mAReg;
 	/*
 	stwu     r1, -0x10(r1)
 	lbz      r5, 1(r4)
@@ -287,29 +244,3 @@ lbl_800497EC:
 	blr
 	*/
 }
-
-/*
- * --INFO--
- * Address:	80049820
- * Size:	00003C
- */
-// void __sinit_J2DBloSaver_cpp()
-// {
-// 	/*
-// 	stwu     r1, -0x10(r1)
-// 	mflr     r0
-// 	lis      r3, __dt__Q211J2DBloSaver19CTextureNameConnectFv@ha
-// 	lis      r5, lbl_804F0408@ha
-// 	stw      r0, 0x14(r1)
-// 	li       r0, 0
-// 	addi     r4, r3, __dt__Q211J2DBloSaver19CTextureNameConnectFv@l
-// 	addi     r3, r13, TextureNameConnect__11J2DBloSaver@sda21
-// 	stw      r0, TextureNameConnect__11J2DBloSaver@sda21(r13)
-// 	addi     r5, r5, lbl_804F0408@l
-// 	bl       __register_global_object
-// 	lwz      r0, 0x14(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x10
-// 	blr
-// 	*/
-// }

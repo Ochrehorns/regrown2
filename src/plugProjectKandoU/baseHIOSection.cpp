@@ -4,22 +4,20 @@
 #include "Dolphin/os.h"
 #include "JSystem/JFramework/JFWDisplay.h"
 #include "JSystem/JKernel/JKRHeap.h"
-#include "JSystem/JUtility/JUTException.h"
 #include "JSystem/JUtility/JUTXfb.h"
 #include "JSystem/JUtility/JUTProcBar.h"
 #include "nans.h"
+#include "P2Macros.h"
 #include "System.h"
-#include "types.h"
 
 namespace Game {
 
 static const int unusedBaseHIOArray[] = { 0, 0, 0 };
 static const char unusedBaseHIOName[] = "baseHIOSection";
 
-/*
- * --INFO--
- * Address:	80164BF0
- * Size:	0000C0
+/**
+ * @note Address: 0x80164BF0
+ * @note Size: 0xC0
  */
 BaseHIOSection::BaseHIOSection(JKRHeap* heap)
     : Section(nullptr, heap, false)
@@ -30,13 +28,12 @@ BaseHIOSection::BaseHIOSection(JKRHeap* heap)
 	u32 totalFreeSize = JKRHeap::sCurrentHeap->getTotalFreeSize();
 
 	JUT_ASSERTLINE(314, freeSize == totalFreeSize, "fragmentation occurred : after sound\n");
-	_44 = new Controller(Controller::PORT_3);
+	mPlayer4Controller = new Controller(Controller::PORT_3);
 }
 
-/*
- * --INFO--
- * Address:	80164CB0
- * Size:	0000C4
+/**
+ * @note Address: 0x80164CB0
+ * @note Size: 0xC4
  */
 BaseHIOSection::~BaseHIOSection()
 {
@@ -47,14 +44,13 @@ BaseHIOSection::~BaseHIOSection()
 
 	mRootNode = nullptr;
 
-	delete _44;
-	_44 = nullptr;
+	delete mPlayer4Controller;
+	mPlayer4Controller = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80164DD4
- * Size:	000150
+/**
+ * @note Address: 0x80164DD4
+ * @note Size: 0x150
  */
 void BaseHIOSection::setDisplay(JFWDisplay* display, int secondsPer60Frames)
 {
@@ -85,10 +81,9 @@ void BaseHIOSection::setDisplay(JFWDisplay* display, int secondsPer60Frames)
 	JUTProcBar::getManager()->setVisibleHeapBar(false);
 }
 
-/*
- * --INFO--
- * Address:	80164F24
- * Size:	000080
+/**
+ * @note Address: 0x80164F24
+ * @note Size: 0x80
  */
 void BaseHIOSection::initHIO(Game::HIORootNode* node)
 {
@@ -107,38 +102,33 @@ void BaseHIOSection::initHIO(Game::HIORootNode* node)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80164FA4
- * Size:	000004
+/**
+ * @note Address: 0x80164FA4
+ * @note Size: 0x4
  */
 void BaseHIOSection::createScreenRootNode() { }
 
-/*
- * --INFO--
- * Address:	80164FA8
- * Size:	000008
+/**
+ * @note Address: 0x80164FA8
+ * @note Size: 0x8
  */
 bool BaseHIOSection::doUpdate() { return true; }
 
-/*
- * --INFO--
- * Address:	80164FB0
- * Size:	000024
+/**
+ * @note Address: 0x80164FB0
+ * @note Size: 0x24
  */
 void BaseHIOSection::addGenNode(CNode* node) { mRootNode->add(node); }
 
-/*
- * --INFO--
- * Address:	80164FD4
- * Size:	000004
+/**
+ * @note Address: 0x80164FD4
+ * @note Size: 0x4
  */
 void BaseHIOSection::refreshHIO() { }
 
-/*
- * --INFO--
- * Address:	80164FD8
- * Size:	000054
+/**
+ * @note Address: 0x80164FD8
+ * @note Size: 0x54
  */
 HIORootNode::HIORootNode(Section* section)
     : CNode()

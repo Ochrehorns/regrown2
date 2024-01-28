@@ -1,23 +1,20 @@
 #include "JSystem/JAudio/JAS/JASCalc.h"
 #include "Dolphin/os.h"
-#include "types.h"
 
 namespace JASCalc {
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00007C
+/**
+ * @note Address: N/A
+ * @note Size: 0x7C
  */
 void mixcopy(const s16*, const s16*, s16*, u32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A5EBC
- * Size:	0000D4
+/**
+ * @note Address: 0x800A5EBC
+ * @note Size: 0xD4
  */
 void imixcopy(const s16* s1, const s16* s2, s16* dst, u32 n)
 {
@@ -27,10 +24,9 @@ void imixcopy(const s16* s1, const s16* s2, s16* dst, u32 n)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E0
+/**
+ * @note Address: N/A
+ * @note Size: 0xE0
  */
 void bcopyfast(const void* src, void* dest, u32 size)
 {
@@ -52,10 +48,9 @@ void bcopyfast(const void* src, void* dest, u32 size)
 	}
 }
 
-/*
- * --INFO--
- * Address:	800A5F90
- * Size:	0002D4
+/**
+ * @note Address: 0x800A5F90
+ * @note Size: 0x2D4
  */
 void bcopy(const void* src, void* dest, u32 size)
 {
@@ -99,10 +94,9 @@ void bcopy(const void* src, void* dest, u32 size)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000CC
+/**
+ * @note Address: N/A
+ * @note Size: 0xCC
  */
 void bzerofast(void* dest, u32 size)
 {
@@ -116,10 +110,9 @@ void bzerofast(void* dest, u32 size)
 	}
 }
 
-/*
- * --INFO--
- * Address:	800A6264
- * Size:	000274
+/**
+ * @note Address: 0x800A6264
+ * @note Size: 0x274
  * bzero__7JASCalcFPvUl
  */
 void bzero(void* dest, u32 size)
@@ -164,10 +157,9 @@ void bzero(void* dest, u32 size)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000104
+/**
+ * @note Address: N/A
+ * @note Size: 0x104
  */
 void hannWindow(s16*, u32 x)
 {
@@ -175,24 +167,22 @@ void hannWindow(s16*, u32 x)
 }
 
 // required to get clamp to generate
-void fake(long x) { clamp<s16, long>(x); }
+void fake(s32 x) { clamp<s16, s32>(x); }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000118
+/**
+ * @note Address: N/A
+ * @note Size: 0x118
  */
 void hammWindow(s16*, u32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0004CC
+/**
+ * @note Address: N/A
+ * @note Size: 0x4CC
  */
-void fft(float*, float*, u32, long)
+void fft(f32*, f32*, u32, s32)
 {
 	// UNUSED FUNCTION
 }

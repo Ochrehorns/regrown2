@@ -2,7 +2,7 @@
 #define _JSYSTEM_JMATH_H
 
 #include "JSystem/JMath/Inline.h"
-#include "Dolphin/math.h"
+#include "math.h"
 #include "Dolphin/mtx.h"
 #include "Dolphin/vec.h"
 #include "types.h"
@@ -175,13 +175,11 @@ inline const TSinCosTable<2048, f32>* getSinCosTable() { return &sincosTable_; }
 struct TRandom_fast_ {
 	u32 value;
 
+	TRandom_fast_() { value = 0; }
+
 	TRandom_fast_(u32 param_0);
 
-	inline u32 next()
-	{
-		value = value * 0x19660d + 0x3c6ef35f;
-		return value;
-	}
+	inline u32 next() { return value = value * 0x19660d + 0x3c6ef35f; }
 
 	/**
 	 * @fabricated
@@ -228,10 +226,17 @@ struct TRandom_fast_ {
 		}
 		return min + v7;
 	}
+
+	void setSeed(u32 seed) { value = seed; }
 };
+
+inline f32 JMAFastReciprocal(f32 value) { return __fres(value); }
+
+inline f32 fastReciprocal(f32 value) { return JMAFastReciprocal(value); }
+
 } // namespace JMath
 
-void JMAEulerToQuat(short, short, short, Quaternion*);
+void JMAEulerToQuat(s16, s16, s16, Quaternion*);
 void JMAQuatLerp(const Quaternion*, const Quaternion*, f32, Quaternion*);
 void JMALagrangeInterpolation(int, f32*, f32*, f32);
 void JMAFastVECMag(const Vec*);
@@ -241,7 +246,7 @@ void JMAVECLerp(const Vec*, const Vec*, Vec*, f32);
 void JMAMTXApplyScale(const Mtx, Mtx, f32, f32, f32);
 void JMAMTXScaleApply(const Mtx, Mtx, f32, f32, f32);
 
-inline f32 JMAAbs(f32 input) { return __fabs(input); }
+inline f32 JMAAbs(f32 input) { return __fabsf(input); }
 
 inline f32 JMAAtan2Radian(f32 y, f32 x) { return JMath::atanTable_.atan2Radian(y, x); };
 
@@ -256,9 +261,9 @@ inline f32 JMAFastSqrt(register f32 x)
 	register f32 recip;
 
 	if (x > 0.0f) {
-		// clang-format off
+#ifdef __MWERKS__ // clang-format off
 		asm { frsqrte recip, x }
-		// clang-format on
+#endif // clang-format on
 		return recip * x;
 	}
 	return x;
@@ -274,24 +279,23 @@ inline f32 JMAHermiteInterpolation(register f32 p1, register f32 p2, register f3
 	register f32 ff28;
 	register f32 ff27;
 	register f32 ff26;
-	// clang-format off
-    asm {
-        fsubs   ff31, p1, p2
-        fsubs   ff30, p5, p2
-        fdivs   ff29, ff31, ff30
-        fmuls   ff28,ff29,ff29
-        fadds   ff25,ff29,ff29
-        fsubs   ff27,ff28,ff29
-        fsubs   ff30, p3, p6
-        fmsubs  ff26,ff25,ff27,ff28
-        fmadds  ff25,p4,ff27,p4
-        fmadds  ff26,ff26,ff30,p3
-        fmadds  ff25,p7,ff27,ff25
-        fmsubs  ff25,ff29,p4,ff25
-        fnmsubs ff25,ff31,ff25,ff26
-
-    }
-	// clang-format on
+#ifdef __MWERKS__ // clang-format off
+	asm {
+		fsubs   ff31, p1, p2
+		fsubs   ff30, p5, p2
+		fdivs   ff29, ff31, ff30
+		fmuls   ff28,ff29,ff29
+		fadds   ff25,ff29,ff29
+		fsubs   ff27,ff28,ff29
+		fsubs   ff30, p3, p6
+		fmsubs  ff26,ff25,ff27,ff28
+		fmadds  ff25,p4,ff27,p4
+		fmadds  ff26,ff26,ff30,p3
+		fmadds  ff25,p7,ff27,ff25
+		fmsubs  ff25,ff29,p4,ff25
+		fnmsubs ff25,ff31,ff25,ff26
+	}
+#endif // clang-format on
 	return ff25;
 }
 

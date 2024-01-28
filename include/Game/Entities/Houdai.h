@@ -52,8 +52,8 @@ struct Obj : public EnemyBase {
 	virtual void doAnimationCullingOff();                                      // _1DC
 	virtual void doDebugDraw(Graphics& gfx);                                   // _1EC
 	virtual void setParameters();                                              // _228
-	virtual void getThrowupItemPosition(Vector3f*);                            // _268
-	virtual void getThrowupItemVelocity(Vector3f*);                            // _26C
+	virtual void getThrowupItemPosition(Vector3f* position);                   // _268
+	virtual void getThrowupItemVelocity(Vector3f* velocity);                   // _26C
 	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part); // _278
 	virtual void doStartStoneState();                                          // _2A4
 	virtual void doFinishStoneState();                                         // _2A8
@@ -179,7 +179,7 @@ struct Mgr : public EnemyMgrBase {
 
 	//////////////// VTABLE
 	// virtual ~Mgr();                                  // _58 (weak)
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual void doAlloc();                            // _A8
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
@@ -202,31 +202,31 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		inline ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mFp01(this, 'fp01', "ÉxÅ[ÉXåWêî", 5.0f, 0.0f, 10.0f)          // 'base factor'
-		    , mFp02(this, 'fp02', "è„Ç∞å∏ë¨åWêî", -0.4f, -5.0f, 5.0f)       // 'raising deceleration factor'
-		    , mFp03(this, 'fp03', "â∫Ç∞â¡ë¨åWêî", 0.5f, -5.0f, 5.0f)        // 'downward acceleration factor'
-		    , mFp04(this, 'fp04', "ç≈í·å∏â¡ë¨åWêî", -3.0f, -10.0f, 10.0f)   // 'minimum deceleration acceleration factor'
-		    , mFp05(this, 'fp05', "ç≈çÇå∏â¡ë¨åWêî", 10.0f, -10.0f, 10.0f)   // 'maximum deceleration acceleration factor'
-		    , mFp06(this, 'fp06', "ë´ÇÃêUÇËè„Ç∞", 90.0f, 0.0f, 200.0f)      // 'leg swing'
-		    , mFp10(this, 'fp10', "éÀåÇOn:Max", 2.0f, 0.0f, 10.0f)          // 'shooting on:max'
-		    , mFp11(this, 'fp11', "éÀåÇOn:Min", 1.0f, 0.0f, 10.0f)          // 'shooting on:min'
-		    , mFp12(this, 'fp12', "éÀåÇOff:Max", 1.0f, 0.0f, 10.0f)         // 'shooting off:max'
-		    , mFp13(this, 'fp13', "éÀåÇOff:Min", 0.5f, 0.0f, 10.0f)         // 'shooting off:min'
-		    , mFp20(this, 'fp20', "Last 2 Territory", 380.0f, 0.0f, 500.0f) // 'Last 2 Territory'
+		    , mBaseFactor(this, 'fp01', "ÉxÅ[ÉXåWêî", 5.0f, 0.0f, 10.0f)                 // 'base factor'
+		    , mRaiseDecelFactor(this, 'fp02', "è„Ç∞å∏ë¨åWêî", -0.4f, -5.0f, 5.0f)        // 'raising deceleration factor'
+		    , mDownwardAccelFactor(this, 'fp03', "â∫Ç∞â¡ë¨åWêî", 0.5f, -5.0f, 5.0f)      // 'downward acceleration factor'
+		    , mMinDecelAccelFactor(this, 'fp04', "ç≈í·å∏â¡ë¨åWêî", -3.0f, -10.0f, 10.0f) // 'minimum deceleration acceleration factor'
+		    , mMaxDecelAccelFactor(this, 'fp05', "ç≈çÇå∏â¡ë¨åWêî", 10.0f, -10.0f, 10.0f) // 'maximum deceleration acceleration factor'
+		    , mLegSwing(this, 'fp06', "ë´ÇÃêUÇËè„Ç∞", 90.0f, 0.0f, 200.0f)               // 'leg swing'
+		    , mMaxShootingOn(this, 'fp10', "éÀåÇOn:Max", 2.0f, 0.0f, 10.0f)              // 'shooting on:max'
+		    , mMinShootingOn(this, 'fp11', "éÀåÇOn:Min", 1.0f, 0.0f, 10.0f)              // 'shooting on:min'
+		    , mMaxShootingOff(this, 'fp12', "éÀåÇOff:Max", 1.0f, 0.0f, 10.0f)            // 'shooting off:max'
+		    , mMinShootingOff(this, 'fp13', "éÀåÇOff:Min", 0.5f, 0.0f, 10.0f)            // 'shooting off:min'
+		    , mLastToTerritory(this, 'fp20', "Last 2 Territory", 380.0f, 0.0f, 500.0f)   // 'Last 2 Territory'
 		{
 		}
 
-		Parm<f32> mFp01; // _804
-		Parm<f32> mFp02; // _82C
-		Parm<f32> mFp03; // _854
-		Parm<f32> mFp04; // _87C
-		Parm<f32> mFp05; // _8A4
-		Parm<f32> mFp06; // _8CC
-		Parm<f32> mFp10; // _8F4
-		Parm<f32> mFp11; // _91C
-		Parm<f32> mFp12; // _944
-		Parm<f32> mFp13; // _96C
-		Parm<f32> mFp20; // _994
+		Parm<f32> mBaseFactor;          // _804
+		Parm<f32> mRaiseDecelFactor;    // _82C
+		Parm<f32> mDownwardAccelFactor; // _854
+		Parm<f32> mMinDecelAccelFactor; // _87C
+		Parm<f32> mMaxDecelAccelFactor; // _8A4
+		Parm<f32> mLegSwing;            // _8CC
+		Parm<f32> mMaxShootingOn;       // _8F4
+		Parm<f32> mMinShootingOn;       // _91C
+		Parm<f32> mMaxShootingOff;      // _944
+		Parm<f32> mMinShootingOff;      // _96C
+		Parm<f32> mLastToTerritory;     // _994
 	};
 
 	Parms() {};
@@ -240,6 +240,15 @@ struct Parms : public EnemyParmsBase {
 
 	// _00-_7F8	= EnemyParmsBase
 	ProperParms mProperParms; // _7F8
+};
+
+enum AnimID {
+	HOUDAIANIM_Dead    = 0,
+	HOUDAIANIM_Dormant = 1, // 'landing'
+	HOUDAIANIM_Wait    = 2,
+	HOUDAIANIM_Flick   = 3,
+	HOUDAIANIM_Attack  = 4,
+	HOUDAIANIM_AnimCount, // 5
 };
 
 struct ProperAnimator : public EnemyAnimatorBase {
@@ -289,21 +298,25 @@ struct HoudaiGroundCallBack : public JointGroundCallBack {
 };
 
 struct HoudaiShotGunNode : public CNode {
-	inline HoudaiShotGunNode(Obj* houdai)
-	    : mOwner(houdai)
-	{
-	}
+	HoudaiShotGunNode(Obj* houdai);
 
 	virtual ~HoudaiShotGunNode() { } // _08 (weak)
 
 	bool update();
 
+	void create();
+	void setPosition(Vector3f& pos);
+	void setVelocity(Vector3f& vel);
+	void startShotGun();
+
+	HoudaiShotGunNode* getChild() const { return static_cast<HoudaiShotGunNode*>(mChild); }
+
 	// _00		= VTBL
 	// _00-_18 	= CNode
 	Obj* mOwner;                 // _18
 	efx::THdamaShell* mEfxShell; // _1C
-	Vector3f _20;                // _20
-	Vector3f _2C;                // _2C
+	Vector3f mPosition;          // _20
+	Vector3f mVelocity;          // _2C
 };
 
 struct HoudaiShotGunMgr {
@@ -334,19 +347,19 @@ struct HoudaiShotGunMgr {
 	void startStoneStateEffectOn();
 	void finishStoneStateEffectOn();
 
-	Obj* mOwner;                 // _00
-	bool mIsShotGunRotation;     // _04
-	bool mIsShotGunLockedOn;     // _05
-	bool mIsShotGunFinished;     // _06
-	f32 _08;                     // _08
-	f32 _0C;                     // _0C
-	Matrixf* mHeadMtx;           // _10, world matrix for head joint
-	Matrixf* mGunMtx;            // _14, world matrix for gun joint
-	Vector3f mTargetPosition;    // _18
-	u8 _24[0xC];                 // _24, unknown
-	efx::THdamaSight* mEfxSight; // _30
-	HoudaiShotGunNode* _34;      // _34
-	HoudaiShotGunNode* _38;      // _38
+	Obj* mOwner;                       // _00
+	bool mIsShotGunRotation;           // _04
+	bool mIsShotGunLockedOn;           // _05
+	bool mIsShotGunFinished;           // _06
+	f32 mYaw;                          // _08, (-) used for rotateLevel
+	f32 mPitch;                        // _0C, (+) used for rotateVertical
+	Matrixf* mHeadMtx;                 // _10, world matrix for head joint
+	Matrixf* mGunMtx;                  // _14, world matrix for gun joint
+	Vector3f mTargetPosition;          // _18
+	Vector3f mLockOnPosition;          // _24
+	efx::THdamaSight* mEfxSight;       // _30
+	HoudaiShotGunNode* mActiveNodes;   // _34
+	HoudaiShotGunNode* mInactiveNodes; // _38
 };
 
 // static bool levelRotationCallBack(J3DJoint*, int);
@@ -355,7 +368,7 @@ struct HoudaiShotGunMgr {
 /////////////////////////////////////////////////////////////////
 // STATE MACHINE DEFINITIONS
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -378,9 +391,9 @@ struct StateDead : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -392,9 +405,9 @@ struct StateFlick : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -406,9 +419,9 @@ struct StateLand : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -420,9 +433,9 @@ struct StateShot : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -434,9 +447,9 @@ struct StateStay : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -448,9 +461,9 @@ struct StateWait : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -462,9 +475,9 @@ struct StateWalk : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

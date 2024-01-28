@@ -6,12 +6,11 @@
 namespace ebi {
 namespace title {
 
-/*
+/**
  * sets Fog graphics effect based on parameters.
  *
- * --INFO--
- * Address:	803EB1A4
- * Size:	000118
+ * @note Address: 0x803EB1A4
+ * @note Size: 0x118
  */
 void TTitleFogMgr::setGX(Camera& camera)
 {
@@ -19,8 +18,8 @@ void TTitleFogMgr::setGX(Camera& camera)
 		Color4 color4_local(mParms.mColR.mValue, mParms.mColG.mValue, mParms.mColB.mValue, mParms.mColA.mValue);
 		GXColor color_local = color4_local.toGXColor();
 
-		float startDist = mParms.mStartDist.mValue;
-		float endDist   = mParms.mEndDist.mValue;
+		f32 startDist = mParms.mStartDist.mValue;
+		f32 endDist   = mParms.mEndDist.mValue;
 
 		GXSetFog(GX_FOG_LINEAR, startDist, endDist, camera.getNear(), camera.getFar(), color_local);
 
@@ -33,22 +32,18 @@ void TTitleFogMgr::setGX(Camera& camera)
 	}
 }
 
-/*
+/**
  * Sets title-screen fog parameters from file.
  *
- * --INFO--
- * Address:	803EB2BC
- * Size:	00007C
+ * @note Address: 0x803EB2BC
+ * @note Size: 0x7C
  */
 void TTitleFogMgr::loadSettingFile(JKRArchive* archive, char* file)
 {
 	void* resource = archive->getResource(file);
 	if (resource) {
 		RamStream stream(resource, -1);
-		stream.mMode = 1;
-		if (stream.mMode == 1) {
-			stream.mTabCount = 0;
-		};
+		stream.resetPosition(true, 1);
 		mParms.read(stream);
 	}
 }

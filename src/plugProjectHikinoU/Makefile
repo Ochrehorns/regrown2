@@ -1,7 +1,7 @@
 HIKINO_FILES:=\
 	$(BUILD_DIR)/asm/plugProjectHikinoU/PSSeq.o\
 	$(BUILD_DIR)/asm/plugProjectHikinoU/PSGame.o\
-	$(BUILD_DIR)/asm/plugProjectHikinoU/PSSystemIF.o\
+	$(BUILD_DIR)/src/plugProjectHikinoU/PSSystemIF.o\
 	$(BUILD_DIR)/asm/plugProjectHikinoU/PSAutoBgm.o\
 	$(BUILD_DIR)/asm/plugProjectHikinoU/PSBnkMgr.o\
 	$(BUILD_DIR)/src/plugProjectHikinoU/PSTaskBase.o\
@@ -9,10 +9,10 @@ HIKINO_FILES:=\
 	$(BUILD_DIR)/src/plugProjectHikinoU/PSCreatureMgr.o\
 	$(BUILD_DIR)/src/plugProjectHikinoU/PSAutoBgm_MeloArranger.o\
 	$(BUILD_DIR)/asm/plugProjectHikinoU/PSSe.o\
-	$(BUILD_DIR)/asm/plugProjectHikinoU/PSSeBase.o\
-	$(BUILD_DIR)/asm/plugProjectHikinoU/PSScene.o\
+	$(BUILD_DIR)/src/plugProjectHikinoU/PSSeBase.o\
+	$(BUILD_DIR)/src/plugProjectHikinoU/PSScene.o\
 	$(BUILD_DIR)/src/plugProjectHikinoU/PSBgmTrack.o\
-	$(BUILD_DIR)/asm/plugProjectHikinoU/PSDirector.o\
+	$(BUILD_DIR)/src/plugProjectHikinoU/PSDirector.o\
 
 $(HIKINO_FILES): CFLAGS += -sym on
 

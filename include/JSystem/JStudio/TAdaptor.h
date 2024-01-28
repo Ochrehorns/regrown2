@@ -72,19 +72,19 @@ struct TAdaptor_actor : public TAdaptor {
 
 	// ~TAdaptor_actor();
 
-	virtual ~TAdaptor_actor()                                                                                  = 0; // _08
-	virtual void adaptor_do_PARENT(JStudio::data::TEOperationData, const void*, unsigned long)                 = 0; // _20
-	virtual void adaptor_do_PARENT_NODE(JStudio::data::TEOperationData, const void*, unsigned long)            = 0; // _24
-	virtual void adaptor_do_PARENT_ENABLE(JStudio::data::TEOperationData, const void*, unsigned long)          = 0; // _28
-	virtual void adaptor_do_PARENT_FUNCTION(JStudio::data::TEOperationData, const void*, unsigned long)        = 0; // _2C
-	virtual void adaptor_do_RELATION(JStudio::data::TEOperationData, const void*, unsigned long)               = 0; // _30
-	virtual void adaptor_do_RELATION_NODE(JStudio::data::TEOperationData, const void*, unsigned long)          = 0; // _34
-	virtual void adaptor_do_RELATION_ENABLE(JStudio::data::TEOperationData, const void*, unsigned long)        = 0; // _38
-	virtual void adaptor_do_SHAPE(JStudio::data::TEOperationData, const void*, unsigned long)                  = 0; // _3C
-	virtual void adaptor_do_ANIMATION(JStudio::data::TEOperationData, const void*, unsigned long)              = 0; // _40
-	virtual void adaptor_do_ANIMATION_MODE(JStudio::data::TEOperationData, const void*, unsigned long)         = 0; // _44
-	virtual void adaptor_do_TEXTURE_ANIMATION(JStudio::data::TEOperationData, const void*, unsigned long)      = 0; // _48
-	virtual void adaptor_do_TEXTURE_ANIMATION_MODE(JStudio::data::TEOperationData, const void*, unsigned long) = 0; // _4C
+	virtual ~TAdaptor_actor()                                                                        = 0; // _08
+	virtual void adaptor_do_PARENT(JStudio::data::TEOperationData, const void*, u32)                 = 0; // _20
+	virtual void adaptor_do_PARENT_NODE(JStudio::data::TEOperationData, const void*, u32)            = 0; // _24
+	virtual void adaptor_do_PARENT_ENABLE(JStudio::data::TEOperationData, const void*, u32)          = 0; // _28
+	virtual void adaptor_do_PARENT_FUNCTION(JStudio::data::TEOperationData, const void*, u32)        = 0; // _2C
+	virtual void adaptor_do_RELATION(JStudio::data::TEOperationData, const void*, u32)               = 0; // _30
+	virtual void adaptor_do_RELATION_NODE(JStudio::data::TEOperationData, const void*, u32)          = 0; // _34
+	virtual void adaptor_do_RELATION_ENABLE(JStudio::data::TEOperationData, const void*, u32)        = 0; // _38
+	virtual void adaptor_do_SHAPE(JStudio::data::TEOperationData, const void*, u32)                  = 0; // _3C
+	virtual void adaptor_do_ANIMATION(JStudio::data::TEOperationData, const void*, u32)              = 0; // _40
+	virtual void adaptor_do_ANIMATION_MODE(JStudio::data::TEOperationData, const void*, u32)         = 0; // _44
+	virtual void adaptor_do_TEXTURE_ANIMATION(JStudio::data::TEOperationData, const void*, u32)      = 0; // _48
+	virtual void adaptor_do_TEXTURE_ANIMATION_MODE(JStudio::data::TEOperationData, const void*, u32) = 0; // _4C
 
 	JStudio::TVariableValue _0C[14]; // _0C
 
@@ -119,14 +119,14 @@ struct TAdaptor_camera : public TAdaptor {
 
 	// ~TAdaptor_camera();
 
-	virtual ~TAdaptor_camera()                                                                               = 0; // _08
-	virtual void adaptor_do_PARENT(JStudio::data::TEOperationData, const void*, unsigned long)               = 0; // _20
-	virtual void adaptor_do_PARENT_NODE(JStudio::data::TEOperationData, const void*, unsigned long)          = 0; // _24
-	virtual void adaptor_do_PARENT_ENABLE(JStudio::data::TEOperationData, const void*, unsigned long)        = 0; // _28
-	virtual void adaptor_do_PARENT_FUNCTION(JStudio::data::TEOperationData, const void*, unsigned long)      = 0; // _2C
-	virtual void adaptor_do_TARGET_PARENT(JStudio::data::TEOperationData, const void*, unsigned long)        = 0; // _30
-	virtual void adaptor_do_TARGET_PARENT_NODE(JStudio::data::TEOperationData, const void*, unsigned long)   = 0; // _34
-	virtual void adaptor_do_TARGET_PARENT_ENABLE(JStudio::data::TEOperationData, const void*, unsigned long) = 0; // _38
+	virtual ~TAdaptor_camera()                                                                     = 0; // _08
+	virtual void adaptor_do_PARENT(JStudio::data::TEOperationData, const void*, u32)               = 0; // _20
+	virtual void adaptor_do_PARENT_NODE(JStudio::data::TEOperationData, const void*, u32)          = 0; // _24
+	virtual void adaptor_do_PARENT_ENABLE(JStudio::data::TEOperationData, const void*, u32)        = 0; // _28
+	virtual void adaptor_do_PARENT_FUNCTION(JStudio::data::TEOperationData, const void*, u32)      = 0; // _2C
+	virtual void adaptor_do_TARGET_PARENT(JStudio::data::TEOperationData, const void*, u32)        = 0; // _30
+	virtual void adaptor_do_TARGET_PARENT_NODE(JStudio::data::TEOperationData, const void*, u32)   = 0; // _34
+	virtual void adaptor_do_TARGET_PARENT_ENABLE(JStudio::data::TEOperationData, const void*, u32) = 0; // _38
 
 	JStudio::TVariableValue _0C[0xC]; // _0C
 
@@ -152,11 +152,17 @@ struct TAdaptor_fog : public TAdaptor {
 };
 
 struct TAdaptor_light : public TAdaptor {
+	TAdaptor_light()
+	    : TAdaptor(_0C, 13)
+	{
+	}
 	// ~TAdaptor_light();
 
-	virtual ~TAdaptor_light()                                                                   = 0; // _08
-	virtual void adaptor_do_ENABLE(JStudio::data::TEOperationData, const void*, unsigned long)  = 0; // _20
-	virtual void adaptor_do_FACULTY(JStudio::data::TEOperationData, const void*, unsigned long) = 0; // _24
+	virtual ~TAdaptor_light()                                                         = 0; // _08
+	virtual void adaptor_do_ENABLE(JStudio::data::TEOperationData, const void*, u32)  = 0; // _20
+	virtual void adaptor_do_FACULTY(JStudio::data::TEOperationData, const void*, u32) = 0; // _24
+
+	JStudio::TVariableValue _0C[13]; // _0C
 
 	static const u32 sauVariableValue_3_COLOR_RGB[3];
 	static const u32 sauVariableValue_4_COLOR_RGBA[4];
@@ -185,15 +191,15 @@ struct TAdaptor_particle : public TAdaptor {
 
 	// ~TAdaptor_particle();
 
-	virtual ~TAdaptor_particle()                                                                      = 0; // _08
-	virtual void adaptor_do_PARTICLE(JStudio::data::TEOperationData, const void*, unsigned long)      = 0; // _20
-	virtual void adaptor_do_BEGIN(JStudio::data::TEOperationData, const void*, unsigned long)         = 0; // _24
-	virtual void adaptor_do_BEGIN_FADE_IN(JStudio::data::TEOperationData, const void*, unsigned long) = 0; // _28
-	virtual void adaptor_do_END(JStudio::data::TEOperationData, const void*, unsigned long)           = 0; // _2C
-	virtual void adaptor_do_END_FADE_OUT(JStudio::data::TEOperationData, const void*, unsigned long)  = 0; // _30
-	virtual void adaptor_do_PARENT(JStudio::data::TEOperationData, const void*, unsigned long)        = 0; // _34
-	virtual void adaptor_do_PARENT_NODE(JStudio::data::TEOperationData, const void*, unsigned long)   = 0; // _38
-	virtual void adaptor_do_PARENT_ENABLE(JStudio::data::TEOperationData, const void*, unsigned long) = 0; // _3C
+	virtual ~TAdaptor_particle()                                                            = 0; // _08
+	virtual void adaptor_do_PARTICLE(JStudio::data::TEOperationData, const void*, u32)      = 0; // _20
+	virtual void adaptor_do_BEGIN(JStudio::data::TEOperationData, const void*, u32)         = 0; // _24
+	virtual void adaptor_do_BEGIN_FADE_IN(JStudio::data::TEOperationData, const void*, u32) = 0; // _28
+	virtual void adaptor_do_END(JStudio::data::TEOperationData, const void*, u32)           = 0; // _2C
+	virtual void adaptor_do_END_FADE_OUT(JStudio::data::TEOperationData, const void*, u32)  = 0; // _30
+	virtual void adaptor_do_PARENT(JStudio::data::TEOperationData, const void*, u32)        = 0; // _34
+	virtual void adaptor_do_PARENT_NODE(JStudio::data::TEOperationData, const void*, u32)   = 0; // _38
+	virtual void adaptor_do_PARENT_ENABLE(JStudio::data::TEOperationData, const void*, u32) = 0; // _3C
 
 	JStudio::TVariableValue _0C[18];
 
@@ -207,18 +213,22 @@ struct TAdaptor_particle : public TAdaptor {
 };
 
 struct TAdaptor_sound : public TAdaptor {
+	TAdaptor_sound(TVariableValue* var, u32 a1)
+	    : TAdaptor(var, a1)
+	{
+	}
 	// ~TAdaptor_sound();
 
 	virtual ~TAdaptor_sound() = 0; // _08
-	virtual void _20()        = 0; // _20
-	virtual void _24()        = 0; // _24
-	virtual void _28()        = 0; // _28
-	virtual void _2C()        = 0; // _2C
-	virtual void _30()        = 0; // _30
-	virtual void _34()        = 0; // _34
-	virtual void _38()        = 0; // _38
-	virtual void _3C()        = 0; // _3C
-	virtual void _40()        = 0; // _40
+	// virtual void _20()        = 0; // _20
+	// virtual void _24()        = 0; // _24
+	// virtual void _28()        = 0; // _28
+	// virtual void _2C()        = 0; // _2C
+	// virtual void _30()        = 0; // _30
+	// virtual void _34()        = 0; // _34
+	// virtual void _38()        = 0; // _38
+	// virtual void _3C()        = 0; // _3C
+	// virtual void _40()        = 0; // _40
 
 	static const u32 sauVariableValue_3_POSITION_XYZ[3];
 };

@@ -55,7 +55,7 @@ struct TParam : public TParamBase {
 };
 
 struct TAnimFolder : public E3DAnimFolderBase {
-	virtual E3DAnimRes* getAnimRes(long id) { return &mAnims[id]; } // _08 (weak)
+	virtual E3DAnimRes* getAnimRes(s32 id) { return &mAnims[id]; } // _08 (weak)
 
 	void load(J3DModelData*, JKRArchive*);
 	E3DAnimRes* getAnimRes(int);
@@ -91,14 +91,14 @@ struct TMgr : public CNode {
 
 struct TUnit : public TObjBase {
 	enum enumAIState {
-		CHAPPYAI_Inactive   = 0,
-		CHAPPYAI_Wait       = 1,
-		CHAPPYAI_Turn       = 2,
-		CHAPPYAI_Walk       = 3,
-		CHAPPYAI_4          = 4,
-		CHAPPYAI_5          = 5,
-		CHAPPYAI_6          = 6,
-		CHAPPYAI_Controlled = 7,
+		CHAPPYAI_Inactive     = 0,
+		CHAPPYAI_Wait         = 1,
+		CHAPPYAI_Turn         = 2,
+		CHAPPYAI_Walk         = 3,
+		CHAPPYAI_4            = 4,
+		CHAPPYAI_EscapeScreen = 5,
+		CHAPPYAI_GoHome       = 6,
+		CHAPPYAI_Controlled   = 7,
 	};
 
 	enum enumAction {
@@ -115,8 +115,8 @@ struct TUnit : public TObjBase {
 		mCounter  = 0;
 		mCounter2 = 0;
 
-		mAnim._0C              = 0;
-		mAnim.pAnimFolder_0x10 = 0;
+		mAnim.mAnimRes    = 0;
+		mAnim.mAnimFolder = 0;
 
 		mTargetPos   = Vector2f(0.0f);
 		mTargetAngle = Vector2f(1.0f, 0.0f);
@@ -125,8 +125,8 @@ struct TUnit : public TObjBase {
 		mCounter  = time;
 		mCounter2 = time;
 
-		mControl = nullptr;
-		_48      = false;
+		mController = nullptr;
+		_48         = false;
 
 		mManager = nullptr;
 		mStateID = CHAPPYAI_Inactive;
@@ -135,8 +135,8 @@ struct TUnit : public TObjBase {
 		mAttacks  = 0;
 	}
 
-	virtual u32 getCreatureType() { return 6; } // _08 (weak)
-	virtual bool isCalc();                      // _0C
+	virtual u32 getCreatureType() { return TITLECREATURE_Chappy; } // _08 (weak)
+	virtual bool isCalc();                                         // _0C
 
 	void setController(Controller*);
 	void init(TMgr*);
@@ -150,17 +150,17 @@ struct TUnit : public TObjBase {
 
 	// _00     = VTBL
 	// _00-_2C = TObjBase
-	Vector2f mTargetPos;   // _2C
-	Vector2f mTargetAngle; // _34
-	u32 mCounter;          // _3C
-	u32 mCounter2;         // _40
-	Controller* mControl;  // _44
-	bool _48;              // _48
-	TMgr* mManager;        // _4C
-	E3DAnimCtrl mAnim;     // _50
-	int mAttacks;          // _64
-	enumAIState mStateID;  // _68
-	int mActionID;         // _6C
+	Vector2f mTargetPos;     // _2C
+	Vector2f mTargetAngle;   // _34
+	u32 mCounter;            // _3C
+	u32 mCounter2;           // _40
+	Controller* mController; // _44
+	bool _48;                // _48
+	TMgr* mManager;          // _4C
+	E3DAnimCtrl mAnim;       // _50
+	int mAttacks;            // _64
+	enumAIState mStateID;    // _68
+	int mActionID;           // _6C
 };
 } // namespace Chappy
 } // namespace title

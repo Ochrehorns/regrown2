@@ -1,569 +1,205 @@
-#include "types.h"
-#include "Graphics.h"
+#include "Splitter.h"
 #include "Viewport.h"
+#include "Graphics.h"
+#include "Camera.h"
+#include "JSystem/J3D/J3DSys.h"
+#include "JSystem/J2D/J2DPrint.h"
+#include "IDelegate.h"
+#include "trig.h"
 #include "nans.h"
 
-/*
-    Generated from dpostproc
+int gScissorOffset;
+char* Graphics::lastTokenName;
 
-    .section .ctors, "wa"  # 0x80472F00 - 0x804732C0
-        .4byte __sinit_graphics_cpp
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_80499C38
-    lbl_80499C38:
-        .asciz "initPrimDraw"
-        .skip 3
-    .global lbl_80499C48
-    lbl_80499C48:
-        .asciz "draw axis"
-        .skip 6
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804EBD98
-    lbl_804EBD98:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-    .global __vt__17HorizonalSplitter
-    __vt__17HorizonalSplitter:
-        .4byte 0
-        .4byte 0
-        .4byte split2__17HorizonalSplitterFf
-        .4byte split4__8SplitterFff
-    .global __vt__8Splitter
-    __vt__8Splitter:
-        .4byte 0
-        .4byte 0
-        .4byte split2__8SplitterFf
-        .4byte split4__8SplitterFff
-        .4byte 0
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global lbl_80516190
-    lbl_80516190:
-        .skip 0x4
-    .global lbl_80516194
-    lbl_80516194:
-        .skip 0x4
-    .global gScissorOffset
-    gScissorOffset:
-        .skip 0x4
-    .global lastTokenName__8Graphics
-    lastTokenName__8Graphics:
-        .skip 0x4
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_805204B8
-    lbl_805204B8:
-        .4byte 0x00000000
-    .global lbl_805204BC
-    lbl_805204BC:
-        .float 0.5
-    .global lbl_805204C0
-    lbl_805204C0:
-        .4byte 0x43300000
-        .4byte 0x00000000
-    .global lbl_805204C8
-    lbl_805204C8:
-        .float 1.0
-    .global lbl_805204CC
-    lbl_805204CC:
-        .4byte 0xBF800000
-    .global lbl_805204D0
-    lbl_805204D0:
-        .4byte 0x43300000
-        .4byte 0x80000000
-    .global lbl_805204D8
-    lbl_805204D8:
-        .4byte 0x3EC90FDB
-    .global lbl_805204DC
-    lbl_805204DC:
-        .4byte 0x43A2F983
-    .global lbl_805204E0
-    lbl_805204E0:
-        .4byte 0xC3A2F983
-    .global lbl_805204E4
-    lbl_805204E4:
-        .4byte 0x40490FDB
-    .global lbl_805204E8
-    lbl_805204E8:
-        .4byte 0xBF7FBE77
-    .global lbl_805204EC
-    lbl_805204EC:
-        .4byte 0x3BB60B61
-    .global lbl_805204F0
-    lbl_805204F0:
-        .4byte 0x33D6BF95
-    .global lbl_805204F4
-    lbl_805204F4:
-        .4byte 0x40C90FDB
-    .global lbl_805204F8
-    lbl_805204F8:
-        .4byte 0xC4800000
-    .global lbl_805204FC
-    lbl_805204FC:
-        .4byte 0x44800000
-    .global lbl_80520500
-    lbl_80520500:
-        .4byte 0x41F00000
-    .global lbl_80520504
-    lbl_80520504:
-        .4byte 0x41200000
-    .global lbl_80520508
-    lbl_80520508:
-        .4byte 0x461C4000
-        .4byte 0x00000000
-*/
-
-/*
- * --INFO--
- * Address:	80424E90
- * Size:	000150
+/**
+ * @note Address: 0x80424E90
+ * @note Size: 0x150
  */
-HorizonalSplitter::HorizonalSplitter(Graphics*)
+HorizonalSplitter::HorizonalSplitter(Graphics* gfx)
 {
-	/*
-	stwu     r1, -0x50(r1)
-	mflr     r0
-	lis      r6, __vt__8Splitter@ha
-	lis      r5, __vt__17HorizonalSplitter@ha
-	stw      r0, 0x54(r1)
-	addi     r0, r5, __vt__17HorizonalSplitter@l
-	stw      r31, 0x4c(r1)
-	stw      r30, 0x48(r1)
-	stw      r29, 0x44(r1)
-	mr       r29, r4
-	stw      r28, 0x40(r1)
-	mr       r28, r3
-	addi     r3, r6, __vt__8Splitter@l
-	stw      r3, 0(r28)
-	stw      r0, 0(r28)
-	stw      r29, 0x14(r28)
-	bl       getRenderModeObj__6SystemFv
-	lhz      r31, 6(r3)
-	bl       getRenderModeObj__6SystemFv
-	lhz      r4, 4(r3)
-	lis      r0, 0x4330
-	lfs      f3, lbl_805204B8@sda21(r2)
-	mr       r3, r29
-	stw      r4, 0x2c(r1)
-	li       r4, 2
-	lfd      f2, lbl_805204C0@sda21(r2)
-	stw      r0, 0x28(r1)
-	lfd      f0, 0x28(r1)
-	stfs     f3, 4(r28)
-	fsubs    f1, f0, f2
-	stfs     f3, 8(r28)
-	stw      r31, 0x34(r1)
-	stw      r0, 0x30(r1)
-	lfd      f0, 0x30(r1)
-	stfs     f1, 0xc(r28)
-	fsubs    f0, f0, f2
-	stfs     f0, 0x10(r28)
-	bl       allocateViewports__8GraphicsFi
-	li       r3, 0x58
-	bl       __nw__FUl
-	or.      r31, r3, r3
-	beq      lbl_80424F40
-	bl       __ct__8ViewportFv
-	mr       r31, r3
+	mGraphics = gfx;
 
-lbl_80424F40:
-	li       r3, 0x58
-	bl       __nw__FUl
-	or.      r30, r3, r3
-	beq      lbl_80424F58
-	bl       __ct__8ViewportFv
-	mr       r30, r3
+	mBounds.set(sys->getRenderModeObj()->fbWidth, sys->getRenderModeObj()->efbHeight);
 
-lbl_80424F58:
-	lfs      f2, lbl_805204BC@sda21(r2)
-	mr       r3, r31
-	lfs      f1, 0x10(r28)
-	addi     r4, r1, 0x18
-	lfs      f3, 0xc(r28)
-	lfs      f0, lbl_805204B8@sda21(r2)
-	fmuls    f2, f2, f1
-	stfs     f3, 0x20(r1)
-	stfs     f0, 0x18(r1)
-	stfs     f0, 0x1c(r1)
-	stfs     f2, 0x24(r1)
-	stfs     f0, 8(r1)
-	stfs     f2, 0xc(r1)
-	stfs     f3, 0x10(r1)
-	stfs     f1, 0x14(r1)
-	bl       "setRect__8ViewportFR7Rect<f>"
-	mr       r3, r30
-	addi     r4, r1, 8
-	bl       "setRect__8ViewportFR7Rect<f>"
-	mr       r3, r29
-	mr       r4, r31
-	bl       addViewport__8GraphicsFP8Viewport
-	mr       r3, r29
-	mr       r4, r30
-	bl       addViewport__8GraphicsFP8Viewport
-	lwz      r0, 0x54(r1)
-	mr       r3, r28
-	lwz      r31, 0x4c(r1)
-	lwz      r30, 0x48(r1)
-	lwz      r29, 0x44(r1)
-	lwz      r28, 0x40(r1)
-	mtlr     r0
-	addi     r1, r1, 0x50
-	blr
-	*/
+	gfx->allocateViewports(2);
+	Viewport* vp1 = new Viewport;
+	Viewport* vp2 = new Viewport;
+
+	Rectf bounds1(0.0f, 0.0f, mBounds.p2.x, mBounds.p2.y * 0.5f);
+	Rectf bounds2(0.0f, mBounds.p2.y * 0.5f, mBounds.p2.x, mBounds.p2.y);
+
+	vp1->setRect(bounds1);
+	vp2->setRect(bounds2);
+	gfx->addViewport(vp1);
+	gfx->addViewport(vp2);
 }
 
-/*
- * --INFO--
- * Address:	80424FE0
- * Size:	0000BC
+/**
+ * @note Address: 0x80424FE0
+ * @note Size: 0xBC
  */
-void HorizonalSplitter::split2(f32)
+void HorizonalSplitter::split2(f32 split)
 {
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stfd     f31, 0x20(r1)
-	psq_st   f31, 40(r1), 0, qr0
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	fmr      f31, f1
-	lwz      r3, 0x14(r3)
-	li       r4, 0
-	bl       getViewport__8GraphicsFi
-	mr       r0, r3
-	lwz      r3, 0x14(r29)
-	mr       r31, r0
-	li       r4, 1
-	bl       getViewport__8GraphicsFi
-	lfs      f0, lbl_805204C8@sda21(r2)
-	mr       r30, r3
-	lfs      f3, lbl_805204BC@sda21(r2)
-	mr       r3, r31
-	fsubs    f0, f0, f31
-	fdivs    f1, f31, f3
-	fdivs    f0, f0, f3
-	stfs     f1, 0x54(r31)
-	stfs     f0, 0x54(r30)
-	lfs      f0, 0x10(r29)
-	lfs      f2, 0x28(r31)
-	lfs      f1, 0x20(r31)
-	fmuls    f0, f3, f0
-	lfs      f3, 0x54(r31)
-	fsubs    f1, f2, f1
-	fmsubs   f0, f3, f1, f0
-	stfs     f0, 0x4c(r30)
-	bl       refresh__8ViewportFv
-	mr       r3, r30
-	bl       refresh__8ViewportFv
-	psq_l    f31, 40(r1), 0, qr0
-	lwz      r0, 0x34(r1)
-	lfd      f31, 0x20(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
+	Viewport* vp1 = mGraphics->getViewport(0);
+	Viewport* vp2 = mGraphics->getViewport(1);
+
+	vp1->_50.y = split / 0.5f;
+	vp2->_50.y = (1.0f - split) / 0.5f;
+	vp2->_48.y = vp1->_50.y * (vp1->mBounds.getHeight()) - mBounds.p2.y * 0.5f;
+
+	vp1->refresh();
+	vp2->refresh();
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000150
+/**
+ * @note Address: N/A
+ * @note Size: 0x150
  */
 VerticalSplitter::VerticalSplitter(Graphics*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000BC
+/**
+ * @note Address: N/A
+ * @note Size: 0xBC
  */
 void VerticalSplitter::split2(f32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0001C8
+/**
+ * @note Address: N/A
+ * @note Size: 0x1C8
  */
 FourSplitter::FourSplitter(Graphics*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00016C
+/**
+ * @note Address: N/A
+ * @note Size: 0x16C
  */
 void FourSplitter::split4(f32, f32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8042509C
- * Size:	0000C0
+/**
+ * @note Address: 0x8042509C
+ * @note Size: 0xC0
  */
 Viewport::Viewport()
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	mr       r30, r3
-	bl       __ct__5CNodeFv
-	lis      r3, __vt__8Viewport@ha
-	li       r0, 0
-	addi     r3, r3, __vt__8Viewport@l
-	stw      r3, 0(r30)
-	sth      r0, 0x18(r30)
-	bl       getRenderModeObj__6SystemFv
-	lhz      r31, 6(r3)
-	bl       getRenderModeObj__6SystemFv
-	lhz      r3, 4(r3)
-	lis      r4, 0x4330
-	lfs      f4, lbl_805204B8@sda21(r2)
-	li       r0, 0
-	stw      r3, 0xc(r1)
-	mr       r3, r30
-	lfd      f3, lbl_805204C0@sda21(r2)
-	stw      r4, 8(r1)
-	lfs      f0, lbl_805204C8@sda21(r2)
-	lfd      f1, 8(r1)
-	stfs     f4, 0x1c(r30)
-	fsubs    f2, f1, f3
-	stfs     f4, 0x20(r30)
-	stw      r31, 0x14(r1)
-	stw      r4, 0x10(r1)
-	lfd      f1, 0x10(r1)
-	stfs     f2, 0x24(r30)
-	fsubs    f1, f1, f3
-	stfs     f1, 0x28(r30)
-	stb      r0, 0x3c(r30)
-	stw      r0, 0x44(r30)
-	stfs     f4, 0x48(r30)
-	stfs     f4, 0x4c(r30)
-	stfs     f0, 0x50(r30)
-	stfs     f0, 0x54(r30)
-	bl       refresh__8ViewportFv
-	lwz      r0, 0x24(r1)
-	mr       r3, r30
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	mVpId = 0;
+
+	u16 y      = sys->getRenderModeObj()->efbHeight;
+	u16 x      = sys->getRenderModeObj()->fbWidth;
+	mBounds.p1 = 0.0f;
+	mBounds.p2 = Vector2f(x, y);
+	mFlags     = 0;
+	mCamera    = nullptr;
+	_48        = Vector2f(0.0f);
+	_50        = Vector2f(1.0f);
+	refresh();
 }
 
-/*
- * --INFO--
- * Address:	8042515C
- * Size:	000044
+/**
+ * @note Address: 0x8042515C
+ * @note Size: 0x44
  */
-Matrixf* Viewport::getMatrix(bool)
+Matrixf* Viewport::getMatrix(bool getCurrentViewMtx)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r0, 0x44(r3)
-	cmplwi   r0, 0
-	beq      lbl_8042518C
-	mr       r3, r0
-	lwz      r12, 0(r3)
-	lwz      r12, 0x48(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80425190
-
-lbl_8042518C:
-	lwz      r3, 0x40(r3)
-
-lbl_80425190:
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (mCamera) {
+		return mCamera->getViewMatrix(getCurrentViewMtx);
+	} else {
+		return mViewMat;
+	}
 }
 
-/*
- * --INFO--
- * Address:	804251A0
- * Size:	00002C
+/**
+ * @note Address: 0x804251A0
+ * @note Size: 0x2C
  */
 void Viewport::setProjection()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x44(r3)
-	cmplwi   r3, 0
-	beq      lbl_804251BC
-	bl       setProjection__6CameraFv
-
-lbl_804251BC:
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (mCamera) {
+		mCamera->setProjection();
+	}
 }
 
-/*
- * --INFO--
- * Address:	804251CC
- * Size:	000074
+/**
+ * @note Address: 0x804251CC
+ * @note Size: 0x74
  */
 int Graphics::getNumActiveViewports()
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	li       r31, 0
-	stw      r30, 0x18(r1)
-	li       r30, 0
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	b        lbl_80425214
-
-lbl_804251F4:
-	mr       r3, r29
-	mr       r4, r30
-	bl       getViewport__8GraphicsFi
-	bl       viewable__8ViewportFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_80425210
-	addi     r31, r31, 1
-
-lbl_80425210:
-	addi     r30, r30, 1
-
-lbl_80425214:
-	lwz      r0, 0x264(r29)
-	cmpw     r30, r0
-	blt      lbl_804251F4
-	lwz      r0, 0x24(r1)
-	mr       r3, r31
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	int ret = 0;
+	for (int i = 0; i < mActiveViewports; i++) {
+		if (getViewport(i)->viewable()) {
+			ret++;
+		}
+	}
+	return ret;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00003C
+/**
+ * @note Address: N/A
+ * @note Size: 0x3C
  */
 void Viewport::getAspect()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80425240
- * Size:	000050
+/**
+ * @note Address: 0x80425240
+ * @note Size: 0x50
  */
 bool Viewport::viewable()
 {
-	/*
-	lbz      r0, 0x3c(r3)
-	clrlwi.  r0, r0, 0x1f
-	beq      lbl_80425254
-	li       r3, 0
-	blr
+	if (mFlags & 1) {
+		return false;
+	}
+	if (mBounds2.getWidth() < 1.0f || mBounds2.getHeight() < 1.0f) {
+		return false;
+	}
 
-lbl_80425254:
-	lfs      f1, 0x34(r3)
-	lfs      f0, 0x2c(r3)
-	lfs      f2, lbl_805204C8@sda21(r2)
-	fsubs    f0, f1, f0
-	fcmpo    cr0, f0, f2
-	blt      lbl_80425280
-	lfs      f1, 0x38(r3)
-	lfs      f0, 0x30(r3)
-	fsubs    f0, f1, f0
-	fcmpo    cr0, f0, f2
-	bge      lbl_80425288
-
-lbl_80425280:
-	li       r3, 0
-	blr
-
-lbl_80425288:
-	li       r3, 1
-	blr
-	*/
+	return true;
 }
 
-/*
- * --INFO--
- * Address:	80425290
- * Size:	00004C
+/**
+ * @note Address: 0x80425290
+ * @note Size: 0x4C
  */
 void Viewport::updateCameraAspect()
 {
-	/*
-	lwz      r4, 0x44(r3)
-	cmplwi   r4, 0
-	beqlr
-	lfs      f3, 0x38(r3)
-	lfs      f0, 0x30(r3)
-	lfs      f2, 0x34(r3)
-	lfs      f1, 0x2c(r3)
-	fsubs    f3, f3, f0
-	lfs      f0, lbl_805204B8@sda21(r2)
-	fsubs    f1, f2, f1
-	fcmpu    cr0, f0, f3
-	beq      lbl_804252C8
-	fcmpu    cr0, f0, f1
-	bne      lbl_804252D0
+	if (!mCamera) {
+		return;
+	}
 
-lbl_804252C8:
-	lfs      f0, lbl_805204C8@sda21(r2)
-	b        lbl_804252D4
-
-lbl_804252D0:
-	fdivs    f0, f1, f3
-
-lbl_804252D4:
-	stfs     f0, 0x2c(r4)
-	blr
-	*/
+	f32 y = mBounds2.getHeight();
+	f32 x = mBounds2.getWidth();
+	f32 aspect;
+	if (y == 0.0f || x == 0.0f) {
+		aspect = 1.0f;
+	} else {
+		aspect = x / y;
+	}
+	mCamera->mAspectRatio = aspect;
 }
 
-/*
- * --INFO--
- * Address:	804252DC
- * Size:	0000A4
+/**
+ * @note Address: 0x804252DC
+ * @note Size: 0xA4
  */
 void Viewport::refresh()
 {
+	mBounds2.p1 = mBounds.p1 + _48;
+	mBounds2.p2 = mBounds2.p1 + Vector2f(_50.x * mBounds.getWidth(), _50.y * mBounds.getHeight());
+	updateCameraAspect();
 	/*
 	lfs      f4, 0x1c(r3)
 	lfs      f0, 0x48(r3)
@@ -615,13 +251,14 @@ lbl_80425378:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80425380
- * Size:	0000C4
+/**
+ * @note Address: 0x80425380
+ * @note Size: 0xC4
  */
-void Viewport::setRect(Rectf&)
+void Viewport::setRect(Rectf& rect)
 {
+	mBounds = rect;
+	refresh();
 	/*
 	lfs      f0, 0(r4)
 	stfs     f0, 0x1c(r3)
@@ -681,710 +318,330 @@ lbl_8042543C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80425444
- * Size:	0000D4
+/**
+ * @note Address: 0x80425444
+ * @note Size: 0xD4
  */
 void Viewport::setViewport()
 {
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stfd     f31, 0x30(r1)
-	psq_st   f31, 56(r1), 0, qr0
-	stfd     f30, 0x20(r1)
-	psq_st   f30, 40(r1), 0, qr0
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	stw      r28, 0x10(r1)
-	lfs      f2, 0x30(r3)
-	mr       r28, r3
-	lfs      f0, 0x38(r3)
-	lfs      f1, 0x2c(r3)
-	lfs      f3, 0x34(r3)
-	fsubs    f4, f0, f2
-	lfs      f5, lbl_805204B8@sda21(r2)
-	fsubs    f3, f3, f1
-	lfs      f6, lbl_805204C8@sda21(r2)
-	bl       GXSetViewport
-	lfs      f31, 0x30(r28)
-	lfs      f0, 0x38(r28)
-	lfs      f30, 0x2c(r28)
-	fsubs    f1, f0, f31
-	bl       __cvt_fp2unsigned
-	lfs      f0, 0x34(r28)
-	mr       r28, r3
-	lwz      r29, gScissorOffset@sda21(r13)
-	fsubs    f1, f0, f30
-	bl       __cvt_fp2unsigned
-	fmr      f1, f31
-	mr       r30, r3
-	bl       __cvt_fp2unsigned
-	fmr      f1, f30
-	mr       r31, r3
-	bl       __cvt_fp2unsigned
-	mr       r4, r31
-	mr       r5, r30
-	add      r6, r29, r28
-	bl       GXSetScissor
-	psq_l    f31, 56(r1), 0, qr0
-	lfd      f31, 0x30(r1)
-	psq_l    f30, 40(r1), 0, qr0
-	lfd      f30, 0x20(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	lwz      r0, 0x44(r1)
-	lwz      r28, 0x10(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
+	GXSetViewport(mBounds2.p1.x, mBounds2.p1.y, mBounds2.getWidth(), mBounds2.getHeight(), 0.0f, 1.0f);
+
+	u32 x = mBounds2.getWidth();
+	u32 y = mBounds2.getHeight();
+	GXSetScissor(mBounds2.p1.x, mBounds2.p1.y, x, gScissorOffset + y);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0001EC
+/**
+ * @note Address: N/A
+ * @note Size: 0x1EC
  */
 void Viewport::setOrthoGraph2d(J2DOrthoGraph&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80425518
- * Size:	000050
+/**
+ * @note Address: 0x80425518
+ * @note Size: 0x50
  */
-SysShape::Model* Viewport::setJ3DViewMtx(bool)
+SysShape::Model* Viewport::setJ3DViewMtx(bool flag)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r0, 0x44(r3)
-	cmplwi   r0, 0
-	beq      lbl_80425548
-	mr       r3, r0
-	lwz      r12, 0(r3)
-	lwz      r12, 0x48(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_8042554C
-
-lbl_80425548:
-	lwz      r3, 0x40(r3)
-
-lbl_8042554C:
-	lis      r4, j3dSys@ha
-	addi     r4, r4, j3dSys@l
-	bl       PSMTXCopy
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	Matrixf* mtx = getMatrix(flag);
+	PSMTXCopy(mtx->mMatrix.mtxView, j3dSys.mViewMtx);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000DC
+/**
+ * @note Address: N/A
+ * @note Size: 0xDC
  */
 void Viewport::draw2dframe(J2DGrafContext&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80425568
- * Size:	000044
+/**
+ * @note Address: 0x80425568
+ * @note Size: 0x44
  */
-void Graphics::allocateViewports(int)
+void Graphics::allocateViewports(int vpNum)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	stw      r4, 0x260(r3)
-	lwz      r0, 0x260(r3)
-	slwi     r3, r0, 2
-	bl       __nwa__FUl
-	stw      r3, 0x268(r31)
-	li       r0, 0
-	stw      r0, 0x264(r31)
-	lwz      r31, 0xc(r1)
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mMaxViewports    = vpNum;
+	mViewports       = new Viewport*[mMaxViewports];
+	mActiveViewports = 0;
 }
 
-/*
- * --INFO--
- * Address:	804255AC
- * Size:	000014
+/**
+ * @note Address: 0x804255AC
+ * @note Size: 0x14
  */
 void Graphics::deleteViewports()
 {
-	/*
-	li       r0, 0
-	stw      r0, 0x260(r3)
-	stw      r0, 0x264(r3)
-	stw      r0, 0x268(r3)
-	blr
-	*/
+	mMaxViewports    = 0;
+	mActiveViewports = 0;
+	mViewports       = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	804255C0
- * Size:	000030
+/**
+ * @note Address: 0x804255C0
+ * @note Size: 0x30
  */
-void Graphics::addViewport(Viewport*)
+void Graphics::addViewport(Viewport* vp)
 {
-	/*
-	lwz      r0, 0x260(r3)
-	lwz      r5, 0x264(r3)
-	cmpw     r0, r5
-	blelr
-	sth      r5, 0x18(r4)
-	lwz      r6, 0x264(r3)
-	lwz      r7, 0x268(r3)
-	addi     r5, r6, 1
-	slwi     r0, r6, 2
-	stw      r5, 0x264(r3)
-	stwx     r4, r7, r0
-	blr
-	*/
+	if (mMaxViewports <= mActiveViewports) {
+		return;
+	}
+	vp->mVpId                      = mActiveViewports;
+	mViewports[mActiveViewports++] = vp;
 }
 
-/*
- * --INFO--
- * Address:	804255F0
- * Size:	000010
+/**
+ * @note Address: 0x804255F0
+ * @note Size: 0x10
  */
-Viewport* Graphics::getViewport(int)
-{
-	/*
-	lwz      r3, 0x268(r3)
-	slwi     r0, r4, 2
-	lwzx     r3, r3, r0
-	blr
-	*/
-}
+Viewport* Graphics::getViewport(int id) { return mViewports[id]; }
 
-/*
- * --INFO--
- * Address:	80425600
- * Size:	0000E0
+/**
+ * @note Address: 0x80425600
+ * @note Size: 0xE0
  */
-void Graphics::mapViewport(IDelegate1<Viewport*>*)
+void Graphics::mapViewport(IDelegate1<Viewport*>* delegate)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	li       r31, 0
-	stw      r30, 0x18(r1)
-	li       r30, 0
-	stw      r29, 0x14(r1)
-	mr       r29, r4
-	stw      r28, 0x10(r1)
-	mr       r28, r3
-	b        lbl_804256B4
-
-lbl_80425630:
-	lwz      r3, 0x268(r28)
-	lwzx     r3, r3, r31
-	lbz      r0, 0x3c(r3)
-	clrlwi.  r0, r0, 0x1f
-	beq      lbl_8042564C
-	li       r0, 0
-	b        lbl_80425684
-
-lbl_8042564C:
-	lfs      f1, 0x34(r3)
-	lfs      f0, 0x2c(r3)
-	lfs      f2, lbl_805204C8@sda21(r2)
-	fsubs    f0, f1, f0
-	fcmpo    cr0, f0, f2
-	blt      lbl_80425678
-	lfs      f1, 0x38(r3)
-	lfs      f0, 0x30(r3)
-	fsubs    f0, f1, f0
-	fcmpo    cr0, f0, f2
-	bge      lbl_80425680
-
-lbl_80425678:
-	li       r0, 0
-	b        lbl_80425684
-
-lbl_80425680:
-	li       r0, 1
-
-lbl_80425684:
-	clrlwi.  r0, r0, 0x18
-	beq      lbl_804256AC
-	stw      r3, 0x25c(r28)
-	mr       r3, r29
-	lwz      r12, 0(r29)
-	lwz      r4, 0x268(r28)
-	lwz      r12, 8(r12)
-	lwzx     r4, r4, r31
-	mtctr    r12
-	bctrl
-
-lbl_804256AC:
-	addi     r31, r31, 4
-	addi     r30, r30, 1
-
-lbl_804256B4:
-	lwz      r0, 0x264(r28)
-	cmpw     r30, r0
-	blt      lbl_80425630
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	lwz      r28, 0x10(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	for (int i = 0; i < mActiveViewports; i++) {
+		Viewport* vp = getViewport(i);
+		if (vp->viewable()) {
+			mCurrentViewport = vp;
+			delegate->invoke(mViewports[i]);
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E4
+/**
+ * @note Address: N/A
+ * @note Size: 0xE4
  */
 void Graphics::mapViewport(IDelegate2<Graphics&, Viewport*>*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000130
+/**
+ * @note Address: N/A
+ * @note Size: 0x130
  */
 void Graphics::renderJ3D()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000F0
+/**
+ * @note Address: N/A
+ * @note Size: 0xF0
  */
 void Graphics::updateJ3D()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	804256E0
- * Size:	000030
+/**
+ * @note Address: 0x804256E0
+ * @note Size: 0x30
  */
-void graphicsTokenCallback(u16)
+static void graphicsTokenCallback(u16 id) { Graphics::lastTokenName = sys->mGfx->getTokenName(id); }
+
+/**
+ * @note Address: 0x80425710
+ * @note Size: 0x78
+ */
+void Graphics::setToken(char* tok)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	mr       r4, r3
-	stw      r0, 0x14(r1)
-	lwz      r5, sys@sda21(r13)
-	lwz      r3, 0x24(r5)
-	bl       getTokenName__8GraphicsFUs
-	stw      r3, lastTokenName__8Graphics@sda21(r13)
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	int id = findTokenIndex(tok);
+	if (id == -1) {
+		if (mActiveTokens < GRAPHICS_TOKEN_MAX) {
+			mTokens[mActiveTokens] = tok;
+			GXSetDrawSync(mActiveTokens);
+			mActiveTokens++;
+		}
+	} else {
+		GXSetDrawSync(id);
+	}
 }
 
-/*
- * --INFO--
- * Address:	80425710
- * Size:	000078
+/**
+ * @note Address: 0x80425788
+ * @note Size: 0x10
  */
-void Graphics::setToken(char*)
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	mr       r30, r3
-	bl       findTokenIndex__8GraphicsFPc
-	cmpwi    r3, -1
-	bne      lbl_80425768
-	lhz      r0, 0(r30)
-	cmplwi   r0, 0x20
-	bge      lbl_80425770
-	rlwinm   r0, r0, 2, 0xe, 0x1d
-	add      r3, r30, r0
-	stw      r31, 4(r3)
-	lhz      r3, 0(r30)
-	bl       GXSetDrawSync
-	lhz      r3, 0(r30)
-	addi     r0, r3, 1
-	sth      r0, 0(r30)
-	b        lbl_80425770
+char* Graphics::getTokenName(u16 id) { return mTokens[id]; }
 
-lbl_80425768:
-	clrlwi   r3, r3, 0x10
-	bl       GXSetDrawSync
-
-lbl_80425770:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	80425788
- * Size:	000010
- */
-char* Graphics::getTokenName(unsigned short)
-{
-	/*
-	rlwinm   r0, r4, 2, 0xe, 0x1d
-	add      r3, r3, r0
-	lwz      r3, 4(r3)
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000038
+/**
+ * @note Address: N/A
+ * @note Size: 0x38
  */
 u16 Graphics::getToken()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80425798
- * Size:	000084
+/**
+ * @note Address: 0x80425798
+ * @note Size: 0x84
  */
-int Graphics::findTokenIndex(char*)
+int Graphics::findTokenIndex(char* tok)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	li       r30, 0
-	stw      r29, 0x14(r1)
-	mr       r29, r4
-	stw      r28, 0x10(r1)
-	mr       r28, r3
-	mr       r31, r28
-	b        lbl_804257EC
-
-lbl_804257C8:
-	lwz      r3, 4(r31)
-	mr       r4, r29
-	bl       strcmp
-	cmpwi    r3, 0
-	bne      lbl_804257E4
-	mr       r3, r30
-	b        lbl_804257FC
-
-lbl_804257E4:
-	addi     r31, r31, 4
-	addi     r30, r30, 1
-
-lbl_804257EC:
-	lhz      r0, 0(r28)
-	cmpw     r30, r0
-	blt      lbl_804257C8
-	li       r3, -1
-
-lbl_804257FC:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	lwz      r28, 0x10(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	for (int i = 0; i < mActiveTokens; i++) {
+		if (!strcmp(mTokens[i], tok)) {
+			return i;
+		}
+	}
+	return -1;
 }
 
-/*
- * --INFO--
- * Address:	8042581C
- * Size:	0001CC
+/**
+ * @note Address: 0x8042581C
+ * @note Size: 0x1CC
  */
-void Graphics::initPrimDraw(Matrixf*)
+void Graphics::initPrimDraw(Matrixf* mtx)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stmw     r27, 0xc(r1)
-	mr       r27, r3
-	lis      r3, lbl_80499C38@ha
-	mr       r28, r4
-	li       r30, 0
-	mr       r29, r27
-	addi     r31, r3, lbl_80499C38@l
-	b        lbl_80425868
-
-lbl_80425848:
-	lwz      r3, 4(r29)
-	mr       r4, r31
-	bl       strcmp
-	cmpwi    r3, 0
-	bne      lbl_80425860
-	b        lbl_80425878
-
-lbl_80425860:
-	addi     r29, r29, 4
-	addi     r30, r30, 1
-
-lbl_80425868:
-	lhz      r0, 0(r27)
-	cmpw     r30, r0
-	blt      lbl_80425848
-	li       r30, -1
-
-lbl_80425878:
-	cmpwi    r30, -1
-	bne      lbl_804258B8
-	lhz      r0, 0(r27)
-	cmplwi   r0, 0x20
-	bge      lbl_804258C0
-	rlwinm   r0, r0, 2, 0xe, 0x1d
-	lis      r3, lbl_80499C38@ha
-	addi     r4, r3, lbl_80499C38@l
-	add      r3, r27, r0
-	stw      r4, 4(r3)
-	lhz      r3, 0(r27)
-	bl       GXSetDrawSync
-	lhz      r3, 0(r27)
-	addi     r0, r3, 1
-	sth      r0, 0(r27)
-	b        lbl_804258C0
-
-lbl_804258B8:
-	clrlwi   r3, r30, 0x10
-	bl       GXSetDrawSync
-
-lbl_804258C0:
-	bl       initGX__8GraphicsFv
-	li       r3, 1
-	bl       GXSetNumTevStages
-	li       r3, 0
-	li       r4, 4
-	bl       GXSetTevOp
-	li       r3, 0
-	li       r4, 0
-	li       r5, 0
-	li       r6, 4
-	bl       GXSetTevOrder
-	li       r3, 1
-	bl       GXSetNumChans
-	li       r3, 4
-	li       r4, 1
-	li       r5, 1
-	li       r6, 1
-	li       r7, 0
-	li       r8, 0
-	li       r9, 2
-	bl       GXSetChanCtrl
-	mr       r3, r27
-	bl       disableLight__8GraphicsFv
-	mr       r3, r27
-	bl       clearVtxDesc__8GraphicsFv
-	mr       r3, r27
-	li       r4, 9
-	li       r5, 1
-	bl       setVtxDesc__8GraphicsF7_GXAttr11_GXAttrType
-	mr       r3, r27
-	li       r4, 0xb
-	li       r5, 1
-	bl       setVtxDesc__8GraphicsF7_GXAttr11_GXAttrType
-	mr       r3, r27
-	li       r4, 0
-	li       r5, 9
-	li       r6, 1
-	li       r7, 4
-	li       r8, 0
-	bl setVtxAttrFmt__8GraphicsF9_GXVtxFmt7_GXAttr10_GXCompCnt11_GXCompTypeUc mr
-r3, r27 li       r4, 0 li       r5, 0xb li       r6, 1 li       r7, 5 li r8, 0
-	bl setVtxAttrFmt__8GraphicsF9_GXVtxFmt7_GXAttr10_GXCompCnt11_GXCompTypeUc li
-r3, 0 bl       GXSetCullMode cmplwi   r28, 0 beq      lbl_80425998 mr       r3,
-r28 addi     r4, r27, 0x8c bl       PSMTXCopy
-
-lbl_80425998:
-	li       r3, 6
-	li       r4, 0
-	bl       GXSetLineWidth
-	li       r3, 0
-	li       r4, 1
-	li       r5, 1
-	li       r6, 0
-	bl       GXSetBlendMode
-	li       r3, 1
-	li       r4, 1
-	li       r5, 1
-	bl       GXSetZMode
-	addi     r3, r27, 0x8c
-	li       r4, 0
-	bl       GXLoadPosMtxImm
-	lmw      r27, 0xc(r1)
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	setToken("initPrimDraw");
+	initGX();
+	GXSetNumTevStages(1);
+	GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
+	GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+	GXSetNumChans(1);
+	GXSetChanCtrl(GX_COLOR0A0, GX_TRUE, GX_SRC_VTX, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+	disableLight();
+	clearVtxDesc();
+	setVtxDesc(GX_VA_POS, GX_DIRECT);
+	setVtxDesc(GX_VA_CLR0, GX_DIRECT);
+	setVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+	setVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_POS_XYZ, GX_RGBA8, 0);
+	GXSetCullMode(GX_CULL_NONE);
+	if (mtx) {
+		PSMTXCopy(mtx->mMatrix.mtxView, mMatrix.mMatrix.mtxView);
+	}
+	GXSetLineWidth(6, GX_TO_ZERO);
+	GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ONE, GX_LO_CLEAR);
+	GXSetZMode(GX_TRUE, GX_LESS, GX_TRUE);
+	GXLoadPosMtxImm(mMatrix.mMatrix.mtxView, 0);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000F0
+/**
+ * @note Address: N/A
+ * @note Size: 0xF0
  */
 void Graphics::drawPoint(Vector3f&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00012C
+/**
+ * @note Address: N/A
+ * @note Size: 0x12C
  */
 void Graphics::drawPoint(Vector3f*, u16)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	804259E8
- * Size:	0000C4
+/**
+ * @note Address: 0x804259E8
+ * @note Size: 0xC4
  */
-void Graphics::drawLine(Vector3f&, Vector3f&)
+void Graphics::drawLine(Vector3f& start, Vector3f& end)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r5
-	li       r5, 2
-	stw      r30, 0x18(r1)
-	mr       r30, r4
-	li       r4, 0
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	li       r3, 0xa8
-	bl       GXBegin
-	lfs      f2, 8(r30)
-	lis      r6, 0xCC008000@ha
-	lfs      f1, 4(r30)
-	lfs      f0, 0(r30)
-	stfs     f0, 0xCC008000@l(r6)
-	stfs     f1, -0x8000(r6)
-	stfs     f2, -0x8000(r6)
-	lbz      r5, 0x87(r29)
-	lbz      r4, 0x86(r29)
-	lbz      r3, 0x85(r29)
-	lbz      r0, 0x84(r29)
-	stb      r0, -0x8000(r6)
-	stb      r3, -0x8000(r6)
-	stb      r4, -0x8000(r6)
-	stb      r5, -0x8000(r6)
-	lfs      f2, 8(r31)
-	lfs      f1, 4(r31)
-	lfs      f0, 0(r31)
-	stfs     f0, -0x8000(r6)
-	stfs     f1, -0x8000(r6)
-	stfs     f2, -0x8000(r6)
-	lbz      r5, 0x87(r29)
-	lbz      r4, 0x86(r29)
-	lbz      r3, 0x85(r29)
-	lbz      r0, 0x84(r29)
-	stb      r0, -0x8000(r6)
-	stb      r3, -0x8000(r6)
-	stb      r4, -0x8000(r6)
-	stb      r5, -0x8000(r6)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	GXBegin(GX_LINES, GX_VTXFMT0, 2);
+
+	GXPosition3f32(start.x, start.y, start.z);
+	GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+
+	GXPosition3f32(end.x, end.y, end.z);
+	GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0002FC
+/**
+ * @note Address: N/A
+ * @note Size: 0x2FC
  */
 void Graphics::drawPlane(Plane&, f32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0007F0
+/**
+ * @note Address: N/A
+ * @note Size: 0x7F0
  */
 void Graphics::drawBox(Vector3f&, Vector3f*, f32*, f32*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000790
+/**
+ * @note Address: N/A
+ * @note Size: 0x790
  */
 void Graphics::drawBox(Vector3f&, Vector3f&, Vector3f&, Vector3f&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80425AAC
- * Size:	000598
+/**
+ * @note Address: 0x80425AAC
+ * @note Size: 0x598
  */
-void Graphics::drawSphere(Vector3f&, f32)
+void Graphics::drawSphere(Vector3f& position, f32 radius)
 {
+	Matrixf concatMtx; // 0x98
+	for (int i = 0; i < 16; i++) {
+		Matrixf srtMtx;                           // 0x68
+		Vector3f scale(1.0f);                     // 0x2C
+		Vector3f rot(0.0f, 0.3926991f * i, 0.0f); // 0x20
+
+		srtMtx.makeSRT(scale, rot, position);
+
+		PSMTXConcat(mMatrix.mMatrix.mtxView, srtMtx.mMatrix.mtxView, concatMtx.mMatrix.mtxView);
+		GXLoadPosMtxImm(concatMtx.mMatrix.mtxView, 0);
+
+		for (int j = 0; j < 16; j++) {
+			f32 theta    = 0.3926991f * (f32)(j);
+			f32 phi      = 0.3926991f * (f32)((j + 1) % 32);
+			f32 cosTheta = radius * cosf(theta); // f26
+			f32 sinTheta = radius * sinf(theta); // f24
+			f32 cosPhi   = radius * cosf(phi);   // f23
+			f32 sinPhi   = radius * sinf(phi);   // f22
+			f32 zero     = 0.0f;                 // f28
+			GXBegin(GX_LINES, GX_VTXFMT0, 2);
+			GXPosition3f32(sinTheta, cosTheta, zero);
+			GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+			GXPosition3f32(sinPhi, cosPhi, zero);
+			GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+		}
+	}
+
+	for (int i = 0; i < 16; i++) {
+		Matrixf srtMtx;                           // 0x68
+		Vector3f scale(1.0f);                     // 0x2C
+		Vector3f rot(0.3926991f * i, 0.0f, 0.0f); // 0x20
+
+		srtMtx.makeSRT(scale, rot, position);
+
+		PSMTXConcat(mMatrix.mMatrix.mtxView, srtMtx.mMatrix.mtxView, concatMtx.mMatrix.mtxView);
+		GXLoadPosMtxImm(concatMtx.mMatrix.mtxView, 0);
+
+		for (int j = 0; j < 16; j++) {
+			f32 theta    = 0.3926991f * (f32)(j);
+			f32 phi      = 0.3926991f * (f32)((j + 1) % 32);
+			f32 cosTheta = radius * cosf(theta); // f26
+			f32 sinTheta = radius * sinf(theta); // f23
+			f32 cosPhi   = radius * cosf(phi);   // f24
+			f32 sinPhi   = radius * sinf(phi);   // f22
+			f32 zero     = 0.0f;                 // f30
+			GXBegin(GX_LINES, GX_VTXFMT0, 2);
+			GXPosition3f32(sinTheta, zero, cosTheta);
+			GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+			GXPosition3f32(sinPhi, zero, cosPhi);
+			GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+		}
+	}
 	/*
 	stwu     r1, -0x1d0(r1)
 	mflr     r0
@@ -1779,13 +1036,66 @@ lbl_80425F5C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80426044
- * Size:	0005C8
+/**
+ * @note Address: 0x80426044
+ * @note Size: 0x5C8
  */
-void Graphics::drawSphere(f32, Matrixf*)
+void Graphics::drawSphere(f32 radius, Matrixf* gfxMtx)
 {
+	Matrixf concatMtx; // 0x98
+	for (int i = 0; i < 16; i++) {
+		Matrixf srtMtx;                           // 0x68
+		Vector3f scale(1.0f);                     // 0x2C
+		Vector3f rot(0.0f, 0.3926991f * i, 0.0f); // 0x20
+
+		srtMtx.makeSRT(scale, rot, Vector3f::zero);
+
+		PSMTXConcat(gfxMtx->mMatrix.mtxView, srtMtx.mMatrix.mtxView, srtMtx.mMatrix.mtxView);
+		PSMTXConcat(mMatrix.mMatrix.mtxView, srtMtx.mMatrix.mtxView, concatMtx.mMatrix.mtxView);
+		GXLoadPosMtxImm(concatMtx.mMatrix.mtxView, 0);
+
+		for (int j = 0; j < 16; j++) {
+			f32 theta    = 0.3926991f * (f32)(j);
+			f32 phi      = 0.3926991f * (f32)((j + 1) % 32);
+			f32 cosTheta = radius * cosf(theta); // f26
+			f32 sinTheta = radius * sinf(theta); // f24
+			f32 cosPhi   = radius * cosf(phi);   // f23
+			f32 sinPhi   = radius * sinf(phi);   // f22
+			f32 zero     = 0.0f;                 // f28
+			GXBegin(GX_LINES, GX_VTXFMT0, 2);
+			GXPosition3f32(sinTheta, cosTheta, zero);
+			GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+			GXPosition3f32(sinPhi, cosPhi, zero);
+			GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+		}
+	}
+
+	for (int i = 0; i < 16; i++) {
+		Matrixf srtMtx;                           // 0x68
+		Vector3f scale(1.0f);                     // 0x2C
+		Vector3f rot(0.3926991f * i, 0.0f, 0.0f); // 0x20
+
+		srtMtx.makeSRT(scale, rot, Vector3f::zero);
+
+		PSMTXConcat(gfxMtx->mMatrix.mtxView, srtMtx.mMatrix.mtxView, srtMtx.mMatrix.mtxView);
+		PSMTXConcat(mMatrix.mMatrix.mtxView, srtMtx.mMatrix.mtxView, concatMtx.mMatrix.mtxView);
+		GXLoadPosMtxImm(concatMtx.mMatrix.mtxView, 0);
+
+		for (int j = 0; j < 16; j++) {
+			f32 theta    = 0.3926991f * (f32)(j);
+			f32 phi      = 0.3926991f * (f32)((j + 1) % 32);
+			f32 cosTheta = radius * cosf(theta); // f26
+			f32 sinTheta = radius * sinf(theta); // f23
+			f32 cosPhi   = radius * cosf(phi);   // f24
+			f32 sinPhi   = radius * sinf(phi);   // f22
+			f32 zero     = 0.0f;                 // f30
+			GXBegin(GX_LINES, GX_VTXFMT0, 2);
+			GXPosition3f32(sinTheta, zero, cosTheta);
+			GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+			GXPosition3f32(sinPhi, zero, cosPhi);
+			GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+		}
+	}
 	/*
 	stwu     r1, -0x1d0(r1)
 	mflr     r0
@@ -2192,304 +1502,175 @@ lbl_80426524:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0005B4
+/**
+ * @note Address: N/A
+ * @note Size: 0x5B4
  */
 void Graphics::drawCylinder(Vector3f&, Vector3f&, f32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
 void Graphics::loadPrimViewMtx()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0005F8
+/**
+ * @note Address: N/A
+ * @note Size: 0x5F8
  */
 void Graphics::drawTube(Vector3f&, Vector3f&, f32, f32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E0
+/**
+ * @note Address: N/A
+ * @note Size: 0xE0
  */
 void Graphics::drawMesh(Matrixf*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8042660C
- * Size:	0002B8
+/**
+ * @note Address: 0x8042660C
+ * @note Size: 0x2B8
  */
-void Graphics::drawAxis(f32, Matrixf*)
+void Graphics::drawAxis(f32 a1, Matrixf* mtx)
 {
-	/*
-	stwu     r1, -0x60(r1)
-	mflr     r0
-	stw      r0, 0x64(r1)
-	stfd     f31, 0x50(r1)
-	psq_st   f31, 88(r1), 0, qr0
-	stmw     r26, 0x38(r1)
-	fmr      f31, f1
-	mr       r26, r3
-	lis      r3, lbl_80499C48@ha
-	mr       r27, r4
-	mr       r30, r26
-	li       r29, 0
-	addi     r28, r3, lbl_80499C48@l
-	b        lbl_80426664
+	setToken("draw axis");
+	Color4 backup = mDrawColor;
+	Mtx out;
+	if (mtx) {
+		PSMTXConcat(mMatrix.mMatrix.mtxView, mtx->mMatrix.mtxView, out);
+		GXLoadPosMtxImm(out, 0);
+	} else {
+		GXLoadPosMtxImm(mMatrix.mMatrix.mtxView, 0);
+	}
+	f32 zero   = 0.0f;
+	mDrawColor = Color4(255, 0, 0, 255);
+	GXBegin(GX_LINES, GX_VTXFMT0, 2);
+	GXPosition3f32(zero, zero, zero);
+	GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+	GXPosition3f32(a1, zero, zero);
+	GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
 
-lbl_80426644:
-	lwz      r3, 4(r30)
-	mr       r4, r28
-	bl       strcmp
-	cmpwi    r3, 0
-	bne      lbl_8042665C
-	b        lbl_80426674
+	mDrawColor = Color4(0, 255, 0, 255);
+	GXBegin(GX_LINES, GX_VTXFMT0, 2);
+	GXPosition3f32(zero, zero, zero);
+	GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+	GXPosition3f32(zero, a1, zero);
+	GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
 
-lbl_8042665C:
-	addi     r30, r30, 4
-	addi     r29, r29, 1
+	mDrawColor = Color4(0, 0, 255, 255);
+	GXBegin(GX_LINES, GX_VTXFMT0, 2);
+	GXPosition3f32(zero, zero, zero);
+	GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+	GXPosition3f32(zero, zero, a1);
+	GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
 
-lbl_80426664:
-	lhz      r0, 0(r26)
-	cmpw     r29, r0
-	blt      lbl_80426644
-	li       r29, -1
-
-lbl_80426674:
-	cmpwi    r29, -1
-	bne      lbl_804266B4
-	lhz      r0, 0(r26)
-	cmplwi   r0, 0x20
-	bge      lbl_804266BC
-	rlwinm   r0, r0, 2, 0xe, 0x1d
-	lis      r3, lbl_80499C48@ha
-	addi     r4, r3, lbl_80499C48@l
-	add      r3, r26, r0
-	stw      r4, 4(r3)
-	lhz      r3, 0(r26)
-	bl       GXSetDrawSync
-	lhz      r3, 0(r26)
-	addi     r0, r3, 1
-	sth      r0, 0(r26)
-	b        lbl_804266BC
-
-lbl_804266B4:
-	clrlwi   r3, r29, 0x10
-	bl       GXSetDrawSync
-
-lbl_804266BC:
-	cmplwi   r27, 0
-	lbz      r31, 0x84(r26)
-	lbz      r30, 0x85(r26)
-	lbz      r29, 0x86(r26)
-	lbz      r28, 0x87(r26)
-	beq      lbl_804266F4
-	mr       r4, r27
-	addi     r3, r26, 0x8c
-	addi     r5, r1, 8
-	bl       PSMTXConcat
-	addi     r3, r1, 8
-	li       r4, 0
-	bl       GXLoadPosMtxImm
-	b        lbl_80426700
-
-lbl_804266F4:
-	addi     r3, r26, 0x8c
-	li       r4, 0
-	bl       GXLoadPosMtxImm
-
-lbl_80426700:
-	li       r6, 0xff
-	li       r0, 0
-	stb      r6, 0x84(r26)
-	li       r3, 0xa8
-	li       r4, 0
-	li       r5, 2
-	stb      r0, 0x85(r26)
-	stb      r0, 0x86(r26)
-	stb      r6, 0x87(r26)
-	bl       GXBegin
-	lfs      f0, lbl_805204B8@sda21(r2)
-	lis      r11, 0xCC008000@ha
-	li       r6, 0
-	li       r0, 0xff
-	stfs     f0, 0xCC008000@l(r11)
-	li       r3, 0xa8
-	li       r4, 0
-	li       r5, 2
-	stfs     f0, -0x8000(r11)
-	stfs     f0, -0x8000(r11)
-	lbz      r10, 0x87(r26)
-	lbz      r9, 0x86(r26)
-	lbz      r8, 0x85(r26)
-	lbz      r7, 0x84(r26)
-	stb      r7, -0x8000(r11)
-	stb      r8, -0x8000(r11)
-	stb      r9, -0x8000(r11)
-	stb      r10, -0x8000(r11)
-	stfs     f31, -0x8000(r11)
-	stfs     f0, -0x8000(r11)
-	stfs     f0, -0x8000(r11)
-	lbz      r10, 0x87(r26)
-	lbz      r9, 0x86(r26)
-	lbz      r8, 0x85(r26)
-	lbz      r7, 0x84(r26)
-	stb      r7, -0x8000(r11)
-	stb      r8, -0x8000(r11)
-	stb      r9, -0x8000(r11)
-	stb      r10, -0x8000(r11)
-	stb      r6, 0x84(r26)
-	stb      r0, 0x85(r26)
-	stb      r6, 0x86(r26)
-	stb      r0, 0x87(r26)
-	bl       GXBegin
-	lfs      f0, lbl_805204B8@sda21(r2)
-	lis      r11, 0xCC008000@ha
-	li       r6, 0
-	li       r0, 0xff
-	stfs     f0, 0xCC008000@l(r11)
-	li       r3, 0xa8
-	li       r4, 0
-	li       r5, 2
-	stfs     f0, -0x8000(r11)
-	stfs     f0, -0x8000(r11)
-	lbz      r10, 0x87(r26)
-	lbz      r9, 0x86(r26)
-	lbz      r8, 0x85(r26)
-	lbz      r7, 0x84(r26)
-	stb      r7, -0x8000(r11)
-	stb      r8, -0x8000(r11)
-	stb      r9, -0x8000(r11)
-	stb      r10, -0x8000(r11)
-	stfs     f0, -0x8000(r11)
-	stfs     f31, -0x8000(r11)
-	stfs     f0, -0x8000(r11)
-	lbz      r10, 0x87(r26)
-	lbz      r9, 0x86(r26)
-	lbz      r8, 0x85(r26)
-	lbz      r7, 0x84(r26)
-	stb      r7, -0x8000(r11)
-	stb      r8, -0x8000(r11)
-	stb      r9, -0x8000(r11)
-	stb      r10, -0x8000(r11)
-	stb      r6, 0x84(r26)
-	stb      r6, 0x85(r26)
-	stb      r0, 0x86(r26)
-	stb      r0, 0x87(r26)
-	bl       GXBegin
-	lfs      f0, lbl_805204B8@sda21(r2)
-	lis      r6, 0xCC008000@ha
-	stfs     f0, 0xCC008000@l(r6)
-	stfs     f0, -0x8000(r6)
-	stfs     f0, -0x8000(r6)
-	lbz      r5, 0x87(r26)
-	lbz      r4, 0x86(r26)
-	lbz      r3, 0x85(r26)
-	lbz      r0, 0x84(r26)
-	stb      r0, -0x8000(r6)
-	stb      r3, -0x8000(r6)
-	stb      r4, -0x8000(r6)
-	stb      r5, -0x8000(r6)
-	stfs     f0, -0x8000(r6)
-	stfs     f0, -0x8000(r6)
-	stfs     f31, -0x8000(r6)
-	lbz      r5, 0x87(r26)
-	lbz      r4, 0x86(r26)
-	lbz      r3, 0x85(r26)
-	lbz      r0, 0x84(r26)
-	stb      r0, -0x8000(r6)
-	stb      r3, -0x8000(r6)
-	stb      r4, -0x8000(r6)
-	stb      r5, -0x8000(r6)
-	stb      r31, 0x84(r26)
-	stb      r30, 0x85(r26)
-	stb      r29, 0x86(r26)
-	stb      r28, 0x87(r26)
-	psq_l    f31, 88(r1), 0, qr0
-	lfd      f31, 0x50(r1)
-	lmw      r26, 0x38(r1)
-	lwz      r0, 0x64(r1)
-	mtlr     r0
-	addi     r1, r1, 0x60
-	blr
-	*/
+	mDrawColor = backup;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000274
+/**
+ * @note Address: N/A
+ * @note Size: 0x274
  */
 void Graphics::drawMarker(f32, Matrixf*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0001EC
+/**
+ * @note Address: N/A
+ * @note Size: 0x1EC
  */
 void Graphics::drawRect(Rectf&, Color4&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0001B8
+/**
+ * @note Address: N/A
+ * @note Size: 0x1B8
  */
 void Graphics::drawRect(Rectf&, JUTTexture*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	804268C4
- * Size:	000024
+/**
+ * @note Address: 0x804268C4
+ * @note Size: 0x24
  */
-void Graphics::clearZBuffer(Rectf&)
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	lfs      f1, lbl_805204E8@sda21(r2)
-	stw      r0, 0x14(r1)
-	bl       "fillZBuffer__8GraphicsFR7Rect<f>f"
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
+void Graphics::clearZBuffer(Rectf& bounds) { fillZBuffer(bounds, -0.999f); }
 
-/*
- * --INFO--
- * Address:	804268E8
- * Size:	0003D0
+/**
+ * @note Address: 0x804268E8
+ * @note Size: 0x3D0
  */
-void Graphics::fillZBuffer(Rectf&, f32)
+void Graphics::fillZBuffer(Rectf& bounds, f32 z)
 {
+	setToken("initPrimDraw");
+	initGX();
+	GXSetNumTevStages(1);
+	GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
+	GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+	GXSetNumChans(1);
+	GXSetChanCtrl(GX_COLOR0A0, GX_TRUE, GX_SRC_VTX, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+	disableLight();
+	clearVtxDesc();
+	setVtxDesc(GX_VA_POS, GX_DIRECT);
+	setVtxDesc(GX_VA_CLR0, GX_DIRECT);
+	setVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+	setVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_POS_XYZ, GX_RGBA8, 0);
+	GXSetCullMode(GX_CULL_NONE);
+	GXSetLineWidth(6, GX_TO_ZERO);
+	GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ONE, GX_LO_CLEAR);
+	GXSetZMode(GX_TRUE, GX_LESS, GX_TRUE);
+	GXLoadPosMtxImm(mMatrix.mMatrix.mtxView, 0);
+	GXSetViewport(bounds.p1.x, bounds.p1.y, bounds.getWidth(), bounds.getHeight(), 0.0f, 1.0f);
+	GXSetScissor(bounds.p1.x, bounds.p1.y, bounds.getWidth(), bounds.getHeight());
+	GXSetColorUpdate(GX_FALSE);
+	GXSetZMode(GX_TRUE, GX_ALWAYS, GX_TRUE);
+
+	Mtx mtx;
+	C_MTXOrtho(mtx, bounds.p1.y, bounds.p2.y, bounds.p1.x, bounds.p2.x, -1.0f, 1.0f);
+	GXSetProjection(mtx, GX_ORTHOGRAPHIC);
+
+	Mtx mtx2;
+	PSMTXIdentity(mtx2);
+	GXLoadPosMtxImm(mtx2, 0);
+
+	GXSetCullMode(GX_CULL_NONE);
+	GXClearVtxDesc();
+	GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
+	GXSetVtxDesc(GX_VA_CLR0, GX_DIRECT);
+	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_POS_XYZ, GX_RGBA8, 0);
+	GXBegin(GX_QUADS, GX_VTXFMT0, 4);
+
+	GXPosition3f32(bounds.p1.x, bounds.p1.y, z);
+	GXColor4u8(10, 70, 10, 255);
+
+	GXPosition3f32(bounds.p1.x, bounds.p2.y, z);
+	GXColor4u8(10, 70, 10, 255);
+
+	GXPosition3f32(bounds.p2.x, bounds.p2.y, z);
+	GXColor4u8(10, 70, 10, 255);
+
+	GXPosition3f32(bounds.p2.x, bounds.p1.y, z);
+	GXColor4u8(10, 70, 10, 255);
+
+	GXSetZMode(GX_TRUE, GX_LESS, GX_TRUE);
+	GXSetColorUpdate(GX_TRUE);
+
 	/*
 	stwu     r1, -0xc0(r1)
 	mflr     r0
@@ -2733,23 +1914,88 @@ r3, 1 li       r4, 1 li       r5, 1 bl       GXSetZMode addi     r3, r27, 0x8c
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00045C
+/**
+ * @note Address: N/A
+ * @note Size: 0x45C
  */
 void Graphics::drawTile(Sys::Sphere&, Sys::Sphere&, JUTTexture*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80426CB8
- * Size:	00070C
+/**
+ * @note Address: 0x80426CB8
+ * @note Size: 0x70C
  */
-void Graphics::drawCone(Vector3f&, Vector3f&, f32, int)
+void Graphics::drawCone(Vector3f& start, Vector3f& end, f32 angle, int limit)
 {
+	f32 angle    = TORADIANS(angle); // f7
+	Vector3f sep = end - start;      // f2, f0, f1
+	f32 dist     = sep.length();     // f31
+
+	f32 sinTheta = sinf(angle);
+	f32 cosTheta = cosf(angle);
+
+	sep *= 1.0f / dist;
+
+	f32 val = dist * (sinTheta / cosTheta); // f30
+
+	Vector3f xVec; // f3, f4, f5
+	Vector3f yVec; // f6, f7, f8
+	Vector3f yAxis(0.0f, 1.0f, 0.0f);
+	if (FABS(dot(sep, yAxis)) < 1.0E-7f) {
+		xVec = cross(yAxis, sep);
+		xVec.normalise();
+
+		yVec = cross(xVec, sep);
+		yVec.normalise();
+	} else {
+		yVec = cross(yAxis, sep);
+		yVec.normalise();
+		xVec = cross(yVec, sep);
+		xVec.normalise();
+	}
+
+	Matrixf mtx; // 0x38
+	mtx.setColumn(0, xVec);
+	mtx.setColumn(1, yVec);
+	mtx.setColumn(2, sep);
+	mtx.setColumn(3, start);
+
+	Matrixf concatMtx; // 0x8
+	PSMTXConcat(mMatrix.mMatrix.mtxView, mtx.mMatrix.mtxView, concatMtx.mMatrix.mtxView);
+
+	GXLoadPosMtxImm(concatMtx.mMatrix.mtxView, 0);
+
+	for (int i = 0; i < limit; i++) {
+		f32 newAngle1 = (TAU * ((f32)i - 0.5f)) / (f32)limit;
+
+		f32 cosPhi = val * cosf(newAngle1); // f24
+		f32 sinPhi = val * sinf(newAngle1); // f23
+
+		f32 newAngle2 = (TAU * ((f32)(i + 1) - 0.5f)) / (f32)limit;
+
+		f32 cosOmega = val * cosf(newAngle2); // f22
+		f32 sinOmega = val * sinf(newAngle2); // f21
+
+		GXBegin(GX_LINES, GX_VTXFMT0, 2);
+		GXPosition3f32(Vector3f::zero.x, Vector3f::zero.y, Vector3f::zero.z);
+		GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+		GXPosition3f32(cosPhi, sinPhi, dist);
+		GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+
+		GXBegin(GX_LINES, GX_VTXFMT0, 2);
+		GXPosition3f32(Vector3f::zero.x, Vector3f::zero.y, Vector3f::zero.z);
+		GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+		GXPosition3f32(cosOmega, sinOmega, dist);
+		GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+
+		GXBegin(GX_LINES, GX_VTXFMT0, 2);
+		GXPosition3f32(cosPhi, sinPhi, dist);
+		GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+		GXPosition3f32(cosOmega, sinOmega, dist);
+		GXColor4u8(mDrawColor.r, mDrawColor.g, mDrawColor.b, mDrawColor.a);
+	}
 	/*
 	stwu     r1, -0x190(r1)
 	mflr     r0
@@ -3255,85 +2501,61 @@ lbl_80427350:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	804273C4
- * Size:	0000A4
+/**
+ * @note Address: 0x804273C4
+ * @note Size: 0xA4
  */
 Graphics::Graphics()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	lis      r4, __vt__8Graphics@ha
-	stw      r0, 0x14(r1)
-	addi     r0, r4, __vt__8Graphics@l
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	stw      r0, 0x26c(r3)
-	addi     r3, r31, 0xbc
-	bl       __ct__13J2DOrthoGraphFv
-	addi     r3, r31, 0x190
-	bl       __ct__13J2DPerspGraphFv
-	li       r4, 0
-	lis      r3, graphicsTokenCallback__FUs@ha
-	stw      r4, 0x260(r31)
-	li       r0, 0xff
-	addi     r3, r3, graphicsTokenCallback__FUs@l
-	stw      r4, 0x264(r31)
-	stw      r4, 0x268(r31)
-	stb      r0, 0x84(r31)
-	stb      r0, 0x85(r31)
-	stb      r0, 0x86(r31)
-	stb      r0, 0x87(r31)
-	stb      r0, 0x88(r31)
-	stb      r0, 0x89(r31)
-	stb      r0, 0x8a(r31)
-	stb      r0, 0x8b(r31)
-	sth      r4, 0(r31)
-	bl       GXSetDrawSyncCallback
-	li       r0, 0
-	mr       r3, r31
-	stw      r0, 0x25c(r31)
-	bl       setupJ2DOrthoGraphDefault__8GraphicsFv
-	mr       r3, r31
-	bl       setupJ2DPerspGraphDefault__8GraphicsFv
-	lwz      r0, 0x14(r1)
-	mr       r3, r31
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	deleteViewports();
+	mDrawColor.set(255, 255, 255, 255);
+	mWhiteColor.set(255, 255, 255, 255);
+	mActiveTokens = 0;
+	GXSetDrawSyncCallback(graphicsTokenCallback);
+	mCurrentViewport = nullptr;
+	setupJ2DOrthoGraphDefault();
+	setupJ2DPerspGraphDefault();
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00016C
+/**
+ * @note Address: N/A
+ * @note Size: 0x16C
  */
 void Graphics::initJ2DOrthoGraph(J2DOrthoGraph*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00011C
+/**
+ * @note Address: N/A
+ * @note Size: 0x11C
  */
 void Graphics::initJ2DPerspGraph(J2DPerspGraph*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80427468
- * Size:	00016C
+/**
+ * @note Address: 0x80427468
+ * @note Size: 0x16C
  */
 void Graphics::setupJ2DOrthoGraphDefault()
 {
+	sys->getRenderModeObj();
+	u16 y = sys->getRenderModeObj()->efbHeight;
+	u16 x = sys->getRenderModeObj()->fbWidth;
+	mOrthoGraph.place(0.0f, 0.0f, x, y);
+
+	f32 y2   = sys->getRenderModeObj()->efbHeight + gScissorOffset;
+	f32 x2   = sys->getRenderModeObj()->fbWidth;
+	f32 offs = 0.0f;
+	JGeometry::TBox2f bounds(0.0f, 0.0f, x2 + offs, y2 + offs);
+	mOrthoGraph.scissor(bounds);
+
+	y = sys->getRenderModeObj()->efbHeight;
+	x = sys->getRenderModeObj()->fbWidth;
+	JGeometry::TBox2f bounds2(0.0f, 0.0f, x, y);
+	mOrthoGraph.setOrtho(bounds2, -1024.0f, 1024.0f);
 	/*
 	stwu     r1, -0x70(r1)
 	mflr     r0
@@ -3429,13 +2651,23 @@ void Graphics::setupJ2DOrthoGraphDefault()
 	*/
 }
 
-/*
- * --INFO--
- * Address:	804275D4
- * Size:	00011C
+/**
+ * @note Address: 0x804275D4
+ * @note Size: 0x11C
  */
 void Graphics::setupJ2DPerspGraphDefault()
 {
+	u16 y = sys->getRenderModeObj()->efbHeight;
+	u16 x = sys->getRenderModeObj()->fbWidth;
+	mPerspGraph.place(0.0f, 0.0f, x, y);
+
+	f32 y2   = sys->getRenderModeObj()->efbHeight + gScissorOffset;
+	f32 x2   = sys->getRenderModeObj()->fbWidth;
+	f32 offs = 0.0f;
+	JGeometry::TBox2f bounds(0.0f, 0.0f, offs + x2, offs + y2);
+	mPerspGraph.scissor(bounds);
+
+	mPerspGraph.set(30.0f, 10.0f, 10000.0f);
 	/*
 	stwu     r1, -0x50(r1)
 	mflr     r0
@@ -3511,381 +2743,143 @@ void Graphics::setupJ2DPerspGraphDefault()
 	*/
 }
 
-/*
- * --INFO--
- * Address:	804276F0
- * Size:	000020
+/**
+ * @note Address: 0x804276F0
+ * @note Size: 0x20
  */
-void Graphics::clearVtxDesc()
+void Graphics::clearVtxDesc() { GXClearVtxDesc(); }
+
+/**
+ * @note Address: 0x80427710
+ * @note Size: 0x28
+ */
+void Graphics::setVtxDesc(_GXAttr attr, _GXAttrType type) { GXSetVtxDesc(attr, type); }
+
+/**
+ * @note Address: 0x80427738
+ * @note Size: 0x34
+ */
+void Graphics::setVtxAttrFmt(_GXVtxFmt fmt, _GXAttr attr, _GXCompCnt comp, _GXCompType type, u8 a1)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	bl       GXClearVtxDesc
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	GXSetVtxAttrFmt(fmt, attr, comp, type, a1);
 }
 
-/*
- * --INFO--
- * Address:	80427710
- * Size:	000028
- */
-void Graphics::setVtxDesc(_GXAttr, _GXAttrType)
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	mr       r3, r4
-	mr       r4, r5
-	stw      r0, 0x14(r1)
-	bl       GXSetVtxDesc
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	80427738
- * Size:	000034
- */
-void Graphics::setVtxAttrFmt(_GXVtxFmt, _GXAttr, _GXCompCnt, _GXCompType, unsigned char)
-{
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  mr        r3, r4
-	  mr        r4, r5
-	  stw       r0, 0x14(r1)
-	  mr        r5, r6
-	  mr        r6, r7
-	  mr        r7, r8
-	  bl        -0x343050
-	  lwz       r0, 0x14(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	........
- * Size:	0001DC
+/**
+ * @note Address: N/A
+ * @note Size: 0x1DC
  */
 void Graphics::drawRectangle(Rectf&, bool)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8042776C
- * Size:	00003C
+/**
+ * @note Address: 0x8042776C
+ * @note Size: 0x3C
  */
-void Graphics::disableLight()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	li       r3, 4
-	li       r4, 0
-	stw      r0, 0x14(r1)
-	li       r5, 1
-	li       r6, 1
-	li       r7, 1
-	li       r8, 2
-	li       r9, 2
-	bl       GXSetChanCtrl
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
+void Graphics::disableLight() { GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_VTX, GX_SRC_VTX, GX_LIGHT0, GX_DF_CLAMP, GX_AF_NONE); }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00004C
+/**
+ * @note Address: N/A
+ * @note Size: 0x4C
  */
 void Graphics::disableTexture()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	804277A8
- * Size:	000100
+/**
+ * @note Address: 0x804277A8
+ * @note Size: 0x100
  */
 void Graphics::setTextureGX()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	li       r3, 4
-	li       r4, 0
-	stw      r0, 0x14(r1)
-	li       r5, 1
-	li       r6, 1
-	li       r7, 1
-	li       r8, 2
-	li       r9, 2
-	bl       GXSetChanCtrl
-	bl       GXClearVtxDesc
-	li       r3, 1
-	bl       GXSetNumTevStages
-	li       r3, 0
-	li       r4, 0
-	li       r5, 0
-	li       r6, 4
-	bl       GXSetTevOrder
-	li       r3, 0
-	li       r4, 0
-	bl       GXSetTevOp
-	li       r3, 1
-	bl       GXSetNumTexGens
-	li       r3, 0
-	li       r4, 1
-	li       r5, 4
-	li       r6, 0x3c
-	li       r7, 0
-	li       r8, 0x7d
-	bl       GXSetTexCoordGen2
-	li       r3, 9
-	li       r4, 1
-	bl       GXSetVtxDesc
-	li       r3, 0xd
-	li       r4, 1
-	bl       GXSetVtxDesc
-	li       r3, 0
-	li       r4, 9
-	li       r5, 1
-	li       r6, 4
-	li       r7, 0
-	bl       GXSetVtxAttrFmt
-	li       r3, 0
-	li       r4, 0xd
-	li       r5, 1
-	li       r6, 1
-	li       r7, 4
-	bl       GXSetVtxAttrFmt
-	li       r3, 2
-	bl       GXSetCullMode
-	li       r3, 0
-	li       r4, 0
-	li       r5, 0
-	bl       GXSetZMode
-	li       r3, 1
-	li       r4, 4
-	li       r5, 5
-	li       r6, 0
-	bl       GXSetBlendMode
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_VTX, GX_SRC_VTX, GX_LIGHT0, GX_DF_CLAMP, GX_AF_NONE);
+	GXClearVtxDesc();
+	GXSetNumTevStages(1);
+	GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+	GXSetTevOp(GX_TEVSTAGE0, GX_MODULATE);
+	GXSetNumTexGens(1);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEX0, 0x3c, GX_FALSE, 0x7d);
+	GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
+	GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
+	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_POS_XYZ, GX_S8, 4);
+	GXSetCullMode(GX_CULL_BACK);
+	GXSetZMode(GX_FALSE, GX_NEVER, GX_FALSE);
+	GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_CLEAR);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000F0
+/**
+ * @note Address: N/A
+ * @note Size: 0xF0
  */
 void Graphics::drawTexture(JUTTexture*, f32, f32, f32, f32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	804278A8
- * Size:	000234
+/**
+ * @note Address: 0x804278A8
+ * @note Size: 0x234
  */
-void Graphics::initPerspPrintf(Viewport*)
+void Graphics::initPerspPrintf(Viewport* vp)
 {
-	/*
-	stwu     r1, -0x50(r1)
-	mflr     r0
-	stw      r0, 0x54(r1)
-	stmw     r26, 0x38(r1)
-	mr       r30, r3
-	mr       r31, r4
-	lwz      r3, 0x44(r4)
-	cmplwi   r3, 0
-	beq      lbl_804278E4
-	lwz      r12, 0(r3)
-	li       r4, 0
-	lwz      r12, 0x48(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_804278E8
+	initPrimDraw(vp->getMatrix(false));
 
-lbl_804278E4:
-	lwz      r3, 0x40(r31)
-
-lbl_804278E8:
-	lis      r4, lbl_80499C38@ha
-	mr       r28, r3
-	mr       r26, r30
-	li       r27, 0
-	addi     r29, r4, lbl_80499C38@l
-	b        lbl_80427920
-
-lbl_80427900:
-	lwz      r3, 4(r26)
-	mr       r4, r29
-	bl       strcmp
-	cmpwi    r3, 0
-	bne      lbl_80427918
-	b        lbl_80427930
-
-lbl_80427918:
-	addi     r26, r26, 4
-	addi     r27, r27, 1
-
-lbl_80427920:
-	lhz      r0, 0(r30)
-	cmpw     r27, r0
-	blt      lbl_80427900
-	li       r27, -1
-
-lbl_80427930:
-	cmpwi    r27, -1
-	bne      lbl_80427970
-	lhz      r0, 0(r30)
-	cmplwi   r0, 0x20
-	bge      lbl_80427978
-	rlwinm   r0, r0, 2, 0xe, 0x1d
-	lis      r3, lbl_80499C38@ha
-	addi     r4, r3, lbl_80499C38@l
-	add      r3, r30, r0
-	stw      r4, 4(r3)
-	lhz      r3, 0(r30)
-	bl       GXSetDrawSync
-	lhz      r3, 0(r30)
-	addi     r0, r3, 1
-	sth      r0, 0(r30)
-	b        lbl_80427978
-
-lbl_80427970:
-	clrlwi   r3, r27, 0x10
-	bl       GXSetDrawSync
-
-lbl_80427978:
-	bl       initGX__8GraphicsFv
-	li       r3, 1
-	bl       GXSetNumTevStages
-	li       r3, 0
-	li       r4, 4
-	bl       GXSetTevOp
-	li       r3, 0
-	li       r4, 0
-	li       r5, 0
-	li       r6, 4
-	bl       GXSetTevOrder
-	li       r3, 1
-	bl       GXSetNumChans
-	li       r3, 4
-	li       r4, 1
-	li       r5, 1
-	li       r6, 1
-	li       r7, 0
-	li       r8, 0
-	li       r9, 2
-	bl       GXSetChanCtrl
-	li       r3, 4
-	li       r4, 0
-	li       r5, 1
-	li       r6, 1
-	li       r7, 1
-	li       r8, 2
-	li       r9, 2
-	bl       GXSetChanCtrl
-	bl       GXClearVtxDesc
-	li       r3, 9
-	li       r4, 1
-	bl       GXSetVtxDesc
-	li       r3, 0xb
-	li       r4, 1
-	bl       GXSetVtxDesc
-	li       r3, 0
-	li       r4, 9
-	li       r5, 1
-	li       r6, 4
-	li       r7, 0
-	bl       GXSetVtxAttrFmt
-	li       r3, 0
-	li       r4, 0xb
-	li       r5, 1
-	li       r6, 5
-	li       r7, 0
-	bl       GXSetVtxAttrFmt
-	li       r3, 0
-	bl       GXSetCullMode
-	cmplwi   r28, 0
-	beq      lbl_80427A54
-	mr       r3, r28
-	addi     r4, r30, 0x8c
-	bl       PSMTXCopy
-
-lbl_80427A54:
-	li       r3, 6
-	li       r4, 0
-	bl       GXSetLineWidth
-	li       r3, 0
-	li       r4, 1
-	li       r5, 1
-	li       r6, 0
-	bl       GXSetBlendMode
-	li       r3, 1
-	li       r4, 1
-	li       r5, 1
-	bl       GXSetZMode
-	addi     r3, r30, 0x8c
-	li       r4, 0
-	bl       GXLoadPosMtxImm
-	addi     r3, r1, 8
-	bl       PSMTXIdentity
-	addi     r3, r1, 8
-	li       r4, 0x1e
-	li       r5, 0
-	bl       GXLoadTexMtxImm
-	li       r3, 1
-	li       r4, 1
-	li       r5, 0
-	bl       GXSetZMode
-	lwz      r3, 0x44(r31)
-	cmplwi   r3, 0
-	beq      lbl_80427AC8
-	bl       setProjection__6CameraFv
-
-lbl_80427AC8:
-	lmw      r26, 0x38(r1)
-	lwz      r0, 0x54(r1)
-	mtlr     r0
-	addi     r1, r1, 0x50
-	blr
-	*/
+	Mtx mtx;
+	PSMTXIdentity(mtx);
+	GXLoadTexMtxImm(mtx, 0x1e, GX_MTX3x4);
+	GXSetZMode(GX_TRUE, GX_LESS, GX_FALSE);
+	vp->setProjection();
 }
 
-/*
- * --INFO--
- * Address:	80427ADC
- * Size:	0003C4
+/**
+ * @note Address: 0x80427ADC
+ * @note Size: 0x3C4
  */
-void Graphics::perspPrintf(PerspPrintfInfo&, Vector3f&, char*, ...)
+void Graphics::perspPrintf(PerspPrintfInfo& info, Vector3f& position, char* format, ...)
 {
+	va_list args;
+	va_start(args, format);
+	char buf[256];
+	vsprintf(buf, format, args);
+
+	Matrixf mtx;
+	mtx.set(info.mScale, position, mCurrentViewport->getViewMatrix());
+
+	Matrixf concatMtx;
+	PSMTXConcat(mCurrentViewport->getViewMatrix()->mMatrix.mtxView, mtx.mMatrix.mtxView, concatMtx.mMatrix.mtxView);
+
+	GXLoadPosMtxImm(concatMtx.mMatrix.mtxView, 0);
+
+	JUtility::TColor color1;
+	JUtility::TColor color2;
+	color1.set(info.mColorA.r, info.mColorA.g, info.mColorA.b, info.mColorA.a);
+	color2.set(info.mColorB.r, info.mColorB.g, info.mColorB.b, info.mColorB.a);
+
+	J2DPrint printer(info.mFont, color1, color2);
+	printer.initiate();
+
+	switch (info.mPrintType) {
+	case 1:
+		printer.print((f32)info.mPerspectiveOffsetX, (f32)info.mPerspectiveOffsetY, buf);
+		break;
+
+	case 2: {
+		f32 width = printer.getWidth(buf);
+		f32 val   = (width >= 0.0f) ? 0.5f + width : width - 0.5f;
+		int x     = info.mPerspectiveOffsetX - (int)val;
+		printer.print(x, (f32)info.mPerspectiveOffsetY, buf);
+	} break;
+	default: {
+		f32 width = 0.5f * printer.getWidth(buf);
+		f32 val   = (width >= 0.0f) ? 0.5f + width : width - 0.5f;
+		int x     = info.mPerspectiveOffsetX - (int)val;
+		printer.print(x, (f32)info.mPerspectiveOffsetY, buf);
+	} break;
+	}
+
 	/*
 	stwu     r1, -0x270(r1)
 	mflr     r0
@@ -4157,107 +3151,31 @@ lbl_80427E74:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80427EA0
- * Size:	000060
+/**
+ * @note Address: 0x80427EA0
+ * @note Size: 0x60
  */
 void Graphics::initGX()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	bl       GXClearVtxDesc
-	bl       GXInvalidateVtxCache
-	li       r3, 0
-	bl       GXSetCurrentMtx
-	li       r3, 0
-	bl       GXSetNumChans
-	li       r3, 1
-	bl       GXSetNumTevStages
-	li       r3, 0
-	li       r4, 3
-	bl       GXSetTevOp
-	li       r3, 1
-	bl       GXSetNumTexGens
-	li       r3, 0
-	bl       GXSetNumIndStages
-	li       r3, 0
-	bl       GXSetTevDirect
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	GXClearVtxDesc();
+	GXInvalidateVtxCache();
+	GXSetCurrentMtx(0);
+	GXSetNumChans(0);
+	GXSetNumTevStages(1);
+	GXSetTevOp(GX_TEVSTAGE0, GX_REPLACE);
+	GXSetNumTexGens(1);
+	GXSetNumIndStages(0);
+	GXSetTevDirect(GX_TEVSTAGE0);
 }
 
-/*
- * --INFO--
- * Address:	80427F00
- * Size:	000004
+/**
+ * @note Address: 0x80427F00
+ * @note Size: 0x4
  */
 void Graphics::dirtyInitGX() { }
 
-/*
- * --INFO--
- * Address:	80427F04
- * Size:	000060
+/**
+ * @note Address: 0x80427F04
+ * @note Size: 0x60
  */
-void Graphics::clearInitGX()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	bl       GXClearVtxDesc
-	bl       GXInvalidateVtxCache
-	li       r3, 0
-	bl       GXSetCurrentMtx
-	li       r3, 0
-	bl       GXSetNumChans
-	li       r3, 1
-	bl       GXSetNumTevStages
-	li       r3, 0
-	li       r4, 3
-	bl       GXSetTevOp
-	li       r3, 1
-	bl       GXSetNumTexGens
-	li       r3, 0
-	bl       GXSetNumIndStages
-	li       r3, 0
-	bl       GXSetTevDirect
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	80427F64
- * Size:	000004
- */
-void Splitter::split4(f32, f32) { }
-
-/*
- * --INFO--
- * Address:	80427F68
- * Size:	000028
- */
-void __sinit_graphics_cpp()
-{
-	/*
-	lis      r4, __float_nan@ha
-	li       r0, -1
-	lfs      f0, __float_nan@l(r4)
-	lis      r3, lbl_804EBD98@ha
-	stw      r0, lbl_80516190@sda21(r13)
-	stfsu    f0, lbl_804EBD98@l(r3)
-	stfs     f0, lbl_80516194@sda21(r13)
-	stfs     f0, 4(r3)
-	stfs     f0, 8(r3)
-	blr
-	*/
-}
+void Graphics::clearInitGX() { initGX(); }

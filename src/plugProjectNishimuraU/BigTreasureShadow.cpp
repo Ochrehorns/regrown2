@@ -5,21 +5,22 @@ namespace BigTreasure {
 
 static const char bigTreasureShadowName[] = "246-BigTreasureShadow";
 
-/*
- * --INFO--
- * Address:	802DA5C8
- * Size:	000418
+/**
+ * @note Address: 0x802DA5C8
+ * @note Size: 0x418
  */
 BigTreasureShadowMgr::BigTreasureShadowMgr(Obj* obj)
 {
 	mObj      = obj;
 	mRootNode = new JointShadowRootNode(obj);
-	_88       = new SphereShadowNode;
-	_8C       = new SphereShadowNode;
 
+	// body/head shadow nodes?
+	_88 = new SphereShadowNode;
+	_8C = new SphereShadowNode;
 	mRootNode->add(_88);
 	mRootNode->add(_8C);
 
+	// set up leg shadow nodes
 	for (int i = 0; i < 4; i++) {
 		_90[i] = new TubeShadowSetNode;
 		_A0[i] = new TubeShadowSetNode;
@@ -42,37 +43,40 @@ BigTreasureShadowMgr::BigTreasureShadowMgr(Obj* obj)
 		}
 	}
 
-	for (int i = 0; i < 4; i++) {
-		_100[i] = new SphereShadowNode;
-		mRootNode->add(_100[i]);
+	// set up treasure shadow nodes
+	for (int i = 0; i < BIGATTACK_Count; i++) {
+		mTreasureShadowNodes[i] = new SphereShadowNode;
+		mRootNode->add(mTreasureShadowNodes[i]);
 	}
 
+	// set up hand shadow nodes
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 4; j++) {
-			_110[i][j] = new TubeShadowPosNode;
-			mRootNode->add(_110[i][j]);
+			mHandTubeNodes[i][j] = new TubeShadowPosNode;
+			mRootNode->add(mHandTubeNodes[i][j]);
 
 			if (j < 2) {
-				_130[i][j] = new SphereShadowNode;
-				mRootNode->add(_130[i][j]);
+				mHandSphereNodes[i][j] = new SphereShadowNode;
+				mRootNode->add(mHandSphereNodes[i][j]);
 			}
 		}
 	}
 
+	// set up antenna shadow nodes
 	for (int i = 0; i < 2; i++) {
-		_168[i] = new SphereShadowNode;
-		mRootNode->add(_168[i]);
+		mAntennaSphereNodes[i] = new SphereShadowNode;
+		mRootNode->add(mAntennaSphereNodes[i]);
+
 		for (int j = 0; j < 5; j++) {
-			_140[i][j] = new TubeShadowPosNode;
-			mRootNode->add(_140[i][j]);
+			mAntennaTubeNodes[i][j] = new TubeShadowPosNode;
+			mRootNode->add(mAntennaTubeNodes[i][j]);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	802DA9E0
- * Size:	0002B4
+/**
+ * @note Address: 0x802DA9E0
+ * @note Size: 0x2B4
  */
 void BigTreasure::BigTreasureShadowMgr::init()
 {
@@ -118,32 +122,32 @@ void BigTreasure::BigTreasureShadowMgr::init()
 	mRightAntennaMatrix[1] = model->getJoint("rantenna2")->getWorldMatrix();
 }
 
-/*
- * --INFO--
- * Address:	802DAC94
- * Size:	000008
+/**
+ * @note Address: 0x802DAC94
+ * @note Size: 0x8
  */
 void BigTreasureShadowMgr::setKosiJointPosPtr(Vector3f* posPtr) { mKosiPosition = posPtr; }
 
-/*
- * --INFO--
- * Address:	802DAC9C
- * Size:	000018
+/**
+ * @note Address: 0x802DAC9C
+ * @note Size: 0x18
  */
-void BigTreasureShadowMgr::setJointPosPtr(int p1, int p2, Vector3f* posPtr) { mJointPositions[p1][p2] = posPtr; }
+void BigTreasureShadowMgr::setJointPosPtr(int jointIndex, int positionIndex, Vector3f* position)
+{
+	mJointPositions[jointIndex][positionIndex] = position;
+}
 
-/*
- * --INFO--
- * Address:	802DACB4
- * Size:	000510
+/**
+ * @note Address: 0x802DACB4
+ * @note Size: 0x510
  */
 void BigTreasureShadowMgr::update()
 {
 	JointShadowParm parm;
 	parm.mPosition = mObj->getTraceCentrePosition();
-	parm._0C       = Vector3f(0.5f, 3.0f, 0.5f);
-	parm._0C.normalise();
-	*mKosiPosition = mBodyMatrix->getBasis(3);
+	parm.mRotation = Vector3f(0.5f, 3.0f, 0.5f);
+	parm.mRotation.normalise();
+	*mKosiPosition = mBodyMatrix->getColumn(3);
 	mKosiPosition->y += -20.0f;
 
 	f32 p1 = 5.0f * mObj->mShadowScale;
@@ -151,18 +155,20 @@ void BigTreasureShadowMgr::update()
 
 	// this section needs fixing
 	const f32 theta = mObj->getFaceDir();
-	f32 cosTheta    = pikmin2_cosf(theta);
-	f32 sinTheta    = pikmin2_sinf(theta);
-	Vector3f vec1(20.0f * sinTheta, 0.0f, 20.0f * cosTheta);
-	Vector3f vec2(-10.0f * sinTheta, -0.0f, -10.0f * cosTheta);
+
+	Vector3f pos1 = getDirection(theta);
+	Vector3f pos2 = pos1;
 
 	parm._18          = 0.0f;
 	parm._1C          = 0.0f;
 	parm.mShadowScale = 20.0f * mObj->mShadowScale;
 	parm._24          = -75.0f;
 
-	Vector3f pos1 = vec1 + *mKosiPosition;
-	Vector3f pos2 = vec2 + *mKosiPosition;
+	pos1 *= 20.0f;
+	pos2 *= -10.0f;
+
+	pos1 += *mKosiPosition;
+	pos2 += *mKosiPosition;
 
 	_88->makeShadowSRT(parm, pos1);
 
@@ -217,456 +223,78 @@ void BigTreasureShadowMgr::update()
 	updateTreasureShadow(parm);
 	updateHandShadow(parm);
 	updateAntennaShadow(parm);
-	/*
-	stwu     r1, -0x140(r1)
-	mflr     r0
-	stw      r0, 0x144(r1)
-	stfd     f31, 0x130(r1)
-	psq_st   f31, 312(r1), 0, qr0
-	stfd     f30, 0x120(r1)
-	psq_st   f30, 296(r1), 0, qr0
-	stfd     f29, 0x110(r1)
-	psq_st   f29, 280(r1), 0, qr0
-	stfd     f28, 0x100(r1)
-	psq_st   f28, 264(r1), 0, qr0
-	stfd     f27, 0xf0(r1)
-	psq_st   f27, 248(r1), 0, qr0
-	stfd     f26, 0xe0(r1)
-	psq_st   f26, 232(r1), 0, qr0
-	stfd     f25, 0xd0(r1)
-	psq_st   f25, 216(r1), 0, qr0
-	stfd     f24, 0xc0(r1)
-	psq_st   f24, 200(r1), 0, qr0
-	stmw     r25, 0xa4(r1)
-	mr       r31, r3
-	addi     r3, r1, 8
-	lwz      r4, 0x3c(r31)
-	bl       getTraceCentrePosition__Q34Game11BigTreasure3ObjFv
-	lfs      f3, lbl_8051CBC0@sda21(r2)
-	lfs      f2, lbl_8051CBC4@sda21(r2)
-	fmuls    f8, f3, f3
-	lfs      f6, 8(r1)
-	fmuls    f7, f2, f2
-	lfs      f5, 0xc(r1)
-	lfs      f4, 0x10(r1)
-	lfs      f1, lbl_8051CBC8@sda21(r2)
-	fadds    f0, f8, f7
-	stfs     f6, 0x5c(r1)
-	stfs     f5, 0x60(r1)
-	fadds    f0, f8, f0
-	stfs     f4, 0x64(r1)
-	fcmpo    cr0, f0, f1
-	stfs     f3, 0x68(r1)
-	stfs     f2, 0x6c(r1)
-	stfs     f3, 0x70(r1)
-	ble      lbl_802DAD78
-	fmadds   f0, f3, f3, f7
-	fadds    f3, f8, f0
-	fcmpo    cr0, f3, f1
-	ble      lbl_802DAD7C
-	frsqrte  f0, f3
-	fmuls    f3, f0, f3
-	b        lbl_802DAD7C
-
-lbl_802DAD78:
-	fmr      f3, f1
-
-lbl_802DAD7C:
-	lfs      f0, lbl_8051CBC8@sda21(r2)
-	fcmpo    cr0, f3, f0
-	ble      lbl_802DADB4
-	lfs      f0, lbl_8051CBCC@sda21(r2)
-	lfs      f2, 0x68(r1)
-	fdivs    f3, f0, f3
-	lfs      f1, 0x6c(r1)
-	lfs      f0, 0x70(r1)
-	fmuls    f2, f2, f3
-	fmuls    f1, f1, f3
-	fmuls    f0, f0, f3
-	stfs     f2, 0x68(r1)
-	stfs     f1, 0x6c(r1)
-	stfs     f0, 0x70(r1)
-
-lbl_802DADB4:
-	lwz      r4, 0(r31)
-	lwz      r3, 0x40(r31)
-	lfs      f4, 0x2c(r4)
-	lfs      f3, 0x1c(r4)
-	lfs      f0, 0xc(r4)
-	lfs      f2, lbl_8051CBD0@sda21(r2)
-	stfs     f0, 0(r3)
-	lfs      f1, lbl_8051CBD4@sda21(r2)
-	stfs     f3, 4(r3)
-	lfs      f0, lbl_8051CBD8@sda21(r2)
-	stfs     f4, 8(r3)
-	lwz      r3, 0x40(r31)
-	lfs      f3, 4(r3)
-	fadds    f2, f3, f2
-	stfs     f2, 4(r3)
-	lwz      r3, 0x3c(r31)
-	lfs      f2, 0x2d8(r3)
-	lwz      r12, 0(r3)
-	fmuls    f31, f1, f2
-	lwz      r12, 0x64(r12)
-	fmuls    f30, f0, f2
-	mtctr    r12
-	bctrl
-	fmr      f2, f1
-	lfs      f0, lbl_8051CBC8@sda21(r2)
-	fcmpo    cr0, f2, f0
-	bge      lbl_802DAE24
-	fneg     f2, f2
-
-lbl_802DAE24:
-	lfs      f3, lbl_8051CBDC@sda21(r2)
-	lis      r3, sincosTable___5JMath@ha
-	lfs      f0, lbl_8051CBC8@sda21(r2)
-	addi     r4, r3, sincosTable___5JMath@l
-	fmuls    f2, f2, f3
-	fcmpo    cr0, f1, f0
-	fctiwz   f0, f2
-	stfd     f0, 0x88(r1)
-	lwz      r0, 0x8c(r1)
-	rlwinm   r0, r0, 3, 0x12, 0x1c
-	add      r3, r4, r0
-	lfs      f12, 4(r3)
-	bge      lbl_802DAE7C
-	lfs      f0, lbl_8051CBE0@sda21(r2)
-	fmuls    f0, f1, f0
-	fctiwz   f0, f0
-	stfd     f0, 0x90(r1)
-	lwz      r0, 0x94(r1)
-	rlwinm   r0, r0, 3, 0x12, 0x1c
-	lfsx     f0, r4, r0
-	fneg     f2, f0
-	b        lbl_802DAE94
-
-lbl_802DAE7C:
-	fmuls    f0, f1, f3
-	fctiwz   f0, f0
-	stfd     f0, 0x98(r1)
-	lwz      r0, 0x9c(r1)
-	rlwinm   r0, r0, 3, 0x12, 0x1c
-	lfsx     f2, r4, r0
-
-lbl_802DAE94:
-	frsp     f10, f2
-	lfs      f11, lbl_8051CBC8@sda21(r2)
-	lfs      f9, lbl_8051CBE4@sda21(r2)
-	frsp     f0, f12
-	lfs      f4, lbl_8051CBEC@sda21(r2)
-	frsp     f1, f11
-	stfs     f2, 0x20(r1)
-	fmuls    f7, f10, f9
-	fmuls    f6, f11, f9
-	lfs      f8, lbl_8051CBE8@sda21(r2)
-	stfs     f11, 0x24(r1)
-	fmuls    f5, f12, f9
-	fmuls    f2, f10, f4
-	stfs     f12, 0x28(r1)
-	fmuls    f3, f1, f4
-	addi     r4, r1, 0x5c
-	stfs     f10, 0x14(r1)
-	fmuls    f4, f0, f4
-	addi     r5, r1, 0x20
-	stfs     f11, 0x18(r1)
-	stfs     f12, 0x1c(r1)
-	stfs     f11, 0x74(r1)
-	stfs     f11, 0x78(r1)
-	lwz      r3, 0x3c(r31)
-	lfs      f0, 0x2d8(r3)
-	fmuls    f0, f9, f0
-	stfs     f8, 0x80(r1)
-	stfs     f7, 0x20(r1)
-	stfs     f0, 0x7c(r1)
-	stfs     f6, 0x24(r1)
-	stfs     f5, 0x28(r1)
-	stfs     f2, 0x14(r1)
-	stfs     f3, 0x18(r1)
-	stfs     f4, 0x1c(r1)
-	lwz      r3, 0x40(r31)
-	lfs      f0, 0(r3)
-	fadds    f1, f7, f0
-	fadds    f0, f2, f0
-	stfs     f1, 0x20(r1)
-	lfs      f1, 4(r3)
-	fadds    f2, f6, f1
-	fadds    f1, f3, f1
-	stfs     f2, 0x24(r1)
-	lfs      f3, 8(r3)
-	fadds    f2, f5, f3
-	stfs     f0, 0x14(r1)
-	fadds    f0, f4, f3
-	stfs     f1, 0x18(r1)
-	stfs     f2, 0x28(r1)
-	stfs     f0, 0x1c(r1)
-	lwz      r3, 0x88(r31)
-	bl
-"makeShadowSRT__Q24Game16SphereShadowNodeFRQ24Game15JointShadowParmR10Vector3<f>"
-	lwz      r3, 0x3c(r31)
-	addi     r4, r1, 0x5c
-	lfs      f1, lbl_8051CBF0@sda21(r2)
-	addi     r5, r1, 0x14
-	lfs      f0, 0x2d8(r3)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x7c(r1)
-	lwz      r3, 0x8c(r31)
-	bl
-"makeShadowSRT__Q24Game16SphereShadowNodeFRQ24Game15JointShadowParmR10Vector3<f>"
-	lfs      f24, lbl_8051CBF4@sda21(r2)
-	mr       r30, r31
-	lfs      f25, lbl_8051CBF8@sda21(r2)
-	mr       r29, r31
-	lfs      f26, lbl_8051CBEC@sda21(r2)
-	addi     r28, r1, 0x38
-	lfs      f27, lbl_8051CBC8@sda21(r2)
-	addi     r27, r1, 0x44
-	lfs      f28, lbl_8051CBFC@sda21(r2)
-	addi     r26, r1, 0x50
-	lfs      f29, lbl_8051CBD0@sda21(r2)
-	li       r25, 0
-
-lbl_802DAFB8:
-	stfs     f24, 0x74(r1)
-	addi     r4, r1, 0x5c
-	addi     r6, r1, 0x2c
-	stfs     f25, 0x78(r1)
-	stfs     f31, 0x7c(r1)
-	stfs     f26, 0x80(r1)
-	lwz      r3, 0x90(r30)
-	lwz      r5, 0x40(r31)
-	bl
-"makeShadowSRT__Q24Game17TubeShadowSetNodeFRQ24Game15JointShadowParmR10Vector3<f>R10Vector3<f>"
-	stfs     f27, 0x74(r1)
-	mr       r6, r28
-	addi     r4, r1, 0x5c
-	addi     r5, r1, 0x2c
-	stfs     f27, 0x78(r1)
-	stfs     f31, 0x7c(r1)
-	stfs     f26, 0x80(r1)
-	lwz      r3, 0xa0(r30)
-	bl
-"makeShadowSRT__Q24Game17TubeShadowSetNodeFRQ24Game15JointShadowParmR10Vector3<f>R10Vector3<f>"
-	stfs     f28, 0x74(r1)
-	mr       r5, r28
-	mr       r6, r27
-	addi     r4, r1, 0x5c
-	stfs     f29, 0x78(r1)
-	stfs     f31, 0x7c(r1)
-	stfs     f26, 0x80(r1)
-	lwz      r3, 0xb0(r30)
-	bl
-"makeShadowSRT__Q24Game17TubeShadowSetNodeFRQ24Game15JointShadowParmR10Vector3<f>R10Vector3<f>"
-	stfs     f27, 0x74(r1)
-	mr       r5, r27
-	mr       r6, r26
-	addi     r4, r1, 0x5c
-	stfs     f27, 0x78(r1)
-	stfs     f31, 0x7c(r1)
-	stfs     f26, 0x80(r1)
-	lwz      r3, 0xc0(r30)
-	bl
-"makeShadowSRT__Q24Game17TubeShadowSetNodeFRQ24Game15JointShadowParmR10Vector3<f>R10Vector3<f>"
-	stfs     f27, 0x74(r1)
-	addi     r4, r1, 0x5c
-	addi     r5, r1, 0x2c
-	stfs     f27, 0x78(r1)
-	stfs     f30, 0x7c(r1)
-	stfs     f26, 0x80(r1)
-	lwz      r3, 0xd0(r30)
-	bl
-"makeShadowSRT__Q24Game16SphereShadowNodeFRQ24Game15JointShadowParmR10Vector3<f>"
-	lwz      r3, 0xe0(r30)
-	mr       r5, r28
-	addi     r4, r1, 0x5c
-	bl
-"makeShadowSRT__Q24Game16SphereShadowNodeFRQ24Game15JointShadowParmR10Vector3<f>"
-	lwz      r3, 0xf0(r30)
-	mr       r5, r27
-	addi     r4, r1, 0x5c
-	bl
-"makeShadowSRT__Q24Game16SphereShadowNodeFRQ24Game15JointShadowParmR10Vector3<f>"
-	lwz      r3, 0x44(r29)
-	cmplwi   r3, 0
-	beq      lbl_802DB0B4
-	lfs      f0, 0x2c(r1)
-	stfs     f0, 0(r3)
-	lfs      f0, 0x30(r1)
-	lwz      r3, 0x44(r29)
-	stfs     f0, 4(r3)
-	lfs      f0, 0x34(r1)
-	lwz      r3, 0x44(r29)
-	stfs     f0, 8(r3)
-
-lbl_802DB0B4:
-	lwz      r3, 0x48(r29)
-	cmplwi   r3, 0
-	beq      lbl_802DB0E0
-	lfs      f0, 0x38(r1)
-	stfs     f0, 0(r3)
-	lfs      f0, 0x3c(r1)
-	lwz      r3, 0x48(r29)
-	stfs     f0, 4(r3)
-	lfs      f0, 0x40(r1)
-	lwz      r3, 0x48(r29)
-	stfs     f0, 8(r3)
-
-lbl_802DB0E0:
-	lwz      r3, 0x4c(r29)
-	cmplwi   r3, 0
-	beq      lbl_802DB10C
-	lfs      f0, 0x44(r1)
-	stfs     f0, 0(r3)
-	lfs      f0, 0x48(r1)
-	lwz      r3, 0x4c(r29)
-	stfs     f0, 4(r3)
-	lfs      f0, 0x4c(r1)
-	lwz      r3, 0x4c(r29)
-	stfs     f0, 8(r3)
-
-lbl_802DB10C:
-	lwz      r3, 0x50(r29)
-	cmplwi   r3, 0
-	beq      lbl_802DB138
-	lfs      f0, 0x50(r1)
-	stfs     f0, 0(r3)
-	lfs      f0, 0x54(r1)
-	lwz      r3, 0x50(r29)
-	stfs     f0, 4(r3)
-	lfs      f0, 0x58(r1)
-	lwz      r3, 0x50(r29)
-	stfs     f0, 8(r3)
-
-lbl_802DB138:
-	addi     r25, r25, 1
-	addi     r29, r29, 0x10
-	cmpwi    r25, 4
-	addi     r30, r30, 4
-	blt      lbl_802DAFB8
-	mr       r3, r31
-	addi     r4, r1, 0x5c
-	bl
-updateTreasureShadow__Q34Game11BigTreasure20BigTreasureShadowMgrFRQ24Game15JointShadowParm
-	mr       r3, r31
-	addi     r4, r1, 0x5c
-	bl
-updateHandShadow__Q34Game11BigTreasure20BigTreasureShadowMgrFRQ24Game15JointShadowParm
-	mr       r3, r31
-	addi     r4, r1, 0x5c
-	bl
-updateAntennaShadow__Q34Game11BigTreasure20BigTreasureShadowMgrFRQ24Game15JointShadowParm
-	psq_l    f31, 312(r1), 0, qr0
-	lfd      f31, 0x130(r1)
-	psq_l    f30, 296(r1), 0, qr0
-	lfd      f30, 0x120(r1)
-	psq_l    f29, 280(r1), 0, qr0
-	lfd      f29, 0x110(r1)
-	psq_l    f28, 264(r1), 0, qr0
-	lfd      f28, 0x100(r1)
-	psq_l    f27, 248(r1), 0, qr0
-	lfd      f27, 0xf0(r1)
-	psq_l    f26, 232(r1), 0, qr0
-	lfd      f26, 0xe0(r1)
-	psq_l    f25, 216(r1), 0, qr0
-	lfd      f25, 0xd0(r1)
-	psq_l    f24, 200(r1), 0, qr0
-	lfd      f24, 0xc0(r1)
-	lmw      r25, 0xa4(r1)
-	lwz      r0, 0x144(r1)
-	mtlr     r0
-	addi     r1, r1, 0x140
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	802DB1C4
- * Size:	0000F4
+/**
+ * @note Address: 0x802DB1C4
+ * @note Size: 0xF4
  */
 void BigTreasureShadowMgr::updateTreasureShadow(JointShadowParm& parm)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x30(r1)
-	  mflr      r0
-	  lfs       f3, -0x1760(r2)
-	  stw       r0, 0x34(r1)
-	  lfs       f1, -0x1798(r2)
-	  stw       r31, 0x2C(r1)
-	  lfs       f0, -0x175C(r2)
-	  stw       r30, 0x28(r1)
-	  li        r30, 0
-	  stw       r29, 0x24(r1)
-	  mr        r29, r4
-	  stw       r28, 0x20(r1)
-	  mr        r28, r3
-	  mr        r31, r28
-	  lwz       r3, 0x3C(r3)
-	  lfs       f2, 0x2D8(r3)
-	  fmuls     f2, f3, f2
-	  stfs      f2, 0x20(r4)
-	  stfs      f1, 0x18(r4)
-	  stfs      f1, 0x1C(r4)
-	  stfs      f0, 0x24(r4)
+	parm.mShadowScale = 30.0f * mObj->mShadowScale;
+	parm._18          = 0.0f;
+	parm._1C          = 0.0f;
+	parm._24          = -35.0f;
+	for (int i = 0; i < BIGATTACK_Count; i++) {
+		if (mObj->isCapturedTreasure(i)) {
+			if (!mTreasureShadowNodes[i]->mParent) {
+				mRootNode->add(mTreasureShadowNodes[i]);
+			}
 
-	.loc_0x54:
-	  lwz       r3, 0x3C(r28)
-	  mr        r4, r30
-	  bl        0x2614
-	  rlwinm.   r0,r3,0,24,31
-	  beq-      .loc_0xB0
-	  lwz       r4, 0x100(r31)
-	  lwz       r0, 0xC(r4)
-	  cmplwi    r0, 0
-	  bne-      .loc_0x80
-	  lwz       r3, 0x84(r28)
-	  bl        0x1361C8
+			Vector3f treasurePos = getTreasureMatrix(i)->getColumn(3);
+			mTreasureShadowNodes[i]->makeShadowSRT(parm, treasurePos);
 
-	.loc_0x80:
-	  lwz       r3, 0x4(r31)
-	  mr        r4, r29
-	  addi      r5, r1, 0x8
-	  lfs       f2, 0x2C(r3)
-	  lfs       f1, 0x1C(r3)
-	  lfs       f0, 0xC(r3)
-	  stfs      f0, 0x8(r1)
-	  stfs      f1, 0xC(r1)
-	  stfs      f2, 0x10(r1)
-	  lwz       r3, 0x100(r31)
-	  bl        0x17470
-	  b         .loc_0xC4
-
-	.loc_0xB0:
-	  lwz       r3, 0x100(r31)
-	  lwz       r0, 0xC(r3)
-	  cmplwi    r0, 0
-	  beq-      .loc_0xC4
-	  bl        0x13634C
-
-	.loc_0xC4:
-	  addi      r30, r30, 0x1
-	  addi      r31, r31, 0x4
-	  cmpwi     r30, 0x4
-	  blt+      .loc_0x54
-	  lwz       r0, 0x34(r1)
-	  lwz       r31, 0x2C(r1)
-	  lwz       r30, 0x28(r1)
-	  lwz       r29, 0x24(r1)
-	  lwz       r28, 0x20(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x30
-	  blr
-	*/
+		} else if (mTreasureShadowNodes[i]->mParent) {
+			mTreasureShadowNodes[i]->del();
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	802DB2B8
- * Size:	000348
+/**
+ * @note Address: 0x802DB2B8
+ * @note Size: 0x348
  */
 void BigTreasureShadowMgr::updateHandShadow(JointShadowParm& parm)
 {
+	parm._18 = 0.0f;
+	parm._1C = 0.0f;
+	parm._24 = -10.0f;
+
+	for (int i = 0; i < 2; i++) {
+		parm.mShadowScale = 4.0f * mObj->mShadowScale;
+		Vector3f pos1     = getArmMatrices(i)[0]->getColumn(3);
+		Vector3f pos2     = getArmMatrices(i)[1]->getColumn(3);
+		Vector3f pos3     = getArmMatrices(i)[2]->getColumn(3);
+		Vector3f pos4     = pos3;
+		Vector3f pos5     = pos3;
+
+		mHandTubeNodes[i][0]->makeShadowSRT(parm, pos1, pos2);
+		mHandTubeNodes[i][1]->makeShadowSRT(parm, pos2, pos3);
+
+		Vector3f xVec, yVec;
+
+		getArmMatrices(i)[2]->getColumn(0, xVec);
+		getArmMatrices(i)[2]->getColumn(1, yVec);
+
+		parm.mShadowScale = 3.0f * mObj->mShadowScale;
+
+		pos4 += xVec * 50.0f;
+		pos4 += yVec * -7.5f;
+
+		mHandTubeNodes[i][2]->makeShadowSRT(parm, pos3, pos4);
+
+		parm.mShadowScale = 2.0f * mObj->mShadowScale;
+
+		pos5 += xVec * 35.0f;
+		pos5 += yVec * 5.0f;
+
+		mHandTubeNodes[i][3]->makeShadowSRT(parm, pos3, pos5);
+
+		parm.mShadowScale = 2.5f * mObj->mShadowScale;
+
+		mHandSphereNodes[i][0]->makeShadowSRT(parm, pos2);
+		mHandSphereNodes[i][1]->makeShadowSRT(parm, pos3);
+	}
 	/*
 	stwu     r1, -0x140(r1)
 	mflr     r0
@@ -889,13 +517,75 @@ lbl_802DB384:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802DB600
- * Size:	000544
+/**
+ * @note Address: 0x802DB600
+ * @note Size: 0x544
  */
 void BigTreasureShadowMgr::updateAntennaShadow(JointShadowParm& parm)
 {
+	parm._18 = 0.0f;
+	parm._1C = 0.0f;
+	parm._24 = -10.0f;
+
+	for (int i = 0; i < 2; i++) {
+		parm.mShadowScale = 5.0f * mObj->mShadowScale;
+
+		Vector3f pos1 = getAntennaMatrices(i)[0]->getColumn(3);
+		Vector3f pos2 = getAntennaMatrices(i)[1]->getColumn(3);
+
+		mAntennaTubeNodes[i][0]->makeShadowSRT(parm, pos1, pos2);
+
+		Vector3f xVec1, yVec1;
+		getAntennaMatrices(i)[1]->getColumn(0, xVec1);
+		getAntennaMatrices(i)[1]->getColumn(1, yVec1);
+
+		parm.mShadowScale = 4.0f * mObj->mShadowScale;
+
+		Vector3f pos3 = pos2;
+		pos3 += xVec1 * 55.0f;
+		pos3 += yVec1 * 0.0f;
+
+		mAntennaTubeNodes[i][1]->makeShadowSRT(parm, pos2, pos3);
+
+		parm.mShadowScale = 5.0f * mObj->mShadowScale;
+
+		Vector3f pos4 = pos2;
+		Vector3f pos5 = pos2;
+
+		pos4 += xVec1 * 55.0f;
+		pos5 += xVec1 * 50.0f;
+
+		pos4 += yVec1 * -35.0f;
+		pos5 += yVec1 * 0.0f;
+
+		mAntennaTubeNodes[i][2]->makeShadowSRT(parm, pos4, pos5);
+
+		Vector3f pos6 = pos2;
+		Vector3f pos7 = pos2;
+
+		pos6 += xVec1 * 37.5f;
+		pos7 += xVec1 * 40.0f;
+
+		pos6 += yVec1 * -30.0f;
+		pos7 += yVec1 * 0.0f;
+
+		mAntennaTubeNodes[i][3]->makeShadowSRT(parm, pos6, pos7);
+
+		Vector3f pos8 = pos2;
+		Vector3f pos9 = pos2;
+
+		pos8 += xVec1 * 20.0f;
+		pos9 += xVec1 * 35.0f;
+
+		pos8 += yVec1 * -20.0f;
+		pos9 += yVec1 * 0.0f;
+
+		mAntennaTubeNodes[i][4]->makeShadowSRT(parm, pos8, pos9);
+
+		parm.mShadowScale = 3.0f * mObj->mShadowScale;
+
+		mAntennaSphereNodes[i]->makeShadowSRT(parm, pos2);
+	}
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x1C0(r1)

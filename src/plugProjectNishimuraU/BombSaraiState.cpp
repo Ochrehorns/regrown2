@@ -12,10 +12,9 @@ namespace BombSarai {
 static const int unusedBombSaraiArray[] = { 0, 0, 0 };
 static const char bombSaraiStateName[]  = "246-BombSaraiState";
 
-/*
- * --INFO--
- * Address:	802AFC74
- * Size:	000480
+/**
+ * @note Address: 0x802AFC74
+ * @note Size: 0x480
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -35,10 +34,9 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateBombFlick);
 }
 
-/*
- * --INFO--
- * Address:	802B00F4
- * Size:	000094
+/**
+ * @note Address: 0x802B00F4
+ * @note Size: 0x94
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -46,14 +44,13 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	enemy->mTargetVelocity = Vector3f(0.0f);
 	enemy->disableEvent(0, EB_Untargetable);
 	enemy->disableEvent(0, EB_Cullable);
-	enemy->startMotion(0, nullptr);
+	enemy->startMotion(BOMBSARAIANIM_Dead, nullptr);
 	enemy->getJAIObject()->startSound(PSSE_EN_BOMBSARAI_DEAD, 0);
 }
 
-/*
- * --INFO--
- * Address:	802B0188
- * Size:	000134
+/**
+ * @note Address: 0x802B0188
+ * @note Size: 0x134
  */
 void StateDead::exec(EnemyBase* enemy)
 {
@@ -77,7 +74,7 @@ void StateDead::exec(EnemyBase* enemy)
 		} else if (sarai->mCurAnim->mType == KEYEVENT_7) {
 			Vector3f pos = sarai->getPosition();
 			cameraMgr->startVibration(0, pos, 2);
-			rumbleMgr->startRumble(11, pos, 2);
+			rumbleMgr->startRumble(11, pos, RUMBLEID_Both);
 			sarai->createDownEffect(0.9f);
 
 		} else if (sarai->mCurAnim->mType == KEYEVENT_END) {
@@ -86,17 +83,15 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B02BC
- * Size:	000004
+/**
+ * @note Address: 0x802B02BC
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802B02C0
- * Size:	0000B0
+/**
+ * @note Address: 0x802B02C0
+ * @note Size: 0xB0
  */
 void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -106,16 +101,15 @@ void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mTargetVelocity = Vector3f(0.0f);
 	sarai->disableEvent(0, EB_Untargetable);
 	sarai->setEmotionExcitement();
-	sarai->startMotion(4, nullptr);
+	sarai->startMotion(BOMBSARAIANIM_Struggle, nullptr);
 
 	Vector3f pos = sarai->getPosition();
-	rumbleMgr->startRumble(8, pos, 2);
+	rumbleMgr->startRumble(8, pos, RUMBLEID_Both);
 }
 
-/*
- * --INFO--
- * Address:	802B0370
- * Size:	0001B4
+/**
+ * @note Address: 0x802B0370
+ * @note Size: 0x1B4
  */
 void StateDamage::exec(EnemyBase* enemy)
 {
@@ -135,14 +129,14 @@ void StateDamage::exec(EnemyBase* enemy)
 			sarai->createDownEffect(0.8f);
 
 			Vector3f pos = sarai->getPosition();
-			rumbleMgr->startRumble(8, pos, 2);
+			rumbleMgr->startRumble(8, pos, RUMBLEID_Both);
 
 		} else if (sarai->mCurAnim->mType == KEYEVENT_END) {
 			if (sarai->mHealth <= 0.0f) {
 				transit(sarai, BOMBSARAI_Dead, nullptr);
 				return;
 			}
-			if (sarai->mHealth / CG_PARMS(sarai)->mGeneral.mHealth.mValue > 0.5f) {
+			if (sarai->mHealth / CG_GENERALPARMS(sarai).mHealth.mValue > 0.5f) {
 				transit(sarai, BOMBSARAI_TakeOff1, nullptr);
 			} else {
 				transit(sarai, BOMBSARAI_TakeOff2, nullptr);
@@ -151,10 +145,9 @@ void StateDamage::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B0524
- * Size:	000030
+/**
+ * @note Address: 0x802B0524
+ * @note Size: 0x30
  */
 void StateDamage::cleanup(EnemyBase* enemy)
 {
@@ -162,10 +155,9 @@ void StateDamage::cleanup(EnemyBase* enemy)
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	802B0554
- * Size:	000054
+/**
+ * @note Address: 0x802B0554
+ * @note Size: 0x54
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -174,13 +166,12 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mNextState      = BOMBSARAI_NULL;
 	sarai->mStateTimer     = 0.0f;
 	sarai->mTargetVelocity = Vector3f(0.0f);
-	sarai->startMotion(12, nullptr);
+	sarai->startMotion(BOMBSARAIANIM_Wait, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B05A8
- * Size:	000148
+/**
+ * @note Address: 0x802B05A8
+ * @note Size: 0x148
  */
 void StateWait::exec(EnemyBase* enemy)
 {
@@ -213,17 +204,15 @@ void StateWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B06F0
- * Size:	000004
+/**
+ * @note Address: 0x802B06F0
+ * @note Size: 0x4
  */
 void StateWait::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802B06F4
- * Size:	000074
+/**
+ * @note Address: 0x802B06F4
+ * @note Size: 0x74
  */
 void StateBombWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -234,13 +223,12 @@ void StateBombWait::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mStateTimer     = 0.0f;
 	sarai->mTargetVelocity = Vector3f(0.0f);
 	sarai->setEmotionExcitement();
-	sarai->startMotion(13, nullptr);
+	sarai->startMotion(BOMBSARAIANIM_BombWait, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B0768
- * Size:	000454
+/**
+ * @note Address: 0x802B0768
+ * @note Size: 0x454
  */
 void StateBombWait::exec(EnemyBase* enemy)
 {
@@ -251,18 +239,19 @@ void StateBombWait::exec(EnemyBase* enemy)
 		sarai->mNextState = BOMBSARAI_Release;
 		sarai->finishMotion();
 	} else if (target) {
-		f32 minRange  = CG_PARMS(sarai)->mGeneral.mMinAttackRange.mValue; // f29
-		f32 maxRange  = CG_PARMS(sarai)->mGeneral.mMaxAttackRange.mValue; // f30
-		f32 angleDist = sarai->getAngDist(target);
+		f32 maxRange, minRange, angleDist;
+		minRange  = CG_GENERALPARMS(sarai).mMaxAttackAngle(); // f29
+		maxRange  = CG_GENERALPARMS(sarai).mMaxAttackRange(); // f30
+		angleDist = sarai->getAngDist(target);
 
-		if (sarai->checkDistAndAngle(target, angleDist, maxRange, minRange)) {
+		if (sarai->isTargetAttackable(target, angleDist, maxRange, minRange)) {
 			sarai->mNextState = BOMBSARAI_Release;
 			sarai->finishMotion();
 		} else {
 			Vector3f saraiPos  = sarai->getPosition();
 			Vector3f targetPos = target->getPosition();
 
-			if (sqrDistanceXZ(saraiPos, targetPos) < SQUARE(CG_PARMS(sarai)->mGeneral.mAttackRadius.mValue)) {
+			if (sqrDistanceXZ(saraiPos, targetPos) < SQUARE(CG_GENERALPARMS(sarai).mAttackRadius())) {
 				sarai->mNextState = BOMBSARAI_Release;
 				sarai->finishMotion();
 			} else {
@@ -280,7 +269,7 @@ void StateBombWait::exec(EnemyBase* enemy)
 		return;
 	}
 
-	if (height > CG_PROPERPARMS(sarai).mTransitHeight.mValue || sarai->mStateTimer > 5.0f) {
+	if (height > CG_PROPERPARMS(sarai).mTransitHeight || sarai->mStateTimer > 5.0f) {
 		StateID stateID = sarai->getNextStateOnHeight();
 		if (stateID >= 0) {
 			transit(sarai, stateID, nullptr);
@@ -595,10 +584,9 @@ lbl_802B0B64:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802B0BBC
- * Size:	000030
+/**
+ * @note Address: 0x802B0BBC
+ * @note Size: 0x30
  */
 void StateBombWait::cleanup(EnemyBase* enemy)
 {
@@ -606,10 +594,9 @@ void StateBombWait::cleanup(EnemyBase* enemy)
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	802B0BEC
- * Size:	00006C
+/**
+ * @note Address: 0x802B0BEC
+ * @note Size: 0x6C
  */
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -619,13 +606,12 @@ void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mStateTimer = 0.0f;
 	sarai->setRandTarget();
 	sarai->mTargetVelocity = Vector3f(0.0f);
-	sarai->startMotion(6, nullptr);
+	sarai->startMotion(BOMBSARAIANIM_Run, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B0C58
- * Size:	0001CC
+/**
+ * @note Address: 0x802B0C58
+ * @note Size: 0x1CC
  */
 void StateMove::exec(EnemyBase* enemy)
 {
@@ -646,8 +632,8 @@ void StateMove::exec(EnemyBase* enemy)
 				sarai->finishMotion();
 			}
 
-			EnemyFunc::walkToTarget(sarai, targetPos, CG_PARMS(sarai)->mGeneral.mMoveSpeed.mValue,
-			                        CG_PARMS(sarai)->mGeneral.mRotationalAccel.mValue, CG_PARMS(sarai)->mGeneral.mRotationalSpeed.mValue);
+			EnemyFunc::walkToTarget(sarai, targetPos, CG_GENERALPARMS(sarai).mMoveSpeed.mValue, CG_GENERALPARMS(sarai).mTurnSpeed.mValue,
+			                        CG_GENERALPARMS(sarai).mMaxTurnAngle.mValue);
 		}
 	} else {
 		sarai->mTargetVelocity = Vector3f(0.0f);
@@ -666,17 +652,15 @@ void StateMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B0E24
- * Size:	000004
+/**
+ * @note Address: 0x802B0E24
+ * @note Size: 0x4
  */
 void StateMove::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802B0E28
- * Size:	000080
+/**
+ * @note Address: 0x802B0E28
+ * @note Size: 0x80
  */
 void StateBombMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -688,13 +672,12 @@ void StateBombMove::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->setRandTarget();
 	sarai->setEmotionExcitement();
 	sarai->mTargetVelocity = Vector3f(0.0f);
-	sarai->startMotion(7, nullptr);
+	sarai->startMotion(BOMBSARAIANIM_BombRun, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B0EA8
- * Size:	0004E4
+/**
+ * @note Address: 0x802B0EA8
+ * @note Size: 0x4E4
  */
 void StateBombMove::exec(EnemyBase* enemy)
 {
@@ -707,18 +690,17 @@ void StateBombMove::exec(EnemyBase* enemy)
 		sarai->mNextState = BOMBSARAI_Release;
 		sarai->finishMotion();
 	} else if (target) {
-		f32 minRange  = CG_PARMS(sarai)->mGeneral.mMinAttackRange.mValue; // f29
-		f32 maxRange  = CG_PARMS(sarai)->mGeneral.mMaxAttackRange.mValue; // f30
-		f32 angleDist = sarai->getAngDist(target);
+		f32 minRange, maxRange, angleDist;
+		minRange  = CG_GENERALPARMS(sarai).mMaxAttackAngle(); // f29
+		maxRange  = CG_GENERALPARMS(sarai).mMaxAttackRange(); // f30
+		angleDist = sarai->getAngDist(target);
 
-		if (sarai->checkDistAndAngle(target, angleDist, maxRange, minRange)) {
+		if (sarai->isTargetAttackable(target, angleDist, maxRange, minRange)) {
 			sarai->mNextState = BOMBSARAI_Release;
 			sarai->finishMotion();
 		} else {
-			// Vector3f saraiPos = sarai->getPosition();
 			targetPos = target->getPosition();
-
-			if (sqrDistanceXZ(saraiPos, targetPos) < SQUARE(CG_PARMS(sarai)->mGeneral.mAttackRadius.mValue)) {
+			if (sqrDistanceXZ(saraiPos, targetPos) < SQUARE(CG_GENERALPARMS(sarai).mAttackRadius())) {
 				sarai->mNextState = BOMBSARAI_Release;
 				sarai->finishMotion();
 			}
@@ -735,8 +717,8 @@ void StateBombMove::exec(EnemyBase* enemy)
 	if (sarai->isFinishMotion()) {
 		sarai->mTargetVelocity = Vector3f(0.0f);
 	} else {
-		EnemyFunc::walkToTarget(sarai, targetPos, CG_PARMS(sarai)->mGeneral.mMoveSpeed.mValue,
-		                        CG_PARMS(sarai)->mGeneral.mRotationalAccel.mValue, CG_PARMS(sarai)->mGeneral.mRotationalSpeed.mValue);
+		EnemyFunc::walkToTarget(sarai, targetPos, CG_GENERALPARMS(sarai).mMoveSpeed(), CG_GENERALPARMS(sarai).mTurnSpeed(),
+		                        CG_GENERALPARMS(sarai).mMaxTurnAngle());
 	}
 
 	if (sarai->isEvent(0, EB_BitterQueued)) {
@@ -744,7 +726,7 @@ void StateBombMove::exec(EnemyBase* enemy)
 		return;
 	}
 
-	if (height > CG_PROPERPARMS(sarai).mTransitHeight.mValue || sarai->mStateTimer > 5.0f) {
+	if (height > CG_PROPERPARMS(sarai).mTransitHeight() || sarai->mStateTimer > 5.0f) {
 		StateID stateID = sarai->getNextStateOnHeight();
 		if (stateID >= 0) {
 			transit(sarai, stateID, nullptr);
@@ -1099,10 +1081,9 @@ lbl_802B1324:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802B138C
- * Size:	000030
+/**
+ * @note Address: 0x802B138C
+ * @note Size: 0x30
  */
 void StateBombMove::cleanup(EnemyBase* enemy)
 {
@@ -1110,10 +1091,9 @@ void StateBombMove::cleanup(EnemyBase* enemy)
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	802B13BC
- * Size:	000080
+/**
+ * @note Address: 0x802B13BC
+ * @note Size: 0x80
  */
 void StateSupply::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -1124,14 +1104,13 @@ void StateSupply::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->supplyBomb();
 	sarai->setEmotionExcitement();
 	sarai->mTargetVelocity = Vector3f(0.0f);
-	sarai->startMotion(8, nullptr);
+	sarai->startMotion(BOMBSARAIANIM_Supply, nullptr);
 	sarai->createSupliEffect();
 }
 
-/*
- * --INFO--
- * Address:	802B143C
- * Size:	0000AC
+/**
+ * @note Address: 0x802B143C
+ * @note Size: 0xAC
  */
 void StateSupply::exec(EnemyBase* enemy)
 {
@@ -1147,10 +1126,9 @@ void StateSupply::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B14E8
- * Size:	000038
+/**
+ * @note Address: 0x802B14E8
+ * @note Size: 0x38
  */
 void StateSupply::cleanup(EnemyBase* enemy)
 {
@@ -1160,10 +1138,9 @@ void StateSupply::cleanup(EnemyBase* enemy)
 	sarai->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	802B1520
- * Size:	000070
+/**
+ * @note Address: 0x802B1520
+ * @note Size: 0x70
  */
 void StateRelease::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -1173,13 +1150,12 @@ void StateRelease::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mNextState      = BOMBSARAI_NULL;
 	sarai->mTargetVelocity = Vector3f(0.0f);
 	sarai->setEmotionExcitement();
-	sarai->startMotion(5, nullptr);
+	sarai->startMotion(BOMBSARAIANIM_Release, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B1590
- * Size:	000184
+/**
+ * @note Address: 0x802B1590
+ * @note Size: 0x184
  */
 void StateRelease::exec(EnemyBase* enemy)
 {
@@ -1189,7 +1165,7 @@ void StateRelease::exec(EnemyBase* enemy)
 	if (sarai->mCurAnim->mIsPlaying) {
 		if (sarai->mCurAnim->mType == KEYEVENT_2) {
 			const f32 angle = sarai->getFaceDir();
-			Vector3f vel(50.0f * pikmin2_sinf(angle), 100.0f, 50.0f * pikmin2_cosf(angle));
+			Vector3f vel(50.0f * sinf(angle), 100.0f, 50.0f * cosf(angle));
 			sarai->throwBomb(vel);
 
 			sarai->disableEvent(0, EB_NoInterrupt);
@@ -1206,10 +1182,9 @@ void StateRelease::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B1714
- * Size:	000030
+/**
+ * @note Address: 0x802B1714
+ * @note Size: 0x30
  */
 void StateRelease::cleanup(EnemyBase* enemy)
 {
@@ -1217,10 +1192,9 @@ void StateRelease::cleanup(EnemyBase* enemy)
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	802B1744
- * Size:	0000C4
+/**
+ * @note Address: 0x802B1744
+ * @note Size: 0xC4
  */
 void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -1230,17 +1204,16 @@ void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mTargetVelocity = Vector3f(0.0f);
 	sarai->disableEvent(0, EB_Untargetable);
 	sarai->setEmotionExcitement();
-	sarai->startMotion(1, nullptr);
+	sarai->startMotion(BOMBSARAIANIM_Fall, nullptr);
 
 	Vector3f pos = sarai->getPosition();
 	cameraMgr->startVibration(0, pos, 2);
-	rumbleMgr->startRumble(11, pos, 2);
+	rumbleMgr->startRumble(11, pos, RUMBLEID_Both);
 }
 
-/*
- * --INFO--
- * Address:	802B1808
- * Size:	0002D8
+/**
+ * @note Address: 0x802B1808
+ * @note Size: 0x2D8
  */
 void StateFall::exec(EnemyBase* enemy)
 {
@@ -1256,7 +1229,7 @@ void StateFall::exec(EnemyBase* enemy)
 	if (sarai->mCurAnim->mIsPlaying) {
 		if (sarai->mCurAnim->mType == KEYEVENT_2) {
 			const f32 angle = sarai->getFaceDir();
-			Vector3f vel(100.0f * pikmin2_sinf(angle), 300.0f, 100.0f * pikmin2_cosf(angle));
+			Vector3f vel(100.0f * sinf(angle), 300.0f, 100.0f * cosf(angle));
 			sarai->throwBomb(vel);
 			sarai->disableEvent(0, EB_NoInterrupt);
 
@@ -1277,7 +1250,7 @@ void StateFall::exec(EnemyBase* enemy)
 
 		} else if (sarai->mCurAnim->mType == KEYEVENT_8) {
 			Vector3f pos = sarai->getPosition();
-			rumbleMgr->startRumble(11, pos, 2);
+			rumbleMgr->startRumble(11, pos, RUMBLEID_Both);
 			sarai->createDownEffect(0.9f);
 
 		} else if (sarai->mCurAnim->mType == KEYEVENT_END) {
@@ -1290,10 +1263,9 @@ void StateFall::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B1AE0
- * Size:	000030
+/**
+ * @note Address: 0x802B1AE0
+ * @note Size: 0x30
  */
 void StateFall::cleanup(EnemyBase* enemy)
 {
@@ -1301,23 +1273,21 @@ void StateFall::cleanup(EnemyBase* enemy)
 	enemy->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	802B1B10
- * Size:	000054
+/**
+ * @note Address: 0x802B1B10
+ * @note Size: 0x54
  */
 void StateTakeOff1::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->mToFlick = 0.0f;
+	enemy->mFlickTimer = 0.0f;
 	enemy->disableEvent(0, EB_Untargetable);
 	enemy->setEmotionExcitement();
-	enemy->startMotion(9, nullptr);
+	enemy->startMotion(BOMBSARAIANIM_TakeOff1, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B1B64
- * Size:	000110
+/**
+ * @note Address: 0x802B1B64
+ * @note Size: 0x110
  */
 void StateTakeOff1::exec(EnemyBase* enemy)
 {
@@ -1343,30 +1313,27 @@ void StateTakeOff1::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B1C74
- * Size:	000024
+/**
+ * @note Address: 0x802B1C74
+ * @note Size: 0x24
  */
 void StateTakeOff1::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802B1C98
- * Size:	000054
+/**
+ * @note Address: 0x802B1C98
+ * @note Size: 0x54
  */
 void StateTakeOff2::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->mToFlick = 0.0f;
+	enemy->mFlickTimer = 0.0f;
 	enemy->disableEvent(0, EB_Untargetable);
 	enemy->setEmotionExcitement();
-	enemy->startMotion(10, nullptr);
+	enemy->startMotion(BOMBSARAIANIM_TakeOff2, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B1CEC
- * Size:	000110
+/**
+ * @note Address: 0x802B1CEC
+ * @note Size: 0x110
  */
 void StateTakeOff2::exec(EnemyBase* enemy)
 {
@@ -1392,29 +1359,26 @@ void StateTakeOff2::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B1DFC
- * Size:	000024
+/**
+ * @note Address: 0x802B1DFC
+ * @note Size: 0x24
  */
 void StateTakeOff2::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802B1E20
- * Size:	00004C
+/**
+ * @note Address: 0x802B1E20
+ * @note Size: 0x4C
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->enableEvent(0, EB_Untargetable);
 	enemy->setEmotionExcitement();
-	enemy->startMotion(2, nullptr);
+	enemy->startMotion(BOMBSARAIANIM_Flick, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B1E6C
- * Size:	0000E0
+/**
+ * @note Address: 0x802B1E6C
+ * @note Size: 0xE0
  */
 void StateFlick::exec(EnemyBase* enemy)
 {
@@ -1423,10 +1387,9 @@ void StateFlick::exec(EnemyBase* enemy)
 
 	if (sarai->mCurAnim->mIsPlaying) {
 		if (sarai->mCurAnim->mType == KEYEVENT_2) {
-			EnemyFunc::flickStickPikmin(sarai, CG_PARMS(sarai)->mGeneral.mShakeRateMaybe.mValue,
-			                            CG_PARMS(sarai)->mGeneral.mShakeKnockback.mValue, CG_PARMS(sarai)->mGeneral.mShakeDamage.mValue,
-			                            -1000.0f, nullptr);
-			sarai->mToFlick = 0.0f;
+			EnemyFunc::flickStickPikmin(sarai, CG_GENERALPARMS(sarai).mShakeChance.mValue, CG_GENERALPARMS(sarai).mShakeKnockback.mValue,
+			                            CG_GENERALPARMS(sarai).mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
+			sarai->mFlickTimer = 0.0f;
 
 		} else if (sarai->mCurAnim->mType == KEYEVENT_END) {
 			StateID stateID = sarai->getNextStateOnHeight();
@@ -1440,30 +1403,27 @@ void StateFlick::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B1F4C
- * Size:	000024
+/**
+ * @note Address: 0x802B1F4C
+ * @note Size: 0x24
  */
 void StateFlick::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802B1F70
- * Size:	000058
+/**
+ * @note Address: 0x802B1F70
+ * @note Size: 0x58
  */
 void StateBombFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->enableEvent(0, EB_Untargetable);
 	enemy->enableEvent(0, EB_NoInterrupt);
 	enemy->setEmotionExcitement();
-	enemy->startMotion(3, nullptr);
+	enemy->startMotion(BOMBSARAIANIM_BombFlick, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802B1FC8
- * Size:	000110
+/**
+ * @note Address: 0x802B1FC8
+ * @note Size: 0x110
  */
 void StateBombFlick::exec(EnemyBase* enemy)
 {
@@ -1477,10 +1437,9 @@ void StateBombFlick::exec(EnemyBase* enemy)
 
 	if (sarai->mCurAnim->mIsPlaying) {
 		if (sarai->mCurAnim->mType == KEYEVENT_2) {
-			EnemyFunc::flickStickPikmin(sarai, CG_PARMS(sarai)->mGeneral.mShakeRateMaybe.mValue,
-			                            CG_PARMS(sarai)->mGeneral.mShakeKnockback.mValue, CG_PARMS(sarai)->mGeneral.mShakeDamage.mValue,
-			                            -1000.0f, nullptr);
-			sarai->mToFlick = 0.0f;
+			EnemyFunc::flickStickPikmin(sarai, CG_GENERALPARMS(sarai).mShakeChance.mValue, CG_GENERALPARMS(sarai).mShakeKnockback.mValue,
+			                            CG_GENERALPARMS(sarai).mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
+			sarai->mFlickTimer = 0.0f;
 
 		} else if (sarai->mCurAnim->mType == KEYEVENT_END) {
 			StateID stateID = sarai->getNextStateOnHeight();
@@ -1494,10 +1453,9 @@ void StateBombFlick::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802B20D8
- * Size:	000030
+/**
+ * @note Address: 0x802B20D8
+ * @note Size: 0x30
  */
 void StateBombFlick::cleanup(EnemyBase* enemy)
 {

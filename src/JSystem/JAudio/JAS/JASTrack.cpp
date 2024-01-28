@@ -1,5 +1,5 @@
 #include "Dolphin/OS/OSCache.h"
-#include "Dolphin/math.h"
+#include "math.h"
 #include "JSystem/JAudio/JAS/JASBank.h"
 #include "JSystem/JAudio/JAS/JASCalc.h"
 #include "JSystem/JAudio/JAS/JASChannel.h"
@@ -9,164 +9,42 @@
 #include "JSystem/JAudio/JAS/JASTrack.h"
 #include "JSystem/JSupport/JSUList.h"
 #include "JSystem/JMath.h"
-#include "types.h"
-
-/*
-    Generated from dpostproc
-
-    .section .sdata, "wa"  # 0x80514680 - 0x80514D80
-    .global zz_80514788
-    zz_80514788:
-        .double 0.0078125
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804A4350
-    lbl_804A4350:
-        .4byte lbl_800A184C
-        .4byte lbl_800A185C
-        .4byte lbl_800A186C
-        .4byte lbl_800A19FC
-        .4byte lbl_800A19FC
-        .4byte lbl_800A19FC
-        .4byte lbl_800A19FC
-        .4byte lbl_800A19FC
-        .4byte lbl_800A19FC
-        .4byte lbl_800A19FC
-        .4byte lbl_800A19FC
-        .4byte lbl_800A19FC
-        .4byte lbl_800A188C
-        .4byte lbl_800A1940
-        .4byte lbl_800A19FC
-        .4byte lbl_800A19FC
-        .4byte lbl_800A19D4
-    .global lbl_804A4394
-    lbl_804A4394:
-        .4byte lbl_800A1C3C
-        .4byte lbl_800A1CBC
-        .4byte lbl_800A1CBC
-        .4byte lbl_800A1CBC
-        .4byte lbl_800A1C5C
-        .4byte lbl_800A1CBC
-        .4byte lbl_800A1CBC
-        .4byte lbl_800A1CBC
-        .4byte lbl_800A1C80
-        .4byte lbl_800A1CBC
-        .4byte lbl_800A1CBC
-        .4byte lbl_800A1CBC
-        .4byte lbl_800A1C70
-        .4byte lbl_800A1CBC
-        .4byte lbl_800A1CBC
-        .4byte lbl_800A1CBC
-        .4byte lbl_800A1CB8
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global sCallBackFunc__8JASTrack
-    sCallBackFunc__8JASTrack:
-        .skip 0x4
-    .global sParser__8JASTrack
-    sParser__8JASTrack:
-        .skip 0x4
-    .global sFreeList__8JASTrack
-    sFreeList__8JASTrack:
-        .skip 0x4
-    .global sFreeListEnd__8JASTrack
-    sFreeListEnd__8JASTrack:
-        .skip 0x4
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80516D78
-    lbl_80516D78:
-        .4byte 0x00000000
-    .global lbl_80516D7C
-    lbl_80516D7C:
-        .float 1.0
-    .global lbl_80516D80
-    lbl_80516D80:
-        .4byte 0x43300000
-        .4byte 0x00000000
-    .global lbl_80516D88
-    lbl_80516D88:
-        .float 0.5
-    .global lbl_80516D8C
-    lbl_80516D8C:
-        .4byte 0x46FFFE00
-    .global lbl_80516D90
-    lbl_80516D90:
-        .4byte 0x43000000
-    .global lbl_80516D94
-    lbl_80516D94:
-        .4byte 0x3FAAAAAB
-    .global lbl_80516D98
-    lbl_80516D98:
-        .4byte 0x42C80000
-    .global lbl_80516D9C
-    lbl_80516D9C:
-        .4byte 0x42F00000
-    .global lbl_80516DA0
-    lbl_80516DA0:
-        .4byte 0x41200000
-        .4byte 0x00000000
-    .global lbl_80516DA8
-    lbl_80516DA8:
-        .4byte 0x43300000
-        .4byte 0x80000000
-    .global lbl_80516DB0
-    lbl_80516DB0:
-        .4byte 0x3D638E39
-        .4byte 0x00000000
-    .global lbl_80516DB8
-    lbl_80516DB8:
-        .4byte 0x40100000
-        .4byte 0x00000000
-    .global lbl_80516DC0
-    lbl_80516DC0:
-        .4byte 0x40800000
-    .global lbl_80516DC4
-    lbl_80516DC4:
-        .4byte 0x3FC90FDB
-    .global lbl_80516DC8
-    lbl_80516DC8:
-        .4byte 0xC3A2F983
-    .global lbl_80516DCC
-    lbl_80516DCC:
-        .4byte 0x43A2F983
-    .global lbl_80516DD0
-    lbl_80516DD0:
-        .4byte 0x41400000
-        .4byte 0x00000000
-*/
+#include "trig.h"
 
 static f32 c32 = 1.0f;
 
-/*
- * --INFO--
- * Address:	8009EF94
- * Size:	00012C
+JASTrack::SeqCallback JASTrack::sCallBackFunc;
+JASSeqParser* JASTrack::sParser;
+JASTrack* JASTrack::sFreeList;
+JASTrack* JASTrack::sFreeListEnd;
+
+/**
+ * @note Address: 0x8009EF94
+ * @note Size: 0x12C
  */
 JASTrack::JASTrack()
-    : JSUList<JASChannel>()
-    , mVibrate()
+    : mVibrate()
     , mChannelUpdater()
     , _144(nullptr)
     , mTimedParam()
     , mRegisterParam()
-    , _2F8(nullptr)
+    , mParentTrack(nullptr)
     , _340(0.0f)
-    , _344(0.0f)
+    , mCurrentTempo(0.0f)
     , _348(0)
     , _34C(0)
     , _350(0)
-    , _352(0x78)
-    , _354(0x78)
-    , _356(0)
+    , mTempo(120)
+    , mTimeBase(120)
+    , mTranspose(0)
     , _357(0)
-    , _358(0)
+    , mPauseStatus(0)
     , mVolumeMode(0)
-    , _35A(0)
+    , mNoteMask(0)
     , _35B(0)
-    , _362(false)
-    , _363(0)
-    , _364(0)
+    , mIsPaused(false)
+    , mIsMuted(0)
+    , mTimeRelate(0)
     , _365(0)
     , _366(0)
 {
@@ -177,61 +55,27 @@ JASTrack::JASTrack()
 	JASCalc::bzero(&mTimedParam, sizeof(TimedParam_));
 }
 
-/*
- * --INFO--
- * Address:	8009F0C0
- * Size:	00004C
- */
-// JASTrack::TimedParam_::TimedParam_()
-// {
-// }
-
-/*
- * --INFO--
- * Address:	8009F10C
- * Size:	000018
- */
-// JASTrack::MoveParam_::MoveParam_()
-//     : _00(0.0f)
-//     , _04(0.0f)
-//     , _08(0.0f)
-//     , _0C(0.0f)
-// {
-// }
-
-/*
- * --INFO--
- * Address:	8009F124
- * Size:	000130
- */
-// JASTrack::AInnerParam_::AInnerParam_()
-// {
-// }
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000054
+/**
+ * @note Address: N/A
+ * @note Size: 0x54
  */
 // void JSUList<JASChannel>::~JSUList()
 // {
 // 	// UNUSED FUNCTION
 // }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000C8
+/**
+ * @note Address: N/A
+ * @note Size: 0xC8
  */
 JASTrack::~JASTrack()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8009F254
- * Size:	0001E8
+/**
+ * @note Address: 0x8009F254
+ * @note Size: 0x1E8
  * TODO: needs JASPlayer
  */
 void JASTrack::init()
@@ -244,7 +88,7 @@ void JASTrack::init()
 	_E5 = 0;
 	_E6 = 0;
 	for (int i = 0; i < 8; i++) {
-		_C0[i] = nullptr;
+		mChannels[i] = nullptr;
 	}
 	mChannelUpdater.init();
 	_144 = nullptr;
@@ -252,34 +96,34 @@ void JASTrack::init()
 	mRegisterParam.init();
 
 	for (int i = 0; i < 2; i++) {
-		_2D8[i] = 15;
-		_2A8[i] = JASPlayer::sEnvelopeDef;
+		_2D8[i]     = 15;
+		mOscData[i] = JASPlayer::sEnvelopeDef;
 	}
 
-	_2F8    = nullptr;
-	_2FC[0] = nullptr;
+	mParentTrack  = nullptr;
+	mChildList[0] = nullptr;
 
 	for (int i = 1; i < 16; i++) {
-		_2FC[i] = 0;
+		mChildList[i] = 0;
 	}
 	if (mExtBuffer) {
 		mExtBuffer->initExtBuffer();
 	}
-	_340 = 0.0f;
-	_344 = 1.0f;
-	_348 = 0;
+	_340          = 0.0f;
+	mCurrentTempo = 1.0f;
+	_348          = 0;
 	mVibrate.init();
-	_34C = 0;
-	_350 = 0;
-	_352 = 0x78;
-	_354 = 0x30;
+	_34C      = 0;
+	_350      = 0;
+	mTempo    = 120;
+	mTimeBase = 48;
 	updateTempo();
-	_356        = 0;
-	_357        = 0;
-	_358        = 10;
-	mVolumeMode = 0;
-	_35A        = 0;
-	_35B        = 0;
+	mTranspose   = 0;
+	_357         = 0;
+	mPauseStatus = 10;
+	mVolumeMode  = 0;
+	mNoteMask    = 0;
+	_35B         = 0;
 
 	_35C                = 0;
 	_35F                = 0;
@@ -293,10 +137,10 @@ void JASTrack::init()
 	_361                = 0;
 	mChannelUpdater._4C = 0xD;
 
-	_362 = false;
-	_363 = 0;
-	_364 = 1;
-	_365 = 0;
+	mIsPaused   = false;
+	mIsMuted    = 0;
+	mTimeRelate = 1;
+	_365        = 0;
 	/*
 	stwu     r1, -0x10(r1)
 	mflr     r0
@@ -425,10 +269,9 @@ lbl_8009F388:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000120
+/**
+ * @note Address: N/A
+ * @note Size: 0x120
  */
 int JASTrack::inherit()
 {
@@ -443,39 +286,38 @@ int JASTrack::inherit()
 	// 	mSeqCtrl._40--;
 	// }
 	// if (0 < mSeqCtrl._08) { }
-	if (_362 != false && (_358 & 2) != 0) {
+	if (mIsPaused && (mPauseStatus & 2) != 0) {
 		return -1;
 	}
-	if (mSeqCtrl._08 == -1) {
+	if (mSeqCtrl.mWaitTimer == -1) {
 		if (checkNoteStop(0) == 0) {
 			return 0;
 		}
-		mSeqCtrl._08 = 0;
+		mSeqCtrl.mWaitTimer = 0;
 	}
-	if (0 < mSeqCtrl._40) {
-		mSeqCtrl._40--;
+	if (0 < mSeqCtrl.mState.w) {
+		mSeqCtrl.mState.w--;
 	}
-	if (0 < mSeqCtrl._08) {
+	if (0 < mSeqCtrl.mWaitTimer) {
 		if (!mSeqCtrl.waitCountDown()) {
 			return 0;
 		}
 		if (_E0 != -1 && _E4 == 0) {
-			_C0[0] = nullptr;
+			mChannels[0] = nullptr;
 		}
 	}
 	return 1;
 }
 
-/*
- * --INFO--
- * Address:	8009F43C
- * Size:	00020C
+/**
+ * @note Address: 0x8009F43C
+ * @note Size: 0x20C
  */
 s8 JASTrack::mainProc()
 {
 	int v1 = 0;
-	if (_365 != 0 && _2F8 != nullptr) {
-		f32 v2 = (f32)_352 / (f32)_2F8->_352;
+	if (_365 != 0 && mParentTrack != nullptr) {
+		f32 v2 = (f32)mTempo / (f32)mParentTrack->mTempo;
 		if (1.0f < v2) {
 			v2 = 1.0f;
 		}
@@ -507,11 +349,11 @@ s8 JASTrack::mainProc()
 		return -1;
 	}
 	for (v1 = 0; v1 < 16; v1++) {
-		JASTrack* v3 = _2FC[v1];
+		JASTrack* v3 = mChildList[v1];
 		// if (v3 != nullptr && v3->_35B != 0 && v3->mainProc() == -1) {
 		if (v3 != nullptr && v3->_35B != 0) {
 			v3->close();
-			_2FC[v1] = nullptr;
+			mChildList[v1] = nullptr;
 		}
 	}
 	return 0;
@@ -676,156 +518,136 @@ lbl_8009F628:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8009F648
- * Size:	000028
+/**
+ * @note Address: 0x8009F648
+ * @note Size: 0x28
  */
 void JASTrack::setInterrupt(u16 interrupt) { mIntrMgr.request(interrupt); }
 
-/*
- * --INFO--
- * Address:	8009F670
- * Size:	000060
+/**
+ * @note Address: 0x8009F670
+ * @note Size: 0x60
  */
 bool JASTrack::tryInterrupt()
 {
-	if (mSeqCtrl._44 != 0) {
+	if (mSeqCtrl.mPreviousFilePtr) {
 		return false;
 	}
 	void* intr = mIntrMgr.checkIntr();
 	if (intr == nullptr) {
 		return false;
-	} else {
-		return mSeqCtrl.callIntr(intr);
 	}
+	return mSeqCtrl.callIntr(intr);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000028
+/**
+ * @note Address: N/A
+ * @note Size: 0x28
  */
-void JASTrack::setBankNumber(unsigned char)
+void JASTrack::setBankNumber(u8)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8009F6D0
- * Size:	000008
+/**
+ * @note Address: 0x8009F6D0
+ * @note Size: 0x8
  */
-void JASTrack::assignExtBuffer(JASOuterParam* a1)
-{
-	// Generated from stw r4, 0x33C(r3)
-	mExtBuffer = a1;
-}
+void JASTrack::assignExtBuffer(JASOuterParam* a1) { mExtBuffer = a1; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00000C
+/**
+ * @note Address: N/A
+ * @note Size: 0xC
  */
-void JASTrack::setPanSwitchExt(unsigned char, int)
+void JASTrack::setPanSwitchExt(u8, int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00000C
+/**
+ * @note Address: N/A
+ * @note Size: 0xC
  */
-void JASTrack::setPanSwitchParent(unsigned char, int)
+void JASTrack::setPanSwitchParent(u8, int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00000C
+/**
+ * @note Address: N/A
+ * @note Size: 0xC
  */
-void JASTrack::setPanSwitchJcs(unsigned char, int)
+void JASTrack::setPanSwitchJcs(u8, int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000024
+/**
+ * @note Address: N/A
+ * @note Size: 0x24
  */
 void JASTrack::getBank() const
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000024
+/**
+ * @note Address: N/A
+ * @note Size: 0x24
  */
 void JASTrack::getProgramNumber() const
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void JASTrack::getVolume() const
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void JASTrack::getPitch() const
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void JASTrack::getPan() const
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void JASTrack::getFxmix() const
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void JASTrack::getDolby() const
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8009F6D8
- * Size:	0000CC
+/**
+ * @note Address: 0x8009F6D8
+ * @note Size: 0xCC
  */
 void JASTrack::initTimed()
 {
@@ -856,189 +678,64 @@ void JASTrack::initTimed()
 	mTimedParam.mMoveParams[5]._04  = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	8009F7A4
- * Size:	000010
+/**
+ * @note Address: 0x8009F7A4
+ * @note Size: 0x10
  */
 void JASTrack::connectBus(int p1, int p2) { mChannelUpdater._36[p1] = p2; }
 
-/*
- * --INFO--
- * Address:	8009F7B4
- * Size:	0001A4
+/**
+ * @note Address: 0x8009F7B4
+ * @note Size: 0x1A4
  */
-int JASTrack::noteOn(u8 channelIndex, long p2, long p3, long p4, u32 p5)
+int JASTrack::noteOn(u8 channelIndex, s32 p2, s32 p3, s32 p4, u32 p5)
 {
-	if (_363 != 0 && (_358 & 0x40) == 0) {
+	if (mIsMuted && (mPauseStatus & 0x40)) {
 		return -1;
 	}
-	if ((_35A & 1 << channelIndex) != 0) {
+	if ((mNoteMask & 1 << channelIndex)) {
 		return -1;
 	}
 	noteOff(channelIndex, 0);
-	u16 physicalNumber = JASBankMgr::getPhysicalNumber(mRegisterParam.getBankNumber());
-	u8 programNumber   = mRegisterParam.getProgramNumber();
-	JASChannel* channel;
-	if (_144 != nullptr) {
-		channel = _144(this, physicalNumber, programNumber, p2, p3, mRegisterParam._1A);
-	} else {
-		channel = JASBankMgr::noteOn(physicalNumber, programNumber, p2, p3, mRegisterParam._1A, channelUpdateCallback, this);
-	}
+	u8 physicalNumber   = JASBankMgr::getPhysicalNumber(mRegisterParam.getBankNumber());
+	u8 programNumber    = mRegisterParam.getProgramNumber();
+	JASChannel* channel = !_144 ? JASBankMgr::noteOn(physicalNumber, programNumber, p2, p3, mRegisterParam._1A, channelUpdateCallback, this)
+	                            : _144(this, physicalNumber, programNumber, p2, p3, mRegisterParam._1A);
 	if (channel == nullptr) {
 		return -1;
 	}
 	channel->_2C = p4;
 	append(channel);
-	_C0[channelIndex] = channel;
-	channel->_C8      = p5;
+	mChannels[channelIndex] = channel;
+	channel->_C8            = p5;
 	channel->setPanPower(mRegisterParam._10, mRegisterParam._12, mRegisterParam._14);
 	overwriteOsc(channel);
-	if (_350 != 0) {
+	if (_350) {
 		channel->directReleaseOsc(_350);
 	}
 	return 0;
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stmw     r25, 0x24(r1)
-	mr       r26, r3
-	mr       r27, r4
-	mr       r28, r5
-	mr       r29, r6
-	mr       r30, r7
-	mr       r31, r8
-	lbz      r0, 0x363(r3)
-	cmplwi   r0, 0
-	beq      lbl_8009F7FC
-	lbz      r0, 0x358(r26)
-	rlwinm.  r0, r0, 0, 0x19, 0x19
-	beq      lbl_8009F7FC
-	li       r3, -1
-	b        lbl_8009F944
-
-lbl_8009F7FC:
-	clrlwi   r0, r27, 0x18
-	li       r3, 1
-	lbz      r4, 0x35a(r26)
-	slw      r0, r3, r0
-	and.     r0, r4, r0
-	beq      lbl_8009F81C
-	li       r3, -1
-	b        lbl_8009F944
-
-lbl_8009F81C:
-	mr       r3, r26
-	mr       r4, r27
-	li       r5, 0
-	bl       noteOff__8JASTrackFUcUs
-	addi     r3, r26, 0x268
-	bl       getBankNumber__16JASRegisterParamCFv
-	clrlwi   r3, r3, 0x18
-	bl       getPhysicalNumber__10JASBankMgrFUs
-	clrlwi   r25, r3, 0x18
-	addi     r3, r26, 0x268
-	bl       getProgramNumber__16JASRegisterParamCFv
-	lwz      r12, 0x144(r26)
-	mr       r5, r3
-	cmplwi   r12, 0
-	bne      lbl_8009F884
-	lis      r3,
-channelUpdateCallback__8JASTrackFUlP10JASChannelPQ26JASDsp8TChannelPv@ha lhz r7,
-0x282(r26) addi     r8, r3,
-channelUpdateCallback__8JASTrackFUlP10JASChannelPQ26JASDsp8TChannelPv@l clrlwi
-r4, r5, 0x18 mr       r3, r25 mr       r9, r26 clrlwi   r5, r28, 0x18 clrlwi r6,
-r29, 0x18 bl
-noteOn__10JASBankMgrFiiUcUcUsPFUlP10JASChannelPQ26JASDsp8TChannelPv_vPv mr r28,
-r3 b        lbl_8009F8A4
-
-lbl_8009F884:
-	mr       r3, r26
-	mr       r4, r25
-	clrlwi   r6, r28, 0x18
-	clrlwi   r7, r29, 0x18
-	lhz      r8, 0x282(r26)
-	mtctr    r12
-	bctrl
-	mr       r28, r3
-
-lbl_8009F8A4:
-	cmplwi   r28, 0
-	bne      lbl_8009F8B4
-	li       r3, -1
-	b        lbl_8009F944
-
-lbl_8009F8B4:
-	stw      r30, 0x2c(r28)
-	mr       r3, r26
-	mr       r4, r28
-	bl       append__10JSUPtrListFP10JSUPtrLink
-	rlwinm   r0, r27, 2, 0x16, 0x1d
-	lis      r5, 0x4330
-	add      r4, r26, r0
-	stw      r5, 8(r1)
-	lfd      f3, lbl_80516D80@sda21(r2)
-	mr       r3, r28
-	stw      r28, 0xc0(r4)
-	stw      r31, 0xc8(r28)
-	lhz      r6, 0x278(r26)
-	lhz      r4, 0x27a(r26)
-	stw      r6, 0xc(r1)
-	lhz      r0, 0x27c(r26)
-	lfd      f0, 8(r1)
-	stw      r4, 0x14(r1)
-	fsubs    f1, f0, f3
-	stw      r5, 0x10(r1)
-	lfd      f0, 0x10(r1)
-	stw      r0, 0x1c(r1)
-	fsubs    f2, f0, f3
-	stw      r5, 0x18(r1)
-	lfd      f0, 0x18(r1)
-	fsubs    f3, f0, f3
-	bl       setPanPower__10JASChannelFfff
-	mr       r3, r26
-	mr       r4, r28
-	bl       overwriteOsc__8JASTrackFP10JASChannel
-	lhz      r4, 0x350(r26)
-	cmplwi   r4, 0
-	beq      lbl_8009F940
-	mr       r3, r28
-	bl       directReleaseOsc__10JASChannelFUs
-
-lbl_8009F940:
-	li       r3, 0
-
-lbl_8009F944:
-	lmw      r25, 0x24(r1)
-	lwz      r0, 0x44(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	8009F958
- * Size:	0000A4
+/**
+ * @note Address: 0x8009F958
+ * @note Size: 0xA4
  */
 void JASTrack::overwriteOsc(JASChannel* channel)
 {
 	for (int i = 0; i < 2; i++) {
-		u32 v1 = _2D8[i];
+		const u32 v1 = _2D8[i];
 		if (v1 != 15) {
-			u32 v2 = v1 & 3;
+			const u32 v2 = v1 & 3;
 			if ((v1 & 8) != 0) {
-				channel->copyOsc(v2, _2A8 + i);
+				channel->copyOsc(v2, mOscData + i);
 			} else {
 				if ((v1 & 4) != 0) {
-					s16* v3 = _2A8[i]._0C;
-					channel->copyOsc(v2, _2A8 + i);
-					_2A8[i]._0C = v3;
+					const s16* v3 = mOscData[i].mRelease;
+					channel->copyOsc(v2, mOscData + i);
+					mOscData[i].mRelease = v3;
 				}
 			}
-			channel->overwriteOsc(v2, _2A8 + i);
+			channel->overwriteOsc(v2, mOscData + i);
 		}
 	}
 	/*
@@ -1094,35 +791,31 @@ lbl_8009F9D4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8009F9FC
- * Size:	000068
+/**
+ * @note Address: 0x8009F9FC
+ * @note Size: 0x68
  */
-bool JASTrack::noteOff(unsigned char channelIndex, unsigned short p2)
+bool JASTrack::noteOff(u8 channelIndex, u16 p2)
 {
-
-	if (_C0[channelIndex] == nullptr) {
+	if (mChannels[channelIndex] == nullptr) {
 		return false;
 	}
 	if (p2 == 0) {
-		_C0[channelIndex]->release(0);
+		mChannels[channelIndex]->release(0);
 	} else {
-		_C0[channelIndex]->release(p2);
+		mChannels[channelIndex]->release(p2);
 	}
-	_C0[channelIndex] = nullptr;
+	mChannels[channelIndex] = nullptr;
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	8009FA64
- * Size:	000064
- * TODO: Requires JASBankMgr.
+/**
+ * @note Address: 0x8009FA64
+ * @note Size: 0x64
  */
-int JASTrack::gateOn(u8 p1, long p2, long p3, long p4)
+int JASTrack::gateOn(u8 p1, s32 p2, s32 p3, s32 p4)
 {
-	JASChannel* channel = _C0[p1];
+	JASChannel* channel = mChannels[p1];
 	if (channel == nullptr) {
 		return -1;
 	}
@@ -1131,40 +824,23 @@ int JASTrack::gateOn(u8 p1, long p2, long p3, long p4)
 	return 0;
 }
 
-/*
- * --INFO--
- * Address:	8009FAC8
- * Size:	00002C
+/**
+ * @note Address: 0x8009FAC8
+ * @note Size: 0x2C
  */
-bool JASTrack::checkNoteStop(long p1)
+BOOL JASTrack::checkNoteStop(s32 p1)
 {
-	if (_C0[p1] == nullptr) {
+	if (mChannels[p1] == nullptr) {
 		return true;
 	}
-	return _C0[p1]->_18 == 0;
-	/*
-	slwi     r0, r4, 2
-	add      r3, r3, r0
-	lwz      r3, 0xc0(r3)
-	cmplwi   r3, 0
-	bne      lbl_8009FAE4
-	li       r3, 1
-	blr
-
-lbl_8009FAE4:
-	lwz      r0, 0x18(r3)
-	cntlzw   r0, r0
-	rlwinm   r3, r0, 0x1b, 0x18, 0x1f
-	blr
-	*/
+	return mChannels[p1]->_18 == 0;
 }
 
-/*
- * --INFO--
- * Address:	8009FAF4
- * Size:	0000E0
+/**
+ * @note Address: 0x8009FAF4
+ * @note Size: 0xE0
  */
-void JASTrack::oscSetupFull(unsigned char, unsigned long, unsigned long)
+void JASTrack::oscSetupFull(u8, u32, u32)
 {
 	/*
 	rlwinm.  r0, r4, 0x19, 0x1f, 0x1f
@@ -1236,62 +912,56 @@ lbl_8009FBBC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8009FBD4
- * Size:	000070
+/**
+ * @note Address: 0x8009FBD4
+ * @note Size: 0x70
  */
-void JASTrack::oscSetupSimpleEnv(unsigned char p1, unsigned long p2)
+void JASTrack::oscSetupSimpleEnv(u8 p1, u32 p2)
 {
 	switch (p1) {
 	case 0:
-		_2A8[0]     = JASPlayer::sEnvelopeDef;
-		_2A8[0]._08 = reinterpret_cast<s16*>(mSeqCtrl._00 + p2);
+		mOscData[0]         = JASPlayer::sEnvelopeDef;
+		mOscData[0].mAttack = reinterpret_cast<s16*>(mSeqCtrl.mRawFilePtr + p2);
 		break;
 	case 1:
-		_2A8->_0C = reinterpret_cast<s16*>(mSeqCtrl._00 + p2);
-		break;
-	default:
+		mOscData->mAttack = reinterpret_cast<s16*>(mSeqCtrl.mRawFilePtr + p2);
 		break;
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000064
+/**
+ * @note Address: N/A
+ * @note Size: 0x64
  */
 void JASTrack::updateOscParam(int, f32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8009FC44
- * Size:	0000DC
+/**
+ * @note Address: 0x8009FC44
+ * @note Size: 0xDC
  */
-void JASTrack::oscSetupSimple(unsigned char p1)
+void JASTrack::oscSetupSimple(u8 p1)
 {
 	switch (p1) {
 	case 0:
-		_2A8[1] = JASPlayer::sVibratoDef;
+		mOscData[1] = JASPlayer::sVibratoDef;
 		break;
 	case 1:
-		_2A8[0] = JASPlayer::sTremoroDef;
+		mOscData[0] = JASPlayer::sTremoroDef;
 		break;
 	case 2:
-		_2A8[1] = JASPlayer::sTremoroDef;
+		mOscData[1] = JASPlayer::sTremoroDef;
 		break;
 	default:
 		break;
 	}
 }
 
-/*
- * --INFO--
- * Address:	8009FD20
- * Size:	0000E8
+/**
+ * @note Address: 0x8009FD20
+ * @note Size: 0xE8
  */
 void JASTrack::updateTimedParam()
 {
@@ -1306,22 +976,22 @@ void JASTrack::updateTimedParam()
 			f32 v1 = mTimedParam.mMoveParams[i]._00;
 			switch (i) {
 			case 6:
-				_2A8[0]._10 = v1;
+				mOscData[0].mWidth = v1;
 				break;
 			case 7:
-				_2A8[0]._04 = v1;
+				mOscData[0].mRate = v1;
 				break;
 			case 8:
-				_2A8[0]._14 = v1;
+				mOscData[0].mVertex = v1;
 				break;
 			case 9:
-				_2A8[1]._10 = v1;
+				mOscData[1].mWidth = v1;
 				break;
 			case 10:
-				_2A8[1]._04 = v1;
+				mOscData[1].mRate = v1;
 				break;
 			case 11:
-				_2A8[1]._14 = v1;
+				mOscData[1].mVertex = v1;
 				break;
 			}
 		}
@@ -1329,10 +999,9 @@ void JASTrack::updateTimedParam()
 	_34C |= 2;
 }
 
-/*
- * --INFO--
- * Address:	8009FE08
- * Size:	0003E8
+/**
+ * @note Address: 0x8009FE08
+ * @note Size: 0x3E8
  */
 void JASTrack::updateTrackAll()
 {
@@ -1618,12 +1287,11 @@ lbl_800A01A8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A01F0
- * Size:	0004E0
+/**
+ * @note Address: 0x800A01F0
+ * @note Size: 0x4E0
  */
-void JASTrack::updateTrack(unsigned long)
+void JASTrack::updateTrack(u32)
 {
 	/*
 	stwu     r1, -0xb0(r1)
@@ -1995,299 +1663,38 @@ lbl_800A068C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A06D0
- * Size:	0003B4
+/**
+ * @note Address: 0x800A06D0
+ * @note Size: 0x3B4
  */
 void JASTrack::updateTempo()
 {
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stmw     r24, 0x20(r1)
-	mr       r24, r3
-	lwz      r3, 0x2f8(r3)
-	cmplwi   r3, 0
-	bne      lbl_800A0784
-	lhz      r3, 0x354(r24)
-	lis      r0, 0x4330
-	stw      r0, 8(r1)
-	lfd      f2, lbl_80516D80@sda21(r2)
-	stw      r3, 0xc(r1)
-	lfd      f0, 8(r1)
-	stw      r0, 0x10(r1)
-	fsubs    f0, f0, f2
-	stfs     f0, 0x344(r24)
-	lhz      r0, 0x352(r24)
-	lfs      f1, 0x344(r24)
-	stw      r0, 0x14(r1)
-	lfd      f0, 0x10(r1)
-	fsubs    f0, f0, f2
-	fmuls    f0, f1, f0
-	stfs     f0, 0x344(r24)
-	bl       getDacRate__9JASDriverFv
-	lfs      f2, 0x344(r24)
-	lfs      f0, lbl_80516D94@sda21(r2)
-	fdivs    f1, f2, f1
-	stfs     f1, 0x344(r24)
-	lfs      f1, 0x344(r24)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x344(r24)
-	lwz      r3, 0x33c(r24)
-	cmplwi   r3, 0
-	beq      lbl_800A0798
-	li       r4, 0x40
-	bl       checkOuterSwitch__13JASOuterParamFUs
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_800A0798
-	lwz      r3, 0x33c(r24)
-	lfs      f1, 0x344(r24)
-	lfs      f0, 0x18(r3)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x344(r24)
-	b        lbl_800A0798
+	if (!mParentTrack) {
+		mCurrentTempo = (f32)mTimeBase;
+		mCurrentTempo *= mTempo;
+		mCurrentTempo /= JASDriver::getDacRate();
+		mCurrentTempo *= 1.333333f;
+		if (mExtBuffer && mExtBuffer->checkOuterSwitch(64)) {
+			mCurrentTempo *= mExtBuffer->getTempo();
+		}
+	} else {
+		mCurrentTempo = mParentTrack->mCurrentTempo;
+		mTimeBase     = mParentTrack->mTimeBase;
+	}
 
-lbl_800A0784:
-	lfs      f0, 0x344(r3)
-	stfs     f0, 0x344(r24)
-	lwz      r3, 0x2f8(r24)
-	lhz      r0, 0x354(r3)
-	sth      r0, 0x354(r24)
-
-lbl_800A0798:
-	li       r25, 0
-	mr       r26, r24
-
-lbl_800A07A0:
-	lwz      r24, 0x2fc(r26)
-	cmplwi   r24, 0
-	beq      lbl_800A0A60
-	lbz      r0, 0x35b(r24)
-	cmplwi   r0, 0
-	beq      lbl_800A0A60
-	lwz      r3, 0x2f8(r24)
-	cmplwi   r3, 0
-	bne      lbl_800A0858
-	lhz      r3, 0x354(r24)
-	lis      r0, 0x4330
-	stw      r0, 0x10(r1)
-	lfd      f2, lbl_80516D80@sda21(r2)
-	stw      r3, 0x14(r1)
-	lfd      f0, 0x10(r1)
-	stw      r0, 8(r1)
-	fsubs    f0, f0, f2
-	stfs     f0, 0x344(r24)
-	lhz      r0, 0x352(r24)
-	lfs      f1, 0x344(r24)
-	stw      r0, 0xc(r1)
-	lfd      f0, 8(r1)
-	fsubs    f0, f0, f2
-	fmuls    f0, f1, f0
-	stfs     f0, 0x344(r24)
-	bl       getDacRate__9JASDriverFv
-	lfs      f2, 0x344(r24)
-	lfs      f0, lbl_80516D94@sda21(r2)
-	fdivs    f1, f2, f1
-	stfs     f1, 0x344(r24)
-	lfs      f1, 0x344(r24)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x344(r24)
-	lwz      r3, 0x33c(r24)
-	cmplwi   r3, 0
-	beq      lbl_800A086C
-	li       r4, 0x40
-	bl       checkOuterSwitch__13JASOuterParamFUs
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_800A086C
-	lwz      r3, 0x33c(r24)
-	lfs      f1, 0x344(r24)
-	lfs      f0, 0x18(r3)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x344(r24)
-	b        lbl_800A086C
-
-lbl_800A0858:
-	lfs      f0, 0x344(r3)
-	stfs     f0, 0x344(r24)
-	lwz      r3, 0x2f8(r24)
-	lhz      r0, 0x354(r3)
-	sth      r0, 0x354(r24)
-
-lbl_800A086C:
-	li       r31, 0
-	mr       r27, r24
-
-lbl_800A0874:
-	lwz      r28, 0x2fc(r27)
-	cmplwi   r28, 0
-	beq      lbl_800A0A50
-	lbz      r0, 0x35b(r28)
-	cmplwi   r0, 0
-	beq      lbl_800A0A50
-	lwz      r3, 0x2f8(r28)
-	cmplwi   r3, 0
-	bne      lbl_800A092C
-	lhz      r3, 0x354(r28)
-	lis      r0, 0x4330
-	stw      r0, 0x10(r1)
-	lfd      f2, lbl_80516D80@sda21(r2)
-	stw      r3, 0x14(r1)
-	lfd      f0, 0x10(r1)
-	stw      r0, 8(r1)
-	fsubs    f0, f0, f2
-	stfs     f0, 0x344(r28)
-	lhz      r0, 0x352(r28)
-	lfs      f1, 0x344(r28)
-	stw      r0, 0xc(r1)
-	lfd      f0, 8(r1)
-	fsubs    f0, f0, f2
-	fmuls    f0, f1, f0
-	stfs     f0, 0x344(r28)
-	bl       getDacRate__9JASDriverFv
-	lfs      f2, 0x344(r28)
-	lfs      f0, lbl_80516D94@sda21(r2)
-	fdivs    f1, f2, f1
-	stfs     f1, 0x344(r28)
-	lfs      f1, 0x344(r28)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x344(r28)
-	lwz      r3, 0x33c(r28)
-	cmplwi   r3, 0
-	beq      lbl_800A0940
-	li       r4, 0x40
-	bl       checkOuterSwitch__13JASOuterParamFUs
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_800A0940
-	lwz      r3, 0x33c(r28)
-	lfs      f1, 0x344(r28)
-	lfs      f0, 0x18(r3)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x344(r28)
-	b        lbl_800A0940
-
-lbl_800A092C:
-	lfs      f0, 0x344(r3)
-	stfs     f0, 0x344(r28)
-	lwz      r3, 0x2f8(r28)
-	lhz      r0, 0x354(r3)
-	sth      r0, 0x354(r28)
-
-lbl_800A0940:
-	li       r30, 0
-
-lbl_800A0944:
-	lwz      r29, 0x2fc(r28)
-	cmplwi   r29, 0
-	beq      lbl_800A0A40
-	lbz      r0, 0x35b(r29)
-	cmplwi   r0, 0
-	beq      lbl_800A0A40
-	lwz      r3, 0x2f8(r29)
-	cmplwi   r3, 0
-	bne      lbl_800A09FC
-	lhz      r3, 0x354(r29)
-	lis      r0, 0x4330
-	stw      r0, 0x10(r1)
-	lfd      f2, lbl_80516D80@sda21(r2)
-	stw      r3, 0x14(r1)
-	lfd      f0, 0x10(r1)
-	stw      r0, 8(r1)
-	fsubs    f0, f0, f2
-	stfs     f0, 0x344(r29)
-	lhz      r0, 0x352(r29)
-	lfs      f1, 0x344(r29)
-	stw      r0, 0xc(r1)
-	lfd      f0, 8(r1)
-	fsubs    f0, f0, f2
-	fmuls    f0, f1, f0
-	stfs     f0, 0x344(r29)
-	bl       getDacRate__9JASDriverFv
-	lfs      f2, 0x344(r29)
-	lfs      f0, lbl_80516D94@sda21(r2)
-	fdivs    f1, f2, f1
-	stfs     f1, 0x344(r29)
-	lfs      f1, 0x344(r29)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x344(r29)
-	lwz      r3, 0x33c(r29)
-	cmplwi   r3, 0
-	beq      lbl_800A0A10
-	li       r4, 0x40
-	bl       checkOuterSwitch__13JASOuterParamFUs
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_800A0A10
-	lwz      r3, 0x33c(r29)
-	bl       getTempo__13JASOuterParamCFv
-	lfs      f0, 0x344(r29)
-	fmuls    f0, f0, f1
-	stfs     f0, 0x344(r29)
-	b        lbl_800A0A10
-
-lbl_800A09FC:
-	lfs      f0, 0x344(r3)
-	stfs     f0, 0x344(r29)
-	lwz      r3, 0x2f8(r29)
-	lhz      r0, 0x354(r3)
-	sth      r0, 0x354(r29)
-
-lbl_800A0A10:
-	li       r24, 0
-
-lbl_800A0A14:
-	lwz      r3, 0x2fc(r29)
-	cmplwi   r3, 0
-	beq      lbl_800A0A30
-	lbz      r0, 0x35b(r3)
-	cmplwi   r0, 0
-	beq      lbl_800A0A30
-	bl       updateTempo__8JASTrackFv
-
-lbl_800A0A30:
-	addi     r24, r24, 1
-	addi     r29, r29, 4
-	cmpwi    r24, 0x10
-	blt      lbl_800A0A14
-
-lbl_800A0A40:
-	addi     r30, r30, 1
-	addi     r28, r28, 4
-	cmpwi    r30, 0x10
-	blt      lbl_800A0944
-
-lbl_800A0A50:
-	addi     r31, r31, 1
-	addi     r27, r27, 4
-	cmpwi    r31, 0x10
-	blt      lbl_800A0874
-
-lbl_800A0A60:
-	addi     r25, r25, 1
-	addi     r26, r26, 4
-	cmpwi    r25, 0x10
-	blt      lbl_800A07A0
-	lmw      r24, 0x20(r1)
-	lwz      r0, 0x44(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
+	for (int i = 0; i < 16; i++) {
+		JASTrack* track = mChildList[i];
+		if (track && track->_35B) {
+			track->updateTempo();
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	800A0A84
- * Size:	000008
+/**
+ * @note Address: 0x800A0A8C
+ * @note Size: 0x294
  */
-f32 JASOuterParam::getTempo() const { return _18; }
-
-/*
- * --INFO--
- * Address:	800A0A8C
- * Size:	000294
- */
-void JASTrack::updateSeq(unsigned long p1, bool recursive)
+void JASTrack::updateSeq(u32 p1, bool recursive)
 {
 	p1 |= _34C;
 	if (mExtBuffer != nullptr) {
@@ -2300,11 +1707,11 @@ void JASTrack::updateSeq(unsigned long p1, bool recursive)
 		updateTrack(p1);
 	}
 	for (int i = 0; i < 16; i++) {
-		if (_2FC[i] != nullptr && _2FC[i]->_35B != 0) {
+		if (mChildList[i] != nullptr && mChildList[i]->_35B != 0) {
 			if (recursive) {
-				_2FC[i]->updateSeq(p1, recursive);
+				mChildList[i]->updateSeq(p1, recursive);
 			} else {
-				_2FC[i]->_34C |= p1;
+				mChildList[i]->_34C |= p1;
 			}
 		}
 	}
@@ -2517,12 +1924,11 @@ lbl_800A0CFC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A0D20
- * Size:	0000D8
+/**
+ * @note Address: 0x800A0D20
+ * @note Size: 0xD8
  */
-void JASTrack::seqTimeToDspTime(long, unsigned char)
+s32 JASTrack::seqTimeToDspTime(s32, u8)
 {
 	/*
 	stwu     r1, -0x30(r1)
@@ -2586,10 +1992,9 @@ lbl_800A0DD4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A0DF8
- * Size:	000084
+/**
+ * @note Address: 0x800A0DF8
+ * @note Size: 0x84
  */
 void JASTrack::setParam(int paramIndex, f32 p2, int p3)
 {
@@ -2644,12 +2049,11 @@ lbl_800A0E74:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A0E7C
- * Size:	000064
+/**
+ * @note Address: 0x800A0E7C
+ * @note Size: 0x64
  */
-bool JASTrack::setSeqData(u8* p1, long p2)
+bool JASTrack::setSeqData(u8* p1, s32 p2)
 {
 	init();
 	_357 = 3;
@@ -2686,10 +2090,9 @@ bool JASTrack::setSeqData(u8* p1, long p2)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A0EE0
- * Size:	000078
+/**
+ * @note Address: 0x800A0EE0
+ * @note Size: 0x78
  */
 bool JASTrack::startSeq()
 {
@@ -2700,68 +2103,19 @@ bool JASTrack::startSeq()
 	case 1:
 		return false;
 		break;
-	case 2:
-		_35B = 1;
-		break;
 	case 3:
 		return false;
 		break;
-	default:
+	case 2:
+		_35B = 1;
 		break;
 	}
 	return JASDriver::registerSubFrameCallback(rootCallback, this);
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lbz      r0, 0x35b(r3)
-	cmpwi    r0, 2
-	beq      lbl_800A0F30
-	bge      lbl_800A0F0C
-	cmpwi    r0, 0
-	beq      lbl_800A0F18
-	bge      lbl_800A0F20
-	b        lbl_800A0F38
-
-lbl_800A0F0C:
-	cmpwi    r0, 4
-	bge      lbl_800A0F38
-	b        lbl_800A0F28
-
-lbl_800A0F18:
-	li       r3, 0
-	b        lbl_800A0F48
-
-lbl_800A0F20:
-	li       r3, 0
-	b        lbl_800A0F48
-
-lbl_800A0F28:
-	li       r3, 0
-	b        lbl_800A0F48
-
-lbl_800A0F30:
-	li       r0, 1
-	stb      r0, 0x35b(r3)
-
-lbl_800A0F38:
-	lis      r5, rootCallback__8JASTrackFPv@ha
-	mr       r4, r3
-	addi     r3, r5, rootCallback__8JASTrackFPv@l
-	bl       registerSubFrameCallback__9JASDriverFPFPv_lPv
-
-lbl_800A0F48:
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	800A0F58
- * Size:	0000FC
+/**
+ * @note Address: 0x800A0F58
+ * @note Size: 0xFC
  */
 bool JASTrack::stopSeq()
 {
@@ -2881,10 +2235,9 @@ lbl_800A1034:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A1054
- * Size:	00003C
+/**
+ * @note Address: 0x800A1054
+ * @note Size: 0x3C
  */
 void JASTrack::stopSeqMain()
 {
@@ -2892,10 +2245,9 @@ void JASTrack::stopSeqMain()
 	close();
 }
 
-/*
- * --INFO--
- * Address:	800A1090
- * Size:	0001D4
+/**
+ * @note Address: 0x800A1090
+ * @note Size: 0x1D4
  */
 void JASTrack::close()
 {
@@ -3056,267 +2408,56 @@ lbl_800A1244:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A1264
- * Size:	000080
+/**
+ * @note Address: 0x800A1264
+ * @note Size: 0x80
  */
 void JASTrack::setNoteMask(u8 noteMask)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stmw     r26, 8(r1)
-	mr       r26, r3
-	clrlwi   r29, r4, 0x18
-	li       r27, 0
-	li       r30, 1
-	li       r31, 0
-	stb      r4, 0x35a(r3)
-	b        lbl_800A12C4
+	mNoteMask = noteMask;
 
-lbl_800A1290:
-	clrlwi   r0, r27, 0x18
-	slw      r0, r30, r0
-	and.     r0, r29, r0
-	beq      lbl_800A12C0
-	rlwinm   r3, r27, 2, 0x16, 0x1d
-	addi     r28, r3, 0xc0
-	lwzx     r3, r26, r28
-	cmplwi   r3, 0
-	beq      lbl_800A12C0
-	li       r4, 0xa
-	bl       release__10JASChannelFUs
-	stwx     r31, r26, r28
-
-lbl_800A12C0:
-	addi     r27, r27, 1
-
-lbl_800A12C4:
-	clrlwi   r0, r27, 0x18
-	cmplwi   r0, 8
-	blt      lbl_800A1290
-	lmw      r26, 8(r1)
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	for (u8 i = 0; i < 8; i++) {
+		if (noteMask & 1 << i) {
+			noteOff(i, 10);
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	800A12E4
- * Size:	000234
+/**
+ * @note Address: 0x800A12E4
+ * @note Size: 0x234
  */
-void JASTrack::muteTrack(bool)
+void JASTrack::muteTrack(bool doMute)
 {
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stmw     r23, 0xc(r1)
-	mr       r26, r4
-	mr       r28, r3
-	stb      r26, 0x363(r3)
-	lwz      r0, 0x34c(r3)
-	ori      r0, r0, 1
-	stw      r0, 0x34c(r3)
-	lbz      r0, 0x363(r3)
-	cmplwi   r0, 0
-	beq      lbl_800A1360
-	lbz      r0, 0x358(r28)
-	rlwinm.  r0, r0, 0, 0x1a, 0x1a
-	beq      lbl_800A1360
-	li       r24, 0
-	li       r25, 0
-	b        lbl_800A1354
+	mIsMuted = doMute;
+	_34C |= 1;
 
-lbl_800A1330:
-	rlwinm   r3, r24, 2, 0x16, 0x1d
-	addi     r23, r3, 0xc0
-	lwzx     r3, r28, r23
-	cmplwi   r3, 0
-	beq      lbl_800A1350
-	li       r4, 0xa
-	bl       release__10JASChannelFUs
-	stwx     r25, r28, r23
+	if (mIsMuted && mPauseStatus & 0x20) {
+		for (u8 i = 0; i < 8; i++) {
+			noteOff(i, 10);
+		}
+	}
 
-lbl_800A1350:
-	addi     r24, r24, 1
-
-lbl_800A1354:
-	clrlwi   r0, r24, 0x18
-	cmplwi   r0, 8
-	blt      lbl_800A1330
-
-lbl_800A1360:
-	li       r27, 0
-
-lbl_800A1364:
-	lwz      r24, 0x2fc(r28)
-	cmplwi   r24, 0
-	beq      lbl_800A14F4
-	stb      r26, 0x363(r24)
-	lwz      r0, 0x34c(r24)
-	ori      r0, r0, 1
-	stw      r0, 0x34c(r24)
-	lbz      r0, 0x363(r24)
-	cmplwi   r0, 0
-	beq      lbl_800A13D4
-	lbz      r0, 0x358(r24)
-	rlwinm.  r0, r0, 0, 0x1a, 0x1a
-	beq      lbl_800A13D4
-	li       r29, 0
-	mr       r25, r29
-	b        lbl_800A13C8
-
-lbl_800A13A4:
-	rlwinm   r3, r29, 2, 0x16, 0x1d
-	addi     r23, r3, 0xc0
-	lwzx     r3, r24, r23
-	cmplwi   r3, 0
-	beq      lbl_800A13C4
-	li       r4, 0xa
-	bl       release__10JASChannelFUs
-	stwx     r25, r24, r23
-
-lbl_800A13C4:
-	addi     r29, r29, 1
-
-lbl_800A13C8:
-	clrlwi   r0, r29, 0x18
-	cmplwi   r0, 8
-	blt      lbl_800A13A4
-
-lbl_800A13D4:
-	li       r31, 0
-	mr       r29, r24
-
-lbl_800A13DC:
-	lwz      r30, 0x2fc(r29)
-	cmplwi   r30, 0
-	beq      lbl_800A14E4
-	stb      r26, 0x363(r30)
-	lwz      r0, 0x34c(r30)
-	ori      r0, r0, 1
-	stw      r0, 0x34c(r30)
-	lbz      r0, 0x363(r30)
-	cmplwi   r0, 0
-	beq      lbl_800A144C
-	lbz      r0, 0x358(r30)
-	rlwinm.  r0, r0, 0, 0x1a, 0x1a
-	beq      lbl_800A144C
-	li       r24, 0
-	mr       r25, r24
-	b        lbl_800A1440
-
-lbl_800A141C:
-	rlwinm   r3, r24, 2, 0x16, 0x1d
-	addi     r23, r3, 0xc0
-	lwzx     r3, r30, r23
-	cmplwi   r3, 0
-	beq      lbl_800A143C
-	li       r4, 0xa
-	bl       release__10JASChannelFUs
-	stwx     r25, r30, r23
-
-lbl_800A143C:
-	addi     r24, r24, 1
-
-lbl_800A1440:
-	clrlwi   r0, r24, 0x18
-	cmplwi   r0, 8
-	blt      lbl_800A141C
-
-lbl_800A144C:
-	li       r25, 0
-
-lbl_800A1450:
-	lwz      r23, 0x2fc(r30)
-	cmplwi   r23, 0
-	beq      lbl_800A14D4
-	stb      r26, 0x363(r23)
-	lwz      r0, 0x34c(r23)
-	ori      r0, r0, 1
-	stw      r0, 0x34c(r23)
-	lbz      r0, 0x363(r23)
-	cmplwi   r0, 0
-	beq      lbl_800A14AC
-	lbz      r0, 0x358(r23)
-	rlwinm.  r0, r0, 0, 0x1a, 0x1a
-	beq      lbl_800A14AC
-	li       r24, 0
-	b        lbl_800A14A0
-
-lbl_800A148C:
-	mr       r3, r23
-	mr       r4, r24
-	li       r5, 0xa
-	bl       noteOff__8JASTrackFUcUs
-	addi     r24, r24, 1
-
-lbl_800A14A0:
-	clrlwi   r0, r24, 0x18
-	cmplwi   r0, 8
-	blt      lbl_800A148C
-
-lbl_800A14AC:
-	li       r24, 0
-
-lbl_800A14B0:
-	lwz      r3, 0x2fc(r23)
-	cmplwi   r3, 0
-	beq      lbl_800A14C4
-	mr       r4, r26
-	bl       muteTrack__8JASTrackFb
-
-lbl_800A14C4:
-	addi     r24, r24, 1
-	addi     r23, r23, 4
-	cmpwi    r24, 0x10
-	blt      lbl_800A14B0
-
-lbl_800A14D4:
-	addi     r25, r25, 1
-	addi     r30, r30, 4
-	cmpwi    r25, 0x10
-	blt      lbl_800A1450
-
-lbl_800A14E4:
-	addi     r31, r31, 1
-	addi     r29, r29, 4
-	cmpwi    r31, 0x10
-	blt      lbl_800A13DC
-
-lbl_800A14F4:
-	addi     r27, r27, 1
-	addi     r28, r28, 4
-	cmpwi    r27, 0x10
-	blt      lbl_800A1364
-	lmw      r23, 0xc(r1)
-	lwz      r0, 0x34(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
+	for (int i = 0; i < 16; i++) {
+		JASTrack* track = mChildList[i];
+		if (track) {
+			track->muteTrack(doMute);
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000068
+/**
+ * @note Address: N/A
+ * @note Size: 0x68
  */
-void JASTrack::muteChildTracks(unsigned short)
+void JASTrack::muteChildTracks(u16)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A1518
- * Size:	000044
+/**
+ * @note Address: 0x800A1518
+ * @note Size: 0x44
  */
 bool JASTrack::start(void* p1, u32 p2)
 {
@@ -3345,12 +2486,11 @@ bool JASTrack::start(void* p1, u32 p2)
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A155C
- * Size:	0001DC
+/**
+ * @note Address: 0x800A155C
+ * @note Size: 0x1DC
  */
-void JASTrack::openChild(unsigned char, unsigned char)
+JASTrack* JASTrack::openChild(u8, u8)
 {
 	/*
 	stwu     r1, -0x20(r1)
@@ -3489,23 +2629,27 @@ lbl_800A1724:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000B8
+/**
+ * @note Address: N/A
+ * @note Size: 0xB8
  */
-void JASTrack::loadTbl(unsigned long, unsigned long, unsigned long)
+void JASTrack::loadTbl(u32, u32, u32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A1738
- * Size:	000040
+/**
+ * @note Address: 0x800A1738
+ * @note Size: 0x40
  */
-void JASTrack::exchangeRegisterValue(unsigned char)
+u32 JASTrack::exchangeRegisterValue(u8 val)
 {
+	if (val < 64) {
+		return readReg32(val);
+	}
+
+	u8 calc = val - 64;
+	return mTrackPort._20[calc * 2 & 0x1fe];
 	/*
 	stwu     r1, -0x10(r1)
 	mflr     r0
@@ -3530,12 +2674,11 @@ lbl_800A1768:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A1778
- * Size:	000094
+/**
+ * @note Address: 0x800A1778
+ * @note Size: 0x94
  */
-void JASTrack::readReg32(unsigned char)
+u32 JASTrack::readReg32(u8)
 {
 	/*
 	stwu     r1, -0x10(r1)
@@ -3586,12 +2729,11 @@ lbl_800A17F0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A180C
- * Size:	000218
+/**
+ * @note Address: 0x800A180C
+ * @note Size: 0x218
  */
-u32 JASTrack::readReg16(unsigned char)
+u32 JASTrack::readReg16(u8)
 {
 	/*
 	stwu     r1, -0x10(r1)
@@ -3782,12 +2924,11 @@ lbl_800A1A08:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A1A24
- * Size:	0000D0
+/**
+ * @note Address: 0x800A1A24
+ * @note Size: 0xD0
  */
-void JASTrack::writeRegDirect(unsigned char, unsigned short)
+void JASTrack::writeRegDirect(u8, u16)
 {
 	/*
 	stwu     r1, -0x20(r1)
@@ -3857,32 +2998,29 @@ lbl_800A1AD4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
-void JASRegisterParam::setFlag(unsigned short)
+void JASRegisterParam::setFlag(u16)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
-void JSULoByte(unsigned short)
+void JSULoByte(u16)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A1AF4
- * Size:	0005B0
+/**
+ * @note Address: 0x800A1AF4
+ * @note Size: 0x5B0
  */
-void JASTrack::writeRegParam(unsigned char)
+void JASTrack::writeRegParam(u8)
 {
 	/*
 	stwu     r1, -0x30(r1)
@@ -4378,24 +3516,21 @@ lbl_800A2090:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A20A4
- * Size:	000024
+/**
+ * @note Address: 0x800A20A4
+ * @note Size: 0x24
  */
 u16 JASTrack::readSelfPort(int portNumber) { return mTrackPort.readImport(portNumber); }
 
-/*
- * --INFO--
- * Address:	800A20C8
- * Size:	000024
+/**
+ * @note Address: 0x800A20C8
+ * @note Size: 0x24
  */
 void JASTrack::writeSelfPort(int portNumber, u16 value) { mTrackPort.writeExport(portNumber, value); }
 
-/*
- * --INFO--
- * Address:	800A20EC
- * Size:	000068
+/**
+ * @note Address: 0x800A20EC
+ * @note Size: 0x68
  */
 bool JASTrack::writePortAppDirect(u32 p1, u16 value)
 {
@@ -4411,10 +3546,9 @@ bool JASTrack::writePortAppDirect(u32 p1, u16 value)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	800A2154
- * Size:	000038
+/**
+ * @note Address: 0x800A2154
+ * @note Size: 0x38
  */
 bool JASTrack::readPortAppDirect(u32 p1, u16* value)
 {
@@ -4422,32 +3556,29 @@ bool JASTrack::readPortAppDirect(u32 p1, u16* value)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000038
+/**
+ * @note Address: N/A
+ * @note Size: 0x38
  */
-void JASTrack::routeTrack(unsigned long)
+void JASTrack::routeTrack(u32)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000038
+/**
+ * @note Address: N/A
+ * @note Size: 0x38
  */
-void JASTrack::routeTrack(unsigned long) const
+void JASTrack::routeTrack(u32) const
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A218C
- * Size:	0000B4
+/**
+ * @note Address: 0x800A218C
+ * @note Size: 0xB4
  */
-void JASTrack::writePortApp(unsigned long, unsigned short)
+void JASTrack::writePortApp(u32, u16)
 {
 	/*
 	stwu     r1, -0x10(r1)
@@ -4516,12 +3647,11 @@ lbl_800A2228:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A2240
- * Size:	000084
+/**
+ * @note Address: 0x800A2240
+ * @note Size: 0x84
  */
-void JASTrack::readPortApp(unsigned long, unsigned short*)
+void JASTrack::readPortApp(u32, u16*)
 {
 	/*
 	stwu     r1, -0x10(r1)
@@ -4570,260 +3700,130 @@ lbl_800A22B0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000058
+/**
+ * @note Address: N/A
+ * @note Size: 0x58
  */
-void JASTrack::checkExportApp(unsigned long) const
+void JASTrack::checkExportApp(u32) const
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000058
+/**
+ * @note Address: N/A
+ * @note Size: 0x58
  */
-void JASTrack::checkImportApp(unsigned long) const
+void JASTrack::checkImportApp(u32) const
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A22C4
- * Size:	000168
+/**
+ * @note Address: 0x800A22C4
+ * @note Size: 0x168
  */
-void JASTrack::pause(bool, bool)
+void JASTrack::pause(bool doPause, bool pauseChildren)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	clrlwi.  r0, r4, 0x18
-	stmw     r26, 8(r1)
-	mr       r30, r4
-	mr       r29, r3
-	mr       r31, r5
-	stb      r30, 0x362(r3)
-	beq      lbl_800A2388
-	lbz      r0, 0x358(r29)
-	clrlwi.  r0, r0, 0x1f
-	beq      lbl_800A2304
-	lwz      r0, 0x34c(r29)
-	ori      r0, r0, 1
-	stw      r0, 0x34c(r29)
+	mIsPaused = doPause;
+	if (doPause & 1) {
 
-lbl_800A2304:
-	lbz      r0, 0x358(r29)
-	rlwinm.  r0, r0, 0, 0x1d, 0x1d
-	beq      lbl_800A234C
-	li       r26, 0
-	li       r28, 0
-	b        lbl_800A2340
+		if (mPauseStatus & 1) {
+			_34C |= 1;
+		}
 
-lbl_800A231C:
-	rlwinm   r3, r26, 2, 0x16, 0x1d
-	addi     r27, r3, 0xc0
-	lwzx     r3, r29, r27
-	cmplwi   r3, 0
-	beq      lbl_800A233C
-	li       r4, 0xa
-	bl       release__10JASChannelFUs
-	stwx     r28, r29, r27
+		if (mPauseStatus & 4) {
+			for (u8 i = 0; i < 8; i++) {
+				noteOff(i, 10);
+			}
+		}
 
-lbl_800A233C:
-	addi     r26, r26, 1
+		if (mPauseStatus & 8) {
+			for (int i = 0; i < 8; i++) {
+				if (mChannels[i])
+					mChannels[i]->setPauseFlag(true);
+			}
+		}
 
-lbl_800A2340:
-	clrlwi   r0, r26, 0x18
-	cmplwi   r0, 8
-	blt      lbl_800A231C
+	} else {
+		_34C |= 1;
+		for (int i = 0; i < 8; i++) {
+			if (mChannels[i])
+				mChannels[i]->setPauseFlag(false);
+		}
+	}
 
-lbl_800A234C:
-	lbz      r0, 0x358(r29)
-	rlwinm.  r0, r0, 0, 0x1c, 0x1c
-	beq      lbl_800A23C0
-	li       r26, 0
-	mr       r28, r29
+	mIntrMgr.request(doPause == false);
 
-lbl_800A2360:
-	lwz      r3, 0xc0(r28)
-	cmplwi   r3, 0
-	beq      lbl_800A2374
-	li       r4, 1
-	bl       setPauseFlag__10JASChannelFb
-
-lbl_800A2374:
-	addi     r26, r26, 1
-	addi     r28, r28, 4
-	cmpwi    r26, 8
-	blt      lbl_800A2360
-	b        lbl_800A23C0
-
-lbl_800A2388:
-	lwz      r0, 0x34c(r29)
-	mr       r28, r29
-	li       r26, 0
-	ori      r0, r0, 1
-	stw      r0, 0x34c(r29)
-
-lbl_800A239C:
-	lwz      r3, 0xc0(r28)
-	cmplwi   r3, 0
-	beq      lbl_800A23B0
-	li       r4, 0
-	bl       setPauseFlag__10JASChannelFb
-
-lbl_800A23B0:
-	addi     r26, r26, 1
-	addi     r28, r28, 4
-	cmpwi    r26, 8
-	blt      lbl_800A239C
-
-lbl_800A23C0:
-	clrlwi   r0, r30, 0x18
-	addi     r3, r29, 0x94
-	cntlzw   r0, r0
-	srwi     r4, r0, 5
-	bl       request__10JASIntrMgrFUl
-	clrlwi.  r0, r31, 0x18
-	beq      lbl_800A2418
-	li       r26, 0
-	mr       r28, r29
-
-lbl_800A23E4:
-	lwz      r3, 0x2fc(r28)
-	cmplwi   r3, 0
-	beq      lbl_800A2408
-	lbz      r0, 0x35b(r3)
-	cmplwi   r0, 0
-	beq      lbl_800A2408
-	mr       r4, r30
-	li       r5, 1
-	bl       pause__8JASTrackFbb
-
-lbl_800A2408:
-	addi     r26, r26, 1
-	addi     r28, r28, 4
-	cmpwi    r26, 0x10
-	blt      lbl_800A23E4
-
-lbl_800A2418:
-	lmw      r26, 8(r1)
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	if (pauseChildren) {
+		for (int i = 0; i < 16; i++) {
+			JASTrack* track = mChildList[i];
+			if (track && track->_35B) {
+				track->pause(doPause, true);
+			}
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	800A242C
- * Size:	000170
+/**
+ * @note Address: 0x800A242C
+ * @note Size: 0x170
  */
 int JASTrack::getTranspose() const
 {
-	if (_2F8) {
-		return _356 + _2F8->getTranspose();
+	if (mParentTrack) {
+		return mTranspose + mParentTrack->getTranspose();
 	}
-	return _356;
+	return mTranspose;
 }
 
-/*
- * --INFO--
- * Address:	800A259C
- * Size:	00003C
+/**
+ * @note Address: 0x800A259C
+ * @note Size: 0x3C
  */
 void JASTrack::setTempo(u16 tempo)
 {
-	_352 = tempo;
-	if (_2F8 == nullptr) {
+	mTempo = tempo;
+	if (mParentTrack == nullptr) {
 		updateTempo();
 	} else {
 		_365 = 1;
 	}
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	sth      r4, 0x352(r3)
-	lwz      r0, 0x2f8(r3)
-	cmplwi   r0, 0
-	bne      lbl_800A25C0
-	bl       updateTempo__8JASTrackFv
-	b        lbl_800A25C8
-
-lbl_800A25C0:
-	li       r0, 1
-	stb      r0, 0x365(r3)
-
-lbl_800A25C8:
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	800A25D8
- * Size:	000030
+/**
+ * @note Address: 0x800A25D8
+ * @note Size: 0x30
  */
 void JASTrack::setTimebase(u16 timebase)
 {
-	_354 = timebase;
-	if (_2F8 == nullptr) {
+	mTimeBase = timebase;
+	if (mParentTrack == nullptr) {
 		updateTempo();
 	}
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	sth      r4, 0x354(r3)
-	lwz      r0, 0x2f8(r3)
-	cmplwi   r0, 0
-	bne      lbl_800A25F8
-	bl       updateTempo__8JASTrackFv
-
-lbl_800A25F8:
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	800A2608
- * Size:	000050
+/**
+ * @note Address: 0x800A2608
+ * @note Size: 0x50
  */
 f32 JASTrack::panCalc(f32 p1, f32 p2, f32 p3, u8 p4)
 {
 	switch (p4) {
 	case 0:
 		return p1;
-		break;
 	case 1:
 		return p2;
-		break;
 	case 2:
 		return (p1 * (1.0f - p3) + (p2 * p3));
-		break;
 	}
 	return 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	800A2658
- * Size:	0000F4
+/**
+ * @note Address: 0x800A2658
+ * @note Size: 0xF4
  */
-long JASTrack::rootCallback(void* obj)
+s32 JASTrack::rootCallback(void* obj)
 {
 	JASTrack* track = static_cast<JASTrack*>(obj);
 	if (track == nullptr) {
@@ -4836,7 +3836,7 @@ long JASTrack::rootCallback(void* obj)
 		track->stopSeqMain();
 		return -1;
 	}
-	track->_340 += track->_344;
+	track->_340 += track->mCurrentTempo;
 	DCInvalidateRange(&c32, sizeof(c32));
 	if (track->_340 < c32) {
 		track->updateSeq(0, true);
@@ -4853,28 +3853,29 @@ long JASTrack::rootCallback(void* obj)
 	return 0;
 }
 
-/*
- * --INFO--
- * Address:	800A274C
- * Size:	000008
+/**
+ * @note Address: 0x800A274C
+ * @note Size: 0x8
  */
-void JASTrack::registerSeqCallback(unsigned short (*cb)(JASTrack*, unsigned short))
-{
-	sCallBackFunc = cb;
-	/*
-	.loc_0x0:
-	  stw       r3, -0x7590(r13)
-	  blr
-	*/
-}
+void JASTrack::registerSeqCallback(JASTrack::SeqCallback cb) { sCallBackFunc = cb; }
 
-/*
- * --INFO--
- * Address:	800A2754
- * Size:	0000D4
+/**
+ * @note Address: 0x800A2754
+ * @note Size: 0xD4
  */
-void JASTrack::newMemPool(int)
+void JASTrack::newMemPool(int id)
 {
+	// needs to not have JASTrack ctor?
+	JASTrack* track   = new (JASDram, 0) JASTrack;
+	track->mExtBuffer = new (JASDram, 0) JASOuterParam;
+	sFreeList         = track;
+
+	for (int i = 1; i < id; i++) {
+		track->mChildList[i]             = new (JASDram, 0) JASTrack;
+		track->mChildList[i]->mExtBuffer = new (JASDram, 0) JASOuterParam;
+		sFreeListEnd                     = track->mChildList[i];
+	}
+	track->mChildList[0] = nullptr;
 	/*
 	stwu     r1, -0x20(r1)
 	mflr     r0
@@ -4940,34 +3941,31 @@ lbl_800A27FC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00004C
+/**
+ * @note Address: N/A
+ * @note Size: 0x4C
  */
 int JASTrack::getFreeMemCount()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A2828
- * Size:	000030
+/**
+ * @note Address: 0x800A2828
+ * @note Size: 0x30
  */
 JASVibrate::JASVibrate() { init(); }
 
-/*
- * --INFO--
- * Address:	800A2858
- * Size:	000018
+/**
+ * @note Address: 0x800A2858
+ * @note Size: 0x18
  */
 void JASVibrate::init()
 {
 	// TODO: Might be wrong value
-	_08 = 0.055f;
-	_04 = 0.0f;
-	_00 = 0.0f;
+	mPitch = 0.055f;
+	mDepth = 0.0f;
+	_00    = 0.0f;
 	/*
 	lfs      f1, lbl_80516DB0@sda21(r2)
 	lfs      f0, lbl_80516D78@sda21(r2)
@@ -4978,34 +3976,31 @@ void JASVibrate::init()
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A2870
- * Size:	000034
+/**
+ * @note Address: 0x800A2870
+ * @note Size: 0x34
  */
 void JASVibrate::incCounter()
 {
-	_00 += _08;
+	_00 += mPitch;
 	if (_00 >= 4.0) { // intentional double
 		_00 -= 4.0f;
 	}
 }
 
-/*
- * --INFO--
- * Address:	800A28A4
- * Size:	0000A4
+/**
+ * @note Address: 0x800A28A4
+ * @note Size: 0xA4
  */
 f32 JASVibrate::getValue() const
 {
-	f32 result;
-	if (_04 == 0.0f) {
-		result = 1.0f;
-	} else {
-		result = _00 * HALF_PI;
-		result = JMath::getSinCosTable()->cos(result);
-		result = JASPlayer::pitchToCent(result * _04, 12.0f);
+	if (mDepth == 0.0f) {
+		return 1.0f;
 	}
+
+	f32 result = _00 * HALF_PI;
+	result     = sinf(result);
+	result     = JASPlayer::pitchToCent(result * mDepth, 12.0f);
 	return result;
 
 	/*
@@ -5061,10 +4056,9 @@ lbl_800A2938:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800A2948
- * Size:	0000B0
+/**
+ * @note Address: 0x800A2948
+ * @note Size: 0xB0
  */
 void JASTrack::channelUpdateCallback(u32 p1, JASChannel* p2, JASDsp::TChannel* p3, void* p4)
 {
@@ -5135,20 +4129,18 @@ void JASTrack::channelUpdateCallback(u32 p1, JASChannel* p2, JASDsp::TChannel* p
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 int JASTrack::getChannelCount() const
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000030
+/**
+ * @note Address: N/A
+ * @note Size: 0x30
  */
 int JASTrack::getReleaseChannelCount() const
 {

@@ -104,12 +104,12 @@
         .4byte 0x00000000
 */
 
-/*
- * --INFO--
- * Address:	80014FD8
- * Size:	0000C8
+/**
+ * @note Address: 0x80014FD8
+ * @note Size: 0xC8
  */
 JStudio_JAudio::TAdaptor_sound::TAdaptor_sound(JAIBasic*, const JStage::TSystem*)
+    : JStudio::TAdaptor_sound(_0C, 0)
 {
 	/*
 	.loc_0x0:
@@ -166,10 +166,9 @@ JStudio_JAudio::TAdaptor_sound::TAdaptor_sound(JAIBasic*, const JStage::TSystem*
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800150A0
- * Size:	000084
+/**
+ * @note Address: 0x800150A0
+ * @note Size: 0x84
  */
 JStudio_JAudio::TAdaptor_sound::~TAdaptor_sound()
 {
@@ -214,10 +213,9 @@ lbl_80015108:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80015124
- * Size:	0000CC
+/**
+ * @note Address: 0x80015124
+ * @note Size: 0xCC
  */
 void JStudio_JAudio::TAdaptor_sound::adaptor_do_prepare(const JStudio::TObject*)
 {
@@ -287,10 +285,9 @@ lbl_800151D0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800151F0
- * Size:	000058
+/**
+ * @note Address: 0x800151F0
+ * @note Size: 0x58
  */
 void JStudio_JAudio::TAdaptor_sound::adaptor_do_end(const JStudio::TObject*)
 {
@@ -322,12 +319,11 @@ lbl_80015238:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80015248
- * Size:	00014C
+/**
+ * @note Address: 0x80015248
+ * @note Size: 0x14C
  */
-void JStudio_JAudio::TAdaptor_sound::adaptor_do_update(const JStudio::TObject*, unsigned long)
+void JStudio_JAudio::TAdaptor_sound::adaptor_do_update(const JStudio::TObject*, u32)
 {
 	/*
 	.loc_0x0:
@@ -433,12 +429,11 @@ void JStudio_JAudio::TAdaptor_sound::adaptor_do_update(const JStudio::TObject*, 
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80015394
- * Size:	0000A4
+/**
+ * @note Address: 0x80015394
+ * @note Size: 0xA4
  */
-void JStudio_JAudio::TAdaptor_sound::adaptor_do_SOUND(JStudio::data::TEOperationData, const void*, unsigned long)
+void JStudio_JAudio::TAdaptor_sound::adaptor_do_SOUND(JStudio::data::TEOperationData, const void*, u32)
 {
 	/*
 	.loc_0x0:
@@ -492,12 +487,11 @@ void JStudio_JAudio::TAdaptor_sound::adaptor_do_SOUND(JStudio::data::TEOperation
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80015438
- * Size:	000030
+/**
+ * @note Address: 0x80015438
+ * @note Size: 0x30
  */
-void JStudio_JAudio::TAdaptor_sound::adaptor_do_BEGIN(JStudio::data::TEOperationData, const void*, unsigned long)
+void JStudio_JAudio::TAdaptor_sound::adaptor_do_BEGIN(JStudio::data::TEOperationData, const void*, u32)
 {
 	/*
 	.loc_0x0:
@@ -520,12 +514,11 @@ void JStudio_JAudio::TAdaptor_sound::adaptor_do_BEGIN(JStudio::data::TEOperation
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80015468
- * Size:	000048
+/**
+ * @note Address: 0x80015468
+ * @note Size: 0x48
  */
-void JStudio_JAudio::TAdaptor_sound::adaptor_do_BEGIN_FADE_IN(JStudio::data::TEOperationData, const void*, unsigned long)
+void JStudio_JAudio::TAdaptor_sound::adaptor_do_BEGIN_FADE_IN(JStudio::data::TEOperationData, const void*, u32)
 {
 	/*
 	.loc_0x0:
@@ -554,12 +547,11 @@ void JStudio_JAudio::TAdaptor_sound::adaptor_do_BEGIN_FADE_IN(JStudio::data::TEO
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800154B0
- * Size:	000030
+/**
+ * @note Address: 0x800154B0
+ * @note Size: 0x30
  */
-void JStudio_JAudio::TAdaptor_sound::adaptor_do_END(JStudio::data::TEOperationData, const void*, unsigned long)
+void JStudio_JAudio::TAdaptor_sound::adaptor_do_END(JStudio::data::TEOperationData, const void*, u32)
 {
 	/*
 	.loc_0x0:
@@ -582,12 +574,11 @@ void JStudio_JAudio::TAdaptor_sound::adaptor_do_END(JStudio::data::TEOperationDa
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800154E0
- * Size:	000048
+/**
+ * @note Address: 0x800154E0
+ * @note Size: 0x48
  */
-void JStudio_JAudio::TAdaptor_sound::adaptor_do_END_FADE_OUT(JStudio::data::TEOperationData, const void*, unsigned long)
+void JStudio_JAudio::TAdaptor_sound::adaptor_do_END_FADE_OUT(JStudio::data::TEOperationData, const void*, u32)
 {
 	/*
 	.loc_0x0:
@@ -616,12 +607,11 @@ void JStudio_JAudio::TAdaptor_sound::adaptor_do_END_FADE_OUT(JStudio::data::TEOp
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80015528
- * Size:	000068
+/**
+ * @note Address: 0x80015528
+ * @note Size: 0x68
  */
-void JStudio_JAudio::TAdaptor_sound::adaptor_do_PARENT(JStudio::data::TEOperationData, const void*, unsigned long)
+void JStudio_JAudio::TAdaptor_sound::adaptor_do_PARENT(JStudio::data::TEOperationData, const void*, u32)
 {
 	/*
 	.loc_0x0:
@@ -658,12 +648,11 @@ void JStudio_JAudio::TAdaptor_sound::adaptor_do_PARENT(JStudio::data::TEOperatio
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80015590
- * Size:	000080
+/**
+ * @note Address: 0x80015590
+ * @note Size: 0x80
  */
-void JStudio_JAudio::TAdaptor_sound::adaptor_do_PARENT_NODE(JStudio::data::TEOperationData, const void*, unsigned long)
+void JStudio_JAudio::TAdaptor_sound::adaptor_do_PARENT_NODE(JStudio::data::TEOperationData, const void*, u32)
 {
 	/*
 	.loc_0x0:
@@ -708,12 +697,11 @@ void JStudio_JAudio::TAdaptor_sound::adaptor_do_PARENT_NODE(JStudio::data::TEOpe
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80015610
- * Size:	000020
+/**
+ * @note Address: 0x80015610
+ * @note Size: 0x20
  */
-void JStudio_JAudio::TAdaptor_sound::adaptor_do_PARENT_ENABLE(JStudio::data::TEOperationData, const void*, unsigned long)
+void JStudio_JAudio::TAdaptor_sound::adaptor_do_PARENT_ENABLE(JStudio::data::TEOperationData, const void*, u32)
 {
 	/*
 	.loc_0x0:
@@ -728,12 +716,11 @@ void JStudio_JAudio::TAdaptor_sound::adaptor_do_PARENT_ENABLE(JStudio::data::TEO
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80015630
- * Size:	000028
+/**
+ * @note Address: 0x80015630
+ * @note Size: 0x28
  */
-void JStudio_JAudio::TAdaptor_sound::adaptor_do_LOCATED(JStudio::data::TEOperationData, const void*, unsigned long)
+void JStudio_JAudio::TAdaptor_sound::adaptor_do_LOCATED(JStudio::data::TEOperationData, const void*, u32)
 {
 	/*
 	.loc_0x0:
@@ -750,12 +737,11 @@ void JStudio_JAudio::TAdaptor_sound::adaptor_do_LOCATED(JStudio::data::TEOperati
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80015658
- * Size:	000040
+/**
+ * @note Address: 0x80015658
+ * @note Size: 0x40
  */
-void JStudio_JAudio::TAdaptor_sound::TVVOSetValue_::operator()(float, JStudio::TAdaptor*) const
+void JStudio_JAudio::TAdaptor_sound::TVVOSetValue_::operator()(f32, JStudio::TAdaptor*) const
 {
 	/*
 	.loc_0x0:
@@ -780,12 +766,11 @@ void JStudio_JAudio::TAdaptor_sound::TVVOSetValue_::operator()(float, JStudio::T
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80015698
- * Size:	0000D8
+/**
+ * @note Address: 0x80015698
+ * @note Size: 0xD8
  */
-void JStudio_JAudio::TAdaptor_sound::beginSound_fadeIn_(unsigned long)
+void JStudio_JAudio::TAdaptor_sound::beginSound_fadeIn_(u32)
 {
 	/*
 	stwu     r1, -0x10(r1)
@@ -853,12 +838,11 @@ lbl_80015758:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80015770
- * Size:	000050
+/**
+ * @note Address: 0x80015770
+ * @note Size: 0x50
  */
-void JStudio_JAudio::TAdaptor_sound::endSound_fadeOut_(unsigned long)
+void JStudio_JAudio::TAdaptor_sound::endSound_fadeOut_(u32)
 {
 	/*
 	stwu     r1, -0x10(r1)
@@ -886,10 +870,9 @@ lbl_800157AC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800157C0
- * Size:	000060
+/**
+ * @note Address: 0x800157C0
+ * @note Size: 0x60
  */
 JStudio_JAudio::TAdaptor_sound::TVVOSetValue_::~TVVOSetValue_()
 {
@@ -922,329 +905,3 @@ lbl_80015804:
 	blr
 	*/
 }
-
-/*
- * --INFO--
- * Address:	80015820
- * Size:	00004C
- */
-void JAIBasic::prepareSoundVecT<JAISound>(unsigned long, JAISound**, Vec*, unsigned long, unsigned long, unsigned char)
-{
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  stw       r0, 0x14(r1)
-	  stw       r31, 0xC(r1)
-	  mr        r31, r5
-	  bl        .loc_0x4C
-	  lwz       r3, 0x0(r31)
-	  cmplwi    r3, 0
-	  beq-      .loc_0x38
-	  lwz       r12, 0x10(r3)
-	  li        r4, 0x1
-	  lwz       r12, 0xA8(r12)
-	  mtctr     r12
-	  bctrl
-
-	.loc_0x38:
-	  lwz       r0, 0x14(r1)
-	  lwz       r31, 0xC(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-
-	.loc_0x4C:
-	*/
-}
-
-/*
- * --INFO--
- * Address:	8001586C
- * Size:	000060
- */
-void JAIBasic::startSoundVecT<JAISound>(unsigned long, JAISound**, Vec*, unsigned long, unsigned long, unsigned char)
-{
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x20(r1)
-	  mflr      r0
-	  cmplwi    r6, 0
-	  stw       r0, 0x24(r1)
-	  stw       r6, 0x8(r1)
-	  stw       r6, 0xC(r1)
-	  stw       r6, 0x10(r1)
-	  stw       r8, 0x14(r1)
-	  beq-      .loc_0x30
-	  addis     r0, r6, 0x1
-	  cmplwi    r0, 0xFFFF
-	  bne-      .loc_0x3C
-
-	.loc_0x30:
-	  li        r0, 0x1
-	  stb       r0, 0x18(r1)
-	  b         .loc_0x44
-
-	.loc_0x3C:
-	  li        r0, 0
-	  stb       r0, 0x18(r1)
-
-	.loc_0x44:
-	  mr        r8, r9
-	  addi      r6, r1, 0x8
-	  bl        .loc_0x60
-	  lwz       r0, 0x24(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x20
-	  blr
-
-	.loc_0x60:
-	*/
-}
-
-/*
- * --INFO--
- * Address:	800158CC
- * Size:	000068
- */
-void JAIBasic::startSoundActorT<JAISound>(unsigned long, JAISound**, JAInter::Actor*, unsigned long, unsigned char)
-{
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x20(r1)
-	  mflr      r0
-	  stw       r0, 0x24(r1)
-	  stmw      r26, 0x8(r1)
-	  mr        r27, r4
-	  mr        r26, r3
-	  mr        r28, r5
-	  mr        r29, r6
-	  mr        r30, r7
-	  mr        r31, r8
-	  mr        r3, r27
-	  bl        0xA1C20
-	  mr.       r9, r3
-	  beq-      .loc_0x54
-	  mr        r3, r26
-	  mr        r4, r27
-	  mr        r5, r28
-	  mr        r6, r29
-	  mr        r7, r30
-	  mr        r8, r31
-	  bl        0x96E60
-
-	.loc_0x54:
-	  lmw       r26, 0x8(r1)
-	  lwz       r0, 0x24(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x20
-	  blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	80015934
- * Size:	000310
- */
-// void __sinit_object - sound_cpp()
-// {
-// 	/*
-// 	stwu     r1, -0x90(r1)
-// 	mflr     r0
-// 	lis      r4, __vt__Q37JStudio14TVariableValue7TOutput@ha
-// 	lis      r3, lbl_8049F910@ha
-// 	stw      r0, 0x94(r1)
-// 	addi     r5, r4, __vt__Q37JStudio14TVariableValue7TOutput@l
-// 	lis      r4, __dt__Q314JStudio_JAudio14TAdaptor_sound13TVVOSetValue_Fv@ha
-// 	lis      r9, aoData$1256@ha
-// 	stw      r31, 0x8c(r1)
-// 	addi     r31, r3, lbl_8049F910@l
-// 	lis      r3, saoVVOSetValue___Q214JStudio_JAudio14TAdaptor_sound@ha
-// 	li       r8, 5
-// 	stw      r30, 0x88(r1)
-// 	addi     r30, r9, aoData$1256@l
-// 	addi     r9, r31, 0x3c
-// 	addi     r4, r4, __dt__Q314JStudio_JAudio14TAdaptor_sound13TVVOSetValue_Fv@l
-// 	stwu     r5, saoVVOSetValue___Q214JStudio_JAudio14TAdaptor_sound@l(r3)
-// 	lwz      r7, 0(r31)
-// 	lwz      r6, 4(r31)
-// 	lwz      r0, 8(r31)
-// 	stw      r5, 0x6c(r1)
-// 	addi     r5, r30, 0x20
-// 	stw      r9, 0x6c(r1)
-// 	stw      r8, 0x70(r1)
-// 	stw      r7, 0x74(r1)
-// 	stw      r6, 0x78(r1)
-// 	stw      r0, 0x7c(r1)
-// 	stw      r9, 0(r3)
-// 	stw      r8, 4(r3)
-// 	stw      r7, 8(r3)
-// 	stw      r6, 0xc(r3)
-// 	stw      r0, 0x10(r3)
-// 	bl       __register_global_object
-// 	addi     r0, r31, 0x3c
-// 	addi     r3, r1, 0x6c
-// 	stw      r0, 0x6c(r1)
-// 	li       r4, 0
-// 	bl       __dt__Q37JStudio14TVariableValue7TOutputFv
-// 	lis      r4, __vt__Q37JStudio14TVariableValue7TOutput@ha
-// 	lis      r3, saoVVOSetValue___Q214JStudio_JAudio14TAdaptor_sound@ha
-// 	addi     r5, r4, __vt__Q37JStudio14TVariableValue7TOutput@l
-// 	lwz      r7, 0xc(r31)
-// 	addi     r3, r3, saoVVOSetValue___Q214JStudio_JAudio14TAdaptor_sound@l
-// 	lwz      r6, 0x10(r31)
-// 	stwu     r5, 0x14(r3)
-// 	li       r8, 6
-// 	lwz      r0, 0x14(r31)
-// 	addi     r9, r31, 0x3c
-// 	stw      r5, 0x58(r1)
-// 	lis      r4, __dt__Q314JStudio_JAudio14TAdaptor_sound13TVVOSetValue_Fv@ha
-// 	addi     r4, r4, __dt__Q314JStudio_JAudio14TAdaptor_sound13TVVOSetValue_Fv@l
-// 	addi     r5, r30, 0x2c
-// 	stw      r9, 0x58(r1)
-// 	stw      r8, 0x5c(r1)
-// 	stw      r7, 0x60(r1)
-// 	stw      r6, 0x64(r1)
-// 	stw      r0, 0x68(r1)
-// 	stw      r9, 0(r3)
-// 	stw      r8, 4(r3)
-// 	stw      r7, 8(r3)
-// 	stw      r6, 0xc(r3)
-// 	stw      r0, 0x10(r3)
-// 	bl       __register_global_object
-// 	addi     r0, r31, 0x3c
-// 	addi     r3, r1, 0x58
-// 	stw      r0, 0x58(r1)
-// 	li       r4, 0
-// 	bl       __dt__Q37JStudio14TVariableValue7TOutputFv
-// 	lis      r4, __vt__Q37JStudio14TVariableValue7TOutput@ha
-// 	lis      r3, saoVVOSetValue___Q214JStudio_JAudio14TAdaptor_sound@ha
-// 	addi     r5, r4, __vt__Q37JStudio14TVariableValue7TOutput@l
-// 	lwz      r7, 0x18(r31)
-// 	addi     r3, r3, saoVVOSetValue___Q214JStudio_JAudio14TAdaptor_sound@l
-// 	lwz      r6, 0x1c(r31)
-// 	stwu     r5, 0x28(r3)
-// 	li       r8, 7
-// 	lwz      r0, 0x20(r31)
-// 	addi     r9, r31, 0x3c
-// 	stw      r5, 0x44(r1)
-// 	lis      r4, __dt__Q314JStudio_JAudio14TAdaptor_sound13TVVOSetValue_Fv@ha
-// 	addi     r4, r4, __dt__Q314JStudio_JAudio14TAdaptor_sound13TVVOSetValue_Fv@l
-// 	addi     r5, r30, 0x38
-// 	stw      r9, 0x44(r1)
-// 	stw      r8, 0x48(r1)
-// 	stw      r7, 0x4c(r1)
-// 	stw      r6, 0x50(r1)
-// 	stw      r0, 0x54(r1)
-// 	stw      r9, 0(r3)
-// 	stw      r8, 4(r3)
-// 	stw      r7, 8(r3)
-// 	stw      r6, 0xc(r3)
-// 	stw      r0, 0x10(r3)
-// 	bl       __register_global_object
-// 	addi     r0, r31, 0x3c
-// 	addi     r3, r1, 0x44
-// 	stw      r0, 0x44(r1)
-// 	li       r4, 0
-// 	bl       __dt__Q37JStudio14TVariableValue7TOutputFv
-// 	lis      r4, __vt__Q37JStudio14TVariableValue7TOutput@ha
-// 	lis      r3, saoVVOSetValue___Q214JStudio_JAudio14TAdaptor_sound@ha
-// 	addi     r5, r4, __vt__Q37JStudio14TVariableValue7TOutput@l
-// 	lwz      r7, 0x24(r31)
-// 	addi     r3, r3, saoVVOSetValue___Q214JStudio_JAudio14TAdaptor_sound@l
-// 	lwz      r6, 0x28(r31)
-// 	stwu     r5, 0x3c(r3)
-// 	li       r8, 8
-// 	lwz      r0, 0x2c(r31)
-// 	addi     r9, r31, 0x3c
-// 	stw      r5, 0x30(r1)
-// 	lis      r4, __dt__Q314JStudio_JAudio14TAdaptor_sound13TVVOSetValue_Fv@ha
-// 	addi     r4, r4, __dt__Q314JStudio_JAudio14TAdaptor_sound13TVVOSetValue_Fv@l
-// 	addi     r5, r30, 0x44
-// 	stw      r9, 0x30(r1)
-// 	stw      r8, 0x34(r1)
-// 	stw      r7, 0x38(r1)
-// 	stw      r6, 0x3c(r1)
-// 	stw      r0, 0x40(r1)
-// 	stw      r9, 0(r3)
-// 	stw      r8, 4(r3)
-// 	stw      r7, 8(r3)
-// 	stw      r6, 0xc(r3)
-// 	stw      r0, 0x10(r3)
-// 	bl       __register_global_object
-// 	addi     r0, r31, 0x3c
-// 	addi     r3, r1, 0x30
-// 	stw      r0, 0x30(r1)
-// 	li       r4, 0
-// 	bl       __dt__Q37JStudio14TVariableValue7TOutputFv
-// 	lis      r4, __vt__Q37JStudio14TVariableValue7TOutput@ha
-// 	lis      r3, saoVVOSetValue___Q214JStudio_JAudio14TAdaptor_sound@ha
-// 	addi     r5, r4, __vt__Q37JStudio14TVariableValue7TOutput@l
-// 	lwz      r7, 0x30(r31)
-// 	addi     r3, r3, saoVVOSetValue___Q214JStudio_JAudio14TAdaptor_sound@l
-// 	lwz      r6, 0x34(r31)
-// 	stwu     r5, 0x50(r3)
-// 	li       r8, 9
-// 	lwz      r0, 0x38(r31)
-// 	addi     r9, r31, 0x3c
-// 	stw      r5, 0x1c(r1)
-// 	lis      r4, __dt__Q314JStudio_JAudio14TAdaptor_sound13TVVOSetValue_Fv@ha
-// 	addi     r4, r4, __dt__Q314JStudio_JAudio14TAdaptor_sound13TVVOSetValue_Fv@l
-// 	addi     r5, r30, 0x50
-// 	stw      r9, 0x1c(r1)
-// 	stw      r8, 0x20(r1)
-// 	stw      r7, 0x24(r1)
-// 	stw      r6, 0x28(r1)
-// 	stw      r0, 0x2c(r1)
-// 	stw      r9, 0(r3)
-// 	stw      r8, 4(r3)
-// 	stw      r7, 8(r3)
-// 	stw      r6, 0xc(r3)
-// 	stw      r0, 0x10(r3)
-// 	bl       __register_global_object
-// 	addi     r0, r31, 0x3c
-// 	addi     r3, r1, 0x1c
-// 	stw      r0, 0x1c(r1)
-// 	li       r4, 0
-// 	bl       __dt__Q37JStudio14TVariableValue7TOutputFv
-// 	lis      r3, __vt__Q37JStudio14TVariableValue7TOutput@ha
-// 	li       r9, -1
-// 	addi     r11, r3, __vt__Q37JStudio14TVariableValue7TOutput@l
-// 	lis      r4, __dt__Q314JStudio_JAudio14TAdaptor_sound13TVVOSetValue_Fv@ha
-// 	stw      r11, 8(r1)
-// 	addi     r10, r31, 0x3c
-// 	lis      r3, __ptmf_null@ha
-// 	addi     r4, r4, __dt__Q314JStudio_JAudio14TAdaptor_sound13TVVOSetValue_Fv@l
-// 	stw      r10, 8(r1)
-// 	addi     r8, r3, __ptmf_null@l
-// 	lis      r3, saoVVOSetValue___Q214JStudio_JAudio14TAdaptor_sound@ha
-// 	lwz      r7, 0(r8)
-// 	stw      r9, 0xc(r1)
-// 	addi     r3, r3, saoVVOSetValue___Q214JStudio_JAudio14TAdaptor_sound@l
-// 	addi     r5, r30, 0x5c
-// 	lwz      r6, 4(r8)
-// 	stw      r7, 0x10(r1)
-// 	stw      r6, 0x14(r1)
-// 	lwz      r0, 8(r8)
-// 	stwu     r11, 0x64(r3)
-// 	stw      r0, 0x18(r1)
-// 	stw      r10, 0(r3)
-// 	stw      r9, 4(r3)
-// 	stw      r7, 8(r3)
-// 	stw      r6, 0xc(r3)
-// 	stw      r0, 0x10(r3)
-// 	bl       __register_global_object
-// 	addi     r0, r31, 0x3c
-// 	addi     r3, r1, 8
-// 	stw      r0, 8(r1)
-// 	li       r4, 0
-// 	bl       __dt__Q37JStudio14TVariableValue7TOutputFv
-// 	lwz      r0, 0x94(r1)
-// 	lwz      r31, 0x8c(r1)
-// 	lwz      r30, 0x88(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x90
-// 	blr
-// 	*/
-// }

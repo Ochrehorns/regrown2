@@ -55,9 +55,9 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->enableEvent(0, EB_Untargetable);
 
-	EnemyFunc::flickStickPikmin(usuba, CG_PARMS(usuba)->mGeneral.mShakeRateMaybe.mValue, CG_PARMS(usuba)->mGeneral.mShakeKnockback.mValue,
+	EnemyFunc::flickStickPikmin(usuba, CG_PARMS(usuba)->mGeneral.mShakeChance.mValue, CG_PARMS(usuba)->mGeneral.mShakeKnockback.mValue,
 	                            CG_PARMS(usuba)->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
-	usuba->mToFlick = 0.0f;
+	usuba->mFlickTimer = 0.0f;
 	usuba->startMotion(USUBAANIM_Dead, nullptr);
 
 	usuba->endElec();
@@ -427,10 +427,10 @@ void StateRecover::exec(EnemyBase* enemy)
 			EnemyFunc::flickNearbyNavi(enemy, CG_PARMS(enemy)->mGeneral.mShakeRange.mValue,
 			                           CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue,
 			                           FLICK_BACKWARD_ANGLE, nullptr);
-			EnemyFunc::flickStickPikmin(enemy, CG_PARMS(enemy)->mGeneral.mShakeRateMaybe.mValue,
+			EnemyFunc::flickStickPikmin(enemy, CG_PARMS(enemy)->mGeneral.mShakeChance.mValue,
 			                            CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue,
 			                            FLICK_BACKWARD_ANGLE, nullptr);
-			enemy->mToFlick = 0.0f;
+			enemy->mFlickTimer = 0.0f;
 			usuba->startBossFlickBGM();
 
 		} else if (usuba->mCurAnim->mType == KEYEVENT_END) { // anim end
@@ -478,10 +478,10 @@ void StateFlick::exec(EnemyBase* enemy)
 
 	if (usuba->mCurAnim->mIsPlaying) {
 		if (usuba->mCurAnim->mType == KEYEVENT_2) {
-			EnemyFunc::flickStickPikmin(usuba, CG_PARMS(usuba)->mGeneral.mShakeRateMaybe.mValue,
+			EnemyFunc::flickStickPikmin(usuba, CG_PARMS(usuba)->mGeneral.mShakeChance.mValue,
 			                            CG_PARMS(usuba)->mGeneral.mShakeKnockback.mValue, CG_PARMS(usuba)->mGeneral.mShakeDamage.mValue,
 			                            FLICK_BACKWARD_ANGLE, nullptr);
-			usuba->mToFlick = 0.0f;
+			usuba->mFlickTimer = 0.0f;
 
 		} else if (usuba->mCurAnim->mType == KEYEVENT_END) {
 			if (usuba->mHealth <= 0.0f) {
@@ -604,8 +604,8 @@ void StateMove::exec(EnemyBase* enemy)
 		usuba->mTargetVelocity = Vector3f(0.0f);
 		usuba->finishMotion();
 	} else {
-		EnemyFunc::walkToTarget(usuba, targetPos, CG_PROPERPARMS(usuba).mFlySpeed.mValue, CG_PARMS(usuba)->mGeneral.mRotationalAccel.mValue,
-		                        CG_PARMS(usuba)->mGeneral.mRotationalSpeed.mValue);
+		EnemyFunc::walkToTarget(usuba, targetPos, CG_PROPERPARMS(usuba).mFlySpeed.mValue, CG_PARMS(usuba)->mGeneral.mTurnSpeed.mValue,
+		                        CG_PARMS(usuba)->mGeneral.mMaxTurnAngle.mValue);
 	}
 
 	if (height > CG_PROPERPARMS(usuba).mTransitHeight.mValue || usuba->mStateTimer > 3.0f) {
@@ -754,7 +754,7 @@ void StateAttackDive::exec(EnemyBase* enemy)
 				f32 usubaHeight  = usuba->getPosition().y;
 
 				Vector3f vel = usuba->getVelocity();
-				f32 factor   = ((targetHeight - usubaHeight) / sys->mDeltaTime) * *CG_PROPERPARMS(usuba).mFp31();
+				f32 factor   = ((targetHeight - usubaHeight) / sys->mDeltaTime) * CG_PROPERPARMS(usuba).mFp31();
 
 				f32 vertSpeed;
 				if (factor < -2500.0f) {
@@ -773,7 +773,7 @@ void StateAttackDive::exec(EnemyBase* enemy)
 			}
 		} else {
 			usuba->setHeightVelocity();
-			f32 decayRate          = *CG_PROPERPARMS(usuba).mFp32();
+			f32 decayRate          = CG_PROPERPARMS(usuba).mFp32();
 			usuba->mTargetVelocity = usuba->mTargetVelocity * decayRate;
 		}
 	} else {

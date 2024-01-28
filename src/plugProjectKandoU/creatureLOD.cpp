@@ -1,147 +1,40 @@
-#include "Camera.h"
 #include "Game/AILOD.h"
-#include "Game/AILODParm.h"
 #include "Game/Creature.h"
 #include "Game/GameSystem.h"
-#include "Graphics.h"
-#include "JSystem/JFramework/JFWSystem.h"
-#include "JSystem/JUtility/JUTException.h"
 #include "Sys/Sphere.h"
-#include "types.h"
-#include "System.h"
 #include "Sys/Cylinder.h"
 #include "Viewport.h"
-
-/*
-    Generated from dpostproc
-
-    .section .ctors, "wa"  # 0x80472F00 - 0x804732C0
-    .4byte __sinit_creatureLOD_cpp
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_804807C8
-    lbl_804807C8:
-        .asciz "creatureLOD.cpp"
-    .global lbl_804807D8
-    lbl_804807D8:
-        .asciz "P2Assert"
-        .skip 3
-    lbl_804807E4:
-        .4byte lbl_80519758
-        .4byte lbl_80519760
-        .4byte lbl_80519764
-    .global lbl_804807F0
-    lbl_804807F0:
-        .asciz "[%s%s %s %s]"
-        .skip 3
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804B8610
-    lbl_804B8610:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global lbl_80515AD8
-    lbl_80515AD8:
-        .skip 0x4
-    .global lbl_80515ADC
-    lbl_80515ADC:
-        .skip 0x4
-    .global drawInfo__Q24Game5AILOD
-    drawInfo__Q24Game5AILOD:
-        .skip 0x8
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80519750
-    lbl_80519750:
-        .float 0.07
-    .global lbl_80519754
-    lbl_80519754:
-        .float 0.02
-    .global lbl_80519758
-    lbl_80519758:
-        .asciz "near"
-        .skip 3
-    .global lbl_80519760
-    lbl_80519760:
-        .asciz "mid"
-    .global lbl_80519764
-    lbl_80519764:
-        .asciz "far"
-    .global lbl_80519768
-    lbl_80519768:
-        .float 1.0
-    .global lbl_8051976C
-    lbl_8051976C:
-        .4byte 0x70000000
-    .global lbl_80519770
-    lbl_80519770:
-        .4byte 0x5F000000
-    .global lbl_80519774
-    lbl_80519774:
-        .4byte 0x76000000
-    .global lbl_80519778
-    lbl_80519778:
-        .4byte 0x78000000
-    .global lbl_8051977C
-    lbl_8051977C:
-        .4byte 0x41700000
-    .global lbl_80519780
-    lbl_80519780:
-        .4byte 0x3C25663E
-        .4byte 0x00000000
-*/
+#include "nans.h"
 
 namespace Game {
 
-/*
- * --INFO--
- * Address:	801D7808
- * Size:	00001C
+bool AILOD::drawInfo;
+
+/**
+ * @note Address: 0x801D7808
+ * @note Size: 0x1C
  */
 AILODParm::AILODParm()
     : mFar(0.07f)
     , mClose(0.02f)
     , mIsCylinder(false)
 {
-	/*
-	lfs      f1, lbl_80519750@sda21(r2)
-	li       r0, 0
-	lfs      f0, lbl_80519754@sda21(r2)
-	stfs     f1, 0(r3)
-	stfs     f0, 4(r3)
-	stb      r0, 8(r3)
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801D7824
- * Size:	000018
+/**
+ * @note Address: 0x801D7824
+ * @note Size: 0x18
  */
 AILOD::AILOD()
-    : mFlags(FLAG_NONE)
+    : mFlags(AILOD_NULL)
     , mSndVpId(0)
 {
-	mFlags = VisibleOnViewport0;
-	/*
-	li       r4, 0
-	li       r0, 0x10
-	stb      r4, 0(r3)
-	stb      r4, 1(r3)
-	stb      r0, 0(r3)
-	blr
-	*/
+	mFlags = AILOD_IsVisVP0;
 }
 
-/*
- * --INFO--
- * Address:	801D783C
- * Size:	0003A8
+/**
+ * @note Address: 0x801D783C
+ * @note Size: 0x3A8
  */
 void Creature::updateLOD(Game::AILODParm& parm)
 {
@@ -151,96 +44,91 @@ void Creature::updateLOD(Game::AILODParm& parm)
 	if (parm.mIsCylinder) {
 		getLODCylinder(lodCylinder);
 	}
-	int iStack[2];
-	int* pi           = iStack;
-	bool shouldCull   = true; // set to false if visible on any viewport
-	int v11           = 2;
-	int viewportCount = sys->mGfx->mViewportCount;
+
+	// gonna have to play with the order of these probably
+	mLod.mFlags     = AILOD_NULL;
+	bool shouldCull = true; // set to false if visible on any viewport
+	int vpStats[2];
+	Graphics* gfx     = sys->mGfx;
+	int viewportCount = gfx->mActiveViewports;
+	u32 currFlag      = 2;
+
 	for (int i = 0; i < viewportCount; i++) {
-		Viewport* vp = sys->mGfx->getViewport(i);
+		Viewport* vp = gfx->getViewport(i);
 		if (!vp->viewable()) {
-			*pi = 2;
+			vpStats[i] = 2;
 		} else {
 			Camera* camera = vp->mCamera;
 			if (parm.mIsCylinder) {
 				if (camera->isCylinderVisible(lodCylinder)) {
 					shouldCull = false;
-					mLod.mFlags |= (AILOD::VisibleOnViewport0 << i);
+					mLod.mFlags |= (AILOD_IsVisVP0 << i);
 				}
 			} else {
 				if (camera->isVisible(lodSphere)) {
 					shouldCull = false;
-					mLod.mFlags |= (AILOD::VisibleOnViewport0 << i);
+					mLod.mFlags |= (AILOD_IsVisVP0 << i);
 				}
 			}
-			float screenSize = camera->calcScreenSize(lodSphere);
-			if (screenSize <= parm.mFar) {
-				if (screenSize <= parm.mClose) {
-					*pi = 2;
-				} else {
-					*pi = 1;
-				}
+			f32 screenSize = camera->calcScreenSize(lodSphere);
+			if (screenSize > parm.mFar) {
+
+				vpStats[i] = 0;
 			} else {
-				*pi = 0;
+				if (screenSize > parm.mClose) {
+					vpStats[i] = 1;
+				} else {
+					vpStats[i] = 2;
+				}
 			}
-			if (*pi < v11) {
-				v11 = *pi;
+			if (vpStats[i] < currFlag) {
+				currFlag = vpStats[i];
 			}
 		}
-		pi++;
 	}
-	// TODO: This smells of inlining.
-	bool isMultiplayer = gameSystem->isMultiplayerMode();
-	if (!(isMultiplayer && (2 <= viewportCount))) {
+
+	if (!(gameSystem->isMultiplayerMode() && (2 <= viewportCount))) {
 		mLod.mSndVpId = 0;
 	} else {
-		Viewport* vp0 = sys->mGfx->getViewport(0);
-		Viewport* vp1 = sys->mGfx->getViewport(1);
+		Viewport* vp0 = gfx->getViewport(0);
+		Viewport* vp1 = gfx->getViewport(1);
 		if (!vp0->viewable()) {
-			mLod.mSndVpId = 1;
+			mLod.mSndVpId = 0;
 		} else {
 			if (!vp1->viewable()) {
 				mLod.mSndVpId = 0;
 			} else {
-				P2ASSERTLINE(175, (vp0->mCamera != nullptr));
-				P2ASSERTLINE(176, (vp1->mCamera != nullptr));
-				Vector3f* pos0 = vp0->mCamera->getSoundPositionPtr();
-				Vector3f* pos1 = vp1->mCamera->getSoundPositionPtr();
-				// TODO: Possible inlining?
-				float y0 = pos0->y - lodSphere.mPosition.y;
-				float y1 = pos1->y - lodSphere.mPosition.y;
-				float x0 = pos0->x - lodSphere.mPosition.x;
-				float x1 = pos1->x - lodSphere.mPosition.x;
-				float z0 = pos0->z - lodSphere.mPosition.z;
-				float z1 = pos1->z - lodSphere.mPosition.z;
-				if (SQUARE(z1) + SQUARE(x1) + SQUARE(y1)
-				    // (SQUARE(pos1->x - lodSphere.mPosition.x)
-				    // + SQUARE(pos1->y - lodSphere.mPosition.y)
-				    // + SQUARE(pos1->z - lodSphere.mPosition.z))
-				    <= SQUARE(z0) + SQUARE(x0) + SQUARE(y0)
-				    // (SQUARE(pos0->x - lodSphere.mPosition.x)
-				    // + SQUARE(pos0->y - lodSphere.mPosition.y)
-				    // + SQUARE(pos0->z - lodSphere.mPosition.z))
-				) {
-					mLod.mSndVpId = 1;
-				} else {
+				P2ASSERTLINE(175, vp0->mCamera);
+				P2ASSERTLINE(176, vp1->mCamera);
+
+				Vector3f pos0 = *vp0->mCamera->getSoundPositionPtr();
+				Vector3f pos1 = *vp1->mCamera->getSoundPositionPtr();
+
+				f32 dist0 = pos0.sqrDistance(lodSphere.mPosition);
+				f32 dist1 = pos1.sqrDistance(lodSphere.mPosition);
+
+				if (dist0 < dist1) {
 					mLod.mSndVpId = 0;
+				} else {
+					mLod.mSndVpId = 1;
 				}
 			}
 		}
 	}
+
 	for (int i = 0; i < viewportCount; i++) {
-		sys->mGfx->getViewport(i)->viewable();
+		gfx->getViewport(i)->viewable();
 	}
-	mLod.mFlags |= (u8)v11;
+	mLod.setFlag((u8)currFlag);
 	if (!shouldCull) {
-		mLod.mFlags |= AILOD::FLAG_NEED_SHADOW;
+		mLod.setFlag(AILOD_IsVisible);
 	} else {
-		mLod.mFlags = AILOD::IsFar;
+		mLod.mFlags = (AILOD_IsFar);
 	}
 	if (0 < getCellPikiCount()) {
-		mLod.mFlags |= AILOD::FLAG_UNKNOWN4;
+		mLod.setFlag(AILOD_PikiInCell);
 	}
+
 	/*
 	stwu     r1, -0xa0(r1)
 	mflr     r0
@@ -529,282 +417,45 @@ lbl_801D7BB8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801D7BE4
- * Size:	000258
+/**
+ * @note Address: 0x801D7BE4
+ * @note Size: 0x258
  */
 void Creature::drawLODInfo(Graphics& gfx, Vector3f& position)
 {
 	if (AILOD::drawInfo) {
 		PerspPrintfInfo info;
-		info.mFont = JFWSystem::systemFont;
-		info._04   = 0;
-		info._08   = 0;
-		info._0C   = 0;
-		info._10   = 1.0f;
-		info._14.r = 0x66;
-		info._14.g = 0x99;
-		info._14.b = 0xFF;
-		info._14.a = 0xFF;
-		info._18.r = 0x00;
-		info._18.g = 0x66;
-		info._18.b = 0xFF;
-		info._18.a = 0xFF;
-		gfx.initPerspPrintf(gfx._25C);
+		gfx.initPerspPrintf(gfx.mCurrentViewport);
 		const char* nearnessLabels[] = { "near", "mid", "far" };
-		// nearnessLabels[0] = "near";
-		// nearnessLabels[1] = "mid";
-		// nearnessLabels[2] = "far";
 
-		u8 nearness = mLod.mFlags & (AILOD::IsMid | AILOD::IsFar);
+		int nearness = mLod.mFlags & (AILOD_IsMid | AILOD_IsFar);
 		switch (nearness) {
-		case AILOD::FLAG_NONE:
-			if (true) {
-				info._14.r = 0x00;
-				info._14.g = 0x0A;
-				info._14.b = 0xFF;
-				info._14.a = 0xFF;
-				info._18.r = 0xC8;
-				info._18.g = 0xC8;
-				info._18.b = 0xC8;
-				info._18.a = 0xFF;
-			}
+		case AILOD_NULL:
+			info.mColorA.set(0, 10, 255, 255);
+			info.mColorB.set(200, 200, 200, 255);
 			break;
-		case AILOD::IsMid:
-			info._14.r = 0xC8;
-			info._14.g = 0xC8;
-			info._14.b = 0x00;
-			info._14.a = 0xFF;
-			info._18.r = 0xC8;
-			info._18.g = 0xC8;
-			info._18.b = 0xC8;
-			info._18.a = 0xFF;
+		case AILOD_IsMid:
+			info.mColorA.set(200, 200, 0, 255);
+			info.mColorB.set(200, 200, 200, 255);
 			break;
-		case AILOD::IsFar:
-			info._14.r = 0xFF;
-			info._14.g = 0x0A;
-			info._14.b = 0x00;
-			info._14.a = 0xFF;
-			info._18.r = 0xC8;
-			info._18.g = 0xC8;
-			info._18.b = 0xC8;
-			info._18.a = 0xFF;
+		case AILOD_IsFar:
+			info.mColorA.set(255, 10, 0, 255);
+			info.mColorB.set(200, 200, 200, 255);
 			break;
 		}
-		const char* flag4Text = "_";
-		if (mLod.mFlags & AILOD::FLAG_UNKNOWN4) {
-			flag4Text = "p";
-		}
-		const char* vp1VisibilityText = "x";
-		if (mLod.mFlags & AILOD::VisibleOnViewport1) {
-			vp1VisibilityText = "v";
-		}
-		const char* vp0VisibilityText = "x";
-		if (mLod.mFlags & AILOD::VisibleOnViewport0) {
-			vp0VisibilityText = "v";
-		}
-		gfx.perspPrintf(info, position, "[%s%s %s %s]", vp0VisibilityText, vp1VisibilityText, flag4Text, nearnessLabels[nearness]);
+
+		gfx.perspPrintf(info, position, "[%s%s %s %s]", (mLod.isFlag(AILOD_IsVisVP0)) ? "v" : "x",
+		                (mLod.isFlag(AILOD_IsVisVP1)) ? "v" : "x", (mLod.isFlag(AILOD_PikiInCell)) ? "p" : "_", nearnessLabels[nearness]);
+
 		Camera* camera0 = sys->mGfx->getViewport(0)->mCamera;
 		Vector3f sizeOnScreenTextPosition;
-		sizeOnScreenTextPosition.x = position.x;
-		sizeOnScreenTextPosition.y = position.y + 15.0f;
-		sizeOnScreenTextPosition.z = position.z;
+		sizeOnScreenTextPosition = position;
+		sizeOnScreenTextPosition.y += 15.0f;
+
 		Sys::Sphere lodSphere;
 		getLODSphere(lodSphere);
 		gfx.perspPrintf(info, sizeOnScreenTextPosition, "<%f>", camera0->calcScreenSize(lodSphere));
 	}
-	/*
-	stwu     r1, -0x60(r1)
-	mflr     r0
-	stw      r0, 0x64(r1)
-	stw      r31, 0x5c(r1)
-	mr       r31, r5
-	stw      r30, 0x58(r1)
-	mr       r30, r4
-	stw      r29, 0x54(r1)
-	mr       r29, r3
-	stw      r28, 0x50(r1)
-	lbz      r0, drawInfo__Q24Game5AILOD@sda21(r13)
-	cmplwi   r0, 0
-	beq      lbl_801D7E1C
-	lwz      r3, systemFont__9JFWSystem@sda21(r13)
-	li       r6, 0
-	li       r0, 0xff
-	li       r5, 0x66
-	lfs      f0, lbl_80519768@sda21(r2)
-	li       r4, 0x99
-	stw      r3, 0x30(r1)
-	mr       r3, r30
-	stw      r6, 0x34(r1)
-	stw      r6, 0x38(r1)
-	stw      r6, 0x3c(r1)
-	stfs     f0, 0x40(r1)
-	stb      r5, 0x44(r1)
-	stb      r4, 0x45(r1)
-	stb      r0, 0x46(r1)
-	stb      r0, 0x47(r1)
-	stb      r6, 0x48(r1)
-	stb      r5, 0x49(r1)
-	stb      r0, 0x4a(r1)
-	stb      r0, 0x4b(r1)
-	lwz      r4, 0x25c(r30)
-	bl       initPerspPrintf__8GraphicsFP8Viewport
-	lbz      r0, 0xd8(r29)
-	lis      r3, lbl_804807E4@ha
-	lwzu     r5, lbl_804807E4@l(r3)
-	clrlwi   r0, r0, 0x1e
-	lwz      r4, 4(r3)
-	cmpwi    r0, 1
-	lwz      r3, 8(r3)
-	stw      r5, 0x24(r1)
-	stw      r4, 0x28(r1)
-	stw      r3, 0x2c(r1)
-	beq      lbl_801D7CEC
-	bge      lbl_801D7CAC
-	cmpwi    r0, 0
-	bge      lbl_801D7CB8
-	b        lbl_801D7D4C
-
-lbl_801D7CAC:
-	cmpwi    r0, 3
-	bge      lbl_801D7D4C
-	b        lbl_801D7D1C
-
-lbl_801D7CB8:
-	li       r4, 0xff
-	li       r3, 0xc8
-	li       r6, 0
-	li       r5, 0xa
-	stb      r6, 0x44(r1)
-	stb      r5, 0x45(r1)
-	stb      r4, 0x46(r1)
-	stb      r4, 0x47(r1)
-	stb      r3, 0x48(r1)
-	stb      r3, 0x49(r1)
-	stb      r3, 0x4a(r1)
-	stb      r4, 0x4b(r1)
-	b        lbl_801D7D4C
-
-lbl_801D7CEC:
-	li       r5, 0xc8
-	li       r3, 0xff
-	li       r4, 0
-	stb      r5, 0x44(r1)
-	stb      r5, 0x45(r1)
-	stb      r4, 0x46(r1)
-	stb      r3, 0x47(r1)
-	stb      r5, 0x48(r1)
-	stb      r5, 0x49(r1)
-	stb      r5, 0x4a(r1)
-	stb      r3, 0x4b(r1)
-	b        lbl_801D7D4C
-
-lbl_801D7D1C:
-	li       r6, 0xff
-	li       r3, 0xc8
-	li       r5, 0xa
-	li       r4, 0
-	stb      r6, 0x44(r1)
-	stb      r5, 0x45(r1)
-	stb      r4, 0x46(r1)
-	stb      r6, 0x47(r1)
-	stb      r3, 0x48(r1)
-	stb      r3, 0x49(r1)
-	stb      r3, 0x4a(r1)
-	stb      r6, 0x4b(r1)
-
-lbl_801D7D4C:
-	lbz      r4, 0xd8(r29)
-	addi     r9, r2, lbl_80519770@sda21
-	rlwinm.  r3, r4, 0, 0x1c, 0x1c
-	beq      lbl_801D7D60
-	addi     r9, r2, lbl_8051976C@sda21
-
-lbl_801D7D60:
-	rlwinm.  r3, r4, 0, 0x1a, 0x1a
-	addi     r8, r2, lbl_80519778@sda21
-	beq      lbl_801D7D70
-	addi     r8, r2, lbl_80519774@sda21
-
-lbl_801D7D70:
-	rlwinm.  r3, r4, 0, 0x1b, 0x1b
-	lis      r4, lbl_804807F0@ha
-	addi     r6, r4, lbl_804807F0@l
-	mr       r5, r31
-	mr       r3, r30
-	addi     r4, r1, 0x30
-	addi     r7, r2, lbl_80519778@sda21
-	beq      lbl_801D7D94
-	addi     r7, r2, lbl_80519774@sda21
-
-lbl_801D7D94:
-	slwi     r0, r0, 2
-	addi     r10, r1, 0x24
-	lwzx     r10, r10, r0
-	crclr    6
-	bl       "perspPrintf__8GraphicsFR15PerspPrintfInfoR10Vector3<f>Pce"
-	lwz      r3, sys@sda21(r13)
-	li       r4, 0
-	lwz      r3, 0x24(r3)
-	bl       getViewport__8GraphicsFi
-	lwz      r28, 0x44(r3)
-	mr       r3, r29
-	lfs      f1, 0(r31)
-	addi     r4, r1, 8
-	lfs      f0, lbl_8051977C@sda21(r2)
-	stfs     f1, 0x18(r1)
-	lfs      f1, 4(r31)
-	stfs     f1, 0x1c(r1)
-	fadds    f0, f1, f0
-	lfs      f1, 8(r31)
-	stfs     f1, 0x20(r1)
-	stfs     f0, 0x1c(r1)
-	lwz      r12, 0(r29)
-	lwz      r12, 0x140(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r28
-	addi     r4, r1, 8
-	bl       calcScreenSize__6CameraFRQ23Sys6Sphere
-	mr       r3, r30
-	addi     r4, r1, 0x30
-	addi     r5, r1, 0x18
-	addi     r6, r2, lbl_80519780@sda21
-	crset    6
-	bl       "perspPrintf__8GraphicsFR15PerspPrintfInfoR10Vector3<f>Pce"
-
-lbl_801D7E1C:
-	lwz      r0, 0x64(r1)
-	lwz      r31, 0x5c(r1)
-	lwz      r30, 0x58(r1)
-	lwz      r29, 0x54(r1)
-	lwz      r28, 0x50(r1)
-	mtlr     r0
-	addi     r1, r1, 0x60
-	blr
-	*/
 }
 
 } // namespace Game
-
-/*
- * --INFO--
- * Address:	801D7E3C
- * Size:	000028
- */
-void __sinit_creatureLOD_cpp()
-{
-	/*
-	lis      r4, __float_nan@ha
-	li       r0, -1
-	lfs      f0, __float_nan@l(r4)
-	lis      r3, lbl_804B8610@ha
-	stw      r0, lbl_80515AD8@sda21(r13)
-	stfsu    f0, lbl_804B8610@l(r3)
-	stfs     f0, lbl_80515ADC@sda21(r13)
-	stfs     f0, 4(r3)
-	stfs     f0, 8(r3)
-	blr
-	*/
-}

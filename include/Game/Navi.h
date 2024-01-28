@@ -1,6 +1,7 @@
 #ifndef _GAME_NAVI_H
 #define _GAME_NAVI_H
 
+#include "BitFlag.h"
 #include "Game/FakePiki.h"
 #include "Game/PelletView.h"
 #include "Game/StateMachine.h"
@@ -28,9 +29,21 @@ enum NaviIndex {
 	NAVIID_Olimar    = 0,
 	NAVIID_Louie     = 1,
 	NAVIID_President = 2,
+
+	NAVIID_Captain1 = NAVIID_Olimar, // 0, always olimar
+	NAVIID_Captain2 = NAVIID_Louie,  // 1, louie or president
+};
+
+enum AliveOrimaType {
+	ALIVEORIMA_Active   = 0,
+	ALIVEORIMA_Inactive = 1,
 };
 
 #define GET_OTHER_NAVI(navi) (1 - (navi)->mNaviIndex)
+
+// Louie scale is also used for president
+#define OLIMAR_SCALE 1.3f
+#define LOUIE_SCALE  1.5f
 
 namespace PSM {
 struct DirectorUpdator;
@@ -50,12 +63,6 @@ struct Item;
 enum NaviControlFlags {
 	NAVICTRL_InMovie = 0x1,
 	NAVICTRL_InOnyon = 0x2,
-};
-
-struct NaviDamageArg {
-	virtual const char* getName(); // _08 (weak)
-
-	// _00 VTBL
 };
 
 struct NaviFSM : public StateMachine<Navi> {
@@ -95,6 +102,7 @@ struct NaviWhistle {
 #define NAVI_THROWTIMER_LENGTH (10)
 
 struct Navi : public FakePiki, virtual public PelletView {
+	typedef NaviState StateType;
 	Navi();
 
 	// vtable 1 (Creature)
@@ -107,7 +115,7 @@ struct Navi : public FakePiki, virtual public PelletView {
 	virtual void doViewCalc();                                          // _48
 	virtual void doSimulation(f32);                                     // _4C
 	virtual void doDirectDraw(Graphics& gfx);                           // _50
-	virtual void setVelocity(Vector3f& vel);                            // _68 (weak)
+	virtual void setVelocity(Vector3f& vel) { mVelocity = vel; }        // _68 (weak)
 	virtual void onSetPosition(Vector3f& dest);                         // _70
 	virtual void inWaterCallback(WaterBox* wb);                         // _84
 	virtual void outWaterCallback();                                    // _88
@@ -130,8 +138,8 @@ struct Navi : public FakePiki, virtual public PelletView {
 	virtual void onStickEnd(Creature*);                                 // _15C
 	virtual bool ignoreAtari(Creature* toIgnore);                       // _190
 	virtual bool stimulate(Interaction& data);                          // _1A4
-	virtual char* getCreatureName();                                    // _1A8 (weak)
-	virtual s32 getCreatureID();                                        // _1AC (weak)
+	virtual char* getCreatureName() { return "navi"; }                  // _1A8 (weak)
+	virtual s32 getCreatureID() { return mNaviIndex; }                  // _1AC (weak)
 
 	// vtable 2 (MotionListener + FakePiki + self)
 	virtual int getDownfloorMass();                           // _1BC
@@ -153,10 +161,10 @@ struct Navi : public FakePiki, virtual public PelletView {
 	void applyDopes(int, Vector3f&);
 	void applyDopeSmoke(CellObject*);
 	void callPikis();
-	void checkBigFountain();
-	void checkCave();
+	ItemBigFountain::Item* checkBigFountain();
+	ItemCave::Item* checkCave();
 	FakePiki* checkDemoNaviAndPiki(Sys::Sphere&);
-	void checkHole();
+	ItemHole::Item* checkHole();
 	Onyon* checkOnyon();
 	void clearKaisanDisable();
 	void clearThrowDisable();
@@ -207,16 +215,32 @@ struct Navi : public FakePiki, virtual public PelletView {
 		model->mJ3dModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = static_cast<J3DMtxCalcAnmBase*>(mAnimator.mBoundAnimator.getCalc());
 	}
 
-	inline NaviState* getCurrentState() { return mCurrentState; }
+	inline void setCamera(PlayCamera* cam)
+	{
+		mCamera  = cam;
+		mCamera2 = cam;
+	}
+
+	inline void setController(Controller* control)
+	{
+		mController1 = control;
+		mController2 = control;
+	}
+
+	inline int getNaviID() { return mNaviIndex; }
+
+	// inline NaviState* getCurrentState() { return mCurrentState; }
 
 	inline void setControlFlag(u16 flag) { mNaviControlFlag.typeView |= flag; }
 	inline void resetControlFlag(u16 flag) { mNaviControlFlag.typeView &= ~flag; }
 	inline bool isControlFlag(u16 flag) { return mNaviControlFlag.typeView & flag; }
 
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
+
 	// _000      = VTBL
 	// _000-_250 = FakePiki
 	// _250      = ptr to PelletView
-	// u32 _250;                                // probably shouldn't be here?
 	CPlate* mCPlateMgr;                     // _254
 	u8 _258;                                // _258
 	u8 mStickCount;                         // _259
@@ -224,7 +248,7 @@ struct Navi : public FakePiki, virtual public PelletView {
 	u8 _264[4];                             // _264
 	bool mIsAlive;                          // _268
 	u8 _269;                                // _269
-	u8 _26A;                                // _26A
+	u8 mPluckingCounter;                    // _26A
 	PSM::Navi* mSoundObj;                   // _26C
 	NaviFSM* mFsm;                          // _270
 	NaviState* mCurrentState;               // _274
@@ -249,13 +273,13 @@ struct Navi : public FakePiki, virtual public PelletView {
 	SysShape::Joint* mBeaconJoint;          // _2C0
 	Vector3f mBeaconPosition;               // _2C4
 	efx::TNaviEffect* mEffectsObj;          // _2D0
-	u8 mDisbandTimer;                       // _2D4
+	s8 mDisbandTimer;                       // _2D4
 	Footmarks* mFootmarks;                  // _2D8
 	u16 mNaviIndex;                         // _2DC
 	u8 _2DE;                                // _2DE
 	Vector3f mCStickTargetVector;           // _2E0
 	Vector3f mCStickPosition;               // _2EC
-	f32 _2F8;                               // _2F8
+	f32 mCStickAngle;                       // _2F8
 	u8 _2FC;                                // _2FC
 	u8 _2FD;                                // _2FD
 	int mCStickState;                       // _300
@@ -273,51 +297,54 @@ struct NaviMgr : public MonoObjectMgr<Navi>, public JKRDisposer {
 	virtual ~NaviMgr(); // _08 (weak)
 
 	// vtable 2 (MonoObjectMgr, _00)
-	virtual void doAnimation();        // _64 (weak, thunk at _34)
-	virtual void doEntry();            // _68 (weak, thunk at _38)
-	virtual void doSimulation(f32 p1); // _74 (weak, thunk at _44)
-	virtual Navi* birth();             // _7C
-	virtual void resetMgr();           // _80 (weak, thunk at _54)
+	virtual void doAnimation();          // _64 (thunk at _34)
+	virtual void doEntry();              // _68 (thunk at _38)
+	virtual void doSimulation(f32 rate); // _74 (thunk at _44)
+	virtual Navi* birth();               // _7C
+	virtual void resetMgr();             // _80 (thunk at _54)
 
 	// vtable 3 (JKRDisposer + self, _30)
 	virtual void killAll();                          // _98
 	virtual char* getMgrName() { return "NaviMgr"; } // _9C (weak)
 	virtual bool frozenable() { return false; }      // _A0 (weak, thunk at _5C in vt 2)
-	virtual void loadResources();                    // _A4 (weak, thunk at _50 in vt 2)
+	virtual void loadResources();                    // _A4 (thunk at _50 in vt 2)
 
 	void clearDeadCount();
-	SysShape::Model* createModel(int);
+	SysShape::Model* createModel(int naviID);
 	void createPSMDirectorUpdator();
 	Navi* getActiveNavi();
 	int getAliveCount();
-	Navi* getAliveOrima(int);
-	Navi* getDeadOrima(int);
-	void informOrimaDead(int);
+	Navi* getAliveOrima(int aliveOrimaType); // see AliveOrimaType enum; 0 = get active, 1 = get inactive
+	Navi* getDeadOrima(int deadID);          // 0 for first dead, 1 for second dead
+	void informOrimaDead(int naviID);
 	void load();
 	void loadResources_float();
-	void setMovieDraw(bool);
+	void setMovieDraw(bool isMoviePlaying);
 	void setupSoundViewerAndBas();
-	void setupNavi(Navi*);
+	void setupNavi(Navi* navi);
 
 	// Unused/inlined:
-	unknown init();
+	void init();
 	Navi* getSurviveNavi();
-	unknown draw2d(J2DGrafContext&);
+	void draw2d(J2DGrafContext&);
 
 	static SysShape::AnimMgr* animMgr;
 
-	// VT 3 pointer is at _30
-	PSM::DirectorUpdator* _48;               // _48 (appears to be completely unused)
+	// _00     = VTBL 1 + 2
+	// _00-_30 = MonoObjectMgr
+	// _30     = VTBL 3
+	// _30-_48 = JKRDisposer
+	PSM::DirectorUpdator* mBackupPSMMgr;     // _48 (appears to be completely unused)
 	PSM::DirectorUpdator* mPSMMgr;           // _4C (used for damage taking bgm mix)
 	int mDeadNavis;                          // _50
 	int mNaviDeadFlags[2];                   // _54 (seems to translate the order of killed captains to their ids?)
-	u8 mFlags;                               // _5C
+	BitFlag<u8> mFlags;                      // _5C
 	Sys::MatTevRegAnimation mCursorAnims[2]; // _60
 	Sys::MatTevRegAnimation mMarkerAnims[2]; // _88
 	J3DModelData* mOlimarModel;              // _B0
 	J3DModelData* mLouieModel;               // _B4 (also president model)
 	J3DModelData* mCursorModelData;          // _B8
-	u8 _BC[8];                               // _BC
+	u8 _BC[8];                               // _BC, unused?
 	J3DModelData* mMarkerModelData;          // _C4
 	NaviParms* mNaviParms;                   // _C8
 	CollPartFactory* mCollData;              // _CC

@@ -9,10 +9,9 @@
 
 namespace Game {
 
-/*
- * --INFO--
- * Address:	8025DC8C
- * Size:	000130
+/**
+ * @note Address: 0x8025DC8C
+ * @note Size: 0x130
  */
 Kogane::Obj::Obj()
 {
@@ -20,17 +19,15 @@ Kogane::Obj::Obj()
 	setFSM(new FSM);
 }
 
-/*
- * --INFO--
- * Address:	8025DDBC
- * Size:	000004
+/**
+ * @note Address: 0x8025DDBC
+ * @note Size: 0x4
  */
 void Kogane::Obj::setInitialSetting(Game::EnemyInitialParamBase*) { }
 
-/*
- * --INFO--
- * Address:	8025DDC0
- * Size:	000130
+/**
+ * @note Address: 0x8025DDC0
+ * @note Size: 0x130
  */
 void Kogane::Obj::onInit(Game::CreatureInitArg* arg)
 {
@@ -48,7 +45,7 @@ void Kogane::Obj::onInit(Game::CreatureInitArg* arg)
 	mScaleTimer = 0.0001f;
 	resetFartTimer();
 	mFsm->start(this, KOGANE_Appear, nullptr);
-	if (gameSystem && gameSystem->mMode == GSM_PIKLOPEDIA) {
+	if (gameSystem && gameSystem->isZukanMode()) {
 		mAppearTimer = -12800.0f;
 		mFsm->transit(this, KOGANE_Move, nullptr);
 	} else {
@@ -56,17 +53,15 @@ void Kogane::Obj::onInit(Game::CreatureInitArg* arg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025DEF0
- * Size:	000004
+/**
+ * @note Address: 0x8025DEF0
+ * @note Size: 0x4
  */
 void Kogane::Obj::resetFartTimer() { }
 
-/*
- * --INFO--
- * Address:	8025DEF4
- * Size:	000050
+/**
+ * @note Address: 0x8025DEF4
+ * @note Size: 0x50
  */
 void Kogane::Obj::onKill(Game::CreatureKillArg* arg)
 {
@@ -74,38 +69,33 @@ void Kogane::Obj::onKill(Game::CreatureKillArg* arg)
 	EnemyBase::onKill(arg);
 }
 
-/*
- * --INFO--
- * Address:	8025DF44
- * Size:	000034
+/**
+ * @note Address: 0x8025DF44
+ * @note Size: 0x34
  */
 void Kogane::Obj::doUpdate() { mFsm->exec(this); }
 
-/*
- * --INFO--
- * Address:	8025DF78
- * Size:	000020
+/**
+ * @note Address: 0x8025DF78
+ * @note Size: 0x20
  */
 void Kogane::Obj::doUpdateCommon() { EnemyBase::doUpdateCommon(); }
 
-/*
- * --INFO--
- * Address:	8025DF98
- * Size:	000004
+/**
+ * @note Address: 0x8025DF98
+ * @note Size: 0x4
  */
 void Kogane::Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	8025DF9C
- * Size:	000020
+/**
+ * @note Address: 0x8025DF9C
+ * @note Size: 0x20
  */
 void Kogane::Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	8025DFBC
- * Size:	00004C
+/**
+ * @note Address: 0x8025DFBC
+ * @note Size: 0x4C
  */
 void Kogane::Obj::setFSM(FSM* fsm)
 {
@@ -114,10 +104,9 @@ void Kogane::Obj::setFSM(FSM* fsm)
 	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8025E008
- * Size:	0000A0
+/**
+ * @note Address: 0x8025E008
+ * @note Size: 0xA0
  */
 void Kogane::Obj::getShadowParam(ShadowParam& param)
 {
@@ -128,10 +117,9 @@ void Kogane::Obj::getShadowParam(ShadowParam& param)
 	param.mSize                     = mScaleTimer * 15.0f;
 }
 
-/*
- * --INFO--
- * Address:	8025E0A8
- * Size:	00006C
+/**
+ * @note Address: 0x8025E0A8
+ * @note Size: 0x6C
  */
 bool Kogane::Obj::pressCallBack(Creature* obj, f32 dmg, CollPart*)
 {
@@ -142,10 +130,9 @@ bool Kogane::Obj::pressCallBack(Creature* obj, f32 dmg, CollPart*)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025E114
- * Size:	00003C
+/**
+ * @note Address: 0x8025E114
+ * @note Size: 0x3C
  */
 void Kogane::Obj::wallCallback(const MoveInfo& info)
 {
@@ -153,10 +140,9 @@ void Kogane::Obj::wallCallback(const MoveInfo& info)
 	setTargetPosition(&pos);
 }
 
-/*
- * --INFO--
- * Address:	8025E150
- * Size:	000060
+/**
+ * @note Address: 0x8025E150
+ * @note Size: 0x60
  */
 bool Kogane::Obj::earthquakeCallBack(Creature* obj, f32)
 {
@@ -167,10 +153,9 @@ bool Kogane::Obj::earthquakeCallBack(Creature* obj, f32)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025E1B0
- * Size:	00006C
+/**
+ * @note Address: 0x8025E1B0
+ * @note Size: 0x6C
  */
 bool Kogane::Obj::hipdropCallBack(Creature* obj, f32 dmg, CollPart*)
 {
@@ -181,10 +166,9 @@ bool Kogane::Obj::hipdropCallBack(Creature* obj, f32 dmg, CollPart*)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025E21C
- * Size:	000050
+/**
+ * @note Address: 0x8025E21C
+ * @note Size: 0x50
  */
 void Kogane::Obj::doStartStoneState()
 {
@@ -194,10 +178,9 @@ void Kogane::Obj::doStartStoneState()
 	enableEvent(0, EB_LifegaugeVisible);
 }
 
-/*
- * --INFO--
- * Address:	8025E26C
- * Size:	000050
+/**
+ * @note Address: 0x8025E26C
+ * @note Size: 0x50
  */
 void Kogane::Obj::doFinishStoneState()
 {
@@ -207,24 +190,21 @@ void Kogane::Obj::doFinishStoneState()
 	disableEvent(0, EB_LifegaugeVisible);
 }
 
-/*
- * --INFO--
- * Address:	8025E2BC
- * Size:	00002C
+/**
+ * @note Address: 0x8025E2BC
+ * @note Size: 0x2C
  */
 void Kogane::Obj::doStartMovie() { effectDrawOff(); }
 
-/*
- * --INFO--
- * Address:	8025E2EC
- * Size:	00002C
+/**
+ * @note Address: 0x8025E2EC
+ * @note Size: 0x2C
  */
 void Kogane::Obj::doEndMovie() { effectDrawOn(); }
 
-/*
- * --INFO--
- * Address:	8025E31C
- * Size:	000084
+/**
+ * @note Address: 0x8025E31C
+ * @note Size: 0x84
  */
 bool Kogane::Obj::transitDamageState(f32 dmg)
 {
@@ -242,10 +222,9 @@ bool Kogane::Obj::transitDamageState(f32 dmg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025E3A0
- * Size:	000108
+/**
+ * @note Address: 0x8025E3A0
+ * @note Size: 0x108
  */
 bool Kogane::Obj::transitDisappear()
 {
@@ -261,10 +240,9 @@ bool Kogane::Obj::transitDisappear()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	8025E4A8
- * Size:	000050
+/**
+ * @note Address: 0x8025E4A8
+ * @note Size: 0x50
  */
 Vector3f Kogane::Obj::getBodyJointPos()
 {
@@ -272,20 +250,19 @@ Vector3f Kogane::Obj::getBodyJointPos()
 	return Vector3f(mtx->mMatrix.structView.tx, mtx->mMatrix.structView.ty, mtx->mMatrix.structView.tz);
 }
 
-/*
- * --INFO--
- * Address:	8025E4F8
- * Size:	0000A4
+/**
+ * @note Address: 0x8025E4F8
+ * @note Size: 0xA4
  */
 bool Kogane::Obj::koganeScaleUp()
 {
 	bool check = false;
-	if (mScaleTimer < C_PARMS->mProperParms.mScale.mValue) {
+	if (mScaleTimer < C_PROPERPARMS.mScale.mValue) {
 		mScaleTimer += sys->mDeltaTime * 10.0f;
 
-		if (mScaleTimer >= *C_PARMS->mProperParms.mScale()) {
+		if (mScaleTimer >= C_PROPERPARMS.mScale()) {
 			check       = true;
-			mScaleTimer = *C_PARMS->mProperParms.mScale();
+			mScaleTimer = C_PROPERPARMS.mScale();
 			disableEvent(0, EB_NoInterrupt);
 		}
 		f32 scale      = mScaleTimer;
@@ -296,10 +273,9 @@ bool Kogane::Obj::koganeScaleUp()
 	return check;
 }
 
-/*
- * --INFO--
- * Address:	8025E59C
- * Size:	00008C
+/**
+ * @note Address: 0x8025E59C
+ * @note Size: 0x8C
  */
 bool Kogane::Obj::koganeScaleDown()
 {
@@ -319,10 +295,9 @@ bool Kogane::Obj::koganeScaleDown()
 	return check;
 }
 
-/*
- * --INFO--
- * Address:	8025E628
- * Size:	0001AC
+/**
+ * @note Address: 0x8025E628
+ * @note Size: 0x1AC
  */
 void Kogane::Obj::setTargetPosition(Vector3f* goal)
 {
@@ -333,36 +308,34 @@ void Kogane::Obj::setTargetPosition(Vector3f* goal)
 	} else {
 		f32 angle = 0.0f;
 		if (mScaleTimer > 0.1f) {
-			angle = randWeightFloat(C_PARMS->mProperParms.mTurnAngle.mValue * 2.0f);
-			angle -= C_PARMS->mProperParms.mTurnAngle.mValue;
+			angle = randWeightFloat(C_PROPERPARMS.mTurnAngle.mValue * 2.0f);
+			angle -= C_PROPERPARMS.mTurnAngle.mValue;
 		}
 		f32 theta         = PI * (DEG2RAD * angle) + getFaceDir();
-		mTargetPosition.x = 1000.0f * pikmin2_sinf(theta) + mPosition.x;
+		mTargetPosition.x = 1000.0f * sinf(theta) + mPosition.x;
 		mTargetPosition.y = mPosition.y;
-		mTargetPosition.z = 1000.0f * pikmin2_cosf(theta) + mPosition.z;
+		mTargetPosition.z = 1000.0f * cosf(theta) + mPosition.z;
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025E7D4
- * Size:	000078
+/**
+ * @note Address: 0x8025E7D4
+ * @note Size: 0x78
  */
 void Kogane::Obj::resetAppearTimer()
 {
-	f32 time     = C_PARMS->mProperParms.mMaxAppearTime.mValue - C_PARMS->mProperParms.mMinAppearTime.mValue;
+	f32 time     = C_PROPERPARMS.mMaxAppearTime.mValue - C_PROPERPARMS.mMinAppearTime.mValue;
 	mAppearTimer = randWeightFloat(time);
 }
 
-/*
- * --INFO--
- * Address:	8025E84C
- * Size:	000080
+/**
+ * @note Address: 0x8025E84C
+ * @note Size: 0x80
  */
 bool Kogane::Obj::isAppear()
 {
 	bool check;
-	f32 rad = C_PARMS->mGeneral.mSightRadius.mValue;
+	f32 rad = C_GENERALPARMS.mSightRadius.mValue;
 
 	if (EnemyFunc::isThereOlimar(this, rad, nullptr)) {
 		check = true;
@@ -375,10 +348,9 @@ bool Kogane::Obj::isAppear()
 	return check;
 }
 
-/*
- * --INFO--
- * Address:	8025E8CC
- * Size:	000084
+/**
+ * @note Address: 0x8025E8CC
+ * @note Size: 0x84
  */
 void Kogane::Obj::resetMoveTimer(f32 min, f32 max)
 {
@@ -386,10 +358,9 @@ void Kogane::Obj::resetMoveTimer(f32 min, f32 max)
 	mMoveTimer = randWeightFloat(time);
 }
 
-/*
- * --INFO--
- * Address:	8025E950
- * Size:	000194
+/**
+ * @note Address: 0x8025E950
+ * @note Size: 0x194
  */
 bool Kogane::Obj::createTreasureItem()
 {
@@ -421,38 +392,36 @@ bool Kogane::Obj::createTreasureItem()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8025EAE4
- * Size:	000294
+/**
+ * @note Address: 0x8025EAE4
+ * @note Size: 0x294
  */
 void Kogane::Obj::createPellet(int type, int num)
 {
-	int colors       = 0;
-	int hasColors[3] = { 1, 1, 1 };
-	for (int i = 0; i < 3; i++) {
+	int colors                = 0;
+	int hasColors[OnyonCount] = {};
+	for (int i = 0; i < OnyonCount; i++) {
 		if (playData->hasMetPikmin(i)) {
 			hasColors[colors] = i;
 			colors++;
 		}
 	}
 
-	f32 angle = getFaceDir() + 2.0943952f;
-	f32 offs  = 2.0943952f / (f32)(num + 1);
+	f32 angle = getFaceDir() + TAU / 3;
+	f32 offs  = TAU / 3 / (num + 1);
 
 	Matrixf* mtx = mModel->getJoint("body")->getWorldMatrix();
-	Vector3f pos = mtx->getBasis(3);
+	Vector3f pos = mtx->getColumn(3);
 
 	for (int i = 0; i < num; i++) {
-		PelletNumberInitArg arg(type, hasColors[(int)(randFloat() * colors)]);
+		PelletNumberInitArg arg(type, hasColors[randInt(colors)]);
 		Pellet* pelt = pelletMgr->birth(&arg);
 		if (pelt) {
 			pelt->init(&arg);
 			pelt->onSetPosition(pos);
 
-			Vector3f vel;
 			angle += offs;
-			vel = Vector3f(1000.0f * pikmin2_sinf(angle), 250.0f, 1000.0f * pikmin2_cosf(angle));
+			Vector3f vel = Vector3f(1000.0f * sinf(angle), 250.0f, 1000.0f * cosf(angle));
 			pelt->setVelocity(vel);
 		}
 	}
@@ -641,18 +610,17 @@ lbl_8025ED3C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8025ED78
- * Size:	0001DC
+/**
+ * @note Address: 0x8025ED78
+ * @note Size: 0x1DC
  */
 void Kogane::Obj::createDoping(u8 type, int num)
 {
-	f32 angle = getFaceDir() + 2.0943952f;
-	f32 offs  = 2.0943952f / (f32)(num + 1);
+	f32 angle = getFaceDir() + TAU / 3;
+	f32 offs  = TAU / 3 / (num + 1);
 
 	Matrixf* mtx = mModel->getJoint("body")->getWorldMatrix();
-	Vector3f pos = mtx->getBasis(3);
+	Vector3f pos = mtx->getColumn(3);
 
 	for (int i = 0; i < num; i++) {
 		ItemHoney::InitArg arg(type, 0);
@@ -662,7 +630,7 @@ void Kogane::Obj::createDoping(u8 type, int num)
 			honey->setPosition(pos, false);
 
 			angle += offs;
-			Vector3f vel = Vector3f(50.0f * pikmin2_sinf(angle), 250.0f, 50.0f * pikmin2_cosf(angle));
+			Vector3f vel = Vector3f(50.0f * sinf(angle), 250.0f, 50.0f * cosf(angle));
 			honey->setVelocity(vel);
 		}
 	}

@@ -1,25 +1,32 @@
 #include "PikiAI.h"
 #include "Game/Piki.h"
 #include "Game/PikiMgr.h"
+#include "Game/PikiState.h"
 #include "Game/Navi.h"
+#include "Game/NaviParms.h"
+#include "Game/NaviState.h"
 #include "Game/gameStat.h"
 #include "Game/CPlate.h"
 #include "Game/GameSystem.h"
+#include "Game/SingleGameSection.h"
 #include "Game/gamePlayData.h"
 #include "Game/MoviePlayer.h"
-#include "JSystem/JUtility/JUTException.h"
+#include "Game/Footmark.h"
+#include "Dolphin/rand.h"
+#include "P2Macros.h"
 #include "Iterator.h"
 #include "nans.h"
+
+static bool newVer = true;
 
 namespace PikiAI {
 
 static const int someFormationArray[3] = { 0, 0, 0 };
 static const char formationName[]      = "actFormation";
 
-/*
- * --INFO--
- * Address:	8019CD70
- * Size:	0000F8
+/**
+ * @note Address: 0x8019CD70
+ * @note Size: 0xF8
  */
 ActFormation::ActFormation(Game::Piki* p)
     : Action(p)
@@ -31,24 +38,21 @@ ActFormation::ActFormation(Game::Piki* p)
 	mNavi   = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8019CE68
- * Size:	000008
+/**
+ * @note Address: 0x8019CE68
+ * @note Size: 0x8
  */
 void ActFormation::inform(int slotID) { mSlotID = slotID; }
 
-/*
- * --INFO--
- * Address:	8019CE70
- * Size:	00000C
+/**
+ * @note Address: 0x8019CE70
+ * @note Size: 0xC
  */
 void ActFormation::startSort() { mSortState = 2; }
 
-/*
- * --INFO--
- * Address:	8019CE7C
- * Size:	0001B4
+/**
+ * @note Address: 0x8019CE7C
+ * @note Size: 0x1B4
  */
 void ActFormation::init(ActionArg* initArg)
 {
@@ -65,9 +69,9 @@ void ActFormation::init(ActionArg* initArg)
 	mInitArg._09       = formationArg->_09;
 
 	if (mInitArg._09) {
-		_38 = 45;
+		mTouchingNaviCooldownTimer = 45;
 	} else {
-		_38 = 0;
+		mTouchingNaviCooldownTimer = 0;
 	}
 
 	Game::Navi* initNavi = static_cast<Game::Navi*>(formationArg->mCreature);
@@ -78,11 +82,11 @@ void ActFormation::init(ActionArg* initArg)
 		return;
 	}
 
-	_2A = 5;
-	_2C = 5;
-	_2E = 0;
-	_60 = false;
-	_61 = false;
+	mDistanceType    = 5;
+	mOldDistanceType = 5;
+	mDistanceCounter = 0;
+	_60              = false;
+	_61              = false;
 
 	mCPlate = initNavi->mCPlateMgr;
 	mSlotID = mCPlate->getSlot(mParent, this, initCheck);
@@ -92,45 +96,43 @@ void ActFormation::init(ActionArg* initArg)
 
 	mParent->startMotion(Game::IPikiAnims::RUN2, Game::IPikiAnims::RUN2, nullptr, nullptr);
 
-	_30        = 0;
-	_31        = 0;
-	mSortState = 0;
-	_4C        = 0;
-	_50        = 0.0f;
-	_54        = 0;
-	_3C        = 0;
+	_30             = 0;
+	_31             = 0;
+	mSortState      = 0;
+	mAnimationTimer = 0;
+	_50             = 0.0f;
+	mIsAnimating    = 0;
+	mFootmark       = nullptr;
 
 	mParent->setPastel(false);
-	_40 = 0;
-	_48 = -1;
+	mTouchingWallTimer = 0;
+	mFootmarkFlags     = -1;
 	mParent->setFreeLightEffect(false);
 }
 
-/*
- * --INFO--
- * Address:	8019D030
- * Size:	000058
+/**
+ * @note Address: 0x8019D030
+ * @note Size: 0x58
  */
 void ActFormation::wallCallback(Vector3f&)
 {
 	mFrameTimer = Game::gameSystem->mFrameTimer;
-	if (_40 < 30) {
-		_40++;
+	if (mTouchingWallTimer < 30) {
+		mTouchingWallTimer++;
 	}
 
-	if (_40 > 8 && mSortState != 1) {
-		_40 = 0;
+	if (mTouchingWallTimer > 8 && mSortState != 1) {
+		mTouchingWallTimer = 0;
 	}
 
-	if (_40 > 20) {
-		_40 = 0;
+	if (mTouchingWallTimer > 20) {
+		mTouchingWallTimer = 0;
 	}
 }
 
-/*
- * --INFO--
- * Address:	8019D088
- * Size:	00045C
+/**
+ * @note Address: 0x8019D088
+ * @note Size: 0x45C
  */
 void ActFormation::setFormed()
 {
@@ -162,7 +164,7 @@ void ActFormation::setFormed()
 	}
 
 	Game::Navi* navi = mParent->mNavi;
-	int index        = 0;
+	int index        = NAVIID_Olimar;
 	if (navi) {
 		index = navi->mNaviIndex;
 	}
@@ -173,18 +175,15 @@ void ActFormation::setFormed()
 	    c) reds-purples cutscene hasn't played, and
 	    d) purples in ship cutscene HAS played
 	*/
-	if (!Game::gameSystem->mIsInCave && Game::gameSystem->mFlags & 0x20 && !Game::playData->isDemoFlag(Game::DEMO_Reds_Purples_Tutorial)
-	    && Game::playData->isDemoFlag(Game::DEMO_Purples_In_Ship)) {
-		Game::GameStat::checkNaviIndex(index); // check navi index is between 0 and 6 otherwise panic (?)
-		Game::GameStat::PikiCounter* counter = &Game::GameStat::formationPikis.mCounter[index]; // get squad numbers
+	if (!Game::gameSystem->mIsInCave && Game::gameSystem->isFlag(Game::GAMESYS_IsGameWorldActive)
+	    && !Game::playData->isDemoFlag(Game::DEMO_Reds_Purples_Tutorial) && Game::playData->isDemoFlag(Game::DEMO_Purples_In_Ship)) {
 
-		int redCount = (*counter)(Game::Red);
+		int redCount = Game::GameStat::formationPikis.getCount(index, Game::Red);
 
 		// if we have reds in squad...
 		if (redCount > 0) {
 
-			Game::GameStat::checkNaviIndex(index);
-			int purpleCount = (*counter)(Game::Purple);
+			int purpleCount = Game::GameStat::formationPikis.getCount(index, Game::Purple);
 
 			// ... AND we have purples in squad...
 			if (purpleCount > 0) {
@@ -200,25 +199,24 @@ void ActFormation::setFormed()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8019D4E4
- * Size:	0000F8
+/**
+ * @note Address: 0x8019D4E4
+ * @note Size: 0xF8
  */
 void ActFormation::onKeyEvent(SysShape::KeyEvent const& keyEvent)
 {
 	switch (keyEvent.mType) {
 	case KEYEVENT_2:
-		if (_54) {
+		if (mIsAnimating) {
 			mParent->mSimVelocity = Vector3f(0.0f);
 			mParent->mVelocity    = Vector3f(0.0f);
 		}
 		break;
 
 	case KEYEVENT_1:
-		if (_54) {
-			_4C--;
-			if (_4C <= 0) {
+		if (mIsAnimating) {
+			mAnimationTimer--;
+			if (mAnimationTimer <= 0) {
 				mParent->mAnimator.mSelfAnimator.mFlags |= EANIM_FLAG_FINISHED;
 				mParent->mAnimator.mBoundAnimator.mFlags |= EANIM_FLAG_FINISHED;
 			}
@@ -226,18 +224,17 @@ void ActFormation::onKeyEvent(SysShape::KeyEvent const& keyEvent)
 		break;
 
 	case KEYEVENT_END:
-		if (_54) {
-			_54 = 0;
+		if (mIsAnimating) {
+			mIsAnimating = 0;
 			mParent->startMotion(Game::IPikiAnims::WALK, Game::IPikiAnims::WALK, nullptr, nullptr);
 		}
 		break;
 	}
 }
 
-/*
- * --INFO--
- * Address:	8019D5DC
- * Size:	0000A4
+/**
+ * @note Address: 0x8019D5DC
+ * @note Size: 0xA4
  */
 void ActFormation::cleanup()
 {
@@ -258,13 +255,291 @@ void ActFormation::cleanup()
 	mSlotID = -1;
 }
 
-/*
- * --INFO--
- * Address:	8019D680
- * Size:	0016E8
+/**
+ * @note Address: 0x8019D680
+ * @note Size: 0x16E8
  */
 int PikiAI::ActFormation::exec()
 {
+	if (mTouchingNaviCooldownTimer) {
+		mTouchingNaviCooldownTimer--;
+	}
+
+	if (mSlotID == -1) {
+		return ACTEXEC_Fail;
+	}
+
+	if (!mInitArg._08 && mNavi && mNavi->mPellet) {
+		return ACTEXEC_Fail;
+	}
+
+	if (mNavi && !mNavi->isAlive()) {
+		return ACTEXEC_Fail;
+	}
+
+	if (!mInitArg._08 && !Game::gameSystem->isMultiplayerMode() && mNavi && !mNavi->mController1
+	    && mNavi->getStateID() == Game::NSID_Follow) {
+		mNextAIType = ACT_Formation;
+		mParent->getCreatureID();
+		return ACTEXEC_Fail;
+	}
+
+	mParent->setMoveRotation(true);
+	mOldDistanceType = mDistanceType;
+	mDistanceType    = 5;
+	if (mIsAnimating) {
+		int animId;
+		if (mParent->mAnimator.mSelfAnimator.mAnimInfo) {
+			animId = mParent->mAnimator.mSelfAnimator.mAnimInfo->mId;
+		} else {
+			animId = -1;
+		}
+
+		if (animId != Game::IPikiAnims::KOROBU) {
+			mIsAnimating = 0;
+			mParent->startMotion(Game::IPikiAnims::WALK, Game::IPikiAnims::WALK, nullptr, nullptr);
+		}
+
+		mParent->mVelocity = mParent->mVelocity * 0.955f;
+		return ACTEXEC_Continue;
+	}
+
+	_61 = _60;
+	if (!mParent->mNavi) {
+		return ACTEXEC_Fail;
+	}
+
+	bool cstickTest = mParent->mNavi->isCStickNetural();
+	JUT_ASSERTLINE(661, mCPlate->validSlot(mSlotID), "invalid slotId!\n");
+
+	Vector3f slotPos; // 0x138
+	mCPlate->getSlotPosition(mSlotID, slotPos);
+
+	if (!mParent->mNavi->commandOn()) {
+		Vector3f sep     = slotPos - mParent->getPosition(); // 0x12c
+		f32 dist         = sep.length();                     // f26
+		Vector3f pikiPos = mParent->getPosition();           // 0x120
+		if ((Game::gameSystem->mFrameTimer - mFrameTimer) < 0x32 && dist > 60.0f) {
+			if (mTouchingWallTimer > 3) {
+				mFootmark = mParent->mNavi->mFootmarks->findNearest2(pikiPos, mFootmarkFlags);
+				if (mFootmark) {
+					sep = mFootmark->mPosition - pikiPos;
+					if (sep.normalise() < 20.0f) {
+						mFootmarkFlags = mFootmark->mFlags;
+					}
+
+					mParent->setSpeed(1.0f, sep);
+					return ACTEXEC_Continue;
+				}
+			}
+		} else {
+			mTouchingWallTimer = 0;
+			mFootmarkFlags     = -1;
+		}
+	} else {
+		mTouchingWallTimer = 0;
+		mFootmarkFlags     = -1;
+	}
+
+	Vector3f movieSep = mParent->mPositionBeforeMovie - mParent->getPosition();
+	_50 += movieSep.length();
+
+	if (mParent->getKind() != Game::Bulbmin && _50 >= 100.0f && mParent->mSimVelocity.length() > 110.0f) {
+		if (randFloat() >= 0.99f && randFloat() > 0.7f) {
+			if (mParent->getStateID() == Game::PIKISTATE_Walk) {
+				mParent->mFsm->transit(mParent, Game::PIKISTATE_Koke, nullptr);
+			}
+			_50 = 0.0f;
+			return ACTEXEC_Continue;
+		}
+
+		_50 = 0.0f;
+	}
+
+	Vector3f sep = slotPos - mParent->getPosition(); // 0x114
+	f32 dist     = sep.length();                     // f31
+
+	sep.normalise();
+
+	if (dist < 60.0f && mParent->mNavi->mCommandOn1 && mSortState != FORMATION_SORT_STARTED) {
+		if (!_60
+		    && (mParent->mNavi->mSceneAnimationTimer - 2.0f * randFloat())
+		           >= static_cast<Game::NaviParms*>(mParent->mNavi->mParms)->mNaviParms.mPikiLoseNumbnessTime.mValue) {
+			_60 = true;
+			return ACTEXEC_Continue;
+		}
+
+		if (mSortState == FORMATION_SORT_NONE) {
+			mDistanceType = 0;
+			Iterator<Game::Creature> iter(mParent->mNavi->mCPlateMgr);
+			CI_LOOP(iter)
+			{
+				Game::Creature* creature = *iter;
+				// ?
+			}
+
+			slotPos              = mParent->mNavi->getPosition(); // 0x138
+			_60                  = false;
+			Vector3f naviPikiDir = slotPos - mParent->getPosition(); // 0xf8
+			naviPikiDir.normalise();
+
+			if (qdist2(slotPos.x, slotPos.z, mParent->getPosition().x, mParent->getPosition().z) <= 40.0f) {
+				if (mSortState != FORMATION_SORT_FORMED) {
+					setFormed();
+				}
+			} else {
+				mParent->setSpeed(1.0f, naviPikiDir);
+				if (_61 && !_60) {
+					mParent->startMotion(Game::IPikiAnims::WALK, Game::IPikiAnims::WALK, nullptr, nullptr);
+				}
+			}
+
+			return ACTEXEC_Continue;
+		}
+
+		mDistanceType        = 1;
+		mParent->mVelocity   = Vector3f(0.0f);
+		Vector3f naviPikiSep = mParent->mNavi->getPosition() - mParent->getPosition();
+		f32 angle            = JMAAtan2Radian(naviPikiSep.x, naviPikiSep.z); // f26
+		mParent->setMoveRotation(false);
+		mParent->mFaceDir += 0.3f * angDist(angle, mParent->mFaceDir);
+		return ACTEXEC_Continue;
+	}
+
+	if (dist <= 7.0f) {
+		mDistanceCounter = 0;
+	} else if (dist < 15.0f) {
+		mDistanceCounter++;
+		if (mOldDistanceType == 2 && mParent->mNavi->mSceneAnimationTimer > 0.1f) {
+			mDistanceCounter = 0;
+		}
+
+		if (mDistanceCounter >= 6) {
+			mDistanceCounter = 6;
+		}
+	} else {
+		mDistanceCounter = 0;
+	}
+
+	if (dist <= 7.0f || (mDistanceCounter < 6 && dist <= 15.0f)) {
+		mDistanceType      = 2;
+		mParent->mVelocity = Vector3f(0.0f);
+
+		sep = mParent->mNavi->getPosition() - mParent->getPosition(); // 0x114
+
+		f32 angle = angDist(JMAAtan2Radian(sep.x, sep.z), mParent->mFaceDir); // f26
+		mParent->setMoveRotation(false);
+		mParent->mFaceDir += 0.3f * angle;
+		if (mSortState != FORMATION_SORT_FORMED) {
+			setFormed();
+		}
+
+	} else if (dist < 15.0f) {
+		mDistanceType = 3;
+		mParent->setMoveRotation(false);
+
+		if (_60 && dist < 10.0f) {
+			_60 = true; // this has to be true to get... set to true lol
+		}
+
+		f32 factor  = 10.0f / static_cast<Game::PikiParms*>(mParent->mParms)->mCreatureProps.mProps.mAccel.mValue; // f26
+		f32 speed   = mParent->getSpeed(1.0f);                                                                     // f1
+		f32 factor2 = (0.5f * (speed / factor)) * speed;                                                           // f7
+
+		f32 simSpeed = mParent->mSimVelocity.length(); // f3
+		f32 factor3  = (0.5f * (simSpeed / factor)) * simSpeed;
+
+		if (dist < factor3) {
+			mParent->mVelocity = Vector3f(0.0f);
+			sep                = mParent->mNavi->getPosition() - mParent->getPosition();   // 0x114
+			f32 angle          = angDist(JMAAtan2Radian(sep.x, sep.z), mParent->mFaceDir); // f26
+			mParent->setMoveRotation(false);
+			mParent->mFaceDir += 0.3f * angle;
+		} else if (dist < factor2) {
+			f32 val            = SQUARE(simSpeed) + (8.0f * factor) * dist;
+			f32 val2           = 0.5f * _sqrtf2(val) + simSpeed;
+			mParent->mVelocity = sep * val2;
+		} else {
+			mParent->setSpeed(1.0f, sep);
+		}
+
+		Vector3f naviPikiSep = mParent->getPosition() - mParent->mNavi->getPosition(); // f30, f29, f28
+		Vector3f plateSep    = mParent->mNavi->getPosition() - mCPlate->_A4;
+		plateSep.normalise();
+
+		if (dot(plateSep, naviPikiSep) > 0.0f) {
+			Vector3f impulse = Vector3f(-naviPikiSep.z, 0.0f, naviPikiSep.x); // f29, f27, f30
+			if (mSlotID & 1) {
+				impulse.negate();
+			}
+
+			impulse.normalise();
+
+			if (newVer && cstickTest) {
+				impulse = Vector3f(0.0f);
+			}
+
+			f32 currSpeed = mParent->mVelocity.length(); // f28
+
+			mParent->mVelocity += impulse * mParent->getSpeed(1.0f);
+			mParent->mVelocity.normalise();
+			mParent->mVelocity *= currSpeed;
+		}
+	} else {
+		mDistanceType = 4;
+		mParent->setSpeed(1.0f, sep);
+
+		Vector3f naviPikiSep = mParent->getPosition() - mParent->mNavi->getPosition(); // f30, f29, f28
+		Vector3f plateSep    = mParent->mNavi->getPosition() - mCPlate->_A4;
+		plateSep.normalise();
+
+		if (dot(plateSep, naviPikiSep) > 0.0f) {
+			Vector3f impulse = Vector3f(-naviPikiSep.z, 0.0f, naviPikiSep.x); // f29, f27, f30
+			if (mSlotID & 1) {
+				impulse.negate();
+			}
+
+			impulse.normalise();
+
+			if (newVer && cstickTest) {
+				impulse = Vector3f(0.0f);
+			}
+
+			f32 currSpeed = mParent->mVelocity.length(); // f28
+
+			mParent->mVelocity += impulse * mParent->getSpeed(1.0f);
+			mParent->mVelocity.normalise();
+			mParent->mVelocity *= currSpeed;
+		}
+	}
+
+	if (dist < static_cast<Game::PikiParms*>(mParent->mParms)->mPikiParms.mWhiteDistance.mValue) {
+		mLostPikiTimer = 0.0f;
+		_30            = 0;
+	} else if (dist < static_cast<Game::PikiParms*>(mParent->mParms)->mPikiParms.mGrayDistance.mValue) {
+		mLostPikiTimer += sys->mDeltaTime;
+		if (!_30) {
+			if (mSlotID != -1) {
+				mCPlate->releaseSlot(mParent, mSlotID);
+				mSlotID = mCPlate->getSlot(mParent, this, false);
+			}
+			_30 = 1;
+		}
+		if ((!mInitArg._08 && mSlotID == -1)
+		    || mLostPikiTimer > static_cast<Game::PikiParms*>(mParent->mParms)->mPikiParms.mLostChildTime.mValue) {
+			return ACTEXEC_Fail;
+		}
+
+	} else if (!mInitArg._08) {
+		return ACTEXEC_Fail;
+	}
+
+	if (_61 && !_60) {
+		mParent->startMotion(Game::IPikiAnims::WALK, Game::IPikiAnims::WALK, nullptr, nullptr);
+	}
+
+	return ACTEXEC_Continue;
+
 	/*
 	stwu     r1, -0x1c0(r1)
 	mflr     r0
@@ -1941,10 +2216,9 @@ lbl_8019ED1C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8019ED68
- * Size:	000074
+/**
+ * @note Address: 0x8019ED68
+ * @note Size: 0x74
  */
 void ActFormation::collisionCallback(Game::Piki* p, Game::CollEvent& collEvent)
 {
@@ -1952,7 +2226,7 @@ void ActFormation::collisionCallback(Game::Piki* p, Game::CollEvent& collEvent)
 	Game::Navi* navi      = p->mNavi;
 	if (navi) {
 		isBeingCommanded = navi->commandOn();
-		if (_38) {
+		if (mTouchingNaviCooldownTimer) {
 			isBeingCommanded = false;
 		}
 	}
@@ -1960,10 +2234,9 @@ void ActFormation::collisionCallback(Game::Piki* p, Game::CollEvent& collEvent)
 	p->invokeAI(&collEvent, isBeingCommanded);
 }
 
-/*
- * --INFO--
- * Address:	8019EDDC
- * Size:	000058
+/**
+ * @note Address: 0x8019EDDC
+ * @note Size: 0x58
  */
 void ActFormation::platCallback(Game::Piki* p, Game::PlatEvent& platEvent)
 {
@@ -1973,17 +2246,15 @@ void ActFormation::platCallback(Game::Piki* p, Game::PlatEvent& platEvent)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8019EE34
- * Size:	000008
+/**
+ * @note Address: 0x8019EE34
+ * @note Size: 0x8
  */
 bool ActFormation::resumable() { return true; }
 
-/*
- * --INFO--
- * Address:	8019EE3C
- * Size:	000008
+/**
+ * @note Address: 0x8019EE3C
+ * @note Size: 0x8
  */
 u32 ActFormation::getNextAIType() { return mNextAIType; }
 

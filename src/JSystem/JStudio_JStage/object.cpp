@@ -11,13 +11,12 @@
     Generated from dpostproc
 */
 
-/*
- * --INFO--
- * Address:	80011DCC
- * Size:	000098
+/**
+ * @note Address: 0x80011DCC
+ * @note Size: 0x98
  */
-bool JStudio_JStage::transformToGlobalFromLocal(float (*p1)[4], const JStudio::TControl::TTransformTranslation_rotation_scaling& transform,
-                                                const JStage::TObject* object, unsigned long p4)
+bool JStudio_JStage::transform_toGlobalFromLocal(f32 (*p1)[4], const JStudio::TControl::TTransform_translation_rotation_scaling& transform,
+                                                 const JStage::TObject* object, u32 p4)
 {
 	if (object == nullptr) {
 		return false;
@@ -32,14 +31,13 @@ bool JStudio_JStage::transformToGlobalFromLocal(float (*p1)[4], const JStudio::T
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80011E64
- * Size:	000098
- * transformToGlobalFromLocal__14JStudio_JStageFPA4_fRCQ37JStudio8TControl19TTransformPositionPCQ26JStage7TObjectUl
+/**
+ * @note Address: 0x80011E64
+ * @note Size: 0x98
+ * transform_toGlobalFromLocal__14JStudio_JStageFPA4_fRCQ37JStudio8TControl19TTransform_positionPCQ26JStage7TObjectUl
  */
-bool JStudio_JStage::transformToGlobalFromLocal(float (*p1)[4], const JStudio::TControl::TTransformPosition& transform,
-                                                const JStage::TObject* object, unsigned long p4)
+bool JStudio_JStage::transform_toGlobalFromLocal(f32 (*p1)[4], const JStudio::TControl::TTransform_position& transform,
+                                                 const JStage::TObject* object, u32 p4)
 {
 	if (object == nullptr) {
 		return false;
@@ -54,13 +52,12 @@ bool JStudio_JStage::transformToGlobalFromLocal(float (*p1)[4], const JStudio::T
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80011EFC
- * Size:	0000A4
+/**
+ * @note Address: 0x80011EFC
+ * @note Size: 0xA4
  */
-bool JStudio_JStage::transformToLocalFromGlobal(float (*p1)[4], const JStudio::TControl::TTransformTranslation_rotation_scaling& transform,
-                                                const JStage::TObject* object, unsigned long p4)
+bool JStudio_JStage::transform_toLocalFromGlobal(f32 (*p1)[4], const JStudio::TControl::TTransform_translation_rotation_scaling& transform,
+                                                 const JStage::TObject* object, u32 p4)
 {
 	if (object == nullptr) {
 		return false;
@@ -77,14 +74,13 @@ bool JStudio_JStage::transformToLocalFromGlobal(float (*p1)[4], const JStudio::T
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80011FA0
- * Size:	0000A4
- * transformToLocalFromGlobal__14JStudio_JStageFPA4_fRCQ37JStudio8TControl19TTransformPositionPCQ26JStage7TObjectUl
+/**
+ * @note Address: 0x80011FA0
+ * @note Size: 0xA4
+ * transform_toLocalFromGlobal__14JStudio_JStageFPA4_fRCQ37JStudio8TControl19TTransform_positionPCQ26JStage7TObjectUl
  */
-bool JStudio_JStage::transformToLocalFromGlobal(float (*p1)[4], const JStudio::TControl::TTransformPosition& transform,
-                                                const JStage::TObject* object, unsigned long p4)
+bool JStudio_JStage::transform_toLocalFromGlobal(f32 (*p1)[4], const JStudio::TControl::TTransform_position& transform,
+                                                 const JStage::TObject* object, u32 p4)
 {
 	if (object == nullptr) {
 		return false;
@@ -101,21 +97,18 @@ bool JStudio_JStage::transformToLocalFromGlobal(float (*p1)[4], const JStudio::T
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80012044
- * Size:	000048
+/**
+ * @note Address: 0x80012044
+ * @note Size: 0x48
  */
-void JStudio_JStage::TAdaptor_object_::adaptor_data_(JStage::TObject* object, const void* p2, unsigned long p3, const void* p4,
-                                                     unsigned long p5)
+void JStudio_JStage::TAdaptor_object_::adaptor_data_(JStage::TObject* object, const void* p2, u32 p3, const void* p4, u32 p5)
 {
 	object->JSGSetData((p3 == 0 ? 0xFFFFFFFF : *(u32*)p2), p4, p5);
 }
 
-/*
- * --INFO--
- * Address:	8001208C
- * Size:	00004C
+/**
+ * @note Address: 0x8001208C
+ * @note Size: 0x4C
  */
 JStage::TObject* JStudio_JStage::TAdaptor_object_::adaptor_findJSGObject_(const JStage::TSystem* system, const char* name)
 {
@@ -126,23 +119,21 @@ JStage::TObject* JStudio_JStage::TAdaptor_object_::adaptor_findJSGObject_(const 
 	return results;
 }
 
-/*
- * --INFO--
- * Address:	800120D8
- * Size:	00002C
+/**
+ * @note Address: 0x800120D8
+ * @note Size: 0x2C
  */
 u32 JStudio_JStage::TAdaptor_object_::adaptor_findJSGObjectNode_(const JStage::TObject* object, const char* name)
 {
 	return object->JSGFindNodeID(name);
 }
 
-/*
- * --INFO--
- * Address:	80012104
- * Size:	000094
+/**
+ * @note Address: 0x80012104
+ * @note Size: 0x94
  */
 void JStudio_JStage::TAdaptor_object_::adaptor_ENABLE_(JStage::TObject* object, JStudio::data::TEOperationData operation, const void* p3,
-                                                       unsigned long p4)
+                                                       u32 p4)
 {
 	switch (operation) {
 	case JStudio::data::TEOD_Unknown_02: {

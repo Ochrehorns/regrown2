@@ -48,6 +48,8 @@ struct J3DAnmVtxColorFull : public J3DAnmVtxColor {
 	virtual J3DAnmKind getKind() const { return J3DAnmKind_VtxColorFull; } // _0C (weak)
 	virtual void getColor(u8, u16, GXColor*) const;                        // _10
 
+	inline J3DAnmColorFullTable* getAnmTable(u8 idx) const { return mTable[idx]; }
+
 	// _00     = VTBL
 	// _00-_18 = J3DAnmVtxColor
 	J3DAnmColorFullTable* mTable[2]; // _18
@@ -58,17 +60,14 @@ struct J3DAnmVtxColorFull : public J3DAnmVtxColor {
 };
 
 struct J3DAnmVtxColorFullData : J3DAnmFullData {
-	u8 _10[8]; // _10
-	void* _18; // _18
-	void* _1C; // _1C
-	void* _20; // _20
-	void* _24; // _24
-	void* _28; // _28
-	void* _2C; // _2C
-	void* _30; // _30
-	void* _34; // _34
-	void* _38; // _38
-	void* _3C; // _3C
+	u8 _10[0x18 - 0x10];                 // _10
+	s32 mTableOffsets[2];                // _18
+	s32 mVtxColorIndexDataOffsets[2];    // _20
+	s32 mVtxColorIndexPointerOffsets[2]; // _28
+	s32 mRValuesOffset;                  // _30
+	s32 mGValuesOffset;                  // _34
+	s32 mBValuesOffset;                  // _38
+	s32 mAValuesOffset;                  // _3C
 };
 
 /**
@@ -86,6 +85,8 @@ struct J3DAnmVtxColorKey : public J3DAnmVtxColor {
 	virtual J3DAnmKind getKind() const { return J3DAnmKind_VtxColorKey; } // _0C (weak)
 	virtual void getColor(u8, u16, GXColor*) const;                       // _10
 
+	inline J3DAnmColorKeyTable* getAnmTable(u8 idx) const { return mTable[idx]; }
+
 	J3DAnmColorKeyTable* mTable[2]; // _18
 	s16* mRedVals;                  // _20
 	s16* mGreenVals;                // _24
@@ -94,21 +95,18 @@ struct J3DAnmVtxColorKey : public J3DAnmVtxColor {
 };
 
 struct J3DAnmVtxColorKeyData : J3DFileBlockBase {
-	u8 _08;    // _08
-	s16 _0A;   // _0A
-	u16 _0C;   // _0C
-	u16 _0E;   // _0E
-	u8 _10[8]; // _10 - unknown/filler
-	void* _18; // _18
-	void* _1C; // _1C
-	void* _20; // _20
-	void* _24; // _24
-	void* _28; // _28
-	void* _2C; // _2C
-	void* _30; // _30
-	void* _34; // _34
-	void* _38; // _38
-	void* _3C; // _3C
+	u8 mAttribute;                      // _08
+	u8 _09;                             // _09
+	s16 mFrameMax;                      // _0A
+	u16 mAnmTableNum[2];                // _0C
+	u8 _10[0x18 - 0x10];                // _10
+	s32 mTableOffsets[2];               // _18
+	s32 mVtxColoIndexDataOffset[2];     // _20
+	s32 mVtxColorIndexPointerOffset[2]; // _28
+	s32 mRValOffset;                    // _30
+	s32 mGValOffset;                    // _34
+	s32 mBValOffset;                    // _38
+	s32 mAValOffset;                    // _3C
 };
 
 #endif

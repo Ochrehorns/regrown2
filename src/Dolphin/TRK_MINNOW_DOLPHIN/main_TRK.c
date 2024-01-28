@@ -1,18 +1,17 @@
 #include "PowerPC_EABI_Support/MetroTRK/trk.h"
 
-static s32 TRK_mainError;
+static DSError TRK_mainError;
 
-/*
- * --INFO--
- * Address:	800C040C
- * Size:	000058
+/**
+ * @note Address: 0x800C040C
+ * @note Size: 0x58
  */
-int TRK_main(void)
+DSError TRK_main(void)
 {
 	MWTRACE(1, "TRK_Main \n");
 	TRK_mainError = TRKInitializeNub();
 
-	if (!TRK_mainError) {
+	if (TRK_mainError == DS_NoError) {
 		TRKNubWelcome();
 		TRKNubMainLoop();
 	}

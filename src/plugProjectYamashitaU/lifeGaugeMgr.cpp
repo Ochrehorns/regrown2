@@ -1,123 +1,34 @@
-#include "Dolphin/math.h"
-#include "System.h"
-#include "types.h"
-#include "Graphics.h"
-#include "Viewport.h"
 #include "LifeGaugeMgr.h"
+#include "JSystem/JKernel/JKRArchive.h"
+#include "JSystem/JUtility/JUTTexture.h"
+#include "Game/MoviePlayer.h"
+#include "Viewport.h"
+#include "nans.h"
 
-/*
-    Generated from dpostproc
-
-    .section .ctors, "wa"  # 0x80472F00 - 0x804732C0
-    .4byte __sinit_lifeGaugeMgr_cpp
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_8047B238
-    lbl_8047B238:
-        .4byte 0x2F757365
-        .4byte 0x722F5961
-        .4byte 0x6D617368
-        .4byte 0x6974612F
-        .4byte 0x6172632F
-        .4byte 0x67616D65
-        .4byte 0x5465782E
-        .4byte 0x737A7300
-    .global lbl_8047B258
-    lbl_8047B258:
-        .4byte 0x6C696665
-        .4byte 0x47617567
-        .4byte 0x652E6274
-        .4byte 0x69000000
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804AC308
-    lbl_804AC308:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-    .global __vt__13LifeGaugeList
-    __vt__13LifeGaugeList:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__13LifeGaugeListFv
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global lbl_80515880
-    lbl_80515880:
-        .skip 0x4
-    .global lbl_80515884
-    lbl_80515884:
-        .skip 0x4
-    .global lifeGaugeMgr
-    lifeGaugeMgr:
-        .skip 0x8
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80517B28
-    lbl_80517B28:
-        .4byte 0x00000000
-    .global lbl_80517B2C
-    lbl_80517B2C:
-        .f32 0.5
-    .global lbl_80517B30
-    lbl_80517B30:
-        .4byte 0x43160000
-    .global lbl_80517B34
-    lbl_80517B34:
-        .4byte 0x3ECCCCCD
-    .global lbl_80517B38
-    lbl_80517B38:
-        .f32 1.0
-    .global lbl_80517B3C
-    lbl_80517B3C:
-        .4byte 0x3E4CCCCD
-    .global lbl_80517B40
-    lbl_80517B40:
-        .4byte 0x43300000
-        .4byte 0x00000000
-    .global lbl_80517B48
-    lbl_80517B48:
-        .4byte 0x43300000
-        .4byte 0x80000000
-    .global lbl_80517B50
-    lbl_80517B50:
-        .4byte 0xBFC90FDB
-    .global lbl_80517B54
-    lbl_80517B54:
-        .4byte 0x40C90FDB
-    .global lbl_80517B58
-    lbl_80517B58:
-        .4byte 0x3FA00000
-        .4byte 0x00000000
-*/
-
-/*
- * --INFO--
- * Address:	80119BFC
- * Size:	000034
+/**
+ * @note Address: 0x80119BFC
+ * @note Size: 0x34
  */
-LifeGauge::LifeGauge() { init(' '); }
+LifeGauge::LifeGauge() { init(LIFEGAUGE_SEGMENTS); }
 
-/*
- * --INFO--
- * Address:	80119C30
- * Size:	000014
+/**
+ * @note Address: 0x80119C30
+ * @note Size: 0x14
  */
 void LifeGauge::init(u8 c)
 {
-	_00 = 0.0f;
-	_09 = c;
-	_08 = c;
+	mTimer            = 0.0f;
+	mCircleResolution = c;
+	mSegmentCount     = c;
 }
 
-/*
- * --INFO--
- * Address:	80119C44
- * Size:	0001CC
+/**
+ * @note Address: 0x80119C44
+ * @note Size: 0x1CC
  */
 void LifeGauge::update(f32 newFullness)
 {
-	f32 adjustedFullness = _09 * newFullness;
+	f32 adjustedFullness = mCircleResolution * newFullness;
 
 	if (adjustedFullness >= 0.0f) {
 		adjustedFullness = adjustedFullness + 0.5f;
@@ -127,8 +38,8 @@ void LifeGauge::update(f32 newFullness)
 
 	u8 newAdjustedValue = static_cast<u8>(adjustedFullness);
 
-	if (_08 != newAdjustedValue) {
-		f32 fb = fabs((newAdjustedValue - _08) / static_cast<f32>(_09));
+	if (mSegmentCount != newAdjustedValue) {
+		f32 fb = fabs((newAdjustedValue - mSegmentCount) / static_cast<f32>(mCircleResolution));
 
 		f32 delta          = fb * (sys->mDeltaTime * 150.0f);
 		const f32 minDelta = 0.4f;
@@ -137,75 +48,90 @@ void LifeGauge::update(f32 newFullness)
 			delta = minDelta;
 		}
 
-		_00 += delta;
+		mTimer += delta;
 
-		if (_00 > 1.0f) {
-			_08 += (_08 < newAdjustedValue) ? 1 : -1;
-			_00 -= static_cast<int>(_00);
+		if (mTimer > 1.0f) {
+			mSegmentCount += (newAdjustedValue > mSegmentCount) ? 1 : -1;
+			mTimer -= static_cast<int>(mTimer);
 		}
 
-		if (_08 == 0 && newFullness > 0.0f) {
-			_08 = 1;
+		if (mSegmentCount == 0 && newFullness > 0.0f) {
+			mSegmentCount = 1;
 		}
 	}
 
-	if (newFullness < 0.2f) {
-		if (newFullness < 0.5f) {
-			mLifeGaugeColor.r = 255;
-			mLifeGaugeColor.g = 0;
-		} else {
-			mLifeGaugeColor.r = 255;
-			mLifeGaugeColor.g = 255;
-		}
-
+	if (newFullness < 0.2f) { // lifegauge red
+		mLifeGaugeColor.r = 255;
+		mLifeGaugeColor.g = 0;
 		mLifeGaugeColor.b = 0;
 		mLifeGaugeColor.a = 255;
-
-	} else {
+	} else if (newFullness < 0.5f) { // lifegauge yellow
+		mLifeGaugeColor.r = 255;
+		mLifeGaugeColor.g = 255;
+		mLifeGaugeColor.b = 0;
+		mLifeGaugeColor.a = 255;
+	} else { // lifegauge green
 		mLifeGaugeColor.r = 0;
 		mLifeGaugeColor.g = 255;
 		mLifeGaugeColor.b = 0;
+		mLifeGaugeColor.a = 255;
 	}
 }
 
-/*
- * --INFO--
- * Address:	80119E10
- * Size:	0001BC
+/**
+ * @note Address: 0x80119E10
+ * @note Size: 0x1BC
  * TODO
  */
-void LifeGauge::draw(f32 a2, f32 a3, f32 a4)
+void LifeGauge::draw(f32 size, f32 x, f32 y)
 {
-	Vector3f position;
-	Vector3f offsetPos;
+	Vector3f position(x, y, 0.0f); // Position of the center
 
-	position.x = a3;
-	position.y = a4;
-	position.z = 0.0f;
+	for (int i = 0; i < this->mSegmentCount; i++) {
+		// First vertex
+		f32 angleI = static_cast<f32>(i) / static_cast<f32>(this->mCircleResolution);
+		f32 angle  = TAU * angleI;
 
-	for (int i = 0; i < this->_08; ++i) {
-		float angle = static_cast<float>(i) / static_cast<float>(this->_09);
-
-		offsetPos.x = (a2 * cos(angle * 6.2831855f - 1.5707964f)) + position.x;
-		offsetPos.y = (a2 * sin(angle * 6.2831855f - 1.5707964f)) + position.y;
+		Vector3f offsetPos;
+		offsetPos.x = (size * cos(angle)) + position.x;
+		offsetPos.y = (size * sin(angle)) + position.y;
 		offsetPos.z = position.z;
 
-		float x2 = (a2 * cos((angle + 1.0f) * 6.2831855f - 1.5707964f)) + position.x;
-		float y2 = (a2 * sin((angle + 1.0f) * 6.2831855f - 1.5707964f)) + position.y;
-		float z2 = position.z;
+		// Second vertex
+		f32 nextAngleI = static_cast<f32>(i + 1) / static_cast<f32>(this->mCircleResolution);
+		f32 nextAngle  = TAU * nextAngleI;
 
+		Vector3f secondVtx;
+		secondVtx.x = (size * cos(nextAngle)) + position.x;
+		secondVtx.y = (size * sin(nextAngle)) + position.y;
+		secondVtx.z = position.z;
+
+		// Draw the triangle
 		drawOneTri(&position, mLifeGaugeColor);
-
-		position.x = x2;
-		position.y = y2;
-		position.z = z2;
+		position = secondVtx;
 	}
+
+	// for (int i = 0; i < mSegmentCount; ++i) {
+	// 	f32 angle = static_cast<f32>(i) / static_cast<f32>(this->mCircleResolution);
+
+	// 	Vector3f offsetPos;
+	// 	offsetPos.x = (size * cos(angle * 6.2831855f - 1.5707964f)) + position.x;
+	// 	offsetPos.y = (size * sin(angle * 6.2831855f - 1.5707964f)) + position.y;
+	// 	offsetPos.z = position.z;
+
+	// 	Vector3f xyz;
+	// 	xyz.x = (size * cos((angle + 1.0f) * 6.2831855f - 1.5707964f)) + position.x;
+	// 	xyz.y = (size * sin((angle + 1.0f) * 6.2831855f - 1.5707964f)) + position.y;
+	// 	xyz.z = position.z;
+
+	// 	position = xyz;
+	// 	drawOneTri(&position, mLifeGaugeColor);
+	// }
 }
 
-/*
- * --INFO--
- * Address:	80119FCC
- * Size:	000110
+/**
+ * @note Address: 0x80119FCC
+ * @note Size: 0x110
  */
 void LifeGauge::initLifeGaugeDraw()
 {
@@ -230,105 +156,144 @@ void LifeGauge::initLifeGaugeDraw()
 	GXLoadTexMtxImm(mtx, GX_TEXMTX0, GX_MTX2x4);
 }
 
-/*
- * --INFO--
- * Address:	8011A0DC
- * Size:	0000F0
- * TODO
+/**
+ * Draws a single triangle using the given positions and color.
+ *
+ * @param vertices An array of three Vector3f positions representing the vertices of the triangle.
+ * @param color The color of the triangle.
+ *
+ * @note Address: 0x8011A0DC
+ * @note Size: 0xF0
  */
-void LifeGauge::drawOneTri(Vector3f* pos, Color4& clr)
+void LifeGauge::drawOneTri(Vector3f* vertices, Color4& color)
 {
-	// WTF?
 	GXBegin(GX_TRIANGLEFAN, GX_VTXFMT0, 3);
-	GXWGFifo.f32 = pos->x;
-	GXWGFifo.f32 = pos->y;
-	GXWGFifo.f32 = pos->z;
 
-	GXWGFifo.u8 = clr.r;
-	GXWGFifo.u8 = clr.g;
-	GXWGFifo.u8 = clr.b;
-	GXWGFifo.u8 = clr.a;
+	for (int i = 0; i < 3; i++) {
+		GXPosition3f32(vertices[i].x, vertices[i].y, vertices[i].z);
+		GXColor4u8(color.r, color.g, color.b, color.a);
+	}
+
+	GXEnd();
 }
 
-/*
- * --INFO--
- * Address:	8011A1CC
- * Size:	000604
+/**
+ * @note Address: 0x8011A1CC
+ * @note Size: 0x604
  * TODO
  */
 void LifeGaugeList::draw(Graphics& gfx)
 {
-	if (!_38) {
+	if (!mParam.mIsGaugeShown) {
 		return;
 	}
 
+	f32 x         = (1.25f * mParam.mRadius);
 	Viewport* cVp = gfx.mCurrentViewport;
-	Matrixf* mtx  = cVp->getMatrix(true);
+	cVp->getMatrix(true);
+	Matrixf* mtx = cVp->getMatrix(true);
+	Matrixf calcmtx;
+	Mtx mtx0;
+	PSMTXConcat(mtx->mMatrix.mtxView, calcmtx.mMatrix.mtxView, mtx0);
+	GXLoadPosMtxImm(mtx->mMatrix.mtxView, GX_MTX3x4);
+	GXSetNumChans(1);
+	GXSetTevDirect(GX_TEVSTAGE0);
+	GXSetNumTevStages(1);
+	GXSetTevOp(GX_TEVSTAGE0, GX_MODULATE);
+	GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+	GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+	GXClearVtxDesc();
+	GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
+	GXSetVtxDesc(GX_VA_CLR0, GX_DIRECT);
+	GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
+	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_POS_XYZ, GX_RGBA8, 0);
+	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_POS_XYZ, GX_U8, 0);
+	GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_SET);
+	GXSetZMode(GX_FALSE, GX_LESS, GX_FALSE);
+	GXSetCurrentMtx(0);
+	GXSetNumTexGens(1);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEXCOORD0, 60, 0, 125);
+	Mtx mtx2;
+	PSMTXIdentity(mtx2);
+	GXLoadTexMtxImm(mtx2, 30, GX_MTX2x4);
 
-	//  GXSetNumChans(1);
-	// GXSetTevDirect(0);
-	// GXSetNumTevStages(1u);
-	// GXSetTevOp(0, 0);
-	// GXSetTevOrder(0, 0, 0, 4);
-	// GXSetChanCtrl(4, 0, 0, 1, 0, 0, 2);
-	// GXClearVtxDesc();
-	// GXSetVtxDesc(9, 1);
-	// GXSetVtxDesc(11, 1);
-	// GXSetVtxDesc(13, 1);
-	// GXSetVtxAttrFmt(0, 9, 1, 4, 0);
-	// GXSetVtxAttrFmt(0, 11, 1, 5, 0);
-	// GXSetVtxAttrFmt(0, 13, 1, 0, 0);
-	// GXSetBlendMode(1, 4, 5, 15);
-	// GXSetZMode(0, 1, 0);
-	// GXSetCurrentMtx(0);
-	// GXSetNumTexGens(1u);
-	// GXSetTexCoordGen2(0, 1, 12, 60, 0, 125);
-	// PSMTXIdentity(v24);
-	// GXLoadTexMtxImm(v24, 0x1Eu, 1);
-	// GXBegin(152, 0, 4);
-	// GXEnd();
-	//     GXSetTevDirect(0);
-	// GXSetNumChans(1);
-	// GXSetNumTevStages(1u);
-	// GXSetTevOp(0, 4);
-	// GXSetTevOrder(0, 255, 255, 4);
-	// GXSetChanCtrl(4, 0, 0, 1, 0, 0, 2);
-	// GXClearVtxDesc();
-	// GXSetVtxDesc(9, 1);
-	// GXSetVtxDesc(11, 1);
-	// GXSetVtxDesc(13, 0);
-	// GXSetVtxAttrFmt(0, 9, 1, 4, 0);
-	// GXSetVtxAttrFmt(0, 11, 1, 5, 0);
-	// GXSetBlendMode(1, 4, 5, 15);
-	// GXSetZMode(0, 1, 0);
-	// GXSetCurrentMtx(0);
-	// PSMTXIdentity(v23);
+	GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
+	f32 y = -x;
+	f32 z = 0.0f;
+
+	// Draw Top Left
+	GXPosition3f32(x, y, z);
+	GXColor4u8(255, 255, 255, 255);
+	GXTexCoord2s8(0, 0);
+
+	// Draw Top Right
+	GXPosition3f32(x, y, z);
+	GXColor4u8(255, 255, 255, 255);
+	GXTexCoord2s8(1, 0);
+
+	// Draw Bottom Left
+	GXPosition3f32(x, y, z);
+	GXColor4u8(255, 255, 255, 255);
+	GXTexCoord2s8(0, 1);
+
+	// Draw Bottom Right
+	GXPosition3f32(x, y, z);
+	GXColor4u8(255, 255, 255, 255);
+	GXTexCoord2s8(1, 1);
+
+	GXSetTevDirect(GX_TEVSTAGE0);
+	GXSetNumChans(1);
+	GXSetNumTevStages(1);
+	GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
+	GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+	GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+	GXClearVtxDesc();
+	GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
+	GXSetVtxDesc(GX_VA_CLR0, GX_DIRECT);
+	GXSetVtxDesc(GX_VA_TEX0, GX_NONE);
+	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_POS_XYZ, GX_RGBA8, 0);
+	GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_SET);
+	GXSetZMode(GX_FALSE, GX_LESS, GX_FALSE);
+
+	GXSetCurrentMtx(0);
+	Mtx mtx3;
+	PSMTXIdentity(mtx3);
+	GXLoadTexMtxImm(mtx3, 30, GX_MTX2x4);
+	for (int i = 0; i < mSegmentCount; i++) {
+		// TODO
+		GXBegin(GX_TRIANGLEFAN, GX_VTXFMT0, 3);
+	}
 }
 
-/*
- * --INFO--
- * Address:	8011A7D0
- * Size:	0000DC
+/**
+ * @note Address: 0x8011A7D0
+ * @note Size: 0xDC
  * TODO
  */
 LifeGaugeMgr::LifeGaugeMgr() { }
 
-/*
- * --INFO--
- * Address:	8011A8AC
- * Size:	000098
+/**
+ * @note Address: 0x8011A944
+ * @note Size: 0x150
  */
-// LifeGaugeList::~LifeGaugeList()
-// {
-// }
-
-/*
- * --INFO--
- * Address:	8011A944
- * Size:	000150
- */
-void LifeGaugeMgr::createLifeGauge(Game::Creature*)
+LifeGaugeList* LifeGaugeMgr::createLifeGauge(Game::Creature* obj)
 {
+	if (!search(obj)) {
+		return mListB.mNext;
+	}
+
+	if (!search(obj)) {
+		LifeGaugeList* list = new LifeGaugeList(obj);
+		list->clearRelations();
+		list->mPrev  = &mListB;
+		list->mNext  = mListB.mNext;
+		mListA.mNext = list;
+		return list;
+	}
+
+	return mListA.mNext;
 	/*
 	stwu     r1, -0x20(r1)
 	mflr     r0
@@ -443,13 +408,32 @@ lbl_8011AA78:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8011AA94
- * Size:	0000E4
+/**
+ * @note Address: 0x8011AA94
+ * @note Size: 0xE4
  */
-void LifeGaugeMgr::activeLifeGauge(Game::Creature*, f32)
+void LifeGaugeMgr::activeLifeGauge(Game::Creature* obj, f32 x)
 {
+	LifeGaugeList* list = search(obj);
+
+	if (list) {
+		f32 y = list->_45 * x;
+		if (x >= 0.0f) {
+			y = x + 0.5f;
+		} else {
+			y = x - 0.5f;
+		}
+		list->mSegmentCount = y;
+
+		list->clearRelations();
+		list->mPrev = &mListB;
+		list->mNext = mListB.mNext;
+		if (list->mNext) {
+			list->mNext->mNext = list;
+		}
+		mListA.mNext = list;
+	}
+
 	/*
 	stwu     r1, -0x20(r1)
 	lwz      r5, 0x64(r3)
@@ -531,13 +515,23 @@ lbl_8011AB70:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8011AB78
- * Size:	0000A8
+/**
+ * @note Address: 0x8011AB78
+ * @note Size: 0xA8
  */
-void LifeGaugeMgr::inactiveLifeGauge(Game::Creature*)
+void LifeGaugeMgr::inactiveLifeGauge(Game::Creature* obj)
 {
+	LifeGaugeList* list = search(obj);
+	if (list) {
+		list->mParam.mIsGaugeShown = false;
+		list->_3C                  = 0.0f;
+		list->_45                  = LIFEGAUGE_SEGMENTS;
+		list->mSegmentCount        = LIFEGAUGE_SEGMENTS;
+		list->clearRelations();
+		list->mPrev  = &mListB;
+		list->mNext  = mListB.mNext;
+		mListA.mNext = list;
+	}
 	/*
 	lwz      r5, 0x1c(r3)
 	b        lbl_8011AB94
@@ -598,13 +592,19 @@ lbl_8011AC18:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8011AC20
- * Size:	000270
+/**
+ * @note Address: 0x8011AC20
+ * @note Size: 0x270
  */
 void LifeGaugeMgr::update()
 {
+	for (LifeGaugeList* list = mListA.mNext; list; list = list->mNext) {
+		list->mGameObject->getLifeGaugeParam(list->mParam);
+		if (list->mParam.mIsGaugeShown) {
+			LifeGauge* gauge = nullptr;
+			gauge->update(1.0f);
+		}
+	}
 	/*
 	stwu     r1, -0x30(r1)
 	mflr     r0
@@ -793,13 +793,20 @@ lbl_8011AE6C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8011AE90
- * Size:	000080
+/**
+ * @note Address: 0x8011AE90
+ * @note Size: 0x80
  */
-void LifeGaugeMgr::draw(Graphics&)
+void LifeGaugeMgr::draw(Graphics& gfx)
 {
+	if (!Game::moviePlayer || !Game::moviePlayer->isFlag(1)) {
+		if (LifeGaugeList* list = mListA.mNext) {
+			mTexture->load(GX_TEXMAP0);
+			for (list; list; list = list->mNext) {
+				list->draw(gfx);
+			}
+		}
+	}
 	/*
 	stwu     r1, -0x10(r1)
 	mflr     r0
@@ -844,75 +851,13 @@ lbl_8011AEF8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8011AF10
- * Size:	000098
+/**
+ * @note Address: 0x8011AF10
+ * @note Size: 0x98
  */
 void LifeGaugeMgr::loadResource()
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lis      r4, lbl_8047B238@ha
-	li       r5, 0
-	stw      r0, 0x24(r1)
-	li       r6, 1
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	addi     r3, r4, lbl_8047B238@l
-	li       r4, 1
-	bl
-mount__10JKRArchiveFPCcQ210JKRArchive10EMountModeP7JKRHeapQ210JKRArchive15EMountDirection
-	lis      r5, lbl_8047B258@ha
-	mr       r4, r3
-	addi     r3, r5, lbl_8047B258@l
-	bl       getGlbResource__13JKRFileLoaderFPCcP13JKRFileLoader
-	mr       r30, r3
-	li       r3, 0x40
-	bl       __nw__FUl
-	or.      r31, r3, r3
-	beq      lbl_8011AF88
-	li       r0, 0
-	mr       r4, r30
-	stw      r0, 0x28(r31)
-	li       r5, 0
-	bl       storeTIMG__10JUTTextureFPC7ResTIMGUc
-	lbz      r0, 0x3b(r31)
-	rlwinm   r0, r0, 0, 0x1e, 0x1e
-	stb      r0, 0x3b(r31)
-
-lbl_8011AF88:
-	stw      r31, 0x90(r29)
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	8011AFA8
- * Size:	000028
- */
-void __sinit_lifeGaugeMgr_cpp()
-{
-	/*
-	lis      r4, __f32_nan@ha
-	li       r0, -1
-	lfs      f0, __f32_nan@l(r4)
-	lis      r3, lbl_804AC308@ha
-	stw      r0, lbl_80515880@sda21(r13)
-	stfsu    f0, lbl_804AC308@l(r3)
-	stfs     f0, lbl_80515884@sda21(r13)
-	stfs     f0, 4(r3)
-	stfs     f0, 8(r3)
-	blr
-	*/
+	JKRArchive* arc = JKRMountArchive("/user/Yamashita/arc/gameTex.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	ResTIMG* timg   = JKRGetImageResource("lifeGauge.bti", arc);
+	mTexture        = new JUTTexture(timg);
 }

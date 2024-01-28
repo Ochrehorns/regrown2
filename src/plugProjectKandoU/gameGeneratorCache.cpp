@@ -1,79 +1,66 @@
 #include "Game/gameGeneratorCache.h"
-#include "CNode.h"
 #include "Game/gameStages.h"
-#include "JSystem/JUtility/JUTException.h"
-#include "stream.h"
-#include "types.h"
+#include "Game/Entities/ItemPikihead.h"
 
 namespace Game {
 
-static const char unusedGenCacheName[] = "generatorCache";
+static const char className[] = "generatorCache";
 
 GeneratorCache* generatorCache;
 
-/*
- * --INFO--
- * Address:	801F1908
- * Size:	000088
+/**
+ * @note Address: 0x801F1908
+ * @note Size: 0x88
  */
 GeneratorCache::GeneratorCache()
-    : _00(-1)
-    , _3C(-1)
+    : mRootCache(-1)
+    , mFreeCache(-1)
     , mGenerator()
 {
-	_00.mChild  = nullptr;
-	_00.mParent = nullptr;
-	_00.mPrev   = nullptr;
-	_00.mNext   = nullptr;
-	_3C.mChild  = nullptr;
-	_3C.mParent = nullptr;
-	_3C.mPrev   = nullptr;
-	_3C.mNext   = nullptr;
+	mRootCache.clearRelations();
+	mFreeCache.clearRelations();
 	createHeap();
 	generatorCache = this;
-	_78            = nullptr;
+	mCurrentCache  = nullptr;
 	clearGeneratorList();
 }
 
-/*
- * --INFO--
- * Address:	801F19F0
- * Size:	000098
+/**
+ * @note Address: 0x801F19F0
+ * @note Size: 0x98
  */
 void GeneratorCache::clearCache()
 {
 	for (int i = 0; i < stageList->mCourseCount; i++) {
-		CourseCache* course = findCache(_00, i);
+		CourseCache* course = findCache(mRootCache, i);
 		if (course) {
 			course->del();
-			_3C.add(course);
+			mFreeCache.add(course);
 		}
 	}
 
 	clearGeneratorList();
-	mFreeOffset = 0;
-	mFreeSize   = mHeapSize;
-	_78         = nullptr;
+	mFreeOffset   = 0;
+	mFreeSize     = mHeapSize;
+	mCurrentCache = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	801F1A88
- * Size:	000018
+/**
+ * @note Address: 0x801F1A88
+ * @note Size: 0x18
  */
 void GeneratorCache::clearGeneratorList() { mGenerator.clearRelations(); }
 
-/*
- * --INFO--
- * Address:	801F1AA0
- * Size:	000078
+/**
+ * @note Address: 0x801F1AA0
+ * @note Size: 0x78
  */
 void GeneratorCache::addGenerator(Game::Generator* newGenerator)
 {
 	int count = 0;
 	FOREACH_NODE(Generator, getFirstGenerator(), gen)
 	{
-		if (gen->_AC == 0) {
+		if (gen->mIsInactive == FALSE) {
 			count++;
 		}
 	}
@@ -84,63 +71,63 @@ void GeneratorCache::addGenerator(Game::Generator* newGenerator)
 	}
 }
 
-/*
- * --INFO--
- * Address:	801F1B18
- * Size:	000008
+/**
+ * @note Address: 0x801F1B18
+ * @note Size: 0x8
  */
 Generator* GeneratorCache::getFirstGenerator() { return (Generator*)mGenerator.mChild; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000034
+/**
+ * @note Address: N/A
+ * @note Size: 0x34
  */
-void GeneratorCache::findRamGenerator(int)
+Generator* GeneratorCache::findRamGenerator(int index)
 {
+	FOREACH_NODE(Generator, mGenerator.mChild, gen)
+	{
+		if (gen->mIsInactive == FALSE && gen->mIndex == index) {
+			return gen;
+		}
+	}
+	return nullptr;
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	801F1B20
- * Size:	000024
+/**
+ * @note Address: 0x801F1B20
+ * @note Size: 0x24
  */
 int GeneratorCache::getTotalMePikmins()
 {
 	int count = 0;
-	FOREACH_NODE(CourseCache, _00.mChild, cache) { count += cache->mPikiheadCount; }
+	FOREACH_NODE(CourseCache, mRootCache.mChild, cache) { count += cache->mPikiheadCount; }
 	return count;
 }
 
-/*
- * --INFO--
- * Address:	801F1B44
- * Size:	000074
+/**
+ * @note Address: 0x801F1B44
+ * @note Size: 0x74
  */
 int GeneratorCache::getColorMePikmins(int pikminType)
 {
 	int count = 0;
-	for (CourseCache* cache = (CourseCache*)_00.mChild; cache != nullptr; cache = (CourseCache*)cache->mNext) {
-		count += cache->getColorMePikmins(mHeapBuffer, pikminType);
-	}
+	FOREACH_NODE(CourseCache, mRootCache.mChild, cache) { count += cache->getColorMePikmins(mHeapBuffer, pikminType); }
 	return count;
 }
 
-/*
+/**
  * getColorMePikmins__Q24Game11CourseCacheFPUci
  *
- * --INFO--
- * Address:	801F1BB8
- * Size:	00009C
+ * @note Address: 0x801F1BB8
+ * @note Size: 0x9C
  */
 int CourseCache::getColorMePikmins(u8* buffer, int pikminType)
 {
-	int count     = 0;
-	int totalSize = mCreatureSize + mOffset + mGeneratorSize;
-	RamStream stream(&buffer[totalSize], mPikiheadSize);
+	int pikiheadFlags = 0;
+	int count         = 0;
+	RamStream stream(&buffer[mCreatureSize + mOffset + mGeneratorSize], mPikiheadSize);
 	for (int i = 0; i < mPikiheadCount; i++) {
-		u8 pikiheadFlags = stream.readByte();
+		pikiheadFlags = stream.readByte();
 		Vector3f position;
 		position.read(stream);
 		// TODO: Replace 0xf with define for ItemPikiheadTypeMask?
@@ -198,10 +185,9 @@ lbl_801F1C30:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801F1C54
- * Size:	00009C
+/**
+ * @note Address: 0x801F1C54
+ * @note Size: 0x9C
  */
 void GeneratorCache::createHeap()
 {
@@ -210,24 +196,22 @@ void GeneratorCache::createHeap()
 	mFreeOffset = 0;
 	mFreeSize   = mHeapSize;
 	for (int i = 0; i < stageList->mCourseCount; i++) {
-		_3C.add(new CourseCache(i));
+		mFreeCache.add(new CourseCache(i));
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000004
+/**
+ * @note Address: N/A
+ * @note Size: 0x4
  */
 void GeneratorCache::destroyHeap()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	801F1CF0
- * Size:	000038
+/**
+ * @note Address: 0x801F1CF0
+ * @note Size: 0x38
  */
 CourseCache* GeneratorCache::findCache(Game::CourseCache& haystack, int courseIndex)
 {
@@ -244,33 +228,34 @@ CourseCache* GeneratorCache::findCache(Game::CourseCache& haystack, int courseIn
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	801F1D28
- * Size:	000128
+/**
+ * @note Address: 0x801F1D28
+ * @note Size: 0x128
  */
 void GeneratorCache::loadGenerators(int courseIndex)
 {
-	_78 = findCache(_00, courseIndex);
-	if (_78 != nullptr) {
-		RamStream input(mHeapBuffer + _78->mOffset, _78->mSize);
-		for (int i = 0; i < _78->mGeneratorCount; i++) {
-			Generator* generator = new Generator();
+	mCurrentCache = findCache(mRootCache, courseIndex);
+	if (mCurrentCache) {
+		RamStream input(mHeapBuffer + mCurrentCache->mOffset, mCurrentCache->mSize);
+		for (int i = 0; i < mCurrentCache->mGeneratorCount; i++) {
+			Generator* generator = new Generator;
 
-			Generator::ramMode = 1;
+			Generator::ramMode = Generator::RM_MemoryCache;
 			generator->read(input);
-			Generator::ramMode = 0;
 
-			generator->mGeneratorIndexMaybe = i;
-			generator->_AC                  = 0;
+			int v1             = 0;
+			Generator::ramMode = Generator::RM_Disc;
 
-			int v1 = 0;
+			generator->mIndex      = i;
+			generator->mIsInactive = FALSE;
+
 			FOREACH_NODE(Generator, mGenerator.mChild, child)
 			{
-				if (child->_AC == 0) {
+				if (child->mIsInactive == FALSE) {
 					v1++;
 				}
 			}
+
 			if (v1 < 80) {
 				mGenerator.add(generator);
 			}
@@ -380,13 +365,35 @@ lbl_801F1E34:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801F1E50
- * Size:	0001B8
+/**
+ * @note Address: 0x801F1E50
+ * @note Size: 0x1B8
  */
-void GeneratorCache::loadCreatures(int)
+void GeneratorCache::loadCreatures(int courseIndex)
 {
+	mCurrentCache = findCache(mRootCache, courseIndex);
+	if (mCurrentCache) {
+		RamStream input(mHeapBuffer + mCurrentCache->mGeneratorSize + mCurrentCache->mOffset, mCurrentCache->mCreatureSize);
+		for (int i = 0; i < mCurrentCache->mCreatureCount; i++) {
+			int id         = input.readInt();
+			Generator* gen = findRamGenerator(id);
+			JUT_ASSERTLINE(430, gen, "no ram generator %d %d\n", i, id);
+
+			bool created = gen->loadCreature(input);
+			if (!created) {
+				if (gen->mObject) {
+					char buf[512];
+					sprintf(buf, "none");
+					gen->mObject->getDebugInfo(buf);
+					ID32 objID(gen->mObject->mTypeID);
+					JUT_PANICLINE(448, "loadC[%s](no%d):%s", objID.getID(), id, buf);
+				}
+				JUT_PANICLINE(450, "loadC(no%d)\n", id);
+			}
+		}
+		loadPikiheads();
+		slideCache();
+	}
 	/*
 	stwu     r1, -0x650(r1)
 	mflr     r0
@@ -531,13 +538,22 @@ lbl_801F1FF4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801F2008
- * Size:	000114
+/**
+ * @note Address: 0x801F2008
+ * @note Size: 0x114
  */
 void GeneratorCache::loadPikiheads()
 {
+	CourseCache* cache = mCurrentCache;
+	RamStream input(mHeapBuffer + cache->mGeneratorSize + cache->mOffset + cache->mCreatureSize, cache->mPikiheadSize);
+	for (int i = 0; i < mCurrentCache->mPikiheadCount; i++) {
+		ItemPikihead::Item* piki = ItemPikihead::mgr->birth();
+		ItemPikihead::InitArg arg;
+		arg.mIsAlreadyBuried = true;
+		piki->init(&arg);
+		piki->cacheLoad(input);
+	}
+
 	/*
 	stwu     r1, -0x480(r1)
 	mflr     r0
@@ -615,13 +631,23 @@ lbl_801F20F0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801F211C
- * Size:	0000C0
+/**
+ * @note Address: 0x801F211C
+ * @note Size: 0xC0
  */
 void GeneratorCache::slideCache()
 {
+	int size = mCurrentCache->mSize;
+	FOREACH_NODE(CourseCache, mCurrentCache->mChild, cache)
+	{
+		// wackness in here
+		cache->mOffset -= size;
+	}
+
+	mCurrentCache->del();
+	mRootCache.add(mCurrentCache);
+	mFreeOffset -= size;
+	mFreeSize += size;
 	/*
 	stwu     r1, -0x10(r1)
 	mflr     r0
@@ -682,192 +708,85 @@ lbl_801F218C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801F21DC
- * Size:	00004C
+/**
+ * @note Address: 0x801F21DC
+ * @note Size: 0x4C
  */
 void GeneratorCache::updateUseList()
 {
 	for (Generator* gen = getFirstGenerator(); gen != nullptr; gen = (Generator*)gen->mNext) {
-		if (gen->_AC == 0) {
+		if (gen->mIsInactive == FALSE) {
 			gen->updateUseList();
 		}
 	}
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	lwz      r31, 0x9c(r3)
-	b        lbl_801F220C
-
-lbl_801F21F4:
-	lbz      r0, 0xac(r31)
-	cmplwi   r0, 0
-	bne      lbl_801F2208
-	mr       r3, r31
-	bl       updateUseList__Q24Game9GeneratorFv
-
-lbl_801F2208:
-	lwz      r31, 4(r31)
-
-lbl_801F220C:
-	cmplwi   r31, 0
-	bne      lbl_801F21F4
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801F2228
- * Size:	000078
+/**
+ * @note Address: 0x801F2228
+ * @note Size: 0x78
  */
 void GeneratorCache::createNumberGenerators()
 {
 	for (Generator* gen = getFirstGenerator(); gen != nullptr; gen = (Generator*)gen->mNext) {
-		if (gen->_AC == 0 && (gen->mReservedNum & 4U) != 0) {
-			Generator::ramMode = 1;
+		if (gen->mIsInactive == FALSE && (gen->mReservedNum & 4U) != 0) {
+			Generator::ramMode = Generator::RM_MemoryCache;
 			gen->generate();
-			Generator::ramMode = 0;
+			Generator::ramMode = Generator::RM_Disc;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	801F22A0
- * Size:	0000F8
+/**
+ * @note Address: 0x801F22A0
+ * @note Size: 0xF8
  */
-void GeneratorCache::beginSave(int)
+void GeneratorCache::beginSave(int courseIndex)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lis      r3, lbl_80481480@ha
-	lwz      r6, 0x4c(r31)
-	addi     r5, r3, lbl_80481480@l
-	b        lbl_801F22E8
+	mCurrentCache = findCache(mFreeCache, courseIndex);
 
-lbl_801F22C4:
-	cmplwi   r6, 0
-	bne      lbl_801F22D4
-	li       r6, 0
-	b        lbl_801F22F4
+	if (!mCurrentCache) {
+		CourseCache* cache = findCache(mRootCache, courseIndex);
 
-lbl_801F22D4:
-	lwz      r0, 0x18(r6)
-	cmpw     r0, r4
-	bne      lbl_801F22E4
-	b        lbl_801F22F4
+		if (cache) {
+			JUT_PANICLINE(544, "BeginSave::Cache (%d) is alive !\n", courseIndex);
+		} else {
+			JUT_PANICLINE(546, "BeginSave::Cache (%d) is invalid !\n", courseIndex);
+		}
+	}
 
-lbl_801F22E4:
-	lwz      r6, 4(r6)
-
-lbl_801F22E8:
-	cmplwi   r6, 0
-	bne      lbl_801F22C4
-	li       r6, 0
-
-lbl_801F22F4:
-	stw      r6, 0x78(r31)
-	lwz      r0, 0x78(r31)
-	cmplwi   r0, 0
-	bne      lbl_801F2378
-	lwz      r3, 0x10(r31)
-	b        lbl_801F2330
-
-lbl_801F230C:
-	cmplwi   r3, 0
-	bne      lbl_801F231C
-	li       r3, 0
-	b        lbl_801F233C
-
-lbl_801F231C:
-	lwz      r0, 0x18(r3)
-	cmpw     r0, r4
-	bne      lbl_801F232C
-	b        lbl_801F233C
-
-lbl_801F232C:
-	lwz      r3, 4(r3)
-
-lbl_801F2330:
-	cmplwi   r3, 0
-	bne      lbl_801F230C
-	li       r3, 0
-
-lbl_801F233C:
-	cmplwi   r3, 0
-	beq      lbl_801F2360
-	mr       r6, r4
-	addi     r3, r5, 0x10
-	addi     r5, r5, 0x64
-	li       r4, 0x220
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-	b        lbl_801F2378
-
-lbl_801F2360:
-	mr       r6, r4
-	addi     r3, r5, 0x10
-	addi     r5, r5, 0x88
-	li       r4, 0x222
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801F2378:
-	lwz      r3, 0x78(r31)
-	lwz      r4, 0x84(r31)
-	bl       beginSave__Q24Game11CourseCacheFi
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mCurrentCache->beginSave(mFreeOffset);
 }
 
-/*
- * --INFO--
- * Address:	801F2398
- * Size:	0000C8
+/**
+ * @note Address: 0x801F2398
+ * @note Size: 0xC8
  */
 void GeneratorCache::endSave()
 {
-	P2ASSERTLINE(554, _78);
-	P2ASSERTLINE(555, findCache(_3C, _78->mCourseIndex));
-	_78->del();
-	_00.add(_78);
+	P2ASSERTLINE(554, mCurrentCache);
+	P2ASSERTLINE(555, findCache(mFreeCache, mCurrentCache->mCourseIndex));
+	mCurrentCache->del();
+	mRootCache.add(mCurrentCache);
 }
 
-/*
- * --INFO--
- * Address:	801F2460
- * Size:	0000F0
+/**
+ * @note Address: 0x801F2460
+ * @note Size: 0xF0
  */
-void GeneratorCache::saveGenerator(Game::Generator* generator)
+void GeneratorCache::saveGenerator(Generator* generator)
 {
-	if (generator->mDayLimitMaybe == -1 || gameSystem->mTimeMgr->mDayCount < generator->mDayLimitMaybe) {
+	if (generator->mDayLimit == -1 || gameSystem->mTimeMgr->mDayCount < generator->mDayLimit) {
 		if (generator->need_saveCreature()) {
 			RamStream output(mHeapBuffer + mFreeOffset, mFreeSize);
-			generator->mGeneratorIndexMaybe = _78->mGeneratorCount;
-			Generator::ramMode              = 1;
+			generator->mIndex  = mCurrentCache->mGeneratorCount;
+			Generator::ramMode = Generator::RM_MemoryCache;
 			generator->write(output);
-			Generator::ramMode = 0;
+			Generator::ramMode = Generator::RM_Disc;
 			mFreeOffset += output.mPosition;
 			mFreeSize -= output.mPosition;
-			_78->mGeneratorCount++;
-			_78->mSize += output.mPosition;
-			_78->mGeneratorSize += output.mPosition;
+			mCurrentCache->mGeneratorCount++;
+			mCurrentCache->mSize += output.mPosition;
+			mCurrentCache->mGeneratorSize += output.mPosition;
 		}
 	}
 	/*
@@ -938,13 +857,32 @@ lbl_801F2538:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801F2550
- * Size:	000140
+/**
+ * @note Address: 0x801F2550
+ * @note Size: 0x140
  */
-void GeneratorCache::saveCreature(Game::Generator*)
+void GeneratorCache::saveCreature(Generator* gen)
 {
+	if (gen->mCreature && (gen->mDayLimit == -1 || gameSystem->mTimeMgr->mDayCount < gen->mDayLimit)) {
+		RamStream output(mHeapBuffer + mFreeOffset, mFreeSize);
+		Generator::ramMode = Generator::RM_MemoryCache;
+		if (gen->need_saveCreature()) {
+			output.writeInt(gen->mIndex);
+			gen->saveCreature(output);
+
+			JUT_ASSERTLINE(672, mCurrentCache->mGeneratorCount < gen->mIndex, "(gen number large %d>=%d\n", mCurrentCache->mGeneratorCount,
+			               gen->mIndex);
+			Generator::ramMode = Generator::RM_Disc;
+		} else {
+			Generator::ramMode = Generator::RM_Disc;
+		}
+		int size = output.mPosition;
+		mFreeOffset += size;
+		mFreeSize -= size;
+		mCurrentCache->mCreatureCount++;
+		mCurrentCache->mSize += size;
+		mCurrentCache->mGeneratorSize += size;
+	}
 	/*
 	stwu     r1, -0x430(r1)
 	mflr     r0
@@ -1037,13 +975,34 @@ lbl_801F2678:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801F2690
- * Size:	0002D0
+/**
+ * @note Address: 0x801F2690
+ * @note Size: 0x2D0
  */
 void GeneratorCache::savePikiheads()
 {
+	RamStream output(mHeapBuffer + mFreeOffset, mFreeSize);
+
+	Iterator<ItemPikihead::Item> iterator(ItemPikihead::mgr);
+	CI_LOOP(iterator)
+	{
+		ItemPikihead::Item* obj = *iterator;
+		if (obj->isAlive() && obj->needSave()) {
+			int size = output.mPosition;
+			obj->cacheSave(output);
+			size -= output.mPosition;
+			mFreeOffset += size;
+			mFreeSize -= size;
+			mCurrentCache->mPikiheadCount++;
+			mCurrentCache->mSize += size;
+			mCurrentCache->mPikiheadSize += size;
+		} else {
+			if (obj->isAlive()) {
+				obj->kill(nullptr);
+			}
+		}
+	}
+
 	/*
 	stwu     r1, -0x450(r1)
 	mflr     r0
@@ -1250,23 +1209,20 @@ lbl_801F2924:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000030
+/**
+ * @note Address: N/A
+ * @note Size: 0x30
  */
 void GeneratorCache::checkOverflow()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	801F2960
- * Size:	000070
+/**
+ * @note Address: 0x801F2960
+ * @note Size: 0x70
  */
 CourseCache::CourseCache(int courseIndex)
-    : CNode()
 {
 	mCourseIndex    = courseIndex;
 	mSize           = 0;
@@ -1277,43 +1233,12 @@ CourseCache::CourseCache(int courseIndex)
 	mCreatureSize   = 0;
 	mPikiheadCount  = 0;
 	mPikiheadSize   = 0;
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	mr       r30, r3
-	bl       __ct__5CNodeFv
-	lis      r3, __vt__Q24Game11CourseCache@ha
-	li       r0, 0
-	addi     r4, r3, __vt__Q24Game11CourseCache@l
-	mr       r3, r30
-	stw      r4, 0(r30)
-	stw      r31, 0x18(r30)
-	stw      r0, 0x20(r30)
-	stw      r0, 0x1c(r30)
-	stw      r0, 0x24(r30)
-	stw      r0, 0x28(r30)
-	stw      r0, 0x2c(r30)
-	stw      r0, 0x30(r30)
-	stw      r0, 0x34(r30)
-	stw      r0, 0x38(r30)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
+/**
  * beginSave__Q24Game11CourseCacheFi
- * --INFO--
- * Address:	801F29D0
- * Size:	000028
+ * @note Address: 0x801F29D0
+ * @note Size: 0x28
  */
 void CourseCache::beginSave(int offset)
 {
@@ -1327,13 +1252,50 @@ void CourseCache::beginSave(int offset)
 	mPikiheadSize   = 0;
 }
 
-/*
- * --INFO--
- * Address:	801F29F8
- * Size:	000234
+/**
+ * @note Address: 0x801F29F8
+ * @note Size: 0x234
  */
-void GeneratorCache::write(Stream&)
+void GeneratorCache::write(Stream& output)
 {
+	for (int i = 0; i < stageList->getCourseCount(); i++) {
+
+		CourseCache* cache = findCache(mFreeCache, i);
+		if (cache) {
+			output.textWriteTab(output.mTabCount);
+			output.writeByte(0);
+			output.textWriteText("\t# Alive\r\n");
+
+		} else {
+			cache = findCache(mRootCache, i);
+
+			JUT_ASSERTLINE(945, cache, "no cache : %d\n", i);
+			output.textWriteTab(output.mTabCount);
+			output.writeByte(255);
+			output.textWriteText("\t# Dead\r\n");
+		}
+		cache->write(output);
+	}
+
+	output.textWriteTab(output.mTabCount);
+	output.writeInt(mHeapSize);
+	output.textWriteText("\t# heapSize\r\n");
+
+	output.textWriteTab(output.mTabCount);
+	output.writeInt(mFreeOffset);
+	output.textWriteText("\t# freeOffset\r\n");
+
+	output.textWriteTab(output.mTabCount);
+	output.writeInt(mFreeSize);
+	output.textWriteText("\t# freeSize\r\n");
+
+	for (int j = 0; j < mHeapSize; j++) {
+		output.textWriteTab(output.mTabCount);
+		for (int k = 0; k < 0x40; k++) {
+			output.writeByte(mHeapBuffer[k]);
+		}
+		output.textWriteText("\r\n");
+	}
 	/*
 	stwu     r1, -0x20(r1)
 	mflr     r0
@@ -1519,13 +1481,52 @@ lbl_801F2C10:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801F2C2C
- * Size:	0002B0
+/**
+ * @note Address: 0x801F2C2C
+ * @note Size: 0x2B0
  */
-void GeneratorCache::read(Stream&)
+void GeneratorCache::read(Stream& input)
 {
+	for (int i = 0; i < stageList->getCourseCount(); i++) {
+		CourseCache* cache = findCache(mRootCache, i);
+		if (cache) {
+			cache->del();
+			mFreeCache.add(cache);
+		}
+	}
+	mRootCache.clearRelations();
+	mFreeOffset   = 0;
+	mFreeSize     = mHeapSize;
+	mCurrentCache = nullptr;
+	CourseCache newcache(-1);
+
+	for (int i = 0; i < stageList->getCourseCount(); i++) {
+		u8 flag            = input.readByte();
+		CourseCache* cache = findCache(newcache, i);
+		JUT_ASSERTLINE(1009, cache, "cache %d is not in dead list\n", i);
+		cache->read(input);
+		if (flag == 0) {
+			cache->del();
+			newcache.add(cache);
+		} else if (flag == 255) {
+			cache->del();
+			mRootCache.add(cache);
+		} else {
+			JUT_PANICLINE(1019, "illegal cache flag(%x)\n", flag);
+		}
+	}
+
+	CourseCache* cache = findCache(newcache, -1);
+	if (cache) {
+		cache->del();
+		mFreeCache.add(cache);
+	}
+	mHeapSize   = input.readInt();
+	mFreeOffset = input.readInt();
+	mFreeSize   = input.readInt();
+	for (int j = 0; j < mHeapSize; j++) {
+		mHeapBuffer[j] = input.readByte();
+	}
 	/*
 	stwu     r1, -0x60(r1)
 	mflr     r0
@@ -1756,11 +1757,10 @@ lbl_801F2EA4:
 	*/
 }
 
-/*
+/**
  * write__Q24Game11CourseCacheFR6Stream
- * --INFO--
- * Address:	801F2EDC
- * Size:	0001D4
+ * @note Address: 0x801F2EDC
+ * @note Size: 0x1D4
  */
 void CourseCache::write(Stream& output)
 {
@@ -1808,20 +1808,17 @@ void CourseCache::write(Stream& output)
 	output.textEndGroup();
 }
 
-/*
+/**
  * read__Q24Game11CourseCacheFR6Stream
- * --INFO--
- * Address:	801F30B0
- * Size:	0000BC
+ * @note Address: 0x801F30B0
+ * @note Size: 0xBC
  */
 void CourseCache::read(Stream& input)
 {
-#if MATCHING
-	// Why would you do this? I guess maybe to print out to console what's being
-	// parsed?
 	char header[256];
 	sprintf(header, "CourseCache %d", mCourseIndex);
-#endif
+	// some testing leftover
+
 	mCourseIndex    = input.readInt();
 	mOffset         = input.readInt();
 	mSize           = input.readInt();

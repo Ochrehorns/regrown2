@@ -21,11 +21,20 @@ void createSimpleChinka(Vector3f&);
 void createSimpleWaterOff(Vector3f&);
 void createSimpleGedoku(Vector3f&);
 void createSimpleBlackDrop(Vector3f&);
+void createSimpleDig(Vector3f&);
 void createSimpleDive(Vector3f&);
-void createSimpleChiru(Vector3f&, long);
+void createSimpleChiru(Vector3f&, s32);
+void createSimpleInattack(Vector3f&);
 void createSimpleInstick(Vector3f&);
-void createSimpleDead(Vector3f&, long);
+void createSimpleDead(Vector3f&, s32);
+void createSimpleBridgeAttack(Vector3f&);
+void createSimpleGate1Attack(Vector3f&);
+void createSimpleGate2Attack(Vector3f&);
+void createSimpleGate3Attack(Vector3f&);
 void createSimpleStoneAttack(Vector3f& pos);
+void createSimpleGlow2(Vector3f& pos);
+void createSimpleWalkwater(Vector3f& pos);
+void createSimpleWalksmoke(Vector3f& pos);
 
 struct TPkAp : public TSimple2 {
 	inline TPkAp()
@@ -189,6 +198,15 @@ struct TPkOneEmitterSimple : public TBase, public JPAEmitterCallBack {
 };
 
 struct TPkEffectTane {
+	TPkEffectTane()
+	    : mPikiColor(-1)
+	    , mPos(nullptr)
+	    , _08(nullptr)
+	    , _0C(nullptr)
+	    , _10(nullptr)
+	{
+	}
+
 	void init();
 	void createTanekira_(Vector3f*);
 	void killTanekira_();
@@ -345,15 +363,15 @@ struct TPkEffect {
 	TPkMoeA mMoeA;             // _48
 	TPkBlackDown mBlackDown;   // _5C
 	ToeKourin mOeKourin;       // _70
-	u8 _8C[4];                 // _8C, unknown
-	ToeDoping mOeDoping;       // _90
-	ToeNagekira mOeNagekira;   // _AC
-	ToeMoeBC mOeMoeBC;         // _C8
-	ToeChudoku mOeChudoku;     // _100
-	ToeWater mOeWater;         // _11C
-	ToeHamonA mOeHamonA;       // _154
-	ToeHamonB mOeHamonB;       // _170
-	ToeMoeSmoke mOeMoeSmoke;   // _18C
+	// u8 _8C[4];                 // _8C, unknown
+	ToeDoping mOeDoping;     // _90
+	ToeNagekira mOeNagekira; // _AC
+	ToeMoeBC mOeMoeBC;       // _C8
+	ToeChudoku mOeChudoku;   // _100
+	ToeWater mOeWater;       // _11C
+	ToeHamonA mOeHamonA;     // _154
+	ToeHamonB mOeHamonB;     // _170
+	ToeMoeSmoke mOeMoeSmoke; // _18C
 };
 
 struct TPkEffectMgr : public JKRDisposer {
@@ -368,7 +386,7 @@ struct TPkEffectMgr : public JKRDisposer {
 	void exitMgr();
 
 	void resetContextS();
-	void createS_Dead(Vector3f&, long);
+	void createS_Dead(Vector3f&, s32);
 	void createS_Chinka(Vector3f&);
 	void createS_Gedoku(Vector3f&);
 	void createS_WaterOff(Vector3f&);

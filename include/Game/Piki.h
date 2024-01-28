@@ -56,9 +56,10 @@ typedef enum EPikiKind {
 } EPikiKind;
 
 typedef enum EPikiHappa {
-	Leaf   = 0,
-	Bud    = 1,
-	Flower = 2,
+	Leaf          = 0,
+	Bud           = 1,
+	Flower        = 2,
+	MaxHappaStage = Flower,
 	PikiGrowthStageCount,
 
 	Bud_Red    = 3,
@@ -245,6 +246,9 @@ struct Piki : public FakePiki {
 	inline efx::TPkEffect* getEffectObj() { return mEffectsObj; }
 
 	inline f32 getAnimSpeed() const { return mAnimSpeed; }
+
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
 
 	static Color4 pikiColors[PikiColorCount + 1];
 	static Color4 pikiColorsCursor[PikiColorCount + 1];

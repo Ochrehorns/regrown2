@@ -13,10 +13,9 @@
 namespace Game {
 namespace KingChappy {
 
-/*
- * --INFO--
- * Address:	803591BC
- * Size:	000204
+/**
+ * @note Address: 0x803591BC
+ * @note Size: 0x204
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -37,10 +36,9 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateSwallow(KINGCHAPPY_Swallow));
 }
 
-/*
- * --INFO--
- * Address:	803593C0
- * Size:	00003C
+/**
+ * @note Address: 0x803593C0
+ * @note Size: 0x3C
  */
 StateWalk::StateWalk(int stateID)
     : State(stateID)
@@ -48,43 +46,43 @@ StateWalk::StateWalk(int stateID)
 	mName = "walk";
 }
 
-/*
- * --INFO--
- * Address:	803593FC
- * Size:	000080
+/**
+ * @note Address: 0x803593FC
+ * @note Size: 0x80
  */
 void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	OBJ(enemy)->startMotionSelf(6, nullptr);
+	OBJ(enemy)->startMotionSelf(KINGANIM_Move, nullptr);
 	OBJ(enemy)->resetFootPos();
 	if (enemy->mTargetCreature) {
-		_10 = 0;
+		mNoTargetTimer = 0;
 	}
 
 	OBJ(enemy)->mNextState = KINGCHAPPY_NULL;
-	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed * CG_PROPERPARMS(enemy).mFp11.mValue);
+	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed * CG_PROPERPARMS(enemy).mWalkingAnimeSpeed.mValue);
 }
 
-/*
- * --INFO--
- * Address:	8035947C
- * Size:	0001A4
+/**
+ * @note Address: 0x8035947C
+ * @note Size: 0x1A4
  */
 void StateWalk::exec(EnemyBase* enemy)
 {
 	if (OBJ(enemy)->mNextState < 0) {
 		OBJ(enemy)->walkFunc();
 		OBJ(enemy)->checkTurn(true);
+
 		if (!enemy->mTargetCreature) {
-			_10++;
+			mNoTargetTimer++;
 		}
 
-		if (OBJ(enemy)->isOutOfTerritory(1.0f) || CG_PARMS(enemy)->_BC9 || _10 > CG_PROPERPARMS(enemy).mIp01.mValue) {
-			OBJ(enemy)->_2BC = enemy->mHomePosition;
-			_10              = CG_PROPERPARMS(enemy).mIp01.mValue;
-			if (OBJ(enemy)->isReachToGoal(CG_PARMS(enemy)->mGeneral.mHomeRadius.mValue)) {
+		if (OBJ(enemy)->isOutOfTerritory(1.0f) || CG_PARMS(enemy)->_BC9
+		    || mNoTargetTimer > CG_PROPERPARMS(enemy).mPeriodOfIncubation.mValue) {
+			OBJ(enemy)->mGoalPosition = enemy->mHomePosition;
+			mNoTargetTimer            = CG_PROPERPARMS(enemy).mPeriodOfIncubation.mValue;
+			if (OBJ(enemy)->isReachToGoal(CG_GENERALPARMS(enemy).mHomeRadius.mValue)) {
 				OBJ(enemy)->mNextState = KINGCHAPPY_Hide;
-				_10                    = 0;
+				mNoTargetTimer         = 0;
 			}
 		} else if (OBJ(enemy)->isReachToGoal(20.0f)) {
 			OBJ(enemy)->setNextGoal();
@@ -109,17 +107,15 @@ void StateWalk::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80359620
- * Size:	000028
+/**
+ * @note Address: 0x80359620
+ * @note Size: 0x28
  */
 void StateWalk::cleanup(EnemyBase* enemy) { enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed); }
 
-/*
- * --INFO--
- * Address:	80359648
- * Size:	00003C
+/**
+ * @note Address: 0x80359648
+ * @note Size: 0x3C
  */
 StateAttack::StateAttack(int stateID)
     : State(stateID)
@@ -127,38 +123,36 @@ StateAttack::StateAttack(int stateID)
 	mName = "attack";
 }
 
-/*
- * --INFO--
- * Address:	80359684
- * Size:	00006C
+/**
+ * @note Address: 0x80359684
+ * @note Size: 0x6C
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	OBJ(enemy)->startMotionSelf(0, nullptr);
-	enemy->mTargetVelocity = Vector3f(0.0f);
-	_10                    = 0;
-	_14                    = 0;
-	_18                    = 0;
-	_1C                    = 0;
-	OBJ(enemy)->_338       = 0;
+	OBJ(enemy)->startMotionSelf(KINGANIM_Attack, nullptr);
+	enemy->mTargetVelocity   = Vector3f(0.0f);
+	mEatenPikis              = 0;
+	_14                      = 0;
+	mEatenBombs              = 0;
+	mDoCheckEat              = false;
+	OBJ(enemy)->mCanEatBombs = false;
 }
 
-/*
- * --INFO--
- * Address:	803596F0
- * Size:	0006AC
+/**
+ * @note Address: 0x803596F0
+ * @note Size: 0x6AC
  */
 void StateAttack::exec(EnemyBase* enemy)
 {
-	if (_1C) {
+	if (mDoCheckEat) {
 		int bombVal = OBJ(enemy)->eatBomb();
-		if (bombVal > _18) {
-			_18 = bombVal;
+		if (bombVal > mEatenBombs) {
+			mEatenBombs = bombVal;
 		}
 
 		int pikiVal = EnemyFunc::eatPikmin(enemy, nullptr);
-		if (pikiVal > _10) {
-			_10 = pikiVal;
+		if (pikiVal > mEatenPikis) {
+			mEatenPikis = pikiVal;
 		}
 	}
 
@@ -173,16 +167,16 @@ void StateAttack::exec(EnemyBase* enemy)
 	mapMgr->traceMove(moveInfo, sys->mDeltaTime);
 
 	if (moveInfo.mBounceTriangle || moveInfo.mWallTriangle) {
-		OBJ(enemy)->_2E4 = 1;
-		OBJ(enemy)->fadeEffect(6);
-		if (_18 > 0) {
+		OBJ(enemy)->mAllowAnimBlending = true;
+		OBJ(enemy)->fadeEffect(Obj::KingEfx_AttackDrool);
+		if (mEatenBombs > 0) {
 			StateEatArg eatArg;
-			eatArg._00 = 1;
+			eatArg.mDoStunAfter = true;
 			transit(enemy, KINGCHAPPY_Eat, &eatArg);
 			return;
 		}
 
-		if (_10 > 0) {
+		if (mEatenPikis > 0) {
 			transit(enemy, KINGCHAPPY_Swallow, nullptr);
 			return;
 		}
@@ -205,7 +199,7 @@ void StateAttack::exec(EnemyBase* enemy)
 			Vector3f diff(slotPos.y - naviPos.y, slotPos.z - naviPos.z, slotPos.x - naviPos.x);
 			f32 len = _length2(diff);
 			if (len < slot->mRadius) {
-				InteractAttack attack(enemy, CG_PARMS(enemy)->mGeneral.mAttackDamage.mValue, nullptr);
+				InteractAttack attack(enemy, CG_GENERALPARMS(enemy).mAttackDamage.mValue, nullptr);
 				navi->stimulate(attack);
 			}
 		}
@@ -222,29 +216,29 @@ void StateAttack::exec(EnemyBase* enemy)
 			PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(enemy->mSoundObj);
 			PSM::checkBoss(soundObj);
 			if (soundObj) {
-				soundObj->jumpRequest(3);
+				soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_Attack);
 			}
 			break;
 
 		case KEYEVENT_3:
-			_1C = 1;
-			OBJ(enemy)->createEffect(6);
+			mDoCheckEat = true;
+			OBJ(enemy)->createEffect(Obj::KingEfx_AttackDrool);
 			break;
 
 		case KEYEVENT_5:
-			OBJ(enemy)->fadeEffect(6);
+			OBJ(enemy)->fadeEffect(Obj::KingEfx_AttackDrool);
 			break;
 
 		case KEYEVENT_6:
-			OBJ(enemy)->_338 = 1;
+			OBJ(enemy)->mCanEatBombs = true;
 			break;
 
 		case KEYEVENT_END:
-			if (_18 > 0) {
+			if (mEatenBombs > 0) {
 				StateEatArg eatArg;
-				eatArg._00 = 1;
+				eatArg.mDoStunAfter = true;
 				transit(enemy, KINGCHAPPY_Eat, &eatArg);
-			} else if (_10 > 0) {
+			} else if (mEatenPikis > 0) {
 				transit(enemy, KINGCHAPPY_Swallow, nullptr);
 			} else {
 				transit(enemy, KINGCHAPPY_Walk, nullptr);
@@ -735,21 +729,19 @@ lbl_80359D80:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80359D9C
- * Size:	00003C
+/**
+ * @note Address: 0x80359D9C
+ * @note Size: 0x3C
  */
 void StateAttack::cleanup(EnemyBase* enemy)
 {
-	OBJ(enemy)->fadeEffect(6);
-	OBJ(enemy)->_338 = 1;
+	OBJ(enemy)->fadeEffect(Obj::KingEfx_AttackDrool);
+	OBJ(enemy)->mCanEatBombs = true;
 }
 
-/*
- * --INFO--
- * Address:	80359DD8
- * Size:	00003C
+/**
+ * @note Address: 0x80359DD8
+ * @note Size: 0x3C
  */
 StateDead::StateDead(int stateID)
     : State(stateID)
@@ -757,30 +749,28 @@ StateDead::StateDead(int stateID)
 	mName = "dead";
 }
 
-/*
- * --INFO--
- * Address:	80359E14
- * Size:	0000CC
+/**
+ * @note Address: 0x80359E14
+ * @note Size: 0xCC
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	OBJ(enemy)->startMotionSelf(3, nullptr);
+	OBJ(enemy)->startMotionSelf(KINGANIM_Dead, nullptr);
 	enemy->mCurrentVelocity = Vector3f(0.0f);
 	enemy->mTargetVelocity  = Vector3f(0.0f);
 	enemy->deathProcedure();
-	OBJ(enemy)->createEffect(7);
+	OBJ(enemy)->createEffect(Obj::KingEfx_Dead);
 
 	Vector3f pos = enemy->getPosition();
 	cameraMgr->startVibration(12, pos, 2);
-	rumbleMgr->startRumble(13, pos, 2);
+	rumbleMgr->startRumble(13, pos, RUMBLEID_Both);
 
 	enemy->disableEvent(0, EB_Cullable);
 }
 
-/*
- * --INFO--
- * Address:	80359EE0
- * Size:	0000DC
+/**
+ * @note Address: 0x80359EE0
+ * @note Size: 0xDC
  */
 void StateDead::exec(EnemyBase* enemy)
 {
@@ -794,7 +784,7 @@ void StateDead::exec(EnemyBase* enemy)
 			OBJ(enemy)->createBounceEffect();
 			Vector3f pos = enemy->getPosition();
 			cameraMgr->startVibration(3, pos, 2);
-			rumbleMgr->startRumble(11, pos, 2);
+			rumbleMgr->startRumble(11, pos, RUMBLEID_Both);
 			break;
 
 		case KEYEVENT_END:
@@ -804,17 +794,15 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80359FBC
- * Size:	000028
+/**
+ * @note Address: 0x80359FBC
+ * @note Size: 0x28
  */
-void StateDead::cleanup(EnemyBase* enemy) { OBJ(enemy)->fadeEffect(7); }
+void StateDead::cleanup(EnemyBase* enemy) { OBJ(enemy)->fadeEffect(Obj::KingEfx_Dead); }
 
-/*
- * --INFO--
- * Address:	80359FE4
- * Size:	00003C
+/**
+ * @note Address: 0x80359FE4
+ * @note Size: 0x3C
  */
 StateFlick::StateFlick(int stateID)
     : State(stateID)
@@ -822,23 +810,21 @@ StateFlick::StateFlick(int stateID)
 	mName = "flick";
 }
 
-/*
- * --INFO--
- * Address:	8035A020
- * Size:	000060
+/**
+ * @note Address: 0x8035A020
+ * @note Size: 0x60
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	OBJ(enemy)->startMotionSelf(5, nullptr);
+	OBJ(enemy)->startMotionSelf(KINGANIM_Flick, nullptr);
 	enemy->mCurrentVelocity = Vector3f(0.0f);
 	enemy->mTargetVelocity  = Vector3f(0.0f);
 	enemy->enableEvent(0, EB_NoInterrupt);
 }
 
-/*
- * --INFO--
- * Address:	8035A080
- * Size:	0008EC
+/**
+ * @note Address: 0x8035A080
+ * @note Size: 0x8EC
  */
 void StateFlick::exec(EnemyBase* enemy)
 {
@@ -862,21 +848,21 @@ void StateFlick::exec(EnemyBase* enemy)
 			}
 
 			cameraMgr->startVibration(3, pos, 2);
-			rumbleMgr->startRumble(11, pos, 2);
+			rumbleMgr->startRumble(11, pos, RUMBLEID_Both);
 
 			PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(enemy->mSoundObj);
 			PSM::checkBoss(soundObj);
 			if (soundObj) {
-				soundObj->jumpRequest(4);
+				soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_Flick);
 			}
 
 			break;
 
 		case KEYEVENT_3:
-			f32 yMax         = 25.0f + OBJ(enemy)->_300.y;                                     // f31
-			f32 yMin         = OBJ(enemy)->_300.y - 30.0f;                                     // f30
-			Vector3f footPos = OBJ(enemy)->_300;                                               // f28, na, f27
-			f32 trampleRange = SQUARE(*CG_PROPERPARMS(enemy).mFp08() * enemy->mScaleModifier); // f29
+			f32 yMax         = 25.0f + OBJ(enemy)->mFootPosition.y;                                     // f31
+			f32 yMin         = OBJ(enemy)->mFootPosition.y - 30.0f;                                     // f30
+			Vector3f footPos = OBJ(enemy)->mFootPosition;                                               // f28, na, f27
+			f32 trampleRange = SQUARE(CG_PROPERPARMS(enemy).mTramplingRange() * enemy->mScaleModifier); // f29
 
 			Iterator<Piki> iterPiki(pikiMgr);
 
@@ -886,7 +872,7 @@ void StateFlick::exec(EnemyBase* enemy)
 				if (piki->isAlive()) {
 					Vector3f pikiPos = piki->getPosition();
 					if (yMax > pikiPos.y && yMin < pikiPos.y && sqrDistanceXZ(footPos, pikiPos) < trampleRange) {
-						InteractPress pikiPress(enemy, CG_PARMS(enemy)->mGeneral.mAttackDamage.mValue, nullptr);
+						InteractPress pikiPress(enemy, CG_GENERALPARMS(enemy).mAttackDamage.mValue, nullptr);
 						piki->stimulate(pikiPress);
 					}
 				}
@@ -902,24 +888,24 @@ void StateFlick::exec(EnemyBase* enemy)
 				if (navi->isAlive()) {
 					Vector3f naviPos = navi->getPosition();
 					if (yMax > naviPos.y && yMin < naviPos.y && sqrDistanceXZ(footPos, naviPos) < trampleRange) {
-						InteractPress naviPress(enemy, CG_PARMS(enemy)->mGeneral.mAttackDamage.mValue, nullptr);
+						InteractPress naviPress(enemy, CG_GENERALPARMS(enemy).mAttackDamage.mValue, nullptr);
 						navi->stimulate(naviPress);
 						naviCheck = false;
 					}
 				}
 			}
 
-			f32 rate      = CG_PARMS(enemy)->mGeneral.mShakeRateMaybe.mValue;
-			f32 knockback = CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue;
-			f32 damage    = CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue;
-			f32 range     = CG_PARMS(enemy)->mGeneral.mShakeRange.mValue * enemy->mScaleModifier;
+			f32 rate      = CG_GENERALPARMS(enemy).mShakeChance.mValue;
+			f32 knockback = CG_GENERALPARMS(enemy).mShakeKnockback.mValue;
+			f32 damage    = CG_GENERALPARMS(enemy).mShakeDamage.mValue;
+			f32 range     = CG_GENERALPARMS(enemy).mShakeRange.mValue * enemy->mScaleModifier;
 
-			EnemyFunc::flickNearbyPikmin(enemy, range, knockback, damage, -1000.0f, nullptr);
+			EnemyFunc::flickNearbyPikmin(enemy, range, knockback, damage, FLICK_BACKWARD_ANGLE, nullptr);
 			EnemyFunc::flickStickPikmin(enemy, rate, knockback, damage, enemy->getFaceDir(), nullptr);
 			if (naviCheck) {
-				EnemyFunc::flickNearbyNavi(enemy, range, knockback, damage, -1000.0f, nullptr);
+				EnemyFunc::flickNearbyNavi(enemy, range, knockback, damage, FLICK_BACKWARD_ANGLE, nullptr);
 			}
-			enemy->mToFlick = 0.0f;
+			enemy->mFlickTimer = 0.0f;
 			if (!enemy->isEvent(0, EB_PS3)) {
 				enemy->disableEvent(0, EB_NoInterrupt);
 			}
@@ -1570,17 +1556,15 @@ lbl_8035A91C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8035A96C
- * Size:	000010
+/**
+ * @note Address: 0x8035A96C
+ * @note Size: 0x10
  */
 void StateFlick::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInterrupt); }
 
-/*
- * --INFO--
- * Address:	8035A97C
- * Size:	00003C
+/**
+ * @note Address: 0x8035A97C
+ * @note Size: 0x3C
  */
 StateWarCry::StateWarCry(int stateID)
     : State(stateID)
@@ -1588,22 +1572,20 @@ StateWarCry::StateWarCry(int stateID)
 	mName = "warcry";
 }
 
-/*
- * --INFO--
- * Address:	8035A9B8
- * Size:	000054
+/**
+ * @note Address: 0x8035A9B8
+ * @note Size: 0x54
  */
 void StateWarCry::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	OBJ(enemy)->startMotionSelf(1, nullptr);
+	OBJ(enemy)->startMotionSelf(KINGANIM_WarCry, nullptr);
 	enemy->mCurrentVelocity = Vector3f(0.0f);
 	enemy->mTargetVelocity  = Vector3f(0.0f);
 }
 
-/*
- * --INFO--
- * Address:	8035AA0C
- * Size:	0006D0
+/**
+ * @note Address: 0x8035AA0C
+ * @note Size: 0x6D0
  */
 void StateWarCry::exec(EnemyBase* enemy)
 {
@@ -1614,22 +1596,24 @@ void StateWarCry::exec(EnemyBase* enemy)
 			break;
 
 		case KEYEVENT_2:
-			OBJ(enemy)->createEffect(3);
+			OBJ(enemy)->createEffect(Obj::KingEfx_RoarInd);
 			break;
 
 		case KEYEVENT_3:
-			OBJ(enemy)->createEffect(2);
+			OBJ(enemy)->createEffect(Obj::KingEfx_Roar);
 			OBJ(enemy)->requestTransit(KINGCHAPPY_Appear);
 			OBJ(enemy)->requestTransit(KINGCHAPPY_WarCry);
 			Vector3f rumblePos = enemy->getPosition();
 			cameraMgr->startVibration(26, rumblePos, 2);
-			rumbleMgr->startRumble(3, rumblePos, 2);
+			rumbleMgr->startRumble(3, rumblePos, RUMBLEID_Both);
 			break;
 
 		case KEYEVENT_4:
 			Vector3f kingPos = enemy->getPosition();
-			f32 yMin         = kingPos.y - 20.0f; // f29
-			f32 yMax         = 30.0f + yMin;      // f28
+			f32 roarDist;
+			f32 roarAngle;
+			f32 yMin = kingPos.y - 20.0f; // f29
+			f32 yMax = 30.0f + yMin;      // f28
 			Iterator<Piki> iterPiki(pikiMgr);
 			CI_LOOP(iterPiki)
 			{
@@ -1637,11 +1621,12 @@ void StateWarCry::exec(EnemyBase* enemy)
 				if (piki->isAlive()) {
 					Vector3f pikiPos = piki->getPosition();
 					if (yMax > pikiPos.y && yMin < pikiPos.y) {
-						f32 angDist         = enemy->changeFaceDir(piki);
-						Vector3f newPikiPos = piki->getPosition();
-						Vector3f newKingPos = enemy->getPosition();
-						bool distCheck      = false;
-						if (FABS(angDist) <= sqrDistanceXZ(newPikiPos, newKingPos)) { // this should be two checks + also wrong
+						roarAngle      = CG_PROPERPARMS(enemy).mRoarEffectiveAngleDeg();
+						roarDist       = CG_PROPERPARMS(enemy).mRoarEffectiveRange();
+						f32 angDist    = enemy->getCreatureViewAngle(piki);
+						bool distCheck = false;
+						Vector3f sep   = enemy->getTargetSeparation(piki);
+						if ((sep.sqrMagnitude() < SQUARE(roarDist)) && FABS(angDist) <= PI * (DEG2RAD * roarAngle)) {
 							distCheck = true;
 						}
 						if (distCheck) {
@@ -1652,24 +1637,24 @@ void StateWarCry::exec(EnemyBase* enemy)
 				}
 			}
 
-			f32 rate      = CG_PARMS(enemy)->mGeneral.mShakeRateMaybe.mValue;
-			f32 knockback = CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue;
-			f32 damage    = CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue;
-			f32 range     = CG_PARMS(enemy)->mGeneral.mShakeRange.mValue * enemy->mScaleModifier;
+			f32 rate      = CG_GENERALPARMS(enemy).mShakeChance.mValue;
+			f32 knockback = CG_GENERALPARMS(enemy).mShakeKnockback.mValue;
+			f32 damage    = CG_GENERALPARMS(enemy).mShakeDamage.mValue;
+			f32 range     = CG_GENERALPARMS(enemy).mShakeRange.mValue * enemy->mScaleModifier;
 
 			EnemyFunc::flickStickPikmin(enemy, rate, knockback, damage, enemy->getFaceDir(), nullptr);
-			EnemyFunc::flickNearbyPikmin(enemy, range, knockback, damage, -1000.0f, nullptr);
-			EnemyFunc::flickNearbyNavi(enemy, range, knockback, damage, -1000.0f, nullptr);
+			EnemyFunc::flickNearbyPikmin(enemy, range, knockback, damage, FLICK_BACKWARD_ANGLE, nullptr);
+			EnemyFunc::flickNearbyNavi(enemy, range, knockback, damage, FLICK_BACKWARD_ANGLE, nullptr);
 
-			enemy->mToFlick = 0.0f;
+			enemy->mFlickTimer = 0.0f;
 			break;
 
 		case KEYEVENT_5:
-			OBJ(enemy)->fadeEffect(2);
+			OBJ(enemy)->fadeEffect(Obj::KingEfx_Roar);
 			break;
 
 		case KEYEVENT_6:
-			OBJ(enemy)->fadeEffect(3);
+			OBJ(enemy)->fadeEffect(Obj::KingEfx_RoarInd);
 			break;
 
 		case KEYEVENT_END:
@@ -1683,506 +1668,21 @@ void StateWarCry::exec(EnemyBase* enemy)
 	}
 
 	OBJ(enemy)->checkDead(true);
-	/*
-	stwu     r1, -0x160(r1)
-	mflr     r0
-	stw      r0, 0x164(r1)
-	stfd     f31, 0x150(r1)
-	psq_st   f31, 344(r1), 0, qr0
-	stfd     f30, 0x140(r1)
-	psq_st   f30, 328(r1), 0, qr0
-	stfd     f29, 0x130(r1)
-	psq_st   f29, 312(r1), 0, qr0
-	stfd     f28, 0x120(r1)
-	psq_st   f28, 296(r1), 0, qr0
-	stfd     f27, 0x110(r1)
-	psq_st   f27, 280(r1), 0, qr0
-	stfd     f26, 0x100(r1)
-	psq_st   f26, 264(r1), 0, qr0
-	stfd     f25, 0xf0(r1)
-	psq_st   f25, 248(r1), 0, qr0
-	stfd     f24, 0xe0(r1)
-	psq_st   f24, 232(r1), 0, qr0
-	stw      r31, 0xdc(r1)
-	stw      r30, 0xd8(r1)
-	stw      r29, 0xd4(r1)
-	mr       r31, r4
-	lwz      r5, 0x188(r4)
-	lbz      r0, 0x24(r5)
-	cmplwi   r0, 0
-	beq      lbl_8035B074
-	lwz      r0, 0x1c(r5)
-	cmpwi    r0, 6
-	beq      lbl_8035B01C
-	bge      lbl_8035AAAC
-	cmpwi    r0, 3
-	beq      lbl_8035AAE0
-	bge      lbl_8035AAA0
-	cmpwi    r0, 2
-	bge      lbl_8035AAD0
-	b        lbl_8035B074
-
-lbl_8035AAA0:
-	cmpwi    r0, 5
-	bge      lbl_8035B00C
-	b        lbl_8035AB60
-
-lbl_8035AAAC:
-	cmpwi    r0, 0x7d0
-	beq      lbl_8035AAC4
-	bge      lbl_8035B074
-	cmpwi    r0, 0x3e8
-	beq      lbl_8035B02C
-	b        lbl_8035B074
-
-lbl_8035AAC4:
-	mr       r3, r31
-	bl       endBlendAnimation__Q34Game10KingChappy3ObjFv
-	b        lbl_8035B074
-
-lbl_8035AAD0:
-	mr       r3, r31
-	li       r4, 3
-	bl       createEffect__Q34Game10KingChappy3ObjFi
-	b        lbl_8035B074
-
-lbl_8035AAE0:
-	mr       r3, r31
-	li       r4, 2
-	bl       createEffect__Q34Game10KingChappy3ObjFi
-	mr       r3, r31
-	li       r4, 0xa
-	bl       requestTransit__Q34Game10KingChappy3ObjFi
-	mr       r3, r31
-	li       r4, 4
-	bl       requestTransit__Q34Game10KingChappy3ObjFi
-	mr       r4, r31
-	addi     r3, r1, 0x98
-	lwz      r12, 0(r31)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f2, 0x98(r1)
-	addi     r5, r1, 0xc0
-	lfs      f1, 0x9c(r1)
-	li       r4, 0x1a
-	lfs      f0, 0xa0(r1)
-	li       r6, 2
-	stfs     f2, 0xc0(r1)
-	lwz      r3, cameraMgr__4Game@sda21(r13)
-	stfs     f1, 0xc4(r1)
-	stfs     f0, 0xc8(r1)
-	bl       "startVibration__Q24Game9CameraMgrFiR10Vector3<f>i"
-	lwz      r3, rumbleMgr__4Game@sda21(r13)
-	addi     r5, r1, 0xc0
-	li       r4, 3
-	li       r6, 2
-	bl       "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
-	b        lbl_8035B074
-
-lbl_8035AB60:
-	lwz      r12, 0(r4)
-	addi     r3, r1, 0x8c
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f1, 0x90(r1)
-	li       r0, 0
-	lfs      f0, lbl_8051E574@sda21(r2)
-	lis      r4, "__vt__22Iterator<Q24Game4Piki>"@ha
-	lwz      r3, pikiMgr__4Game@sda21(r13)
-	addi     r4, r4, "__vt__22Iterator<Q24Game4Piki>"@l
-	fsubs    f29, f1, f0
-	lfs      f0, lbl_8051E5A0@sda21(r2)
-	cmplwi   r0, 0
-	stw      r4, 0xb0(r1)
-	fadds    f28, f0, f29
-	stw      r0, 0xbc(r1)
-	stw      r0, 0xb4(r1)
-	stw      r3, 0xb8(r1)
-	bne      lbl_8035ABC8
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xb4(r1)
-	b        lbl_8035AF5C
-
-lbl_8035ABC8:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xb4(r1)
-	b        lbl_8035AC34
-
-lbl_8035ABE0:
-	lwz      r3, 0xb8(r1)
-	lwz      r4, 0xb4(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0xbc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8035AF5C
-	lwz      r3, 0xb8(r1)
-	lwz      r4, 0xb4(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xb4(r1)
-
-lbl_8035AC34:
-	lwz      r12, 0xb0(r1)
-	addi     r3, r1, 0xb0
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8035ABE0
-	b        lbl_8035AF5C
-
-lbl_8035AC54:
-	lwz      r3, 0xb8(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	lwz      r12, 0(r3)
-	mr       r30, r3
-	lwz      r12, 0xa8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8035AEA0
-	mr       r4, r30
-	addi     r3, r1, 0x80
-	lwz      r12, 0(r30)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f0, 0x84(r1)
-	fcmpo    cr0, f28, f0
-	ble      lbl_8035AEA0
-	fcmpo    cr0, f29, f0
-	bge      lbl_8035AEA0
-	mr       r4, r30
-	lwz      r5, 0xc0(r31)
-	lwz      r12, 0(r30)
-	addi     r3, r1, 0x68
-	lfs      f30, 0x86c(r5)
-	lwz      r12, 8(r12)
-	lfs      f31, 0x894(r5)
-	mtctr    r12
-	bctrl
-	mr       r4, r31
-	lfs      f2, 0x68(r1)
-	lwz      r12, 0(r31)
-	addi     r3, r1, 0x74
-	lfs      f1, 0x6c(r1)
-	lfs      f0, 0x70(r1)
-	lwz      r12, 8(r12)
-	stfs     f2, 0x50(r1)
-	stfs     f1, 0x54(r1)
-	stfs     f0, 0x58(r1)
-	mtctr    r12
-	bctrl
-	lfs      f5, 0x74(r1)
-	lis      r3, atanTable___5JMath@ha
-	lfs      f3, 0x7c(r1)
-	addi     r3, r3, atanTable___5JMath@l
-	lfs      f1, 0x50(r1)
-	lfs      f0, 0x58(r1)
-	lfs      f4, 0x78(r1)
-	fsubs    f1, f1, f5
-	fsubs    f2, f0, f3
-	stfs     f5, 0x5c(r1)
-	stfs     f4, 0x60(r1)
-	stfs     f3, 0x64(r1)
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	bl       roundAng__Ff
-	lwz      r12, 0(r31)
-	fmr      f24, f1
-	mr       r3, r31
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fmr      f2, f1
-	fmr      f1, f24
-	bl       angDist__Fff
-	mr       r4, r31
-	fmr      f26, f1
-	lwz      r12, 0(r31)
-	addi     r3, r1, 0x14
-	li       r29, 0
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r30
-	addi     r3, r1, 8
-	lwz      r12, 0(r30)
-	lfs      f27, 0x14(r1)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r31
-	lfs      f0, 8(r1)
-	lwz      r12, 0(r31)
-	addi     r3, r1, 0x2c
-	fsubs    f24, f0, f27
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r30
-	addi     r3, r1, 0x20
-	lwz      r12, 0(r30)
-	lfs      f27, 0x30(r1)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r31
-	lfs      f0, 0x24(r1)
-	lwz      r12, 0(r31)
-	addi     r3, r1, 0x44
-	fsubs    f25, f0, f27
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r30
-	addi     r3, r1, 0x38
-	lwz      r12, 0(r30)
-	lfs      f27, 0x4c(r1)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	fmuls    f1, f25, f25
-	lfs      f2, 0x40(r1)
-	fmuls    f0, f31, f31
-	fsubs    f2, f2, f27
-	fmadds   f1, f24, f24, f1
-	fmadds   f1, f2, f2, f1
-	fcmpo    cr0, f1, f0
-	bge      lbl_8035AE5C
-	lfs      f0, lbl_8051E5B4@sda21(r2)
-	fabs     f2, f26
-	lfs      f1, lbl_8051E5B0@sda21(r2)
-	fmuls    f0, f0, f30
-	frsp     f2, f2
-	fmuls    f0, f1, f0
-	fcmpo    cr0, f2, f0
-	cror     2, 0, 2
-	bne      lbl_8035AE5C
-	li       r29, 1
-
-lbl_8035AE5C:
-	clrlwi.  r0, r29, 0x18
-	beq      lbl_8035AEA0
-	lis      r3, __vt__Q24Game11Interaction@ha
-	lfs      f0, lbl_8051E5B8@sda21(r2)
-	addi     r0, r3, __vt__Q24Game11Interaction@l
-	lis      r3, __vt__Q24Game16InteractAstonish@ha
-	stw      r0, 0xa4(r1)
-	addi     r0, r3, __vt__Q24Game16InteractAstonish@l
-	mr       r3, r30
-	addi     r4, r1, 0xa4
-	stw      r31, 0xa8(r1)
-	stw      r0, 0xa4(r1)
-	stfs     f0, 0xac(r1)
-	lwz      r12, 0(r30)
-	lwz      r12, 0x1a4(r12)
-	mtctr    r12
-	bctrl
-
-lbl_8035AEA0:
-	lwz      r0, 0xbc(r1)
-	cmplwi   r0, 0
-	bne      lbl_8035AECC
-	lwz      r3, 0xb8(r1)
-	lwz      r4, 0xb4(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xb4(r1)
-	b        lbl_8035AF5C
-
-lbl_8035AECC:
-	lwz      r3, 0xb8(r1)
-	lwz      r4, 0xb4(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xb4(r1)
-	b        lbl_8035AF40
-
-lbl_8035AEEC:
-	lwz      r3, 0xb8(r1)
-	lwz      r4, 0xb4(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0xbc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8035AF5C
-	lwz      r3, 0xb8(r1)
-	lwz      r4, 0xb4(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xb4(r1)
-
-lbl_8035AF40:
-	lwz      r12, 0xb0(r1)
-	addi     r3, r1, 0xb0
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8035AEEC
-
-lbl_8035AF5C:
-	lwz      r3, 0xb8(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0xb4(r1)
-	cmplw    r4, r3
-	bne      lbl_8035AC54
-	lwz      r4, 0xc0(r31)
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lfs      f1, 0x514(r4)
-	lfs      f0, 0x1f8(r31)
-	lwz      r12, 0x64(r12)
-	fmuls    f27, f1, f0
-	lfs      f24, 0x53c(r4)
-	lfs      f25, 0x4c4(r4)
-	lfs      f26, 0x4ec(r4)
-	mtctr    r12
-	bctrl
-	fmr      f4, f1
-	mr       r3, r31
-	fmr      f1, f24
-	li       r4, 0
-	fmr      f2, f25
-	fmr      f3, f26
-	bl
-"flickStickPikmin__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Piki>"
-	fmr      f1, f27
-	lfs      f4, lbl_8051E5A4@sda21(r2)
-	fmr      f2, f25
-	mr       r3, r31
-	fmr      f3, f26
-	li       r4, 0
-	bl
-"flickNearbyPikmin__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Piki>"
-	fmr      f1, f27
-	lfs      f4, lbl_8051E5A4@sda21(r2)
-	fmr      f2, f25
-	mr       r3, r31
-	fmr      f3, f26
-	li       r4, 0
-	bl
-"flickNearbyNavi__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Navi>"
-	lfs      f0, lbl_8051E578@sda21(r2)
-	stfs     f0, 0x20c(r31)
-	b        lbl_8035B074
-
-lbl_8035B00C:
-	mr       r3, r31
-	li       r4, 2
-	bl       fadeEffect__Q34Game10KingChappy3ObjFi
-	b        lbl_8035B074
-
-lbl_8035B01C:
-	mr       r3, r31
-	li       r4, 3
-	bl       fadeEffect__Q34Game10KingChappy3ObjFi
-	b        lbl_8035B074
-
-lbl_8035B02C:
-	lfs      f1, 0x200(r31)
-	lfs      f0, lbl_8051E578@sda21(r2)
-	fcmpo    cr0, f1, f0
-	cror     2, 0, 2
-	bne      lbl_8035B05C
-	lwz      r12, 0(r3)
-	li       r5, 2
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_8035B074
-
-lbl_8035B05C:
-	lwz      r12, 0(r3)
-	li       r5, 0
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_8035B074:
-	mr       r3, r31
-	li       r4, 1
-	bl       checkDead__Q34Game10KingChappy3ObjFb
-	psq_l    f31, 344(r1), 0, qr0
-	lfd      f31, 0x150(r1)
-	psq_l    f30, 328(r1), 0, qr0
-	lfd      f30, 0x140(r1)
-	psq_l    f29, 312(r1), 0, qr0
-	lfd      f29, 0x130(r1)
-	psq_l    f28, 296(r1), 0, qr0
-	lfd      f28, 0x120(r1)
-	psq_l    f27, 280(r1), 0, qr0
-	lfd      f27, 0x110(r1)
-	psq_l    f26, 264(r1), 0, qr0
-	lfd      f26, 0x100(r1)
-	psq_l    f25, 248(r1), 0, qr0
-	lfd      f25, 0xf0(r1)
-	psq_l    f24, 232(r1), 0, qr0
-	lfd      f24, 0xe0(r1)
-	lwz      r31, 0xdc(r1)
-	lwz      r30, 0xd8(r1)
-	lwz      r0, 0x164(r1)
-	lwz      r29, 0xd4(r1)
-	mtlr     r0
-	addi     r1, r1, 0x160
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	8035B0DC
- * Size:	000040
+/**
+ * @note Address: 0x8035B0DC
+ * @note Size: 0x40
  */
 void StateWarCry::cleanup(EnemyBase* enemy)
 {
-	OBJ(enemy)->fadeEffect(2);
-	OBJ(enemy)->fadeEffect(3);
+	OBJ(enemy)->fadeEffect(Obj::KingEfx_Roar);
+	OBJ(enemy)->fadeEffect(Obj::KingEfx_RoarInd);
 }
 
-/*
- * --INFO--
- * Address:	8035B11C
- * Size:	00003C
+/**
+ * @note Address: 0x8035B11C
+ * @note Size: 0x3C
  */
 StateDamage::StateDamage(int stateID)
     : State(stateID)
@@ -2190,27 +1690,25 @@ StateDamage::StateDamage(int stateID)
 	mName = "damage";
 }
 
-/*
- * --INFO--
- * Address:	8035B158
- * Size:	000040
+/**
+ * @note Address: 0x8035B158
+ * @note Size: 0x40
  */
 void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	OBJ(enemy)->startMotionSelf(2, nullptr);
-	_10 = 0;
+	OBJ(enemy)->startMotionSelf(KINGANIM_Damage, nullptr);
+	mStunTimer = 0;
 }
 
-/*
- * --INFO--
- * Address:	8035B198
- * Size:	0001B4
+/**
+ * @note Address: 0x8035B198
+ * @note Size: 0x1B4
  */
 void StateDamage::exec(EnemyBase* enemy)
 {
-	if (_10 > 0) {
-		_10++;
-		if (_10 > CG_PROPERPARMS(enemy).mIp03.mValue) {
+	if (mStunTimer > 0) {
+		mStunTimer++;
+		if (mStunTimer > CG_PROPERPARMS(enemy).mBombDamageTime.mValue) {
 			enemy->finishMotion();
 		}
 	}
@@ -2222,17 +1720,17 @@ void StateDamage::exec(EnemyBase* enemy)
 			break;
 
 		case KEYEVENT_2:
-			OBJ(enemy)->createEffect(4);
+			OBJ(enemy)->createEffect(Obj::KingEfx_EatBomb);
 			break;
 
 		case KEYEVENT_3:
-			OBJ(enemy)->createEffect(5);
+			OBJ(enemy)->createEffect(Obj::KingEfx_NoseSmoke);
 			break;
 
 		case KEYEVENT_4:
 			int pikiNum = OBJ(enemy)->getPikminInMouth(true);
-			enemy->addDamage(pikiNum * CG_PROPERPARMS(enemy).mFp05.mValue, 1.0f);
-			enemy->mToFlick = 0.0f;
+			enemy->addDamage(pikiNum * CG_PROPERPARMS(enemy).mBombDamage.mValue, 1.0f);
+			enemy->mFlickTimer = 0.0f;
 			break;
 
 		case KEYEVENT_5:
@@ -2240,7 +1738,7 @@ void StateDamage::exec(EnemyBase* enemy)
 			break;
 
 		case KEYEVENT_6:
-			_10 = 1;
+			mStunTimer = 1;
 			break;
 
 		case KEYEVENT_END:
@@ -2256,21 +1754,19 @@ void StateDamage::exec(EnemyBase* enemy)
 	OBJ(enemy)->checkDead(true);
 }
 
-/*
- * --INFO--
- * Address:	8035B34C
- * Size:	000040
+/**
+ * @note Address: 0x8035B34C
+ * @note Size: 0x40
  */
 void StateDamage::cleanup(EnemyBase* enemy)
 {
-	OBJ(enemy)->fadeEffect(5);
-	OBJ(enemy)->fadeEffect(4);
+	OBJ(enemy)->fadeEffect(Obj::KingEfx_NoseSmoke);
+	OBJ(enemy)->fadeEffect(Obj::KingEfx_EatBomb);
 }
 
-/*
- * --INFO--
- * Address:	8035B38C
- * Size:	00003C
+/**
+ * @note Address: 0x8035B38C
+ * @note Size: 0x3C
  */
 StateTurn::StateTurn(int stateID)
     : State(stateID)
@@ -2278,27 +1774,25 @@ StateTurn::StateTurn(int stateID)
 	mName = "turn";
 }
 
-/*
- * --INFO--
- * Address:	8035B3C8
- * Size:	000048
+/**
+ * @note Address: 0x8035B3C8
+ * @note Size: 0x48
  */
 void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	OBJ(enemy)->startMotionSelf(11, nullptr);
+	OBJ(enemy)->startMotionSelf(KINGANIM_Turn, nullptr);
 	enemy->mTargetVelocity = Vector3f(0.0f);
 }
 
-/*
- * --INFO--
- * Address:	8035B410
- * Size:	0000F8
+/**
+ * @note Address: 0x8035B410
+ * @note Size: 0xF8
  */
 void StateTurn::exec(EnemyBase* enemy)
 {
 	f32 threshold = 0.5f;
 	if (enemy->mTargetCreature) {
-		threshold = PI * (DEG2RAD * CG_PROPERPARMS(enemy).mFp07.mValue);
+		threshold = PI * (DEG2RAD * CG_PROPERPARMS(enemy).mTurningEndAngle.mValue);
 	}
 
 	f32 turnVal = OBJ(enemy)->turnFunc(1.0f);
@@ -2319,10 +1813,9 @@ void StateTurn::exec(EnemyBase* enemy)
 	OBJ(enemy)->checkFlick(true);
 }
 
-/*
- * --INFO--
- * Address:	8035B508
- * Size:	00003C
+/**
+ * @note Address: 0x8035B508
+ * @note Size: 0x3C
  */
 StateEat::StateEat(int stateID)
     : State(stateID)
@@ -2330,21 +1823,19 @@ StateEat::StateEat(int stateID)
 	mName = "eat";
 }
 
-/*
- * --INFO--
- * Address:	8035B544
- * Size:	000050
+/**
+ * @note Address: 0x8035B544
+ * @note Size: 0x50
  */
 void StateEat::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	OBJ(enemy)->startMotionSelf(8, nullptr);
-	_10 = static_cast<StateEatArg*>(stateArg)->_00;
+	OBJ(enemy)->startMotionSelf(KINGANIM_Eat, nullptr);
+	mDoStunAfter = static_cast<StateEatArg*>(stateArg)->mDoStunAfter;
 }
 
-/*
- * --INFO--
- * Address:	8035B594
- * Size:	0000A4
+/**
+ * @note Address: 0x8035B594
+ * @note Size: 0xA4
  */
 void StateEat::exec(EnemyBase* enemy)
 {
@@ -2353,7 +1844,7 @@ void StateEat::exec(EnemyBase* enemy)
 			OBJ(enemy)->endBlendAnimation();
 
 		} else if (enemy->mCurAnim->mType == KEYEVENT_END) {
-			if (_10) {
+			if (mDoStunAfter) {
 				transit(enemy, KINGCHAPPY_Damage, nullptr);
 			} else {
 				transit(enemy, KINGCHAPPY_Swallow, nullptr);
@@ -2364,10 +1855,9 @@ void StateEat::exec(EnemyBase* enemy)
 	OBJ(enemy)->checkDead(true);
 }
 
-/*
- * --INFO--
- * Address:	8035B638
- * Size:	00003C
+/**
+ * @note Address: 0x8035B638
+ * @note Size: 0x3C
  */
 StateHide::StateHide(int stateID)
     : State(stateID)
@@ -2375,14 +1865,13 @@ StateHide::StateHide(int stateID)
 	mName = "hide";
 }
 
-/*
- * --INFO--
- * Address:	8035B674
- * Size:	0000BC
+/**
+ * @note Address: 0x8035B674
+ * @note Size: 0xBC
  */
 void StateHide::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	OBJ(enemy)->startMotionSelf(4, nullptr);
+	OBJ(enemy)->startMotionSelf(KINGANIM_Dive, nullptr);
 	enemy->setEmotionCaution();
 	enemy->mTargetVelocity = Vector3f(0.0f);
 	enemy->enableEvent(0, EB_BitterImmune);
@@ -2390,13 +1879,12 @@ void StateHide::init(EnemyBase* enemy, StateArg* stateArg)
 
 	Vector3f pos = enemy->getPosition();
 	cameraMgr->startVibration(6, pos, 2);
-	rumbleMgr->startRumble(13, pos, 2);
+	rumbleMgr->startRumble(13, pos, RUMBLEID_Both);
 }
 
-/*
- * --INFO--
- * Address:	8035B730
- * Size:	0001B8
+/**
+ * @note Address: 0x8035B730
+ * @note Size: 0x1B8
  */
 void StateHide::exec(EnemyBase* enemy)
 {
@@ -2407,7 +1895,7 @@ void StateHide::exec(EnemyBase* enemy)
 			break;
 
 		case KEYEVENT_2:
-			OBJ(enemy)->createEffect(1);
+			OBJ(enemy)->createEffect(Obj::KingEfx_Dive);
 			if (enemy->mWaterBox) {
 				enemy->mSoundObj->startSound(PSSE_EN_KING_WATER_APPEAR, 0);
 			} else {
@@ -2416,7 +1904,7 @@ void StateHide::exec(EnemyBase* enemy)
 			break;
 
 		case KEYEVENT_4:
-			OBJ(enemy)->fadeEffect(1);
+			OBJ(enemy)->fadeEffect(Obj::KingEfx_Dive);
 			break;
 
 		case KEYEVENT_END:
@@ -2429,22 +1917,20 @@ void StateHide::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8035B8E8
- * Size:	000054
+/**
+ * @note Address: 0x8035B8E8
+ * @note Size: 0x54
  */
 void StateHide::cleanup(EnemyBase* enemy)
 {
-	OBJ(enemy)->fadeEffect(1);
-	OBJ(enemy)->fadeEffect(0);
+	OBJ(enemy)->fadeEffect(Obj::KingEfx_Dive);
+	OBJ(enemy)->fadeEffect(Obj::KingEfx_Drool);
 	enemy->fadeEfxHamon();
 }
 
-/*
- * --INFO--
- * Address:	8035B93C
- * Size:	000040
+/**
+ * @note Address: 0x8035B93C
+ * @note Size: 0x40
  */
 StateHideWait::StateHideWait(int stateID)
     : State(stateID)
@@ -2452,39 +1938,38 @@ StateHideWait::StateHideWait(int stateID)
 	mName = "hidewait";
 }
 
-/*
- * --INFO--
- * Address:	8035B97C
- * Size:	000080
+/**
+ * @note Address: 0x8035B97C
+ * @note Size: 0x80
  */
 void StateHideWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	_10 = 0;
-	OBJ(enemy)->startMotionSelf(10, nullptr);
+	mCanCheckAppearTimer = 0;
+	OBJ(enemy)->startMotionSelf(KINGANIM_HideWait, nullptr);
 	enemy->disableEvent(0, EB_LifegaugeVisible);
 	enemy->hardConstraintOn();
-	OBJ(enemy)->fadeEffect(0);
-	_14 = 0;
+	OBJ(enemy)->fadeEffect(Obj::KingEfx_Drool);
+	mHasMadeEfx = false;
 	enemy->enableEvent(0, EB_BitterImmune);
 }
 
-/*
- * --INFO--
- * Address:	8035B9FC
- * Size:	00018C
+/**
+ * @note Address: 0x8035B9FC
+ * @note Size: 0x18C
  */
 void StateHideWait::exec(EnemyBase* enemy)
 {
 	enemy->fadeEfxHamon();
-	if (!_14 && enemy->mWaterBox) {
-		OBJ(enemy)->createEffect(8);
-		_14 = 1;
+	if (!mHasMadeEfx && enemy->mWaterBox) {
+		// WHY is this not just in init
+		OBJ(enemy)->createEffect(Obj::KingEfx_Hiding);
+		mHasMadeEfx = 1;
 	}
 
-	_10++;
+	mCanCheckAppearTimer++;
 
-	if (OBJ(enemy)->_2EC || _10 > CG_PROPERPARMS(enemy).mIp02.mValue) {
-		f32 range = CG_PROPERPARMS(enemy).mFp02.mValue * enemy->mScaleModifier;
+	if (OBJ(enemy)->mDoCheckAppear || mCanCheckAppearTimer > CG_PROPERPARMS(enemy).mTimeToAppearance.mValue) {
+		f32 range = CG_PROPERPARMS(enemy).mDistanceToSpawn.mValue * enemy->mScaleModifier;
 
 		bool doWake;
 		if (EnemyFunc::isThereOlimar(enemy, range, nullptr)) {
@@ -2497,7 +1982,7 @@ void StateHideWait::exec(EnemyBase* enemy)
 
 		if (doWake) {
 			transit(enemy, KINGCHAPPY_Appear, nullptr);
-			OBJ(enemy)->_2EC = 0;
+			OBJ(enemy)->mDoCheckAppear = false;
 		}
 	}
 
@@ -2506,26 +1991,24 @@ void StateHideWait::exec(EnemyBase* enemy)
 			OBJ(enemy)->endBlendAnimation();
 		} else if (enemy->mCurAnim->mType == KEYEVENT_END) {
 			transit(enemy, KINGCHAPPY_Appear, nullptr);
-			OBJ(enemy)->_2EC = 0;
+			OBJ(enemy)->mDoCheckAppear = false;
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	8035BB88
- * Size:	000040
+/**
+ * @note Address: 0x8035BB88
+ * @note Size: 0x40
  */
 void StateHideWait::cleanup(EnemyBase* enemy)
 {
-	OBJ(enemy)->fadeEffect(8);
+	OBJ(enemy)->fadeEffect(Obj::KingEfx_Hiding);
 	enemy->disableEvent(0, EB_BitterImmune);
 }
 
-/*
- * --INFO--
- * Address:	8035BBC8
- * Size:	00003C
+/**
+ * @note Address: 0x8035BBC8
+ * @note Size: 0x3C
  */
 StateAppear::StateAppear(int stateID)
     : State(stateID)
@@ -2533,19 +2016,18 @@ StateAppear::StateAppear(int stateID)
 	mName = "appear";
 }
 
-/*
- * --INFO--
- * Address:	8035BC04
- * Size:	0002EC
+/**
+ * @note Address: 0x8035BC04
+ * @note Size: 0x2EC
  */
 void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	OBJ(enemy)->startMotionSelf(9, nullptr);
+	OBJ(enemy)->startMotionSelf(KINGANIM_Appear, nullptr);
 	OBJ(enemy)->searchTarget();
 	enemy->setEmotionExcitement();
 	enemy->disableEvent(0, EB_BitterImmune);
 	enemy->enableEvent(0, EB_NoInterrupt);
-	_10 = 1;
+	mHasNotShaken = true;
 
 	f32 faceDir  = enemy->getFaceDir();
 	Vector3f pos = enemy->getPosition();
@@ -2561,10 +2043,10 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 		enemy->mSoundObj->startSound(PSSE_EN_KING_APPEAR, 0);
 	}
 
-	OBJ(enemy)->createEffect(0);
+	OBJ(enemy)->createEffect(Obj::KingEfx_Drool);
 	enemy->createEfxHamon();
 	cameraMgr->startVibration(15, pos, 2);
-	rumbleMgr->startRumble(12, pos, 2);
+	rumbleMgr->startRumble(12, pos, RUMBLEID_Both);
 
 	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(enemy->mSoundObj);
 	PSM::checkBoss(soundObj);
@@ -2573,10 +2055,9 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8035BEF0
- * Size:	00019C
+/**
+ * @note Address: 0x8035BEF0
+ * @note Size: 0x19C
  */
 void StateAppear::exec(EnemyBase* enemy)
 {
@@ -2591,20 +2072,20 @@ void StateAppear::exec(EnemyBase* enemy)
 			break;
 
 		case KEYEVENT_3:
-			_10             = 0;
-			f32 shakePower  = CG_PROPERPARMS(enemy).mFp10.mValue;
-			f32 shakeDamage = CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue;
-			f32 shakeRange  = CG_PROPERPARMS(enemy).mFp09.mValue;
+			mHasNotShaken   = false;
+			f32 shakePower  = CG_PROPERPARMS(enemy).mAppearanceShakeOffPower.mValue;
+			f32 shakeDamage = CG_GENERALPARMS(enemy).mShakeDamage.mValue;
+			f32 shakeRange  = CG_PROPERPARMS(enemy).mAppearanceShakeOffRange.mValue;
 
-			EnemyFunc::flickNearbyPikmin(enemy, shakeRange, shakePower, shakeDamage, -1000.0f, nullptr);
-			EnemyFunc::flickNearbyNavi(enemy, shakeRange, shakePower, shakeDamage, -1000.0f, nullptr);
+			EnemyFunc::flickNearbyPikmin(enemy, shakeRange, shakePower, shakeDamage, FLICK_BACKWARD_ANGLE, nullptr);
+			EnemyFunc::flickNearbyNavi(enemy, shakeRange, shakePower, shakeDamage, FLICK_BACKWARD_ANGLE, nullptr);
 			break;
 
 		case KEYEVENT_4:
 			OBJ(enemy)->createBounceEffect();
 			Vector3f pos = enemy->getPosition();
 			cameraMgr->startVibration(6, pos, 2);
-			rumbleMgr->startRumble(11, pos, 2);
+			rumbleMgr->startRumble(11, pos, RUMBLEID_Both);
 			break;
 
 		case KEYEVENT_END:
@@ -2617,10 +2098,9 @@ void StateAppear::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8035C08C
- * Size:	00003C
+/**
+ * @note Address: 0x8035C08C
+ * @note Size: 0x3C
  */
 StateCaution::StateCaution(int stateID)
     : State(stateID)
@@ -2628,17 +2108,15 @@ StateCaution::StateCaution(int stateID)
 	mName = "caution";
 }
 
-/*
- * --INFO--
- * Address:	8035C0C8
- * Size:	00002C
+/**
+ * @note Address: 0x8035C0C8
+ * @note Size: 0x2C
  */
-void StateCaution::init(EnemyBase* enemy, StateArg* stateArg) { OBJ(enemy)->startMotionSelf(12, nullptr); }
+void StateCaution::init(EnemyBase* enemy, StateArg* stateArg) { OBJ(enemy)->startMotionSelf(KINGANIM_Caution, nullptr); }
 
-/*
- * --INFO--
- * Address:	8035C0F4
- * Size:	000064
+/**
+ * @note Address: 0x8035C0F4
+ * @note Size: 0x64
  */
 void StateCaution::exec(EnemyBase* enemy)
 {
@@ -2652,10 +2130,9 @@ void StateCaution::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8035C158
- * Size:	00003C
+/**
+ * @note Address: 0x8035C158
+ * @note Size: 0x3C
  */
 StateSwallow::StateSwallow(int stateID)
     : State(stateID)
@@ -2663,17 +2140,15 @@ StateSwallow::StateSwallow(int stateID)
 	mName = "swallow";
 }
 
-/*
- * --INFO--
- * Address:	8035C194
- * Size:	00002C
+/**
+ * @note Address: 0x8035C194
+ * @note Size: 0x2C
  */
-void StateSwallow::init(EnemyBase* enemy, StateArg* stateArg) { OBJ(enemy)->startMotionSelf(7, nullptr); }
+void StateSwallow::init(EnemyBase* enemy, StateArg* stateArg) { OBJ(enemy)->startMotionSelf(KINGANIM_Swallow, nullptr); }
 
-/*
- * --INFO--
- * Address:	8035C1C0
- * Size:	000094
+/**
+ * @note Address: 0x8035C1C0
+ * @note Size: 0x94
  */
 void StateSwallow::exec(EnemyBase* enemy)
 {

@@ -30,7 +30,7 @@ struct TTitleParameters : public Parameters {
 	    , mPikiScatterOriginY(this, 'tp09', "ピクミン解散中心座標Y", 0.0f, -480.0f, 480.0f)
 	    , mMinPikminScatterRadius(this, 'tp10', "ピクミン解散半径最小", 500.0f, 0.0f, 1000.0f)
 	    , mMaxPikminScatterRadius(this, 'tp11', "ピクミン解散半径最大(オブジェクト配置限界半径)", 600.0f, 0.0f, 1000.0f)
-	    , mWindProbability(this, 'tp13', "風あたり範囲の乱数", 3.0f, 0.0f, 100.0f)
+	    , mWindProbability(this, 'tp13', "風あたり範囲の乱数", 30.0f, 0.0f, 100.0f)
 	    , mPlantMoveDuration(this, 'tp50', "BG風状態時間(秒)", 8.0f, 0.0f, 100.0f)
 	    , mBoidDurationDisperse(this, 'tp15', "BOID1状態時間(秒)", 3.0f, 0.0f, 60.0f)
 	    , mBoidDurationRegroup(this, 'tp16', "BOID2状態時間(秒)", 3.0f, 0.0f, 60.0f)
@@ -145,59 +145,59 @@ struct TTitleLightSetting {
 	struct TMainParms : public Parameters {
 		TMainParms()
 		    : Parameters(nullptr, "TMainParms")
-		    , mTl04(this, 'tl04', "ライト色R", 255, 0, 255)
-		    , mTl05(this, 'tl05', "ライト色G", 255, 0, 255)
-		    , mTl06(this, 'tl06', "ライト色B", 255, 0, 255)
-		    , mTl07(this, 'tl07', "ライト色A", 255, 0, 255)
-		    , mTl50(this, 'tl50', "位置X", 0.0f, -10000.0f, 10000.0f)
-		    , mTl51(this, 'tl51', "位置Y", 1000.0f, -10000.0f, 50000.0f)
-		    , mTl52(this, 'tl52', "位置Z", 0.0f, -10000.0f, 10000.0f)
-		    , mTl53(this, 'tl53', "向きX", 0.0f, -1.0f, 1.0f)
-		    , mTl54(this, 'tl54', "向きY", -1.0f, -1.0f, 1.0f)
-		    , mTl55(this, 'tl55', "向きZ", 0.0f, -1.0f, 1.0f)
-		    , mTl56(this, 'tl56', "距離減衰-距離", 10000.0f, 1.0f, 50000.0f)
-		    , mTl57(this, 'tl57', "距離減衰-明るさ", 1.0f, 0.0f, 1.0f)
-		    , mTl58(this, 'tl58', "カットオフ角度", 25.0f, 1.0f, 180.0f)
+		    , mLightColR(this, 'tl04', "ライト色R", 255, 0, 255)
+		    , mLightColG(this, 'tl05', "ライト色G", 255, 0, 255)
+		    , mLightColB(this, 'tl06', "ライト色B", 255, 0, 255)
+		    , mLightColA(this, 'tl07', "ライト色A", 255, 0, 255)
+		    , mPosX(this, 'tl50', "位置X", 0.0f, -10000.0f, 10000.0f)
+		    , mPosY(this, 'tl51', "位置Y", 1000.0f, -10000.0f, 50000.0f)
+		    , mPosZ(this, 'tl52', "位置Z", 0.0f, -10000.0f, 10000.0f)
+		    , mRotX(this, 'tl53', "向きX", 0.0f, -1.0f, 1.0f)
+		    , mRotY(this, 'tl54', "向きY", -1.0f, -1.0f, 1.0f)
+		    , mRotZ(this, 'tl55', "向きZ", 0.0f, -1.0f, 1.0f)
+		    , mLightRange(this, 'tl56', "距離減衰-距離", 10000.0f, 1.0f, 50000.0f)
+		    , mLightBrightness(this, 'tl57', "距離減衰-明るさ", 1.0f, 0.0f, 1.0f)
+		    , mCutoffAngle(this, 'tl58', "カットオフ角度", 25.0f, 1.0f, 180.0f)
 		{
 		}
 
-		Parm<int> mTl04; // _0C, _BC
-		Parm<int> mTl05; // _34, _E4
-		Parm<int> mTl06; // _5C, _10C
-		Parm<int> mTl07; // _84, _134
-		Parm<f32> mTl50; // _AC, _15C
-		Parm<f32> mTl51; // _D4, _184
-		Parm<f32> mTl52; // _FC, _1AC
-		Parm<f32> mTl53; // _124, _1D4
-		Parm<f32> mTl54; // _14C, _1FC
-		Parm<f32> mTl55; // _174, _224
-		Parm<f32> mTl56; // _19C, _24C
-		Parm<f32> mTl57; // _1C4, _274
-		Parm<f32> mTl58; // _1EC, _29C
+		Parm<int> mLightColR;       // _0C, _BC
+		Parm<int> mLightColG;       // _34, _E4
+		Parm<int> mLightColB;       // _5C, _10C
+		Parm<int> mLightColA;       // _84, _134
+		Parm<f32> mPosX;            // _AC, _15C
+		Parm<f32> mPosY;            // _D4, _184
+		Parm<f32> mPosZ;            // _FC, _1AC
+		Parm<f32> mRotX;            // _124, _1D4
+		Parm<f32> mRotY;            // _14C, _1FC
+		Parm<f32> mRotZ;            // _174, _224
+		Parm<f32> mLightRange;      // _19C, _24C
+		Parm<f32> mLightBrightness; // _1C4, _274
+		Parm<f32> mCutoffAngle;     // _1EC, _29C
 	};
 
 	struct TSpecParms : public Parameters {
 		TSpecParms()
 		    : Parameters(nullptr, "TSpecParms")
-		    , mSp04(this, 'sp04', "ライト色R", 255, 0, 255)
-		    , mSp05(this, 'sp05', "ライト色G", 255, 0, 255)
-		    , mSp06(this, 'sp06', "ライト色B", 255, 0, 255)
-		    , mSp07(this, 'sp07', "ライト色A", 255, 0, 255)
-		    , mSp53(this, 'sp53', "向きX", 0.0f, -1.0f, 1.0f)
-		    , mSp54(this, 'sp54', "向きY", -1.0f, -1.0f, 1.0f)
-		    , mSp55(this, 'sp55', "向きZ", 0.0f, -1.0f, 1.0f)
-		    , mSp56(this, 'sp56', "光沢", 64.0f, 0.0f, 512.0f)
+		    , mLightColR(this, 'sp04', "ライト色R", 255, 0, 255)
+		    , mLightColG(this, 'sp05', "ライト色G", 255, 0, 255)
+		    , mLightColB(this, 'sp06', "ライト色B", 255, 0, 255)
+		    , mLightColA(this, 'sp07', "ライト色A", 255, 0, 255)
+		    , mRotX(this, 'sp53', "向きX", 0.0f, -1.0f, 1.0f)
+		    , mRotY(this, 'sp54', "向きY", -1.0f, -1.0f, 1.0f)
+		    , mRotZ(this, 'sp55', "向きZ", 0.0f, -1.0f, 1.0f)
+		    , mGlossAmount(this, 'sp56', "光沢", 64.0f, 0.0f, 512.0f) // Luster?
 		{
 		}
 
-		Parm<int> mSp04; // _0C, _2D4
-		Parm<int> mSp05; // _34, _2FC
-		Parm<int> mSp06; // _5C, _324
-		Parm<int> mSp07; // _84, _34C
-		Parm<f32> mSp53; // _AC, _374
-		Parm<f32> mSp54; // _D4, _39C
-		Parm<f32> mSp55; // _FC, _3C4
-		Parm<f32> mSp56; // _124, _3EC
+		Parm<int> mLightColR;   // _0C, _2D4
+		Parm<int> mLightColG;   // _34, _2FC
+		Parm<int> mLightColB;   // _5C, _324
+		Parm<int> mLightColA;   // _84, _34C
+		Parm<f32> mRotX;        // _AC, _374
+		Parm<f32> mRotY;        // _D4, _39C
+		Parm<f32> mRotZ;        // _FC, _3C4
+		Parm<f32> mGlossAmount; // _124, _3EC
 	};
 
 	TAmbParms mAmbParms;   // _00
@@ -208,8 +208,8 @@ struct TTitleLightSetting {
 struct TTitleLightMgr : public LightMgr {
 	TTitleLightMgr()
 	    : LightMgr("LightMgr")
-	    , mLightObjMain("メインライト", GX_LIGHT0, TYPE_2, JUtility::TColor(255, 255, 255, 255))
-	    , mLightObjSpec("スペキュラライト", GX_LIGHT7, TYPE_4, JUtility::TColor(255, 255, 255, 255))
+	    , mLightObjMain("メインライト", GX_LIGHT0, TYPE_Spot, JUtility::TColor(255, 255, 255, 255))
+	    , mLightObjSpec("スペキュラライト", GX_LIGHT7, TYPE_Spec, JUtility::TColor(255, 255, 255, 255))
 	    , mSetting()
 	{
 		registLightObj(&mLightObjMain);
@@ -244,19 +244,20 @@ struct TTitleMgr : public CNode, JKRDisposer {
 
 	TTitleMgr();
 
-	inline bool isIdleState()
+	inline bool controllerOK()
 	{
-		bool good;
-		if (!mPikminMgr.isAssemble()) {
-			good = false;
-		} else if (mKoganeMgr.mObject->isCalc()) {
-			good = false;
-		} else if (mChappyMgr.mObject->isCalc()) {
-			good = false;
-		} else {
-			good = true;
+		if (mCounterControl == 0) {
+			return true;
 		}
-		return good;
+		return false;
+	}
+
+	inline bool pressStartOK()
+	{
+		if (mCounterPressStart == 0) {
+			return true;
+		}
+		return false;
 	}
 
 	virtual ~TTitleMgr(); // _08 (weak)
@@ -279,7 +280,7 @@ struct TTitleMgr : public CNode, JKRDisposer {
 	bool breakup();
 	bool startKogane();
 	bool startChappy();
-	void boidToAssemble(long);
+	bool boidToAssemble(s32);
 	bool isControllerOK();
 	bool isPressStart();
 	void startState(enumState);
@@ -288,12 +289,12 @@ struct TTitleMgr : public CNode, JKRDisposer {
 	void checkEncounter_();
 	void draw();
 	void readTitleParam(JKRArchive*, char*);
-	void setDestToPiki(long);
-	void setPosToPiki(long);
-	void setStartPosToPiki();
+	void setDestToPiki(s32);
+	void setPosToPiki(s32);
+	Vector2f setStartPosToPiki();
 	void calcBreakupDestination();
-	void calcDestination(long);
-	void isAssemble();
+	void calcDestination(s32);
+	bool isAssemble();
 	void setDrawBufferToJ3DSys();
 	void inField(Vector2f&);
 	void inViewField(Vector2f&, f32);
@@ -301,7 +302,7 @@ struct TTitleMgr : public CNode, JKRDisposer {
 	void windBlow();
 	void boid3ToAssemble();
 	void isAnyKey();
-	void showInfo(long, long, long, long);
+	void showInfo(s32, s32, s32, s32);
 
 	// _00     = VTBL
 	// _00-_18 = CNode

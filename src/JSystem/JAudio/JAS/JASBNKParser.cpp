@@ -6,55 +6,16 @@
 #include "JSystem/JAudio/JAS/JASOscillator.h"
 #include "JSystem/JKernel/JKRDisposer.h"
 #include "JSystem/JSupport/JSU.h"
-#include "types.h"
 
-/*
-    Generated from dpostproc
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__13JASInstEffect
-    __vt__13JASInstEffect:
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global sUsedHeapSize__12JASBNKParser
-    sUsedHeapSize__12JASBNKParser:
-        .skip 0x8
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80516CB8
-    lbl_80516CB8:
-        .float 1.0
-    .global lbl_80516CBC
-    lbl_80516CBC:
-        .4byte 0x00000000
-    .global lbl_80516CC0
-    lbl_80516CC0:
-        .4byte 0x42FE0000
-        .4byte 0x00000000
-    .global lbl_80516CC8
-    lbl_80516CC8:
-        .4byte 0x43300000
-        .4byte 0x80000000
-    .global lbl_80516CD0
-    lbl_80516CD0:
-        .float 0.5
-        .4byte 0x00000000
-*/
-
-/*
- * --INFO--
- * Address:	8009A7DC
- * Size:	0006D0
+/**
+ * @note Address: 0x8009A7DC
+ * @note Size: 0x6D0
  */
 JASBasicBank* JASBNKParser::createBasicBank(void* stream)
 {
 	JKRHeap* heap      = JASBank::getCurrentHeap();
-	u32 freeSize       = heap->getFreeSize();
-	JASBasicBank* bank = new (heap, 0) JASBasicBank();
+	const u32 freeSize = heap->getFreeSize();
+	JASBasicBank* bank = new (heap, 0) JASBasicBank;
 	if (bank == nullptr) {
 		return nullptr;
 	}
@@ -63,11 +24,11 @@ JASBasicBank* JASBNKParser::createBasicBank(void* stream)
 
 	/// Populate insts:
 	for (int i = 0; i < 0x80; i++) {
-		TInst* instRaw = JSUConvertOffsetToPtr<TInst>(header, header->mInstOffsets[i]);
+		TInst* instRaw = JSUConvertOffsetToPtr<TInst>(header, header->mInstOffsets[i]); // problem with mInstOffsets again
 		if (instRaw != nullptr) {
-			JASBasicInst* inst = new (heap, 0) JASBasicInst();
-			inst->_04          = instRaw->_08;
-			inst->_08          = instRaw->_0C;
+			JASBasicInst* inst = new (heap, 0) JASBasicInst;
+			inst->mPitch       = instRaw->mPitch;
+			inst->mVolume      = instRaw->mVolume;
 
 			/// Populate inst oscillators:
 			inst->setOscCount(2);
@@ -76,29 +37,29 @@ JASBasicBank* JASBNKParser::createBasicBank(void* stream)
 				if (oscRaw != nullptr) {
 					JASOscillator::Data* oscData = findOscPtr(bank, header, oscRaw);
 					if (oscData == nullptr) {
-						oscData         = new (heap, 0) JASOscillator::Data();
-						oscData->_00    = oscRaw->_00;
-						oscData->_04    = oscRaw->_04;
-						short* oscTable = JSUConvertOffsetToPtr<short>(header, oscRaw->_08);
+						oscData          = new (heap, 0) JASOscillator::Data;
+						oscData->mTarget = oscRaw->mTarget;
+						oscData->mRate   = oscRaw->mRate;
+						s16* oscTable    = JSUConvertOffsetToPtr<s16>(header, oscRaw->mAttack);
 						if (oscTable != nullptr) {
-							u32 tableLength  = getOscTableEndPtr(oscTable) - oscTable;
-							short* tableCopy = new (heap, 0) short[tableLength];
-							JASCalc::bcopy(oscTable, tableCopy, tableLength * sizeof(short));
-							oscData->_08 = tableCopy;
+							u32 tableLength = getOscTableEndPtr(oscTable) - oscTable;
+							s16* tableCopy  = new (heap, 0) s16[tableLength];
+							JASCalc::bcopy(oscTable, tableCopy, tableLength * sizeof(s16));
+							oscData->mAttack = tableCopy;
 						} else {
-							oscData->_08 = nullptr;
+							oscData->mAttack = nullptr;
 						}
-						oscTable = JSUConvertOffsetToPtr<short>(header, oscRaw->_0C);
+						oscTable = JSUConvertOffsetToPtr<s16>(header, oscRaw->mRelease);
 						if (oscTable != nullptr) {
-							u32 tableLength  = getOscTableEndPtr(oscTable) - oscTable;
-							short* tableCopy = new (heap, 0) short[tableLength];
-							JASCalc::bcopy(oscTable, tableCopy, tableLength * sizeof(short));
-							oscData->_0C = tableCopy;
+							u32 tableLength = getOscTableEndPtr(oscTable) - oscTable;
+							s16* tableCopy  = new (heap, 0) s16[tableLength];
+							JASCalc::bcopy(oscTable, tableCopy, tableLength * sizeof(s16));
+							oscData->mRelease = tableCopy;
 						} else {
-							oscData->_0C = nullptr;
+							oscData->mRelease = nullptr;
 						}
-						oscData->_10 = oscRaw->_10;
-						oscData->_14 = oscRaw->_14;
+						oscData->mWidth  = oscRaw->mWidth;
+						oscData->mVertex = oscRaw->mVertex;
 					}
 					inst->setOsc(oscIndex, oscData);
 					oscIndex++;
@@ -110,19 +71,19 @@ JASBasicBank* JASBNKParser::createBasicBank(void* stream)
 			for (int j = 0; j < 2; j++) {
 				TRand* randRaw = JSUConvertOffsetToPtr<TRand>(header, instRaw->mRandOffsets[j]);
 				if (randRaw != nullptr) {
-					JASInstRand* rand = new (heap, 0) JASInstRand();
-					rand->setTarget(randRaw->_00);
-					rand->_08 = randRaw->_04;
-					rand->_0C = randRaw->_08;
+					JASInstRand* rand = new (heap, 0) JASInstRand;
+					rand->setTarget(randRaw->mTarget);
+					rand->mFloor   = randRaw->mFloor;
+					rand->mCeiling = randRaw->mCeiling;
 					inst->setEffect(j, rand);
 				}
 			}
 			for (int j = 0; j < 2; j++) {
 				TSense* senseRaw = JSUConvertOffsetToPtr<TSense>(header, instRaw->mSenseOffsets[j]);
 				if (senseRaw != nullptr) {
-					JASInstSense* sense = new (heap, 0) JASInstSense();
-					sense->setTarget(senseRaw->_00);
-					sense->setParams(senseRaw->_01, senseRaw->_02, senseRaw->_04, senseRaw->_08);
+					JASInstSense* sense = new (heap, 0) JASInstSense;
+					sense->setTarget(senseRaw->mTarget);
+					sense->setParams(senseRaw->mRegister, senseRaw->mKey, senseRaw->mFloor, senseRaw->mCeiling);
 					inst->setEffect(j + 2, sense);
 				}
 			}
@@ -132,15 +93,15 @@ JASBasicBank* JASBNKParser::createBasicBank(void* stream)
 			for (int j = 0; j < instRaw->mKeyRegionCount; j++) {
 				JASBasicInst::TKeymap* instKeymap = inst->getKeyRegion(j);
 				TKeymap* keymapRaw                = JSUConvertOffsetToPtr<TKeymap>(header, instRaw->mKeymapOffsets[j]);
-				instKeymap->_00                   = keymapRaw->_00;
-				instKeymap->setVeloRegionCount(keymapRaw->_04);
-				for (int k = 0; k < keymapRaw->_04; k++) {
+				instKeymap->mBaseKey              = keymapRaw->mBaseKey;
+				instKeymap->setVeloRegionCount(keymapRaw->mVelRegCount);
+				for (int k = 0; k < keymapRaw->mVelRegCount; k++) {
 					JASBasicInst::TVeloRegion* instVeloRegion = instKeymap->getVeloRegion(k);
 					TVmap* vmapRaw                            = JSUConvertOffsetToPtr<TVmap>(header, keymapRaw->mVmapOffsets[k]);
-					instVeloRegion->_00                       = vmapRaw->_00;
-					instVeloRegion->_04                       = vmapRaw->_04 & 0xFFFF;
-					instVeloRegion->_08                       = vmapRaw->_08;
-					instVeloRegion->_0C                       = vmapRaw->_0C;
+					instVeloRegion->mVelocity                 = vmapRaw->mVelocity;
+					instVeloRegion->mWaveID                   = vmapRaw->mWaveID & 0xFFFF;
+					instVeloRegion->mVolume                   = vmapRaw->mVolume;
+					instVeloRegion->mPitch                    = vmapRaw->mPitch;
 				}
 			}
 			bank->setInst(i, inst);
@@ -150,25 +111,25 @@ JASBasicBank* JASBNKParser::createBasicBank(void* stream)
 	for (int i = 0; i < 12; i++) {
 		TPerc* percRaw = JSUConvertOffsetToPtr<TPerc>(header, header->mPercOffsets[i]);
 		if (percRaw != nullptr) {
-			JASDrumSet* drumSet = new (heap, 0) JASDrumSet();
+			JASDrumSet* drumSet = new (heap, 0) JASDrumSet;
 			for (int j = 0; j < 0x80; j++) {
 				TPmap* pmapRaw = JSUConvertOffsetToPtr<TPmap>(header, percRaw->mPmapOffsets[j]);
 				if (pmapRaw != nullptr) {
 					JASDrumSet::TPerc* drumSetPerc = drumSet->getPerc(j);
-					drumSetPerc->_00               = pmapRaw->_00;
-					drumSetPerc->_04               = pmapRaw->_04;
+					drumSetPerc->mPitch            = pmapRaw->mPitch;
+					drumSetPerc->mVolume           = pmapRaw->mVolume;
 					if (percRaw->mMagic == 'PER2') {
-						drumSetPerc->_08 = percRaw->_288[j] / 127.0f;
+						drumSetPerc->mPanning = percRaw->mPanning[j] / 127.0f;
 						drumSetPerc->setRelease(percRaw->_308[j]);
 					}
 					drumSetPerc->setEffectCount(2);
 					for (int effectIndex = 0, k = 0; k < 2; k++) {
 						TRand* randRaw = JSUConvertOffsetToPtr<TRand>(header, pmapRaw->mRandOffsets[k]);
 						if (randRaw != nullptr) {
-							JASInstRand* rand = new (heap, 0) JASInstRand();
-							rand->setTarget(randRaw->_00);
-							rand->_08 = randRaw->_04;
-							rand->_0C = randRaw->_08;
+							JASInstRand* rand = new (heap, 0) JASInstRand;
+							rand->setTarget(randRaw->mTarget);
+							rand->mFloor   = randRaw->mFloor;
+							rand->mCeiling = randRaw->mCeiling;
 							drumSetPerc->setEffect(effectIndex, rand);
 							effectIndex++;
 						}
@@ -177,10 +138,10 @@ JASBasicBank* JASBNKParser::createBasicBank(void* stream)
 					for (int k = 0; k < pmapRaw->mVeloRegionCount; k++) {
 						JASBasicInst::TVeloRegion* instVeloRegion = drumSetPerc->getVeloRegion(k);
 						TVmap* vmapRaw                            = JSUConvertOffsetToPtr<TVmap>(header, pmapRaw->mVeloRegionOffsets[k]);
-						instVeloRegion->_00                       = vmapRaw->_00;
-						instVeloRegion->_04                       = vmapRaw->_04 & 0xFFFF;
-						instVeloRegion->_08                       = vmapRaw->_08;
-						instVeloRegion->_0C                       = vmapRaw->_0C;
+						instVeloRegion->mVelocity                 = vmapRaw->mVelocity;
+						instVeloRegion->mWaveID                   = vmapRaw->mWaveID & 0xFFFF;
+						instVeloRegion->mVolume                   = vmapRaw->mVolume;
+						instVeloRegion->mPitch                    = vmapRaw->mPitch;
 					}
 				}
 			}
@@ -698,15 +659,14 @@ lbl_8009AE98:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8009AEAC
- * Size:	000120
+/**
+ * @note Address: 0x8009AEAC
+ * @note Size: 0x120
  */
 JASOscillator::Data* JASBNKParser::findOscPtr(JASBasicBank* bank, JASBNKParser::THeader* header, JASBNKParser::TOsc* oscPtr)
 {
 	for (int i = 0; i < 128; i++) {
-		TInst* instRaw = JSUConvertOffsetToPtr<TInst>(header, header->mInstOffsets[i]);
+		TInst* instRaw = JSUConvertOffsetToPtr<TInst>(header, header->mInstOffsets[i]); // mismatch here
 		if (instRaw != nullptr) {
 			for (int j = 0; j < 2; j++) {
 				TOsc* oscRaw = JSUConvertOffsetToPtr<TOsc>(header, instRaw->mOscOffsets[j]);
@@ -811,198 +771,16 @@ JASOscillator::Data* JASBNKParser::findOscPtr(JASBasicBank* bank, JASBNKParser::
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8009AFCC
- * Size:	000014
+/**
+ * @note Address: 0x8009AFCC
+ * @note Size: 0x14
  */
-short* JASBNKParser::getOscTableEndPtr(short* p1)
+s16* JASBNKParser::getOscTableEndPtr(s16* p1)
 {
-	short v1;
+	s16 v1;
 	do {
 		v1 = *p1;
 		p1 += 3;
 	} while (v1 <= 0xa);
 	return p1;
 }
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
- */
-u32 JASBNKParser::getUsedHeapSize()
-{
-	// UNUSED FUNCTION
-}
-
-/*
- * --INFO--
- * Address:	8009AFE0
- * Size:	000018
- */
-// void JSUConvertOffsetToPtr<JASBNKParser::TPmap>(const void*, unsigned long)
-// {
-// 	/*
-// 	cmplwi   r4, 0
-// 	bne      lbl_8009AFF0
-// 	li       r3, 0
-// 	blr
-
-// lbl_8009AFF0:
-// 	add      r3, r3, r4
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	8009AFF8
- * Size:	000018
- */
-// void JSUConvertOffsetToPtr<JASBNKParser::TPerc>(const void*, unsigned long)
-// {
-// 	/*
-// 	cmplwi   r4, 0
-// 	bne      lbl_8009B008
-// 	li       r3, 0
-// 	blr
-
-// lbl_8009B008:
-// 	add      r3, r3, r4
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	8009B010
- * Size:	000018
- */
-// void JSUConvertOffsetToPtr<JASBNKParser::TVmap>(const void*, unsigned long)
-// {
-// 	/*
-// 	cmplwi   r4, 0
-// 	bne      lbl_8009B020
-// 	li       r3, 0
-// 	blr
-
-// lbl_8009B020:
-// 	add      r3, r3, r4
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	8009B028
- * Size:	000018
- */
-// void JSUConvertOffsetToPtr<JASBNKParser::TKeymap>(const void*, unsigned long)
-// {
-// 	/*
-// 	cmplwi   r4, 0
-// 	bne      lbl_8009B038
-// 	li       r3, 0
-// 	blr
-
-// lbl_8009B038:
-// 	add      r3, r3, r4
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	8009B040
- * Size:	000018
- */
-// void JSUConvertOffsetToPtr<JASBNKParser::TSense>(const void*, unsigned long)
-// {
-// 	/*
-// 	cmplwi   r4, 0
-// 	bne      lbl_8009B050
-// 	li       r3, 0
-// 	blr
-
-// lbl_8009B050:
-// 	add      r3, r3, r4
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	8009B058
- * Size:	000018
- */
-// void JSUConvertOffsetToPtr<JASBNKParser::TRand>(const void*, unsigned long)
-// {
-// 	/*
-// 	cmplwi   r4, 0
-// 	bne      lbl_8009B068
-// 	li       r3, 0
-// 	blr
-
-// lbl_8009B068:
-// 	add      r3, r3, r4
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	8009B070
- * Size:	000018
- */
-// void JSUConvertOffsetToPtr<short>(const void*, unsigned long)
-// {
-// 	/*
-// 	cmplwi   r4, 0
-// 	bne      lbl_8009B080
-// 	li       r3, 0
-// 	blr
-
-// lbl_8009B080:
-// 	add      r3, r3, r4
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	8009B088
- * Size:	000018
- */
-// void JSUConvertOffsetToPtr<JASBNKParser::TOsc>(const void*, unsigned long)
-// {
-// 	/*
-// 	cmplwi   r4, 0
-// 	bne      lbl_8009B098
-// 	li       r3, 0
-// 	blr
-
-// lbl_8009B098:
-// 	add      r3, r3, r4
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	8009B0A0
- * Size:	000018
- */
-// void JSUConvertOffsetToPtr<JASBNKParser::TInst>(const void*, unsigned long)
-// {
-// 	/*
-// 	cmplwi   r4, 0
-// 	bne      lbl_8009B0B0
-// 	li       r3, 0
-// 	blr
-
-// lbl_8009B0B0:
-// 	add      r3, r3, r4
-// 	blr
-// 	*/
-// }

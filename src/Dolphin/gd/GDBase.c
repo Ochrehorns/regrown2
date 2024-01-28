@@ -5,32 +5,29 @@
 GDCurrentDL* __GDCurrentDL    = (GDCurrentDL*)NULL;
 GDOverflowCallback overflowcb = (GDOverflowCallback)NULL;
 
-/*
- * --INFO--
- * Address:	800E1B04
- * Size:	000018
+/**
+ * @note Address: 0x800E1B04
+ * @note Size: 0x18
  */
-void GDInitGDLObj(GDCurrentDL* GDL_Obj, u8* begin_ptr, s32 new_length)
+void GDInitGDLObj(GDCurrentDL* GDL_Obj, u8* start, s32 len)
 {
-	GDL_Obj->begin            = begin_ptr;
-	GDL_Obj->pDisplayListData = begin_ptr;
-	GDL_Obj->end              = begin_ptr + new_length;
-	GDL_Obj->length           = new_length;
+	GDL_Obj->begin            = start;
+	GDL_Obj->pDisplayListData = start;
+	GDL_Obj->end              = start + len;
+	GDL_Obj->length           = len;
 }
 
-/*
- * --INFO--
- * Address:	800E1B1C
- * Size:	00002C
+/**
+ * @note Address: 0x800E1B1C
+ * @note Size: 0x2C
  */
-void GDFlushCurrToMem(void) { DCFlushRange(__GDCurrentDL->begin, __GDCurrentDL->length); }
+void GDFlushCurrToMem() { DCFlushRange(__GDCurrentDL->begin, __GDCurrentDL->length); }
 
-/*
- * --INFO--
- * Address:	800E1B48
- * Size:	0000F8
+/**
+ * @note Address: 0x800E1B48
+ * @note Size: 0xF8
  */
-void GDPadCurr32(void)
+void GDPadCurr32()
 {
 	u32 i = ((u32)__GDCurrentDL->pDisplayListData & 31);
 	if (i) {
@@ -40,10 +37,9 @@ void GDPadCurr32(void)
 	}
 }
 
-/*
- * --INFO--
- * Address:	800E1C40
- * Size:	000030
+/**
+ * @note Address: 0x800E1C40
+ * @note Size: 0x30
  */
 void GDOverflowed(void)
 {
@@ -52,24 +48,14 @@ void GDOverflowed(void)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
-void GDSetOverflowCallback(GDOverflowCallback cb)
-{
-	// UNUSED FUNCTION
-	overflowcb = cb;
-}
+void GDSetOverflowCallback(GDOverflowCallback cb) { overflowcb = cb; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
-GDOverflowCallback GDGetOverflowCallback(void)
-{
-	// UNUSED FUNCTION
-	return overflowcb;
-}
+GDOverflowCallback GDGetOverflowCallback(void) { return overflowcb; }

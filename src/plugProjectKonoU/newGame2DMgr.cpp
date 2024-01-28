@@ -24,10 +24,9 @@ namespace Screen {
 
 Game2DMgr* gGame2DMgr;
 
-/*
- * --INFO--
- * Address:	803FBEEC
- * Size:	000060
+/**
+ * @note Address: 0x803FBEEC
+ * @note Size: 0x60
  */
 void Game2DMgr::create()
 {
@@ -35,10 +34,9 @@ void Game2DMgr::create()
 	gGame2DMgr = new Game2DMgr;
 }
 
-/*
- * --INFO--
- * Address:	803FBF4C
- * Size:	000058
+/**
+ * @note Address: 0x803FBF4C
+ * @note Size: 0x58
  */
 Game2DMgr::Game2DMgr()
     : mScreenMgr(nullptr)
@@ -48,52 +46,45 @@ Game2DMgr::Game2DMgr()
 	og::Lib2D::create();
 }
 
-/*
- * --INFO--
- * Address:	803FBFA4
- * Size:	000068
+/**
+ * @note Address: 0x803FBFA4
+ * @note Size: 0x68
  */
 Game2DMgr::~Game2DMgr() { gGame2DMgr = nullptr; }
 
-/*
- * --INFO--
- * Address:	803FC00C
- * Size:	000020
+/**
+ * @note Address: 0x803FC00C
+ * @note Size: 0x20
  */
 void Game2DMgr::initInCourse() { og::newScreen::initGround(); }
 
-/*
- * --INFO--
- * Address:	803FC02C
- * Size:	000024
+/**
+ * @note Address: 0x803FC02C
+ * @note Size: 0x24
  */
 void Game2DMgr::update() { mScreenMgr->update(); }
 
-/*
- * --INFO--
- * Address:	803FC050
- * Size:	000024
+/**
+ * @note Address: 0x803FC050
+ * @note Size: 0x24
  */
 void Game2DMgr::draw(Graphics& gfx) { mScreenMgr->draw(gfx); }
 
-/*
- * --INFO--
- * Address:	803FC074
- * Size:	000004
+/**
+ * @note Address: 0x803FC074
+ * @note Size: 0x4
  */
 void Game2DMgr::drawIndirect(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	803FC078
- * Size:	000024
+/**
+ * @note Address: 0x803FC078
+ * @note Size: 0x24
  */
 void Game2DMgr::setGamePad(Controller* cont) { mScreenMgr->setGamePad(cont); }
 
-/*
- * --INFO--
- * Address:	803FC09C
- * Size:	000034
+/**
+ * @note Address: 0x803FC09C
+ * @note Size: 0x34
  */
 bool Game2DMgr::setDispMember(og::Screen::DispMemberBase* disp)
 {
@@ -104,17 +95,15 @@ bool Game2DMgr::setDispMember(og::Screen::DispMemberBase* disp)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FC0D0
- * Size:	000038
+/**
+ * @note Address: 0x803FC0D0
+ * @note Size: 0x38
  */
 void Game2DMgr::setToumeiBG() { mScreenMgr->mBackupScene->setColorBG(0, 0, 0, 0); }
 
-/*
- * --INFO--
- * Address:	803FC108
- * Size:	0000BC
+/**
+ * @note Address: 0x803FC108
+ * @note Size: 0xBC
  */
 bool Game2DMgr::open_GameGround(og::Screen::DispMemberGround& disp)
 {
@@ -123,17 +112,16 @@ bool Game2DMgr::open_GameGround(og::Screen::DispMemberGround& disp)
 	}
 	disp.mDataGame.mPokoCount = Game::playData->mPokoCount;
 
-	SetSceneArg arg(SCENE_GROUND, &disp, 0, true);
+	SetSceneArg arg(SCENE_GROUND, &disp);
 	if (mScreenMgr->setScene(arg)) {
 		mScreenMgr->startScene(nullptr);
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FC1C4
- * Size:	000060
+/**
+ * @note Address: 0x803FC1C4
+ * @note Size: 0x60
  */
 bool Game2DMgr::is_GameGround()
 {
@@ -144,10 +132,9 @@ bool Game2DMgr::is_GameGround()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FC224
- * Size:	0001B4
+/**
+ * @note Address: 0x803FC224
+ * @note Size: 0x1B4
  */
 bool Game2DMgr::open_GameCave(og::Screen::DispMemberCave& disp, int type)
 {
@@ -157,15 +144,15 @@ bool Game2DMgr::open_GameCave(og::Screen::DispMemberCave& disp, int type)
 	disp.mDataGame.mPokoCount = Game::playData->mCavePokoCount;
 
 	if (type == 0) {
-		SetSceneArg arg(SCENE_CAVE, &disp, 0, true);
+		SetSceneArg arg(SCENE_CAVE, &disp);
 		if (mScreenMgr->setScene(arg)) {
 			mScreenMgr->startScene(nullptr);
 		}
 	} else if (type & 2) {
-		SetSceneArg arg(SCENE_CAVE, &disp, 0, true);
+		SetSceneArg arg(SCENE_CAVE, &disp);
 		if (mScreenMgr->setScene(arg)) {
 			kh::Screen::DispFinalFloor disp2;
-			SetSceneArg arg2(SCENE_FINAL_FLOOR, &disp2, 0, true);
+			SetSceneArg arg2(SCENE_FINAL_FLOOR, &disp2);
 			if (mScreenMgr->setScene(arg2)) {
 				mScreenMgr->startScene(nullptr);
 			}
@@ -174,10 +161,9 @@ bool Game2DMgr::open_GameCave(og::Screen::DispMemberCave& disp, int type)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FC3D8
- * Size:	000060
+/**
+ * @note Address: 0x803FC3D8
+ * @note Size: 0x60
  */
 bool Game2DMgr::is_GameCave()
 {
@@ -188,24 +174,23 @@ bool Game2DMgr::is_GameCave()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FC438
- * Size:	0001A0
+/**
+ * @note Address: 0x803FC438
+ * @note Size: 0x1A0
  */
 bool Game2DMgr::open_GameVs(og::Screen::DispMemberVs& disp, int type)
 {
 	if (type == 0) {
-		SetSceneArg arg(SCENE_VS, &disp, 0, true);
+		SetSceneArg arg(SCENE_VS, &disp);
 		if (mScreenMgr->setScene(arg)) {
 			mScreenMgr->startScene(nullptr);
 		}
 	} else if (type & 1) {
-		SetSceneArg arg(SCENE_VS, &disp, 0, true);
+		SetSceneArg arg(SCENE_VS, &disp);
 		if (mScreenMgr->setScene(arg)) {
 			kh::Screen::DispReadyGo disp2;
 			disp2.mIs2Player = true;
-			SetSceneArg arg2(SCENE_READY_GO, &disp2, 0, true);
+			SetSceneArg arg2(SCENE_READY_GO, &disp2);
 			if (mScreenMgr->setScene(arg2)) {
 				mScreenMgr->startScene(nullptr);
 			}
@@ -214,10 +199,9 @@ bool Game2DMgr::open_GameVs(og::Screen::DispMemberVs& disp, int type)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	803FC5D8
- * Size:	00009C
+/**
+ * @note Address: 0x803FC5D8
+ * @note Size: 0x9C
  */
 int Game2DMgr::check_VsStatus()
 {
@@ -239,14 +223,13 @@ int Game2DMgr::check_VsStatus()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FC674
- * Size:	000334
+/**
+ * @note Address: 0x803FC674
+ * @note Size: 0x334
  */
 void Game2DMgr::open_GameChallenge2P(og::Screen::DispMemberChallenge2P& disp, int type)
 {
-	SetSceneArg arg(SCENE_CHALLENGE_2P, &disp, 0, true);
+	SetSceneArg arg(SCENE_CHALLENGE_2P, &disp);
 	og::newScreen::SArgChallenge2P sarg(1.5f);
 
 	if (type == 0) {
@@ -259,7 +242,7 @@ void Game2DMgr::open_GameChallenge2P(og::Screen::DispMemberChallenge2P& disp, in
 			disp2.mIs2Player    = true;
 			disp2.mIsFinalFloor = true;
 			disp2.mGameType     = 1;
-			SetSceneArg arg2(SCENE_READY_GO, &disp2, 0, true);
+			SetSceneArg arg2(SCENE_READY_GO, &disp2);
 			if (mScreenMgr->setScene(arg2)) {
 				mScreenMgr->startScene(nullptr);
 			}
@@ -269,7 +252,7 @@ void Game2DMgr::open_GameChallenge2P(og::Screen::DispMemberChallenge2P& disp, in
 			kh::Screen::DispReadyGo disp2;
 			disp2.mIs2Player = true;
 			disp2.mGameType  = 1;
-			SetSceneArg arg2(SCENE_READY_GO, &disp2, 0, true);
+			SetSceneArg arg2(SCENE_READY_GO, &disp2);
 			if (mScreenMgr->setScene(arg2)) {
 				mScreenMgr->startScene(nullptr);
 			}
@@ -278,7 +261,7 @@ void Game2DMgr::open_GameChallenge2P(og::Screen::DispMemberChallenge2P& disp, in
 		if (mScreenMgr->setScene(arg)) {
 			kh::Screen::DispFinalFloor disp2;
 			disp2.mIs2Player = true;
-			SetSceneArg arg2(SCENE_FINAL_FLOOR, &disp2, 0, true);
+			SetSceneArg arg2(SCENE_FINAL_FLOOR, &disp2);
 			if (mScreenMgr->setScene(arg2)) {
 				mScreenMgr->startScene(nullptr);
 			}
@@ -286,14 +269,13 @@ void Game2DMgr::open_GameChallenge2P(og::Screen::DispMemberChallenge2P& disp, in
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FC9A8
- * Size:	000328
+/**
+ * @note Address: 0x803FC9A8
+ * @note Size: 0x328
  */
 void Game2DMgr::open_GameChallenge1P(og::Screen::DispMemberChallenge1P& disp, int type)
 {
-	SetSceneArg arg(SCENE_CHALLENGE_1P, &disp, 0, true);
+	SetSceneArg arg(SCENE_CHALLENGE_1P, &disp);
 	og::newScreen::SArgChallenge1P sarg(1.5f);
 
 	if (type == 0) {
@@ -305,7 +287,7 @@ void Game2DMgr::open_GameChallenge1P(og::Screen::DispMemberChallenge1P& disp, in
 			kh::Screen::DispReadyGo disp2;
 			disp2.mIsFinalFloor = true;
 			disp2.mGameType     = 1;
-			SetSceneArg arg2(SCENE_READY_GO, &disp2, 0, true);
+			SetSceneArg arg2(SCENE_READY_GO, &disp2);
 			if (mScreenMgr->setScene(arg2)) {
 				mScreenMgr->startScene(nullptr);
 			}
@@ -314,7 +296,7 @@ void Game2DMgr::open_GameChallenge1P(og::Screen::DispMemberChallenge1P& disp, in
 		if (mScreenMgr->setScene(arg)) {
 			kh::Screen::DispReadyGo disp2;
 			disp2.mGameType = 1;
-			SetSceneArg arg2(SCENE_READY_GO, &disp2, 0, true);
+			SetSceneArg arg2(SCENE_READY_GO, &disp2);
 			if (mScreenMgr->setScene(arg2)) {
 				mScreenMgr->startScene(nullptr);
 			}
@@ -322,7 +304,7 @@ void Game2DMgr::open_GameChallenge1P(og::Screen::DispMemberChallenge1P& disp, in
 	} else if (type == 2) {
 		if (mScreenMgr->setScene(arg)) {
 			kh::Screen::DispFinalFloor disp2;
-			SetSceneArg arg2(SCENE_FINAL_FLOOR, &disp2, 0, true);
+			SetSceneArg arg2(SCENE_FINAL_FLOOR, &disp2);
 			if (mScreenMgr->setScene(arg2)) {
 				mScreenMgr->startScene(nullptr);
 			}
@@ -330,10 +312,9 @@ void Game2DMgr::open_GameChallenge1P(og::Screen::DispMemberChallenge1P& disp, in
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FCCD0
- * Size:	0000B0
+/**
+ * @note Address: 0x803FCCD0
+ * @note Size: 0xB0
  */
 bool Game2DMgr::open_SMenu(og::Screen::DispMemberSMenuAll& disp)
 {
@@ -357,16 +338,15 @@ bool Game2DMgr::open_SMenu(og::Screen::DispMemberSMenuAll& disp)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FCD80
- * Size:	0001B0
+/**
+ * @note Address: 0x803FCD80
+ * @note Size: 0x1B0
  */
 bool Game2DMgr::open_SMenu_Sub(og::Screen::DispMemberSMenuAll& disp)
 {
 	bool ret                              = false;
 	disp.mSMenuPauseDoukutu.mPreCavePokos = disp.mSMenuPause.mPokoCount;
-	if (mScreenMgr->mInCave) {
+	if (static_cast<newScreen::Mgr*>(mScreenMgr)->mInCave) {
 		disp.mSMenuMap.mInCave = true;
 	} else {
 		disp.mSMenuMap.mInCave = false;
@@ -384,13 +364,13 @@ bool Game2DMgr::open_SMenu_Sub(og::Screen::DispMemberSMenuAll& disp)
 
 	switch (disp.mOpenMode) {
 	case og::Screen::DispMemberSMenuAll::Open_StoryMode: {
-		SetSceneArg arg(SCENE_PAUSE_MENU_MAP, &disp, 0, true);
+		SetSceneArg arg(SCENE_PAUSE_MENU_MAP, &disp);
 		set = mScreenMgr->setScene(arg);
 		break;
 	}
 	case og::Screen::DispMemberSMenuAll::Open_ChallengeMode:
 	case og::Screen::DispMemberSMenuAll::Open_Versus: {
-		SetSceneArg arg(SCENE_PAUSE_MENU_VS, &disp, 0, true);
+		SetSceneArg arg(SCENE_PAUSE_MENU_VS, &disp);
 		set = mScreenMgr->setScene(arg);
 		break;
 	}
@@ -405,10 +385,9 @@ bool Game2DMgr::open_SMenu_Sub(og::Screen::DispMemberSMenuAll& disp)
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FCF30
- * Size:	000128
+/**
+ * @note Address: 0x803FCF30
+ * @note Size: 0x128
  */
 int Game2DMgr::check_SMenu()
 {
@@ -423,36 +402,36 @@ int Game2DMgr::check_SMenu()
 		if (mScreenMgr->isSceneFinish()) {
 			int scene = mScreenMgr->getSceneFinishState();
 			switch (scene) {
-			case 1:
+			case SceneBase::SB_WaitForResourceSync:
 				exit = 0;
 				break;
 
-			case 2:
+			case SceneBase::SB_Unknown2:
 				PSPause_StartMenuOff();
 				exit = 1;
 				break;
 
-			case 3:
+			case SceneBase::SB_Started:
 				PSPause_StartMenuOff();
 				exit = 2;
 				break;
 
-			case 4:
+			case SceneBase::SB_Unknown4:
 				PSPause_StartMenuOff();
 				exit = 3;
 				break;
 
-			case 5:
+			case SceneBase::SB_Unknown5:
 				PSPause_StartMenuOff();
 				exit = 1;
 				break;
 
-			case 6:
+			case SceneBase::SB_Unknown6:
 				PSPause_StartMenuOff();
 				exit = 4;
 				break;
 
-			case 7:
+			case SceneBase::SB_Unknown7:
 				PSPause_StartMenuOff();
 				exit = 5;
 				break;
@@ -474,14 +453,13 @@ int Game2DMgr::check_SMenu()
 	return exit;
 }
 
-/*
- * --INFO--
- * Address:	803FD058
- * Size:	0000A8
+/**
+ * @note Address: 0x803FD058
+ * @note Size: 0xA8
  */
 bool Game2DMgr::open_WorldMapInfoWin0(og::Screen::DispMemberWorldMapInfoWin0& disp)
 {
-	SetSceneArg arg(SCENE_WORLD_MAP_INFO_WINDOW_0, &disp, 0, true);
+	SetSceneArg arg(SCENE_WORLD_MAP_INFO_WINDOW_0, &disp);
 	if (mScreenMgr->setScene(arg)) {
 		if (mScreenMgr->startScene(nullptr)) {
 			return true;
@@ -490,10 +468,9 @@ bool Game2DMgr::open_WorldMapInfoWin0(og::Screen::DispMemberWorldMapInfoWin0& di
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FD100
- * Size:	00007C
+/**
+ * @note Address: 0x803FD100
+ * @note Size: 0x7C
  */
 int Game2DMgr::check_WorldMapInfoWin0() const
 {
@@ -510,14 +487,13 @@ int Game2DMgr::check_WorldMapInfoWin0() const
 	return 3;
 }
 
-/*
- * --INFO--
- * Address:	803FD17C
- * Size:	0000A8
+/**
+ * @note Address: 0x803FD17C
+ * @note Size: 0xA8
  */
 bool Game2DMgr::open_WorldMapInfoWin1(og::Screen::DispMemberWorldMapInfoWin1& disp)
 {
-	SetSceneArg arg(SCENE_WORLD_MAP_INFO_WINDOW_1, &disp, 0, true);
+	SetSceneArg arg(SCENE_WORLD_MAP_INFO_WINDOW_1, &disp);
 	if (mScreenMgr->setScene(arg)) {
 		if (mScreenMgr->startScene(nullptr)) {
 			return true;
@@ -526,10 +502,9 @@ bool Game2DMgr::open_WorldMapInfoWin1(og::Screen::DispMemberWorldMapInfoWin1& di
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FD224
- * Size:	00007C
+/**
+ * @note Address: 0x803FD224
+ * @note Size: 0x7C
  */
 int Game2DMgr::check_WorldMapInfoWin1() const
 {
@@ -546,14 +521,13 @@ int Game2DMgr::check_WorldMapInfoWin1() const
 	return 3;
 }
 
-/*
- * --INFO--
- * Address:	803FD2A0
- * Size:	000124
+/**
+ * @note Address: 0x803FD2A0
+ * @note Size: 0x124
  */
 void Game2DMgr::open_Kantei(og::Screen::DispMemberKantei& disp)
 {
-	if (mScreenMgr->mInCave) {
+	if (static_cast<newScreen::Mgr*>(mScreenMgr)->mInCave) {
 		disp.mInCave = true;
 	} else {
 		disp.mInCave = false;
@@ -571,7 +545,7 @@ void Game2DMgr::open_Kantei(og::Screen::DispMemberKantei& disp)
 		disp.mKanteiType = 0;
 	}
 
-	SetSceneArg arg(SCENE_KANTEI_DEMO, &disp, 0, true);
+	SetSceneArg arg(SCENE_KANTEI_DEMO, &disp);
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		PSPause_StartMenuOn();
 	} else {
@@ -579,10 +553,9 @@ void Game2DMgr::open_Kantei(og::Screen::DispMemberKantei& disp)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FD3C4
- * Size:	000084
+/**
+ * @note Address: 0x803FD3C4
+ * @note Size: 0x84
  */
 void Game2DMgr::close_Kantei()
 {
@@ -596,10 +569,9 @@ void Game2DMgr::close_Kantei()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FD448
- * Size:	000074
+/**
+ * @note Address: 0x803FD448
+ * @note Size: 0x74
  */
 bool Game2DMgr::update_Kantei()
 {
@@ -611,23 +583,21 @@ bool Game2DMgr::update_Kantei()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FD4BC
- * Size:	000090
+/**
+ * @note Address: 0x803FD4BC
+ * @note Size: 0x90
  */
 void Game2DMgr::open_SpecialItem(og::Screen::DispMemberSpecialItem& disp)
 {
-	SetSceneArg arg(SCENE_SPECIAL_ITEM, &disp, 0, true);
+	SetSceneArg arg(SCENE_SPECIAL_ITEM, &disp);
 	mScreenMgr->setScene(arg);
 	mScreenMgr->startScene(nullptr);
 	PSPause_StartMenuOn();
 }
 
-/*
- * --INFO--
- * Address:	803FD54C
- * Size:	000084
+/**
+ * @note Address: 0x803FD54C
+ * @note Size: 0x84
  */
 void Game2DMgr::close_SpecialItem()
 {
@@ -641,23 +611,21 @@ void Game2DMgr::close_SpecialItem()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FD5D0
- * Size:	000090
+/**
+ * @note Address: 0x803FD5D0
+ * @note Size: 0x90
  */
 void Game2DMgr::open_Floor(og::Screen::DispMemberFloor& disp)
 {
-	SetSceneArg arg(SCENE_FLOOR, &disp, 0, true);
-	arg._08 = 1; // probably proof the last two arguments dont belong in the ctor
+	SetSceneArg arg(SCENE_FLOOR, &disp);
+	arg._08 = 1;
 	mScreenMgr->setScene(arg);
 	mScreenMgr->startScene(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	803FD660
- * Size:	000070
+/**
+ * @note Address: 0x803FD660
+ * @note Size: 0x70
  */
 void Game2DMgr::close_Floor()
 {
@@ -668,10 +636,9 @@ void Game2DMgr::close_Floor()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FD6D0
- * Size:	00005C
+/**
+ * @note Address: 0x803FD6D0
+ * @note Size: 0x5C
  */
 void Game2DMgr::set_FloorVS_LoadEnd()
 {
@@ -684,10 +651,9 @@ void Game2DMgr::set_FloorVS_LoadEnd()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FD72C
- * Size:	000048
+/**
+ * @note Address: 0x803FD72C
+ * @note Size: 0x48
  */
 void Game2DMgr::startCount_Floor()
 {
@@ -697,10 +663,9 @@ void Game2DMgr::startCount_Floor()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FD774
- * Size:	000048
+/**
+ * @note Address: 0x803FD774
+ * @note Size: 0x48
  */
 void Game2DMgr::startFadeBG_Floor()
 {
@@ -710,23 +675,21 @@ void Game2DMgr::startFadeBG_Floor()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FD7BC
- * Size:	000090
+/**
+ * @note Address: 0x803FD7BC
+ * @note Size: 0x90
  */
 bool Game2DMgr::open_CourseName(og::Screen::DispMemberCourseName& disp)
 {
-	SetSceneArg arg(SCENE_COURSE_NAME, &disp, 0, true);
+	SetSceneArg arg(SCENE_COURSE_NAME, &disp);
 	arg._08 = 1;
 	mScreenMgr->setScene(arg);
 	mScreenMgr->startScene(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	803FD84C
- * Size:	000048
+/**
+ * @note Address: 0x803FD84C
+ * @note Size: 0x48
  */
 void Game2DMgr::startFadeBG_CourseName()
 {
@@ -736,10 +699,9 @@ void Game2DMgr::startFadeBG_CourseName()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FD894
- * Size:	000070
+/**
+ * @note Address: 0x803FD894
+ * @note Size: 0x70
  */
 void Game2DMgr::close_CourseName()
 {
@@ -750,10 +712,9 @@ void Game2DMgr::close_CourseName()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FD904
- * Size:	000048
+/**
+ * @note Address: 0x803FD904
+ * @note Size: 0x48
  */
 void Game2DMgr::startCount_CourseName()
 {
@@ -763,40 +724,39 @@ void Game2DMgr::startCount_CourseName()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FD94C
- * Size:	000258
+/**
+ * @note Address: 0x803FD94C
+ * @note Size: 0x258
  */
 void Game2DMgr::open_GameOver(GameOverTitle id)
 {
 	switch (id) {
 	case GOTITLE_Default: {
-		SetSceneArg arg(SCENE_GAME_OVER_GENERAL, nullptr, 0, true);
+		SetSceneArg arg(SCENE_GAME_OVER_GENERAL, nullptr);
 		mScreenMgr->setScene(arg);
 		mScreenMgr->startScene(nullptr);
 		break;
 	}
 	case GOTITLE_OlimarDown: {
-		SetSceneArg arg(SCENE_ORIMA_DOWN, nullptr, 0, true);
+		SetSceneArg arg(SCENE_ORIMA_DOWN, nullptr);
 		mScreenMgr->setScene(arg);
 		mScreenMgr->startScene(nullptr);
 		break;
 	}
 	case GOTITLE_LouieDown: {
-		SetSceneArg arg(SCENE_LUJI_DOWN, nullptr, 0, true);
+		SetSceneArg arg(SCENE_LUJI_DOWN, nullptr);
 		mScreenMgr->setScene(arg);
 		mScreenMgr->startScene(nullptr);
 		break;
 	}
 	case GOTITLE_PresidentDown: {
-		SetSceneArg arg(SCENE_PRESIDENT_DOWN, nullptr, 0, true);
+		SetSceneArg arg(SCENE_PRESIDENT_DOWN, nullptr);
 		mScreenMgr->setScene(arg);
 		mScreenMgr->startScene(nullptr);
 		break;
 	}
 	case GOTITLE_PikminZero: {
-		SetSceneArg arg(SCENE_PIKMIN_DOWN, nullptr, 0, true);
+		SetSceneArg arg(SCENE_PIKMIN_DOWN, nullptr);
 		mScreenMgr->setScene(arg);
 		mScreenMgr->startScene(nullptr);
 		break;
@@ -804,10 +764,9 @@ void Game2DMgr::open_GameOver(GameOverTitle id)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FDBA4
- * Size:	0000AC
+/**
+ * @note Address: 0x803FDBA4
+ * @note Size: 0xAC
  */
 void Game2DMgr::close_GameOver()
 {
@@ -829,10 +788,9 @@ void Game2DMgr::close_GameOver()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FDC50
- * Size:	0000E0
+/**
+ * @note Address: 0x803FDC50
+ * @note Size: 0xE0
  */
 bool Game2DMgr::open_CaveInMenu(og::Screen::DispMemberAnaDemo& disp)
 {
@@ -841,7 +799,7 @@ bool Game2DMgr::open_CaveInMenu(og::Screen::DispMemberAnaDemo& disp)
 	}
 
 	if (mScreenMgr->getSceneType() == SCENE_GROUND) {
-		SetSceneArg arg(SCENE_CAVE_IN_MENU, &disp, 0, true);
+		SetSceneArg arg(SCENE_CAVE_IN_MENU, &disp);
 		if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 			PSPause_StartMenuOn();
 			return true;
@@ -850,10 +808,9 @@ bool Game2DMgr::open_CaveInMenu(og::Screen::DispMemberAnaDemo& disp)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FDD30
- * Size:	00009C
+/**
+ * @note Address: 0x803FDD30
+ * @note Size: 0x9C
  */
 int Game2DMgr::check_CaveInMenu()
 {
@@ -879,10 +836,9 @@ int Game2DMgr::check_CaveInMenu()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FDDCC
- * Size:	0000E0
+/**
+ * @note Address: 0x803FDDCC
+ * @note Size: 0xE0
  */
 bool Game2DMgr::open_KanketuMenu(og::Screen::DispMemberKanketuMenu& disp)
 {
@@ -891,7 +847,7 @@ bool Game2DMgr::open_KanketuMenu(og::Screen::DispMemberKanketuMenu& disp)
 	}
 
 	if (mScreenMgr->getSceneType() == SCENE_CAVE) {
-		SetSceneArg arg(SCENE_KANKETU_MENU, &disp, 0, true);
+		SetSceneArg arg(SCENE_KANKETU_MENU, &disp);
 		if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 			PSPause_StartMenuOn();
 			return true;
@@ -900,10 +856,9 @@ bool Game2DMgr::open_KanketuMenu(og::Screen::DispMemberKanketuMenu& disp)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FDEAC
- * Size:	0000F4
+/**
+ * @note Address: 0x803FDEAC
+ * @note Size: 0xF4
  */
 bool Game2DMgr::open_ChallengeKanketuMenu(og::Screen::DispMemberKanketuMenu& disp)
 {
@@ -913,7 +868,7 @@ bool Game2DMgr::open_ChallengeKanketuMenu(og::Screen::DispMemberKanketuMenu& dis
 
 	if (mScreenMgr->getSceneType() == SCENE_CHALLENGE_1P || mScreenMgr->getSceneType() == SCENE_CHALLENGE_2P) {
 		disp.mIsChallenge = true;
-		SetSceneArg arg(SCENE_KANKETU_MENU, &disp, 0, true);
+		SetSceneArg arg(SCENE_KANKETU_MENU, &disp);
 		if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 			PSPause_StartMenuOn();
 			return true;
@@ -922,10 +877,9 @@ bool Game2DMgr::open_ChallengeKanketuMenu(og::Screen::DispMemberKanketuMenu& dis
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FDFA0
- * Size:	00009C
+/**
+ * @note Address: 0x803FDFA0
+ * @note Size: 0x9C
  */
 int Game2DMgr::check_KanketuMenu()
 {
@@ -951,10 +905,9 @@ int Game2DMgr::check_KanketuMenu()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FE03C
- * Size:	000100
+/**
+ * @note Address: 0x803FE03C
+ * @note Size: 0x100
  */
 bool Game2DMgr::open_CaveMoreMenu(og::Screen::DispMemberCaveMore& disp)
 {
@@ -964,7 +917,7 @@ bool Game2DMgr::open_CaveMoreMenu(og::Screen::DispMemberCaveMore& disp)
 
 	if (mScreenMgr->getSceneType() == SCENE_CAVE || mScreenMgr->getSceneType() == SCENE_CHALLENGE_1P
 	    || mScreenMgr->getSceneType() == SCENE_CHALLENGE_2P) {
-		SetSceneArg arg(SCENE_CAVE_MORE_MENU, &disp, 0, true);
+		SetSceneArg arg(SCENE_CAVE_MORE_MENU, &disp);
 		if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 			PSPause_StartMenuOn();
 			return true;
@@ -973,10 +926,9 @@ bool Game2DMgr::open_CaveMoreMenu(og::Screen::DispMemberCaveMore& disp)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FE13C
- * Size:	00009C
+/**
+ * @note Address: 0x803FE13C
+ * @note Size: 0x9C
  */
 int Game2DMgr::check_CaveMoreMenu()
 {
@@ -1002,14 +954,13 @@ int Game2DMgr::check_CaveMoreMenu()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FE1D8
- * Size:	0000AC
+/**
+ * @note Address: 0x803FE1D8
+ * @note Size: 0xAC
  */
 bool Game2DMgr::open_FinalResult(kh::Screen::DispFinalResult& disp)
 {
-	SetSceneArg arg(SCENE_FINAL_RESULT, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_FINAL_RESULT, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	arg._08 = 1;
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		return true;
@@ -1017,10 +968,9 @@ bool Game2DMgr::open_FinalResult(kh::Screen::DispFinalResult& disp)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FE284
- * Size:	00008C
+/**
+ * @note Address: 0x803FE284
+ * @note Size: 0x8C
  */
 int Game2DMgr::check_FinalResult() const
 {
@@ -1034,24 +984,22 @@ int Game2DMgr::check_FinalResult() const
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FE310
- * Size:	0000A8
+/**
+ * @note Address: 0x803FE310
+ * @note Size: 0xA8
  */
 bool Game2DMgr::open_CaveResult(kh::Screen::DispCaveResult& disp)
 {
-	SetSceneArg arg(SCENE_CAVE_RESULT, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_CAVE_RESULT, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FE3B8
- * Size:	00008C
+/**
+ * @note Address: 0x803FE3B8
+ * @note Size: 0x8C
  */
 int Game2DMgr::check_CaveResult() const
 {
@@ -1065,14 +1013,13 @@ int Game2DMgr::check_CaveResult() const
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FE444
- * Size:	0000AC
+/**
+ * @note Address: 0x803FE444
+ * @note Size: 0xAC
  */
 bool Game2DMgr::open_DayEndResult(kh::Screen::DispDayEndResult& disp)
 {
-	SetSceneArg arg(SCENE_DAY_END_RESULT_TITL, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_DAY_END_RESULT_TITL, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	arg._08 = 1;
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		return true;
@@ -1080,10 +1027,9 @@ bool Game2DMgr::open_DayEndResult(kh::Screen::DispDayEndResult& disp)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FE4F0
- * Size:	0000B0
+/**
+ * @note Address: 0x803FE4F0
+ * @note Size: 0xB0
  */
 int Game2DMgr::check_DayEndResult() const
 {
@@ -1098,24 +1044,22 @@ int Game2DMgr::check_DayEndResult() const
 	return reinterpret_cast<kh::Screen::DispDayEndResult*>(mScreenMgr->getDispMember())->mMail._14;
 }
 
-/*
- * --INFO--
- * Address:	803FE5A0
- * Size:	0000A8
+/**
+ * @note Address: 0x803FE5A0
+ * @note Size: 0xA8
  */
 bool Game2DMgr::open_PayDept(kh::Screen::DispPayDept& disp)
 {
-	SetSceneArg arg(SCENE_PAY_DEPT, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_PAY_DEPT, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FE648
- * Size:	00005C
+/**
+ * @note Address: 0x803FE648
+ * @note Size: 0x5C
  */
 int Game2DMgr::check_PayDept() const
 {
@@ -1126,24 +1070,22 @@ int Game2DMgr::check_PayDept() const
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FE6A4
- * Size:	0000A8
+/**
+ * @note Address: 0x803FE6A4
+ * @note Size: 0xA8
  */
 bool Game2DMgr::open_Save(og::Screen::DispMemberSave& disp)
 {
-	SetSceneArg arg(SCENE_SAVE, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_SAVE, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FE74C
- * Size:	00005C
+/**
+ * @note Address: 0x803FE74C
+ * @note Size: 0x5C
  */
 int Game2DMgr::check_Save() const
 {
@@ -1154,24 +1096,22 @@ int Game2DMgr::check_Save() const
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FE7A8
- * Size:	0000A8
+/**
+ * @note Address: 0x803FE7A8
+ * @note Size: 0xA8
  */
 bool Game2DMgr::open_FinalMessage(og::Screen::DispMemberFinalMessage& disp)
 {
-	SetSceneArg arg(SCENE_FINAL_MSG, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_FINAL_MSG, &disp);
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FE850
- * Size:	000048
+/**
+ * @note Address: 0x803FE850
+ * @note Size: 0x48
  */
 int Game2DMgr::check_FinalMessage() const
 {
@@ -1182,10 +1122,9 @@ int Game2DMgr::check_FinalMessage() const
 	return mScreenMgr->getSceneFinishState();
 }
 
-/*
- * --INFO--
- * Address:	803FE898
- * Size:	000070
+/**
+ * @note Address: 0x803FE898
+ * @note Size: 0x70
  */
 void Game2DMgr::stopFinalFloorSound()
 {
@@ -1195,10 +1134,9 @@ void Game2DMgr::stopFinalFloorSound()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FE908
- * Size:	000070
+/**
+ * @note Address: 0x803FE908
+ * @note Size: 0x70
  */
 void Game2DMgr::restartFinalFloorSound()
 {
@@ -1208,10 +1146,9 @@ void Game2DMgr::restartFinalFloorSound()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FE978
- * Size:	000090
+/**
+ * @note Address: 0x803FE978
+ * @note Size: 0x90
  */
 int Game2DMgr::check_ReadyGo() const
 {
@@ -1225,24 +1162,22 @@ int Game2DMgr::check_ReadyGo() const
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FEA08
- * Size:	0000A8
+/**
+ * @note Address: 0x803FEA08
+ * @note Size: 0xA8
  */
 bool Game2DMgr::open_WinLoseReason(kh::Screen::DispWinLoseReason& disp)
 {
-	SetSceneArg arg(SCENE_WIN_LOSE_REASON, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_WIN_LOSE_REASON, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FEAB0
- * Size:	000068
+/**
+ * @note Address: 0x803FEAB0
+ * @note Size: 0x68
  */
 int Game2DMgr::check_WinLoseReason() const
 {
@@ -1259,24 +1194,22 @@ int Game2DMgr::check_WinLoseReason() const
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FEB18
- * Size:	0000A8
+/**
+ * @note Address: 0x803FEB18
+ * @note Size: 0xA8
  */
 bool Game2DMgr::open_WinLose(kh::Screen::DispWinLose& disp)
 {
-	SetSceneArg arg(SCENE_WIN_LOSE, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_WIN_LOSE, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FEBC0
- * Size:	000090
+/**
+ * @note Address: 0x803FEBC0
+ * @note Size: 0x90
  */
 int Game2DMgr::check_WinLose() const
 {
@@ -1290,40 +1223,37 @@ int Game2DMgr::check_WinLose() const
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FEC50
- * Size:	0000D4
+/**
+ * @note Address: 0x803FEC50
+ * @note Size: 0xD4
  */
 bool Game2DMgr::open_TimeUp1P()
 {
 	kh::Screen::DispWinLose disp(Timeup1P, 1);
-	SetSceneArg arg(SCENE_WIN_LOSE, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_WIN_LOSE, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FED24
- * Size:	0000D4
+/**
+ * @note Address: 0x803FED24
+ * @note Size: 0xD4
  */
 bool Game2DMgr::open_TimeUp2P()
 {
 	kh::Screen::DispWinLose disp(Timeup2P, 1);
-	SetSceneArg arg(SCENE_WIN_LOSE, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_WIN_LOSE, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		return true;
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FEDF8
- * Size:	000158
+/**
+ * @note Address: 0x803FEDF8
+ * @note Size: 0x158
  */
 bool Game2DMgr::open_Contena(og::Screen::DispMemberContena& disp)
 {
@@ -1350,7 +1280,7 @@ bool Game2DMgr::open_Contena(og::Screen::DispMemberContena& disp)
 		id = SCENE_CONTENA_PURPLE;
 		break;
 	}
-	SetSceneArg arg(id, &disp, 0, true);
+	SetSceneArg arg(id, &disp);
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		switch (disp.mOnyonID) {
 		case ONYON_TYPE_BLUE:
@@ -1364,10 +1294,9 @@ bool Game2DMgr::open_Contena(og::Screen::DispMemberContena& disp)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FEF50
- * Size:	0000C8
+/**
+ * @note Address: 0x803FEF50
+ * @note Size: 0xC8
  */
 int Game2DMgr::check_Contena()
 {
@@ -1397,10 +1326,9 @@ int Game2DMgr::check_Contena()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FF018
- * Size:	0000A8
+/**
+ * @note Address: 0x803FF018
+ * @note Size: 0xA8
  */
 int Game2DMgr::result_Contena()
 {
@@ -1417,10 +1345,9 @@ int Game2DMgr::result_Contena()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FF0C0
- * Size:	000244
+/**
+ * @note Address: 0x803FF0C0
+ * @note Size: 0x244
  */
 bool Game2DMgr::open_UfoMenu(og::Screen::DispMemberUfoGroup& disp)
 {
@@ -1431,7 +1358,7 @@ bool Game2DMgr::open_UfoMenu(og::Screen::DispMemberUfoGroup& disp)
 	if (disp.mHasWhite && disp.mHasPurple) {
 		disp.mContena1._2C = 1;
 		disp.mContena2._2C = 1;
-		SetSceneArg arg(SCENE_UFO_MENU, &disp, 0, true);
+		SetSceneArg arg(SCENE_UFO_MENU, &disp);
 		if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 			PSPause_StartMenuOn();
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_OPEN, 0);
@@ -1441,7 +1368,7 @@ bool Game2DMgr::open_UfoMenu(og::Screen::DispMemberUfoGroup& disp)
 		if (disp.mHasWhite) {
 			disp.mContena1._2C         = 0;
 			disp.mUfoMenu.mContenaType = 1;
-			SetSceneArg arg(SCENE_CONTENA_WHITE, &disp, 0, true);
+			SetSceneArg arg(SCENE_CONTENA_WHITE, &disp);
 			if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 				PSPause_StartMenuOn();
 				return true;
@@ -1449,7 +1376,7 @@ bool Game2DMgr::open_UfoMenu(og::Screen::DispMemberUfoGroup& disp)
 		} else if (disp.mHasPurple) {
 			disp.mContena2._2C         = 0;
 			disp.mUfoMenu.mContenaType = 2;
-			SetSceneArg arg(SCENE_CONTENA_PURPLE, &disp, 0, true);
+			SetSceneArg arg(SCENE_CONTENA_PURPLE, &disp);
 			if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 				PSPause_StartMenuOn();
 				return true;
@@ -1459,10 +1386,9 @@ bool Game2DMgr::open_UfoMenu(og::Screen::DispMemberUfoGroup& disp)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FF304
- * Size:	000130
+/**
+ * @note Address: 0x803FF304
+ * @note Size: 0x130
  */
 int Game2DMgr::check_UfoMenu()
 {
@@ -1526,10 +1452,9 @@ int Game2DMgr::check_UfoMenu()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FF434
- * Size:	000098
+/**
+ * @note Address: 0x803FF434
+ * @note Size: 0x98
  */
 void Game2DMgr::result_UfoMenu(int* ret1, int* ret2)
 {
@@ -1548,52 +1473,47 @@ void Game2DMgr::result_UfoMenu(int* ret1, int* ret2)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FF4CC
- * Size:	00009C
+/**
+ * @note Address: 0x803FF4CC
+ * @note Size: 0x9C
  */
 bool Game2DMgr::open_ZukanEnemy(Morimura::DispMemberZukanEnemy& disp)
 {
-	SetSceneArg arg(SCENE_ZUKAN_ENEMY, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_ZUKAN_ENEMY, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg)) {
 		return mScreenMgr->startScene(nullptr);
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FF568
- * Size:	00009C
+/**
+ * @note Address: 0x803FF568
+ * @note Size: 0x9C
  */
 bool Game2DMgr::open_ZukanItem(Morimura::DispMemberZukanItem& disp)
 {
-	SetSceneArg arg(SCENE_ZUKAN_ITEM, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_ZUKAN_ITEM, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg)) {
 		return mScreenMgr->startScene(nullptr);
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FF604
- * Size:	000030
+/**
+ * @note Address: 0x803FF604
+ * @note Size: 0x30
  */
 bool Game2DMgr::isZukanEnemy() { return (mScreenMgr->getSceneType() == SCENE_ZUKAN_ENEMY); }
 
-/*
- * --INFO--
- * Address:	803FF634
- * Size:	000030
+/**
+ * @note Address: 0x803FF634
+ * @note Size: 0x30
  */
 bool Game2DMgr::isZukanItem() { return (mScreenMgr->getSceneType() == SCENE_ZUKAN_ITEM); }
 
-/*
- * --INFO--
- * Address:	803FF664
- * Size:	000084
+/**
+ * @note Address: 0x803FF664
+ * @note Size: 0x84
  */
 int Game2DMgr::check_ZukanItemRequest(int& id)
 {
@@ -1608,10 +1528,9 @@ int Game2DMgr::check_ZukanItemRequest(int& id)
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FF6E8
- * Size:	000084
+/**
+ * @note Address: 0x803FF6E8
+ * @note Size: 0x84
  */
 int Game2DMgr::check_ZukanEnemyRequest(int& id)
 {
@@ -1626,10 +1545,9 @@ int Game2DMgr::check_ZukanEnemyRequest(int& id)
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FF76C
- * Size:	000090
+/**
+ * @note Address: 0x803FF76C
+ * @note Size: 0x90
  */
 int Game2DMgr::getZukanEnemyCurrSelectId()
 {
@@ -1643,10 +1561,9 @@ int Game2DMgr::getZukanEnemyCurrSelectId()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FF7FC
- * Size:	000090
+/**
+ * @note Address: 0x803FF7FC
+ * @note Size: 0x90
  */
 int Game2DMgr::getZukanItemCurrSelectId()
 {
@@ -1660,10 +1577,9 @@ int Game2DMgr::getZukanItemCurrSelectId()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FF88C
- * Size:	0000BC
+/**
+ * @note Address: 0x803FF88C
+ * @note Size: 0xBC
  */
 void Game2DMgr::requireZukanRequest()
 {
@@ -1685,10 +1601,9 @@ void Game2DMgr::requireZukanRequest()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FF948
- * Size:	0000BC
+/**
+ * @note Address: 0x803FF948
+ * @note Size: 0xBC
  */
 void Game2DMgr::requireZukanEffectOff()
 {
@@ -1710,10 +1625,9 @@ void Game2DMgr::requireZukanEffectOff()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FFA04
- * Size:	0000E4
+/**
+ * @note Address: 0x803FFA04
+ * @note Size: 0xE4
  */
 bool Game2DMgr::isZukanEnlargedWindow()
 {
@@ -1734,10 +1648,9 @@ bool Game2DMgr::isZukanEnlargedWindow()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FFAE8
- * Size:	0000E4
+/**
+ * @note Address: 0x803FFAE8
+ * @note Size: 0xE4
  */
 bool Game2DMgr::isZukanMemoWindow()
 {
@@ -1758,10 +1671,9 @@ bool Game2DMgr::isZukanMemoWindow()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FFBCC
- * Size:	0000C4
+/**
+ * @note Address: 0x803FFBCC
+ * @note Size: 0xC4
  */
 bool Game2DMgr::isAppearConfirmWindow()
 {
@@ -1779,24 +1691,22 @@ bool Game2DMgr::isAppearConfirmWindow()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FFC90
- * Size:	00009C
+/**
+ * @note Address: 0x803FFC90
+ * @note Size: 0x9C
  */
 bool Game2DMgr::open_ChallengeSelect(Morimura::DispMemberChallengeSelect& disp)
 {
-	SetSceneArg arg(SCENE_CHALLENGE_SELECT, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_CHALLENGE_SELECT, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg)) {
 		return mScreenMgr->startScene(nullptr);
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FFD2C
- * Size:	00006C
+/**
+ * @note Address: 0x803FFD2C
+ * @note Size: 0x6C
  */
 int Game2DMgr::check_ChallengeSelect(int& ret1, int& ret2)
 {
@@ -1812,24 +1722,22 @@ int Game2DMgr::check_ChallengeSelect(int& ret1, int& ret2)
 	return disp->_1C;
 }
 
-/*
- * --INFO--
- * Address:	803FFD98
- * Size:	00009C
+/**
+ * @note Address: 0x803FFD98
+ * @note Size: 0x9C
  */
 bool Game2DMgr::open_ChallengeResult(Morimura::DispMemberChallengeResult& disp)
 {
-	SetSceneArg arg(SCENE_CHALLENGE_RESULT, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_CHALLENGE_RESULT, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg)) {
 		return mScreenMgr->startScene(nullptr);
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FFE34
- * Size:	000034
+/**
+ * @note Address: 0x803FFE34
+ * @note Size: 0x34
  */
 bool Game2DMgr::isEndChallengeResult()
 {
@@ -1838,24 +1746,22 @@ bool Game2DMgr::isEndChallengeResult()
 	return ret;
 }
 
-/*
- * --INFO--
- * Address:	803FFE68
- * Size:	00009C
+/**
+ * @note Address: 0x803FFE68
+ * @note Size: 0x9C
  */
 bool Game2DMgr::open_VsSelect(Morimura::DispMemberVsSelect& disp)
 {
-	SetSceneArg arg(SCENE_VS_SELECT, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_VS_SELECT, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg)) {
 		return mScreenMgr->startScene(nullptr);
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803FFF04
- * Size:	000078
+/**
+ * @note Address: 0x803FFF04
+ * @note Size: 0x78
  */
 u32 Game2DMgr::check_VsSelect(int& ret1, int& ret2, int& ret3)
 {
@@ -1863,32 +1769,30 @@ u32 Game2DMgr::check_VsSelect(int& ret1, int& ret2, int& ret3)
 
 	Morimura::DispMemberVsSelect* disp = reinterpret_cast<Morimura::DispMemberVsSelect*>(mScreenMgr->getDispMember());
 
-	if (disp->_34 == 3) {
+	if (disp->mState == 3) {
 		ret1 = disp->mSelectedStageIndex;
 		ret2 = disp->mOlimarHandicap;
 		ret3 = disp->mLouieHandicap;
 	}
-	return disp->_34;
+	return disp->mState;
 }
 
-/*
- * --INFO--
- * Address:	803FFF7C
- * Size:	00009C
+/**
+ * @note Address: 0x803FFF7C
+ * @note Size: 0x9C
  */
 bool Game2DMgr::open_HighScore(Morimura::DispMemberHighScore& disp)
 {
-	SetSceneArg arg(SCENE_HIGH_SCORE, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
+	SetSceneArg arg(SCENE_HIGH_SCORE, reinterpret_cast<og::Screen::DispMemberBase*>(&disp));
 	if (mScreenMgr->setScene(arg)) {
 		return mScreenMgr->startScene(nullptr);
 	}
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80400018
- * Size:	000058
+/**
+ * @note Address: 0x80400018
+ * @note Size: 0x58
  */
 bool Game2DMgr::isEndHighScore()
 {
@@ -1903,10 +1807,9 @@ bool Game2DMgr::isEndHighScore()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80400070
- * Size:	00006C
+/**
+ * @note Address: 0x80400070
+ * @note Size: 0x6C
  */
 bool Game2DMgr::drawKanteiMsg(Graphics& gfx)
 {
@@ -1923,10 +1826,9 @@ bool Game2DMgr::drawKanteiMsg(Graphics& gfx)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	804000DC
- * Size:	00008C
+/**
+ * @note Address: 0x804000DC
+ * @note Size: 0x8C
  */
 bool Game2DMgr::checkDayEnd(f32 min) const
 {

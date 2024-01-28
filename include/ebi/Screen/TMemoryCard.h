@@ -72,7 +72,7 @@ struct TMemoryCard {
 	void loadResource(JKRHeap*);
 	void setArchive(JKRArchive*);
 	void destroyResource();
-	void open(long);
+	void open(s32);
 	void close();
 	void killScreen();
 	void setSelect_(bool);
@@ -84,25 +84,13 @@ struct TMemoryCard {
 	// unused/inlined:
 	bool isDecide();
 
-	inline void doSetSelect(f32 p1, bool check)
-	{
-		// needs tweaking
-		mBlinkFont1.setPaneColors();
-		mBlinkFont2.setPaneColors();
-
-		mCursor1.mTimer    = p1;
-		mCursor1.mSelected = check;
-		mCursor2.mTimer    = p1;
-		mCursor2.mSelected = check;
-	}
-
 	int mState;                             // _00, unknown
 	Controller* mController;                // _04
-	uint mInputDelay;                       // _08
-	uint _0C;                               // _0C
+	u32 mInputDelay;                        // _08
+	u32 _0C;                                // _0C
 	u32 mMsgAlpha;                          // _10
 	int mAlphaMod;                          // _14
-	u8 mCurrSel;                            // _18
+	u8 mSelectionIdx;                       // _18
 	u8 mCanExit;                            // _19
 	P2DScreen::Mgr_tuning* mScreenMain;     // _1C
 	J2DTextBox* mPaneMsg1;                  // _20

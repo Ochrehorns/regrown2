@@ -4026,9 +4026,9 @@ void ZukanState::dvdloadA()
 
 	PSGame::SceneInfo info;
 	info.mCameras         = 1;
-	info.mCam1Position[0] = *mCamera->getSoundPositionPtr();
-	info.mCam2Position[0] = *mCamera->getSoundPositionPtr();
-	info.mCameraMtx[0]    = *mCamera->getSoundMatrixPtr();
+	info.mCam1Position[0] = mCamera->getSoundPositionPtr();
+	info.mCam2Position[0] = mCamera->getSoundPositionPtr();
+	info.mCameraMtx[0]    = mCamera->getSoundMatrixPtr();
 	info.mBounds.mMin.set(-1000.0f, -1000.0f, -1000.0f);
 	info.mBounds.mMax.set(1000.0f, 1000.0f, 1000.0f);
 	info.setStageFlag(PSGame::SceneInfo::SCENEFLAG_Unk0, PSGame::SceneInfo::SFBS_1);
@@ -4829,11 +4829,11 @@ void ZukanState::dvdloadB_teki()
 		} else {
 			parms->mGroupID = 0;
 		}
-		f32 range                                = *parms->mParms.mAppearRange(); // f31
-		u8 count                                 = *parms->mParms.mAppearNum();   // r25
+		f32 range                                = parms->mParms.mAppearRange(); // f31
+		u8 count                                 = parms->mParms.mAppearNum();   // r25
 		IllustratedBook::PositionParms* posParms = &mParms->mPosParmsList.mParms[id];
 		Vector3f posOffset;
-		posOffset.set(*posParms->mParms.mAppearPosX(), *posParms->mParms.mAppearPosY(), *posParms->mParms.mAppearPosZ()); // f30, f29, f28
+		posOffset.set(posParms->mParms.mAppearPosX(), posParms->mParms.mAppearPosY(), posParms->mParms.mAppearPosZ()); // f30, f29, f28
 
 		OSReport("“G‚ðƒAƒƒbƒN %d•C@free:%d \n", count, JKRGetCurrentHeap()->getFreeSize());
 		bool makeSpectralids = false;
@@ -4858,7 +4858,7 @@ void ZukanState::dvdloadB_teki()
 
 		f32 size = 35.0f; // f27
 		if (parms->mParms.mSize()) {
-			size = *parms->mParms.mSize();
+			size = parms->mParms.mSize();
 		}
 
 		Vector3f* spawnPositions = new Vector3f[count]; // r29
@@ -4955,15 +4955,15 @@ void ZukanState::dvdloadB_teki()
 		}
 
 		mCamera->setTarget(mCurrentEnemy);
-		mCamera->setAtOffset(Vector3f(*parms->mCameraParms.mParms.mOffsetX(), *parms->mCameraParms.mParms.mOffsetY(),
-		                              *parms->mCameraParms.mParms.mOffsetZ()));
-		mCamera->mObjectRadius  = *parms->mCameraParms.mParms.mRadius();
-		mCamera->mCurrentHeight = *parms->mCameraParms.mParms.mInitialHeight();
-		mCamera->setMinMaxHeight(*parms->mCameraParms.mParms.mMinHeight(), *parms->mCameraParms.mParms.mMaxHeight());
-		mCamera->setViewAngleParms(*parms->mCameraParms.mParms.mInitialViewAngle(), *parms->mCameraParms.mParms.mMinViewAngle(),
-		                           *parms->mCameraParms.mParms.mMaxViewAngle());
+		mCamera->setAtOffset(
+		    Vector3f(parms->mCameraParms.mParms.mOffsetX(), parms->mCameraParms.mParms.mOffsetY(), parms->mCameraParms.mParms.mOffsetZ()));
+		mCamera->mObjectRadius  = parms->mCameraParms.mParms.mRadius();
+		mCamera->mCurrentHeight = parms->mCameraParms.mParms.mInitialHeight();
+		mCamera->setMinMaxHeight(parms->mCameraParms.mParms.mMinHeight(), parms->mCameraParms.mParms.mMaxHeight());
+		mCamera->setViewAngleParms(parms->mCameraParms.mParms.mInitialViewAngle(), parms->mCameraParms.mParms.mMinViewAngle(),
+		                           parms->mCameraParms.mParms.mMaxViewAngle());
 
-		mCamera->mHorizontalAngle = TORADIANS(*parms->mCameraParms.mParms.mInitialRotation());
+		mCamera->mHorizontalAngle = TORADIANS(parms->mCameraParms.mParms.mInitialRotation());
 
 		int initCarrotCount = 0;
 
@@ -5011,17 +5011,17 @@ void ZukanState::dvdloadB_teki()
 	}
 
 	IllustratedBook::EnemyParms* parm = mParms->mEnemyParms.mEnemyParms;
-	Vector3f pos(*mParms->mPosParmsList.mParms[0].mParms.mAppearPosX(), *mParms->mPosParmsList.mParms[0].mParms.mAppearPosY(),
-	             *mParms->mPosParmsList.mParms[0].mParms.mAppearPosZ());
+	Vector3f pos(mParms->mPosParmsList.mParms[0].mParms.mAppearPosX(), mParms->mPosParmsList.mParms[0].mParms.mAppearPosY(),
+	             mParms->mPosParmsList.mParms[0].mParms.mAppearPosZ());
 	mCamera->move(pos);
 	mCamera->setAtOffset(
-	    Vector3f(*parm->mCameraParms.mParms.mOffsetX(), *parm->mCameraParms.mParms.mOffsetY(), *parm->mCameraParms.mParms.mOffsetZ()));
-	mCamera->mObjectRadius  = *parm->mCameraParms.mParms.mRadius();
-	mCamera->mCurrentHeight = *parm->mCameraParms.mParms.mInitialHeight();
-	mCamera->setMinMaxHeight(*parm->mCameraParms.mParms.mMinHeight(), *parm->mCameraParms.mParms.mMaxHeight());
-	mCamera->setViewAngleParms(*parm->mCameraParms.mParms.mInitialViewAngle(), *parm->mCameraParms.mParms.mMinViewAngle(),
-	                           *parm->mCameraParms.mParms.mMaxViewAngle());
-	mCamera->mHorizontalAngle = TORADIANS(*parm->mCameraParms.mParms.mInitialRotation());
+	    Vector3f(parm->mCameraParms.mParms.mOffsetX(), parm->mCameraParms.mParms.mOffsetY(), parm->mCameraParms.mParms.mOffsetZ()));
+	mCamera->mObjectRadius  = parm->mCameraParms.mParms.mRadius();
+	mCamera->mCurrentHeight = parm->mCameraParms.mParms.mInitialHeight();
+	mCamera->setMinMaxHeight(parm->mCameraParms.mParms.mMinHeight(), parm->mCameraParms.mParms.mMaxHeight());
+	mCamera->setViewAngleParms(parm->mCameraParms.mParms.mInitialViewAngle(), parm->mCameraParms.mParms.mMinViewAngle(),
+	                           parm->mCameraParms.mParms.mMaxViewAngle());
+	mCamera->mHorizontalAngle = TORADIANS(parm->mCameraParms.mParms.mInitialRotation());
 	/*
 	stwu     r1, -0x180(r1)
 	mflr     r0

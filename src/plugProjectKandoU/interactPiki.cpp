@@ -27,10 +27,9 @@ static const int unusedInteractPikiArray[] = { 0, 0, 0 };
 
 static const char interactPikiName[] = "interactPiki";
 
-/*
- * --INFO--
- * Address:	80192C84
- * Size:	0000E4
+/**
+ * @note Address: 0x80192C84
+ * @note Size: 0xE4
  */
 bool InteractFueFuki::actPiki(Game::Piki* piki)
 {
@@ -48,40 +47,38 @@ bool InteractFueFuki::actPiki(Game::Piki* piki)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80192D68
- * Size:	000BD0
+/**
+ * @note Address: 0x80192D68
+ * @note Size: 0xBD0
  */
 
-inline bool vsFlute(Piki* p, Navi* n)
+inline bool vsFlute(Piki* piki, Navi* navi)
 {
-	bool val = false;
+	bool isEnemyPiki = false;
 	if (gameSystem->isVersusMode()) {
-		int pikiKind = p->mPikiKind;
-		// piki->mPikiKind == navi->mNaviIndex; ????????????
-		val = ((pikiKind == Red && n->mNaviIndex == 1) || (pikiKind == Blue && n->mNaviIndex == 0));
+		int pikiKind = piki->getKind();
+		isEnemyPiki  = ((pikiKind == Red && navi->mNaviIndex == NAVIID_Louie) || (pikiKind == Blue && navi->mNaviIndex == NAVIID_Olimar));
 	}
-	return val;
+	return isEnemyPiki;
 }
 
 bool InteractFue::actPiki(Game::Piki* piki)
 {
-	if (gameSystem->mMode == GSM_STORY_MODE && gameSystem->mTimeMgr->mDayCount == 0 && !playData->isDemoFlag(DEMO_Reunite_Captains)) {
+	if (gameSystem->isStoryMode() && gameSystem->mTimeMgr->mDayCount == 0 && !playData->isDemoFlag(DEMO_Reunite_Captains)) {
 		// the check for if it is day 1 and the captains are separated
 		if (mCreature->isNavi()) {
 			Navi* navi = static_cast<Navi*>(mCreature);
-			if (navi->mNaviIndex == 0 && !piki->wasZikatu()) {
+			if (navi->mNaviIndex == NAVIID_Olimar && !piki->wasZikatu()) {
 				return false;
 			}
-			if (navi->mNaviIndex == 1 && piki->wasZikatu()) {
+			if (navi->mNaviIndex == NAVIID_Louie && piki->wasZikatu()) {
 				return false;
 			}
 		}
 	}
 
 	if (piki->isZikatu()) {
-		int pikiKind = piki->mPikiKind;
+		int pikiKind = piki->getKind();
 		if (pikiKind == Purple) {
 			if (piki->getStateID() != PIKISTATE_Holein) {
 				Vector3f pikiPos = piki->getPosition();
@@ -99,46 +96,44 @@ bool InteractFue::actPiki(Game::Piki* piki)
 						closestCavePos  = cavePos;
 					}
 				}
-				HoleinStateArg holeInArg;
-				holeInArg.mPosition = closestCavePos;
+				HoleinStateArg holeInArg(closestCavePos);
 				piki->mFsm->transit(piki, PIKISTATE_Holein, &holeInArg);
 				return false;
 			}
-		} else if (!(moviePlayer->mDemoState || (u32)pikiKind - 1 > Red && (int)pikiKind != Blue)) {
-
+		} else if (!(moviePlayer->mDemoState || (u32)pikiKind - 1 > Red && pikiKind != Blue)) {
 			piki->setZikatu(false);
-			GameStat::zikatuPikis.dec((int)piki->mPikiKind);
-			if (!playData->isDemoFlag(DEMO_Meet_Red_Pikmin) && (int)piki->mPikiKind == Red) {
+			GameStat::zikatuPikis.dec(piki->getKind());
+			if (!playData->isDemoFlag(DEMO_Meet_Red_Pikmin) && (piki->getKind() == Red)) {
 				if (gameSystem->mSection->getTimerType() != 4) {
 					gameSystem->mSection->enableTimer(1.2f, 4);
 				}
 			}
-			if (!playData->hasBootContainer((u32)piki->mPikiKind)) { // might be u32 param then
+			if (!playData->hasBootContainer(piki->getKind())) {
 				char* cutscenes[3] = { "g21_meet_bluepikmin", "g03_meet_redpikmin", "g1F_meet_yellowpikmin" };
-				MoviePlayArg movieArg(cutscenes[piki->mPikiKind], nullptr, nullptr, 0);
+				MoviePlayArg movieArg(cutscenes[piki->getKind()], nullptr, nullptr, 0);
 				movieArg.setTarget(piki);
-				if ((int)piki->mPikiKind == Red) {
+				if (piki->getKind() == Red) {
 					Iterator<Piki> iPiki = pikiMgr;
 					CI_LOOP(iPiki)
 					{
 						Piki* currPiki = *iPiki;
-						if ((int)currPiki->mPikiKind == (int)piki->mPikiKind) {
+						if (currPiki->getKind() == piki->getKind()) {
 							currPiki->movie_begin(false);
 						}
 					}
 				}
 
 				moviePlayer->mTargetObject = piki;
-				if ((int)piki->mPikiKind != Red) {
+				if (piki->getKind() != Red) {
 					moviePlayer->play(movieArg);
-					playData->setMeetPikmin(piki->mPikiKind);
+					playData->setMeetPikmin(piki->getKind());
 				}
 
-				playData->setContainer(piki->mPikiKind);
-				playData->setBootContainer(piki->mPikiKind);
+				playData->setContainer(piki->getKind());
+				playData->setBootContainer(piki->getKind());
 			}
 
-		} else if ((int)pikiKind == Bulbmin) {
+		} else if (pikiKind == Bulbmin) {
 			if (gameSystem->isFlag(GAMESYS_IsGameWorldActive) && !playData->isDemoFlag(DEMO_Discover_Bulbmin)) { // broken demo likely
 				playData->setDemoFlag(DEMO_Discover_Bulbmin);
 				MoviePlayArg bulbminArg("X13_exp_leafchappy", nullptr, nullptr, 0);
@@ -158,7 +153,7 @@ bool InteractFue::actPiki(Game::Piki* piki)
 	if (!mCreature->isNavi()) {
 		return false;
 	}
-	if (!(piki->mFlags.typeView & 0x2)) {
+	if (!piki->mFlags.isSet(0x2)) {
 		return false;
 	}
 
@@ -177,8 +172,8 @@ bool InteractFue::actPiki(Game::Piki* piki)
 			return false;
 		}
 		callable = true;
-		if (BaseHIOParms::sTekiChappyFlag && piki->mFakePikiFlags.typeView & 0x100) {
-			RESET_FLAG(piki->mFakePikiFlags.typeView, 0x100);
+		if (BaseHIOParms::sTekiChappyFlag && piki->mFakePikiFlags.isSet(0x100)) {
+			piki->mFakePikiFlags.unset(0x100);
 			GameStat::alivePikis.inc(piki);
 		}
 
@@ -194,8 +189,9 @@ bool InteractFue::actPiki(Game::Piki* piki)
 		    || (_08 && piki->mNavi != mCreature && actionID == 0)) {
 			Navi* vsNavi = (Navi*)mCreature;
 			if (gameSystem->isVersusMode()) {
-				int pikiColor = piki->mPikiKind;
-				if ((pikiColor == Red && vsNavi->mNaviIndex == 1) || (pikiColor == Blue && vsNavi->mNaviIndex == 0)) {
+				int pikiColor = piki->getKind();
+				if ((pikiColor == Red && vsNavi->mNaviIndex == NAVIID_Louie)
+				    || (pikiColor == Blue && vsNavi->mNaviIndex == NAVIID_Olimar)) {
 					return false;
 				}
 			}
@@ -205,7 +201,7 @@ bool InteractFue::actPiki(Game::Piki* piki)
 			}
 			piki->mNavi = (Navi*)mCreature;
 			piki->mFsm->transit(piki, PIKISTATE_LookAt, nullptr);
-			if ((int)piki->mPikiKind == Bulbmin && !playData->isDemoFlag(DEMO_Discover_Bulbmin)) {
+			if (piki->getKind() == Bulbmin && !playData->isDemoFlag(DEMO_Discover_Bulbmin)) {
 				playData->setDemoFlag(DEMO_Discover_Bulbmin);
 				MoviePlayArg bulbminArg("x13_exp_leafchappy", nullptr, nullptr, 0);
 				bulbminArg.setTarget(piki);
@@ -218,10 +214,9 @@ bool InteractFue::actPiki(Game::Piki* piki)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80193938
- * Size:	00015C
+/**
+ * @note Address: 0x80193938
+ * @note Size: 0x15C
  */
 bool InteractDope::actPiki(Game::Piki* piki)
 {
@@ -235,7 +230,7 @@ bool InteractDope::actPiki(Game::Piki* piki)
 	if (gameSystem->isVersusMode() && mSprayType == SPRAY_TYPE_BITTER) {
 		if (mCreature->isNavi()) {
 			Navi* navi = static_cast<Navi*>(mCreature);
-			if (piki->mPikiKind == navi->mNaviIndex && !currState->dead()) {
+			if (piki->getKind() == navi->getNaviID() && !currState->dead()) {
 				FallMeckStateArg bitterArg;
 				bitterArg._00 = true;
 				piki->mFsm->transit(piki, PIKISTATE_FallMeck, &bitterArg);
@@ -248,17 +243,16 @@ bool InteractDope::actPiki(Game::Piki* piki)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80193A94
- * Size:	000100
+/**
+ * @note Address: 0x80193A94
+ * @note Size: 0x100
  */
 bool InteractWind::actPiki(Game::Piki* piki)
 {
 	if (piki->mCurrentState->invincible(piki)) {
 		return false;
 	}
-	int pikiKind = piki->mPikiKind;
+	int pikiKind = piki->getKind();
 	if (pikiKind == Purple) {
 		return false;
 	}
@@ -273,17 +267,16 @@ bool InteractWind::actPiki(Game::Piki* piki)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80193B94
- * Size:	000120
+/**
+ * @note Address: 0x80193B94
+ * @note Size: 0x120
  */
 bool InteractHanaChirashi::actPiki(Game::Piki* piki)
 {
 	if (piki->mCurrentState->invincible(piki)) {
 		return false;
 	}
-	int pikiKind = piki->mPikiKind;
+	int pikiKind = piki->getKind();
 	if (pikiKind == Purple) {
 		int pikiHappa = piki->mHappaKind;
 		if (pikiHappa >= Bud) {
@@ -301,17 +294,16 @@ bool InteractHanaChirashi::actPiki(Game::Piki* piki)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80193CB4
- * Size:	00015C
+/**
+ * @note Address: 0x80193CB4
+ * @note Size: 0x15C
  */
 bool InteractBomb::actPiki(Game::Piki* piki)
 {
 	if (piki->mCurrentState->invincible(piki)) {
 		return false;
 	}
-	if (!(gameSystem->mFlags & 0x20)) {
+	if (!(gameSystem->isFlag(GAMESYS_IsGameWorldActive))) {
 		return false;
 	}
 	if (piki->mCurrentState->dead()) {
@@ -332,10 +324,9 @@ bool InteractBomb::actPiki(Game::Piki* piki)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80193E10
- * Size:	000114
+/**
+ * @note Address: 0x80193E10
+ * @note Size: 0x114
  */
 bool InteractDenki::actPiki(Game::Piki* piki)
 {
@@ -349,7 +340,7 @@ bool InteractDenki::actPiki(Game::Piki* piki)
 	} else {
 		piki->mTekiKillID = -1;
 	}
-	int pikiKind = piki->mPikiKind;
+	int pikiKind = piki->getKind();
 	if (pikiKind != Yellow && pikiKind != Bulbmin) {
 		if (currState && currState->transittable(PIKISTATE_DenkiDying)) {
 			piki->mFsm->transit(piki, PIKISTATE_DenkiDying, nullptr);
@@ -359,10 +350,9 @@ bool InteractDenki::actPiki(Game::Piki* piki)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80193F24
- * Size:	0000A0
+/**
+ * @note Address: 0x80193F24
+ * @note Size: 0xA0
  */
 bool InteractFallMeck::actPiki(Game::Piki* piki)
 {
@@ -377,10 +367,9 @@ bool InteractFallMeck::actPiki(Game::Piki* piki)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80193FC4
- * Size:	000288
+/**
+ * @note Address: 0x80193FC4
+ * @note Size: 0x288
  */
 bool InteractBury::actPiki(Game::Piki* piki)
 {
@@ -400,9 +389,9 @@ bool InteractBury::actPiki(Game::Piki* piki)
 	}
 
 	if (currTriangle && !currTriangle->mCode.isBald() && piki->might_bury() && ItemPikihead::mgr) {
-		PikiMgr::mBirthMode          = 1;
+		PikiMgr::mBirthMode          = PikiMgr::PSM_Force;
 		ItemPikihead::Item* pikiHead = (ItemPikihead::Item*)ItemPikihead::mgr->birth();
-		PikiMgr::mBirthMode          = 0;
+		PikiMgr::mBirthMode          = PikiMgr::PSM_Normal;
 		Vector3f pikiPos             = piki->getPosition();
 		f32 minY                     = mapMgr->getMinY(pikiPos);
 		pikiPos.y                    = minY;
@@ -420,10 +409,9 @@ bool InteractBury::actPiki(Game::Piki* piki)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8019424C
- * Size:	0000DC
+/**
+ * @note Address: 0x8019424C
+ * @note Size: 0xDC
  */
 bool InteractSuikomi_Test::actPiki(Game::Piki* piki)
 {
@@ -442,10 +430,9 @@ bool InteractSuikomi_Test::actPiki(Game::Piki* piki)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80194328
- * Size:	000118
+/**
+ * @note Address: 0x80194328
+ * @note Size: 0x118
  */
 bool InteractFire::actPiki(Game::Piki* piki)
 {
@@ -453,7 +440,7 @@ bool InteractFire::actPiki(Game::Piki* piki)
 		return false;
 	}
 	PikiState* currState = piki->mCurrentState;
-	int pikiKind         = piki->mPikiKind;
+	int pikiKind         = piki->getKind();
 	if (currState && currState->transittable(PIKISTATE_Panic)) {
 		if (pikiKind != Red && pikiKind != Bulbmin) {
 			if (mCreature->isTeki()) {
@@ -471,42 +458,39 @@ bool InteractFire::actPiki(Game::Piki* piki)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80194440
- * Size:	000134
+/**
+ * @note Address: 0x80194440
+ * @note Size: 0x134
  */
-
-// what happened to this poor function??
 bool InteractAstonish::actPiki(Game::Piki* piki)
 {
 	if (piki->mCurrentState->invincible(piki)) {
 		return false;
 	}
+
 	PikiState* currState = piki->mCurrentState;
-	if (currState && currState->transittable(PIKISTATE_Panic)) {
-		int pikiKind = piki->mPikiKind;
-		if (pikiKind != Purple) {
-			PanicStateArg panicAstonish;
-			panicAstonish.mPanicType = PIKIPANIC_Panic; // should probably get renamed to astonish
-			if (mCreature && mCreature->isTeki()) {
-				EnemyBase* teki = static_cast<EnemyBase*>(mCreature);
-				piki->setTekiKillID(teki->getEnemyTypeID());
-			} else {
-				piki->mTekiKillID = -1;
-			}
-			piki->mFsm->transit(piki, PIKISTATE_Panic, &panicAstonish);
-			return true;
+	if (currState && currState->transittable(PIKISTATE_Panic) && piki->getKind() != Purple) {
+		PanicStateArg panicAstonish;
+		panicAstonish.mPanicType = PIKIPANIC_Panic; // should probably get renamed to astonish
+
+		if (mCreature && mCreature->isTeki()) {
+			EnemyBase* teki = static_cast<EnemyBase*>(mCreature);
+			piki->setTekiKillID(teki->getEnemyTypeID());
+		} else {
+			piki->mTekiKillID = -1;
 		}
+
+		piki->mFsm->transit(piki, PIKISTATE_Panic, &panicAstonish);
+		return true;
 	}
-	currState->transittable(PIKISTATE_Panic); // ???????
+
+	currState->transittable(PIKISTATE_Panic);
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80194574
- * Size:	000118
+/**
+ * @note Address: 0x80194574
+ * @note Size: 0x118
  */
 bool InteractBubble::actPiki(Game::Piki* piki)
 {
@@ -514,7 +498,7 @@ bool InteractBubble::actPiki(Game::Piki* piki)
 		return false;
 	}
 	PikiState* currState = piki->mCurrentState;
-	int pikiKind         = piki->mPikiKind;
+	int pikiKind         = piki->getKind();
 	if (currState && currState->transittable(PIKISTATE_Panic)) {
 		if (pikiKind != Blue && pikiKind != Bulbmin) {
 			if (mCreature->isTeki()) {
@@ -532,10 +516,9 @@ bool InteractBubble::actPiki(Game::Piki* piki)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8019468C
- * Size:	00013C
+/**
+ * @note Address: 0x8019468C
+ * @note Size: 0x13C
  */
 bool InteractGas::actPiki(Game::Piki* piki)
 {
@@ -547,7 +530,7 @@ bool InteractGas::actPiki(Game::Piki* piki)
 	}
 
 	PikiState* currState = piki->mCurrentState;
-	int pikiKind         = piki->mPikiKind;
+	int pikiKind         = piki->getKind();
 	if (currState && currState->transittable(PIKISTATE_Panic)) {
 		if (pikiKind != White && pikiKind != Bulbmin) {
 			if (mCreature && mCreature->isTeki()) {
@@ -565,10 +548,9 @@ bool InteractGas::actPiki(Game::Piki* piki)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801947C8
- * Size:	0000C0
+/**
+ * @note Address: 0x801947C8
+ * @note Size: 0xC0
  */
 bool InteractBattle::actPiki(Game::Piki* piki)
 {
@@ -581,14 +563,13 @@ bool InteractBattle::actPiki(Game::Piki* piki)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80194888
- * Size:	000120
+/**
+ * @note Address: 0x80194888
+ * @note Size: 0x120
  */
 bool InteractPress::actPiki(Game::Piki* piki)
 {
-	if (!(gameSystem->mFlags & 0x20) && gameSystem->mIsInCave) {
+	if (!(gameSystem->isFlag(GAMESYS_IsGameWorldActive)) && gameSystem->mIsInCave) {
 		return false;
 	}
 	if (piki->mCurrentState->invincible(piki)) {
@@ -608,10 +589,9 @@ bool InteractPress::actPiki(Game::Piki* piki)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	801949A8
- * Size:	000260
+/**
+ * @note Address: 0x801949A8
+ * @note Size: 0x260
  */
 bool InteractFlick::actPiki(Game::Piki* piki)
 {
@@ -629,8 +609,8 @@ bool InteractFlick::actPiki(Game::Piki* piki)
 	if (angle < -10.0f) {
 		angle = piki->getFaceDir();
 	}
-	f32 cosVal = -pikmin2_cosf(angle);
-	f32 sinVal = -pikmin2_sinf(angle);
+	f32 cosVal = -cosf(angle);
+	f32 sinVal = -sinf(angle);
 
 	f32 magnitude = mKnockback * 0.1f * randFloat() + mKnockback;
 
@@ -641,10 +621,9 @@ bool InteractFlick::actPiki(Game::Piki* piki)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80194C08
- * Size:	0002EC
+/**
+ * @note Address: 0x80194C08
+ * @note Size: 0x2EC
  */
 bool InteractSwallow::actPiki(Game::Piki* piki)
 {
@@ -694,10 +673,9 @@ bool InteractSwallow::actPiki(Game::Piki* piki)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80194EF4
- * Size:	0000CC
+/**
+ * @note Address: 0x80194EF4
+ * @note Size: 0xCC
  */
 bool InteractKill::actPiki(Game::Piki* piki)
 {

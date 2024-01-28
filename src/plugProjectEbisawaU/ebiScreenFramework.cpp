@@ -2,10 +2,9 @@
 
 namespace ebi {
 namespace Screen {
-/*
- * --INFO--
- * Address:	803D3850
- * Size:	00003C
+/**
+ * @note Address: 0x803D3850
+ * @note Size: 0x3C
  */
 void TScreenBase::setArchive(JKRArchive* newArchive)
 {
@@ -15,17 +14,9 @@ void TScreenBase::setArchive(JKRArchive* newArchive)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D388C
- * Size:	000004
- */
-void TScreenBase::doSetArchive(JKRArchive*) { }
-
-/*
- * --INFO--
- * Address:	803D3890
- * Size:	000058
+/**
+ * @note Address: 0x803D3890
+ * @note Size: 0x58
  */
 bool TScreenBase::openScreen(ArgOpen* arg)
 {
@@ -38,17 +29,9 @@ bool TScreenBase::openScreen(ArgOpen* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803D38E8
- * Size:	000004
- */
-void TScreenBase::doOpenScreen(ArgOpen*) { }
-
-/*
- * --INFO--
- * Address:	803D38EC
- * Size:	000058
+/**
+ * @note Address: 0x803D38EC
+ * @note Size: 0x58
  */
 bool TScreenBase::closeScreen(ArgClose* arg)
 {
@@ -61,17 +44,9 @@ bool TScreenBase::closeScreen(ArgClose* arg)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803D3944
- * Size:	000004
- */
-void TScreenBase::doCloseScreen(ArgClose*) { }
-
-/*
- * --INFO--
- * Address:	803D3948
- * Size:	000040
+/**
+ * @note Address: 0x803D3948
+ * @note Size: 0x40
  */
 void TScreenBase::killScreen()
 {
@@ -79,39 +54,34 @@ void TScreenBase::killScreen()
 	mState = TSB_US_Finish;
 }
 
-/*
- * --INFO--
- * Address:	803D3988
- * Size:	000010
+/**
+ * @note Address: 0x803D3988
+ * @note Size: 0x10
  */
 u8 TScreenBase::isFinishScreen() { return mState == TSB_US_Finish; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000014
+/**
+ * @note Address: N/A
+ * @note Size: 0x14
  */
 // unused function
 u8 TScreenBase::isOpenScreen() { return mState == TSB_US_Open; }
 
-/*
- * --INFO--
- * Address:	803D3998
- * Size:	000014
+/**
+ * @note Address: 0x803D3998
+ * @note Size: 0x14
  */
 u8 TScreenBase::isWaitScreen() { return mState == TSB_US_Wait; }
 
-/*
- * --INFO--
- * Address:	803D39AC
- * Size:	000014
+/**
+ * @note Address: 0x803D39AC
+ * @note Size: 0x14
  */
 u8 TScreenBase::isCloseScreen() { return mState == TSB_US_Close; }
 
-/*
- * --INFO--
- * Address:	803D39C0
- * Size:	0000EC
+/**
+ * @note Address: 0x803D39C0
+ * @note Size: 0xEC
  */
 void TScreenBase::update()
 {
@@ -138,38 +108,9 @@ void TScreenBase::update()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803D3AAC
- * Size:	000008
- */
-bool TScreenBase::doUpdateStateClose() { return true; }
-
-/*
- * --INFO--
- * Address:	803D3AB4
- * Size:	000008
- */
-bool TScreenBase::doUpdateStateWait() { return true; }
-
-/*
- * --INFO--
- * Address:	803D3ABC
- * Size:	000004
- */
-void TScreenBase::doInitWaitState() { }
-
-/*
- * --INFO--
- * Address:	803D3AC0
- * Size:	000008
- */
-bool TScreenBase::doUpdateStateOpen() { return true; }
-
-/*
- * --INFO--
- * Address:	803D3AC8
- * Size:	000038
+/**
+ * @note Address: 0x803D3AC8
+ * @note Size: 0x38
  */
 void TScreenBase::draw()
 {
@@ -177,19 +118,5 @@ void TScreenBase::draw()
 		doDraw();
 	}
 }
-
-/*
- * --INFO--
- * Address:	803D3B00
- * Size:	000004
- */
-void TScreenBase::doDraw() { }
-
-/*
- * --INFO--
- * Address:	803D3B04
- * Size:	00000C
- */
-char* TScreenBase::getName() { return "NoNameScreen"; }
 } // namespace Screen
 } // namespace ebi

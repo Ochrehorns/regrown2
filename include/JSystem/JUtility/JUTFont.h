@@ -5,6 +5,9 @@
 #include "JSystem/JUtility/TColor.h"
 #include "string.h"
 
+#define ASCII_PRINTABLE_MIN (0x20) // space
+#define ASCII_PRINTABLE_MAX (0x80) // one more than last printable symbol (0x7F = delete)
+
 struct JKRAramBlock;
 struct JKRHeap;
 
@@ -77,31 +80,31 @@ struct JUTFont {
 	typedef bool (*IsLeadByte)(int);
 
 	struct TWidth {
-		u8 w0;
-		u8 w1;
+		u8 w0; // _00
+		u8 w1; // _01
 	};
 
 	JUTFont();
 
-	virtual ~JUTFont() { }                                               // _08
-	virtual void setGX() = 0;                                            // _0C
-	virtual void setGX(JUtility::TColor, JUtility::TColor) { setGX(); }; // _10
-	virtual f32 drawChar_scale(f32, f32, f32, f32, int, bool) = 0;       // _14
-	virtual int getLeading() const                            = 0;       // _18
-	virtual int getAscent() const                             = 0;       // _1C
-	virtual int getDescent() const                            = 0;       // _20
-	virtual int getHeight() const                             = 0;       // _24
-	virtual int getWidth() const                              = 0;       // _28
-	virtual void getWidthEntry(int, JUTFont::TWidth*) const   = 0;       // _2C
-	virtual int getCellWidth() const { return getWidth(); };             // _30
-	virtual int getCellHeight() const { return getHeight(); };           // _34
-	virtual int getFontType() const           = 0;                       // _38
-	virtual const ResFONT* getResFont() const = 0;                       // _3C
-	virtual bool isLeadByte(int) const        = 0;                       // _40
+	virtual ~JUTFont() { }                                                           // _08
+	virtual void setGX() = 0;                                                        // _0C
+	virtual void setGX(JUtility::TColor black, JUtility::TColor white) { setGX(); }; // _10
+	virtual f32 drawChar_scale(f32, f32, f32, f32, int, bool) = 0;                   // _14
+	virtual int getLeading() const                            = 0;                   // _18
+	virtual int getAscent() const                             = 0;                   // _1C
+	virtual int getDescent() const                            = 0;                   // _20
+	virtual int getHeight() const                             = 0;                   // _24
+	virtual int getWidth() const                              = 0;                   // _28
+	virtual void getWidthEntry(int, JUTFont::TWidth*) const   = 0;                   // _2C
+	virtual int getCellWidth() const { return getWidth(); };                         // _30
+	virtual int getCellHeight() const { return getHeight(); };                       // _34
+	virtual int getFontType() const           = 0;                                   // _38
+	virtual const ResFONT* getResFont() const = 0;                                   // _3C
+	virtual bool isLeadByte(int) const        = 0;                                   // _40
 
 	void initialize_state();
-	void setCharColor(JUtility::TColor);
-	void setGradColor(JUtility::TColor, JUtility::TColor);
+	void setCharColor(JUtility::TColor color);
+	void setGradColor(JUtility::TColor bottomColor, JUtility::TColor topColor);
 	f32 drawString_size_scale(f32, f32, f32, f32, const char*, u32, bool);
 
 	void drawString(int posX, int posY, const char* str, bool visible) { drawString_size(posX, posY, str, strlen(str), visible); }
@@ -124,6 +127,8 @@ struct JUTFont {
 	}
 
 	bool isValid() const { return mIsValid; }
+	bool isFixed() const { return mIsFixed; }
+	int getFixedWidth() const { return mFixedWidth; }
 
 	static bool isLeadByte_1Byte(int);
 	static bool isLeadByte_2Byte(int);
@@ -223,8 +228,8 @@ struct JUTResFont : public JUTFont {
 	// _00-_1C = JUTFont
 	int mWidth;                         // _1C
 	int mHeight;                        // _20
-	GXTexObj _24;                       // _24
-	int _44;                            // _44
+	GXTexObj mTexObj;                   // _24
+	int mTexPageIdx;                    // _44
 	const ResFONT* mResource;           // _48
 	ResFONT::InfoBlock* mInfoBlock;     // _4C, INF1
 	void** mMemBlocks;                  // _50
@@ -236,7 +241,7 @@ struct JUTResFont : public JUTFont {
 	u16 mMapBlockCount;                 // _64
 	u16 _66;                            // _66
 	u16 mMaxCode;                       // _68
-	IsLeadByte* mIsLeadByte;            // _6C
+	const IsLeadByte* mIsLeadByte;      // _6C
 };
 
 struct JUTCacheFont : public JUTResFont {
@@ -246,31 +251,24 @@ struct JUTCacheFont : public JUTResFont {
 	};
 
 	struct TGlyphCacheInfo {
-		// TODO: the rest of the data members
 		TGlyphCacheInfo* mPrev; // _00
 		TGlyphCacheInfo* mNext; // _04
-		u8 _08[4];              // _08
-		u16 _0C;                // _0C
-		u16 _0E;                // _0E
-		u8 _10[4];              // _10
-		u16 _14;                // _14
-		u16 _16;                // _16
-		u8 _18[8];              // _18
-		GXTexObj mGxTexObj;     // _20
+		u16 mStartCode;         // _08
+		u16 mEndCode;           // _0A
+		u16 mCellWidth;         // _0C
+		u16 mCellHeight;        // _0E
+		u32 mPageSize;          // _10
+		u16 mTexFormat;         // _14
+		u16 mNumRows;           // _16
+		u16 mNumCols;           // _18
+		u16 mTexWidth;          // _1A
+		u16 mTexHeight;         // _1C
+		u16 mFontType;          // _1E, 0 = ANSI, 1 = SJIS
 	};
 
-	struct TCachePage {
-		u8 _00[0x8]; // _00, unknown
-		s16 _08;     // _08
-		u16 _0A;     // _0A
-		u8 _0C[0x4]; // _0C, unknown
-		u8* _10;     // _10
-		u16 _14;     // _14
-		u16 _18;     // _18
-		u16 _1C;     // _1C
-		u16 _20;     // _20
-		u16 _24;     // _24
-		u16 _28;     // _28
+	struct TCachePage : public TGlyphCacheInfo {
+		GXTexObj mTexObj; // _20
+		u8 mImage[];      // _40
 	};
 
 	JUTCacheFont();
@@ -290,12 +288,12 @@ struct JUTCacheFont : public JUTResFont {
 	bool internal_initiate(const ResFONT*, void*, u32, JKRHeap*);
 	void invalidiateAllCache();
 	TGlyphCacheInfo* loadCache_char_subroutine(int*, bool);
-	void loadCache_string(const char*, bool);
+	bool loadCache_string(const char*, bool);
 	void prepend(TGlyphCacheInfo*);
 	void unlink(TGlyphCacheInfo*);
 
 	// Unused/inlined:
-	void determineBlankPage();
+	TGlyphCacheInfo* determineBlankPage();
 	void getGlyphFromAram(TGlyphCacheInfo*, TCachePage*, int*, int*);
 	void loadCache_char(int, bool);
 	void loadCache_string_size(const char*, u32, bool);
@@ -306,28 +304,31 @@ struct JUTCacheFont : public JUTResFont {
 
 	void setPagingType(EPagingType type) { mPagingType = type; }
 
-	static u32 calcCacheSize(u32 param_0, int param_1) { return (ALIGN_NEXT(param_0, 0x20) + 0x40) * param_1; }
+	static u32 calcCacheSize(u32 sheetSize, int pageCount) { return (ALIGN_NEXT(sheetSize, 0x20) + 0x40) * pageCount; }
+	GXTexObj* getTexObj(void* buffer) { return &((TCachePage*)buffer)->mTexObj; }
+	u8* getImage(void* buffer) { return ((TCachePage*)buffer)->mImage; }
+	TGlyphCacheInfo* getCurrPage() { return mCurrPage; }
 
 	// _00     = VTBL
 	// _00-_70 = JUTResFont
-	u32 mWidthBlocksSize;     // _70
-	u32 mGlyphBlocksSize;     // _74
-	u32 mMapBlocksSize;       // _78
-	void* _7C;                // _7C
-	void* _80;                // _80
-	void* _84;                // _84
-	u32 mMaxSheetSize;        // _88
-	EPagingType mPagingType;  // _8C
-	void* mCacheBuffer;       // _90
-	u32 _94;                  // _94
-	u32 mCachePage;           // _98
-	TGlyphCacheInfo* _9C;     // _9C
-	TGlyphCacheInfo* _A0;     // _A0
-	void* _A4;                // _A4
-	u32 _A8;                  // _A8
-	JKRAramBlock* mAramBlock; // _AC
-	u8 _B0;                   // _B0
-	int _B4;                  // _B4
+	u32 mWidthBlocksSize;        // _70
+	u32 mGlyphBlocksSize;        // _74
+	u32 mMapBlocksSize;          // _78
+	void* mWidthBlockBuffer;     // _7C
+	void* mGlyphBlockBuffer;     // _80
+	void* mMapBlockBuffer;       // _84
+	u32 mMaxSheetSize;           // _88
+	EPagingType mPagingType;     // _8C
+	void* mCacheBuffer;          // _90
+	u32 mPageSize;               // _94
+	u32 mCachePageCount;         // _98
+	TGlyphCacheInfo* mStartPage; // _9C
+	TGlyphCacheInfo* mEndPage;   // _A0
+	TGlyphCacheInfo* mCurrPage;  // _A4
+	void* mEndPageAddr;          // _A8
+	JKRAramBlock* mAramBlock;    // _AC
+	bool mIsHeapBuffer;          // _B0, if true, must be delete[]'d
+	int mBlankPageCount;         // _B4
 };
 
 #endif

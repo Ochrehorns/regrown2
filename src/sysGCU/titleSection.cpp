@@ -19,11 +19,12 @@
 #include "JSystem/JUtility/JUTProcBar.h"
 #include "Dolphin/rand.h"
 #include "Morimura/HiScore.h"
+#include "ebi/E2DGraph.h"
 #include "menu.h"
 #include "nans.h"
 
-static const char idk[]  = "\0\0\0\0\0\0\0\0\0";
-static const char name[] = "titleSection";
+static const u32 padding[]    = { 0, 0, 0 };
+static const char className[] = "titleSection";
 
 namespace {
 static u8 sMovieIndex[7] = { 0, 2, 4, 1, 3, 11, 11 };
@@ -32,10 +33,9 @@ static s8 sSeasonIndex   = 255;
 
 namespace Title {
 
-/*
- * --INFO--
- * Address:	8044A03C
- * Size:	0000F0
+/**
+ * @note Address: 0x8044A03C
+ * @note Size: 0xF0
  */
 Section::Section(JKRHeap* heap)
     : BaseHIOSection(heap)
@@ -50,17 +50,15 @@ Section::Section(JKRHeap* heap)
 	mDoCheckShortCut = false;
 }
 
-/*
- * --INFO--
- * Address:	8044A460
- * Size:	0000A4
+/**
+ * @note Address: 0x8044A460
+ * @note Size: 0xA4
  */
 Section::~Section() { ebi::title::TTitleMgr::deleteInstance(); }
 
-/*
- * --INFO--
- * Address:	8044A504
- * Size:	0000C4
+/**
+ * @note Address: 0x8044A504
+ * @note Size: 0xC4
  */
 void Section::doExit()
 {
@@ -73,36 +71,37 @@ void Section::doExit()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8044A5C8
- * Size:	000104
+/**
+ * @note Address: 0x8044A5C8
+ * @note Size: 0x104
  */
 void Section::loadResident()
 {
-	JKRArchive* arc;
 	JKRHeap* backup = JKRGetCurrentHeap();
-	if (!(sys->mFlags.typeView & 1)) {
+
+	if (!sys->isFlag(System::SF_LoadResident)) {
 		sys->mSysHeap->becomeCurrentHeap();
 		sys->heapStatusStart("titleSection::loadResident", nullptr);
 
-		arc = JKRArchive::mount("/user/Kando/piki/pikis.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
-		JUT_ASSERTLINE(582, arc, "%s : mount failed !!\n", "/user/Kando/piki/pikis.szs");
+		char* path      = "/user/Kando/piki/pikis.szs";
+		JKRArchive* arc = JKRMountArchive(path, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+		JUT_ASSERTLINE(582, arc, "%s : mount failed !!\n", path);
 
-		arc = JKRArchive::mount("user/Kando/onyon/arc.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
-		JUT_ASSERTLINE(590, arc, "%s : mount failed !!\n", "user/Kando/onyon/arc.szs");
+		path = "user/Kando/onyon/arc.szs";
+		arc  = JKRMountArchive(path, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+		JUT_ASSERTLINE(590, arc, "%s : mount failed !!\n", path);
 
 		sys->heapStatusEnd("titleSection::loadResident");
-		sys->mFlags.typeView |= 1;
+		sys->setFlag(System::SF_LoadResident);
 	}
+
 	gPikmin2AramMgr->load();
 	backup->becomeCurrentHeap();
 }
 
-/*
- * --INFO--
- * Address:	8044A6CC
- * Size:	000434
+/**
+ * @note Address: 0x8044A6CC
+ * @note Size: 0x434
  */
 void Section::init()
 {
@@ -111,10 +110,10 @@ void Section::init()
 	sys->heapStatusStart("JMANewSinTable", nullptr);
 	sys->heapStatusEnd("JMANewSinTable");
 
-	initHIO(new HIORootNode(this, "タイトルセクション"));
+	initHIO(new HIORootNode(this, "タイトルセクション")); // "Title Section"
 
 	sys->heapStatusStart("frameBuffer", nullptr);
-	setDisplay(JFWDisplay::createManager(nullptr, mHeap, JUTXfb::DoubleBuffer, false), 1);
+	setDisplay(JFWDisplay::createManager(nullptr, mDisplayHeap, JUTXfb::DoubleBuffer, false), 1);
 	sys->heapStatusEnd("frameBuffer");
 
 	mController1 = new Controller(JUTGamePad::PORT_0);
@@ -123,32 +122,35 @@ void Section::init()
 	sys->setFrameRate(1); // 60fps title screen
 
 	// this entire menu class seems to be for a scrapped debug menu
-	// Wouldnt be suprised if this was stolen from Double Dash. I know it has a whole debug menu, and it feels so out of place here
 	mMenu      = new Menu(mController1, JFWSystem::systemFont, false);
 	mMenu->_48 = 260;
 	mMenu->addKeyEvent(Menu::KeyEvent::UNK1, 512, new Delegate1<Section, Menu&>(this, &menuCancel));
 	mMenu->addKeyEvent(Menu::KeyEvent::UNK0, 256, new Delegate1<Section, Menu&>(this, &menuSelect));
 	int sects = 0;
-	for (int i = 0; i < GameFlow::SECTION_COUNT; i++) {
+	for (int i = 0; i < GameFlow::SN_SECTION_COUNT; i++) {
 		SectionInfo* data = GameFlow::getSectionInfo(i);
+
 		if (data) {
-			if ((!Game::gGameConfig.mParms.mMarioClubDevelop.mData || data->id.c) && data->id.b) {
+			if ((!Game::gGameConfig.mParms.mMarioClubDevelop() || data->mId.c) && data->mId.b) {
 				mMenu->addOption(i, data->mName, nullptr, true);
 				sects++;
 			}
 		} else {
-			mMenu->addOption(i, "NO NAME", nullptr, true);
+			char* name = "NO NAME";
+			mMenu->addOption(i, name, nullptr, true);
 			sects++;
 		}
 	}
-	mMenu->setPosition(300, sys->getRenderModeObj()->efbHeight - (sects * JFWSystem::systemFont->getHeight() + 60));
+
+	JUTFont* font = JFWSystem::systemFont;
+	mMenu->setPosition(300, sys->getRenderModeObj()->efbHeight - (sects * font->getHeight() + 60));
 
 	sys->heapStatusEnd("TitleSection::init");
 
 	PSM::ObjMgr::newInstance();
 
 	mThpPlayer = new Game::THPPlayer;
-	mThpPlayer->init(mHeap);
+	mThpPlayer->init(mDisplayHeap);
 	addGenNode(mThpPlayer);
 	Screen::Game2DMgr::create();
 	Screen::gGame2DMgr->setGamePad(mController1);
@@ -157,31 +159,28 @@ void Section::init()
 	mTimeStep = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	8044AB00
- * Size:	00002C
+/**
+ * @note Address: 0x8044AB00
+ * @note Size: 0x2C
  */
 void Section::menuCancel(Menu&) { PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0); }
 
-/*
- * --INFO--
- * Address:	8044AB2C
- * Size:	000054
+/**
+ * @note Address: 0x8044AB2C
+ * @note Size: 0x54
  */
 void Section::menuSelect(Menu& menu)
 {
-	if (menu.mSelect == 2 || menu.mSelect == 1) {
+	if (menu.mState == 2 || menu.mState == 1) {
 		mIsMainActive                = false;
-		GameFlow::mActiveSectionFlag = menu.mCurrentItem->_0C;
+		GameFlow::mActiveSectionFlag = menu.mCurrentItem->mSectionFlags;
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8044AB80
- * Size:	000110
+/**
+ * @note Address: 0x8044AB80
+ * @note Size: 0x110
  */
 void Section::doDraw(Graphics& gfx)
 {
@@ -212,57 +211,45 @@ void Section::doDraw(Graphics& gfx)
 	particle2dMgr->draw(0, 0);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000200
+/**
+ * @note Address: N/A
+ * @note Size: 0x200
  */
 void Section::drawShortCuts(Graphics& gfx)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000150
+/**
+ * @note Address: N/A
+ * @note Size: 0x150
  */
 void Section::drawShortCut(Graphics&, int, int, int, char*)
 {
+	mTimeStep = randFloat(); // here for sdata2
+
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000004
+/**
+ * @note Address: N/A
+ * @note Size: 0x4
  */
 void Section::drawDebugInfo(Graphics& gfx)
 {
+	// size indicates this function was entired stubbed out before release
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000118
+/**
+ * @note Address: N/A
+ * @note Size: 0x118
  */
 void Section::updateMenu()
 {
-	// UNUSED FUNCTION
-}
-
-/*
- * --INFO--
- * Address:	8044AC90
- * Size:	000688
- */
-void Section::doUpdateMainTitle()
-{
-	mGoToDemoTimer += sys->mDeltaTime;
 	if (mDoCheckShortCut) {
 		mMenu->doUpdate(false);
-		if (mMenu->mSelect == 2 || mMenu->mSelect == 1) {
+		if (mMenu->mState == 2 || mMenu->mState == 1) {
 			if (mController1->mButton.mButtonDown & Controller::PRESS_DPAD_UP && Game::gGameConfig.mParms.mShortCutUp.mData >= 0) {
 				GameFlow::mActiveSectionFlag = Game::gGameConfig.mParms.mShortCutUp.mData;
 				mIsMainActive                = false;
@@ -281,14 +268,24 @@ void Section::doUpdateMainTitle()
 			}
 		}
 	}
+}
+
+/**
+ * @note Address: 0x8044AC90
+ * @note Size: 0x688
+ */
+void Section::doUpdateMainTitle()
+{
+	mGoToDemoTimer += sys->mDeltaTime;
+	updateMenu();
 	mMainTitleMgr.update();
 	if (mController1->isButton(~JUTGamePad::False)) {
 		mGoToDemoTimer = 0.0f;
 	}
 
 	if (mController1->mButton.mButtonDown & Controller::PRESS_Y) {
-		OSReport("code size           %dKB\n", (JKRHeap::mCodeEnd - JKRHeap::mCodeStart) / 1024);
-		OSReport("GameSystemHeap Free %dKB\n", sys->mSysHeap->getTotalFreeSize() / 1024);
+		OSReport("code size           %dKB\n", ((int)JKRHeap::getCodeEnd() - (int)JKRHeap::getCodeStart()) / 1024);
+		OSReport("GameSystemHeap Free %dKB\n", (int)sys->mSysHeap->getTotalFreeSize() / 1024);
 	}
 
 	PSSystem::SceneMgr* mgr;
@@ -298,24 +295,23 @@ void Section::doUpdateMainTitle()
 		PSSystem::checkSceneMgr(mgr);
 		mgr->checkScene();
 		PSSystem::SeqBase* seq = PSSystem::getSeqData(mgr, BGM_MainTheme);
-		f32 rate               = ebi::TMainTitleMgr::kFadeoutTime / sys->mDeltaTime;
-		if (rate >= 0.0f)
-			rate += 0.5f;
-		else
-			rate -= 0.5f;
+		f32 rate               = (ebi::TMainTitleMgr::kFadeOutTime / sys->mDeltaTime);
+		rate                   = (rate >= 0.0f) ? rate + 0.5f : rate - 0.5f;
 		seq->stopSeq((int)rate);
 	}
 
 	if (mMainTitleMgr.isFinish()) {
-		switch (mMainTitleMgr.getSelectedMenu()) {
+		int id        = mMainTitleMgr.getSelectedMenu();
+		mIsMainActive = false;
+		switch (id) {
 		case ebi::TMainTitleMgr::Select_Story:
-			GameFlow::mActiveSectionFlag = GameFlow::SingleGame;
+			GameFlow::mActiveSectionFlag = GameFlow::SN_SingleGame;
 			break;
 		case ebi::TMainTitleMgr::Select_Challenge:
-			GameFlow::mActiveSectionFlag = GameFlow::ChallengeGame;
+			GameFlow::mActiveSectionFlag = GameFlow::SN_ChallengeGame;
 			break;
 		case ebi::TMainTitleMgr::Select_Vs:
-			GameFlow::mActiveSectionFlag = GameFlow::VSGame;
+			GameFlow::mActiveSectionFlag = GameFlow::SN_VSGame;
 			break;
 		case ebi::TMainTitleMgr::Select_Options:
 			mState = State_Options;
@@ -356,7 +352,7 @@ void Section::doUpdateMainTitle()
 			mIsMainActive = true;
 			break;
 		default:
-			GameFlow::mActiveSectionFlag = GameFlow::MainTitle;
+			GameFlow::mActiveSectionFlag = GameFlow::SN_MainTitle;
 			break;
 		}
 	} else {
@@ -364,7 +360,7 @@ void Section::doUpdateMainTitle()
 			if (!Game::gGameConfig.mParms.mKFesVersion.mData && !Game::gGameConfig.mParms.mNintendoVersion.mData) {
 				mMainTitleMgr.forceQuit();
 				mIsMainActive                = false;
-				GameFlow::mActiveSectionFlag = GameFlow::Demo;
+				GameFlow::mActiveSectionFlag = GameFlow::SN_Demo;
 			} else {
 				mGoToDemoTimer = 0.0f;
 			}
@@ -372,20 +368,28 @@ void Section::doUpdateMainTitle()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000214
+/**
+ * @note Address: N/A
+ * @note Size: 0x214
  */
 void Section::doUpdateHiScore()
 {
-	// UNUSED FUNCTION
+	Screen::gGame2DMgr->update();
+	if (Screen::gGame2DMgr->isEndHighScore()) {
+
+		PSSystem::SeqBase* seq = PSSystemGetSeqCheck(BGM_HiScore);
+		seq->stopSeq(0);
+		mState = State_MainTitle;
+		int idk;
+		mMainTitleMgr.startMenuSet(idk, ebi::TMainTitleMgr::Select_HiScore);
+		PSSystemGetSeqCheck(BGM_MainTheme)->startSeq();
+		Screen::gGame2DMgr->mScreenMgr->reset();
+	}
 }
 
-/*
- * --INFO--
- * Address:	8044B318
- * Size:	0004C8
+/**
+ * @note Address: 0x8044B318
+ * @note Size: 0x4C8
  */
 void Section::doUpdateOmake()
 {
@@ -398,11 +402,8 @@ void Section::doUpdateOmake()
 		PSSystem::checkSceneMgr(mgr);
 		mgr->checkScene();
 		PSSystem::SeqBase* seq = PSSystem::getSeqData(mgr, BGM_Bonus);
-		f32 rate               = ebi::TMainTitleMgr::kFadeTime / sys->mDeltaTime;
-		if (rate >= 0.0f)
-			rate += 0.5f;
-		else
-			rate -= 0.5f;
+		f32 rate               = ebi::E2DFader::kFadeTime / sys->mDeltaTime;
+		rate                   = (rate >= 0.0f) ? rate + 0.5f : rate - 0.5f;
 		seq->stopSeq((int)rate);
 	}
 
@@ -419,10 +420,8 @@ void Section::doUpdateOmake()
 			}
 			mThpPlayer->load((Game::THPPlayer::EMovieIndex)mMovieIndex);
 			mThpPlayer->pause();
-		} else {
-			if (mThpPlayer->isFinishLoading()) {
-				mThpPlayer->play();
-			}
+		} else if (mThpPlayer->isFinishLoading()) {
+			mThpPlayer->play();
 		}
 		mThpPlayer->update();
 		if (mThpPlayer->isFinishLoading()) {
@@ -455,20 +454,31 @@ void Section::doUpdateOmake()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00025C
+/**
+ * @note Address: N/A
+ * @note Size: 0x25C
  */
 void Section::doUpdateOption()
 {
-	// UNUSED FUNCTION
+	mOptionMgr.update();
+	if (mOptionMgr.mIsFinished) {
+
+		PSSystem::SeqBase* seq = PSSystemGetSeqCheck(BGM_Options);
+		f32 rate               = ebi::E2DFader::kFadeTime / sys->mDeltaTime;
+		rate                   = (rate >= 0.0f) ? rate + 0.5f : rate - 0.5f;
+		seq->stopSeq((int)rate);
+	}
+	if (mOptionMgr.isFinish()) {
+		mState = State_MainTitle;
+		int idk;
+		mMainTitleMgr.startMenuSet(idk, ebi::TMainTitleMgr::Select_Options);
+		PSSystemGetSeqCheck(BGM_MainTheme)->startSeq();
+	}
 }
 
-/*
- * --INFO--
- * Address:	8044B7E0
- * Size:	000108
+/**
+ * @note Address: 0x8044B7E0
+ * @note Size: 0x108
  */
 void Section::run()
 {
@@ -493,14 +503,12 @@ void Section::run()
 	mIsMainActive = false;
 }
 
-/*
- * --INFO--
- * Address:	8044B8E8
- * Size:	0005B8
+/**
+ * @note Address: 0x8044B8E8
+ * @note Size: 0x5B8
  */
 bool Section::doUpdate()
 {
-	PSSystem::SceneMgr* mgr;
 	PSSystem::SeqBase* seq;
 
 	sys->mCardMgr->update();
@@ -515,75 +523,33 @@ bool Section::doUpdate()
 		break;
 	case State_Options:
 		if (isFinishable()) {
-			mOptionMgr.update();
-			if (mOptionMgr.mIsFinished) {
-				mgr = PSSystem::getSceneMgr();
-				PSSystem::checkSceneMgr(mgr);
-				mgr->checkScene();
-				PSSystem::SeqBase* seq = PSSystem::getSeqData(mgr, BGM_Options);
-				f32 rate               = ebi::TMainTitleMgr::kFadeTime / sys->mDeltaTime;
-				if (rate >= 0.0f)
-					rate += 0.5f;
-				else
-					rate -= 0.5f;
-				seq->stopSeq((int)rate);
-			}
-			if (mOptionMgr.isFinish()) {
-				mState = State_MainTitle;
-				int idk;
-				mMainTitleMgr.startMenuSet(idk, ebi::TMainTitleMgr::Select_Options);
-				mgr = PSSystem::getSceneMgr();
-				PSSystem::checkSceneMgr(mgr);
-				mgr->checkScene();
-				seq = PSSystem::getSeqData(mgr, BGM_MainTheme);
-				seq->startSeq();
-			}
+			doUpdateOption();
 		}
 		break;
 	case State_Bonus:
 		doUpdateOmake();
 		break;
 	case State_HiScore:
-		Screen::gGame2DMgr->update();
-		if (Screen::gGame2DMgr->isEndHighScore()) {
-			mgr = PSSystem::getSceneMgr();
-			PSSystem::checkSceneMgr(mgr);
-			mgr->checkScene();
-			PSSystem::SeqBase* seq = PSSystem::getSeqData(mgr, BGM_Options);
-			seq->stopSeq(0);
-			mState = State_MainTitle;
-			int idk;
-			mMainTitleMgr.startMenuSet(idk, ebi::TMainTitleMgr::Select_HiScore);
-			mgr = PSSystem::getSceneMgr();
-			PSSystem::checkSceneMgr(mgr);
-			mgr->checkScene();
-			seq = PSSystem::getSeqData(mgr, BGM_MainTheme);
-			seq->startSeq();
-			Screen::gGame2DMgr->mScreenMgr->reset();
-		}
+		doUpdateHiScore();
 		break;
 	case 5:
 		if (sys->dvdLoadSyncNoBlock(&mThreadCommand)) {
 			mState = State_MainTitle;
 			int idk;
 			mMainTitleMgr.startMenuSet(idk, ebi::TMainTitleMgr::Select_Options);
-			mgr = PSSystem::getSceneMgr();
-			PSSystem::checkSceneMgr(mgr);
-			mgr->checkScene();
-			seq = PSSystem::getSeqData(mgr, BGM_MainTheme);
-			seq->startSeq();
+			PSSystemGetSeqCheck(BGM_MainTheme)->startSeq();
 		}
 		break;
 	}
+
 	BaseHIOSection::doUpdate();
 	particle2dMgr->update();
 	return mIsMainActive;
 }
 
-/*
- * --INFO--
- * Address:	8044BEA0
- * Size:	000040
+/**
+ * @note Address: 0x8044BEA0
+ * @note Size: 0x40
  */
 bool Section::isFinishable()
 {
@@ -591,36 +557,29 @@ bool Section::isFinishable()
 	sys->dvdLoadSyncNoBlock(&mThreadCommand);
 }
 
-/*
- * --INFO--
- * Address:	8044BEE0
- * Size:	00008C
+/**
+ * @note Address: 0x8044BEE0
+ * @note Size: 0x8C
  */
-void Section::doLoadingStart() { sys->dvdLoadUseCallBack(&mThreadCommand, new Delegate<Section>(this, nullptr)); }
+void Section::doLoadingStart() { sys->dvdLoadUseCallBack(&mThreadCommand, new Delegate<Section>(this, loadResource)); }
 
-/*
- * --INFO--
- * Address:	8044BF6C
- * Size:	0000EC
+/**
+ * @note Address: 0x8044BF6C
+ * @note Size: 0xEC
  */
 bool Section::doLoading()
 {
-	bool flag = sys->dvdLoadSyncNoBlock(&mThreadCommand);
-	if (flag) {
+	bool done = sys->dvdLoadSyncNoBlock(&mThreadCommand);
+	if (done) {
 		sys->dvdLoadUseCallBack(&mThreadCommand, mButtonCallback);
-
-		PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
-		PSSystem::checkSceneMgr(mgr);
-		mgr->checkScene();
-		mgr->mScenes->mChild->startMainSeq();
+		PSMStartMainSeq();
 	}
-	return flag == 0;
+	return u8(done == 0);
 }
 
-/*
- * --INFO--
- * Address:	8044C058
- * Size:	0003C8
+/**
+ * @note Address: 0x8044C058
+ * @note Size: 0x3C8
  */
 void Section::loadResource()
 {
@@ -645,7 +604,7 @@ void Section::loadResource()
 	sys->heapStatusStart("titleMgr", nullptr);
 	int id;
 	if (sSeasonIndex == -1) {
-		id = randFloat() * 12.0f;
+		id = randInt(12);
 	} else {
 		id = 12;
 	}
@@ -709,9 +668,12 @@ void Section::loadResource()
 
 	sys->heapStatusStart("hiscoreTexture", nullptr);
 	mHiScoreTex = nullptr;
+
+	const char* name = "res_hiscoreTexture.szs";
 	char buf[52];
-	og::newScreen::makeLanguageResName(buf, "res_hiscoreTexture.szs");
-	mHiScoreTex = JKRArchive::mount(buf, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	og::newScreen::makeLanguageResName(buf, name);
+
+	mHiScoreTex = JKRMountArchive(buf, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 	JUT_ASSERTLINE(1700, mHiScoreTex, "arcName = %s\n", buf);
 	sys->heapStatusEnd("hiscoreTexture");
 
@@ -726,30 +688,27 @@ void Section::loadResource()
 
 } // namespace Title
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000100
+/**
+ * @note Address: N/A
+ * @note Size: 0x100
  */
 TitleDummy::Section::Section(JKRHeap*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000034
+/**
+ * @note Address: N/A
+ * @note Size: 0x34
  */
 void TitleDummy::Section::init()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0001C0
+/**
+ * @note Address: N/A
+ * @note Size: 0x1C0
  */
 void TitleDummy::Section::loadResource()
 {
@@ -760,30 +719,27 @@ void TitleDummy::Section::loadResource()
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000124
+/**
+ * @note Address: N/A
+ * @note Size: 0x124
  */
 bool TitleDummy::Section::doUpdate()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000C0
+/**
+ * @note Address: N/A
+ * @note Size: 0xC0
  */
 void TitleDummy::Section::doDraw(Graphics& gfx)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000060
+/**
+ * @note Address: N/A
+ * @note Size: 0x60
  */
 TitleDummy::Section::~Section()
 {

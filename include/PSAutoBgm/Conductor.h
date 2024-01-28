@@ -3,6 +3,7 @@
 
 #include "JSystem/JAudio/JAD/JADDataMgr.h"
 #include "types.h"
+#include "P2Macros.h"
 #include "JSystem/JAudio/JAD/JADUtility.h"
 #include "PSAutoBgm/Track.h"
 #include "JSystem/JSupport/JSUList.h"
@@ -15,20 +16,22 @@ struct AutoBgm;
 /**
  * @size = 0x11C
  */
-struct Conductor : JADUtility::PrmSetRc<PSAutoBgm::Track> {
-	virtual ~Conductor();         // _08
-	virtual void* getEraseLink(); // _1C (weak)
+struct Conductor : public JADUtility::PrmSetRc<PSAutoBgm::Track> {
+	Conductor(AutoBgm*, int);
+
+	virtual ~Conductor();                         // _08
+	virtual void* getEraseLink() { return &_98; } // _1C (weak)
 
 	void removeCallback(u8, void*);
-	void seqCpuSync_AutoBgm(JASTrack*, u16, u32, JASTrack*);
+	u16 seqCpuSync_AutoBgm(JASTrack*, u16, u32, JASTrack*);
 	void createTables(JASTrack*);
 
 	// _00      = VTABLE
 	// _04-_98  = PrmSetRc
-	JSUPtrLink _98;                     // _98
+	JSULink<Conductor> _98;             // _98
 	u32 _A8;                            // _A8
 	u32 _AC;                            // _AC
-	u8 _B0[0x4];                        // _B0 - unknown
+	u32 _B0;                            // _B0 - unknown
 	u32 _B4;                            // _B4
 	JADUtility::PrmSlider<u8> _B8;      // _B8
 	JADUtility::PrmRadioButton<u8> _E8; // _E8
@@ -36,27 +39,25 @@ struct Conductor : JADUtility::PrmSetRc<PSAutoBgm::Track> {
 };
 
 /**
- * @size = 0x8
- */
-struct ConductorArcMgr {
-	virtual ~ConductorArcMgr(); // _08 (weak)
-
-	JKRArchive* mArchive; // _04
-};
-
-/**
  * @size = 0x270
  */
-struct ConductorMgr : JADUtility::PrmDataMgrNode<PSAutoBgm::Conductor, PSAutoBgm::AutoBgm> {
-	virtual ~ConductorMgr();            // _08 (weak)
-	virtual JKRHeap* getObjHeap();      // _14 (weak)
-	virtual JKRHeap* getDataHeap();     // _18 (weak)
-	virtual JKRHeap* getSaveTempHeap(); // _2C (weak)
+struct ConductorMgr : public JADUtility::PrmDataMgrNode<PSAutoBgm::Conductor, PSAutoBgm::AutoBgm> {
+	inline ConductorMgr(PSAutoBgm::AutoBgm* bgm)
+	    : JADUtility::PrmDataMgrNode<PSAutoBgm::Conductor, PSAutoBgm::AutoBgm>(bgm)
+	{
+	}
 
-	// virtual void _30() = 0;         // _30 - possibly
-	// virtual void _34() = 0;         // _34 - possibly
+	virtual ~ConductorMgr() { }                          // _08 (weak)
+	virtual JKRHeap* getObjHeap() { return sHeap; }      // _14 (weak)
+	virtual JKRHeap* getDataHeap() { return sHeap; }     // _18 (weak)
+	virtual JKRHeap* getSaveTempHeap() { return sHeap; } // _2C (weak)
 
 	static JKRHeap* sHeap;
+
+	// _00       = DataMgrBase*
+	// _04       = VTBL
+	// _08-_258  = PrmDataMgrNode
+	// _258-_278 = DataMgrBase (virtual)
 };
 
 } // namespace PSAutoBgm

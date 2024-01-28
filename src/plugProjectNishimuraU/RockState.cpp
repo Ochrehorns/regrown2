@@ -8,10 +8,9 @@
 namespace Game {
 namespace Rock {
 
-/*
- * --INFO--
- * Address:	80261D8C
- * Size:	000228
+/**
+ * @note Address: 0x80261D8C
+ * @note Size: 0x228
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -24,14 +23,13 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateDead);
 }
 
-/*
- * --INFO--
- * Address:	80261FB4
- * Size:	000098
+/**
+ * @note Address: 0x80261FB4
+ * @note Size: 0x98
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
+	Obj* rock = OBJ(enemy);
 	rock->setAtari(false);
 	rock->enableEvent(0, EB_Untargetable);
 	rock->hardConstraintOn();
@@ -39,18 +37,17 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	rock->enableEvent(0, EB_ModelHidden);
 
 	rock->mTargetVelocity = Vector3f(0.0f);
-	rock->startMotion(1, nullptr);
+	rock->startMotion(ROCKANIM_Run, nullptr);
 	rock->stopMotion();
 }
 
-/*
- * --INFO--
- * Address:	8026204C
- * Size:	000108
+/**
+ * @note Address: 0x8026204C
+ * @note Size: 0x108
  */
 void StateWait::exec(EnemyBase* enemy)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
+	Obj* rock = OBJ(enemy);
 	if (rock->mExistDuration != 0.0f) {
 		rock->mTimer += sys->mDeltaTime;
 		if (rock->mTimer > 1.5f) {
@@ -58,7 +55,7 @@ void StateWait::exec(EnemyBase* enemy)
 		}
 	} else {
 		bool isTarget;
-		f32 detectRadius = static_cast<Parms*>(rock->mParms)->mGeneral.mSightRadius.mValue;
+		f32 detectRadius = CG_GENERALPARMS(rock).mSightRadius.mValue;
 		if (EnemyFunc::isThereOlimar(rock, detectRadius, nullptr)) {
 			isTarget = true;
 		} else if (EnemyFunc::isTherePikmin(rock, detectRadius, nullptr)) {
@@ -73,27 +70,25 @@ void StateWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80262154
- * Size:	000048
+/**
+ * @note Address: 0x80262154
+ * @note Size: 0x48
  */
 void StateWait::cleanup(EnemyBase* enemy)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
+	Obj* rock = OBJ(enemy);
 	rock->hardConstraintOff();
 	rock->enableEvent(0, EB_Animating);
 	rock->disableEvent(0, EB_ModelHidden);
 }
 
-/*
- * --INFO--
- * Address:	8026219C
- * Size:	000104
+/**
+ * @note Address: 0x8026219C
+ * @note Size: 0x104
  */
 void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* rock         = static_cast<Obj*>(enemy);
+	Obj* rock         = OBJ(enemy);
 	Vector3f position = rock->getPosition();
 	position.y += rock->mFallOffset;
 	rock->onSetPosition(position);
@@ -103,7 +98,7 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	rock->disableEvent(0, EB_14);
 
 	rock->mTargetVelocity = Vector3f(0.0f);
-	rock->startMotion(1, nullptr);
+	rock->startMotion(ROCKANIM_Run, nullptr);
 
 	shadowMgr->addShadow(rock);
 	shadowMgr->setForceVisible(rock, true);
@@ -111,58 +106,53 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	rock->getJAIObject()->startSound(PSSE_EN_ROCK_FALL, 0);
 }
 
-/*
- * --INFO--
- * Address:	802622A0
- * Size:	000064
+/**
+ * @note Address: 0x802622A0
+ * @note Size: 0x64
  */
 void StateAppear::exec(EnemyBase* enemy)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
+	Obj* rock = OBJ(enemy);
 	if (rock->fallRockScaleUp()) {
 		transit(rock, ROCK_Fall, nullptr);
 	}
 }
 
-/*
- * --INFO--
- * Address:	80262304
- * Size:	00005C
+/**
+ * @note Address: 0x80262304
+ * @note Size: 0x5C
  */
 void StateAppear::cleanup(EnemyBase* enemy)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
+	Obj* rock = OBJ(enemy);
 	rock->setAtari(true);
 	rock->disableEvent(0, EB_Untargetable);
 	rock->disableEvent(0, EB_ModelHidden);
 }
 
-/*
- * --INFO--
- * Address:	80262360
- * Size:	00002C
+/**
+ * @note Address: 0x80262360
+ * @note Size: 0x2C
  */
 void StateDropWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
-	rock->startMotion(1, nullptr);
+	Obj* rock = OBJ(enemy);
+	rock->startMotion(ROCKANIM_Run, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8026238C
- * Size:	000034
+/**
+ * @note Address: 0x8026238C
+ * @note Size: 0x34
  */
 void StateDropWait::exec(EnemyBase* enemy) { transit(enemy, ROCK_Fall, nullptr); }
 
-/*
- * --INFO--
- * Address:	802623C0
- * Size:	000058
+/**
+ * @note Address: 0x802623C0
+ * @note Size: 0x58
  */
 void StateDropWait::cleanup(EnemyBase* enemy)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
+	Obj* rock = OBJ(enemy);
 	rock->disableEvent(0, EB_Cullable);
 	rock->disableEvent(0, EB_14);
 
@@ -170,23 +160,21 @@ void StateDropWait::cleanup(EnemyBase* enemy)
 	shadowMgr->setForceVisible(rock, true);
 }
 
-/*
- * --INFO--
- * Address:	80262418
- * Size:	000060
+/**
+ * @note Address: 0x80262418
+ * @note Size: 0x60
  */
 void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
+	Obj* rock = OBJ(enemy);
 	Vector3f velocity(0.0f, -rock->mFallSpeed, 0.0f);
 	rock->setVelocity(velocity);
 	rock->startFallEffect();
 }
 
-/*
- * --INFO--
- * Address:	80262478
- * Size:	000068
+/**
+ * @note Address: 0x80262478
+ * @note Size: 0x68
  */
 void StateFall::exec(EnemyBase* enemy)
 {
@@ -197,14 +185,13 @@ void StateFall::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802624E0
- * Size:	000094
+/**
+ * @note Address: 0x802624E0
+ * @note Size: 0x94
  */
 void StateFall::cleanup(EnemyBase* enemy)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
+	Obj* rock = OBJ(enemy);
 	shadowMgr->setForceVisible(rock, false);
 	rock->finishFallEffect();
 
@@ -213,17 +200,16 @@ void StateFall::cleanup(EnemyBase* enemy)
 	rumbleMgr->startRumble(14, position, 2);
 }
 
-/*
- * --INFO--
- * Address:	80262574
- * Size:	00007C
+/**
+ * @note Address: 0x80262574
+ * @note Size: 0x7C
  */
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
+	Obj* rock = OBJ(enemy);
 	rock->disableEvent(0, EB_Cullable);
 	rock->disableEvent(0, EB_14);
-	rock->startMotion(1, nullptr);
+	rock->startMotion(ROCKANIM_Run, nullptr);
 	rock->mTimer = 0.0f;
 
 	if (rock->mWaterBox) {
@@ -233,14 +219,13 @@ void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802625F0
- * Size:	0000D0
+/**
+ * @note Address: 0x802625F0
+ * @note Size: 0xD0
  */
 void StateMove::exec(EnemyBase* enemy)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
+	Obj* rock = OBJ(enemy);
 	rock->updateMoveVelocity();
 	rock->moveRockScaleUp();
 	rock->mTimer += sys->mDeltaTime;
@@ -252,14 +237,13 @@ void StateMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802626C0
- * Size:	00007C
+/**
+ * @note Address: 0x802626C0
+ * @note Size: 0x7C
  */
 void StateMove::cleanup(EnemyBase* enemy)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
+	Obj* rock = OBJ(enemy);
 	rock->finishRollingGroundEffect();
 	rock->finishRollingWaterEffect();
 
@@ -267,29 +251,27 @@ void StateMove::cleanup(EnemyBase* enemy)
 	rumbleMgr->startRumble(14, position, 2);
 }
 
-/*
- * --INFO--
- * Address:	8026273C
- * Size:	000088
+/**
+ * @note Address: 0x8026273C
+ * @note Size: 0x88
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* rock             = static_cast<Obj*>(enemy);
+	Obj* rock             = OBJ(enemy);
 	rock->mTargetVelocity = Vector3f(0.0f);
-	rock->startMotion(0, nullptr);
+	rock->startMotion(ROCKANIM_Dead, nullptr);
 	shadowMgr->delShadow(rock);
 	rock->createRockDeadEffect();
 	rock->getJAIObject()->startSound(PSSE_EN_ROCK_BREAK, 0);
 }
 
-/*
- * --INFO--
- * Address:	802627C4
- * Size:	00008C
+/**
+ * @note Address: 0x802627C4
+ * @note Size: 0x8C
  */
 void StateDead::exec(EnemyBase* enemy)
 {
-	Obj* rock = static_cast<Obj*>(enemy);
+	Obj* rock = OBJ(enemy);
 	if (rock->isAtari()) {
 		rock->setAtari(false);
 		rock->hardConstraintOn();
@@ -300,10 +282,9 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80262850
- * Size:	000004
+/**
+ * @note Address: 0x80262850
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 

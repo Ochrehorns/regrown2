@@ -23,6 +23,8 @@ struct TTitleMenu_Object_Icon {
 	inline void update()
 	{
 		switch (mStatus) {
+		case 0:
+			break;
 		case 1:
 			if (mAnimA->isFinish()) {
 				mStatus = 2;
@@ -73,14 +75,14 @@ struct TTitleMenu : public TScreenBase {
 	bool openMenuSet(ArgOpen*);
 	bool isDecide();
 	bool isCancel();
-	void showPika_(long);
-	void hidePika_(long);
+	void showPika_(s32);
+	void hidePika_(s32);
 
 	// _00     = VTBL
 	// _00-_08 = TScreenBase
 	Controller* mController;             // _0C
 	EUTPadInterface_countNum mPad;       // _10
-	long mSelectID;                      // _3C
+	s32 mSelectID;                       // _3C
 	bool mDecidedMenuOption;             // _40
 	bool mDoCloseMenu;                   // _41
 	u32 mMenuCloseCounter;               // _44
@@ -92,7 +94,7 @@ struct TTitleMenu : public TScreenBase {
 	J2DPane* mCategoryPanes[6];          // _E4
 	int mPikiCounts[6];                  // _FC
 	J2DPane* mPikaPanes[6][100];         // _114
-	E2DCallBack_AnmBase mAnims1[12];     // _A74
+	E2DCallBack_AnmBase mAnims1[2][6];   // _A74
 	E2DCallBack_AnmBase mAnims2[6];      // _D44
 	E2DCallBack_AnmBase mAnims3[6];      // _EAC
 	E2DCallBack_AnmBase mAnims4[6];      // _1014

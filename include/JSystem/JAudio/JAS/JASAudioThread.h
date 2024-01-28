@@ -13,7 +13,7 @@ enum JASAudioMessage {
  * @size = 0x88
  */
 struct JASAudioThread : public JKRThread {
-	JASAudioThread(int, int, unsigned long); // unused/inlined
+	JASAudioThread(int, int, u32); // unused/inlined
 
 	virtual ~JASAudioThread() { } // _08 (weak)
 	virtual void* run();          // _0C
@@ -21,7 +21,7 @@ struct JASAudioThread : public JKRThread {
 	static void DMACallback();
 	static void DSPCallback(void*);
 
-	static void create(long);
+	static void create(s32);
 	static void stop();
 
 	// unused/inlined:

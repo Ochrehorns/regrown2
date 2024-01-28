@@ -5,6 +5,7 @@
 #include "ebi/Screen/TScreenBase.h"
 #include "ebi/Screen/TOption.h"
 #include "Game/StateMachine.h"
+#include "Game/MemoryCard/Mgr.h"
 
 struct Controller;
 
@@ -12,7 +13,17 @@ namespace ebi {
 namespace Option {
 struct TMgr;
 
-enum StateID { Standby = 0, LoadOption, ScreenOpen, ScreenWait, ScreenClose, SaveMgr, WaitCloseForNoCard, WorldMapInfoWindow };
+enum StateID {
+	Standby = 0,
+	LoadOption,
+	ScreenOpen,
+	ScreenWait,
+	ScreenClose,
+	SaveMgr,
+	WaitCloseForNoCard,
+	WorldMapInfoWindow,
+	StateNum,
+};
 
 struct FSMStateMachine : public Game::StateMachine<TMgr> {
 	virtual void init(TMgr*); // _08
@@ -34,6 +45,15 @@ struct FSMState : public Game::FSMState<TMgr> {
 	virtual void do_init(TMgr*, Game::StateArg*); // _20 (weak)
 	virtual void do_exec(TMgr*);                  // _24 (weak)
 
+	// probably a better place to put this
+	inline bool isSaveError()
+	{
+		if (sys->mCardMgr->isSaveInvalid() && sys->mCardMgr->isCardReady()) {
+			return true;
+		}
+		return false;
+	}
+
 	// _00     = VTBL
 	// _00-_0C = Game::FSMState
 	const char* mName; // _0C
@@ -50,7 +70,7 @@ struct FSMState_LoadOption : public ebi::Option::FSMState {
 
 	// _00     = VTBL
 	// _00-_10 = FSMState
-	u32 _10; // _10
+	u32 mStatus; // _10
 };
 
 struct FSMState_SaveMgr : public FSMState {
@@ -139,7 +159,7 @@ struct TMgr {
 	typedef FSMState StateType;
 	TMgr();
 
-	~TMgr();
+	~TMgr() { }
 
 	void draw();
 	int getStateID();
@@ -152,6 +172,9 @@ struct TMgr {
 
 	void forceQuit();
 	void showInfo();
+
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
 
 	Screen::TOption mOptionScreen; // _000
 	ebi::Save::TMgr* mSaveMgr;     // _F18

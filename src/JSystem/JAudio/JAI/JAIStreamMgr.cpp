@@ -122,7 +122,7 @@ u8 prepareSw;
 u8 prepareFlag;
 u8 externalAram;
 u8 finishFlag;
-StreamUpdate* streamUpdate;
+StreamUpdateData* streamUpdate;
 u16* streamList;
 JAIStream* streamSound;
 void* initOnCodeStrm;
@@ -131,9 +131,9 @@ u32 systemStatus;
 u32 controlStatus;
 JASHeap* aramBufferHeap;
 JASHeap* aramParentHeap;
-AllocCallback allocCallback;
-DeallocCallback deallocCallback;
-JASHeap* (*externalAramCallback)();
+static AllocCallback allocCallback;
+static DeallocCallback deallocCallback;
+static JASHeap* (*externalAramCallback)();
 int dataFileNumber;
 MgrCallback mgrCallback;
 u32 sChannelMax         = 2;
@@ -141,10 +141,9 @@ u32 decodedBufferBlocks = 0x2760;
 } // namespace StreamMgr
 } // namespace JAInter
 
-/*
- * --INFO--
- * Address:	800B764C
- * Size:	00031C
+/**
+ * @note Address: 0x800B764C
+ * @note Size: 0x31C
  */
 void JAInter::StreamMgr::init()
 {
@@ -156,16 +155,20 @@ void JAInter::StreamMgr::init()
 	streamSystem   = new (JAIBasic::msCurrentHeap, 0x20) JASAramStream();
 	aramBufferHeap = new (JAIBasic::msCurrentHeap, 0x20) JASHeap(nullptr);
 	JASAramStream::initSystem(JAIGlobalParameter::getParamStreamDecodedBufferBlocks(), sChannelMax);
-	streamSound       = JAIBasic::msBasic->makeStream();
-	streamSound->_1A8 = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSet[JAIGlobalParameter::getParamStreamParameterLines()];
-	streamSound->_1A4 = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSet[JAIGlobalParameter::getParamStreamParameterLines()];
-	streamSound->_1AC = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSetInitZero[JAIGlobalParameter::getParamStreamParameterLines()];
-	streamSound->_1B0 = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSetInitZero[JAIGlobalParameter::getParamStreamParameterLines()];
-	streamSound->_1C8 = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSet[sChannelMax];
-	streamSound->_1CC = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSet[sChannelMax];
-	streamSound->_1D0 = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSet[sChannelMax];
-	streamSound->_1D4 = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSet[sChannelMax];
-	streamUpdate      = new (JAIBasic::msCurrentHeap, 0x20) StreamUpdate();
+	streamSound = JAIBasic::msBasic->makeStream();
+	streamSound->mStreamParameter.mPans
+	    = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSet[JAIGlobalParameter::getParamStreamParameterLines()];
+	streamSound->mStreamParameter.mPitches
+	    = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSet[JAIGlobalParameter::getParamStreamParameterLines()];
+	streamSound->mStreamParameter.mFxmixes
+	    = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSetInitZero[JAIGlobalParameter::getParamStreamParameterLines()];
+	streamSound->mStreamParameter.mDolbys
+	    = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSetInitZero[JAIGlobalParameter::getParamStreamParameterLines()];
+	streamSound->mStreamParameter.mChannelVolumes = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSet[sChannelMax];
+	streamSound->mStreamParameter.mChannelPans    = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSet[sChannelMax];
+	streamSound->mStreamParameter.mChannelFxmixes = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSet[sChannelMax];
+	streamSound->mStreamParameter.mChannelDolbys  = new (JAIBasic::msCurrentHeap, 0x20) MoveParaSet[sChannelMax];
+	streamUpdate                                  = new (JAIBasic::msCurrentHeap, 0x20) StreamUpdateData();
 	streamUpdate->reset();
 	if (externalAram == 0) {
 		getDecodedBufferSize(10);
@@ -386,80 +389,61 @@ lbl_800B7954:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800B7968
- * Size:	000358
+/**
+ * @note Address: 0x800B7968
+ * @note Size: 0x358
  */
-void JAInter::StreamMgr::storeStreamBuffer(JAIStream** soundHandlePtr, JAInter::Actor* actor, unsigned long soundID, unsigned long p4,
-                                           unsigned char p5, JAInter::SoundInfo* info)
+void JAInter::StreamMgr::storeStreamBuffer(JAIStream** soundHandlePtr, JAInter::Actor* actor, u32 soundID, u32 p4, u8 p5,
+                                           JAInter::SoundInfo* info)
 {
 	if (soundHandlePtr != nullptr && *soundHandlePtr != nullptr && (*soundHandlePtr)->checkSoundHandle(soundID, info)) {
 		return;
 	}
-	if (streamSound->_15 != 0) {
-		if (info->count.v2[0] > streamSound->getInfoPriority()) {
+	if (streamSound->mState != SOUNDSTATE_Inactive) {
+		if (info->mPriority > streamSound->getInfoPriority()) {
 			return;
 		}
 		streamSound->stop(0);
 	}
-	JAIStream* stream = streamSound;
-	stream->_48       = 0;
-	stream->_4C       = 0;
-	stream->_50       = 0;
-	stream->_54       = 0;
-	stream->_58       = 0;
-	stream->_5C       = 0;
-	stream->_60       = 0;
+
+	JAIStream* stream                   = streamSound;
+	stream->mStreamParameter.mPauseMode = SOUNDPAUSE_Unk0;
+	stream->mStreamParameter._04        = 0;
+
+	stream->mStreamParameter.mVolumeFlags = 0;
+	stream->mStreamParameter.mPitchFlags  = 0;
+	stream->mStreamParameter.mPanFlags    = 0;
+	stream->mStreamParameter.mFxmixFlags  = 0;
+	stream->mStreamParameter.mDolbyFlags  = 0;
+
 	for (int i = 0; i < 20; i++) {
-		stream->_64[i] = MoveParaSet();
+		stream->mStreamParameter.mVolumes[i] = MoveParaSet();
 	}
 	for (u32 i = 0; i < JAIGlobalParameter::getParamStreamParameterLines(); i++) {
-		// stream->_1A4[i]._04 = 1.0f;
-		// stream->_1A4[i]._00 = 1.0f;
-		// stream->_1A4[i]._0C = 0;
-		// stream->_1A8[i]._04 = 0.5f;
-		// stream->_1A8[i]._00 = 0.5f;
-		// stream->_1A8[i]._0C = 0;
-		// stream->_1AC[i]._04 = 0.0f;
-		// stream->_1AC[i]._00 = 0.0f;
-		// stream->_1AC[i]._0C = 0;
-		// stream->_1B0[i]._04 = 0.0f;
-		// stream->_1B0[i]._00 = 0.0f;
-		// stream->_1B0[i]._0C = 0;
-		stream->_1A4[i] = MoveParaSet();
-		stream->_1A8[i] = MoveParaSetInitHalf();
-		stream->_1AC[i] = MoveParaSetInitZero();
-		stream->_1B0[i] = MoveParaSetInitZero();
+		stream->mStreamParameter.mPitches[i] = MoveParaSet();
+		stream->mStreamParameter.mPans[i]    = MoveParaSetInitHalf();
+		stream->mStreamParameter.mFxmixes[i] = MoveParaSetInitZero();
+		stream->mStreamParameter.mDolbys[i]  = MoveParaSetInitZero();
 	}
+
 	for (u32 i = 0; i < getChannelMax(); i++) {
-		// stream->_1C8[i]._04 = 1.0f;
-		// stream->_1C8[i]._00 = 1.0f;
-		// stream->_1C8[i]._0C = 0;
-		// stream->_1CC[i]._04 = 0.5f;
-		// stream->_1CC[i]._00 = 0.5f;
-		// stream->_1CC[i]._0C = 0;
-		// stream->_1D0[i]._04 = 0.0f;
-		// stream->_1D0[i]._00 = 0.0f;
-		// stream->_1D0[i]._0C = 0;
-		// stream->_1D4[i]._04 = 0.0f;
-		// stream->_1D4[i]._00 = 0.0f;
-		// stream->_1D4[i]._0C = 0;
-		stream->_1C8[i] = MoveParaSet();
-		stream->_1CC[i] = MoveParaSetInitHalf();
-		stream->_1D0[i] = MoveParaSetInitZero();
-		stream->_1D4[i] = MoveParaSetInitZero();
+		stream->mStreamParameter.mChannelVolumes[i] = MoveParaSet();
+		stream->mStreamParameter.mChannelPans[i]    = MoveParaSetInitHalf();
+		stream->mStreamParameter.mChannelFxmixes[i] = MoveParaSetInitZero();
+		stream->mStreamParameter.mChannelDolbys[i]  = MoveParaSetInitZero();
 	}
-	stream->_1B8      = 0;
-	stream->_1BC      = 0;
-	stream->_1C0      = 0;
-	stream->_1C4      = 0;
-	stream->_15       = 1;
-	stream->_16       = 10;
-	streamUpdate->_02 = 0;
-	streamSound->_1B4 = streamUpdate;
+
+	stream->mStreamParameter.mChannelVolumeFlags = 0;
+	stream->mStreamParameter.mChannelPanFlags    = 0;
+	stream->mStreamParameter.mChannelFxmixFlags  = 0;
+	stream->mStreamParameter.mChannelDolbyFlags  = 0;
+
+	stream->mState                            = SOUNDSTATE_Stored;
+	stream->_16                               = 10;
+	streamUpdate->mPrepareFlag                = 0;
+	streamSound->mStreamParameter.mUpdateData = streamUpdate;
 	stream->initParameter(soundHandlePtr, actor, soundID, p4, p5, info);
-	if (soundHandlePtr != nullptr) {
+	if (soundHandlePtr) {
 		*soundHandlePtr = stream;
 	}
 	/*
@@ -695,30 +679,28 @@ void JAInter::StreamMgr::storeStreamBuffer(JAIStream** soundHandlePtr, JAInter::
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800B7CC0
- * Size:	000088
+/**
+ * @note Address: 0x800B7CC0
+ * @note Size: 0x88
  */
-void JAInter::StreamMgr::releaseStreamBuffer(JAIStream* stream, unsigned long p2)
+void JAInter::StreamMgr::releaseStreamBuffer(JAIStream* stream, u32 fadeTime)
 {
-	if (p2 == 0 || stream->_15 < 4) {
+	if (fadeTime == 0 || stream->mState < SOUNDSTATE_Playing) {
 		stopDirect();
-		stream->_15       = 0;
-		stream->_1B4->_1C = 0;
-		stream->_1B4->_18 = 0;
+		stream->mState                                         = SOUNDSTATE_Inactive;
+		stream->mStreamParameter.mUpdateData->mStream          = nullptr;
+		stream->mStreamParameter.mUpdateData->mActiveTrackFlag = 0;
 		stream->clearMainSoundPPointer();
-		mgrCallback = 0;
-	} else if (stream->_1B4 != nullptr) {
-		stream->_1B4->_18 |= 2;
-		stream->_28 = p2;
+		mgrCallback = nullptr;
+	} else if (stream->mStreamParameter.mUpdateData) {
+		stream->mStreamParameter.mUpdateData->mActiveTrackFlag |= SOUNDACTIVE_DoFadeout;
+		stream->mFadeCounter = fadeTime;
 	}
 }
 
-/*
- * --INFO--
- * Address:	800B7D48
- * Size:	0001AC
+/**
+ * @note Address: 0x800B7D48
+ * @note Size: 0x1AC
  */
 void JAInter::StreamMgr::checkSystem()
 {
@@ -943,37 +925,36 @@ lbl_800B7EE4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800B7EF4
- * Size:	000A00
+/**
+ * @note Address: 0x800B7EF4
+ * @note Size: 0xA00
  */
 void JAInter::StreamMgr::PlayingStream()
 {
 	if (streamSound == nullptr) {
 		return;
 	}
-	if (3 < streamSound->_15) {
+	if (streamSound->mState >= SOUNDSTATE_Playing) {
 		if (finishFlag == 2) {
-			if (streamSound->_1B4 != nullptr) {
-				streamSound->_1B4->_1C = nullptr;
-				streamSound->_1B4->_18 = 0;
+			if (streamSound->mStreamParameter.mUpdateData) {
+				streamSound->mStreamParameter.mUpdateData->mStream          = nullptr;
+				streamSound->mStreamParameter.mUpdateData->mActiveTrackFlag = 0;
 			}
 			streamSound->clearMainSoundPPointer();
-			streamSound->_15 = 0;
-			mgrCallback      = nullptr;
+			streamSound->mState = SOUNDSTATE_Inactive;
+			mgrCallback         = nullptr;
 			return;
 		}
 		if (streamSound->_16 != 0) {
-			streamSound->_16 -= 1;
+			streamSound->_16--;
 		}
-		if ((streamUpdate->_18 & 2) != 0) {
-			streamSound->setVolume(0.0f, streamSound->_28, 7);
-			streamSound->_15 = 5;
-			streamUpdate->_18 ^= 2;
+		if ((streamUpdate->mActiveTrackFlag & SOUNDACTIVE_DoFadeout) != 0) {
+			streamSound->setVolume(0.0f, streamSound->mFadeCounter, SOUNDPARAM_Fadeout);
+			streamSound->mState = SOUNDSTATE_Fadeout;
+			streamUpdate->mActiveTrackFlag &= ~SOUNDACTIVE_DoFadeout;
 		}
 	}
-	if (2 < streamSound->_15) {
+	if (streamSound->mState >= SOUNDSTATE_Ready) {
 		// TODO
 	}
 	/*
@@ -1764,37 +1745,35 @@ lbl_800B88D0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000038
+/**
+ * @note Address: N/A
+ * @note Size: 0x38
  */
 void JAInter::StreamMgr::RequestStream()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800B88F4
- * Size:	0000A8
+/**
+ * @note Address: 0x800B88F4
+ * @note Size: 0xA8
  */
 void JAInter::StreamMgr::changeCallback()
 {
 	switch (controlStatus) {
 	case 4:
-		if (streamUpdate->_02 == 0) {
+		if (streamUpdate->mPrepareFlag == 0) {
 			prepareSw = 0;
 		}
 		break;
 	case 3:
-		streamSound->_15 = 3;
+		streamSound->mState = SOUNDSTATE_Ready;
 		JAIBasic::msBasic->setSeExtParameter(streamSound);
 		PlayingStream();
 		break;
 	case 5:
-		if (streamSound->_15 == 3) {
-			streamSound->_15 = 4;
+		if (streamSound->mState == SOUNDSTATE_Ready) {
+			streamSound->mState = SOUNDSTATE_Playing;
 		}
 		PlayingStream();
 	}
@@ -1857,10 +1836,9 @@ lbl_800B898C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800B899C
- * Size:	000030
+/**
+ * @note Address: 0x800B899C
+ * @note Size: 0x30
  */
 void JAInter::StreamMgr::processGFrameStream()
 {
@@ -1870,26 +1848,25 @@ void JAInter::StreamMgr::processGFrameStream()
 	}
 }
 
-/*
- * --INFO--
- * Address:	800B89CC
- * Size:	0000E8
+/**
+ * @note Address: 0x800B89CC
+ * @note Size: 0xE8
  */
 void JAInter::StreamMgr::checkEntriedStream()
 {
-	if (streamSound->_15 != 1) {
+	if (streamSound->mState != SOUNDSTATE_Stored) {
 		return;
 	}
-	streamSound->_15 = 2;
+	streamSound->mState = SOUNDSTATE_Loaded;
 	streamUpdate->reset();
-	streamUpdate->_1C = streamSound;
-	u16 v1            = streamList[JAIBasic::msBasic->getSoundOffsetNumberFromID(streamSound->mSoundID) + 2];
+	streamUpdate->mStream = streamSound;
+	u16 v1                = streamList[JAIBasic::msBasic->getSoundOffsetNumberFromID(streamSound->mSoundID) + 2];
 	char buffer[0x100];
 	strcpy(buffer, JAIGlobalParameter::getParamStreamPath());
 	strcat(buffer, (char*)(streamList + v1));
 	playDirect(buffer);
 	initChannel();
-	if (streamUpdate->_02 != 0) {
+	if (streamUpdate->mPrepareFlag != 0) {
 		prepareSw = 1;
 	}
 	mgrCallback = changeCallback;
@@ -1959,12 +1936,11 @@ lbl_800B8AA0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800B8AB4
- * Size:	000070
+/**
+ * @note Address: 0x800B8AB4
+ * @note Size: 0x70
  */
-void JAInter::StreamMgr::systemCallBack(unsigned long status, JASAramStream* stream, void* p3)
+void JAInter::StreamMgr::systemCallBack(u32 status, JASAramStream* stream, void* p3)
 {
 	systemStatus = status;
 	if (status == 0) {
@@ -1981,12 +1957,11 @@ void JAInter::StreamMgr::systemCallBack(unsigned long status, JASAramStream* str
 	}
 }
 
-/*
- * --INFO--
- * Address:	800B8B24
- * Size:	0000C8
+/**
+ * @note Address: 0x800B8B24
+ * @note Size: 0xC8
  */
-void JAInter::StreamMgr::prepareSystem(long inode)
+void JAInter::StreamMgr::prepareSystem(s32 inode)
 {
 	u32 start;
 	u32 length;
@@ -1998,7 +1973,7 @@ void JAInter::StreamMgr::prepareSystem(long inode)
 		if (aramParentHeap != nullptr) {
 			aramBufferHeap->alloc(aramParentHeap, 10 * sChannelMax * JAIGlobalParameter::getParamStreamDecodedBufferBlocks() >> 1);
 		}
-		start  = (u32)aramBufferHeap->_38;
+		start  = (u32)aramBufferHeap->mBase;
 		length = 10 * sChannelMax * JAIGlobalParameter::getParamStreamDecodedBufferBlocks() >> 1;
 	}
 	streamSystem->init(start, length, systemCallBack, nullptr);
@@ -2063,10 +2038,9 @@ lbl_800B8BAC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800B8BEC
- * Size:	000198
+/**
+ * @note Address: 0x800B8BEC
+ * @note Size: 0x198
  */
 void JAInter::StreamMgr::playDirect(char* path)
 {
@@ -2092,7 +2066,7 @@ void JAInter::StreamMgr::playDirect(char* path)
 				if (aramParentHeap != nullptr) {
 					aramBufferHeap->alloc(aramParentHeap, sChannelMax * JAIGlobalParameter::getParamStreamDecodedBufferBlocks() * 10 >> 1);
 				}
-				info.mStart  = aramBufferHeap->_38;
+				info.mStart  = aramBufferHeap->mBase;
 				info.mLength = sChannelMax * JAIGlobalParameter::getParamStreamDecodedBufferBlocks() * 10 >> 1;
 			}
 			streamSystem->init(reinterpret_cast<u32>(info.mStart), info.mLength, systemCallBack, nullptr);
@@ -2224,10 +2198,9 @@ lbl_800B8D6C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800B8D84
- * Size:	00003C
+/**
+ * @note Address: 0x800B8D84
+ * @note Size: 0x3C
  */
 void JAInter::StreamMgr::stopDirect()
 {
@@ -2239,14 +2212,13 @@ void JAInter::StreamMgr::stopDirect()
 	dataFileNumber = 0;
 }
 
-/*
- * --INFO--
- * Address:	800B8DC0
- * Size:	0000EC
+/**
+ * @note Address: 0x800B8DC0
+ * @note Size: 0xEC
  */
 void JAInter::StreamMgr::initChannel()
 {
-	u32 v1 = streamSound->mSoundInfo->unk1;
+	u32 v1 = streamSound->mSoundInfo->mPriority;
 	if (v1 == 0) {
 		return;
 	}
@@ -2341,79 +2313,70 @@ lbl_800B8E90:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	800B8EAC
- * Size:	000008
+/**
+ * @note Address: 0x800B8EAC
+ * @note Size: 0x8
  */
 JASAramStream* JAInter::StreamMgr::getStreamObjectPointer() { return streamSystem; }
 
-/*
- * --INFO--
- * Address:	800B8EB4
- * Size:	000008
+/**
+ * @note Address: 0x800B8EB4
+ * @note Size: 0x8
  */
 u32 JAInter::StreamMgr::getSystemStatus() { return systemStatus; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void JAInter::StreamMgr::setParentHeap(JASHeap*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
  */
 void JAInter::StreamMgr::setAllockCallback(JAInter::StreamMgr::AllocCallback)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 void JAInter::StreamMgr::setDeallockCallback(JAInter::StreamMgr::DeallocCallback)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800B8EBC
- * Size:	000008
+/**
+ * @note Address: 0x800B8EBC
+ * @note Size: 0x8
  */
 u32 JAInter::StreamMgr::getDecodedBufferBlocks() { return decodedBufferBlocks; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
-void JAInter::StreamMgr::setDecodedBufferBlocks(unsigned long count)
+void JAInter::StreamMgr::setDecodedBufferBlocks(u32 count)
 {
 	// UNUSED FUNCTION
 	decodedBufferBlocks = count;
 }
 
-/*
- * --INFO--
- * Address:	800B8EC4
- * Size:	000018
+/**
+ * @note Address: 0x800B8EC4
+ * @note Size: 0x18
  */
-u32 JAInter::StreamMgr::getDecodedBufferSize(unsigned long p1) { return decodedBufferBlocks * p1 * sChannelMax >> 1; }
+u32 JAInter::StreamMgr::getDecodedBufferSize(u32 p1) { return decodedBufferBlocks * p1 * sChannelMax >> 1; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
 JAIStream* JAInter::StreamMgr::getStreamSound()
 {
@@ -2421,28 +2384,25 @@ JAIStream* JAInter::StreamMgr::getStreamSound()
 	return streamSound;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000008
+/**
+ * @note Address: N/A
+ * @note Size: 0x8
  */
-void JAInter::StreamMgr::setChannelMax(unsigned long max)
+void JAInter::StreamMgr::setChannelMax(u32 max)
 {
 	// UNUSED FUNCTION
 	sChannelMax = max;
 }
 
-/*
- * --INFO--
- * Address:	800B8EDC
- * Size:	000008
+/**
+ * @note Address: 0x800B8EDC
+ * @note Size: 0x8
  */
 u32 JAInter::StreamMgr::getChannelMax() { return sChannelMax; }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000010
+/**
+ * @note Address: N/A
+ * @note Size: 0x10
  */
 void JAInter::StreamMgr::setExternalAramBuffer(void (*)(JASHeap*))
 {

@@ -8,10 +8,9 @@
 #include "JSystem/JUtility/JUTResource.h"
 #include "types.h"
 
-/*
- * --INFO--
- * Address:	80042544
- * Size:	0000F8
+/**
+ * @note Address: 0x80042544
+ * @note Size: 0xF8
  */
 J2DWindow::J2DWindow()
     : J2DPane()
@@ -23,15 +22,14 @@ J2DWindow::J2DWindow()
     , mPalette(nullptr)
 {
 	_144 = 0;
-	setContentsColor(JUtility::TColor(0xFFFFFFFF));
-	mBlack = 0;
-	mWhite = 0xFFFFFFFF;
+	setContentsColor(TCOLOR_WHITE_U32);
+	mBlack = TCOLOR_BLACK_U32;
+	mWhite = TCOLOR_WHITE_U32;
 }
 
-/*
- * --INFO--
- * Address:	8004263C
- * Size:	0000AC
+/**
+ * @note Address: 0x8004263C
+ * @note Size: 0xAC
  */
 J2DWindow::J2DWindow(J2DPane* parent, JSURandomInputStream* input, JKRArchive* archive)
     : J2DPane()
@@ -45,10 +43,9 @@ J2DWindow::J2DWindow(J2DPane* parent, JSURandomInputStream* input, JKRArchive* a
 	private_readStream(parent, input, archive);
 }
 
-/*
- * --INFO--
- * Address:	800426E8
- * Size:	000560
+/**
+ * @note Address: 0x800426E8
+ * @note Size: 0x560
  */
 J2DWindow::J2DWindow(J2DPane* parent, JSURandomInputStream* input, J2DMaterial* materialList)
     : _100(nullptr)
@@ -154,10 +151,9 @@ J2DWindow::J2DWindow(J2DPane* parent, JSURandomInputStream* input, J2DMaterial* 
 	initinfo2();
 }
 
-/*
- * --INFO--
- * Address:	80042C48
- * Size:	0004E4
+/**
+ * @note Address: 0x80042C48
+ * @note Size: 0x4E4
  */
 void J2DWindow::private_readStream(J2DPane* parent, JSURandomInputStream* input, JKRArchive* arc)
 {
@@ -220,10 +216,9 @@ void J2DWindow::private_readStream(J2DPane* parent, JSURandomInputStream* input,
 	initinfo2();
 }
 
-/*
- * --INFO--
- * Address:	8004312C
- * Size:	00027C
+/**
+ * @note Address: 0x8004312C
+ * @note Size: 0x27C
  */
 void J2DWindow::initinfo2()
 {
@@ -252,10 +247,9 @@ void J2DWindow::initinfo2()
 	}
 }
 
-/*
- * --INFO--
- * Address:	800433A8
- * Size:	0000A8
+/**
+ * @note Address: 0x800433A8
+ * @note Size: 0xA8
  */
 J2DWindow::~J2DWindow()
 {
@@ -267,10 +261,9 @@ J2DWindow::~J2DWindow()
 	delete mContentsTexture;
 }
 
-/*
- * --INFO--
- * Address:	80043450
- * Size:	000134
+/**
+ * @note Address: 0x80043450
+ * @note Size: 0x134
  */
 void J2DWindow::draw(const JGeometry::TBox2f& inBox)
 {
@@ -283,10 +276,9 @@ void J2DWindow::draw(const JGeometry::TBox2f& inBox)
 	draw(inBox, newBox);
 }
 
-/*
- * --INFO--
- * Address:	80043584
- * Size:	000484
+/**
+ * @note Address: 0x80043584
+ * @note Size: 0x484
  */
 void J2DWindow::draw_private(const JGeometry::TBox2f& box0, const JGeometry::TBox2f& box1)
 {
@@ -388,10 +380,9 @@ void J2DWindow::draw_private(const JGeometry::TBox2f& box0, const JGeometry::TBo
 	GXSetVtxDesc(GX_VA_TEX0, GX_NONE);
 }
 
-/*
- * --INFO--
- * Address:	80043A08
- * Size:	000138
+/**
+ * @note Address: 0x80043A08
+ * @note Size: 0x138
  */
 void J2DWindow::draw(const JGeometry::TBox2f& box0, const JGeometry::TBox2f& box1)
 {
@@ -408,10 +399,9 @@ void J2DWindow::draw(const JGeometry::TBox2f& box0, const JGeometry::TBox2f& box
 	}
 }
 
-/*
- * --INFO--
- * Address:	80043B40
- * Size:	00012C
+/**
+ * @note Address: 0x80043B40
+ * @note Size: 0x12C
  */
 void J2DWindow::resize(f32 maxX, f32 maxY)
 {
@@ -429,10 +419,9 @@ void J2DWindow::resize(f32 maxX, f32 maxY)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80043C6C
- * Size:	0000AC
+/**
+ * @note Address: 0x80043C6C
+ * @note Size: 0xAC
  */
 void J2DWindow::setContentsColor(JUtility::TColor colorA, JUtility::TColor colorB, JUtility::TColor colorC, JUtility::TColor colorD)
 {
@@ -442,10 +431,9 @@ void J2DWindow::setContentsColor(JUtility::TColor colorA, JUtility::TColor color
 	mContentsColorD.set(colorD);
 }
 
-/*
- * --INFO--
- * Address:	80043D18
- * Size:	000068
+/**
+ * @note Address: 0x80043D18
+ * @note Size: 0x68
  */
 void J2DWindow::drawSelf(f32 offsetX, f32 offsetY)
 {
@@ -454,10 +442,9 @@ void J2DWindow::drawSelf(f32 offsetX, f32 offsetY)
 	drawSelf(offsetX, offsetY, &mtx);
 }
 
-/*
- * --INFO--
- * Address:	80043D80
- * Size:	0000F8
+/**
+ * @note Address: 0x80043D80
+ * @note Size: 0xF8
  */
 void J2DWindow::drawSelf(f32 offsetX, f32 offsetY, Mtx* mtx)
 {
@@ -472,10 +459,9 @@ void J2DWindow::drawSelf(f32 offsetX, f32 offsetY, Mtx* mtx)
 	clip(_114);
 }
 
-/*
- * --INFO--
- * Address:	80043E78
- * Size:	00033C
+/**
+ * @note Address: 0x80043E78
+ * @note Size: 0x33C
  */
 void J2DWindow::drawContents(const JGeometry::TBox2f& box)
 {
@@ -514,13 +500,14 @@ void J2DWindow::drawContents(const JGeometry::TBox2f& box)
 			}
 			GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
 			GXBegin(GX_QUADS, GX_VTXFMT0, 4);
-			GXPosition3f32(box.i.x, box.i.y, 0.0f);
+			f32 zero = 0.0f;
+			GXPosition3f32(box.i.x, box.i.y, zero);
 			GXColor1u32(color1);
-			GXPosition3f32(box.f.x, box.i.y, 0.0f);
+			GXPosition3f32(box.f.x, box.i.y, zero);
 			GXColor1u32(color3);
-			GXPosition3f32(box.f.x, box.f.y, 0.0f);
+			GXPosition3f32(box.f.x, box.f.y, zero);
 			GXColor1u32(color4);
-			GXPosition3f32(box.i.x, box.f.y, 0.0f);
+			GXPosition3f32(box.i.x, box.f.y, zero);
 			GXColor1u32(color2);
 			GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_S16, 0);
 		} else {
@@ -534,10 +521,9 @@ void J2DWindow::drawContents(const JGeometry::TBox2f& box)
 	}
 }
 
-/*
- * --INFO--
- * Address:	800441B4
- * Size:	000180
+/**
+ * @note Address: 0x800441B4
+ * @note Size: 0x180
  */
 void J2DWindow::drawFrameTexture(JUTTexture* texture, f32 x0, f32 y0, f32 width, f32 height, u16 maxU, u16 maxV, u16 minU, u16 minV,
                                  bool doLoad)
@@ -551,30 +537,32 @@ void J2DWindow::drawFrameTexture(JUTTexture* texture, f32 x0, f32 y0, f32 width,
 
 	JUtility::TColor color(mColorAlpha | 0xFFFFFF00);
 	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+
+	f32 z = 0.0f;
+
 	GXBegin(GX_QUADS, GX_VTXFMT0, 4);
-	GXPosition3f32(x0, y0, 0.0f);
+	GXPosition3f32(x0, y0, z);
 	GXColor1u32(color);
 	GXTexCoord2u16(minU, minV);
 
-	GXPosition3f32(x1, y0, 0.0f);
+	GXPosition3f32(x1, y0, z);
 	GXColor1u32(color);
 	GXTexCoord2u16(maxU, minV);
 
-	GXPosition3f32(x1, y1, 0.0f);
+	GXPosition3f32(x1, y1, z);
 	GXColor1u32(color);
 	GXTexCoord2u16(maxU, maxV);
 
-	GXPosition3f32(x0, y1, 0.0f);
+	GXPosition3f32(x0, y1, z);
 	GXColor1u32(color);
 	GXTexCoord2u16(minU, maxV);
 
 	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_S16, 0);
 }
 
-/*
- * --INFO--
- * Address:	80044334
- * Size:	00022C
+/**
+ * @note Address: 0x80044334
+ * @note Size: 0x22C
  */
 void J2DWindow::drawFrameTexture(JUTTexture* texture, f32 x0, f32 y0, bool doInvertU, bool doInvertV, bool doLoad)
 {
@@ -725,10 +713,9 @@ lbl_80044404:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80044560
- * Size:	000360
+/**
+ * @note Address: 0x80044560
+ * @note Size: 0x360
  */
 void J2DWindow::drawContentsTexture(f32 x0, f32 y0, f32 xOffset, f32 yOffset)
 {
@@ -753,20 +740,22 @@ void J2DWindow::drawContentsTexture(f32 x0, f32 y0, f32 xOffset, f32 yOffset)
 	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_CLR_RGBA, GX_RGBA6, 0);
 	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
 
+	f32 z = 0.0f;
+
 	GXBegin(GX_QUADS, GX_VTXFMT0, 4);
-	GXPosition3f32(x0, y0, 0.0f);
+	GXPosition3f32(x0, y0, z);
 	GXColor1u32(contentsColor.mColorA);
 	GXTexCoord2f32(xTex0, yTex0);
 
-	GXPosition3f32(x1, y0, 0.0f);
+	GXPosition3f32(x1, y0, z);
 	GXColor1u32(contentsColor.mColorB);
 	GXTexCoord2f32(xTex1, yTex0);
 
-	GXPosition3f32(x1, y1, 0.0f);
+	GXPosition3f32(x1, y1, z);
 	GXColor1u32(contentsColor.mColorD);
 	GXTexCoord2f32(xTex1, yTex1);
 
-	GXPosition3f32(x0, y1, 0.0f);
+	GXPosition3f32(x0, y1, z);
 	GXColor1u32(contentsColor.mColorC);
 	GXTexCoord2f32(xTex0, yTex1);
 
@@ -774,10 +763,9 @@ void J2DWindow::drawContentsTexture(f32 x0, f32 y0, f32 xOffset, f32 yOffset)
 	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_S16, 0);
 }
 
-/*
- * --INFO--
- * Address:	800448C0
- * Size:	0002D8
+/**
+ * @note Address: 0x800448C0
+ * @note Size: 0x2D8
  */
 void J2DWindow::setTevMode(JUTTexture* texture, JUtility::TColor color1, JUtility::TColor color2)
 {
@@ -785,10 +773,10 @@ void J2DWindow::setTevMode(JUTTexture* texture, JUtility::TColor color1, JUtilit
 		GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
 		GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
 		if (texture->getTransparency()) {
-			GXSetTevAlphaIn(GX_TEVSTAGE0, GX_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_ZERO);
+			GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
 		} else {
 			GXSetTevColor(GX_TEVREG2, JUtility::TColor(0xFFFFFFFF));
-			GXSetTevAlphaIn(GX_TEVSTAGE0, GX_ZERO, GX_CA_A2, GX_CA_RASA, GX_ZERO);
+			GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_A2, GX_CA_RASA, GX_CA_ZERO);
 		}
 		GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
 		GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
@@ -800,16 +788,16 @@ void J2DWindow::setTevMode(JUTTexture* texture, JUtility::TColor color1, JUtilit
 		GXSetTevColor(GX_TEVREG1, color2);
 		GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_C0, GX_CC_C2, GX_CC_TEXC, GX_CC_ZERO);
 		if (texture->getTransparency()) {
-			GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_A0, GX_CA_A1, GX_CA_TEXA, GX_ZERO);
+			GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_A0, GX_CA_A1, GX_CA_TEXA, GX_CA_ZERO);
 		} else {
 			GXSetTevColor(GX_TEVREG2, JUtility::TColor(0xFFFFFFFF));
-			GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_A0, GX_CA_A1, GX_CA_A2, GX_ZERO);
+			GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_A0, GX_CA_A1, GX_CA_A2, GX_CA_ZERO);
 		}
 		GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
 		GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
 		GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
 		GXSetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_CPREV, GX_CC_RASC, GX_CC_ZERO);
-		GXSetTevAlphaIn(GX_TEVSTAGE1, GX_ZERO, GX_CA_APREV, GX_CA_RASA, GX_ZERO);
+		GXSetTevAlphaIn(GX_TEVSTAGE1, GX_CA_ZERO, GX_CA_APREV, GX_CA_RASA, GX_CA_ZERO);
 		GXSetTevColorOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
 		GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
 		GXSetNumTevStages(2);
@@ -818,10 +806,9 @@ void J2DWindow::setTevMode(JUTTexture* texture, JUtility::TColor color1, JUtilit
 	GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_SET);
 }
 
-/*
- * --INFO--
- * Address:	80044B98
- * Size:	00007C
+/**
+ * @note Address: 0x80044B98
+ * @note Size: 0x7C
  */
 JUTTexture* J2DWindow::getFrameTexture(u8 frameMaterialIndex, u8 textureIndex) const
 {
@@ -832,10 +819,9 @@ JUTTexture* J2DWindow::getFrameTexture(u8 frameMaterialIndex, u8 textureIndex) c
 	return textures[frameMaterialIndex];
 }
 
-/*
- * --INFO--
- * Address:	80044C14
- * Size:	0000B8
+/**
+ * @note Address: 0x80044C14
+ * @note Size: 0xB8
  */
 bool J2DWindow::isUsed(const ResTIMG* resource)
 {

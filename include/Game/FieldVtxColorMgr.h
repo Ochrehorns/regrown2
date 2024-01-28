@@ -10,33 +10,64 @@
 #include "JSystem/J3D/J3DModel.h"
 
 namespace Game {
-// TODO fields
 struct FieldVtxColorInfo {
 	FieldVtxColorInfo()
 	{
-		_00 = 0xFFFF;
-		_02 = 0xFFFF;
-		_04 = 0;
+		mColorIdx = 0xFFFF;
+		_02       = 0xFFFF;
+		mAlpha    = 0;
 	}
 
 	// Unused/inlined:
 	void setVtxColorIndex(u16);
 
-	u16 _00; // _00
-	u16 _02; // _02
-	u8 _04;  // _04
+	u16 mColorIdx; // _00
+	u16 _02;       // _02
+	u8 mAlpha;     // _04
 };
 
-// TODO fields
+// fabricated, probably some other existing struct
+struct FieldVtxColorControlInfo {
+	/**
+	 * @brief Constructor for FieldVtxColorControlInfo class.
+	 *
+	 * @param info The FieldVtxColorInfo object.
+	 * @param normalisedDistance The normalized distance to the object's position.
+	 */
+	FieldVtxColorControlInfo(FieldVtxColorInfo* info, f32 normalisedDistance)
+	{
+		mNext = nullptr;
+		mInfo = info;
+
+		// Force normalise to 0-1
+		if (normalisedDistance < 0.0f || normalisedDistance > 1.0f) {
+			if (normalisedDistance < 0.0f) {
+				normalisedDistance = 0.0f;
+			}
+			if (normalisedDistance > 1.0f) {
+				normalisedDistance = 1.0f;
+			}
+		}
+
+		// Convert to 0-255, then round to nearest integer
+		f32 alpha       = 255.0f * normalisedDistance;
+		mAlphaThreshold = alpha >= 0.0f ? alpha + 0.5f : alpha - 0.5f;
+	}
+
+	FieldVtxColorControlInfo* mNext; // _00
+	FieldVtxColorInfo* mInfo;        // _04
+	u8 mAlphaThreshold;              // _08
+};
+
 struct FieldVtxColorControl {
 	FieldVtxColorControl(); // inlined
 
-	FieldVtxColorControl* mNext; // _00
-	Vector3f mPosition;          // _04
-	f32 _10;                     // _10
-	f32 mPower;                  // _14
-	f32 _18;                     // _18
-	u32 _1C;                     // _1C, unknown
+	FieldVtxColorControl* mNext;            // _00
+	Vector3f mPosition;                     // _04
+	f32 mRadius;                            // _10
+	f32 mPower;                             // _14
+	f32 mCurrentPower;                      // _18
+	FieldVtxColorControlInfo* mControlInfo; // _1C
 };
 
 struct FieldVtxColorMgr : public J3DVtxColorCalc, public CNode {
@@ -60,19 +91,20 @@ struct FieldVtxColorMgr : public J3DVtxColorCalc, public CNode {
 
 	inline FieldVtxColorInfo& getColorInfo(u16 i) const { return mInfo[i]; }
 
+	inline void setFlag(u32 flag) { mMgrFlags.typeView |= flag; }
+	inline void resetFlag(u32 flag) { mMgrFlags.typeView &= ~flag; }
+	inline bool isFlag(u32 flag) const { return mMgrFlags.typeView & flag; }
+
 	// _00     = VTBL1 (J3DVtxColorCalc)
 	// _00-_0C = J3DVtxColorCalc
 	// _0C     = VTBL2 (CNode)
 	// _0C-_24 = CNode
 	J3DModelData* mModelData;       // _24
 	FieldVtxColorInfo* mInfo;       // _28
-	int _2C;                        // _2C
+	int mInfoCount;                 // _2C
 	FieldVtxColorControl* mControl; // _30
-	f32 _34;                        // _34
-	u8 _38;                         // _38
-	u8 _39;                         // _39
-	u8 _3A;                         // _3A
-	u8 _3B;                         // _3B
+	f32 mSmoothingRate;             // _34
+	BitFlag<u32> mMgrFlags;         // _38
 };
 } // namespace Game
 

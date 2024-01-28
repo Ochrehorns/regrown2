@@ -1,18 +1,18 @@
 JPARTICLE_FILES:=\
 	$(BUILD_DIR)/asm/JSystem/JParticle/JPABaseShape.o\
-	$(BUILD_DIR)/asm/JSystem/JParticle/JPAChildShape.o\
+	$(BUILD_DIR)/src/JSystem/JParticle/JPAChildShape.o\
 	$(BUILD_DIR)/asm/JSystem/JParticle/JPADynamicsBlock.o\
-	$(BUILD_DIR)/asm/JSystem/JParticle/JPAEmitter.o\
+	$(BUILD_DIR)/src/JSystem/JParticle/JPAEmitter.o\
 	$(BUILD_DIR)/asm/JSystem/JParticle/JPAEmitterManager.o\
-	$(BUILD_DIR)/asm/JSystem/JParticle/JPAExTexShape.o\
-	$(BUILD_DIR)/asm/JSystem/JParticle/JPAExtraShape.o\
+	$(BUILD_DIR)/src/JSystem/JParticle/JPAExTexShape.o\
+	$(BUILD_DIR)/src/JSystem/JParticle/JPAExtraShape.o\
 	$(BUILD_DIR)/asm/JSystem/JParticle/JPAFieldBlock.o\
 	$(BUILD_DIR)/src/JSystem/JParticle/JPAKeyBlock.o\
 	$(BUILD_DIR)/asm/JSystem/JParticle/JPAMath.o\
 	$(BUILD_DIR)/asm/JSystem/JParticle/JPAParticle.o\
 	$(BUILD_DIR)/asm/JSystem/JParticle/JPAResource.o\
 	$(BUILD_DIR)/asm/JSystem/JParticle/JPAResourceLoader.o\
-	$(BUILD_DIR)/asm/JSystem/JParticle/JPAResourceManager.o\
+	$(BUILD_DIR)/src/JSystem/JParticle/JPAResourceManager.o\
 	$(BUILD_DIR)/src/JSystem/JParticle/JPATexture.o\
 
 DEPENDS += $(JPARTICLE_FILES:.o=.d)

@@ -1,29 +1,12 @@
 #include "Dolphin/os.h"
 #include "JSystem/JAudio/JAS/JASPortCmd.h"
-#include "types.h"
-
-/*
-    Generated from dpostproc
-
-    .section .ctors, "wa"  # 0x80472F00 - 0x804732C0
-    .4byte __sinit_JASCmdStack_cpp
-
-    .section .bss  # 0x804EFC20 - 0x8051467C
-    .global sCommandListOnce__10JASPortCmd
-    sCommandListOnce__10JASPortCmd:
-        .skip 0x18
-    .global sCommandListStay__10JASPortCmd
-    sCommandListStay__10JASPortCmd:
-        .skip 0xC
-*/
 
 JASPortCmd::TPortHead JASPortCmd::sCommandListOnce;
 JASPortCmd::TPortHead JASPortCmd::sCommandListStay;
 
-/*
- * --INFO--
- * Address:	800A6724
- * Size:	00005C
+/**
+ * @note Address: 0x800A6724
+ * @note Size: 0x5C
  */
 bool JASPortCmd::addPortCmdOnce()
 {
@@ -33,30 +16,27 @@ bool JASPortCmd::addPortCmdOnce()
 	return result;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00005C
+/**
+ * @note Address: N/A
+ * @note Size: 0x5C
  */
 u32 JASPortCmd::addPortCmdStay()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00005C
+/**
+ * @note Address: N/A
+ * @note Size: 0x5C
  */
 u32 JASPortCmd::cancelPortCmdStay()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	800A6780
- * Size:	000024
+/**
+ * @note Address: 0x800A6780
+ * @note Size: 0x24
  */
 bool JASPortCmd::setPortCmd(void (*command)(JASPortArgs*), JASPortArgs* args)
 {
@@ -68,10 +48,9 @@ bool JASPortCmd::setPortCmd(void (*command)(JASPortArgs*), JASPortArgs* args)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	800A67A4
- * Size:	000034
+/**
+ * @note Address: 0x800A67A4
+ * @note Size: 0x34
  */
 void JASPortCmd::execAllCommand()
 {
@@ -79,10 +58,9 @@ void JASPortCmd::execAllCommand()
 	sCommandListStay.execCommandStay();
 }
 
-/*
- * --INFO--
- * Address:	800A67D8
- * Size:	000088
+/**
+ * @note Address: 0x800A67D8
+ * @note Size: 0x88
  */
 void JASPortCmd::TPortHead::execCommandOnce()
 {
@@ -96,10 +74,9 @@ void JASPortCmd::TPortHead::execCommandOnce()
 	OSRestoreInterrupts(interrupts);
 }
 
-/*
- * --INFO--
- * Address:	800A6860
- * Size:	000068
+/**
+ * @note Address: 0x800A6860
+ * @note Size: 0x68
  */
 void JASPortCmd::TPortHead::execCommandStay()
 {
@@ -109,58 +86,3 @@ void JASPortCmd::TPortHead::execCommandStay()
 	}
 	OSRestoreInterrupts(interrupts);
 }
-
-/*
- * --INFO--
- * Address:	800A68C8
- * Size:	00006C
- */
-// void __sinit_JASCmdStack_cpp()
-// {
-// 	/*
-// 	stwu     r1, -0x10(r1)
-// 	mflr     r0
-// 	lis      r3, sCommandListOnce__10JASPortCmd@ha
-// 	stw      r0, 0x14(r1)
-// 	addi     r3, r3, sCommandListOnce__10JASPortCmd@l
-// 	bl       initiate__10JSUPtrListFv
-// 	lis      r3, sCommandListOnce__10JASPortCmd@ha
-// 	lis      r4, __dt__Q210JASPortCmd9TPortHeadFv@ha
-// 	lis      r5, lbl_804F06E8@ha
-// 	addi     r3, r3, sCommandListOnce__10JASPortCmd@l
-// 	addi     r4, r4, __dt__Q210JASPortCmd9TPortHeadFv@l
-// 	addi     r5, r5, lbl_804F06E8@l
-// 	bl       __register_global_object
-// 	lis      r3, sCommandListStay__10JASPortCmd@ha
-// 	addi     r3, r3, sCommandListStay__10JASPortCmd@l
-// 	bl       initiate__10JSUPtrListFv
-// 	lis      r3, sCommandListStay__10JASPortCmd@ha
-// 	lis      r4, __dt__Q210JASPortCmd9TPortHeadFv@ha
-// 	lis      r5, lbl_804F06F4@ha
-// 	addi     r3, r3, sCommandListStay__10JASPortCmd@l
-// 	addi     r4, r4, __dt__Q210JASPortCmd9TPortHeadFv@l
-// 	addi     r5, r5, lbl_804F06F4@l
-// 	bl       __register_global_object
-// 	lwz      r0, 0x14(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x10
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	800A6934
- * Size:	000058
- */
-// JASPortCmd::TPortHead::~TPortHead() { }
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000054
- */
-// void JSUList<JASPortCmd>::~JSUList()
-// {
-// 	// UNUSED FUNCTION
-// }

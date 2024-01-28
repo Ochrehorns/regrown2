@@ -8,17 +8,15 @@
 #include "JSystem/JUtility/JUTNameTab.h"
 
 namespace Game {
-/*
- * --INFO--
- * Address:	8029DD44
- * Size:	000090
+/**
+ * @note Address: 0x8029DD44
+ * @note Size: 0x90
  */
 Koganemushi::Obj::Obj() { }
 
-/*
- * --INFO--
- * Address:	8029DDD4
- * Size:	0001F0
+/**
+ * @note Address: 0x8029DDD4
+ * @note Size: 0x1F0
  */
 void Koganemushi::Obj::changeMaterial()
 {
@@ -30,7 +28,7 @@ void Koganemushi::Obj::changeMaterial()
 
 	j3dModel      = mModel->mJ3dModel;
 	modelData     = j3dModel->mModelData;
-	changeTexture = static_cast<Mgr*>(mMgr)->getChangeTexture();
+	changeTexture = C_MGR->getChangeTexture();
 
 	u16 idx                = modelData->mMaterialTable.mMaterialNames->getIndex("karada");
 	J3DMaterial* karadaMat = modelData->mMaterialTable.mMaterials[idx];
@@ -43,8 +41,8 @@ void Koganemushi::Obj::changeMaterial()
 
 	*newTexture = *changeTexture;
 
-	j3dTexture->setImageOffset((u32)changeTexture);
-	j3dTexture->setPaletteOffset((u32)changeTexture);
+	j3dTexture->setImageOffset((u32)changeTexture, 0);
+	j3dTexture->setPaletteOffset((u32)changeTexture, 0);
 
 	for (u16 i = 0; i < modelData->mMaterialTable.mMaterialNum; i++) {
 		J3DMatPacket* packet  = &j3dModel->mMatPackets[i];
@@ -54,10 +52,9 @@ void Koganemushi::Obj::changeMaterial()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8029DFC4
- * Size:	00011C
+/**
+ * @note Address: 0x8029DFC4
+ * @note Size: 0x11C
  */
 void Koganemushi::Obj::createItem()
 {
@@ -112,10 +109,9 @@ void Koganemushi::Obj::createItem()
 	mHitCount++;
 }
 
-/*
- * --INFO--
- * Address:	8029E0E0
- * Size:	000044
+/**
+ * @note Address: 0x8029E0E0
+ * @note Size: 0x44
  */
 void Koganemushi::Obj::createPressSENormal() { getJAIObject()->startSound(PSSE_EN_KOGANE_HIT, 0); }
 } // namespace Game

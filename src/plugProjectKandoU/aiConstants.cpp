@@ -7,10 +7,9 @@
 namespace Game {
 AIConstants* _aiConstants;
 
-/*
- * --INFO--
- * Address:	801B62B0
- * Size:	000148
+/**
+ * @note Address: 0x801B62B0
+ * @note Size: 0x148
  */
 AIConstants::AIConstants()
     : TagParameters("aiConstants")
@@ -25,7 +24,7 @@ AIConstants::AIConstants()
 
 	char* fileName = "/user/Kando/aiConstants.txt";
 
-	void* handle = JKRDvdRipper::loadToMainRAM(fileName, nullptr, Switch_0, 0, 0, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+	void* handle = JKRDvdToMainRam(fileName, nullptr, Switch_0, 0, 0, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
 
 	if (handle) {
 		RamStream stream(handle, -1);
@@ -35,10 +34,9 @@ AIConstants::AIConstants()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801B63F8
- * Size:	000070
+/**
+ * @note Address: 0x801B63F8
+ * @note Size: 0x70
  * AIConstants::~AIConstants() { }
  */
 

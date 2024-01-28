@@ -89,8 +89,8 @@ void Obj::attackNaviPosition()
 	{
 		Navi* navi = (*iter);
 		if (navi->isAlive()) {
-			f32 minAttackRange = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMinAttackRange.mValue;
-			f32 maxAttackRange = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackRange.mValue;
+			f32 minAttackRange = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackAngle();
+			f32 maxAttackRange = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackRange();
 
 			f32 angledist = getCreatureViewAngle(navi);
 
@@ -115,7 +115,7 @@ void Obj::createGas()
 void Obj::interactGasAttack()
 {
 	f32 maxRange = mPosition.y + static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackRange.mValue;
-	f32 minRange = mPosition.y - static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMinAttackRange.mValue;
+	f32 minRange = mPosition.y - static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackAngle.mValue;
 	f32 radius   = static_cast<Frog::Parms*>(mParms)->mProperParms.mScaleMult.mValue * 50.0f;
 
 	f32 dist = SQUARE(radius);
@@ -125,7 +125,7 @@ void Obj::interactGasAttack()
 	sphere.mRadius   = radius;
 
 	CellIteratorArg iterArg(sphere);
-	iterArg.mIsSphereCollisionDisabled = true;
+	iterArg.mOptimise = true;
 	CellIterator iter(iterArg);
 
 	CI_LOOP(iter)

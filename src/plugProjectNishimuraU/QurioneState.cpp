@@ -4,10 +4,9 @@
 namespace Game {
 namespace Qurione {
 
-/*
- * --INFO--
- * Address:	8025F094
- * Size:	000228
+/**
+ * @note Address: 0x8025F094
+ * @note Size: 0x228
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -20,14 +19,13 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateDead);
 }
 
-/*
- * --INFO--
- * Address:	8025F2BC
- * Size:	0000D0
+/**
+ * @note Address: 0x8025F2BC
+ * @note Size: 0xD0
  */
 void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	wisp->resetUtilityTimer();
 	wisp->mQurioneScale = 0.0f;
 
@@ -39,18 +37,17 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	wisp->enableEvent(0, EB_ModelHidden);
 
 	wisp->mTargetVelocity = Vector3f(0.0f);
-	wisp->startMotion(3, nullptr);
+	wisp->startMotion(QURIONEANIM_Appear, nullptr);
 	wisp->stopMotion();
 }
 
-/*
- * --INFO--
- * Address:	8025F38C
- * Size:	000088
+/**
+ * @note Address: 0x8025F38C
+ * @note Size: 0x88
  */
 void StateStay::exec(EnemyBase* enemy)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	wisp->mUtilityTimer += sys->mDeltaTime;
 
 	if ((wisp->mUtilityTimer > 1.0f) && wisp->isAppear()) {
@@ -58,43 +55,40 @@ void StateStay::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025F414
- * Size:	00005C
+/**
+ * @note Address: 0x8025F414
+ * @note Size: 0x5C
  */
 void StateStay::cleanup(EnemyBase* enemy)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	wisp->setAtari(true);
 	wisp->enableEvent(0, EB_Animating);
 	wisp->disableEvent(0, EB_ModelHidden);
 }
 
-/*
- * --INFO--
- * Address:	8025F470
- * Size:	000074
+/**
+ * @note Address: 0x8025F470
+ * @note Size: 0x74
  */
 void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	wisp->setAtari(false);
 	wisp->mTargetVelocity = Vector3f(0.0f);
-	wisp->startMotion(3, nullptr);
+	wisp->startMotion(QURIONEANIM_Appear, nullptr);
 
 	wisp->createAppearEffect();
 	wisp->startGlowEffect();
 }
 
-/*
- * --INFO--
- * Address:	8025F4E4
- * Size:	000080
+/**
+ * @note Address: 0x8025F4E4
+ * @note Size: 0x80
  */
 void StateAppear::exec(EnemyBase* enemy)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	wisp->addQurioneScale();
 	wisp->setGlowEffectScale();
 	if (wisp->mCurAnim->mIsPlaying && (u32)wisp->mCurAnim->mType == KEYEVENT_END) {
@@ -102,41 +96,38 @@ void StateAppear::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025F564
- * Size:	000054
+/**
+ * @note Address: 0x8025F564
+ * @note Size: 0x54
  */
 void StateAppear::cleanup(EnemyBase* enemy)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	wisp->setAtari(true);
 	wisp->mQurioneScale = 1.0f;
 	wisp->setGlowEffectScale();
 }
 
-/*
- * --INFO--
- * Address:	8025F5B8
- * Size:	00006C
+/**
+ * @note Address: 0x8025F5B8
+ * @note Size: 0x6C
  */
 void StateDisappear::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	wisp->setAtari(false);
 	wisp->mTargetVelocity = Vector3f(0.0f);
-	wisp->startMotion(4, nullptr);
+	wisp->startMotion(QURIONEANIM_Hide, nullptr);
 	wisp->createDisppearEffect();
 }
 
-/*
- * --INFO--
- * Address:	8025F624
- * Size:	000080
+/**
+ * @note Address: 0x8025F624
+ * @note Size: 0x80
  */
 void StateDisappear::exec(EnemyBase* enemy)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	wisp->subQurioneScale();
 	wisp->setGlowEffectScale();
 	if (wisp->mCurAnim->mIsPlaying && (u32)wisp->mCurAnim->mType == KEYEVENT_END) {
@@ -144,14 +135,13 @@ void StateDisappear::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025F6A4
- * Size:	000090
+/**
+ * @note Address: 0x8025F6A4
+ * @note Size: 0x90
  */
 void StateDisappear::cleanup(EnemyBase* enemy)
 {
-	Obj* wisp   = static_cast<Obj*>(enemy);
+	Obj* wisp   = OBJ(enemy);
 	f32 faceDir = wisp->getFaceDir() + PI;
 	if (faceDir >= TAU) {
 		faceDir -= TAU;
@@ -164,26 +154,24 @@ void StateDisappear::cleanup(EnemyBase* enemy)
 	wisp->finishGlowEffect();
 }
 
-/*
- * --INFO--
- * Address:	8025F734
- * Size:	00003C
+/**
+ * @note Address: 0x8025F734
+ * @note Size: 0x3C
  */
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* wisp             = static_cast<Obj*>(enemy);
+	Obj* wisp             = OBJ(enemy);
 	wisp->mTargetVelocity = Vector3f(0.0f);
-	wisp->startMotion(0, nullptr);
+	wisp->startMotion(QURIONEANIM_Wait, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8025F770
- * Size:	000130
+/**
+ * @note Address: 0x8025F770
+ * @note Size: 0x130
  */
 void StateMove::exec(EnemyBase* enemy)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	wisp->moveFaceDir();
 
 	Vector3f position      = wisp->getPosition();
@@ -198,35 +186,32 @@ void StateMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025F8A0
- * Size:	000004
+/**
+ * @note Address: 0x8025F8A0
+ * @note Size: 0x4
  */
 void StateMove::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8025F8A4
- * Size:	00005C
+/**
+ * @note Address: 0x8025F8A4
+ * @note Size: 0x5C
  */
 void StateDrop::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	wisp->disableEvent(0, EB_Cullable);
 	wisp->createHitEffect();
 	wisp->mTargetVelocity = Vector3f(0.0f);
-	wisp->startMotion(1, nullptr);
+	wisp->startMotion(QURIONEANIM_Damage, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8025F900
- * Size:	000068
+/**
+ * @note Address: 0x8025F900
+ * @note Size: 0x68
  */
 void StateDrop::exec(EnemyBase* enemy)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	if (wisp->mCurAnim->mIsPlaying) {
 		if ((u32)wisp->mCurAnim->mType == KEYEVENT_2) {
 			wisp->dropItem();
@@ -236,40 +221,37 @@ void StateDrop::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025F968
- * Size:	000010
+/**
+ * @note Address: 0x8025F968
+ * @note Size: 0x10
  */
 void StateDrop::cleanup(EnemyBase* enemy) { enemy->enableEvent(0, EB_Cullable); }
 
-/*
- * --INFO--
- * Address:	8025F978
- * Size:	0000B0
+/**
+ * @note Address: 0x8025F978
+ * @note Size: 0xB0
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	wisp->setAlive(false);
 	wisp->disableEvent(0, EB_Cullable);
 
-	Vector3f velocity(0.0f, static_cast<Parms*>(wisp->mParms)->mProperParms.mFp04.mValue, 0.0f);
+	Vector3f velocity(0.0f, CG_PROPERPARMS(wisp).mDeathRate.mValue, 0.0f);
 	wisp->setVelocity(velocity);
 	wisp->mTargetVelocity = velocity;
 
 	wisp->resetUtilityTimer();
-	wisp->startMotion(2, nullptr);
+	wisp->startMotion(QURIONEANIM_Run, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8025FA28
- * Size:	000060
+/**
+ * @note Address: 0x8025FA28
+ * @note Size: 0x60
  */
 void StateDead::exec(EnemyBase* enemy)
 {
-	Obj* wisp = static_cast<Obj*>(enemy);
+	Obj* wisp = OBJ(enemy);
 	wisp->mUtilityTimer += sys->mDeltaTime;
 
 	if (wisp->isFlyKill()) {
@@ -278,10 +260,9 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8025FA88
- * Size:	000004
+/**
+ * @note Address: 0x8025FA88
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 

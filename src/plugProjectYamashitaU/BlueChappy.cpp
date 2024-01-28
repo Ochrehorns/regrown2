@@ -2,10 +2,9 @@
 
 namespace Game {
 namespace BlueChappy {
-/*
- * --INFO--
- * Address:	8012BBF4
- * Size:	000144
+/**
+ * @note Address: 0x8012BBF4
+ * @note Size: 0x144
  */
 Obj::Obj()
 {
@@ -14,18 +13,17 @@ Obj::Obj()
 	createEffect();
 }
 
-/*
- * --INFO--
- * Address:	8012BD38
- * Size:	0002B0
+/**
+ * @note Address: 0x8012BD38
+ * @note Size: 0x2B0
  */
 void Obj::changeMaterial()
 {
 	J3DModelData* modelData;
 	J3DModel* j3dModel = mModel->mJ3dModel;
 	modelData          = j3dModel->mModelData;
-	ResTIMG* texture0  = static_cast<Mgr*>(mMgr)->getChangeTexture0();
-	ResTIMG* texture1  = static_cast<Mgr*>(mMgr)->getChangeTexture1();
+	ResTIMG* texture0  = C_MGR->getChangeTexture0();
+	ResTIMG* texture1  = C_MGR->getChangeTexture1();
 
 	j3dModel->calcMaterial();
 
@@ -35,8 +33,8 @@ void Obj::changeMaterial()
 
 	*newTexture0 = *texture0;
 
-	j3dTexture0->setImageOffset((u32)texture0);
-	j3dTexture0->setPaletteOffset((u32)texture0);
+	j3dTexture0->setImageOffset((u32)texture0, 0);
+	j3dTexture0->setPaletteOffset((u32)texture0, 0);
 
 	ResTIMG* newTexture1;
 	J3DTexture* j3dTexture1 = mModel->mJ3dModel->mModelData->mMaterialTable.mTextures;
@@ -44,8 +42,8 @@ void Obj::changeMaterial()
 
 	*newTexture1 = *texture1;
 
-	j3dTexture1->setImageOffset2((u32)texture1);
-	j3dTexture1->setPaletteOffset2((u32)texture1);
+	j3dTexture1->setImageOffset((u32)texture1, 1);
+	j3dTexture1->setPaletteOffset((u32)texture1, 1);
 
 	for (u16 i = 0; i < modelData->mMaterialTable.mMaterialNum; i++) {
 		J3DMatPacket* packet  = &j3dModel->mMatPackets[i];

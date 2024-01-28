@@ -8,44 +8,12 @@
 #include "JSystem/J3D/J3DVertexData.h"
 #include "types.h"
 
-/*
-    Generated from dpostproc
+u8* J3DShape::sOldVcdVatCmd;
+u8 J3DShape::sEnvelopeFlag;
 
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__8J3DShape
-    __vt__8J3DShape:
-        .4byte 0
-        .4byte 0
-        .4byte draw__8J3DShapeCFv
-        .4byte drawFast__8J3DShapeCFv
-        .4byte simpleDraw__8J3DShapeCFv
-        .4byte simpleDrawCache__8J3DShapeCFv
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global sOldVcdVatCmd__8J3DShape
-    sOldVcdVatCmd__8J3DShape:
-        .skip 0x4
-    .global sEnvelopeFlag__8J3DShape
-    sEnvelopeFlag__8J3DShape:
-        .skip 0x4
-    .global sInterruptFlag$1728
-    sInterruptFlag$1728:
-        .skip 0x4
-    .global init$1729
-    init$1729:
-        .skip 0x4
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_805169A8
-    lbl_805169A8:
-        .4byte 0x00000000
-        .4byte 0x00000000
-*/
-
-/*
- * --INFO--
- * Address:	80060850
- * Size:	000070
+/**
+ * @note Address: 0x80060850
+ * @note Size: 0x70
  */
 void J3DShape::initialize()
 {
@@ -61,30 +29,28 @@ void J3DShape::initialize()
 	mShapeDraw         = nullptr;
 	mVtxData           = nullptr;
 	mDrawMtxData       = nullptr;
-	mFlagList          = nullptr;
-	mTree1             = nullptr;
-	mTree2             = nullptr;
+	mScaleFlagArray    = nullptr;
+	mDrawMtx           = nullptr;
+	mNrmMtx            = nullptr;
 	mCurrentViewNumber = reinterpret_cast<u32*>(&j3dDefaultViewNo);
-	mMode              = 0;
-	_48                = 0;
+	mHasNBT            = false;
+	mHasPNMTXIdx       = false;
 }
 
-/*
- * --INFO--
- * Address:	800608C0
- * Size:	000078
+/**
+ * @note Address: 0x800608C0
+ * @note Size: 0x78
  */
 void J3DShape::calcNBTScale(const Vec& p1, Mtx33 p2[3], Mtx33 p3[3])
 {
-	for (u16 i = 0; i < mMtxGroupNum; i++) {
-		mShapeMtx[i]->calcNBTScale(p1, p2[0], ***p3);
+	for (u16 i = 0; i < getMtxGroupNum(); i++) {
+		getShapeMtx(i)->calcNBTScale(p1, p2[0], p3[0]);
 	}
 }
 
-/*
- * --INFO--
- * Address:	80060938
- * Size:	000080
+/**
+ * @note Address: 0x80060938
+ * @note Size: 0x80
  */
 int J3DShape::countBumpMtxNum() const
 {
@@ -95,17 +61,16 @@ int J3DShape::countBumpMtxNum() const
 	return count;
 }
 
-/*
- * --INFO--
- * Address:	800609B8
- * Size:	0000EC
+/**
+ * @note Address: 0x800609B8
+ * @note Size: 0xEC
  */
 bool J3DShape::isSameVcdVatCmd(J3DShape* other)
 {
 	u8* otherVatCmd = other->mVcdVatCmd;
 	u8* thisVatCmd  = mVcdVatCmd;
-	// TODO: is the 0xC0 a sizeof?
-	for (int i = 0; i < 0xC0; i++) {
+
+	for (int i = 0; i < kVcdVatDLSize; i++) {
 		if (otherVatCmd[i] != thisVatCmd[i]) {
 			return false;
 		}
@@ -113,327 +78,121 @@ bool J3DShape::isSameVcdVatCmd(J3DShape* other)
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	80060AA4
- * Size:	0002FC
+/**
+ * @note Address: 0x80060AA4
+ * @note Size: 0x2FC
  */
 void J3DShape::makeVtxArrayCmd()
 {
-	/*
-	stwu     r1, -0x60(r1)
-	mflr     r0
-	stw      r0, 0x64(r1)
-	li       r0, 0
-	stw      r31, 0x5c(r1)
-	addi     r31, r1, 0x14
-	stw      r30, 0x58(r1)
-	addi     r30, r1, 8
-	stw      r29, 0x54(r1)
-	lwz      r4, 0x4c(r3)
-	stb      r0, 8(r1)
-	lwz      r4, 0x14(r4)
-	stw      r0, 0x14(r1)
-	stb      r0, 9(r1)
-	stw      r0, 0x18(r1)
-	stb      r0, 0xa(r1)
-	stw      r0, 0x1c(r1)
-	stb      r0, 0xb(r1)
-	stw      r0, 0x20(r1)
-	stb      r0, 0xc(r1)
-	stw      r0, 0x24(r1)
-	stb      r0, 0xd(r1)
-	stw      r0, 0x28(r1)
-	stb      r0, 0xe(r1)
-	stw      r0, 0x2c(r1)
-	stb      r0, 0xf(r1)
-	stw      r0, 0x30(r1)
-	stb      r0, 0x10(r1)
-	stw      r0, 0x34(r1)
-	stb      r0, 0x11(r1)
-	stw      r0, 0x38(r1)
-	stb      r0, 0x12(r1)
-	stw      r0, 0x3c(r1)
-	stb      r0, 0x13(r1)
-	stw      r0, 0x40(r1)
-	b        lbl_80060CC0
+	GXVtxAttrFmtList* vtxAttr = mVtxData->getVtxAttrFmtList();
 
-lbl_80060B34:
-	cmpwi    r6, 0xa
-	beq      lbl_80060BC4
-	bge      lbl_80060B4C
-	cmpwi    r6, 9
-	bge      lbl_80060B60
-	b        lbl_80060CBC
+	u8 stride[0x0C];
+	void* array[0x0C];
+	for (u32 i = 0; i < 0x0C; i++) {
+		stride[i] = 0;
+		array[i]  = 0;
+	}
 
-lbl_80060B4C:
-	cmpwi    r6, 0x15
-	bge      lbl_80060CBC
-	cmpwi    r6, 0xd
-	bge      lbl_80060C64
-	b        lbl_80060C28
+	for (; vtxAttr->mAttr != GX_VA_NULL; vtxAttr++) {
+		switch (vtxAttr->mAttr) {
+		case GX_VA_POS: {
+			if (vtxAttr->mType == GX_F32)
+				stride[vtxAttr->mAttr - GX_VA_POS] = 0x0C;
+			else
+				stride[vtxAttr->mAttr - GX_VA_POS] = 0x06;
+			array[vtxAttr->mAttr - GX_VA_POS] = mVtxData->getVtxPosArray();
+			mVtxData->setVtxPosFrac(vtxAttr->mFrac);
+			mVtxData->setVtxPosType(vtxAttr->mType);
+		} break;
+		case GX_VA_NRM: {
+			if (vtxAttr->mType == GX_F32)
+				stride[vtxAttr->mAttr - GX_VA_POS] = 0x0C;
+			else
+				stride[vtxAttr->mAttr - GX_VA_POS] = 0x06;
+			array[vtxAttr->mAttr - GX_VA_POS] = mVtxData->getVtxNrmArray();
+			mVtxData->setVtxNrmFrac(vtxAttr->mFrac);
+			mVtxData->setVtxNrmType(vtxAttr->mType);
+		} break;
+		case GX_VA_CLR0:
+		case GX_VA_CLR1: {
+			stride[vtxAttr->mAttr - GX_VA_POS] = 0x04;
+			array[vtxAttr->mAttr - GX_VA_POS]  = mVtxData->getVtxColorArray(vtxAttr->mAttr - GX_VA_CLR0);
+		} break;
+		case GX_VA_TEX0:
+		case GX_VA_TEX1:
+		case GX_VA_TEX2:
+		case GX_VA_TEX3:
+		case GX_VA_TEX4:
+		case GX_VA_TEX5:
+		case GX_VA_TEX6:
+		case GX_VA_TEX7: {
+			if (vtxAttr->mType == GX_F32)
+				stride[vtxAttr->mAttr - GX_VA_POS] = 0x08;
+			else
+				stride[vtxAttr->mAttr - GX_VA_POS] = 0x04;
+			array[vtxAttr->mAttr - GX_VA_POS] = mVtxData->getVtxTexCoordArray(vtxAttr->mAttr - GX_VA_TEX0);
+		} break;
+		default:
+			break;
+		}
+	}
 
-lbl_80060B60:
-	lwz      r0, 8(r4)
-	cmpwi    r0, 4
-	bne      lbl_80060B80
-	addi     r5, r1, 8
-	addi     r0, r6, -9
-	li       r6, 0xc
-	stbx     r6, r5, r0
-	b        lbl_80060B90
+	GXVtxDescList* vtxDesc = mVtxDesc;
+	mHasPNMTXIdx           = false;
+	for (; vtxDesc->mAttr != GX_VA_NULL; vtxDesc++) {
+		if (vtxDesc->mAttr == GX_VA_NBT && vtxDesc->mType != GX_NONE) {
+			mHasNBT = true;
+			stride[GX_VA_NRM - GX_VA_POS] *= 3;
+			array[GX_VA_NRM - GX_VA_POS] = mVtxData->getVtxNBTArray();
+		} else if (vtxDesc->mAttr == GX_VA_PNMTXIDX && vtxDesc->mType != GX_NONE) {
+			mHasPNMTXIdx = true;
+		}
+	}
 
-lbl_80060B80:
-	addi     r5, r1, 8
-	addi     r0, r6, -9
-	li       r6, 6
-	stbx     r6, r5, r0
-
-lbl_80060B90:
-	lwz      r9, 0x4c(r3)
-	addi     r7, r1, 0x14
-	lwz      r5, 0(r4)
-	lwz      r8, 0x18(r9)
-	lbz      r0, 0xc(r4)
-	slwi     r5, r5, 2
-	addi     r6, r5, -36
-	stb      r0, 0x4c(r9)
-	lwz      r0, 8(r4)
-	lwz      r5, 0x4c(r3)
-	stwx     r8, r7, r6
-	stw      r0, 0x50(r5)
-	b        lbl_80060CBC
-
-lbl_80060BC4:
-	lwz      r0, 8(r4)
-	cmpwi    r0, 4
-	bne      lbl_80060BE4
-	addi     r5, r1, 8
-	addi     r0, r6, -9
-	li       r6, 0xc
-	stbx     r6, r5, r0
-	b        lbl_80060BF4
-
-lbl_80060BE4:
-	addi     r5, r1, 8
-	addi     r0, r6, -9
-	li       r6, 6
-	stbx     r6, r5, r0
-
-lbl_80060BF4:
-	lwz      r9, 0x4c(r3)
-	addi     r7, r1, 0x14
-	lwz      r5, 0(r4)
-	lwz      r8, 0x1c(r9)
-	lbz      r0, 0xc(r4)
-	slwi     r5, r5, 2
-	addi     r6, r5, -36
-	stb      r0, 0x54(r9)
-	lwz      r0, 8(r4)
-	lwz      r5, 0x4c(r3)
-	stwx     r8, r7, r6
-	stw      r0, 0x58(r5)
-	b        lbl_80060CBC
-
-lbl_80060C28:
-	lwz      r5, 0(r4)
-	addi     r8, r6, -9
-	lwz      r7, 0x4c(r3)
-	addi     r9, r1, 8
-	addi     r0, r5, -11
-	slwi     r6, r5, 2
-	rlwinm   r5, r0, 2, 0x16, 0x1d
-	li       r10, 4
-	addi     r0, r5, 0x24
-	stbx     r10, r9, r8
-	lwzx     r7, r7, r0
-	addi     r5, r1, 0x14
-	addi     r0, r6, -36
-	stwx     r7, r5, r0
-	b        lbl_80060CBC
-
-lbl_80060C64:
-	lwz      r0, 8(r4)
-	cmpwi    r0, 4
-	bne      lbl_80060C84
-	addi     r5, r1, 8
-	addi     r0, r6, -9
-	li       r6, 8
-	stbx     r6, r5, r0
-	b        lbl_80060C94
-
-lbl_80060C84:
-	addi     r5, r1, 8
-	addi     r0, r6, -9
-	li       r6, 4
-	stbx     r6, r5, r0
-
-lbl_80060C94:
-	lwz      r6, 0(r4)
-	addi     r5, r1, 0x14
-	lwz      r8, 0x4c(r3)
-	addi     r0, r6, -13
-	slwi     r6, r6, 2
-	rlwinm   r7, r0, 2, 0x16, 0x1d
-	addi     r7, r7, 0x2c
-	addi     r0, r6, -36
-	lwzx     r6, r8, r7
-	stwx     r6, r5, r0
-
-lbl_80060CBC:
-	addi     r4, r4, 0x10
-
-lbl_80060CC0:
-	lwz      r6, 0(r4)
-	cmpwi    r6, 0xff
-	bne      lbl_80060B34
-	lwz      r6, 0x30(r3)
-	li       r0, 0
-	stb      r0, 0x48(r3)
-	b        lbl_80060D34
-
-lbl_80060CDC:
-	cmpwi    r4, 0x19
-	bne      lbl_80060D14
-	lwz      r0, 4(r6)
-	cmpwi    r0, 0
-	beq      lbl_80060D14
-	li       r4, 1
-	lbz      r0, 9(r1)
-	stb      r4, 0x34(r3)
-	mulli    r5, r0, 3
-	lwz      r4, 0x4c(r3)
-	lwz      r0, 0x20(r4)
-	stb      r5, 9(r1)
-	stw      r0, 0x18(r1)
-	b        lbl_80060D30
-
-lbl_80060D14:
-	cmpwi    r4, 0
-	bne      lbl_80060D30
-	lwz      r0, 4(r6)
-	cmpwi    r0, 0
-	beq      lbl_80060D30
-	li       r0, 1
-	stb      r0, 0x48(r3)
-
-lbl_80060D30:
-	addi     r6, r6, 8
-
-lbl_80060D34:
-	lwz      r4, 0(r6)
-	cmpwi    r4, 0xff
-	bne      lbl_80060CDC
-	li       r29, 0
-
-lbl_80060D44:
-	lwz      r4, 0(r31)
-	cmplwi   r4, 0
-	beq      lbl_80060D60
-	lbz      r5, 0(r30)
-	addi     r3, r29, 9
-	bl       GDSetArray
-	b        lbl_80060D70
-
-lbl_80060D60:
-	lbz      r5, 0(r30)
-	addi     r3, r29, 9
-	li       r4, 0
-	bl       GDSetArrayRaw
-
-lbl_80060D70:
-	addi     r29, r29, 1
-	addi     r30, r30, 1
-	cmplwi   r29, 0xc
-	addi     r31, r31, 4
-	blt      lbl_80060D44
-	lwz      r0, 0x64(r1)
-	lwz      r31, 0x5c(r1)
-	lwz      r30, 0x58(r1)
-	lwz      r29, 0x54(r1)
-	mtlr     r0
-	addi     r1, r1, 0x60
-	blr
-	*/
+	for (u32 i = 0; i < 0x0C; i++) {
+		if (array[i] != 0)
+			GDSetArray((GXAttr)(i + GX_VA_POS), array[i], stride[i]);
+		else
+			GDSetArrayRaw((GXAttr)(i + GX_VA_POS), nullptr, stride[i]);
+	}
 }
 
-/*
- * --INFO--
- * Address:	80060DA0
- * Size:	0000A0
+/**
+ * @note Address: 0x80060DA0
+ * @note Size: 0xA0
  */
 void J3DShape::makeVcdVatCmd()
 {
-	static int sInterruptFlag = OSDisableInterrupts();
+	static s32 sInterruptFlag;
+	static s8 init;
+
+	if (!init) {
+		sInterruptFlag = OSDisableInterrupts();
+		init           = true;
+	}
 	OSDisableScheduler();
-	GDCurrentDL displayList;
-	// TODO: Is 0xC0 a sizeof something?
-	GDInitGDLObj(&displayList, mVcdVatCmd, 0xC0);
-	__GDCurrentDL = &displayList;
+
+	GDCurrentDL gdl_obj;
+	GDInitGDLObj(&gdl_obj, mVcdVatCmd, kVcdVatDLSize);
+	__GDSetCurrent(&gdl_obj);
 	GDSetVtxDescv(mVtxDesc);
 	makeVtxArrayCmd();
-	J3DGDSetVtxAttrFmtv(GX_VTXFMT0, mVtxData->mVtxAttrFmtList, mMode);
+	J3DGDSetVtxAttrFmtv(GX_VTXFMT0, mVtxData->getVtxAttrFmtList(), mHasNBT);
 	GDPadCurr32();
 	GDFlushCurrToMem();
-	__GDCurrentDL = nullptr;
+	__GDSetCurrent(nullptr);
 	OSEnableScheduler();
 	OSRestoreInterrupts(sInterruptFlag);
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r3
-	lbz      r0, init$1729@sda21(r13)
-	extsb.   r0, r0
-	bne      lbl_80060DD0
-	bl       OSDisableInterrupts
-	li       r0, 1
-	stw      r3, sInterruptFlag$1728@sda21(r13)
-	stb      r0, init$1729@sda21(r13)
-
-lbl_80060DD0:
-	bl       OSDisableScheduler
-	lwz      r4, 0x2c(r31)
-	addi     r3, r1, 8
-	li       r5, 0xc0
-	bl       GDInitGDLObj
-	addi     r0, r1, 8
-	stw      r0, __GDCurrentDL@sda21(r13)
-	lwz      r3, 0x30(r31)
-	bl       GDSetVtxDescv
-	mr       r3, r31
-	bl       makeVtxArrayCmd__8J3DShapeFv
-	lwz      r4, 0x4c(r31)
-	li       r3, 0
-	lbz      r5, 0x34(r31)
-	lwz      r4, 0x14(r4)
-	bl       J3DGDSetVtxAttrFmtv__F9_GXVtxFmtPC17_GXVtxAttrFmtListb
-	bl       GDPadCurr32
-	bl       GDFlushCurrToMem
-	li       r0, 0
-	stw      r0, __GDCurrentDL@sda21(r13)
-	bl       OSEnableScheduler
-	lwz      r3, sInterruptFlag$1728@sda21(r13)
-	bl       OSRestoreInterrupts
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	80060E40
- * Size:	0000A0
+/**
+ * @note Address: 0x80060E40
+ * @note Size: 0xA0
  */
 void J3DShape::loadPreDrawSetting() const
 {
 	if (sOldVcdVatCmd != mVcdVatCmd) {
-		// TODO: Is 0xC0 a sizeof?
-		GXCallDisplayList(mVcdVatCmd, 0xC0);
+		GXCallDisplayList(mVcdVatCmd, kVcdVatDLSize);
 		sOldVcdVatCmd = mVcdVatCmd;
 	}
 	mCurrentMtx.load();
@@ -484,71 +243,70 @@ lbl_80060E74:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80060EE0
- * Size:	000278
+void J3DLoadCPCmd(u8 cmd, u32 param)
+{
+	GXWGFifo.u8  = GX_CMD_LOAD_CP_REG;
+	GXWGFifo.u8  = cmd;
+	GXWGFifo.u32 = param;
+}
+
+static void J3DLoadArrayBasePtr(_GXAttr attr, void* data)
+{
+	u32 idx = (attr == GX_VA_NBT) ? 1 : (attr - GX_VA_POS);
+	J3DLoadCPCmd(0xA0 + idx, ((u32)data & 0x7FFFFFFF));
+}
+
+/**
+ * @note Address: 0x80060EE0
+ * @note Size: 0x278
  */
 void J3DShape::drawFast() const
 {
-	// if (sOldVcdVatCmd != mVcdVatCmd) {
-	// 	GXCallDisplayList(mVcdVatCmd, 0xC0);
-	// 	sOldVcdVatCmd = mVcdVatCmd;
-	// }
-	// if (sEnvelopeFlag != 0 && _48 == 0) {
-	// 	GXWGFifo.u8  = 0x08;
-	// 	GXWGFifo.u8  = 0x30;
-	// 	GXWGFifo.u32 = mCurrentMtx;
-	// 	GXWGFifo.u8  = 0x08;
-	// 	GXWGFifo.u8  = 0x40;
-	// 	GXWGFifo.u32 = _44;
-	// 	GXWGFifo.u8  = 0x10;
-	// 	GXWGFifo.u16 = 0x0001;
-	// 	GXWGFifo.u16 = 0x1018;
-	// 	GXWGFifo.u32 = mCurrentMtx;
-	// 	GXWGFifo.u32 = _44;
-	// }
-	// J3DShapeMtx::sCurrentPipeline = mFlags >> 2 & 7;
-	// GXWGFifo.u8                   = 0x08;
-	// GXWGFifo.u8                   = 0xA0;
-	// GXWGFifo.u32                  = j3dSys._10C & 0x7FFFFFFF;
-	// if (mMode == 0) {
-	// 	GXWGFifo.u8  = 0x08;
-	// 	GXWGFifo.u8  = 0xA1;
-	// 	GXWGFifo.u32 = j3dSys._110 & 0x7FFFFFFF;
-	// }
-	// GXWGFifo.u8  = 0x08;
-	// GXWGFifo.u8  = 0xA2;
-	// GXWGFifo.u32 = j3dSys._114 & 0x7FFFFFFF;
-	// j3dSys._104  = mTree1[*_60];
-	// GXSetArray(0x15, j3dSys._104, 0x30);
-	// j3dSys._108 = mTree2[*_60];
-	// GXSetArray(0x16, j3dSys._108, 0x30);
-	// J3DShapeMtx::sCurrentScaleFlag = mFlagList;
-	// J3DShapeMtx::sNBTFlag          = mMode;
-	// sEnvelopeFlag                  = _48;
-	// J3DShapeMtx::sTexMtxLoadType   = mFlags & 0xF000;
-	// if ((mFlags & 0x200) == 0) {
-	// 	if (J3DShapeMtx::sLODFlag != 0) {
-	// 		J3DShapeMtx::resetMtxLoadCache();
-	// 	}
-	// 	for (u32 i = 0; i < _0A; i++) {
-	// 		if (_38[i] != nullptr) {
-	// 			_38[i]->load();
-	// 		}
-	// 		if (_3C[i] != nullptr) {
-	// 			_3C[i]->draw();
-	// 		}
-	// 	}
-	// } else {
-	// 	J3DFifoLoadPosMtxImm(j3dSys.mShapePacket->_30, 0);
-	// 	J3DFifoLoadNrmMtxImm(j3dSys.mShapePacket->_30, 0);
-	// 	for (u32 i = 0; i < _0A; i++) {
-	// 		if (_3C[i] != nullptr) {
-	// 			_3C[i]->draw();
-	// 		}
-	// 	}
-	// }
+	if (sOldVcdVatCmd != mVcdVatCmd) {
+		GXCallDisplayList(mVcdVatCmd, kVcdVatDLSize);
+		sOldVcdVatCmd = mVcdVatCmd;
+	}
+
+	if (sEnvelopeFlag != 0 && !mHasPNMTXIdx)
+		mCurrentMtx.load();
+
+	// start of setArrayAndBindPipeline();
+	J3DShapeMtx::setCurrentPipeline(getPipeline());
+
+	// start of loadVtxArray
+	J3DLoadArrayBasePtr(GX_VA_POS, j3dSys.getVtxPos());
+	if (!mHasNBT) {
+		J3DLoadArrayBasePtr(GX_VA_NRM, j3dSys.getVtxNrm());
+	}
+	J3DLoadArrayBasePtr(GX_VA_CLR0, j3dSys.getVtxCol());
+	// end of loadVtxArray
+
+	j3dSys.setModelDrawMtx(mDrawMtx[*mCurrentViewNumber]);
+	j3dSys.setModelNrmMtx((Mtx*)mScaleFlagArray[*mCurrentViewNumber]);
+	J3DShapeMtx::sCurrentScaleFlag = mScaleFlagArray;
+	J3DShapeMtx::sNBTFlag          = mHasNBT;
+	sEnvelopeFlag                  = mHasPNMTXIdx;
+	J3DShapeMtx::sTexMtxLoadType   = getTexMtxLoadType();
+	// end of setArrayAndBindPipeline();
+
+	if (!checkFlag(J3DShape_NoMtx)) {
+		// LOD flag shenanigans
+		if (J3DShapeMtx::getLODFlag() != 0)
+			J3DShapeMtx::resetMtxLoadCache();
+
+		for (u16 n = getMtxGroupNum(), i = 0; i < n; i++) {
+			if (getShapeMtx(i) != nullptr)
+				getShapeMtx(i)->load();
+			if (getShapeDraw(i) != nullptr)
+				getShapeDraw(i)->draw();
+		}
+	} else {
+		J3DFifoLoadPosMtxImm(*j3dSys.getShapePacket()->getBaseMtxPtr(), GX_PNMTX0);
+		J3DFifoLoadNrmMtxImm(*j3dSys.getShapePacket()->getBaseMtxPtr(), GX_PNMTX0);
+		for (u16 n = getMtxGroupNum(), i = 0; i < n; i++)
+			if (getShapeDraw(i) != nullptr)
+				getShapeDraw(i)->draw();
+	}
 
 	/*
 	stwu     r1, -0x20(r1)
@@ -565,7 +323,7 @@ void J3DShape::drawFast() const
 	lwz      r0, 0x2c(r31)
 	stw      r0, sOldVcdVatCmd__8J3DShape@sda21(r13)
 
-lbl_80060F14:
+	lbl_80060F14:
 	lbz      r0, sEnvelopeFlag__8J3DShape@sda21(r13)
 	cmplwi   r0, 0
 	beq      lbl_80060F84
@@ -595,7 +353,7 @@ lbl_80060F14:
 	stw      r3, -0x8000(r8)
 	stw      r0, -0x8000(r8)
 
-lbl_80060F84:
+	lbl_80060F84:
 	lwz      r4, 0xc(r31)
 	lis      r3, j3dSys@ha
 	lbz      r0, 0x34(r31)
@@ -619,7 +377,7 @@ lbl_80060F84:
 	clrlwi   r0, r0, 1
 	stw      r0, -0x8000(r5)
 
-lbl_80060FDC:
+	lbl_80060FDC:
 	li       r0, 8
 	lis      r8, 0xCC008000@ha
 	stb      r0, 0xCC008000@l(r8)
@@ -666,14 +424,14 @@ lbl_80060FDC:
 	beq      lbl_80061090
 	bl       resetMtxLoadCache__11J3DShapeMtxFv
 
-lbl_80061090:
+	lbl_80061090:
 	lhz      r28, 0xa(r31)
 	li       r27, 0
 	lwz      r29, 0x38(r31)
 	lwz      r30, 0x3c(r31)
 	b        lbl_800610D8
 
-lbl_800610A4:
+	lbl_800610A4:
 	rlwinm   r31, r27, 2, 0xe, 0x1d
 	lwzx     r3, r29, r31
 	cmplwi   r3, 0
@@ -683,22 +441,22 @@ lbl_800610A4:
 	mtctr    r12
 	bctrl
 
-lbl_800610C4:
+	lbl_800610C4:
 	lwzx     r3, r30, r31
 	cmplwi   r3, 0
 	beq      lbl_800610D4
 	bl       draw__12J3DShapeDrawCFv
 
-lbl_800610D4:
+	lbl_800610D4:
 	addi     r27, r27, 1
 
-lbl_800610D8:
+	lbl_800610D8:
 	clrlwi   r0, r27, 0x10
 	cmplw    r0, r28
 	blt      lbl_800610A4
 	b        lbl_80061144
 
-lbl_800610E8:
+	lbl_800610E8:
 	lis      r3, j3dSys@ha
 	li       r4, 0
 	addi     r30, r3, j3dSys@l
@@ -714,22 +472,22 @@ lbl_800610E8:
 	lwz      r31, 0x3c(r31)
 	b        lbl_80061138
 
-lbl_80061120:
+	lbl_80061120:
 	rlwinm   r0, r28, 2, 0xe, 0x1d
 	lwzx     r3, r31, r0
 	cmplwi   r3, 0
 	beq      lbl_80061134
 	bl       draw__12J3DShapeDrawCFv
 
-lbl_80061134:
+	lbl_80061134:
 	addi     r28, r28, 1
 
-lbl_80061138:
+	lbl_80061138:
 	clrlwi   r0, r28, 0x10
 	cmplw    r0, r27
 	blt      lbl_80061120
 
-lbl_80061144:
+	lbl_80061144:
 	lmw      r27, 0xc(r1)
 	lwz      r0, 0x24(r1)
 	mtlr     r0
@@ -738,21 +496,15 @@ lbl_80061144:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80061158
- * Size:	0000B8
+/**
+ * @note Address: 0x80061158
+ * @note Size: 0xB8
  * draw__8J3DShapeCFv
  */
 void J3DShape::draw() const
 {
-	sOldVcdVatCmd = nullptr;
-	if (mVcdVatCmd != sOldVcdVatCmd) {
-		// TODO: Is 0xC0 a sizeof?
-		GXCallDisplayList(mVcdVatCmd, 0xC0);
-		sOldVcdVatCmd = mVcdVatCmd;
-	}
-	mCurrentMtx.load();
+	resetVcdVatCache();
+	loadPreDrawSetting();
 	drawFast();
 	/*
 	stwu     r1, -0x10(r1)
@@ -806,46 +558,27 @@ lbl_80061190:
 	*/
 }
 
-void GXWriteU8U8U32(u8 v1, u8 v2, u32 v3)
-{
-	GXWGFifo.u8  = v1;
-	GXWGFifo.u8  = v2;
-	GXWGFifo.u32 = v3;
-}
-
-void GXWriteU8U16U16U32U32(u8 p1, u16 p2, u16 p3, u32 p4, u32 p5)
-{
-	GXWGFifo.u8  = p1;
-	GXWGFifo.u16 = p2;
-	GXWGFifo.u16 = p3;
-	GXWGFifo.u32 = p4;
-	GXWGFifo.u32 = p5;
-}
-
-/*
- * --INFO--
- * Address:	80061210
- * Size:	000160
+/**
+ * @note Address: 0x80061210
+ * @note Size: 0x160
  */
 void J3DShape::simpleDraw() const
 {
-	sOldVcdVatCmd = nullptr;
-	if (sOldVcdVatCmd != mVcdVatCmd) {
-		GXCallDisplayList(mVcdVatCmd, 0xC0);
-		sOldVcdVatCmd = mVcdVatCmd;
+	resetVcdVatCache();
+	loadPreDrawSetting();
+	J3DShapeMtx::setCurrentPipeline(getPipeline());
+
+	// start of loadVtxArray
+	J3DLoadArrayBasePtr(GX_VA_POS, j3dSys.getVtxPos());
+	if (!mHasNBT) {
+		J3DLoadArrayBasePtr(GX_VA_NRM, j3dSys.getVtxNrm());
 	}
-	mCurrentMtx.load();
-	if (mMode == 0) {
-		GXWGFifo.u8 = 0x08;
-		GXWGFifo.u8 = 0xA1;
-		// GXWGFifo.u32 = j3dSys.mVtxNorm & 0x7FFFFFFF;
-	}
-	GXWGFifo.u8 = 0x08;
-	GXWGFifo.u8 = 0xA2;
-	// GXWGFifo.u32 = j3dSys.mVtxColor & 0x7FFFFFFF;
-	for (u32 i = 0; i < mMtxGroupNum; i++) {
-		if (mShapeDraw[i] != nullptr) {
-			mShapeDraw[i]->draw();
+	J3DLoadArrayBasePtr(GX_VA_CLR0, j3dSys.getVtxCol());
+	// end of loadVtxArray
+
+	for (u16 n = getMtxGroupNum(), i = 0; i < n; i++) {
+		if (getShapeDraw(i) != nullptr) {
+			getShapeDraw(i)->draw();
 		}
 	}
 	/*
@@ -950,48 +683,31 @@ lbl_80061348:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80061370
- * Size:	000170
+/**
+ * @note Address: 0x80061370
+ * @note Size: 0x170
  */
 void J3DShape::simpleDrawCache() const
 {
 	if (sOldVcdVatCmd != mVcdVatCmd) {
-		GXCallDisplayList(mVcdVatCmd, 0xC0);
+		GXCallDisplayList(mVcdVatCmd, kVcdVatDLSize);
 		sOldVcdVatCmd = mVcdVatCmd;
 	}
-	if (sEnvelopeFlag && _48 == 0) {
+
+	if (J3DShapeMtx::sNBTFlag != 0 && !mHasPNMTXIdx)
 		mCurrentMtx.load();
-		// GXWGFifo.u8  = 0x08;
-		// GXWGFifo.u8  = 0x30;
-		// GXWGFifo.u32 = mCurrentMtx;
-		// GXWGFifo.u8  = 0x08;
-		// GXWGFifo.u8  = 0x40;
-		// GXWGFifo.u32 = _44;
-		// GXWGFifo.u8  = 0x10;
-		// GXWGFifo.u16 = 1;
-		// GXWGFifo.u16 = 0x1018;
-		// GXWGFifo.u32 = mCurrentMtx;
-		// GXWGFifo.u32 = _44;
+
+	// start of loadVtxArray
+	J3DLoadArrayBasePtr(GX_VA_POS, j3dSys.getVtxPos());
+	if (!mHasNBT) {
+		J3DLoadArrayBasePtr(GX_VA_NRM, j3dSys.getVtxNrm());
 	}
-	// GXWriteU8U8U32(0x08, 0xA0, j3dSys.mVtxPos & 0x7FFFFFFF);
-	// GXWGFifo.u8= 0x08;
-	// GXWGFifo.u8= 0xA0;
-	// GXWGFifo.u32= j3dSys._10C & 0x7FFFFFFF;
-	if (mMode == 0) {
-		GXWGFifo.u8 = 0x08;
-		GXWGFifo.u8 = 0xA1;
-		// GXWGFifo.u32= j3dSys.mVtxNorm & 0x7FFFFFFF;
-	}
-	GXWGFifo.u8 = 0x08;
-	GXWGFifo.u8 = 0xA2;
-	// GXWGFifo.u32= j3dSys.mVtxColor & 0x7FFFFFFF;
-	for (u16 i = 0; i < mMtxGroupNum; ++i) {
-		if (mShapeDraw[i] != nullptr) {
-			mShapeDraw[i]->draw();
-		}
-	}
+	J3DLoadArrayBasePtr(GX_VA_CLR0, j3dSys.getVtxCol());
+	// end of loadVtxArray
+
+	for (u16 n = getMtxGroupNum(), i = 0; i < n; i++)
+		if (getShapeDraw(i) != NULL)
+			getShapeDraw(i)->draw();
 	/*
 	stwu     r1, -0x20(r1)
 	mflr     r0

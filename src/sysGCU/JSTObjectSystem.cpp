@@ -1,105 +1,24 @@
-#include "types.h"
+#include "Game/P2JST/ObjectSystem.h"
 #include "nans.h"
 
-/*
-    Generated from dpostproc
-
-    .section .ctors, "wa"  # 0x80472F00 - 0x804732C0
-        .4byte __sinit_JSTObjectSystemCpp
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_8049A300
-    lbl_8049A300:
-        .4byte 0x4A53544F
-        .4byte 0x626A6563
-        .4byte 0x74537973
-        .4byte 0x74656D2E
-        .4byte 0x63707000
-    .global lbl_8049A314
-    lbl_8049A314:
-        .4byte 0x4A534746
-        .4byte 0x696E644F
-        .4byte 0x626A6563
-        .4byte 0x742D2D2D
-        .4byte 0x2D202564
-        .4byte 0x206E6F74
-        .4byte 0x20666F75
-        .4byte 0x6E640A00
-        .4byte 0x00000000
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804EC2C8
-    lbl_804EC2C8:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-    .global __vt__Q34Game5P2JST12ObjectSystem
-    __vt__Q34Game5P2JST12ObjectSystem:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q34Game5P2JST12ObjectSystemFv
-        .4byte JSGFGetType__Q26JStage7TSystemCFv
-        .4byte JSGGetName__Q34Game5P2JST12ObjectSystemCFv
-        .4byte JSGUpdate__Q26JStage7TObjectFv
-        .4byte JSGGetFlag__Q34Game5P2JST12ObjectSystemCFv
-        .4byte JSGSetFlag__Q34Game5P2JST12ObjectSystemFUl
-        .4byte JSGGetData__Q26JStage7TObjectCFUlPvUl
-        .4byte JSGSetData__Q34Game5P2JST12ObjectSystemFUlPCvUl
-        .4byte JSGGetParent__Q26JStage7TObjectCFPPQ26JStage7TObjectPUl
-        .4byte JSGSetParent__Q26JStage7TObjectFPQ26JStage7TObjectUl
-        .4byte JSGSetRelation__Q26JStage7TObjectFbPQ26JStage7TObjectUl
-        .4byte JSGFindNodeID__Q26JStage7TObjectCFPCc
-        .4byte JSGGetNodeTransformation__Q26JStage7TObjectCFUlPA4_f
-        .4byte
-   JSGFindObject__Q34Game5P2JST12ObjectSystemCFPPQ26JStage7TObjectPCcQ26JStage8TEObject
-        .4byte JSGCreateObject__Q26JStage7TSystemFPCcQ26JStage8TEObjectUl
-        .4byte JSGDestroyObject__Q26JStage7TSystemFPQ26JStage7TObject
-        .4byte JSGGetSystemData__Q26JStage7TSystemFUl
-        .4byte JSGSetSystemData__Q26JStage7TSystemFUlUl
-        .4byte 0
-        .4byte 0
-        .4byte "@4@reset__Q34Game5P2JST12ObjectSystemFv"
-        .4byte "@4@update__Q34Game5P2JST12ObjectSystemFv"
-        .4byte "@4@start__Q34Game5P2JST12ObjectSystemFv"
-        .4byte "@4@stop__Q34Game5P2JST12ObjectSystemFv"
-        .4byte parseUserData___Q34Game5P2JST10ObjectBaseFUlPCv
-        .4byte reset__Q34Game5P2JST12ObjectSystemFv
-        .4byte update__Q34Game5P2JST12ObjectSystemFv
-        .4byte entry__Q34Game5P2JST12ObjectSystemFv
-        .4byte start__Q34Game5P2JST12ObjectSystemFv
-        .4byte stop__Q34Game5P2JST12ObjectSystemFv
-        .4byte 0
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global lbl_805161F8
-    lbl_805161F8:
-        .skip 0x4
-    .global lbl_805161FC
-    lbl_805161FC:
-        .skip 0x4
-    .global lbl_80516200
-    lbl_80516200:
-        .skip 0x8
-*/
-
 namespace Game {
+namespace P2JST {
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000E4
+/**
+ * @note Address: N/A
+ * @note Size: 0xE4
  */
-void P2JST::_Print(char*, ...)
-{
-	// UNUSED FUNCTION
-}
+// void P2JST::_Print(char*, ...)
+// {
+// 	// UNUSED FUNCTION
+// }
 
-/*
- * --INFO--
- * Address:	80430954
- * Size:	0000A0
+/**
+ * @note Address: 0x80430954
+ * @note Size: 0xA0
  */
-P2JST::ObjectSystem::ObjectSystem(char const*, Game::MoviePlayer*)
+ObjectSystem::ObjectSystem(char const* name, MoviePlayer* player)
+    : ObjectBase(name, player)
 {
 	/*
 	stwu     r1, -0x20(r1)
@@ -145,27 +64,13 @@ P2JST::ObjectSystem::ObjectSystem(char const*, Game::MoviePlayer*)
 	*/
 }
 
-} // namespace Game
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000054
+/**
+ * @note Address: 0x804309F4
+ * @note Size: 0x84
  */
-void __dt__Q27JGadget33TList_pointer<JStage::TObject*> Fv()
+ObjectSystem::~ObjectSystem()
 {
-	// UNUSED FUNCTION
-}
-
-namespace Game {
-
-/*
- * --INFO--
- * Address:	804309F4
- * Size:	000084
- */
-P2JST::ObjectSystem::~ObjectSystem()
-{
+	destroyObjectAll();
 	/*
 	stwu     r1, -0x10(r1)
 	mflr     r0
@@ -207,12 +112,11 @@ lbl_80430A5C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80430A78
- * Size:	0000A8
+/**
+ * @note Address: 0x80430A78
+ * @note Size: 0xA8
  */
-void P2JST::ObjectSystem::destroyObjectAll()
+void ObjectSystem::destroyObjectAll()
 {
 	/*
 	stwu     r1, -0x30(r1)
@@ -267,12 +171,11 @@ lbl_80430AF4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80430B20
- * Size:	0000F4
+/**
+ * @note Address: 0x80430B20
+ * @note Size: 0xF4
  */
-void P2JST::ObjectSystem::reset()
+void ObjectSystem::reset()
 {
 	/*
 	stwu     r1, -0x30(r1)
@@ -353,12 +256,11 @@ lbl_80430BEC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80430C14
- * Size:	0000AC
+/**
+ * @note Address: 0x80430C14
+ * @note Size: 0xAC
  */
-void P2JST::ObjectSystem::entry()
+void ObjectSystem::entry()
 {
 	/*
 	stwu     r1, -0x30(r1)
@@ -415,12 +317,11 @@ lbl_80430C98:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80430CC0
- * Size:	0000D4
+/**
+ * @note Address: 0x80430CC0
+ * @note Size: 0xD4
  */
-void P2JST::ObjectSystem::update()
+void ObjectSystem::update()
 {
 	/*
 	stwu     r1, -0x30(r1)
@@ -489,12 +390,11 @@ lbl_80430D6C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80430D94
- * Size:	0000D4
+/**
+ * @note Address: 0x80430D94
+ * @note Size: 0xD4
  */
-void P2JST::ObjectSystem::start()
+void ObjectSystem::start()
 {
 	/*
 	stwu     r1, -0x30(r1)
@@ -563,12 +463,11 @@ lbl_80430E40:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80430E68
- * Size:	0000D4
+/**
+ * @note Address: 0x80430E68
+ * @note Size: 0xD4
  */
-void P2JST::ObjectSystem::stop()
+void ObjectSystem::stop()
 {
 	/*
 	stwu     r1, -0x30(r1)
@@ -637,12 +536,11 @@ lbl_80430F14:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80430F3C
- * Size:	0000FC
+/**
+ * @note Address: 0x80430F3C
+ * @note Size: 0xFC
  */
-void P2JST::ObjectSystem::findObject(const(char const*, JStage::TEObject))
+ObjectBase* ObjectSystem::findObject(char const*, JStage::TEObject) const
 {
 	/*
 	stwu     r1, -0x60(r1)
@@ -725,13 +623,13 @@ lbl_80431020:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80431038
- * Size:	000310
+/**
+ * @note Address: 0x80431038
+ * @note Size: 0x310
  */
-void P2JST::ObjectSystem::JSGFindObject(const(JStage::TObject**, char const*, JStage::TEObject))
+int ObjectSystem::JSGFindObject(JStage::TObject**, char const*, JStage::TEObject) const
 {
+	JUT_PANICLINE(449, "JSGFindObject---- %d not found\n");
 	/*
 	.loc_0x0:
 	  stwu      r1, -0xB0(r1)
@@ -985,129 +883,34 @@ void P2JST::ObjectSystem::JSGFindObject(const(JStage::TObject**, char const*, JS
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80431348
- * Size:	000008
+/**
+ * @note Address: 0x80431348
+ * @note Size: 0x8
  */
-void P2JST::ObjectSystem::JSGGetName() const
+char* ObjectSystem::JSGGetName() const { return const_cast<char*>(mName); }
+
+/**
+ * @note Address: 0x80431350
+ * @note Size: 0x8
+ */
+void ObjectSystem::JSGSetFlag(u32 a1) { mFlags = a1; }
+
+/**
+ * @note Address: 0x80431358
+ * @note Size: 0x8
+ */
+u32 ObjectSystem::JSGGetFlag() const { return mFlags; }
+
+/**
+ * @note Address: 0x80431360
+ * @note Size: 0x10
+ */
+void ObjectSystem::JSGSetData(u32 d1, void const* d2, u32 d3)
 {
-	/*
-	lwz      r3, 0xc(r3)
-	blr
-	*/
+	_14 = d1;
+	_18 = d2;
+	_1C = d3;
 }
 
-/*
- * --INFO--
- * Address:	80431350
- * Size:	000008
- */
-void P2JST::ObjectSystem::JSGSetFlag(unsigned long a1)
-{
-	// Generated from stw r4, 0x10(r3)
-	_10 = a1;
-}
-
-/*
- * --INFO--
- * Address:	80431358
- * Size:	000008
- */
-u32 P2JST::ObjectSystem::JSGGetFlag() const
-{
-	/*
-	lwz      r3, 0x10(r3)
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	80431360
- * Size:	000010
- */
-void P2JST::ObjectSystem::JSGSetData(unsigned long, void const*, unsigned long)
-{
-	/*
-	stw      r4, 0x14(r3)
-	stw      r5, 0x18(r3)
-	stw      r6, 0x1c(r3)
-	blr
-	*/
-}
-
+} // namespace P2JST
 } // namespace Game
-
-/*
- * --INFO--
- * Address:	80431370
- * Size:	000028
- */
-void __sinit_JSTObjectSystemCpp()
-{
-	/*
-	lis      r4, __float_nan@ha
-	li       r0, -1
-	lfs      f0, __float_nan@l(r4)
-	lis      r3, lbl_804EC2C8@ha
-	stw      r0, lbl_805161FC@sda21(r13)
-	stfsu    f0, lbl_804EC2C8@l(r3)
-	stfs     f0, lbl_80516200@sda21(r13)
-	stfs     f0, 4(r3)
-	stfs     f0, 8(r3)
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	80431398
- * Size:	000008
- */
-void @4 @Game::P2JST::ObjectSystem::stop()
-{
-	/*
-	addi     r3, r3, -4
-	b        stop__Q34Game5P2JST12ObjectSystemFv
-	*/
-}
-
-/*
- * --INFO--
- * Address:	804313A0
- * Size:	000008
- */
-void @4 @Game::P2JST::ObjectSystem::start()
-{
-	/*
-	addi     r3, r3, -4
-	b        start__Q34Game5P2JST12ObjectSystemFv
-	*/
-}
-
-/*
- * --INFO--
- * Address:	804313A8
- * Size:	000008
- */
-void @4 @Game::P2JST::ObjectSystem::update()
-{
-	/*
-	addi     r3, r3, -4
-	b        update__Q34Game5P2JST12ObjectSystemFv
-	*/
-}
-
-/*
- * --INFO--
- * Address:	804313B0
- * Size:	000008
- */
-void @4 @Game::P2JST::ObjectSystem::reset()
-{
-	/*
-	addi     r3, r3, -4
-	b        reset__Q34Game5P2JST12ObjectSystemFv
-	*/
-}

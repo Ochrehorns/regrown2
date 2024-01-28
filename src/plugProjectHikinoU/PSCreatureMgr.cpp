@@ -1,6 +1,6 @@
 #include "types.h"
 
-#include "PSGame/SoundCreatureMgr.h"
+#include "SysShape/AnimMgr.h"
 
 namespace PSGame {
 void SoundCreatureMgr::registerAnime(J3DAnmBase* arg1, const char* arg2) { }

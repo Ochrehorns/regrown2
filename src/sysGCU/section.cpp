@@ -10,23 +10,24 @@
 #include "System.h"
 #include "Graphics.h"
 #include "nans.h"
+#if BUILDTARGET == USADEMO1
+#include "Game/GameConfig.h"
+#endif
 
 static const f32 unusedSectionArray[] = { 0.0f, 0.0f, 0.0f };
 
 // Some bullshit
 static OSTime sPlayTime = OS_TIMER_CLOCK * 300;
 
-/*
- * --INFO--
- * Address:	80423770
- * Size:	000004
+/**
+ * @note Address: 0x80423770
+ * @note Size: 0x4
  */
 void Section::init() { }
 
-/*
- * --INFO--
- * Address:	80423774
- * Size:	0001D0
+/**
+ * @note Address: 0x80423774
+ * @note Size: 0x1D0
  */
 Section::Section(JFWDisplay* display, JKRHeap* heap, bool b)
 {
@@ -69,19 +70,17 @@ Section::Section(JFWDisplay* display, JKRHeap* heap, bool b)
 
 	mGraphics = new Graphics();
 	sys->mGfx = mGraphics;
+#if BUILDTARGET == USADEMO1
+	mOsTime          = 0;
+	mDemoController1 = new JUTGamePad(JUTGamePad::PORT_0);
+	mDemoController2 = new JUTGamePad(JUTGamePad::PORT_1);
+	mTimer           = 0.0f;
+#endif
 }
 
-/*
- * --INFO--
- * Address:	80423944
- * Size:	000060
- */
-ISection::~ISection() { }
-
-/*
- * --INFO--
- * Address:	804239A4
- * Size:	000120
+/**
+ * @note Address: 0x804239A4
+ * @note Size: 0x120
  */
 Section::~Section()
 {
@@ -119,10 +118,9 @@ inline f32 getX(f32 x)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000090
+/**
+ * @note Address: N/A
+ * @note Size: 0x90
  */
 void Section::loading()
 {
@@ -140,10 +138,9 @@ void Section::loading()
 	} while (sys->isDvdErrorOccured());
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000120
+/**
+ * @note Address: N/A
+ * @note Size: 0x120
  */
 void Section::fadeIn()
 {
@@ -169,14 +166,19 @@ void Section::fadeIn()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0001A4
+/**
+ * @note Address: N/A
+ * @note Size: 0x1A4
  */
 void Section::main()
 {
+#if BUILDTARGET == USADEMO1
+	mOsTime = OSGetTime();
 	drawInit(*mGraphics, Section::One);
+	Game::GameConfig* config = &Game::gGameConfig;
+#else
+	drawInit(*mGraphics, Section::One);
+#endif
 	do {
 		sys->mTimers->newFrame();
 
@@ -192,6 +194,22 @@ void Section::main()
 		update();
 		sys->mTimers->_stop("update");
 		endFrame();
+#if BUILDTARGET == USADEMO1
+		// TODO: This case has to be something around the lines of the below, running into inlining issues with Section::run()
+		/*if (!config->mParms.mE3version.mData || !config->mParms.mNintendoVersion.mData && !forceReset()) {
+		    if (!mDemoController1->mButton.mButton || !mDemoController2->mButton.mButton) {
+		        mTimer = 0.0f;
+		    }
+		    mTimer += sys->mDeltaTime;
+		    if (mTimer > 180.0f)
+		        sys->resetOn(false);
+		}*/
+		if (!config->mParms.mE3version.mData) {
+			mTimer += sys->mDeltaTime;
+			if (mTimer > 180.0f)
+				sys->resetOn(false);
+		}
+#endif
 	} while (!mIsLoadingDVD && mIsMainActive);
 	// Don't draw or render while loading from DVD
 
@@ -211,10 +229,9 @@ void Section::main()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0001D0
+/**
+ * @note Address: N/A
+ * @note Size: 0x1D0
  */
 void Section::fadeOut()
 {
@@ -243,10 +260,9 @@ void Section::fadeOut()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80423AC4
- * Size:	0004B8
+/**
+ * @note Address: 0x80423AC4
+ * @note Size: 0x4B8
  */
 void Section::run()
 {
@@ -271,10 +287,9 @@ void Section::run()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80423F7C
- * Size:	000050
+/**
+ * @note Address: 0x80423F7C
+ * @note Size: 0x50
  */
 void Section::exit()
 {
@@ -284,31 +299,27 @@ void Section::exit()
 	sys->refreshGenNode();
 }
 
-/*
- * --INFO--
- * Address:	80423FCC
- * Size:	000024
+/**
+ * @note Address: 0x80423FCC
+ * @note Size: 0x24
  */
 bool Section::beginFrame() { return sys->beginFrame(); }
 
-/*
- * --INFO--
- * Address:	80423FF0
- * Size:	000024
+/**
+ * @note Address: 0x80423FF0
+ * @note Size: 0x24
  */
 void Section::endFrame() { sys->endFrame(); }
 
-/*
- * --INFO--
- * Address:	80424014
- * Size:	000024
+/**
+ * @note Address: 0x80424014
+ * @note Size: 0x24
  */
 void Section::beginRender() { sys->beginRender(); }
 
-/*
- * --INFO--
- * Address:	80424038
- * Size:	000040
+/**
+ * @note Address: 0x80424038
+ * @note Size: 0x40
  */
 void Section::endRender()
 {
@@ -319,10 +330,9 @@ void Section::endRender()
 	sys->endRender();
 }
 
-/*
- * --INFO--
- * Address:	80424078
- * Size:	00007C
+/**
+ * @note Address: 0x80424078
+ * @note Size: 0x7C
  */
 bool Section::update()
 {
@@ -337,10 +347,9 @@ bool Section::update()
 	return isActive;
 }
 
-/*
- * --INFO--
- * Address:	804240F4
- * Size:	00005C
+/**
+ * @note Address: 0x804240F4
+ * @note Size: 0x5C
  */
 void Section::draw(Graphics& gfx)
 {
@@ -349,10 +358,9 @@ void Section::draw(Graphics& gfx)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80424150
- * Size:	000054
+/**
+ * @note Address: 0x80424150
+ * @note Size: 0x54
  */
 // void __sinit_section_cpp()
 // {

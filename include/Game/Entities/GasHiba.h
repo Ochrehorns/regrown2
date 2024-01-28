@@ -47,12 +47,12 @@ struct Obj : public EnemyBase {
 	{
 		return EnemyTypeID::EnemyID_GasHiba;
 	}
-	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part);  // _278
-	virtual bool pressCallBack(Creature*, f32, CollPart*);                      // _27C
-	virtual bool hipdropCallBack(Creature* source, f32 damage, CollPart* part); // _284
-	virtual bool bombCallBack(Creature*, Vector3f&, f32);                       // _294
-	virtual void lifeRecover() { }                                              // _2C0 (weak)
-	virtual void setFSM(FSM* fsm);                                              // _2F8
+	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part);    // _278
+	virtual bool pressCallBack(Creature* source, f32 damage, CollPart* part);     // _27C
+	virtual bool hipdropCallBack(Creature* source, f32 damage, CollPart* part);   // _284
+	virtual bool bombCallBack(Creature* source, Vector3f& direction, f32 damage); // _294
+	virtual void lifeRecover() { }                                                // _2C0 (weak)
+	virtual void setFSM(FSM* fsm);                                                // _2F8
 	//////////////// VTABLE END
 
 	void interactGasAttack();
@@ -83,7 +83,7 @@ struct Mgr : public EnemyMgrBaseAlwaysMovieActor {
 
 	// virtual ~Mgr();                                     // _58 (weak)
 	virtual void doAlloc();                            // _A8
-	virtual void createObj(int);                       // _A0
+	virtual void createObj(int count);                 // _A0
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
 	{
@@ -99,21 +99,21 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		inline ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mWaitTime(this, 'fp02', "ÉEÉFÉCÉgéûä‘", 2.5f, 0.0f, 100.0f)   // 'wait time'
-		    , mActiveTime(this, 'fp01', "ÉKÉXìfÇ´éûä‘", 2.5f, 0.0f, 100.0f) // 'gas discharge time'
-		    , mFp03(this, 'fp03', "çUåÇäJénéûä‘", 1.0f, 0.0f, 100.0f)       // 'attack start time'
-		    , mStopTime(this, 'fp04', "í‚é~éûä‘", 10.0f, 0.0f, 100.0f)      // 'stop time'
+		    , mWaitTime(this, 'fp02', "ÉEÉFÉCÉgéûä‘", 2.5f, 0.0f, 100.0f)        // 'wait time'
+		    , mActiveTime(this, 'fp01', "ÉKÉXìfÇ´éûä‘", 2.5f, 0.0f, 100.0f)      // 'gas discharge time'
+		    , mAttackStartTime(this, 'fp03', "çUåÇäJénéûä‘", 1.0f, 0.0f, 100.0f) // 'attack start time'
+		    , mStopTime(this, 'fp04', "í‚é~éûä‘", 10.0f, 0.0f, 100.0f)           // 'stop time'
 		    , mLodNear(this, 'fp90', "LOD NEAR", 0.085f, 0.0f, 1.0f)
 		    , mLodMiddle(this, 'fp91', "LOD MIDDLE", 0.05f, 0.0f, 1.0f)
 		{
 		}
 
-		Parm<f32> mWaitTime;   // _804, fp02
-		Parm<f32> mActiveTime; // _82C, fp01
-		Parm<f32> mFp03;       // _854, fp03
-		Parm<f32> mStopTime;   // _87C, fp04
-		Parm<f32> mLodNear;    // _8A4, fp90
-		Parm<f32> mLodMiddle;  // _8CC, fp91
+		Parm<f32> mWaitTime;        // _804, fp02
+		Parm<f32> mActiveTime;      // _82C, fp01
+		Parm<f32> mAttackStartTime; // _854, fp03
+		Parm<f32> mStopTime;        // _87C, fp04
+		Parm<f32> mLodNear;         // _8A4, fp90
+		Parm<f32> mLodMiddle;       // _8CC, fp91
 	};
 
 	Parms() { }
@@ -127,6 +127,12 @@ struct Parms : public EnemyParmsBase {
 
 	// _00-_7F8	= EnemyParmsBase
 	ProperParms mProperParms; // _7F8
+};
+
+enum AnimID {
+	GASHIBAANIM_Wait   = 0,
+	GASHIBAANIM_Attack = 1,
+	GASHIBAANIM_AnimCount, // 2
 };
 
 struct ProperAnimator : public EnemyAnimatorBase {
@@ -150,7 +156,7 @@ enum StateID { // same as Hiba::StateID
 };
 
 struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
+	virtual void init(EnemyBase* enemy); // _08
 
 	// _00		= VTBL
 	// _00-_1C	= EnemyStateMachine
@@ -176,9 +182,9 @@ struct StateAttack : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -190,9 +196,9 @@ struct StateDead : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -204,9 +210,9 @@ struct StateWait : public State {
 	{
 	}
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

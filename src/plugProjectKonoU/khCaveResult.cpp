@@ -18,10 +18,9 @@
 namespace kh {
 namespace Screen {
 
-/*
- * --INFO--
- * Address:	803F8694
- * Size:	00007C
+/**
+ * @note Address: 0x803F8694
+ * @note Size: 0x7C
  */
 DispCaveResult::DispCaveResult(Game::Result::TNode* node, u32 death, u32 otakara, u32 otakaraMax, u32 pokos, bool paydebt, JKRHeap* heap,
                                bool caveComp)
@@ -34,10 +33,9 @@ DispCaveResult::DispCaveResult(Game::Result::TNode* node, u32 death, u32 otakara
 	mHeap             = heap;
 }
 
-/*
- * --INFO--
- * Address:	803F8710
- * Size:	0000AC
+/**
+ * @note Address: 0x803F8710
+ * @note Size: 0xAC
  */
 void DispCaveResult::init(Game::Result::TNode* node, u32 death, bool caveComp)
 {
@@ -65,10 +63,9 @@ void DispCaveResult::init(Game::Result::TNode* node, u32 death, bool caveComp)
 	mIsFinished = 0;
 }
 
-/*
- * --INFO--
- * Address:	803F87BC
- * Size:	000134
+/**
+ * @note Address: 0x803F87BC
+ * @note Size: 0x134
  */
 ObjCaveResult::ObjCaveResult()
 {
@@ -134,10 +131,9 @@ ObjCaveResult::ObjCaveResult()
 	_106              = 0;
 }
 
-/*
- * --INFO--
- * Address:	803F88F0
- * Size:	000B08
+/**
+ * @note Address: 0x803F88F0
+ * @note Size: 0xB08
  */
 void ObjCaveResult::doCreate(JKRArchive* arc)
 {
@@ -282,10 +278,9 @@ void ObjCaveResult::doCreate(JKRArchive* arc)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803F93F8
- * Size:	00034C
+/**
+ * @note Address: 0x803F93F8
+ * @note Size: 0x34C
  */
 bool ObjCaveResult::doUpdate()
 {
@@ -394,10 +389,9 @@ bool ObjCaveResult::doUpdate()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803F9744
- * Size:	000760
+/**
+ * @note Address: 0x803F9744
+ * @note Size: 0x760
  */
 void ObjCaveResult::doDraw(Graphics& gfx)
 {
@@ -405,8 +399,8 @@ void ObjCaveResult::doDraw(Graphics& gfx)
 	J2DPane* paneList[2] = { mScreenMain->search('Nsetp00'), mScreenMain->search('Nsetp01') };
 	J2DPane* pane2       = mScreenMain->search('N3DALL');
 
-	u64 nametags[2] = { 'Piname00', 'Piname01' };
 	u64 icontags[2] = { 'iPicon00', 'iPicon01' };
+	u64 nametags[2] = { 'Piname00', 'Piname01' };
 
 	gfx.mOrthoGraph.setPort();
 	pane1->show();
@@ -443,8 +437,8 @@ void ObjCaveResult::doDraw(Graphics& gfx)
 	int next;
 	FOREACH_NODE(Game::Result::TNode, mResultNode->mChild, cNode)
 	{
-		u32 isOdd = i & 1;
-		f32 calc  = (f32)i * mScrollUpDown + mScrollPos;
+		int isOdd = i % 2;
+		f32 calc  = i * mScrollUpDown + mScrollPos;
 
 		if (calc < -mScrollUpDown || mScissorMax < calc) {
 			paneList[isOdd]->add(0.0f, offs);
@@ -460,9 +454,8 @@ void ObjCaveResult::doDraw(Graphics& gfx)
 				next = cNode->getNextIndex(cNode->mQuantity, cNode->mLostNum);
 				setAlpha(isOdd, 255);
 			}
-			int isEven = !(i % 2);
-			paneList[isOdd]->hide();
-			paneList[isEven]->show();
+			paneList[!isOdd]->hide();
+			paneList[isOdd]->show();
 			paneList[isOdd]->add(0.0f, offs);
 			setTex(mScreenMain, icontags[isOdd], cNode->mTexture->mTexInfo);
 			u64 tag = cNode->mMesgTag;
@@ -479,8 +472,8 @@ void ObjCaveResult::doDraw(Graphics& gfx)
 	}
 
 	for (; i < 6; i++) {
-		int isOdd = i & 1;
-		paneList[isOdd]->hide();
+		int isOdd = i % 2;
+		paneList[!isOdd]->hide();
 		paneList[isOdd]->show();
 		paneList[isOdd]->add(0.0f, offs);
 		setAlpha(isOdd, 255);
@@ -1045,10 +1038,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803F9EA4
- * Size:	000068
+/**
+ * @note Address: 0x803F9EA4
+ * @note Size: 0x68
  */
 bool ObjCaveResult::doUpdateFadein()
 {
@@ -1063,10 +1055,9 @@ bool ObjCaveResult::doUpdateFadein()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803F9F0C
- * Size:	000014
+/**
+ * @note Address: 0x803F9F0C
+ * @note Size: 0x14
  */
 void ObjCaveResult::doUpdateFadeinFinish()
 {
@@ -1074,10 +1065,9 @@ void ObjCaveResult::doUpdateFadeinFinish()
 	_100 = 224.5f;
 }
 
-/*
- * --INFO--
- * Address:	803F9F20
- * Size:	00006C
+/**
+ * @note Address: 0x803F9F20
+ * @note Size: 0x6C
  */
 bool ObjCaveResult::doUpdateFadeout()
 {
@@ -1090,10 +1080,9 @@ bool ObjCaveResult::doUpdateFadeout()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803F9F8C
- * Size:	0001DC
+/**
+ * @note Address: 0x803F9F8C
+ * @note Size: 0x1DC
  */
 void ObjCaveResult::statusNormal()
 {
@@ -1160,10 +1149,9 @@ void ObjCaveResult::statusNormal()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FA168
- * Size:	0000F4
+/**
+ * @note Address: 0x803FA168
+ * @note Size: 0xF4
  */
 void ObjCaveResult::statusScrollUp()
 {
@@ -1177,10 +1165,9 @@ void ObjCaveResult::statusScrollUp()
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_REGI_ROLL, 0);
 }
 
-/*
- * --INFO--
- * Address:	803FA25C
- * Size:	0000F4
+/**
+ * @note Address: 0x803FA25C
+ * @note Size: 0xF4
  */
 void ObjCaveResult::statusScrollDown()
 {
@@ -1194,10 +1181,9 @@ void ObjCaveResult::statusScrollDown()
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_REGI_ROLL, 0);
 }
 
-/*
- * --INFO--
- * Address:	803FA350
- * Size:	0002F0
+/**
+ * @note Address: 0x803FA350
+ * @note Size: 0x2F0
  */
 void ObjCaveResult::statusForceScroll()
 {
@@ -1474,10 +1460,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803FA640
- * Size:	00001C
+/**
+ * @note Address: 0x803FA640
+ * @note Size: 0x1C
  */
 void ObjCaveResult::statusDrumRoll()
 {
@@ -1485,10 +1470,9 @@ void ObjCaveResult::statusDrumRoll()
 	mStatus           = CAVERES_AllMoney;
 }
 
-/*
- * --INFO--
- * Address:	803FA65C
- * Size:	0000C0
+/**
+ * @note Address: 0x803FA65C
+ * @note Size: 0xC0
  */
 void ObjCaveResult::statusAllMoney()
 {
@@ -1505,10 +1489,9 @@ void ObjCaveResult::statusAllMoney()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FA71C
- * Size:	0000E8
+/**
+ * @note Address: 0x803FA71C
+ * @note Size: 0xE8
  */
 void ObjCaveResult::statusDecP()
 {
@@ -1530,10 +1513,9 @@ void ObjCaveResult::statusDecP()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FA804
- * Size:	000110
+/**
+ * @note Address: 0x803FA804
+ * @note Size: 0x110
  */
 void ObjCaveResult::statusLost()
 {
@@ -1546,7 +1528,7 @@ void ObjCaveResult::statusLost()
 		{
 			if (cNode->mLostNum != 0 && ((int)(cNode->mItemMgr->mFlags & LOSTITEM_Unk2) != 2)) {
 				pos.y = mScrollUpDown * (i - 3 - mScrollSelIndexMax) + _100;
-				cNode->mItemMgr->init(pos, i & 1);
+				cNode->mItemMgr->init(pos, i % 2);
 				mChangeStateDelay = mScrollTargetDist;
 				return;
 			}
@@ -1640,10 +1622,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803FA914
- * Size:	0001D4
+/**
+ * @note Address: 0x803FA914
+ * @note Size: 0x1D4
  */
 void ObjCaveResult::statusEffect()
 {
@@ -1674,24 +1655,22 @@ void ObjCaveResult::statusEffect()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FAAE8
- * Size:	000564
+/**
+ * @note Address: 0x803FAAE8
+ * @note Size: 0x564
  */
 void ObjCaveResult::updateAnimation()
 {
-	JGeometry::TVec3f vec1 = mScreenMain->search('Nmask')->getGlbVtx(0);
-	JGeometry::TVec3f vec2 = mScreenMain->search('Nmask')->getGlbVtx(3);
-	mScissorMin            = vec1.y;
-	mScissorMax            = vec2.y;
+	Vector3f vec1 = (mScreenMain->search('Nmask')->getGlbVtx(0));
+	Vector3f vec2 = (mScreenMain->search('Nmask')->getGlbVtx(3));
+	f32 yoffs     = vec1.y;
+	mScissorMin   = vec1.y + 0.5f;
+	mScissorMax   = vec2.y - yoffs;
 
-	mMainAnim->mCurrentFrame          = mAnimTimers[0];
-	mCompleteAnim->mCurrentFrame      = mAnimTimers[1];
-	mMainAnimColor->mCurrentFrame     = mAnimTimers[2];
-	mCompleteAnimColor->mCurrentFrame = mAnimTimers[3];
-	mAnimTexSRT->mCurrentFrame        = mAnimTimers[4];
-	mAnimTevReg->mCurrentFrame        = mAnimTimers[5];
+	mMainAnim->mCurrentFrame      = mAnimTimers[0];
+	mMainAnimColor->mCurrentFrame = mAnimTimers[2];
+	mAnimTexSRT->mCurrentFrame    = mAnimTimers[4];
+	mAnimTevReg->mCurrentFrame    = mAnimTimers[5];
 	mScreenMain->animation();
 
 	if (!isFlag(CAVERESFLAG_SaveOpen)) {
@@ -1724,19 +1703,23 @@ void ObjCaveResult::updateAnimation()
 		mCompleteAnimColor->mCurrentFrame = mAnimTimers[3];
 		mScreenComplete->animation();
 		if (mAnimTimers[1] >= 30.0f && !isFlag(CAVERESFLAG_MakeEfx)) {
-			u32 y = System::getRenderModeObj()->efbHeight;
-			u32 x = System::getRenderModeObj()->fbWidth;
-			efx2d::Arg arg2(x * 0.5f, y * 0.5f);
+			u16 y = System::getRenderModeObj()->efbHeight;
+			u16 x = System::getRenderModeObj()->fbWidth;
+			Vector2f pos(x * 0.5f, y * 0.5f);
+			efx2d::Arg arg2(pos);
 			mEfxComp->create(&arg2);
-			efx2d::Arg arg(getPaneCenterX(mScreenMain->search('NALL')) + msVal._04,
-			               getPaneCenterY(mScreenMain->search('NALL')) + msVal._08);
+
+			Vector2f pos2(getPaneCenterX(mScreenComplete->search('NALL')) + msVal._04,
+			              getPaneCenterY(mScreenComplete->search('NALL')) + msVal._08);
+			efx2d::Arg arg(pos2);
 			efx2d::T2DCavecomp efx;
 			efx.create(&arg);
+
 			setFlag(CAVERESFLAG_MakeEfx);
 		}
 		mAnimTimers[1] += msVal._00;
 		mAnimTimers[3] += msVal._00;
-		if (mCompleteAnim->mFrameLength - 1.0f >= mAnimTimers[1] || mCompleteAnimColor->mFrameLength - 1.0f >= mAnimTimers[3]) {
+		if (mAnimTimers[1] >= mCompleteAnim->getFrameMax() - 1.0f || mAnimTimers[3] >= mCompleteAnimColor->getFrameMax() - 1.0f) {
 			resetFlag(CAVERESFLAG_DrawComp);
 		}
 	}
@@ -2108,21 +2091,19 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803FB04C
- * Size:	000078
+/**
+ * @note Address: 0x803FB04C
+ * @note Size: 0x78
  */
-void ObjCaveResult::setAlpha(int index, unsigned char alpha)
+void ObjCaveResult::setAlpha(int index, u8 alpha)
 {
 	u64 tag[2] = { 'Nicon00', 'Nicon01' };
 	mScreenMain->search(tag[index])->setAlpha(alpha);
 }
 
-/*
- * --INFO--
- * Address:	803FB0C4
- * Size:	0000C4
+/**
+ * @note Address: 0x803FB0C4
+ * @note Size: 0xC4
  */
 void ObjCaveResult::pikminSE()
 {
@@ -2142,10 +2123,9 @@ void ObjCaveResult::pikminSE()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FB188
- * Size:	000038
+/**
+ * @note Address: 0x803FB188
+ * @note Size: 0x38
  */
 LostItem::LostItem()
 {
@@ -2160,10 +2140,9 @@ LostItem::LostItem()
 	mCounter   = false;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000B8
+/**
+ * @note Address: N/A
+ * @note Size: 0xB8
  */
 bool LostItem::update()
 {
@@ -2193,10 +2172,9 @@ bool LostItem::update()
 	return flag;
 }
 
-/*
- * --INFO--
- * Address:	803FB1C0
- * Size:	000080
+/**
+ * @note Address: 0x803FB1C0
+ * @note Size: 0x80
  */
 LostItemMgr::LostItemMgr(int count)
 {
@@ -2210,10 +2188,9 @@ LostItemMgr::LostItemMgr(int count)
 	mFlags = 0;
 }
 
-/*
- * --INFO--
- * Address:	803FB240
- * Size:	0003EC
+/**
+ * @note Address: 0x803FB240
+ * @note Size: 0x3EC
  */
 void LostItemMgr::init(const JGeometry::TVec2f& pos, bool flag)
 {
@@ -2239,8 +2216,8 @@ void LostItemMgr::init(const JGeometry::TVec2f& pos, bool flag)
 			item->_1A        = (10000.0f * x2 - 5000.0f);
 			item->mCounter   = (10.0f * x1 - 8.0f);
 		}
-		float xoffs[5] = { kh::Screen::ObjCaveResult::msVal._24, kh::Screen::ObjCaveResult::msVal._28, kh::Screen::ObjCaveResult::msVal._2C,
-			               kh::Screen::ObjCaveResult::msVal._30, kh::Screen::ObjCaveResult::msVal._34 };
+		f32 xoffs[5] = { kh::Screen::ObjCaveResult::msVal._24, kh::Screen::ObjCaveResult::msVal._28, kh::Screen::ObjCaveResult::msVal._2C,
+			             kh::Screen::ObjCaveResult::msVal._30, kh::Screen::ObjCaveResult::msVal._34 };
 
 		if (flag) {
 			xoffs[0] += 60.0f;
@@ -2522,10 +2499,9 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803FB62C
- * Size:	000108
+/**
+ * @note Address: 0x803FB62C
+ * @note Size: 0x108
  */
 void LostItemMgr::update()
 {
@@ -2543,10 +2519,9 @@ void LostItemMgr::update()
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FB734
- * Size:	000170
+/**
+ * @note Address: 0x803FB734
+ * @note Size: 0x170
  */
 void LostItemMgr::draw(P2DScreen::Mgr_tuning* screen, u64 tag, const ResTIMG* timg, Graphics& gfx)
 {
@@ -2565,10 +2540,9 @@ void LostItemMgr::draw(P2DScreen::Mgr_tuning* screen, u64 tag, const ResTIMG* ti
 	}
 }
 
-/*
- * --INFO--
- * Address:	803FB8A4
- * Size:	0000A4
+/**
+ * @note Address: 0x803FB8A4
+ * @note Size: 0xA4
  */
 void SceneCaveResult::doUserCallBackFunc(Resource::MgrCommand* command)
 {

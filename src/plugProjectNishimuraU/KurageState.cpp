@@ -10,10 +10,9 @@
 namespace Game {
 namespace Kurage {
 
-/*
- * --INFO--
- * Address:	802AB5F0
- * Size:	0003D0
+/**
+ * @note Address: 0x802AB5F0
+ * @note Size: 0x3D0
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -31,22 +30,21 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateGroundFlick);
 }
 
-/*
- * --INFO--
- * Address:	802AB9C0
- * Size:	0000CC
+/**
+ * @note Address: 0x802AB9C0
+ * @note Size: 0xCC
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
+	Obj* kurage = OBJ(enemy);
 	kurage->disableEvent(0, EB_Cullable);
 	kurage->disableEvent(0, EB_DamageAnimEnabled);
 	kurage->mTargetVelocity = Vector3f(0.0f);
 
 	if (kurage->isFlying()) {
-		kurage->startMotion(0, nullptr);
+		kurage->startMotion(KURAGEANIM_DeadFly, nullptr);
 	} else {
-		kurage->startMotion(1, nullptr);
+		kurage->startMotion(KURAGEANIM_DeadGround, nullptr);
 	}
 
 	kurage->enableEvent(0, EB_Untargetable);
@@ -56,14 +54,13 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	kurage->mSoundObj->setKilled();
 }
 
-/*
- * --INFO--
- * Address:	802ABA8C
- * Size:	00014C
+/**
+ * @note Address: 0x802ABA8C
+ * @note Size: 0x14C
  */
 void StateDead::exec(EnemyBase* enemy)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
+	Obj* kurage = OBJ(enemy);
 	f32 frame   = kurage->getMotionFrame();
 	if (frame > 65.0f) {
 		s16 arg = (16.0f - 15.0f * ((frame - 65.0f) / 30.0f));
@@ -72,7 +69,7 @@ void StateDead::exec(EnemyBase* enemy)
 
 	if (kurage->mCurAnim->mIsPlaying) {
 		if ((u32)kurage->mCurAnim->mType == KEYEVENT_2) {
-			EnemyFunc::flickStickPikmin(kurage, 1.0f, 100.0f, 0.0f, -1000.0f, nullptr);
+			EnemyFunc::flickStickPikmin(kurage, 1.0f, 100.0f, 0.0f, FLICK_BACKWARD_ANGLE, nullptr);
 
 		} else if ((u32)kurage->mCurAnim->mType == KEYEVENT_3) {
 			kurage->deathProcedure();
@@ -89,37 +86,34 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802ABBD8
- * Size:	000004
+/**
+ * @note Address: 0x802ABBD8
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802ABBDC
- * Size:	00005C
+/**
+ * @note Address: 0x802ABBDC
+ * @note Size: 0x5C
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kurage         = static_cast<Obj*>(enemy);
+	Obj* kurage         = OBJ(enemy);
 	kurage->mNextState  = KURAGE_NULL;
 	kurage->mStateTimer = 0.0f;
 	kurage->enableEvent(0, EB_Untargetable);
 	kurage->mTargetVelocity = Vector3f(0.0f);
 	kurage->_2C8            = 3.5f;
-	kurage->startMotion(5, nullptr);
+	kurage->startMotion(KURAGEANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802ABC38
- * Size:	000174
+/**
+ * @note Address: 0x802ABC38
+ * @note Size: 0x174
  */
 void StateWait::exec(EnemyBase* enemy)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
+	Obj* kurage = OBJ(enemy);
 	kurage->getJAIObject()->startSound(PSSE_EN_KURAGE_SING, 0);
 	f32 movePitchOffset = kurage->getMovePitchOffset();
 	f32 val             = kurage->setHeightVelocity(movePitchOffset, 0.0f);
@@ -152,38 +146,35 @@ void StateWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802ABDAC
- * Size:	000004
+/**
+ * @note Address: 0x802ABDAC
+ * @note Size: 0x4
  */
 void StateWait::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802ABDB0
- * Size:	000074
+/**
+ * @note Address: 0x802ABDB0
+ * @note Size: 0x74
  */
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kurage         = static_cast<Obj*>(enemy);
+	Obj* kurage         = OBJ(enemy);
 	kurage->mNextState  = KURAGE_NULL;
 	kurage->mStateTimer = 0.0f;
 	kurage->setRandTarget();
 	kurage->enableEvent(0, EB_Untargetable);
 	kurage->mTargetVelocity = Vector3f(0.0f);
 	kurage->_2C8            = 3.5f;
-	kurage->startMotion(5, nullptr);
+	kurage->startMotion(KURAGEANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802ABE24
- * Size:	000208
+/**
+ * @note Address: 0x802ABE24
+ * @note Size: 0x208
  */
 void StateMove::exec(EnemyBase* enemy)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
+	Obj* kurage = OBJ(enemy);
 	kurage->getJAIObject()->startSound(PSSE_EN_KURAGE_SING, 0);
 	f32 movePitchOffset = kurage->getMovePitchOffset();
 	f32 val             = kurage->setHeightVelocity(movePitchOffset, 0.0f);
@@ -206,9 +197,9 @@ void StateMove::exec(EnemyBase* enemy)
 			kurage->finishMotion();
 
 		} else {
-			Parms* parms = static_cast<Parms*>(kurage->mParms);
-			EnemyFunc::walkToTarget(kurage, targetPos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mRotationalAccel.mValue,
-			                        parms->mGeneral.mRotationalSpeed.mValue);
+			Parms* parms = CG_PARMS(kurage);
+			EnemyFunc::walkToTarget(kurage, targetPos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
+			                        parms->mGeneral.mMaxTurnAngle.mValue);
 		}
 	}
 
@@ -229,37 +220,34 @@ void StateMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802AC02C
- * Size:	000004
+/**
+ * @note Address: 0x802AC02C
+ * @note Size: 0x4
  */
 void StateMove::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802AC030
- * Size:	00006C
+/**
+ * @note Address: 0x802AC030
+ * @note Size: 0x6C
  */
 void StateChase::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
+	Obj* kurage = OBJ(enemy);
 	kurage->enableEvent(0, EB_Untargetable);
 	kurage->mNextState = KURAGE_NULL;
 	kurage->setEmotionExcitement();
 	kurage->mTargetVelocity = Vector3f(0.0f);
 	kurage->_2C8            = 3.5f;
-	kurage->startMotion(5, nullptr);
+	kurage->startMotion(KURAGEANIM_Move, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802AC09C
- * Size:	00015C
+/**
+ * @note Address: 0x802AC09C
+ * @note Size: 0x15C
  */
 void StateChase::exec(EnemyBase* enemy)
 {
-	Obj* kurage         = static_cast<Obj*>(enemy);
+	Obj* kurage         = OBJ(enemy);
 	f32 movePitchOffset = kurage->getMovePitchOffset();
 	f32 val             = kurage->setHeightVelocity(movePitchOffset, 0.0f);
 
@@ -269,9 +257,9 @@ void StateChase::exec(EnemyBase* enemy)
 			kurage->finishMotion();
 
 		} else {
-			Parms* parms = static_cast<Parms*>(kurage->mParms);
-			EnemyFunc::walkToTarget(kurage, target, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mRotationalAccel.mValue,
-			                        parms->mGeneral.mRotationalSpeed.mValue);
+			Parms* parms = CG_PARMS(kurage);
+			EnemyFunc::walkToTarget(kurage, target, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
+			                        parms->mGeneral.mMaxTurnAngle.mValue);
 		}
 
 	} else {
@@ -294,21 +282,19 @@ void StateChase::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802AC1F8
- * Size:	000024
+/**
+ * @note Address: 0x802AC1F8
+ * @note Size: 0x24
  */
 void StateChase::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802AC21C
- * Size:	000080
+/**
+ * @note Address: 0x802AC21C
+ * @note Size: 0x80
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
+	Obj* kurage = OBJ(enemy);
 	kurage->enableEvent(0, EB_Untargetable);
 	kurage->mNextState  = KURAGE_NULL;
 	kurage->mStateTimer = 0.0f;
@@ -317,19 +303,18 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	kurage->disableEvent(0, EB_Cullable);
 	kurage->mTargetVelocity = Vector3f(0.0f);
 	kurage->setEmotionExcitement();
-	kurage->startMotion(9, nullptr);
+	kurage->startMotion(KURAGEANIM_Attack, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802AC29C
- * Size:	000244
+/**
+ * @note Address: 0x802AC29C
+ * @note Size: 0x244
  */
 void StateAttack::exec(EnemyBase* enemy)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
-	if (kurage->mHealth <= 0.0f || kurage->mStateTimer > static_cast<Parms*>(kurage->mParms)->mProperParms.mSuckTime.mValue
-	    || kurage->mFallTimer > static_cast<Parms*>(kurage->mParms)->mProperParms.mShakeTime.mValue) {
+	Obj* kurage = OBJ(enemy);
+	if (kurage->mHealth <= 0.0f || kurage->mStateTimer > CG_PROPERPARMS(kurage).mSuckTime.mValue
+	    || kurage->mFallTimer > CG_PROPERPARMS(kurage).mShakeTime.mValue) {
 		kurage->finishMotion();
 	}
 
@@ -376,43 +361,40 @@ void StateAttack::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802AC4E0
- * Size:	000038
+/**
+ * @note Address: 0x802AC4E0
+ * @note Size: 0x38
  */
 void StateAttack::cleanup(EnemyBase* enemy)
 {
-	Obj* kurage        = static_cast<Obj*>(enemy);
+	Obj* kurage        = OBJ(enemy);
 	kurage->mIsSucking = false;
 	kurage->enableEvent(0, EB_Cullable);
 	kurage->setEmotionCaution();
 }
 
-/*
- * --INFO--
- * Address:	802AC518
- * Size:	000068
+/**
+ * @note Address: 0x802AC518
+ * @note Size: 0x68
  */
 void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kurage         = static_cast<Obj*>(enemy);
+	Obj* kurage         = OBJ(enemy);
 	kurage->mNextState  = KURAGE_NULL;
 	kurage->mStateTimer = 0.0f;
 	kurage->enableEvent(0, EB_Untargetable);
 	kurage->mTargetVelocity = Vector3f(0.0f);
 	kurage->setEmotionExcitement();
-	kurage->startMotion(8, nullptr);
+	kurage->startMotion(KURAGEANIM_Fall, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802AC580
- * Size:	000180
+/**
+ * @note Address: 0x802AC580
+ * @note Size: 0x180
  */
 void StateFall::exec(EnemyBase* enemy)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
+	Obj* kurage = OBJ(enemy);
 	if (kurage->isFlying()) {
 		f32 timer = kurage->mStateTimer;
 		kurage->setHeightVelocity(kurage->getFallPitchOffset(timer), 2.0f);
@@ -439,26 +421,24 @@ void StateFall::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802AC700
- * Size:	000024
+/**
+ * @note Address: 0x802AC700
+ * @note Size: 0x24
  */
 void StateFall::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802AC724
- * Size:	0000C0
+/**
+ * @note Address: 0x802AC724
+ * @note Size: 0xC0
  */
 void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kurage         = static_cast<Obj*>(enemy);
+	Obj* kurage         = OBJ(enemy);
 	kurage->mStateTimer = 0.0f;
 	kurage->disableEvent(0, EB_Untargetable);
 	kurage->mTargetVelocity = Vector3f(0.0f);
 	kurage->setEmotionExcitement();
-	kurage->startMotion(6, nullptr);
+	kurage->startMotion(KURAGEANIM_Land, nullptr);
 	kurage->createDownEffect();
 
 	Vector3f position = kurage->getPosition();
@@ -466,14 +446,13 @@ void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 	rumbleMgr->startRumble(9, position, 2);
 }
 
-/*
- * --INFO--
- * Address:	802AC7E4
- * Size:	000080
+/**
+ * @note Address: 0x802AC7E4
+ * @note Size: 0x80
  */
 void StateLand::exec(EnemyBase* enemy)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
+	Obj* kurage = OBJ(enemy);
 	if (kurage->mCurAnim->mIsPlaying && (u32)kurage->mCurAnim->mType == KEYEVENT_END) {
 		if (kurage->mHealth <= 0.0f) {
 			transit(kurage, KURAGE_Dead, nullptr);
@@ -483,37 +462,34 @@ void StateLand::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802AC864
- * Size:	000024
+/**
+ * @note Address: 0x802AC864
+ * @note Size: 0x24
  */
 void StateLand::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802AC888
- * Size:	000068
+/**
+ * @note Address: 0x802AC888
+ * @note Size: 0x68
  */
 void StateTakeOff::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kurage         = static_cast<Obj*>(enemy);
+	Obj* kurage         = OBJ(enemy);
 	kurage->mNextState  = KURAGE_NULL;
 	kurage->mStateTimer = 0.0f;
 	kurage->disableEvent(0, EB_Untargetable);
 	kurage->mTargetVelocity = Vector3f(0.0f);
 	kurage->setEmotionExcitement();
-	kurage->startMotion(7, nullptr);
+	kurage->startMotion(KURAGEANIM_TakeOff, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802AC8F0
- * Size:	0000F0
+/**
+ * @note Address: 0x802AC8F0
+ * @note Size: 0xF0
  */
 void StateTakeOff::exec(EnemyBase* enemy)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
+	Obj* kurage = OBJ(enemy);
 	if (kurage->isFlying()) {
 		kurage->setHeightVelocity(kurage->getTakeOffPitchOffset(), 2.0f);
 	}
@@ -532,37 +508,34 @@ void StateTakeOff::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802AC9E0
- * Size:	000024
+/**
+ * @note Address: 0x802AC9E0
+ * @note Size: 0x24
  */
 void StateTakeOff::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802ACA04
- * Size:	000060
+/**
+ * @note Address: 0x802ACA04
+ * @note Size: 0x60
  */
 void StateGround::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kurage         = static_cast<Obj*>(enemy);
+	Obj* kurage         = OBJ(enemy);
 	kurage->mStateTimer = 0.0f;
 	kurage->disableEvent(0, EB_Untargetable);
 	kurage->mTargetVelocity = Vector3f(0.0f);
 	kurage->setEmotionExcitement();
-	kurage->startMotion(4, nullptr);
+	kurage->startMotion(KURAGEANIM_Wait, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802ACA64
- * Size:	000114
+/**
+ * @note Address: 0x802ACA64
+ * @note Size: 0x114
  */
 void StateGround::exec(EnemyBase* enemy)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
-	if (kurage->mStuckPikminCount == 0 || kurage->mStateTimer > static_cast<Parms*>(kurage->mParms)->mProperParms.mGroundTime.mValue) {
+	Obj* kurage = OBJ(enemy);
+	if (kurage->mStuckPikminCount == 0 || kurage->mStateTimer > CG_PROPERPARMS(kurage).mGroundTime.mValue) {
 		kurage->finishMotion();
 	}
 
@@ -579,26 +552,24 @@ void StateGround::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802ACB78
- * Size:	000024
+/**
+ * @note Address: 0x802ACB78
+ * @note Size: 0x24
  */
 void StateGround::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802ACB9C
- * Size:	0000E0
+/**
+ * @note Address: 0x802ACB9C
+ * @note Size: 0xE0
  */
 void StateFlyFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
+	Obj* kurage = OBJ(enemy);
 	kurage->enableEvent(0, EB_Untargetable);
 	kurage->mNextState      = KURAGE_NULL;
 	kurage->mTargetVelocity = Vector3f(0.0f);
 	kurage->setEmotionExcitement();
-	kurage->startMotion(2, nullptr);
+	kurage->startMotion(KURAGEANIM_FlickFly, nullptr);
 
 	Vector3f position = kurage->getPosition();
 	efx::Arg fxArg(position);
@@ -606,22 +577,21 @@ void StateFlyFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	flickFx.create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	802ACC7C
- * Size:	00017C
+/**
+ * @note Address: 0x802ACC7C
+ * @note Size: 0x17C
  */
 void StateFlyFlick::exec(EnemyBase* enemy)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
+	Obj* kurage = OBJ(enemy);
 	f32 val     = kurage->setHeightVelocity(kurage->getFlickPitchOffset(), 5.0f);
 	if (kurage->mCurAnim->mIsPlaying) {
 		if ((u32)kurage->mCurAnim->mType == KEYEVENT_2) {
-			Parms* parms = static_cast<Parms*>(kurage->mParms);
-			EnemyFunc::flickStickPikmin(kurage, parms->mGeneral.mShakeRateMaybe.mValue, parms->mGeneral.mShakeKnockback.mValue,
+			Parms* parms = CG_PARMS(kurage);
+			EnemyFunc::flickStickPikmin(kurage, parms->mGeneral.mShakeChance.mValue, parms->mGeneral.mShakeKnockback.mValue,
 			                            parms->mGeneral.mShakeDamage.mValue, -1000.0, nullptr);
-			kurage->mToFlick  = 0.0f;
-			Vector3f position = kurage->getPosition();
+			kurage->mFlickTimer = 0.0f;
+			Vector3f position   = kurage->getPosition();
 			rumbleMgr->startRumble(9, position, 2);
 
 		} else if ((u32)kurage->mCurAnim->mType == KEYEVENT_END) {
@@ -639,26 +609,24 @@ void StateFlyFlick::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802ACDF8
- * Size:	000024
+/**
+ * @note Address: 0x802ACDF8
+ * @note Size: 0x24
  */
 void StateFlyFlick::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	802ACE1C
- * Size:	0000DC
+/**
+ * @note Address: 0x802ACE1C
+ * @note Size: 0xDC
  */
 void StateGroundFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kurage         = static_cast<Obj*>(enemy);
+	Obj* kurage         = OBJ(enemy);
 	kurage->mStateTimer = 0.0f;
 	kurage->disableEvent(0, EB_Untargetable);
 	kurage->mTargetVelocity = Vector3f(0.0f);
 	kurage->setEmotionExcitement();
-	kurage->startMotion(3, nullptr);
+	kurage->startMotion(KURAGEANIM_FlickGround, nullptr);
 
 	Vector3f position = kurage->getPosition();
 	efx::Arg fxArg(position);
@@ -666,31 +634,30 @@ void StateGroundFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	flickFx.create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	802ACEF8
- * Size:	00014C
+/**
+ * @note Address: 0x802ACEF8
+ * @note Size: 0x14C
  */
 void StateGroundFlick::exec(EnemyBase* enemy)
 {
-	Obj* kurage = static_cast<Obj*>(enemy);
+	Obj* kurage = OBJ(enemy);
 	if (kurage->mCurAnim->mIsPlaying) {
 		if ((u32)kurage->mCurAnim->mType == KEYEVENT_2) {
 			Vector3f position = kurage->getPosition();
 			rumbleMgr->startRumble(9, position, 2);
 
 		} else if ((u32)kurage->mCurAnim->mType == KEYEVENT_3) {
-			Parms* parms1 = static_cast<Parms*>(kurage->mParms);
+			Parms* parms1 = CG_PARMS(kurage);
 			EnemyFunc::flickNearbyNavi(kurage, parms1->mGeneral.mShakeRange.mValue, parms1->mGeneral.mShakeKnockback.mValue,
-			                           parms1->mGeneral.mShakeDamage.mValue, -1000.0f, nullptr);
-			Parms* parms2 = static_cast<Parms*>(kurage->mParms);
+			                           parms1->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
+			Parms* parms2 = CG_PARMS(kurage);
 			EnemyFunc::flickNearbyPikmin(kurage, parms2->mGeneral.mShakeRange.mValue, parms2->mGeneral.mShakeKnockback.mValue,
-			                             parms2->mGeneral.mShakeDamage.mValue, -1000.0f, nullptr);
+			                             parms2->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
 
-			Parms* parms3 = static_cast<Parms*>(kurage->mParms);
-			EnemyFunc::flickStickPikmin(kurage, parms3->mGeneral.mShakeRateMaybe.mValue, parms3->mGeneral.mShakeKnockback.mValue,
-			                            parms3->mGeneral.mShakeDamage.mValue, -1000.0f, nullptr);
-			kurage->mToFlick = 0.0f;
+			Parms* parms3 = CG_PARMS(kurage);
+			EnemyFunc::flickStickPikmin(kurage, parms3->mGeneral.mShakeChance.mValue, parms3->mGeneral.mShakeKnockback.mValue,
+			                            parms3->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
+			kurage->mFlickTimer = 0.0f;
 
 		} else if ((u32)kurage->mCurAnim->mType == KEYEVENT_END) {
 			if (kurage->mHealth <= 0.0f) {
@@ -703,10 +670,9 @@ void StateGroundFlick::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802AD044
- * Size:	000024
+/**
+ * @note Address: 0x802AD044
+ * @note Size: 0x24
  */
 void StateGroundFlick::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 

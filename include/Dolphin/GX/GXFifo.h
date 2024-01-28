@@ -16,22 +16,23 @@ extern "C" {
 
 #define GXFIFO_ADDR 0xCC008000
 
-// Placeholder struct for GXFifoObj.
-// Actual members (shouldn't be) accessed directly.
-typedef struct {
+// Generic struct for FIFO access (size 0x80).
+typedef struct _GXFifoObj {
 	u8 padding[GX_FIFO_OBJ_SIZE]; // _00
-
-	// structure of obj, note as found:
-	// void* base;        // _00
-	// void* end;         // _04
-	// u32 size;          // _08
-	// u32 highWatermark; // _0C
-	// u32 lowWatermark;  // _10
-	// void* readPtr;     // _14
-	// void* writePtr;    // _18
-	// s32 rwDistance;    // _1C
-	// u8 _20[0x60];      // _20
 } GXFifoObj;
+
+// Internal struct for FIFO access.
+typedef struct _GXFifoObjPriv {
+	void* base;        // _00
+	void* end;         // _04
+	u32 size;          // _08
+	u32 highWatermark; // _0C
+	u32 lowWatermark;  // _10
+	void* readPtr;     // _14
+	void* writePtr;    // _18
+	s32 rwDistance;    // _1C
+	u8 _20[0x60];      // _20
+} GXFifoObjPriv;
 
 typedef void (*GXBreakPtCallback)(void);
 
@@ -50,7 +51,7 @@ typedef union {
 } PPCWGPipe;
 
 #ifdef __MWERKS__
-PPCWGPipe GXWGFifo : GXFIFO_ADDR;
+volatile PPCWGPipe GXWGFifo : GXFIFO_ADDR;
 #else
 #define GXWGFifo (*(volatile PPCWGPipe*)GXFIFO_ADDR)
 #endif
@@ -58,6 +59,11 @@ PPCWGPipe GXWGFifo : GXFIFO_ADDR;
 ////////////////////////////////////////////
 
 //////////// FIFO MACROS/INLINES ///////////
+#define GX_WRITE_U8(val)  (GXWGFifo.u8 = val)
+#define GX_WRITE_U16(val) (GXWGFifo.u16 = val)
+#define GX_WRITE_U32(val) (GXWGFifo.u32 = (u32)val)
+#define GX_WRITE_F32(val) (GXWGFifo.f32 = (f32)val)
+
 static inline void GXPosition2f32(const f32 x, const f32 y)
 {
 	GXWGFifo.f32 = x;
@@ -78,7 +84,7 @@ static inline void GXPosition3u16(const u16 x, const u16 y, const u16 z)
 	GXWGFifo.u16 = z;
 }
 
-static inline void GXPosition3f32(const f32 x, const f32 y, const f32 z)
+static inline void GXPosition3f32(f32 x, f32 y, f32 z)
 {
 	GXWGFifo.f32 = x;
 	GXWGFifo.f32 = y;
@@ -144,6 +150,7 @@ static inline void GXEnd(void) { }
 
 //////////// FIFO INIT/SET/SAVE ////////////
 // Init.
+extern void __GXFifoInit();
 extern void GXInitFifoBase(GXFifoObj* obj, void* base, u32 size);
 extern void GXInitFifoPtrs(GXFifoObj* obj, void* readPtr, void* writePtr);
 extern void GXInitFifoLimits(GXFifoObj* obj, u32 hiWaterMark, u32 loWaterMark);

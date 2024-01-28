@@ -5,355 +5,29 @@
 
 static const char name[] = "dayEndCount";
 
-/*
-    Generated from dpostproc
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_804901E8
-    lbl_804901E8:
-        .4byte 0x64617945
-        .4byte 0x6E64436F
-        .4byte 0x756E7400
-    .global lbl_804901F4
-    lbl_804901F4:
-        .4byte 0x44617945
-        .4byte 0x6E64436F
-        .4byte 0x756E7400
-        .4byte 0x636F756E
-        .4byte 0x742E626C
-        .4byte 0x6F000000
-    .global lbl_8049020C
-    lbl_8049020C:
-        .4byte 0x64617945
-        .4byte 0x6E64436F
-        .4byte 0x756E742E
-        .4byte 0x63707000
-    .global lbl_8049021C
-    lbl_8049021C:
-        .asciz "P2Assert"
-        .skip 3
-    .global lbl_80490228
-    lbl_80490228:
-        .4byte 0x6368616C
-        .4byte 0x6C656E67
-        .4byte 0x65456E64
-        .4byte 0x436F756E
-        .4byte 0x74000000
-        .4byte 0x6368616C
-        .4byte 0x6C656E67
-        .4byte 0x65456E64
-        .4byte 0x436F756E
-        .4byte 0x74317000
-        .4byte 0x6368616C
-        .4byte 0x6C656E67
-        .4byte 0x65456E64
-        .4byte 0x436F756E
-        .4byte 0x74327000
-    .global lbl_80490264
-    lbl_80490264:
-        .4byte 0x7265735F
-        .4byte 0x67726F75
-        .4byte 0x6E642E73
-        .4byte 0x7A730000
-        .4byte 0x73637265
-        .4byte 0x656E4F62
-        .4byte 0x6A2E6800
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global deTagName__8Morimura
-    deTagName__8Morimura:
-        .4byte 0x63643030
-        .4byte 0x63643031
-        .4byte 0x63643032
-        .4byte 0x63643033
-        .4byte 0x63643034
-        .4byte 0x63643035
-        .4byte 0x63643036
-        .4byte 0x63643037
-        .4byte 0x63643038
-        .4byte 0x63643039
-        .4byte 0x63643130
-    .global __vt__Q28Morimura15TCountDownScene
-    __vt__Q28Morimura15TCountDownScene:
-        .4byte 0
-        .4byte 0
-        .4byte getSceneType__Q28Morimura15TCountDownSceneFv
-        .4byte getOwnerID__Q28Morimura15TCountDownSceneFv
-        .4byte getMemberID__Q28Morimura15TCountDownSceneFv
-        .4byte isUseBackupSceneInfo__Q26Screen9SceneBaseFv
-        .4byte isDrawInDemo__Q26Screen9SceneBaseCFv
-        .4byte getResName__Q28Morimura15TCountDownSceneCFv
-        .4byte doCreateObj__Q28Morimura15TCountDownSceneFP10JKRArchive
-        .4byte doUserCallBackFunc__Q26Screen9SceneBaseFPQ28Resource10MgrCommand
-        .4byte setPort__Q26Screen9SceneBaseFR8Graphics
-        .4byte doUpdateActive__Q26Screen9SceneBaseFv
-        .4byte doConfirmSetScene__Q26Screen9SceneBaseFRQ26Screen11SetSceneArg
-        .4byte
-   doConfirmStartScene__Q26Screen9SceneBaseFPQ26Screen13StartSceneArg .4byte
-   doConfirmEndScene__Q26Screen9SceneBaseFRPQ26Screen11EndSceneArg .4byte
-   doStart__Q28Morimura15TCountDownSceneFPQ26Screen13StartSceneArg .4byte
-   doEnd__Q26Screen9SceneBaseFPQ26Screen11EndSceneArg .4byte
-   setDefaultDispMember__Q26Screen9SceneBaseFv .4byte
-   doSetBackupScene__Q26Screen9SceneBaseFRQ26Screen11SetSceneArg .4byte
-   doGetFinishState__Q26Screen9SceneBaseFv .global
-   __vt__Q28Morimura20TChallengeEndCount2p
-    __vt__Q28Morimura20TChallengeEndCount2p:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q28Morimura20TChallengeEndCount2pFv
-        .4byte getChildCount__5CNodeFv
-        .4byte 0
-        .4byte 0
-        .4byte "@24@__dt__Q28Morimura20TChallengeEndCount2pFv"
-        .4byte update__Q26Screen7ObjBaseFv
-        .4byte draw__Q26Screen7ObjBaseFR8Graphics
-        .4byte start__Q26Screen7ObjBaseFPCQ26Screen13StartSceneArg
-        .4byte end__Q26Screen7ObjBaseFPCQ26Screen11EndSceneArg
-        .4byte setOwner__Q26Screen7ObjBaseFPQ26Screen9SceneBase
-        .4byte getOwner__Q26Screen7ObjBaseCFv
-        .4byte create__Q26Screen7ObjBaseFP10JKRArchive
-        .4byte confirmSetScene__Q26Screen7ObjBaseFRQ26Screen11SetSceneArg
-        .4byte confirmStartScene__Q26Screen7ObjBaseFPQ26Screen13StartSceneArg
-        .4byte confirmEndScene__Q26Screen7ObjBaseFPQ26Screen11EndSceneArg
-        .4byte doStart__Q28Morimura12TDayEndCountFPCQ26Screen13StartSceneArg
-        .4byte doEnd__Q28Morimura9TTestBaseFPCQ26Screen11EndSceneArg
-        .4byte doCreate__Q28Morimura18TChallengeEndCountFP10JKRArchive
-        .4byte doUpdateFadein__Q28Morimura9TTestBaseFv
-        .4byte doUpdateFadeinFinish__Q28Morimura9TTestBaseFv
-        .4byte doUpdate__Q28Morimura20TChallengeEndCount2pFv
-        .4byte doUpdateFinish__Q28Morimura9TTestBaseFv
-        .4byte doUpdateFadeout__Q28Morimura9TTestBaseFv
-        .4byte doUpdateFadeoutFinish__Q26Screen7ObjBaseFv
-        .4byte doDraw__Q28Morimura12TDayEndCountFR8Graphics
-        .4byte doConfirmSetScene__Q26Screen7ObjBaseFRQ26Screen11SetSceneArg
-        .4byte doConfirmStartScene__Q26Screen7ObjBaseFPQ26Screen13StartSceneArg
-        .4byte doConfirmEndScene__Q26Screen7ObjBaseFRPQ26Screen11EndSceneArg
-        .4byte getDispMemberBase__Q28Morimura12TDayEndCountFv
-    .global __vt__Q28Morimura20TChallengeEndCount1p
-    __vt__Q28Morimura20TChallengeEndCount1p:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q28Morimura20TChallengeEndCount1pFv
-        .4byte getChildCount__5CNodeFv
-        .4byte 0
-        .4byte 0
-        .4byte "@24@__dt__Q28Morimura20TChallengeEndCount1pFv"
-        .4byte update__Q26Screen7ObjBaseFv
-        .4byte draw__Q26Screen7ObjBaseFR8Graphics
-        .4byte start__Q26Screen7ObjBaseFPCQ26Screen13StartSceneArg
-        .4byte end__Q26Screen7ObjBaseFPCQ26Screen11EndSceneArg
-        .4byte setOwner__Q26Screen7ObjBaseFPQ26Screen9SceneBase
-        .4byte getOwner__Q26Screen7ObjBaseCFv
-        .4byte create__Q26Screen7ObjBaseFP10JKRArchive
-        .4byte confirmSetScene__Q26Screen7ObjBaseFRQ26Screen11SetSceneArg
-        .4byte confirmStartScene__Q26Screen7ObjBaseFPQ26Screen13StartSceneArg
-        .4byte confirmEndScene__Q26Screen7ObjBaseFPQ26Screen11EndSceneArg
-        .4byte doStart__Q28Morimura12TDayEndCountFPCQ26Screen13StartSceneArg
-        .4byte doEnd__Q28Morimura9TTestBaseFPCQ26Screen11EndSceneArg
-        .4byte doCreate__Q28Morimura18TChallengeEndCountFP10JKRArchive
-        .4byte doUpdateFadein__Q28Morimura9TTestBaseFv
-        .4byte doUpdateFadeinFinish__Q28Morimura9TTestBaseFv
-        .4byte doUpdate__Q28Morimura20TChallengeEndCount1pFv
-        .4byte doUpdateFinish__Q28Morimura9TTestBaseFv
-        .4byte doUpdateFadeout__Q28Morimura9TTestBaseFv
-        .4byte doUpdateFadeoutFinish__Q26Screen7ObjBaseFv
-        .4byte doDraw__Q28Morimura12TDayEndCountFR8Graphics
-        .4byte doConfirmSetScene__Q26Screen7ObjBaseFRQ26Screen11SetSceneArg
-        .4byte doConfirmStartScene__Q26Screen7ObjBaseFPQ26Screen13StartSceneArg
-        .4byte doConfirmEndScene__Q26Screen7ObjBaseFRPQ26Screen11EndSceneArg
-        .4byte getDispMemberBase__Q28Morimura12TDayEndCountFv
-    .global __vt__Q28Morimura18TChallengeEndCount
-    __vt__Q28Morimura18TChallengeEndCount:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q28Morimura18TChallengeEndCountFv
-        .4byte getChildCount__5CNodeFv
-        .4byte 0
-        .4byte 0
-        .4byte "@24@__dt__Q28Morimura18TChallengeEndCountFv"
-        .4byte update__Q26Screen7ObjBaseFv
-        .4byte draw__Q26Screen7ObjBaseFR8Graphics
-        .4byte start__Q26Screen7ObjBaseFPCQ26Screen13StartSceneArg
-        .4byte end__Q26Screen7ObjBaseFPCQ26Screen11EndSceneArg
-        .4byte setOwner__Q26Screen7ObjBaseFPQ26Screen9SceneBase
-        .4byte getOwner__Q26Screen7ObjBaseCFv
-        .4byte create__Q26Screen7ObjBaseFP10JKRArchive
-        .4byte confirmSetScene__Q26Screen7ObjBaseFRQ26Screen11SetSceneArg
-        .4byte confirmStartScene__Q26Screen7ObjBaseFPQ26Screen13StartSceneArg
-        .4byte confirmEndScene__Q26Screen7ObjBaseFPQ26Screen11EndSceneArg
-        .4byte doStart__Q28Morimura12TDayEndCountFPCQ26Screen13StartSceneArg
-        .4byte doEnd__Q28Morimura9TTestBaseFPCQ26Screen11EndSceneArg
-        .4byte doCreate__Q28Morimura18TChallengeEndCountFP10JKRArchive
-        .4byte doUpdateFadein__Q28Morimura9TTestBaseFv
-        .4byte doUpdateFadeinFinish__Q28Morimura9TTestBaseFv
-        .4byte doUpdate__Q28Morimura12TDayEndCountFv
-        .4byte doUpdateFinish__Q28Morimura9TTestBaseFv
-        .4byte doUpdateFadeout__Q28Morimura9TTestBaseFv
-        .4byte doUpdateFadeoutFinish__Q26Screen7ObjBaseFv
-        .4byte doDraw__Q28Morimura12TDayEndCountFR8Graphics
-        .4byte doConfirmSetScene__Q26Screen7ObjBaseFRQ26Screen11SetSceneArg
-        .4byte doConfirmStartScene__Q26Screen7ObjBaseFPQ26Screen13StartSceneArg
-        .4byte doConfirmEndScene__Q26Screen7ObjBaseFRPQ26Screen11EndSceneArg
-        .4byte getDispMemberBase__Q28Morimura12TDayEndCountFv
-    .global __vt__Q28Morimura12TDayEndCount
-    __vt__Q28Morimura12TDayEndCount:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q28Morimura12TDayEndCountFv
-        .4byte getChildCount__5CNodeFv
-        .4byte 0
-        .4byte 0
-        .4byte "@24@__dt__Q28Morimura12TDayEndCountFv"
-        .4byte update__Q26Screen7ObjBaseFv
-        .4byte draw__Q26Screen7ObjBaseFR8Graphics
-        .4byte start__Q26Screen7ObjBaseFPCQ26Screen13StartSceneArg
-        .4byte end__Q26Screen7ObjBaseFPCQ26Screen11EndSceneArg
-        .4byte setOwner__Q26Screen7ObjBaseFPQ26Screen9SceneBase
-        .4byte getOwner__Q26Screen7ObjBaseCFv
-        .4byte create__Q26Screen7ObjBaseFP10JKRArchive
-        .4byte confirmSetScene__Q26Screen7ObjBaseFRQ26Screen11SetSceneArg
-        .4byte confirmStartScene__Q26Screen7ObjBaseFPQ26Screen13StartSceneArg
-        .4byte confirmEndScene__Q26Screen7ObjBaseFPQ26Screen11EndSceneArg
-        .4byte doStart__Q28Morimura12TDayEndCountFPCQ26Screen13StartSceneArg
-        .4byte doEnd__Q28Morimura9TTestBaseFPCQ26Screen11EndSceneArg
-        .4byte doCreate__Q28Morimura12TDayEndCountFP10JKRArchive
-        .4byte doUpdateFadein__Q28Morimura9TTestBaseFv
-        .4byte doUpdateFadeinFinish__Q28Morimura9TTestBaseFv
-        .4byte doUpdate__Q28Morimura12TDayEndCountFv
-        .4byte doUpdateFinish__Q28Morimura9TTestBaseFv
-        .4byte doUpdateFadeout__Q28Morimura9TTestBaseFv
-        .4byte doUpdateFadeoutFinish__Q26Screen7ObjBaseFv
-        .4byte doDraw__Q28Morimura12TDayEndCountFR8Graphics
-        .4byte doConfirmSetScene__Q26Screen7ObjBaseFRQ26Screen11SetSceneArg
-        .4byte doConfirmStartScene__Q26Screen7ObjBaseFPQ26Screen13StartSceneArg
-        .4byte doConfirmEndScene__Q26Screen7ObjBaseFRPQ26Screen11EndSceneArg
-        .4byte getDispMemberBase__Q28Morimura12TDayEndCountFv
-        .4byte 0
-
-    .section .sdata, "wa"  # 0x80514680 - 0x80514D80
-    .global mWaitTime__Q28Morimura12TDayEndCount
-    mWaitTime__Q28Morimura12TDayEndCount:
-        .float 0.4
-    .global mAlphaMax__Q28Morimura12TDayEndCount
-    mAlphaMax__Q28Morimura12TDayEndCount:
-        .byte 0xC8
-    .global mWaitAlpha__Q28Morimura12TDayEndCount
-    mWaitAlpha__Q28Morimura12TDayEndCount:
-        .byte 0x64
-        .byte 0x0
-        .byte 0x0
-    .global mWaitScale__Q28Morimura12TDayEndCount
-    mWaitScale__Q28Morimura12TDayEndCount:
-        .float 0.2
-    .global mStopScale__Q28Morimura12TDayEndCount
-    mStopScale__Q28Morimura12TDayEndCount:
-        .float 1.0
-    .global mScaleMax__Q28Morimura12TDayEndCount
-    mScaleMax__Q28Morimura12TDayEndCount:
-        .float 2.0
-    .global m2pScale__Q28Morimura12TDayEndCount
-    m2pScale__Q28Morimura12TDayEndCount:
-        .float 0.75
-    .global m2pOffsetY__Q28Morimura12TDayEndCount
-    m2pOffsetY__Q28Morimura12TDayEndCount:
-        .float 170.0
-    .global mColor__Q28Morimura12TDayEndCount
-    mColor__Q28Morimura12TDayEndCount:
-        .4byte 0x00FF00FF
-    .global mNumberColor__Q28Morimura12TDayEndCount
-    mNumberColor__Q28Morimura12TDayEndCount:
-        .4byte 0xFF6400FF
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global mColorTest__Q28Morimura12TDayEndCount
-    mColorTest__Q28Morimura12TDayEndCount:
-        .skip 0x1
-    .global mTestChangeColor__Q28Morimura12TDayEndCount
-    mTestChangeColor__Q28Morimura12TDayEndCount:
-        .skip 0x1
-    .global mCountDownType__Q28Morimura12TDayEndCount
-    mCountDownType__Q28Morimura12TDayEndCount:
-        .skip 0x6
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_8051E1F8
-    lbl_8051E1F8:
-        .float 1.0
-    .global lbl_8051E1FC
-    lbl_8051E1FC:
-        .4byte 0x00000000
-    .global lbl_8051E200
-    lbl_8051E200:
-        .4byte 0x3F666666
-    .global lbl_8051E204
-    lbl_8051E204:
-        .4byte 0x41C80000
-    .global lbl_8051E208
-    lbl_8051E208:
-        .4byte 0x38D1B717
-    .global lbl_8051E20C
-    lbl_8051E20C:
-        .4byte 0x3C23D70A
-    .global lbl_8051E210
-    lbl_8051E210:
-        .4byte 0x41200000
-    .global lbl_8051E214
-    lbl_8051E214:
-        .4byte 0x3F8CCCCD
-    .global lbl_8051E218
-    lbl_8051E218:
-        .4byte 0x41300000
-    .global lbl_8051E21C
-    lbl_8051E21C:
-        .float 0.5
-    .global lbl_8051E220
-    lbl_8051E220:
-        .4byte 0x42C80000
-    .global lbl_8051E224
-    lbl_8051E224:
-        .4byte 0x437F0000
-    .global lbl_8051E228
-    lbl_8051E228:
-        .4byte 0x41490FDB
-    .global lbl_8051E22C
-    lbl_8051E22C:
-        .4byte 0xC3A2F983
-    .global lbl_8051E230
-    lbl_8051E230:
-        .4byte 0x43A2F983
-    .global lbl_8051E234
-    lbl_8051E234:
-        .4byte 0x40A00000
-    .global lbl_8051E238
-    lbl_8051E238:
-        .4byte 0x43300000
-        .4byte 0x80000000
-    .global lbl_8051E240
-    lbl_8051E240:
-        .4byte 0x43300000
-        .4byte 0x00000000
-    .global lbl_8051E248
-    lbl_8051E248:
-        .4byte 0x40C90FDB
-    .global lbl_8051E24C
-    lbl_8051E24C:
-        .4byte 0x42100000
-    .global lbl_8051E250
-    lbl_8051E250:
-        .4byte 0x43B40000
-    .global lbl_8051E254
-    lbl_8051E254:
-        .4byte 0x42A00000
-*/
-
 namespace Morimura {
 
 u32 deTagName[COUNTDOWN_NUMBERS] = { 'cd00', 'cd01', 'cd02', 'cd03', 'cd04', 'cd05', 'cd06', 'cd07', 'cd08', 'cd09', 'cd10' };
 
-/*
- * --INFO--
- * Address:	80344088
- * Size:	0000E0
+bool TDayEndCount::mColorTest;
+bool TDayEndCount::mTestChangeColor;
+u8 TDayEndCount::mCountDownType;
+
+f32 TDayEndCount::mWaitTime = 0.4f;
+u8 TDayEndCount::mAlphaMax  = 200;
+u8 TDayEndCount::mWaitAlpha = 100;
+
+f32 TDayEndCount::mWaitScale       = 0.2f;
+f32 TDayEndCount::mStopScale       = 1.0f;
+f32 TDayEndCount::mScaleMax        = 2.0f;
+f32 TDayEndCount::m2pScale         = 0.75f;
+f32 TDayEndCount::m2pOffsetY       = 170.0f;
+GXColor TDayEndCount::mColor       = { 0, 255, 0, 255 };
+GXColor TDayEndCount::mNumberColor = { 255, 100, 0, 255 };
+
+/**
+ * @note Address: 0x80344088
+ * @note Size: 0xE0
  */
 TDayEndCount::TDayEndCount()
     : TTestBase("DayEndCount")
@@ -369,14 +43,16 @@ TDayEndCount::TDayEndCount()
 	mScale        = 1.0f;
 	mOffsetY      = 0.0f;
 
-	mColor.set(0, 255, 0, 255);
+	mColor.r         = 0;
+	mColor.g         = 255;
+	mColor.b         = 0;
+	mColor.a         = 255;
 	mTestChangeColor = false;
 }
 
-/*
- * --INFO--
- * Address:	80344214
- * Size:	0002EC
+/**
+ * @note Address: 0x80344214
+ * @note Size: 0x2EC
  */
 void TDayEndCount::doCreate(JKRArchive* arc)
 {
@@ -415,23 +91,22 @@ void TDayEndCount::doCreate(JKRArchive* arc)
 	mNumberPanePos.x = pane->mOffset.x;
 	mNumberPanePos.y = pane->mOffset.y + 25.0f;
 	for (u8 i = 0; i < 4; i++) {
-		JGeometry::TVec2<s16>* color = pane->_112;
-		mTexCoords2[i]               = color[i];
+		JGeometry::TVec2<s16>* color = pane->getTexCoord(i);
+		mTexCoords2[i]               = *color;
 		mTexCoords1[i]               = mTexCoords2[i];
 	}
 	reset();
 }
 
-/*
- * --INFO--
- * Address:	80344500
- * Size:	000A88
+/**
+ * @note Address: 0x80344500
+ * @note Size: 0xA88
  */
 bool TDayEndCount::doUpdate()
 {
 	if (mIsSection) {
 		mDispMember->mCurrSunRatio += 0.0001f;
-		if (1.0f < mDispMember->mCurrSunRatio) {
+		if (1.0f > mDispMember->mCurrSunRatio) {
 			mDispMember->mCurrSunRatio = mDispMember->mDuration;
 		}
 		if (mDispMember->mCurrSunRatio < mDispMember->mDuration) {
@@ -440,33 +115,35 @@ bool TDayEndCount::doUpdate()
 	}
 
 	f32 calc = (1.0f - mDispMember->mCurrSunRatio) / (1.0f - mDispMember->mDuration);
-	if (mIsSection || calc > 0.01f) {
+	if (mIsSection || calc < 0.01f) {
 		return true;
 	}
 
-	calc *= 10.0f;
-	if (calc > 10.0f) {
+	f32 calc_2 = calc * 10.0f;
+	if (calc_2 >= 10.0f) {
 		reset();
 		return false;
 	}
 
-	f32 calc2 = calc * 1.1f;
+	f32 calc2 = calc_2 * 1.1f;
 	if (calc2 >= 11.0f) {
 		calc2 = 11.0f;
 	}
-	if (calc2 < 0.0f) {
+
+	if (calc2 <= 0.0f) {
 		calc2 = 0.0f;
 	}
+
 	int id = calc2;
-	if (id > 9)
+	if (id >= 10)
 		id = 10;
+
 	int i = id;
 	if (mCurrNumberValue != i) {
-		while (i + 1 < COUNTDOWN_NUMBERS) {
+		for (; i + 1 < COUNTDOWN_NUMBERS; i++) {
 			J2DPane* pane = mScreenObj->search(deTagName[i]);
 			P2ASSERTLINE(164, pane);
 			pane->hide();
-			i++;
 		}
 		mCurrNumberValue = i;
 		mCurrNumberPane  = static_cast<J2DPicture*>(mScreenObj->search(deTagName[i]));
@@ -1263,29 +940,33 @@ lbl_80344F64:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80344F88
- * Size:	000078
+/**
+ * @note Address: 0x80344F88
+ * @note Size: 0x78
  */
 void TDayEndCount::doDraw(Graphics& gfx)
 {
-	if (mDispMember->mCurrSunRatio <= mDispMember->mDuration) {
+	if (!(mDispMember->mCurrSunRatio < mDispMember->mDuration)) {
 		gfx.mPerspGraph.setPort();
 		mScreenObj->draw(gfx, gfx.mPerspGraph);
 	}
 }
 
-/*
- * --INFO--
- * Address:	80345000
- * Size:	000414
+/**
+ * @note Address: 0x80345000
+ * @note Size: 0x414
  */
 void TDayEndCount::reset()
 {
-	mColor.set(255, 255, 255, 255);
+	mColor.r = 255;
+	mColor.g = 255;
+	mColor.b = 255;
+	mColor.a = 255;
 
-	mTextPane->setWhite(mColor);
+	JUtility::TColor color;
+	color.set(mColor);
+
+	mTextPane->setWhite(color);
 	mTextPane->setAlpha(0);
 	J2DPane* pane = mScreenObj->search('cd10');
 	P2ASSERTLINE(359, pane);
@@ -1303,7 +984,7 @@ void TDayEndCount::reset()
 		P2ASSERTLINE(374, pane);
 		if (mMode) {
 			pane->setBasePosition(J2DPOS_Center);
-			pane->setOffset(pikmin2_sinf(pos) * 80.0f + mNumberPanePos.x, -(pikmin2_cosf(pos) * 80.0f - mNumberPanePos.y));
+			pane->setOffset(sinf(pos) * 80.0f + mNumberPanePos.x, -(cosf(pos) * 80.0f - mNumberPanePos.y));
 			pane->show();
 			pane->updateScale(mWaitScale * mScale);
 			pane->setAlpha(0);
@@ -1323,10 +1004,9 @@ void TDayEndCount::reset()
 	mDoPlaySE      = true;
 }
 
-/*
- * --INFO--
- * Address:	80345414
- * Size:	000104
+/**
+ * @note Address: 0x80345414
+ * @note Size: 0x104
  */
 TChallengeEndCount::TChallengeEndCount()
 {
@@ -1334,10 +1014,9 @@ TChallengeEndCount::TChallengeEndCount()
 	mIsChallenge = true;
 }
 
-/*
- * --INFO--
- * Address:	803455DC
- * Size:	000040
+/**
+ * @note Address: 0x803455DC
+ * @note Size: 0x40
  */
 void TChallengeEndCount::doCreate(JKRArchive* arc)
 {
@@ -1346,10 +1025,9 @@ void TChallengeEndCount::doCreate(JKRArchive* arc)
 	mTextPane->hide();
 }
 
-/*
- * --INFO--
- * Address:	8034561C
- * Size:	00013C
+/**
+ * @note Address: 0x8034561C
+ * @note Size: 0x13C
  */
 TChallengeEndCount1p::TChallengeEndCount1p()
 {
@@ -1358,10 +1036,9 @@ TChallengeEndCount1p::TChallengeEndCount1p()
 	mOffsetY = -m2pOffsetY;
 }
 
-/*
- * --INFO--
- * Address:	80345834
- * Size:	000034
+/**
+ * @note Address: 0x80345834
+ * @note Size: 0x34
  */
 bool TChallengeEndCount1p::doUpdate()
 {
@@ -1370,10 +1047,9 @@ bool TChallengeEndCount1p::doUpdate()
 	TDayEndCount::doUpdate();
 }
 
-/*
- * --INFO--
- * Address:	80345868
- * Size:	00013C
+/**
+ * @note Address: 0x80345868
+ * @note Size: 0x13C
  */
 TChallengeEndCount2p::TChallengeEndCount2p()
 {
@@ -1383,10 +1059,9 @@ TChallengeEndCount2p::TChallengeEndCount2p()
 	mSoundEnabled = false;
 }
 
-/*
- * --INFO--
- * Address:	803459A4
- * Size:	000030
+/**
+ * @note Address: 0x803459A4
+ * @note Size: 0x30
  */
 bool TChallengeEndCount2p::doUpdate()
 {
@@ -1395,10 +1070,9 @@ bool TChallengeEndCount2p::doUpdate()
 	TDayEndCount::doUpdate();
 }
 
-/*
- * --INFO--
- * Address:	803459D4
- * Size:	00048C
+/**
+ * @note Address: 0x803459D4
+ * @note Size: 0x48C
  */
 void TCountDownScene::doCreateObj(JKRArchive* arc)
 {
@@ -1427,10 +1101,9 @@ void TCountDownScene::doCreateObj(JKRArchive* arc)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80345E60
- * Size:	000064
+/**
+ * @note Address: 0x80345E60
+ * @note Size: 0x64
  */
 bool TCountDownScene::doStart(Screen::StartSceneArg* arg)
 {
@@ -1439,10 +1112,9 @@ bool TCountDownScene::doStart(Screen::StartSceneArg* arg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80345F64
- * Size:	00000C
+/**
+ * @note Address: 0x80345F64
+ * @note Size: 0xC
  */
 void TTestBase::doUpdateFadeinFinish() { mCanInput = true; }
 

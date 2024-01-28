@@ -3,13 +3,20 @@
 #include "System.h"
 
 namespace P2JME {
-
 namespace IllustratedBook {
 
-/*
- * --INFO--
- * Address:	80454FF8
- * Size:	00004C
+/**
+ * @note Address: N/A
+ * @note Size: 0x48
+ */
+TSequenceProcessor::TSequenceProcessor(JMessage::TReference* ref, JMessage::TControl* owner)
+    : TSeqProcNoSeq(ref, owner)
+{
+}
+
+/**
+ * @note Address: 0x80454FF8
+ * @note Size: 0x4C
  */
 void TRenderingProcessor::makeMatrix(Matrixf* mtx, Window::DrawInfo*, f32 angle, Vector3f position)
 {
@@ -19,10 +26,9 @@ void TRenderingProcessor::makeMatrix(Matrixf* mtx, Window::DrawInfo*, f32 angle,
 	mtx->makeSRT(scale, rotate, position);
 }
 
-/*
- * --INFO--
- * Address:	80455044
- * Size:	000060
+/**
+ * @note Address: 0x80455044
+ * @note Size: 0x60
  */
 TControl::TControl()
 {
@@ -33,10 +39,9 @@ TControl::TControl()
 	mScrollSpeed       = 0.08f;
 }
 
-/*
- * --INFO--
- * Address:	804550A4
- * Size:	00003C
+/**
+ * @note Address: 0x804550A4
+ * @note Size: 0x3C
  */
 bool TControl::onInit()
 {
@@ -45,10 +50,9 @@ bool TControl::onInit()
 	return true;
 }
 
-/*
- * --INFO--
- * Address:	804550E0
- * Size:	00003C
+/**
+ * @note Address: 0x804550E0
+ * @note Size: 0x3C
  */
 void TControl::reset()
 {
@@ -58,10 +62,9 @@ void TControl::reset()
 	mCurrentTextHeight = 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	8045511C
- * Size:	000028
+/**
+ * @note Address: 0x8045511C
+ * @note Size: 0x28
  */
 f32 TControl::getScrollPosition()
 {
@@ -71,18 +74,17 @@ f32 TControl::getScrollPosition()
 	return mCurrentScroll / mMaxScroll;
 }
 
-/*
- * --INFO--
- * Address:	80455144
- * Size:	0000F4
+/**
+ * @note Address: 0x80455144
+ * @note Size: 0xF4
  */
 void TControl::scroll(f32 rate)
 {
 	if (rate != 0.0f) {
-		mCurrentScroll += rate * _6C * 60.0f * sys->mDeltaTime;
+		mCurrentScroll += rate * _6C * 60.0f * sys->getDeltaTime();
 		if (mCurrentScroll < mMaxScroll) {
 			mCurrentScroll = mMaxScroll;
-		};
+		}
 		if (mCurrentScroll > 0.0f) {
 			mCurrentScroll = 0.0f;
 		}
@@ -93,7 +95,8 @@ void TControl::scroll(f32 rate)
 		} else {
 			dir = -1;
 		}
-		mCurrentTextHeight = f32(dir + (int)(mCurrentScroll / calc)) * calc;
+		f32 height         = (f32)(dir + (int)(mCurrentScroll / calc));
+		mCurrentTextHeight = height * calc;
 		if (mCurrentTextHeight < mMaxScroll) {
 			mCurrentTextHeight = mMaxScroll;
 		}
@@ -105,27 +108,27 @@ void TControl::scroll(f32 rate)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80455238
- * Size:	0000D0
+/**
+ * @note Address: 0x80455238
+ * @note Size: 0xD0
  */
 bool TControl::update(Controller* control1, Controller* control2)
 {
 	P2JME::TControl::update();
-	mMaxScroll = -(mTextRenderProc->_C0 * f32(mTextRenderProc->_A4 + 1) - mTextRenderProc->_3C);
+	mMaxScroll = mTextRenderProc->_3C - mTextRenderProc->_C0 * (f32)(mTextRenderProc->mCurrLine + 1);
 
 	f32 calc   = mTextRenderProc->_C0;
-	mMaxScroll = calc * (int)(mMaxScroll / calc);
+	f32 scroll = (int)(mMaxScroll / calc);
+	mMaxScroll = scroll * calc;
 
-	f32 calc2 = mTextRenderProc->_58;
-	mTextRenderProc->_58 += mScrollSpeed * (mCurrentScroll - calc2) * calc2 * 60.0f * sys->mDeltaTime;
+	f32 calc2            = mTextRenderProc->_58;
+	f32 val              = mScrollSpeed * (mCurrentScroll - calc2) * 60.0f * sys->getDeltaTime();
+	mTextRenderProc->_58 = val + mTextRenderProc->_58;
 }
 
-/*
- * --INFO--
- * Address:	80455308
- * Size:	000080
+/**
+ * @note Address: 0x80455308
+ * @note Size: 0x80
  */
 void TControl::setTextBoxInfo(J2DTextBox* pane)
 {
@@ -134,10 +137,9 @@ void TControl::setTextBoxInfo(J2DTextBox* pane)
 	mTextRenderProc->setTextBoxInfo(mTextBox);
 }
 
-/*
- * --INFO--
- * Address:	80455388
- * Size:	000078
+/**
+ * @note Address: 0x80455388
+ * @note Size: 0x78
  */
 void TControl::draw(Mtx mtx1, Mtx mtx2)
 {

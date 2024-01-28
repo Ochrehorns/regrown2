@@ -7,190 +7,26 @@
 #include "Controller.h"
 #include "SoundID.h"
 
-/*
-    Generated from dpostproc
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_80496270
-    lbl_80496270:
-        .4byte 0x65626953
-        .4byte 0x63726565
-        .4byte 0x6E4D656D
-        .4byte 0x6F727943
-        .4byte 0x61726400
-        .4byte 0x54536372
-        .4byte 0x65656E4D
-        .4byte 0x656D6F72
-        .4byte 0x79436172
-        .4byte 0x643A3A6C
-        .4byte 0x6F616452
-        .4byte 0x65736F75
-        .4byte 0x72636500
-        .4byte 0x6D656D6F
-        .4byte 0x72795F63
-        .4byte 0x6172642E
-        .4byte 0x737A7300
-    .global lbl_804962B4
-    lbl_804962B4:
-        .4byte 0x65626953
-        .4byte 0x63726565
-        .4byte 0x6E4D656D
-        .4byte 0x6F727943
-        .4byte 0x6172642E
-        .4byte 0x63707000
-    .global lbl_804962CC
-    lbl_804962CC:
-        .asciz "P2Assert"
-        .skip 3
-        .4byte 0x54536372
-        .4byte 0x65656E4D
-        .4byte 0x656D6F72
-        .4byte 0x79436172
-        .4byte 0x643A3A73
-        .4byte 0x65744172
-        .4byte 0x63686976
-        .4byte 0x65000000
-        .4byte 0x6D656D6F
-        .4byte 0x72795F63
-        .4byte 0x6172642E
-        .4byte 0x626C6F00
-        .4byte 0x6D656D6F
-        .4byte 0x72795F63
-        .4byte 0x6172642E
-        .4byte 0x62636B00
-        .4byte 0x6D656D6F
-        .4byte 0x72795F63
-        .4byte 0x6172645F
-        .4byte 0x70617474
-        .4byte 0x65726E31
-        .4byte 0x2E62636B
-        .4byte 0x00000000
-        .4byte 0x6D656D6F
-        .4byte 0x72795F63
-        .4byte 0x6172645F
-        .4byte 0x70617474
-        .4byte 0x65726E32
-        .4byte 0x2E62636B
-        .4byte 0x00000000
-        .4byte 0x6D656D6F
-        .4byte 0x72795F63
-        .4byte 0x6172645F
-        .4byte 0x7965732E
-        .4byte 0x62636B00
-        .4byte 0x6D656D6F
-        .4byte 0x72795F63
-        .4byte 0x6172645F
-        .4byte 0x6E6F2E62
-        .4byte 0x636B0000
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804E7A08
-    lbl_804E7A08:
-        .4byte lbl_803C2980
-        .4byte lbl_803C299C
-        .4byte lbl_803C29FC
-        .4byte lbl_803C2A5C
-        .4byte lbl_803C2ABC
-        .4byte lbl_803C2B1C
-        .4byte lbl_803C2BA8
-        .4byte lbl_803C2C08
-        .4byte lbl_803C2C58
-        .4byte lbl_803C2CB8
-        .4byte lbl_803C2D18
-        .4byte lbl_803C2D70
-        .4byte lbl_803C2DEC
-        .4byte lbl_803C2E4C
-        .4byte lbl_803C2EC8
-        .4byte lbl_803C2F40
-        .4byte lbl_803C2FBC
-        .4byte lbl_803C301C
-        .4byte lbl_803C307C
-        .4byte lbl_803C30D4
-        .4byte lbl_803C3134
-        .4byte lbl_803C3194
-        .4byte lbl_803C31F4
-        .4byte lbl_803C3254
-        .4byte lbl_803C32B4
-        .4byte lbl_803C3340
-        .4byte lbl_803C33A0
-        .4byte lbl_803C33F0
-        .4byte lbl_803C3450
-        .4byte lbl_803C34B0
-        .4byte lbl_803C3508
-        .4byte lbl_803C357C
-        .4byte lbl_803C35DC
-        .4byte lbl_803C3658
-        .4byte lbl_803C36D4
-        .4byte lbl_803C3748
-        .4byte lbl_803C37A8
-        .4byte lbl_803C3800
-        .4byte lbl_803C3860
-        .4byte lbl_803C38C0
-        .4byte lbl_803C3920
-        .4byte lbl_803C39A8
-        .4byte lbl_803C3A00
-        .4byte lbl_803C3A8C
-    .global __vt__Q33ebi6Screen17TResourceObserver
-    __vt__Q33ebi6Screen17TResourceObserver:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q33ebi6Screen17TResourceObserverFv
-        .4byte 0
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_8051F8A8
-    lbl_8051F8A8:
-        .4byte 0x42700000
-    .global lbl_8051F8AC
-    lbl_8051F8AC:
-        .float 1.0
-    .global lbl_8051F8B0
-    lbl_8051F8B0:
-        .4byte 0x00000000
-    .global lbl_8051F8B4
-    lbl_8051F8B4:
-        .4byte 0x40555555
-    .global lbl_8051F8B8
-    lbl_8051F8B8:
-        .float 0.5
-    .global lbl_8051F8BC
-    lbl_8051F8BC:
-        .4byte 0xBF000000
-    .global lbl_8051F8C0
-    lbl_8051F8C0:
-        .float 0.7
-    .global lbl_8051F8C4
-    lbl_8051F8C4:
-        .4byte 0x437F0000
-    .global lbl_8051F8C8
-    lbl_8051F8C8:
-        .4byte 0x43300000
-        .4byte 0x00000000
-*/
-
 namespace ebi {
 namespace Screen {
 
-static const char ebiScreenMemoryCardName[] = "ebiScreenMemoryCard";
+static const char className[] = "ebiScreenMemoryCard";
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00004C
+/**
+ * @note Address: N/A
+ * @note Size: 0x4C
  */
-TResourceObserver::TResourceObserver(ebi::Screen::TMemoryCard* owner) { mOwner = owner; }
+TResourceObserver::TResourceObserver(TMemoryCard* owner) { mOwner = owner; }
 
-/*
- * --INFO--
- * Address:	803C2244
- * Size:	00006C
+/**
+ * @note Address: 0x803C2244
+ * @note Size: 0x6C
  */
 TResourceObserver::~TResourceObserver() { mOwner->destroyResource(); }
 
-/*
- * --INFO--
- * Address:	803C22B0
- * Size:	0000D8
+/**
+ * @note Address: 0x803C22B0
+ * @note Size: 0xD8
  */
 void TMemoryCard::loadResource(JKRHeap* heap)
 {
@@ -200,7 +36,7 @@ void TMemoryCard::loadResource(JKRHeap* heap)
 	char buf[264];
 	og::newScreen::makeLanguageResName(buf, "memory_card.szs");
 
-	JKRArchive* arc = JKRArchive::mount(buf, JKRArchive::EMM_Mem, heap, JKRArchive::EMD_Head);
+	JKRArchive* arc = JKRMountArchive(buf, JKRArchive::EMM_Mem, heap, JKRArchive::EMD_Head);
 
 	P2ASSERTLINE(54, arc);
 
@@ -208,10 +44,9 @@ void TMemoryCard::loadResource(JKRHeap* heap)
 	setArchive(arc);
 }
 
-/*
- * --INFO--
- * Address:	803C2388
- * Size:	00039C
+/**
+ * @note Address: 0x803C2388
+ * @note Size: 0x39C
  */
 void TMemoryCard::setArchive(JKRArchive* arc)
 {
@@ -245,25 +80,25 @@ void TMemoryCard::setArchive(JKRArchive* arc)
 	mPane_il01->setAlpha(0);
 	mPane_ir01->setAlpha(0);
 
-	mScreenMain->addCallBackPane(mScreenMain, &mAnims[0]);
-	mScreenMain->addCallBackPane(mPaneMsg3, &mAnims[1]);
-	mScreenMain->addCallBackPane(mPaneMsg4, &mAnims[2]);
-	mScreenMain->addCallBackPane(mPaneMsg1, &mAnims[3]);
-	mScreenMain->addCallBackPane(mPaneMsg2, &mAnims[4]);
+	mScreenMain->addCallBackPane(mScreenMain, &mAnim1);
+	mScreenMain->addCallBackPane(mPaneMsg3, &mAnim2);
+	mScreenMain->addCallBackPane(mPaneMsg4, &mAnim3);
+	mScreenMain->addCallBackPane(mPaneMsg1, &mAnim4);
+	mScreenMain->addCallBackPane(mPaneMsg2, &mAnim5);
 	mScreenMain->addCallBackPane(mScreenMain, &mCalcAnim);
 
-	mAnims[0].loadAnm("memory_card.bck", arc, 0, 99999);
-	mAnims[1].loadAnm("memory_card_pattern1.bck", arc, 0, 99999);
-	mAnims[2].loadAnm("memory_card_pattern2.bck", arc, 0, 99999);
-	mAnims[3].loadAnm("memory_card_yes.bck", arc, 0, 99999);
-	mAnims[4].loadAnm("memory_card_no.bck", arc, 0, 99999);
-	mAnims[0].play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)2, true);
+	mAnim1.loadAnm("memory_card.bck", arc, 0, 99999);
+	mAnim2.loadAnm("memory_card_pattern1.bck", arc, 0, 99999);
+	mAnim3.loadAnm("memory_card_pattern2.bck", arc, 0, 99999);
+	mAnim4.loadAnm("memory_card_yes.bck", arc, 0, 99999);
+	mAnim5.loadAnm("memory_card_no.bck", arc, 0, 99999);
+	mAnim1.play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)2, true);
 
-	mBlinkFont[0].set(mPaneMsg2, temp);
-	mBlinkFont[1].set(mPaneMsg2, temp);
+	mBlinkFont1.set(mPaneMsg2, temp);
+	mBlinkFont2.set(mPaneMsg2, temp);
 
-	mScreenMain->addCallBackPane(mPaneMsg1, &mBlinkFont[0]);
-	mScreenMain->addCallBackPane(mPaneMsg2, &mBlinkFont[1]);
+	mScreenMain->addCallBackPane(mPaneMsg1, &mBlinkFont1);
+	mScreenMain->addCallBackPane(mPaneMsg2, &mBlinkFont2);
 
 	mCursor1.setPanes(mPane_il00, mPane_il01);
 	mCursor2.setPanes(mPane_ir00, mPane_ir01);
@@ -273,10 +108,9 @@ void TMemoryCard::setArchive(JKRArchive* arc)
 
 } // namespace Screen
 
-/*
- * --INFO--
- * Address:	803C2724
- * Size:	0001BC
+/**
+ * @note Address: 0x803C2724
+ * @note Size: 0x1BC
  */
 void E2DCallBack_BlinkFontColor::set(J2DTextBox* pane1, J2DTextBox* pane2)
 {
@@ -286,10 +120,9 @@ void E2DCallBack_BlinkFontColor::set(J2DTextBox* pane1, J2DTextBox* pane2)
 
 namespace Screen {
 
-/*
- * --INFO--
- * Address:	803C28E0
- * Size:	000018
+/**
+ * @note Address: 0x803C28E0
+ * @note Size: 0x18
  */
 void TMemoryCard::destroyResource()
 {
@@ -299,12 +132,11 @@ void TMemoryCard::destroyResource()
 	mPaneMsg4 = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	803C28F8
- * Size:	001208
+/**
+ * @note Address: 0x803C28F8
+ * @note Size: 0x1208
  */
-void TMemoryCard::open(long type)
+void TMemoryCard::open(s32 type)
 {
 	P2ASSERTBOUNDSLINE(162, 0, type, 44);
 	mIsPlaySavingSE = false;
@@ -732,10 +564,9 @@ void TMemoryCard::open(long type)
 	}
 }
 
-/*
- * --INFO--
- * Address:	803C3B00
- * Size:	000030
+/**
+ * @note Address: 0x803C3B00
+ * @note Size: 0x30
  */
 void TMemoryCard::close()
 {
@@ -743,258 +574,41 @@ void TMemoryCard::close()
 		startState(MEMCARD_Finish);
 }
 
-/*
- * --INFO--
- * Address:	803C3B30
- * Size:	000024
+/**
+ * @note Address: 0x803C3B30
+ * @note Size: 0x24
  */
 void TMemoryCard::killScreen() { startState(MEMCARD_Disabled); }
 
-/*
- * --INFO--
- * Address:	803C3B54
- * Size:	000334
+/**
+ * @note Address: 0x803C3B54
+ * @note Size: 0x334
  */
 void TMemoryCard::setSelect_(bool sel)
 {
-	mCurrSel = sel;
+	mSelectionIdx = sel;
 
-	if (mCurrSel) {
-		doSetSelect(1.0f, true); // needs tweaking
+	if (mSelectionIdx) {
+		mBlinkFont1.setPaneColors(0);
+		mBlinkFont2.setPaneColors(0);
+		mCursor1.start();
+		mCursor2.start();
 
 	} else {
-		doSetSelect(0.0f, false); // needs tweaking
+		mBlinkFont1.setPaneColors(0);
+		mBlinkFont2.setPaneColors(0);
+		mCursor1.stop();
+		mCursor2.stop();
 	}
 	mCursor1.update();
 	mCursor2.update();
-	/*
-stwu     r1, -0x70(r1)
-mflr     r0
-stw      r0, 0x74(r1)
-stw      r31, 0x6c(r1)
-mr       r31, r3
-stw      r30, 0x68(r1)
-stb      r4, 0x18(r3)
-lbz      r0, 0x18(r3)
-cmplwi   r0, 0
-beq      lbl_803C3CF0
-li       r0, 0
-stb      r0, 0x5c(r31)
-lwz      r3, 0x58(r31)
-cmplwi   r3, 0
-beq      lbl_803C3C28
-lwz      r7, 0x60(r31)
-mr       r30, r3
-addi     r4, r1, 0x60
-stw      r7, 0x24(r1)
-lbz      r5, 0x24(r1)
-lbz      r0, 0x25(r1)
-stb      r5, 0x104(r3)
-lbz      r5, 0x26(r1)
-stb      r0, 0x105(r3)
-lbz      r0, 0x27(r1)
-stb      r5, 0x106(r3)
-stb      r0, 0x107(r3)
-lwz      r6, 0x64(r31)
-stw      r7, 0x58(r1)
-stw      r6, 0x20(r1)
-lbz      r5, 0x20(r1)
-lbz      r0, 0x21(r1)
-stb      r5, 0x108(r3)
-lbz      r5, 0x22(r1)
-stb      r0, 0x109(r3)
-lbz      r0, 0x23(r1)
-stb      r5, 0x10a(r3)
-stb      r0, 0x10b(r3)
-lwz      r0, 0x68(r31)
-stw      r6, 0x5c(r1)
-stw      r0, 0x60(r1)
-lwz      r12, 0(r3)
-lwz      r12, 0xa8(r12)
-mtctr    r12
-bctrl
-lwz      r0, 0x6c(r31)
-mr       r3, r30
-addi     r4, r1, 0x64
-stw      r0, 0x64(r1)
-lwz      r12, 0(r30)
-lwz      r12, 0xa4(r12)
-mtctr    r12
-bctrl
-
-lbl_803C3C28:
-li       r0, 0
-stb      r0, 0xa8(r31)
-lwz      r3, 0xa4(r31)
-cmplwi   r3, 0
-beq      lbl_803C3CD4
-lwz      r7, 0xac(r31)
-mr       r30, r3
-addi     r4, r1, 0x50
-stw      r7, 0x1c(r1)
-lbz      r5, 0x1c(r1)
-lbz      r0, 0x1d(r1)
-stb      r5, 0x104(r3)
-lbz      r5, 0x1e(r1)
-stb      r0, 0x105(r3)
-lbz      r0, 0x1f(r1)
-stb      r5, 0x106(r3)
-stb      r0, 0x107(r3)
-lwz      r6, 0xb0(r31)
-stw      r7, 0x48(r1)
-stw      r6, 0x18(r1)
-lbz      r5, 0x18(r1)
-lbz      r0, 0x19(r1)
-stb      r5, 0x108(r3)
-lbz      r5, 0x1a(r1)
-stb      r0, 0x109(r3)
-lbz      r0, 0x1b(r1)
-stb      r5, 0x10a(r3)
-stb      r0, 0x10b(r3)
-lwz      r0, 0xb4(r31)
-stw      r6, 0x4c(r1)
-stw      r0, 0x50(r1)
-lwz      r12, 0(r3)
-lwz      r12, 0xa8(r12)
-mtctr    r12
-bctrl
-lwz      r0, 0xb8(r31)
-mr       r3, r30
-addi     r4, r1, 0x54
-stw      r0, 0x54(r1)
-lwz      r12, 0(r30)
-lwz      r12, 0xa4(r12)
-mtctr    r12
-bctrl
-
-lbl_803C3CD4:
-lfs      f0, lbl_8051F8AC@sda21(r2)
-li       r0, 1
-stfs     f0, 0x24c(r31)
-stb      r0, 0x250(r31)
-stfs     f0, 0x284(r31)
-stb      r0, 0x288(r31)
-b        lbl_803C3E60
-
-lbl_803C3CF0:
-li       r0, 0
-stb      r0, 0x5c(r31)
-lwz      r3, 0x58(r31)
-cmplwi   r3, 0
-beq      lbl_803C3D9C
-lwz      r7, 0x60(r31)
-mr       r30, r3
-addi     r4, r1, 0x40
-stw      r7, 0x14(r1)
-lbz      r5, 0x14(r1)
-lbz      r0, 0x15(r1)
-stb      r5, 0x104(r3)
-lbz      r5, 0x16(r1)
-stb      r0, 0x105(r3)
-lbz      r0, 0x17(r1)
-stb      r5, 0x106(r3)
-stb      r0, 0x107(r3)
-lwz      r6, 0x64(r31)
-stw      r7, 0x38(r1)
-stw      r6, 0x10(r1)
-lbz      r5, 0x10(r1)
-lbz      r0, 0x11(r1)
-stb      r5, 0x108(r3)
-lbz      r5, 0x12(r1)
-stb      r0, 0x109(r3)
-lbz      r0, 0x13(r1)
-stb      r5, 0x10a(r3)
-stb      r0, 0x10b(r3)
-lwz      r0, 0x68(r31)
-stw      r6, 0x3c(r1)
-stw      r0, 0x40(r1)
-lwz      r12, 0(r3)
-lwz      r12, 0xa8(r12)
-mtctr    r12
-bctrl
-lwz      r0, 0x6c(r31)
-mr       r3, r30
-addi     r4, r1, 0x44
-stw      r0, 0x44(r1)
-lwz      r12, 0(r30)
-lwz      r12, 0xa4(r12)
-mtctr    r12
-bctrl
-
-lbl_803C3D9C:
-li       r0, 0
-stb      r0, 0xa8(r31)
-lwz      r3, 0xa4(r31)
-cmplwi   r3, 0
-beq      lbl_803C3E48
-lwz      r7, 0xac(r31)
-mr       r30, r3
-addi     r4, r1, 0x30
-stw      r7, 0xc(r1)
-lbz      r5, 0xc(r1)
-lbz      r0, 0xd(r1)
-stb      r5, 0x104(r3)
-lbz      r5, 0xe(r1)
-stb      r0, 0x105(r3)
-lbz      r0, 0xf(r1)
-stb      r5, 0x106(r3)
-stb      r0, 0x107(r3)
-lwz      r6, 0xb0(r31)
-stw      r7, 0x28(r1)
-stw      r6, 8(r1)
-lbz      r5, 8(r1)
-lbz      r0, 9(r1)
-stb      r5, 0x108(r3)
-lbz      r5, 0xa(r1)
-stb      r0, 0x109(r3)
-lbz      r0, 0xb(r1)
-stb      r5, 0x10a(r3)
-stb      r0, 0x10b(r3)
-lwz      r0, 0xb4(r31)
-stw      r6, 0x2c(r1)
-stw      r0, 0x30(r1)
-lwz      r12, 0(r3)
-lwz      r12, 0xa8(r12)
-mtctr    r12
-bctrl
-lwz      r0, 0xb8(r31)
-mr       r3, r30
-addi     r4, r1, 0x34
-stw      r0, 0x34(r1)
-lwz      r12, 0(r30)
-lwz      r12, 0xa4(r12)
-mtctr    r12
-bctrl
-
-lbl_803C3E48:
-lfs      f0, lbl_8051F8B0@sda21(r2)
-li       r0, 0
-stfs     f0, 0x24c(r31)
-stb      r0, 0x250(r31)
-stfs     f0, 0x284(r31)
-stb      r0, 0x288(r31)
-
-lbl_803C3E60:
-addi     r3, r31, 0x224
-bl       update__Q23ebi12TYesNoCursorFv
-addi     r3, r31, 0x25c
-bl       update__Q23ebi12TYesNoCursorFv
-lwz      r0, 0x74(r1)
-lwz      r31, 0x6c(r1)
-lwz      r30, 0x68(r1)
-mtlr     r0
-addi     r1, r1, 0x70
-blr
-	*/
 }
 
 } // namespace Screen
 
-#pragma dont_inline on
-/*
- * --INFO--
- * Address:	803C3E88
- * Size:	000128
+/**
+ * @note Address: 0x803C3E88
+ * @note Size: 0x128
  */
 void TYesNoCursor::update()
 {
@@ -1002,7 +616,7 @@ void TYesNoCursor::update()
 		Vector2f pos1 = E2DPane_getGlbCenter(mPane1);
 		Vector2f pos2 = E2DPane_getGlbCenter(mPane2);
 
-		if (mSelected) {
+		if (mIsLeft) {
 			mTimer += mSpeed;
 			if (mTimer > 1.0f) {
 				mTimer = 1.0f;
@@ -1099,14 +713,12 @@ lbl_803C3F9C:
 	blr
 	*/
 }
-#pragma dont_inline reset
 
 namespace Screen {
 
-/*
- * --INFO--
- * Address:	803C3FB0
- * Size:	000028
+/**
+ * @note Address: 0x803C3FB0
+ * @note Size: 0x28
  */
 bool TMemoryCard::isFinish()
 {
@@ -1116,32 +728,30 @@ bool TMemoryCard::isFinish()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000014
+/**
+ * @note Address: N/A
+ * @note Size: 0x14
  */
 bool TMemoryCard::isDecide()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	803C3FD8
- * Size:	0004EC
+/**
+ * @note Address: 0x803C3FD8
+ * @note Size: 0x4EC
  */
 void TMemoryCard::startState(enumState state)
 {
 	mState = state;
 	switch (mState) {
 	case MEMCARD_Disabled:
-		mCursor1.kill();
-		mCursor2.kill();
+		mCursor1.mCursor.kill();
+		mCursor2.mCursor.kill();
 		break;
 	case MEMCARD_Selection:
-		mCursor1.kill();
-		mCursor2.kill();
+		mCursor1.mCursor.kill();
+		mCursor2.mCursor.kill();
 		mPaneMsg3->hide();
 		mPaneMsg4->show();
 		mPaneMsg4->setAlpha(255);
@@ -1149,46 +759,31 @@ void TMemoryCard::startState(enumState state)
 		mPaneMsg1->setAlpha(255);
 		mPaneMsg2->show();
 		mPaneMsg2->setAlpha(255);
-		if (mCurrSel == 1) {
-			mBlinkFont[0].mIsEnabled = true;
-			mBlinkFont[0].mSpeed     = sys->mDeltaTime * 3.333333f;
-			mBlinkFont[0]._40        = 0.0f;
-			mBlinkFont[0]._48        = true;
-			mBlinkFont[0]._49        = false;
-
-			mBlinkFont[1].setPaneColors();
-			mCursor1.mTimer    = 1.0f;
-			mCursor1.mSelected = true;
-			mCursor2.mTimer    = 1.0f;
-			mCursor2.mSelected = true;
+		if (mSelectionIdx == 1) {
+			mBlinkFont1.enable();
+			mBlinkFont2.setPaneColors(0);
+			mCursor1.start();
+			mCursor2.start();
 		} else {
-			mBlinkFont[0].setPaneColors();
-
-			mBlinkFont[1].mIsEnabled = true;
-			mBlinkFont[1].mSpeed     = sys->mDeltaTime * 3.333333f;
-			mBlinkFont[1]._40        = 0.0f;
-			mBlinkFont[1]._48        = true;
-			mBlinkFont[1]._49        = false;
-
-			mCursor1.mTimer    = 0.0f;
-			mCursor1.mSelected = false;
-			mCursor2.mTimer    = 0.0f;
-			mCursor2.mSelected = false;
+			mBlinkFont1.setPaneColors(0);
+			mBlinkFont2.enable();
+			mCursor1.stop();
+			mCursor2.stop();
 		}
-		mCursor1.create(nullptr);
-		mCursor2.create(nullptr);
+		mCursor1.mCursor.create(nullptr);
+		mCursor2.mCursor.create(nullptr);
 		mInputDelay = 20;
 		_0C         = 20;
-		mAnims[1].play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
-		mAnims[2].play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
-		mAnims[3].play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
-		mAnims[4].play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
+		mAnim2.play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
+		mAnim3.play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
+		mAnim4.play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
+		mAnim5.play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
 		mScreenMain->animation();
 		break;
 
 	case MEMCARD_Message:
-		mCursor1.kill();
-		mCursor2.kill();
+		mCursor1.mCursor.kill();
+		mCursor2.mCursor.kill();
 		mPaneMsg4->hide();
 		mPaneMsg1->hide();
 		mPaneMsg2->hide();
@@ -1196,10 +791,10 @@ void TMemoryCard::startState(enumState state)
 		mPaneMsg3->setAlpha(255);
 		mInputDelay = 20;
 		_0C         = 20;
-		mAnims[1].play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
-		mAnims[2].play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
-		mAnims[3].play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
-		mAnims[4].play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
+		mAnim2.play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
+		mAnim3.play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
+		mAnim4.play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
+		mAnim5.play(sys->mDeltaTime * 60.0f, (J3DAnmAttr)0, true);
 		mScreenMain->animation();
 		break;
 	case MEMCARD_Finish:
@@ -1207,349 +802,11 @@ void TMemoryCard::startState(enumState state)
 		mAlphaMod = 30;
 		break;
 	}
-	/*
-stwu     r1, -0x40(r1)
-mflr     r0
-stw      r0, 0x44(r1)
-stw      r31, 0x3c(r1)
-mr       r31, r3
-stw      r30, 0x38(r1)
-stw      r4, 0(r3)
-lwz      r0, 0(r3)
-cmpwi    r0, 2
-beq      lbl_803C43A0
-bge      lbl_803C4014
-cmpwi    r0, 0
-beq      lbl_803C4020
-bge      lbl_803C404C
-b        lbl_803C44AC
-
-lbl_803C4014:
-cmpwi    r0, 4
-bge      lbl_803C44AC
-b        lbl_803C44A0
-
-lbl_803C4020:
-addi     r3, r31, 0x224
-lwz      r12, 0x224(r31)
-lwz      r12, 0xc(r12)
-mtctr    r12
-bctrl
-addi     r3, r31, 0x25c
-lwz      r12, 0x25c(r31)
-lwz      r12, 0xc(r12)
-mtctr    r12
-bctrl
-b        lbl_803C44AC
-
-lbl_803C404C:
-addi     r3, r31, 0x224
-lwz      r12, 0x224(r31)
-lwz      r12, 0xc(r12)
-mtctr    r12
-bctrl
-addi     r3, r31, 0x25c
-lwz      r12, 0x25c(r31)
-lwz      r12, 0xc(r12)
-mtctr    r12
-bctrl
-lwz      r3, 0x28(r31)
-li       r5, 0
-li       r0, 1
-li       r4, 0xff
-stb      r5, 0xb0(r3)
-lwz      r3, 0x2c(r31)
-stb      r0, 0xb0(r3)
-lwz      r3, 0x2c(r31)
-lwz      r12, 0(r3)
-lwz      r12, 0x24(r12)
-mtctr    r12
-bctrl
-lwz      r3, 0x20(r31)
-li       r0, 1
-li       r4, 0xff
-stb      r0, 0xb0(r3)
-lwz      r3, 0x20(r31)
-lwz      r12, 0(r3)
-lwz      r12, 0x24(r12)
-mtctr    r12
-bctrl
-lwz      r3, 0x24(r31)
-li       r0, 1
-li       r4, 0xff
-stb      r0, 0xb0(r3)
-lwz      r3, 0x24(r31)
-lwz      r12, 0(r3)
-lwz      r12, 0x24(r12)
-mtctr    r12
-bctrl
-lbz      r0, 0x18(r31)
-cmplwi   r0, 1
-bne      lbl_803C41EC
-li       r4, 1
-lfs      f2, lbl_8051F8B4@sda21(r2)
-stb      r4, 0x5c(r31)
-li       r0, 0
-lfs      f0, lbl_8051F8B0@sda21(r2)
-lwz      r3, sys@sda21(r13)
-lfs      f1, 0x54(r3)
-fmuls    f1, f2, f1
-stfs     f1, 0x84(r31)
-stfs     f0, 0x80(r31)
-stb      r4, 0x88(r31)
-stb      r0, 0x89(r31)
-stb      r0, 0xa8(r31)
-lwz      r3, 0xa4(r31)
-cmplwi   r3, 0
-beq      lbl_803C41D0
-lwz      r7, 0xac(r31)
-mr       r30, r3
-addi     r4, r1, 0x30
-stw      r7, 0x14(r1)
-lbz      r5, 0x14(r1)
-lbz      r0, 0x15(r1)
-stb      r5, 0x104(r3)
-lbz      r5, 0x16(r1)
-stb      r0, 0x105(r3)
-lbz      r0, 0x17(r1)
-stb      r5, 0x106(r3)
-stb      r0, 0x107(r3)
-lwz      r6, 0xb0(r31)
-stw      r7, 0x28(r1)
-stw      r6, 0x10(r1)
-lbz      r5, 0x10(r1)
-lbz      r0, 0x11(r1)
-stb      r5, 0x108(r3)
-lbz      r5, 0x12(r1)
-stb      r0, 0x109(r3)
-lbz      r0, 0x13(r1)
-stb      r5, 0x10a(r3)
-stb      r0, 0x10b(r3)
-lwz      r0, 0xb4(r31)
-stw      r6, 0x2c(r1)
-stw      r0, 0x30(r1)
-lwz      r12, 0(r3)
-lwz      r12, 0xa8(r12)
-mtctr    r12
-bctrl
-lwz      r0, 0xb8(r31)
-mr       r3, r30
-addi     r4, r1, 0x34
-stw      r0, 0x34(r1)
-lwz      r12, 0(r30)
-lwz      r12, 0xa4(r12)
-mtctr    r12
-bctrl
-
-lbl_803C41D0:
-lfs      f0, lbl_8051F8AC@sda21(r2)
-li       r0, 1
-stfs     f0, 0x24c(r31)
-stb      r0, 0x250(r31)
-stfs     f0, 0x284(r31)
-stb      r0, 0x288(r31)
-b        lbl_803C42D8
-
-lbl_803C41EC:
-li       r0, 0
-stb      r0, 0x5c(r31)
-lwz      r3, 0x58(r31)
-cmplwi   r3, 0
-beq      lbl_803C4298
-lwz      r7, 0x60(r31)
-mr       r30, r3
-addi     r4, r1, 0x20
-stw      r7, 0xc(r1)
-lbz      r5, 0xc(r1)
-lbz      r0, 0xd(r1)
-stb      r5, 0x104(r3)
-lbz      r5, 0xe(r1)
-stb      r0, 0x105(r3)
-lbz      r0, 0xf(r1)
-stb      r5, 0x106(r3)
-stb      r0, 0x107(r3)
-lwz      r6, 0x64(r31)
-stw      r7, 0x18(r1)
-stw      r6, 8(r1)
-lbz      r5, 8(r1)
-lbz      r0, 9(r1)
-stb      r5, 0x108(r3)
-lbz      r5, 0xa(r1)
-stb      r0, 0x109(r3)
-lbz      r0, 0xb(r1)
-stb      r5, 0x10a(r3)
-stb      r0, 0x10b(r3)
-lwz      r0, 0x68(r31)
-stw      r6, 0x1c(r1)
-stw      r0, 0x20(r1)
-lwz      r12, 0(r3)
-lwz      r12, 0xa8(r12)
-mtctr    r12
-bctrl
-lwz      r0, 0x6c(r31)
-mr       r3, r30
-addi     r4, r1, 0x24
-stw      r0, 0x24(r1)
-lwz      r12, 0(r30)
-lwz      r12, 0xa4(r12)
-mtctr    r12
-bctrl
-
-lbl_803C4298:
-li       r4, 1
-lfs      f2, lbl_8051F8B4@sda21(r2)
-stb      r4, 0xa8(r31)
-li       r0, 0
-lfs      f0, lbl_8051F8B0@sda21(r2)
-lwz      r3, sys@sda21(r13)
-lfs      f1, 0x54(r3)
-fmuls    f1, f2, f1
-stfs     f1, 0xd0(r31)
-stfs     f0, 0xcc(r31)
-stb      r4, 0xd4(r31)
-stb      r0, 0xd5(r31)
-stfs     f0, 0x24c(r31)
-stb      r0, 0x250(r31)
-stfs     f0, 0x284(r31)
-stb      r0, 0x288(r31)
-
-lbl_803C42D8:
-addi     r3, r31, 0x224
-li       r4, 0
-lwz      r12, 0x224(r31)
-lwz      r12, 8(r12)
-mtctr    r12
-bctrl
-addi     r3, r31, 0x25c
-li       r4, 0
-lwz      r12, 0x25c(r31)
-lwz      r12, 8(r12)
-mtctr    r12
-bctrl
-li       r0, 0x14
-lfs      f1, lbl_8051F8A8@sda21(r2)
-stw      r0, 8(r31)
-addi     r3, r31, 0x114
-li       r4, 0
-li       r5, 1
-stw      r0, 0xc(r31)
-lwz      r6, sys@sda21(r13)
-lfs      f0, 0x54(r6)
-fmuls    f1, f1, f0
-bl       play__Q23ebi19E2DCallBack_AnmBaseFf10J3DAnmAttrb
-lwz      r5, sys@sda21(r13)
-addi     r3, r31, 0x150
-lfs      f1, lbl_8051F8A8@sda21(r2)
-li       r4, 0
-lfs      f0, 0x54(r5)
-li       r5, 1
-fmuls    f1, f1, f0
-bl       play__Q23ebi19E2DCallBack_AnmBaseFf10J3DAnmAttrb
-lwz      r5, sys@sda21(r13)
-addi     r3, r31, 0x18c
-lfs      f1, lbl_8051F8A8@sda21(r2)
-li       r4, 0
-lfs      f0, 0x54(r5)
-li       r5, 1
-fmuls    f1, f1, f0
-bl       play__Q23ebi19E2DCallBack_AnmBaseFf10J3DAnmAttrb
-lwz      r5, sys@sda21(r13)
-addi     r3, r31, 0x1c8
-lfs      f1, lbl_8051F8A8@sda21(r2)
-li       r4, 0
-lfs      f0, 0x54(r5)
-li       r5, 1
-fmuls    f1, f1, f0
-bl       play__Q23ebi19E2DCallBack_AnmBaseFf10J3DAnmAttrb
-lwz      r3, 0x1c(r31)
-bl       animation__9J2DScreenFv
-b        lbl_803C44AC
-
-lbl_803C43A0:
-addi     r3, r31, 0x224
-lwz      r12, 0x224(r31)
-lwz      r12, 0xc(r12)
-mtctr    r12
-bctrl
-addi     r3, r31, 0x25c
-lwz      r12, 0x25c(r31)
-lwz      r12, 0xc(r12)
-mtctr    r12
-bctrl
-lwz      r3, 0x2c(r31)
-li       r5, 0
-li       r0, 1
-li       r4, 0xff
-stb      r5, 0xb0(r3)
-lwz      r3, 0x20(r31)
-stb      r5, 0xb0(r3)
-lwz      r3, 0x24(r31)
-stb      r5, 0xb0(r3)
-lwz      r3, 0x28(r31)
-stb      r0, 0xb0(r3)
-lwz      r3, 0x28(r31)
-lwz      r12, 0(r3)
-lwz      r12, 0x24(r12)
-mtctr    r12
-bctrl
-li       r0, 0x14
-lfs      f1, lbl_8051F8A8@sda21(r2)
-stw      r0, 8(r31)
-addi     r3, r31, 0x114
-li       r4, 0
-li       r5, 1
-stw      r0, 0xc(r31)
-lwz      r6, sys@sda21(r13)
-lfs      f0, 0x54(r6)
-fmuls    f1, f1, f0
-bl       play__Q23ebi19E2DCallBack_AnmBaseFf10J3DAnmAttrb
-lwz      r5, sys@sda21(r13)
-addi     r3, r31, 0x150
-lfs      f1, lbl_8051F8A8@sda21(r2)
-li       r4, 0
-lfs      f0, 0x54(r5)
-li       r5, 1
-fmuls    f1, f1, f0
-bl       play__Q23ebi19E2DCallBack_AnmBaseFf10J3DAnmAttrb
-lwz      r5, sys@sda21(r13)
-addi     r3, r31, 0x18c
-lfs      f1, lbl_8051F8A8@sda21(r2)
-li       r4, 0
-lfs      f0, 0x54(r5)
-li       r5, 1
-fmuls    f1, f1, f0
-bl       play__Q23ebi19E2DCallBack_AnmBaseFf10J3DAnmAttrb
-lwz      r5, sys@sda21(r13)
-addi     r3, r31, 0x1c8
-lfs      f1, lbl_8051F8A8@sda21(r2)
-li       r4, 0
-lfs      f0, 0x54(r5)
-li       r5, 1
-fmuls    f1, f1, f0
-bl       play__Q23ebi19E2DCallBack_AnmBaseFf10J3DAnmAttrb
-lwz      r3, 0x1c(r31)
-bl       animation__9J2DScreenFv
-b        lbl_803C44AC
-
-lbl_803C44A0:
-li       r0, 0x1e
-stw      r0, 0x10(r31)
-stw      r0, 0x14(r31)
-
-lbl_803C44AC:
-lwz      r0, 0x44(r1)
-lwz      r31, 0x3c(r1)
-lwz      r30, 0x38(r1)
-mtlr     r0
-addi     r1, r1, 0x40
-blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	803C44C4
- * Size:	0008C8
+/**
+ * @note Address: 0x803C44C4
+ * @note Size: 0x8C8
  */
 void TMemoryCard::update()
 {
@@ -1559,113 +816,55 @@ void TMemoryCard::update()
 			mInputDelay--;
 		}
 		if (!mInputDelay && mCanExit) {
-			if (mController->mButton.mButtonDown & Controller::PRESS_DPAD_RIGHT || mController->mButton.mAnalogL > 0.5f) {
-				if (mCurrSel == 1) {
-					mCurrSel                 = 0;
-					mBlinkFont[0]._48        = false;
-					mBlinkFont[0]._49        = true;
-					mBlinkFont[1].mIsEnabled = true;
-					mBlinkFont[1].mSpeed     = sys->mDeltaTime * 3.333333f;
-					mBlinkFont[1]._40        = 0.0f;
-					mBlinkFont[1]._48        = true;
-					mBlinkFont[1]._49        = false;
-					mCursor1.mSelected       = false;
-					mCursor2.mSelected       = false;
+			if (mController->isMoveRight()) {
+				if (mSelectionIdx == 1) {
+					mSelectionIdx = 0;
+					mBlinkFont1.disable();
+					mBlinkFont2.enable();
+					mCursor1.mIsLeft = false;
+					mCursor2.mIsLeft = false;
+					PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
 				}
-			} else if (mController->mButton.mButtonDown & Controller::PRESS_DPAD_RIGHT || mController->mButton.mAnalogL > 0.5f) {
-				if (mCurrSel == 0) {
-					mCurrSel                 = 1;
-					mBlinkFont[0].mIsEnabled = true;
-					mBlinkFont[0].mSpeed     = sys->mDeltaTime * 3.333333f;
-					mBlinkFont[0]._40        = 0.0f;
-					mBlinkFont[0]._48        = true;
-					mBlinkFont[0]._49        = false;
-					mBlinkFont[1]._48        = false;
-					mBlinkFont[1]._49        = true;
-					mCursor1.mSelected       = true;
-					mCursor2.mSelected       = true;
+			} else if (mController->isMoveLeft()) {
+				if (mSelectionIdx == 0) {
+					mSelectionIdx = 1;
+					mBlinkFont1.enable();
+					mBlinkFont2.disable();
+					mCursor1.mIsLeft = true;
+					mCursor2.mIsLeft = true;
+					PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
 				}
 			} else if (mController->mButton.mButtonDown & Controller::PRESS_A) {
-				if (mCurrSel) {
-					mBlinkFont[0].mIsEnabled = false;
-					J2DTextBox* pane         = static_cast<J2DTextBox*>(mBlinkFont[0].mPane);
-					if (pane) {
-						pane->mCharColor     = mBlinkFont[0].mFonts[0].mCol1;
-						pane->mGradientColor = mBlinkFont[0].mFonts[0].mCol2;
-						pane->setWhite(mBlinkFont[0].mFonts[0].mWhite);
-						pane->setBlack(mBlinkFont[0].mFonts[0].mBlack);
-					}
-
-					mBlinkFont[1].mIsEnabled = false;
-					pane                     = static_cast<J2DTextBox*>(mBlinkFont[1].mPane);
-					if (pane) {
-						pane->mCharColor     = mBlinkFont[1].mFonts[0].mCol1;
-						pane->mGradientColor = mBlinkFont[1].mFonts[0].mCol2;
-						pane->setWhite(mBlinkFont[1].mFonts[0].mWhite);
-						pane->setBlack(mBlinkFont[1].mFonts[0].mBlack);
-					}
-					mCursor1.mTimer    = 1.0f;
-					mCursor1.mSelected = true;
-					mCursor2.mTimer    = 1.0f;
-					mCursor2.mSelected = true;
+				if (mSelectionIdx == 1) {
+					mBlinkFont1.setPaneColors(1);
+					mBlinkFont2.setPaneColors(0);
+					mCursor1.start();
+					mCursor2.start();
 				} else {
-					mBlinkFont[0].mIsEnabled = false;
-					J2DTextBox* pane         = static_cast<J2DTextBox*>(mBlinkFont[0].mPane);
-					if (pane) {
-						pane->mCharColor     = mBlinkFont[0].mFonts[0].mCol1;
-						pane->mGradientColor = mBlinkFont[0].mFonts[0].mCol2;
-						pane->setWhite(mBlinkFont[0].mFonts[0].mWhite);
-						pane->setBlack(mBlinkFont[0].mFonts[0].mBlack);
-					}
-
-					mBlinkFont[1].mIsEnabled = false;
-					pane                     = static_cast<J2DTextBox*>(mBlinkFont[1].mPane);
-					if (pane) {
-						pane->mCharColor     = mBlinkFont[1].mFonts[0].mCol1;
-						pane->mGradientColor = mBlinkFont[1].mFonts[0].mCol2;
-						pane->setWhite(mBlinkFont[1].mFonts[0].mWhite);
-						pane->setBlack(mBlinkFont[1].mFonts[0].mBlack);
-					}
-					mCursor1.mTimer    = 0.0f;
-					mCursor1.mSelected = false;
-					mCursor2.mTimer    = 0.0f;
-					mCursor2.mSelected = false;
+					mBlinkFont1.setPaneColors(0);
+					mBlinkFont2.setPaneColors(1);
+					mCursor1.stop();
+					mCursor2.stop();
 				}
-				mCursor1.update();
-				mCursor2.update();
+				// mCursor1.update();
+				// mCursor2.update();
 				startState(MEMCARD_Finish);
 				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
 				return;
 			} else if (mController->mButton.mButtonDown & Controller::PRESS_B) {
-				mBlinkFont[0].mIsEnabled = false;
-				J2DTextBox* pane         = static_cast<J2DTextBox*>(mBlinkFont[0].mPane);
-				if (pane) {
-					pane->mCharColor     = mBlinkFont[0].mFonts[0].mCol1;
-					pane->mGradientColor = mBlinkFont[0].mFonts[0].mCol2;
-					pane->setWhite(mBlinkFont[0].mFonts[0].mWhite);
-					pane->setBlack(mBlinkFont[0].mFonts[0].mBlack);
-				}
-
-				mBlinkFont[1].mIsEnabled = false;
-				pane                     = static_cast<J2DTextBox*>(mBlinkFont[1].mPane);
-				if (pane) {
-					pane->mCharColor     = mBlinkFont[1].mFonts[1].mCol1;
-					pane->mGradientColor = mBlinkFont[1].mFonts[1].mCol2;
-					pane->setWhite(mBlinkFont[1].mFonts[1].mWhite);
-					pane->setBlack(mBlinkFont[1].mFonts[1].mBlack);
-				}
-				mCursor1.mTimer    = 0.0f;
-				mCursor1.mSelected = false;
-				mCursor2.mTimer    = 0.0f;
-				mCursor2.mSelected = false;
-				mCursor1.update();
-				mCursor2.update();
+				mSelectionIdx = 0;
+				mBlinkFont1.setPaneColors(0);
+				mBlinkFont2.setPaneColors(1);
+				mCursor1.stop();
+				mCursor2.stop();
+				// mCursor1.update();
+				// mCursor2.update();
 				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
 				startState(MEMCARD_Finish);
 				return;
 			}
-			mCursor1.update();
-			mCursor2.update();
+			// mCursor1.update();
+			// mCursor2.update();
 			mScreenMain->update();
 		}
 		break;
@@ -1676,7 +875,7 @@ void TMemoryCard::update()
 		}
 		if (!mInputDelay) {
 			bool end  = false;
-			u32 input = mController->mButton.mButtonDown;
+			u32 input = mController->getButtonDown();
 			if ((input & Controller::PRESS_A) || (input & Controller::PRESS_B) || (input & Controller::PRESS_X)
 			    || (input & Controller::PRESS_Y) || (input & Controller::PRESS_START)) {
 				end = true;
@@ -1706,11 +905,11 @@ void TMemoryCard::update()
 		}
 
 		if (mod < 0.7f) {
-			mCursor1.fade();
-			mCursor2.fade();
+			mCursor1.mCursor.fade();
+			mCursor2.mCursor.fade();
 
 			f32 mod;
-			int temp = mAlphaMod;
+			u8 temp = mAlphaMod;
 			if (!temp) {
 				mod = 0.0f;
 			} else {
@@ -2359,18 +1558,17 @@ blr
 	*/
 }
 
-/*
- * --INFO--
- * Address:	803C4D8C
- * Size:	000080
+/**
+ * @note Address: 0x803C4D8C
+ * @note Size: 0x80
  */
 void TMemoryCard::draw()
 {
 	if (mState != MEMCARD_Disabled) {
-		Graphics& gfx       = *sys->mGfx;
-		J2DPerspGraph& graf = gfx.mPerspGraph;
+		Graphics* gfx       = sys->mGfx;
+		J2DPerspGraph& graf = gfx->mPerspGraph;
 		graf.setPort();
-		mScreenMain->draw(gfx, graf);
+		mScreenMain->draw(*gfx, graf);
 	}
 	/*
 stwu     r1, -0x20(r1)

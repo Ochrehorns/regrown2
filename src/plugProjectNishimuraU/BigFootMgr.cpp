@@ -12,10 +12,9 @@ namespace {
 static const char* cMatAnimBrkTexName = "/enemy/data/BigFoot/ooashi_model.brk";
 } // namespace
 
-/*
- * --INFO--
- * Address:	802C6F58
- * Size:	000050
+/**
+ * @note Address: 0x802C6F58
+ * @note Size: 0x50
  */
 Mgr::Mgr(int objLimit, u8 modelType)
     : EnemyMgrBase(objLimit, modelType)
@@ -23,46 +22,41 @@ Mgr::Mgr(int objLimit, u8 modelType)
 	mName = "オオアシマネージャ"; // big foot manager
 }
 
-/*
- * --INFO--
- * Address:	802C6FA8
- * Size:	000048
+/**
+ * @note Address: 0x802C6FA8
+ * @note Size: 0x48
  */
 void Mgr::doAlloc() { init(new Parms); }
 
-/*
- * --INFO--
- * Address:	802C7410
- * Size:	000060
+/**
+ * @note Address: 0x802C7410
+ * @note Size: 0x60
  */
 void Mgr::createObj(int count) { mObj = new Obj[count]; }
 
-/*
- * --INFO--
- * Address:	802C752C
- * Size:	000010
+/**
+ * @note Address: 0x802C752C
+ * @note Size: 0x10
  */
 EnemyBase* Mgr::getEnemy(int index) { return &mObj[index]; }
 
-/*
- * --INFO--
- * Address:	802C753C
- * Size:	000068
+/**
+ * @note Address: 0x802C753C
+ * @note Size: 0x68
  */
 void Mgr::loadModelData()
 {
 	EnemyMgrBase::loadModelData();
 	J3DShape* shape;
 	for (u16 j = 0; j < mModelData->getShapeNum(); j++) {
-		shape         = mModelData->mShapeTable.mItems[j];
-		shape->mFlags = (shape->mFlags & (~0xF000)) | 0x2000;
+		shape = mModelData->mShapeTable.mItems[j];
+		shape->setTexMtxLoadType(0x2000);
 	}
 }
 
-/*
- * --INFO--
- * Address:	802C75A4
- * Size:	0000B4
+/**
+ * @note Address: 0x802C75A4
+ * @note Size: 0xB4
  */
 void Mgr::loadTexData()
 {
@@ -80,10 +74,9 @@ void Mgr::loadTexData()
 	mTevRegAnimation->attachResource(brkFile, mModelData);
 }
 
-/*
- * --INFO--
- * Address:	802C7658
- * Size:	00007C
+/**
+ * @note Address: 0x802C7658
+ * @note Size: 0x7C
  */
 SysShape::Model* Mgr::createModel()
 {

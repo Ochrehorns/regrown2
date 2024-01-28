@@ -18,10 +18,9 @@ namespace SnakeCrow {
 static const int unusedSnakeCrowArray[] = { 0, 0, 0 };
 static const char unusedSnakeCrowName[] = "246-SnakeCrow";
 
-/*
- * --INFO--
- * Address:	80293094
- * Size:	00016C
+/**
+ * @note Address: 0x80293094
+ * @note Size: 0x16C
  */
 Obj::Obj()
 {
@@ -32,10 +31,9 @@ Obj::Obj()
 	createEffect();
 }
 
-/*
- * --INFO--
- * Address:	80293200
- * Size:	000044
+/**
+ * @note Address: 0x80293200
+ * @note Size: 0x44
  */
 void Obj::constructor()
 {
@@ -45,17 +43,15 @@ void Obj::constructor()
 	resetBossAppearBGM();
 }
 
-/*
- * --INFO--
- * Address:	80293244
- * Size:	000004
+/**
+ * @note Address: 0x80293244
+ * @note Size: 0x4
  */
 void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-/*
- * --INFO--
- * Address:	80293248
- * Size:	0000E0
+/**
+ * @note Address: 0x80293248
+ * @note Size: 0xE0
  */
 void Obj::onInit(CreatureInitArg* initArg)
 {
@@ -79,10 +75,9 @@ void Obj::onInit(CreatureInitArg* initArg)
 	doAnimationCullingOff();
 }
 
-/*
- * --INFO--
- * Address:	80293328
- * Size:	00004C
+/**
+ * @note Address: 0x80293328
+ * @note Size: 0x4C
  */
 void Obj::onKill(CreatureKillArg* killArg)
 {
@@ -91,27 +86,25 @@ void Obj::onKill(CreatureKillArg* killArg)
 	EnemyBase::onKill(killArg);
 }
 
-/*
- * --INFO--
- * Address:	80293374
- * Size:	000088
+/**
+ * @note Address: 0x80293374
+ * @note Size: 0x88
  */
 void Obj::setParameters()
 {
-	if (gameSystem && gameSystem->mIsInCave && gameSystem->mMode == GSM_STORY_MODE) {
+	if (gameSystem && gameSystem->mIsInCave && gameSystem->isStoryMode()) {
 		SingleGameSection* section = static_cast<SingleGameSection*>(gameSystem->mSection);
 		if (section && section->getCaveID() == 'f_02') { // White Flower Garden snagret has its own health value
-			C_PARMS->mGeneral.mHealth.mValue = C_PROPERPARMS.mWFGHealth.mValue;
+			C_GENERALPARMS.mHealth.mValue = C_PROPERPARMS.mWFGHealth.mValue;
 		}
 	}
 
 	EnemyBase::setParameters();
 }
 
-/*
- * --INFO--
- * Address:	802933FC
- * Size:	000048
+/**
+ * @note Address: 0x802933FC
+ * @note Size: 0x48
  */
 void Obj::doUpdate()
 {
@@ -119,10 +112,9 @@ void Obj::doUpdate()
 	mMouthSlots.update();
 }
 
-/*
- * --INFO--
- * Address:	80293444
- * Size:	000034
+/**
+ * @note Address: 0x80293444
+ * @note Size: 0x34
  */
 void Obj::doUpdateCommon()
 {
@@ -130,10 +122,9 @@ void Obj::doUpdateCommon()
 	updateBossBGM();
 }
 
-/*
- * --INFO--
- * Address:	80293478
- * Size:	000034
+/**
+ * @note Address: 0x80293478
+ * @note Size: 0x34
  */
 void Obj::doAnimationUpdateAnimator()
 {
@@ -141,10 +132,9 @@ void Obj::doAnimationUpdateAnimator()
 	doAnimationJointCallBack();
 }
 
-/*
- * --INFO--
- * Address:	802934AC
- * Size:	00003C
+/**
+ * @note Address: 0x802934AC
+ * @note Size: 0x3C
  */
 void Obj::doAnimationCullingOff()
 {
@@ -153,24 +143,21 @@ void Obj::doAnimationCullingOff()
 	finishAnimationJointCallBack();
 }
 
-/*
- * --INFO--
- * Address:	802934E8
- * Size:	000004
+/**
+ * @note Address: 0x802934E8
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	802934EC
- * Size:	000020
+/**
+ * @note Address: 0x802934EC
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	8029350C
- * Size:	00004C
+/**
+ * @note Address: 0x8029350C
+ * @note Size: 0x4C
  */
 void Obj::setFSM(FSM* fsm)
 {
@@ -179,24 +166,22 @@ void Obj::setFSM(FSM* fsm)
 	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80293558
- * Size:	000098
+/**
+ * @note Address: 0x80293558
+ * @note Size: 0x98
  */
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
-	shadowParam.mPosition                 = mModel->getJoint("kutijnt1")->getWorldMatrix()->getBasis(3);
+	shadowParam.mPosition                 = mModel->getJoint("kutijnt1")->getWorldMatrix()->getColumn(3);
 	shadowParam.mPosition.y               = mPosition.y + 2.5f;
 	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
 	shadowParam.mBoundingSphere.mRadius   = 20.0f;
 	shadowParam.mSize                     = 17.5f;
 }
 
-/*
- * --INFO--
- * Address:	802935F0
- * Size:	000098
+/**
+ * @note Address: 0x802935F0
+ * @note Size: 0x98
  */
 bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* part)
 {
@@ -211,10 +196,9 @@ bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* part)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80293688
- * Size:	00003C
+/**
+ * @note Address: 0x80293688
+ * @note Size: 0x3C
  */
 void Obj::doStartStoneState()
 {
@@ -223,15 +207,14 @@ void Obj::doStartStoneState()
 	finishWaitEffect();
 }
 
-/*
- * --INFO--
- * Address:	802936C4
- * Size:	000060
+/**
+ * @note Address: 0x802936C4
+ * @note Size: 0x60
  */
 void Obj::doFinishStoneState()
 {
 	EnemyBase::doFinishStoneState();
-	EnemyFunc::flickStickPikmin(this, 1.0f, 10.0f, 0.0f, -1000.0f, nullptr);
+	EnemyFunc::flickStickPikmin(this, 1.0f, 10.0f, 0.0f, FLICK_BACKWARD_ANGLE, nullptr);
 
 	if (getStateID() >= SNAKECROW_Wait) {
 		// if wait, attack, eat or struggle
@@ -239,31 +222,27 @@ void Obj::doFinishStoneState()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80293724
- * Size:	000028
+/**
+ * @note Address: 0x80293724
+ * @note Size: 0x28
  */
-void Obj::startCarcassMotion() { startMotion(12, nullptr); }
+void Obj::startCarcassMotion() { startMotion(SNAKECROWANIM_Carry, nullptr); }
 
-/*
- * --INFO--
- * Address:	8029374C
- * Size:	000020
+/**
+ * @note Address: 0x8029374C
+ * @note Size: 0x20
  */
 void Obj::doStartMovie() { effectDrawOff(); }
 
-/*
- * --INFO--
- * Address:	8029376C
- * Size:	000020
+/**
+ * @note Address: 0x8029376C
+ * @note Size: 0x20
  */
 void Obj::doEndMovie() { effectDrawOn(); }
 
-/*
- * --INFO--
- * Address:	8029378C
- * Size:	0000BC
+/**
+ * @note Address: 0x8029378C
+ * @note Size: 0xBC
  */
 void Obj::initMouthSlots()
 {
@@ -277,39 +256,36 @@ void Obj::initMouthSlots()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80293848
- * Size:	000058
+/**
+ * @note Address: 0x80293848
+ * @note Size: 0x58
  */
-void Obj::getThrowupItemPosition(Vector3f* pos) { *pos = mModel->getJoint("kutijnt1")->getWorldMatrix()->getBasis(3); }
+void Obj::getThrowupItemPosition(Vector3f* pos) { *pos = mModel->getJoint("kutijnt1")->getWorldMatrix()->getColumn(3); }
 
-/*
- * --INFO--
- * Address:	802938A0
- * Size:	000058
+/**
+ * @note Address: 0x802938A0
+ * @note Size: 0x58
  */
-void Obj::getCommonEffectPos(Vector3f& pos) { pos = mModel->getJoint("kutijnt1")->getWorldMatrix()->getBasis(3); }
+void Obj::getCommonEffectPos(Vector3f& pos) { pos = mModel->getJoint("kutijnt1")->getWorldMatrix()->getColumn(3); }
 
-/*
- * --INFO--
- * Address:	802938F8
- * Size:	000338
+/**
+ * @note Address: 0x802938F8
+ * @note Size: 0x338
  */
 void Obj::appearNearByTarget(Creature* target)
 {
 	Vector3f targetPos = target->getPosition();
 	f32 faceDir        = randWeightFloat(TAU);
 
-	Vector3f newPos = Vector3f(-pikmin2_sinf(faceDir), 0.0f, -pikmin2_cosf(faceDir));
+	Vector3f newPos = Vector3f(-sinf(faceDir), 0.0f, -cosf(faceDir));
 	newPos *= 120.0f;
 	newPos += targetPos;
 
-	if (sqrDistanceXZ(mHomePosition, newPos) > SQUARE(*C_PARMS->mGeneral.mTerritoryRadius())) {
+	if (sqrDistanceXZ(mHomePosition, newPos) > SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
 		f32 angleDist = JMAAtan2Radian(targetPos.x - mHomePosition.x, targetPos.z - mHomePosition.z);
 
 		faceDir = angleDist + (randWeightFloat(PI) - HALF_PI);
-		newPos  = Vector3f(-pikmin2_sinf(faceDir), 0.0f, -pikmin2_cosf(faceDir));
+		newPos  = Vector3f(-sinf(faceDir), 0.0f, -cosf(faceDir));
 		newPos *= 120.0f;
 		newPos += targetPos;
 	}
@@ -319,15 +295,14 @@ void Obj::appearNearByTarget(Creature* target)
 	updateFaceDir(faceDir);
 }
 
-/*
- * --INFO--
- * Address:	80293C30
- * Size:	00020C
+/**
+ * @note Address: 0x80293C30
+ * @note Size: 0x20C
  */
 void Obj::setAttackPosition()
 {
 	f32 angle         = mFaceDir;
-	Vector3f dir      = Vector3f(pikmin2_sinf(angle), 0.0f, pikmin2_cosf(angle));
+	Vector3f dir      = Vector3f(sinf(angle), 0.0f, cosf(angle));
 	Vector3f orthoDir = Vector3f(-dir.z, 0.0f, dir.x);
 
 	f32 array1[5] = { 40.0f, 120.0f, 190.0f, 90.0f, 90.0f };
@@ -484,13 +459,55 @@ lbl_80293D54:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80293E3C
- * Size:	0005F4
+/**
+ * @note Address: 0x80293E3C
+ * @note Size: 0x5F4
  */
-Piki* Obj::getAttackPiki(int)
+Piki* Obj::getAttackPiki(int animIdx)
 {
+	int p1 = 0; // r30
+	int p2 = 5; // r31
+	if (animIdx < 5) {
+		p1 = animIdx;
+		p2 = animIdx + 1;
+	}
+
+	Vector3f snakePos = getPosition();                 // f28, f27, f26
+	Vector3f dir      = getDirection(mFaceDir);        // f30, f29
+	Vector3f orthoDir = Vector3f(-dir.z, 0.0f, dir.x); // f31
+
+	f32 maxDotDirs[]     = { 80.0f, 160.0f, 220.0f, 130.0f, 130.0f };  // 0x94
+	f32 minDotDirs[]     = { 0.0f, 80.0f, 160.0f, 50.0f, 50.0f };      // 0x80
+	f32 maxDotPerpDirs[] = { 30.0f, 30.0f, 30.0f, 110.0f, -50.0f };    // 0x6C
+	f32 minDotPerpDirs[] = { -30.0f, -30.0f, -30.0f, 50.0f, -110.0f }; // 0x58
+	f32 maxYs[]          = { 40.0f, 40.0f, 40.0f, 40.0f, 40.0f };      // 0x44
+	f32 minYs[]          = { -40.0f, -40.0f, -40.0f, -40.0f, -40.0f }; // 0x30
+
+	for (int i = 0; i < 5; i++) {
+		maxYs[i] += mAttackPositions[i].y - snakePos.y;
+		minYs[i] += mAttackPositions[i].y - snakePos.y;
+	}
+
+	Iterator<Piki> iter(pikiMgr);
+	CI_LOOP(iter)
+	{
+		Piki* piki = *iter;
+		if (piki->isAlive() && piki->isPikmin() && !piki->isStickToMouth()) {
+			Vector3f pikiPos = piki->getPosition();
+			Vector3f sep     = pikiPos - snakePos;
+			f32 dotDir       = dot(dir, sep);      // f1
+			f32 dotPerpDir   = dot(orthoDir, sep); // f2
+			for (int i = p1; i < p2; i++) {
+				if (dotDir < maxDotDirs[i] && dotDir > minDotDirs[i] && dotPerpDir < maxDotPerpDirs[i] && dotPerpDir > minDotPerpDirs[i]
+				    && sep.y < maxYs[i] && sep.y > minYs[i]) {
+					mAttackAnimIdx = i;
+					return piki;
+				}
+			}
+		}
+	}
+
+	return nullptr;
 	/*
 	stwu     r1, -0x160(r1)
 	mflr     r0
@@ -908,13 +925,55 @@ lbl_802943EC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80294430
- * Size:	0005C8
+/**
+ * @note Address: 0x80294430
+ * @note Size: 0x5C8
  */
-Navi* Obj::getAttackNavi(int)
+Navi* Obj::getAttackNavi(int animIdx)
 {
+	int p1 = 0; // r30
+	int p2 = 5; // r31
+	if (animIdx < 5) {
+		p1 = animIdx;
+		p2 = animIdx + 1;
+	}
+
+	Vector3f snakePos = getPosition();                 // f28, f27, f26
+	Vector3f dir      = getDirection(mFaceDir);        // f30, f29
+	Vector3f orthoDir = Vector3f(-dir.z, 0.0f, dir.x); // f31
+
+	f32 maxDotDirs[]     = { 80.0f, 160.0f, 220.0f, 130.0f, 130.0f };  // 0x94
+	f32 minDotDirs[]     = { 0.0f, 80.0f, 160.0f, 50.0f, 50.0f };      // 0x80
+	f32 maxDotPerpDirs[] = { 30.0f, 30.0f, 30.0f, 110.0f, -50.0f };    // 0x6C
+	f32 minDotPerpDirs[] = { -30.0f, -30.0f, -30.0f, 50.0f, -110.0f }; // 0x58
+	f32 maxYs[]          = { 40.0f, 40.0f, 40.0f, 40.0f, 40.0f };      // 0x44
+	f32 minYs[]          = { -40.0f, -40.0f, -40.0f, -40.0f, -40.0f }; // 0x30
+
+	for (int i = 0; i < 5; i++) {
+		maxYs[i] += mAttackPositions[i].y - snakePos.y;
+		minYs[i] += mAttackPositions[i].y - snakePos.y;
+	}
+
+	Iterator<Navi> iter(naviMgr);
+	CI_LOOP(iter)
+	{
+		Navi* navi = *iter;
+		if (navi->isAlive()) {
+			Vector3f naviPos = navi->getPosition();
+			Vector3f sep     = naviPos - snakePos;
+			f32 dotDir       = dot(dir, sep);      // f1
+			f32 dotPerpDir   = dot(orthoDir, sep); // f2
+			for (int i = p1; i < p2; i++) {
+				if (dotDir < maxDotDirs[i] && dotDir > minDotDirs[i] && dotPerpDir < maxDotPerpDirs[i] && dotPerpDir > minDotPerpDirs[i]
+				    && sep.y < maxYs[i] && sep.y > minYs[i]) {
+					mAttackAnimIdx = i;
+					return navi;
+				}
+			}
+		}
+	}
+
+	return nullptr;
 	/*
 	stwu     r1, -0x160(r1)
 	mflr     r0
@@ -1321,10 +1380,9 @@ lbl_802949B4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802949F8
- * Size:	000068
+/**
+ * @note Address: 0x802949F8
+ * @note Size: 0x68
  */
 CollPart* Obj::getSwallowSlot()
 {
@@ -1339,10 +1397,9 @@ CollPart* Obj::getSwallowSlot()
 	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	80294A60
- * Size:	00006C
+/**
+ * @note Address: 0x80294A60
+ * @note Size: 0x6C
  */
 bool Obj::isSwallowPikmin()
 {
@@ -1357,10 +1414,9 @@ bool Obj::isSwallowPikmin()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80294ACC
- * Size:	00024C
+/**
+ * @note Address: 0x80294ACC
+ * @note Size: 0x24C
  */
 int Obj::getStickHeadPikmin()
 {
@@ -1378,38 +1434,33 @@ int Obj::getStickHeadPikmin()
 	return stickCount;
 }
 
-/*
- * --INFO--
- * Address:	80294D18
- * Size:	000048
+/**
+ * @note Address: 0x80294D18
+ * @note Size: 0x48
  */
 void Obj::createJointCallBack() { mSnakeJointMgr = new SnakeJointMgr(this); }
 
-/*
- * --INFO--
- * Address:	80294D60
- * Size:	000024
+/**
+ * @note Address: 0x80294D60
+ * @note Size: 0x24
  */
 void Obj::setupJointCallBack() { mSnakeJointMgr->setupCallBackJoint(); }
 
-/*
- * --INFO--
- * Address:	80294D84
- * Size:	000024
+/**
+ * @note Address: 0x80294D84
+ * @note Size: 0x24
  */
 void Obj::doAnimationJointCallBack() { mSnakeJointMgr->doAnimation(); }
 
-/*
- * --INFO--
- * Address:	80294DA8
- * Size:	000024
+/**
+ * @note Address: 0x80294DA8
+ * @note Size: 0x24
  */
 void Obj::finishAnimationJointCallBack() { mSnakeJointMgr->finishAnimation(); }
 
-/*
- * --INFO--
- * Address:	80294DCC
- * Size:	0000B8
+/**
+ * @note Address: 0x80294DCC
+ * @note Size: 0xB8
  */
 void Obj::startJointCallBack()
 {
@@ -1419,10 +1470,9 @@ void Obj::startJointCallBack()
 	mSnakeJointMgr->startModify(y, (f32)event->mFrame - frame);
 }
 
-/*
- * --INFO--
- * Address:	80294E84
- * Size:	000088
+/**
+ * @note Address: 0x80294E84
+ * @note Size: 0x88
  */
 void Obj::returnJointCallBack()
 {
@@ -1431,17 +1481,15 @@ void Obj::returnJointCallBack()
 	mSnakeJointMgr->returnModify((f32)event->mFrame - frame);
 }
 
-/*
- * --INFO--
- * Address:	80294F0C
- * Size:	000024
+/**
+ * @note Address: 0x80294F0C
+ * @note Size: 0x24
  */
 void Obj::finishJointCallBack() { mSnakeJointMgr->finishModify(); }
 
-/*
- * --INFO--
- * Address:	80294F30
- * Size:	000038
+/**
+ * @note Address: 0x80294F30
+ * @note Size: 0x38
  */
 void Obj::setupCollision()
 {
@@ -1451,10 +1499,9 @@ void Obj::setupCollision()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80294F68
- * Size:	000040
+/**
+ * @note Address: 0x80294F68
+ * @note Size: 0x40
  */
 void Obj::lifeIncrement()
 {
@@ -1462,50 +1509,44 @@ void Obj::lifeIncrement()
 	disableEvent(0, EB_TakingDamage);
 	mHealth += 10.0f;
 
-	if (mHealth > *C_PARMS->mGeneral.mHealth()) {
-		mHealth = *C_PARMS->mGeneral.mHealth();
+	if (mHealth > C_GENERALPARMS.mHealth()) {
+		mHealth = C_GENERALPARMS.mHealth();
 	}
 }
 
-/*
- * --INFO--
- * Address:	80294FA8
- * Size:	000048
+/**
+ * @note Address: 0x80294FA8
+ * @note Size: 0x48
  */
 void Obj::createShadowSystem() { mShadowMgr = new SnakeCrowShadowMgr(this); }
 
-/*
- * --INFO--
- * Address:	80294FF0
- * Size:	000024
+/**
+ * @note Address: 0x80294FF0
+ * @note Size: 0x24
  */
 void Obj::setupShadowSystem() { mShadowMgr->init(); }
 
-/*
- * --INFO--
- * Address:	80295014
- * Size:	000024
+/**
+ * @note Address: 0x80295014
+ * @note Size: 0x24
  */
 void Obj::doAnimationShadowSystem() { mShadowMgr->update(); }
 
-/*
- * --INFO--
- * Address:	80295038
- * Size:	000024
+/**
+ * @note Address: 0x80295038
+ * @note Size: 0x24
  */
 void Obj::startJointShadow() { mShadowMgr->startJointShadow(); }
 
-/*
- * --INFO--
- * Address:	8029505C
- * Size:	000024
+/**
+ * @note Address: 0x8029505C
+ * @note Size: 0x24
  */
 void Obj::finishJointShadow() { mShadowMgr->finishJointShadow(); }
 
-/*
- * --INFO--
- * Address:	80295080
- * Size:	000040
+/**
+ * @note Address: 0x80295080
+ * @note Size: 0x40
  */
 void Obj::deleteJointShadow()
 {
@@ -1513,10 +1554,9 @@ void Obj::deleteJointShadow()
 	shadowMgr->delJointShadow(this);
 }
 
-/*
- * --INFO--
- * Address:	802950C0
- * Size:	0000E0
+/**
+ * @note Address: 0x802950C0
+ * @note Size: 0xE0
  */
 void Obj::startBossAttackBGM()
 {
@@ -1525,26 +1565,24 @@ void Obj::startBossAttackBGM()
 	} else {
 		PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 		PSM::checkBoss(soundObj);
-		soundObj->jumpRequest(3);
+		soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_Attack);
 	}
 }
 
-/*
- * --INFO--
- * Address:	802951A0
- * Size:	0000C8
+/**
+ * @note Address: 0x802951A0
+ * @note Size: 0xC8
  */
 void Obj::startBossFlickBGM()
 {
 	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 	PSM::checkBoss(soundObj);
-	soundObj->jumpRequest(4);
+	soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_Flick);
 }
 
-/*
- * --INFO--
- * Address:	80295268
- * Size:	0000FC
+/**
+ * @note Address: 0x80295268
+ * @note Size: 0xFC
  */
 void Obj::updateBossBGM()
 {
@@ -1557,10 +1595,9 @@ void Obj::updateBossBGM()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80295364
- * Size:	0000D0
+/**
+ * @note Address: 0x80295364
+ * @note Size: 0xD0
  */
 void Obj::resetBossAppearBGM()
 {
@@ -1572,10 +1609,9 @@ void Obj::resetBossAppearBGM()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80295434
- * Size:	0000CC
+/**
+ * @note Address: 0x80295434
+ * @note Size: 0xCC
  */
 void Obj::setBossAppearBGM()
 {
@@ -1587,10 +1623,9 @@ void Obj::setBossAppearBGM()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80295500
- * Size:	000160
+/**
+ * @note Address: 0x80295500
+ * @note Size: 0x160
  */
 void Obj::createEffect()
 {
@@ -1599,10 +1634,9 @@ void Obj::createEffect()
 	mEfxDead   = new efx::THebiDead;
 }
 
-/*
- * --INFO--
- * Address:	80295660
- * Size:	00004C
+/**
+ * @note Address: 0x80295660
+ * @note Size: 0x4C
  */
 void Obj::setupEffect()
 {
@@ -1610,10 +1644,9 @@ void Obj::setupEffect()
 	mEfxDead->setMtxptr(matrix->mMatrix.mtxView);
 }
 
-/*
- * --INFO--
- * Address:	802956AC
- * Size:	0001D4
+/**
+ * @note Address: 0x802956AC
+ * @note Size: 0x1D4
  */
 void Obj::createAppearEffect(int effectID)
 {
@@ -1634,10 +1667,9 @@ void Obj::createAppearEffect(int effectID)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80295880
- * Size:	000058
+/**
+ * @note Address: 0x80295880
+ * @note Size: 0x58
  */
 void Obj::startRotateEffect()
 {
@@ -1645,17 +1677,15 @@ void Obj::startRotateEffect()
 	mEfxRotate->create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	802958D8
- * Size:	000030
+/**
+ * @note Address: 0x802958D8
+ * @note Size: 0x30
  */
 void Obj::finishRotateEffect() { mEfxRotate->fade(); }
 
-/*
- * --INFO--
- * Address:	80295908
- * Size:	000058
+/**
+ * @note Address: 0x80295908
+ * @note Size: 0x58
  */
 void Obj::startWaitEffect()
 {
@@ -1663,41 +1693,37 @@ void Obj::startWaitEffect()
 	mEfxWait->create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	80295960
- * Size:	000030
+/**
+ * @note Address: 0x80295960
+ * @note Size: 0x30
  */
 void Obj::finishWaitEffect() { mEfxWait->fade(); }
 
-/*
- * --INFO--
- * Address:	80295990
- * Size:	000034
+/**
+ * @note Address: 0x80295990
+ * @note Size: 0x34
  */
 void Obj::createDeadStartEffect() { mEfxDead->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	802959C4
- * Size:	000094
+/**
+ * @note Address: 0x802959C4
+ * @note Size: 0x94
  */
 void Obj::createDeadFinishEffect()
 {
-	Vector3f fxPos = mModel->getJoint("kutijnt1")->getWorldMatrix()->getBasis(3);
+	Vector3f fxPos = mModel->getJoint("kutijnt1")->getWorldMatrix()->getColumn(3);
 	efx::Arg fxArg(fxPos);
 	efx::THebiDeadHane_ver01 deadFX;
 	deadFX.create(&fxArg);
 }
 
-/*
- * --INFO--
- * Address:	80295A58
- * Size:	0000AC
+/**
+ * @note Address: 0x80295A58
+ * @note Size: 0xAC
  */
 void Obj::createDownHeadEffect(f32 scale)
 {
-	Vector3f fxPos = mModel->getJoint("kutijnt1")->getWorldMatrix()->getBasis(3);
+	Vector3f fxPos = mModel->getJoint("kutijnt1")->getWorldMatrix()->getColumn(3);
 	fxPos.y -= 15.0f;
 	createBounceEffect(fxPos, scale);
 
@@ -1705,10 +1731,9 @@ void Obj::createDownHeadEffect(f32 scale)
 	rumbleMgr->startRumble(8, fxPos, 2);
 }
 
-/*
- * --INFO--
- * Address:	80295B04
- * Size:	000064
+/**
+ * @note Address: 0x80295B04
+ * @note Size: 0x64
  */
 void Obj::effectDrawOn()
 {
@@ -1717,10 +1742,9 @@ void Obj::effectDrawOn()
 	mEfxDead->endDemoDrawOn();
 }
 
-/*
- * --INFO--
- * Address:	80295B68
- * Size:	000064
+/**
+ * @note Address: 0x80295B68
+ * @note Size: 0x64
  */
 void Obj::effectDrawOff()
 {
@@ -1729,10 +1753,9 @@ void Obj::effectDrawOff()
 	mEfxDead->startDemoDrawOff();
 }
 
-/*
- * --INFO--
- * Address:	80295BCC
- * Size:	000048
+/**
+ * @note Address: 0x80295BCC
+ * @note Size: 0x48
  */
 void Obj::createEfxHamon()
 {

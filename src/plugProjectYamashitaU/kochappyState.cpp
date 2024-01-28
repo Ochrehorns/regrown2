@@ -8,10 +8,9 @@
 namespace Game {
 namespace KochappyBase {
 
-/*
- * --INFO--
- * Address:	8010F874
- * Size:	000198
+/**
+ * @note Address: 0x8010F874
+ * @note Size: 0x198
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -28,10 +27,9 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateDemo(KOCHAPPY_Demo));
 }
 
-/*
- * --INFO--
- * Address:	8010FA0C
- * Size:	00003C
+/**
+ * @note Address: 0x8010FA0C
+ * @note Size: 0x3C
  */
 StatePress::StatePress(int stateID)
     : State(stateID)
@@ -39,23 +37,21 @@ StatePress::StatePress(int stateID)
 	mName = "press";
 }
 
-/*
- * --INFO--
- * Address:	8010FA48
- * Size:	000054
+/**
+ * @note Address: 0x8010FA48
+ * @note Size: 0x54
  */
 void StatePress::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mHealth = 0.0f;
-	enemy->startMotion(4, nullptr);
+	enemy->startMotion(KOCHAPPYANIM_Press, nullptr);
 	enemy->deathProcedure();
-	enemy->mCurAnim->mIsPlaying = 0;
+	enemy->mCurAnim->mIsPlaying = false;
 }
 
-/*
- * --INFO--
- * Address:	8010FA9C
- * Size:	000050
+/**
+ * @note Address: 0x8010FA9C
+ * @note Size: 0x50
  */
 void StatePress::exec(EnemyBase* enemy)
 {
@@ -64,10 +60,9 @@ void StatePress::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010FAEC
- * Size:	00003C
+/**
+ * @note Address: 0x8010FAEC
+ * @note Size: 0x3C
  */
 StateWait::StateWait(int stateID)
     : State(stateID)
@@ -75,27 +70,25 @@ StateWait::StateWait(int stateID)
 	mName = "wait";
 }
 
-/*
- * --INFO--
- * Address:	8010FB28
- * Size:	0000C8
+/**
+ * @note Address: 0x8010FB28
+ * @note Size: 0xC8
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->startMotion(6, nullptr);
+	enemy->startMotion(KOCHAPPYANIM_Wait, nullptr);
 	enemy->mTargetCreature = nullptr;
-	if (static_cast<WaitArg*>(stateArg) == (WaitArg*)('rand')) {
+	if ((int)stateArg == 'rand') {
 		enemy->setMotionFrame(randFloat() * enemy->getFirstKeyFrame());
 	}
 
-	static_cast<Obj*>(enemy)->setAnimationSpeed(30.0f);
+	OBJ(enemy)->setAnimationSpeed(30.0f);
 	enemy->enableEvent(0, EB_Constrained);
 }
 
-/*
- * --INFO--
- * Address:	8010FBF0
- * Size:	000308
+/**
+ * @note Address: 0x8010FBF0
+ * @note Size: 0x308
  */
 void StateWait::exec(EnemyBase* enemy)
 {
@@ -117,10 +110,11 @@ void StateWait::exec(EnemyBase* enemy)
 				enemy->getJAIObject()->startSound(PSSE_EN_KOCHAPPY_NOTICE, 0);
 				break;
 			case KEYEVENT_END:
-				Parms* parms = static_cast<Parms*>(enemy->mParms);
-				f32 angLimit = parms->mProperParms.mFp03.mValue;
-				f32 angDist  = enemy->changeFaceDir(enemy->mTargetCreature); // this is wrong?
-				if (FABS(angDist) <= PI * (DEG2RAD * angLimit)) {
+				Parms* parms = CG_PARMS(enemy);
+				f32 angLimit = parms->mProperParms.mRotationEndAngle.mValue;
+				f32 angDist  = enemy->turnToTarget(enemy->mTargetCreature, CG_GENERALPARMS(enemy).mTurnSpeed(),
+                                                  CG_GENERALPARMS(enemy).mMaxTurnAngle()); // this is wrong?
+				if (FABS(angDist) <= TORADIANS(angLimit)) {
 					transit(enemy, KOCHAPPY_Walk, nullptr);
 				} else {
 					transit(enemy, KOCHAPPY_Turn, nullptr);
@@ -350,17 +344,15 @@ lbl_8010FEC0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8010FEF8
- * Size:	000024
+/**
+ * @note Address: 0x8010FEF8
+ * @note Size: 0x24
  */
 void StateWait::cleanup(EnemyBase* enemy) { enemy->constraintOff(); }
 
-/*
- * --INFO--
- * Address:	8010FF1C
- * Size:	00003C
+/**
+ * @note Address: 0x8010FF1C
+ * @note Size: 0x3C
  */
 StateDead::StateDead(int stateID)
     : State(stateID)
@@ -368,21 +360,19 @@ StateDead::StateDead(int stateID)
 	mName = "dead";
 }
 
-/*
- * --INFO--
- * Address:	8010FF58
- * Size:	000040
+/**
+ * @note Address: 0x8010FF58
+ * @note Size: 0x40
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->startMotion(1, nullptr);
+	enemy->startMotion(KOCHAPPYANIM_Dead, nullptr);
 	enemy->deathProcedure();
 }
 
-/*
- * --INFO--
- * Address:	8010FF98
- * Size:	000050
+/**
+ * @note Address: 0x8010FF98
+ * @note Size: 0x50
  */
 void StateDead::exec(EnemyBase* enemy)
 {
@@ -391,17 +381,15 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8010FFE8
- * Size:	000004
+/**
+ * @note Address: 0x8010FFE8
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	8010FFEC
- * Size:	00003C
+/**
+ * @note Address: 0x8010FFEC
+ * @note Size: 0x3C
  */
 StateTurn::StateTurn(int stateID)
     : State(stateID)
@@ -409,25 +397,77 @@ StateTurn::StateTurn(int stateID)
 	mName = "turn";
 }
 
-/*
- * --INFO--
- * Address:	80110028
- * Size:	000054
+/**
+ * @note Address: 0x80110028
+ * @note Size: 0x54
  */
 void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->setEmotionExcitement();
-	enemy->startMotion(7, nullptr);
-	_10 = -1;
+	enemy->startMotion(KOCHAPPYANIM_Turn, nullptr);
+	mNextState = -1;
 }
 
-/*
- * --INFO--
- * Address:	8011007C
- * Size:	000710
+/**
+ * @note Address: 0x8011007C
+ * @note Size: 0x710
  */
 void StateTurn::exec(EnemyBase* enemy)
 {
+	if (EnemyFunc::isStartFlick(enemy, true)) {
+		transit(enemy, KOCHAPPY_Flick, nullptr);
+	} else {
+		bool check = EnemyFunc::isPikminOrNaviInRange(enemy, CG_GENERALPARMS(enemy).mPrivateRadius) || enemy->isAlertLife();
+		if (check) {
+			OBJ(enemy)->mAlertTime = 0.0f;
+		}
+		f32 viewAngle, searchAngle;
+		if (OBJ(enemy)->mAlertTime < CG_GENERALPARMS(enemy).mAlertDuration()) {
+			viewAngle = 180.0f;
+			OBJ(enemy)->mAlertTime += sys->mDeltaTime;
+			searchAngle = viewAngle;
+		} else {
+			viewAngle   = CG_GENERALPARMS(enemy).mViewAngle();
+			searchAngle = CG_GENERALPARMS(enemy).mSearchAngle();
+		}
+		Creature* target
+		    = EnemyFunc::getNearestPikminOrNavi(enemy, searchAngle, CG_GENERALPARMS(enemy).mSearchDistance, nullptr, nullptr, nullptr);
+		if (target) {
+			enemy->mTargetCreature = target;
+			f32 angle              = enemy->getCreatureViewAngle(enemy->mTargetCreature);
+			if (enemy->isTargetAttackable(enemy->mTargetCreature, angle, CG_GENERALPARMS(enemy).mMaxAttackRange,
+			                              CG_GENERALPARMS(enemy).mMaxAttackAngle)) {
+				mNextState = KOCHAPPY_Attack;
+				enemy->finishMotion();
+				OBJ(enemy)->setAnimationSpeed(60.0f);
+			} else {
+				if (enemy->isTargetOutOfRange(enemy->mTargetCreature, angle, CG_GENERALPARMS(enemy).mPrivateRadius(),
+				                              CG_GENERALPARMS(enemy).mSightRadius(), CG_GENERALPARMS(enemy).mFov(), viewAngle)) {
+					mNextState = KOCHAPPY_TurnToHome;
+					enemy->finishMotion();
+				} else {
+					f32 max = CG_PROPERPARMS(enemy).mRotationEndAngle();
+					f32 dir = enemy->changeFaceDir(enemy->mTargetCreature);
+					if (absF(dir) <= TORADIANS(max)) {
+						mNextState = KOCHAPPY_Walk;
+						enemy->finishMotion();
+						OBJ(enemy)->setAnimationSpeed(60.0f);
+					}
+				}
+			}
+		} else {
+			mNextState = KOCHAPPY_TurnToHome;
+			enemy->finishMotion();
+		}
+
+		if (enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
+			transit(enemy, mNextState, nullptr);
+		}
+	}
+
+	if (enemy->mHealth <= 0.0f) {
+		transit(enemy, KOCHAPPY_Dead, nullptr);
+	}
 	/*
 	stwu     r1, -0x190(r1)
 	mflr     r0
@@ -927,47 +967,110 @@ lbl_8011072C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8011078C
- * Size:	000024
+/**
+ * @note Address: 0x8011078C
+ * @note Size: 0x24
  */
 void StateTurn::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	801107B0
- * Size:	000044
+/**
+ * @note Address: 0x801107B0
+ * @note Size: 0x44
  */
 StateWalk::StateWalk(int stateID)
     : State(stateID)
 {
-	_10   = -1;
-	mName = "Walk";
+	mNextState = -1;
+	mName      = "Walk";
 }
 
-/*
- * --INFO--
- * Address:	801107F4
- * Size:	000080
+/**
+ * @note Address: 0x801107F4
+ * @note Size: 0x80
  */
 void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kochappy = static_cast<Obj*>(enemy);
+	Obj* kochappy = OBJ(enemy);
 	kochappy->setEmotionExcitement();
 	Parms* parms = kochappy->getParms();
 	kochappy->setAnimationSpeed(40.0f * (parms->mGeneral.mMoveSpeed.mValue / 50.0f));
-	kochappy->startMotion(3, nullptr);
-	_10 = -1;
+	kochappy->startMotion(KOCHAPPYANIM_Move, nullptr);
+	mNextState = -1;
 }
 
-/*
- * --INFO--
- * Address:	80110874
- * Size:	0006E4
+/**
+ * @note Address: 0x80110874
+ * @note Size: 0x6E4
  */
 void StateWalk::exec(EnemyBase* enemy)
 {
+	if (EnemyFunc::isStartFlick(enemy, true)) {
+		transit(enemy, KOCHAPPY_Flick, nullptr);
+	} else {
+		bool check = EnemyFunc::isPikminOrNaviInRange(enemy, CG_GENERALPARMS(enemy).mPrivateRadius()) || enemy->isAlertLife();
+		if (check) {
+			OBJ(enemy)->mAlertTime = 0.0f;
+		}
+		f32 searchAngle;
+		if (OBJ(enemy)->mAlertTime < CG_GENERALPARMS(enemy).mAlertDuration()) {
+			searchAngle = 180.0f;
+			OBJ(enemy)->mAlertTime += sys->mDeltaTime;
+		} else {
+			searchAngle = CG_GENERALPARMS(enemy).mSearchAngle();
+		}
+		Creature* target
+		    = EnemyFunc::getNearestPikminOrNavi(enemy, searchAngle, CG_GENERALPARMS(enemy).mSearchDistance(), nullptr, nullptr, nullptr);
+		if (target) {
+			enemy->mTargetCreature = target;
+			f32 angle              = enemy->getCreatureViewAngle(enemy->mTargetCreature);
+			if (enemy->isTargetAttackable(enemy->mTargetCreature, angle, CG_GENERALPARMS(enemy).mMaxAttackRange(),
+			                              CG_GENERALPARMS(enemy).mMaxAttackAngle())) {
+				mNextState = KOCHAPPY_Attack;
+				enemy->finishMotion();
+				enemy->mTargetVelocity = Vector3f(0.0f);
+				OBJ(enemy)->setAnimationSpeed(60.0f);
+			} else if (enemy->isTargetOutOfRange(enemy->mTargetCreature, angle, CG_GENERALPARMS(enemy).mPrivateRadius(),
+			                                     CG_GENERALPARMS(enemy).mSightRadius(), CG_GENERALPARMS(enemy).mFov(),
+			                                     CG_GENERALPARMS(enemy).mViewAngle())) {
+				mNextState = KOCHAPPY_TurnToHome;
+				enemy->finishMotion();
+				enemy->mTargetVelocity = Vector3f(0.0f);
+			} else {
+				f32 max = CG_PROPERPARMS(enemy).mRotationEndAngle();
+				if (absF(angle) <= TORADIANS(max)) {
+					EnemyFunc::walkToTarget(enemy, enemy->mTargetCreature, CG_GENERALPARMS(enemy).mMoveSpeed(),
+					                        CG_GENERALPARMS(enemy).mTurnSpeed(), CG_GENERALPARMS(enemy).mMaxTurnAngle());
+				} else {
+					mNextState = KOCHAPPY_Turn;
+					enemy->finishMotion();
+					enemy->mTargetVelocity = Vector3f(0.0f);
+				}
+			}
+		} else {
+			if (enemy->mFlickTimer) {
+				mNextState = KOCHAPPY_Flick;
+			} else {
+				mNextState = KOCHAPPY_TurnToHome;
+			}
+			enemy->finishMotion();
+		}
+
+		Vector3f homePos     = enemy->mHomePosition;
+		Vector3f kochappyPos = enemy->getPosition();
+		if (kochappyPos.distance(homePos) > CG_GENERALPARMS(enemy).mTerritoryRadius()) {
+			mNextState = KOCHAPPY_TurnToHome;
+			enemy->finishMotion();
+			enemy->mTargetVelocity = Vector3f(0.0f);
+		}
+
+		if (enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
+			transit(enemy, mNextState, nullptr);
+		}
+	}
+
+	if (enemy->mHealth <= 0.0f) {
+		transit(enemy, KOCHAPPY_Dead, nullptr);
+	}
 	/*
 	stwu     r1, -0x170(r1)
 	mflr     r0
@@ -1464,10 +1567,9 @@ lbl_80110EF8:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80110F58
- * Size:	000048
+/**
+ * @note Address: 0x80110F58
+ * @note Size: 0x48
  */
 void StateWalk::cleanup(EnemyBase* enemy)
 {
@@ -1476,10 +1578,9 @@ void StateWalk::cleanup(EnemyBase* enemy)
 	enemy->mTargetVelocity = Vector3f(0.0f);
 }
 
-/*
- * --INFO--
- * Address:	80110FA0
- * Size:	00003C
+/**
+ * @note Address: 0x80110FA0
+ * @note Size: 0x3C
  */
 StateAttack::StateAttack(int stateID)
     : State(stateID)
@@ -1487,25 +1588,63 @@ StateAttack::StateAttack(int stateID)
 	mName = "Attack";
 }
 
-/*
- * --INFO--
- * Address:	80110FDC
- * Size:	000048
+/**
+ * @note Address: 0x80110FDC
+ * @note Size: 0x48
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->setEmotionExcitement();
-	enemy->startMotion(0, nullptr);
+	enemy->startMotion(KOCHAPPYANIM_Attack, nullptr);
 	enemy->resetAnimSpeed();
 }
 
-/*
- * --INFO--
- * Address:	80111024
- * Size:	0003F0
+/**
+ * @note Address: 0x80111024
+ * @note Size: 0x3F0
  */
 void StateAttack::exec(EnemyBase* enemy)
 {
+	if (enemy->mCurAnim->mIsPlaying) {
+		switch (enemy->mCurAnim->mType) {
+		case KEYEVENT_2:
+			EnemyFunc::attackNavi(enemy, CG_GENERALPARMS(enemy).mAttackRadius(), CG_GENERALPARMS(enemy).mAttackHitAngle(),
+			                      CG_GENERALPARMS(enemy).mAttackDamage(), nullptr, nullptr);
+			if (!EnemyFunc::eatPikmin(enemy, nullptr)) {
+				enemy->startMotion(KOCHAPPYANIM_Eat, nullptr);
+			}
+
+			EnemyFunc::flickStickPikmin(enemy, CG_GENERALPARMS(enemy).mShakeChance(), CG_GENERALPARMS(enemy).mShakeKnockback(),
+			                            CG_GENERALPARMS(enemy).mShakeDamage(), enemy->getFaceDir(), nullptr);
+			break;
+
+		case KEYEVENT_3:
+			EnemyFunc::swallowPikmin(enemy, CG_PROPERPARMS(enemy).mPoisonDamage(), nullptr);
+			break;
+
+		case KEYEVENT_END:
+			Creature* target = EnemyFunc::getNearestPikminOrNavi(enemy, CG_GENERALPARMS(enemy).mSearchAngle(),
+			                                                     CG_GENERALPARMS(enemy).mSearchDistance(), nullptr, nullptr, nullptr);
+			if (target) {
+				enemy->mTargetCreature = target;
+				f32 angle              = enemy->getCreatureViewAngle(enemy->mTargetCreature);
+				if (enemy->isTargetAttackable(enemy->mTargetCreature, angle, CG_GENERALPARMS(enemy).mMaxAttackRange(),
+				                              CG_GENERALPARMS(enemy).mMaxAttackAngle())) {
+					transit(enemy, KOCHAPPY_Attack, nullptr);
+				} else {
+					transit(enemy, KOCHAPPY_Turn, nullptr);
+				}
+			} else {
+				transit(enemy, KOCHAPPY_TurnToHome, nullptr);
+			}
+			break;
+		}
+	}
+
+	if (enemy->mHealth <= 0.0f) {
+		transit(enemy, KOCHAPPY_Dead, nullptr);
+	}
+
 	/*
 	stwu     r1, -0xf0(r1)
 	mflr     r0
@@ -1787,28 +1926,26 @@ lbl_801113C4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80111414
- * Size:	000024
+/**
+ * @note Address: 0x80111414
+ * @note Size: 0x24
  */
 void StateAttack::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
 
-/*
- * --INFO--
- * Address:	80111438
- * Size:	000044
+/**
+ * @note Address: 0x80111438
+ * @note Size: 0x44
  */
 StateFlick::StateFlick(int stateID)
     : State(stateID)
 {
-	mName = "Flick";
+	mName      = "Flick";
+	mNextState = -1;
 }
 
-/*
- * --INFO--
- * Address:	8011147C
- * Size:	000094
+/**
+ * @note Address: 0x8011147C
+ * @note Size: 0x94
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
@@ -1816,155 +1953,72 @@ void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 
 	FlickArg* flickArg = static_cast<FlickArg*>(stateArg);
 	if (flickArg) {
-		_10 = flickArg->_00;
+		mNextState = flickArg->_00;
 	} else {
-		_10 = -1;
+		mNextState = -1;
 	}
 
-	enemy->startMotion(2, nullptr);
+	enemy->startMotion(KOCHAPPYANIM_Flick, nullptr);
 	enemy->disableEvent(0, EB_FlickEnabled);
-	static_cast<Obj*>(enemy)->resetEnemyNonStone();
+	OBJ(enemy)->resetEnemyNonStone();
 }
 
-/*
- * --INFO--
- * Address:	80111510
- * Size:	000178
+/**
+ * @note Address: 0x80111510
+ * @note Size: 0x178
  */
 void StateFlick::exec(EnemyBase* enemy)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	mr       r30, r3
-	lwz      r5, 0x188(r4)
-	lbz      r0, 0x24(r5)
-	cmplwi   r0, 0
-	beq      lbl_8011163C
-	lwz      r0, 0x1c(r5)
-	cmpwi    r0, 3
-	beq      lbl_801115E4
-	bge      lbl_80111558
-	cmpwi    r0, 2
-	bge      lbl_80111564
-	b        lbl_8011163C
+	Obj* obj = OBJ(enemy);
 
-lbl_80111558:
-	cmpwi    r0, 0x3e8
-	beq      lbl_801115FC
-	b        lbl_8011163C
+	if (obj->mCurAnim->mIsPlaying) {
+		switch (obj->mCurAnim->mType) {
+		case 2:
+			EnemyParmsBase* parm = CG_PARMS(obj);
+			EnemyFunc::flickStickPikmin(obj, parm->mGeneral.mShakeChance, parm->mGeneral.mShakeKnockback, parm->mGeneral.mShakeDamage,
+			                            FLICK_BACKWARD_ANGLE, nullptr);
+			parm = CG_PARMS(obj);
+			EnemyFunc::flickNearbyPikmin(obj, parm->mGeneral.mShakeRange, parm->mGeneral.mShakeKnockback, parm->mGeneral.mShakeDamage,
+			                             FLICK_BACKWARD_ANGLE, nullptr);
+			parm = CG_PARMS(obj);
+			EnemyFunc::flickNearbyNavi(obj, parm->mGeneral.mShakeRange, parm->mGeneral.mShakeKnockback, parm->mGeneral.mShakeDamage,
+			                           FLICK_BACKWARD_ANGLE, nullptr);
+			obj->mFlickTimer = 0.0f;
+			obj->setEnemyNonStone();
+			break;
+		case 3:
+			obj->resetEnemyNonStone();
+			break;
+		case 1000:
+			if (mNextState != -1) {
+				transit(obj, mNextState, nullptr);
+			} else {
+				transit(obj, mStateMachine->mPreviousID, nullptr);
+			}
+			break;
+		}
+	}
 
-lbl_80111564:
-	lwz      r5, 0xc0(r31)
-	mr       r3, r31
-	lfs      f4, lbl_80517A40@sda21(r2)
-	li       r4, 0
-	lfs      f1, 0x53c(r5)
-	lfs      f2, 0x4c4(r5)
-	lfs      f3, 0x4ec(r5)
-	bl
-"flickStickPikmin__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Piki>"
-	lwz      r5, 0xc0(r31)
-	mr       r3, r31
-	lfs      f4, lbl_80517A40@sda21(r2)
-	li       r4, 0
-	lfs      f1, 0x514(r5)
-	lfs      f2, 0x4c4(r5)
-	lfs      f3, 0x4ec(r5)
-	bl
-"flickNearbyPikmin__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Piki>"
-	lwz      r5, 0xc0(r31)
-	mr       r3, r31
-	lfs      f4, lbl_80517A40@sda21(r2)
-	li       r4, 0
-	lfs      f1, 0x514(r5)
-	lfs      f2, 0x4c4(r5)
-	lfs      f3, 0x4ec(r5)
-	bl
-"flickNearbyNavi__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Navi>"
-	lfs      f0, lbl_805179E0@sda21(r2)
-	mr       r3, r31
-	stfs     f0, 0x20c(r31)
-	lwz      r12, 0(r31)
-	lwz      r12, 0x304(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_8011163C
-
-lbl_801115E4:
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x300(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_8011163C
-
-lbl_801115FC:
-	lwz      r5, 0x10(r30)
-	cmpwi    r5, -1
-	beq      lbl_80111620
-	lwz      r12, 0(r3)
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_8011163C
-
-lbl_80111620:
-	lwz      r12, 0(r3)
-	li       r6, 0
-	lwz      r5, 8(r30)
-	lwz      r12, 0x1c(r12)
-	lwz      r5, 0x18(r5)
-	mtctr    r12
-	bctrl
-
-lbl_8011163C:
-	lfs      f1, 0x200(r31)
-	lfs      f0, lbl_805179E0@sda21(r2)
-	fcmpo    cr0, f1, f0
-	cror     2, 0, 2
-	bne      lbl_80111670
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	li       r5, 1
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80111670:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (obj->mHealth <= 0.0f) {
+		transit(obj, KOCHAPPY_Dead, nullptr);
+	}
 }
 
-/*
- * --INFO--
- * Address:	80111688
- * Size:	000050
+/**
+ * @note Address: 0x80111688
+ * @note Size: 0x50
  */
 void StateFlick::cleanup(EnemyBase* enemy)
 {
-	Obj* kochappy = static_cast<Obj*>(enemy);
+	Obj* kochappy = OBJ(enemy);
 	kochappy->setEmotionCaution();
 	kochappy->enableEvent(0, EB_FlickEnabled);
 	kochappy->resetEnemyNonStone();
 }
 
-/*
- * --INFO--
- * Address:	801116D8
- * Size:	000040
+/**
+ * @note Address: 0x801116D8
+ * @note Size: 0x40
  */
 StateTurnToHome::StateTurnToHome(int stateID)
     : State(stateID)
@@ -1972,104 +2026,59 @@ StateTurnToHome::StateTurnToHome(int stateID)
 	mName = "TurnToHome";
 }
 
-/*
- * --INFO--
- * Address:	80111718
- * Size:	000120
+/**
+ * @note Address: 0x80111718
+ * @note Size: 0x120
  */
 void StateTurnToHome::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	/*
-	stwu     r1, -0x50(r1)
-	mflr     r0
-	stw      r0, 0x54(r1)
-	stfd     f31, 0x40(r1)
-	psq_st   f31, 72(r1), 0, qr0
-	stfd     f30, 0x30(r1)
-	psq_st   f30, 56(r1), 0, qr0
-	stfd     f29, 0x20(r1)
-	psq_st   f29, 40(r1), 0, qr0
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	lfs      f0, lbl_805179E0@sda21(r2)
-	mr       r31, r4
-	mr       r30, r3
-	addi     r3, r1, 8
-	stfs     f0, 0x1d4(r4)
-	stfs     f0, 0x1d8(r4)
-	stfs     f0, 0x1dc(r4)
-	lwz      r12, 0(r4)
-	lfs      f31, 0x198(r4)
-	lwz      r12, 8(r12)
-	lfs      f30, 0x19c(r4)
-	lfs      f29, 0x1a0(r4)
-	mtctr    r12
-	bctrl
-	lfs      f0, 0xc(r1)
-	lfs      f2, 8(r1)
-	fsubs    f3, f0, f30
-	lfs      f1, 0x10(r1)
-	fsubs    f2, f2, f31
-	lfs      f0, lbl_805179E0@sda21(r2)
-	fsubs    f1, f1, f29
-	fmuls    f3, f3, f3
-	fmuls    f4, f1, f1
-	fmadds   f1, f2, f2, f3
-	fadds    f1, f4, f1
-	fcmpo    cr0, f1, f0
-	ble      lbl_801117C0
-	ble      lbl_801117C4
-	frsqrte  f0, f1
-	fmuls    f1, f0, f1
-	b        lbl_801117C4
-
-lbl_801117C0:
-	fmr      f1, f0
-
-lbl_801117C4:
-	lwz      r3, 0xc0(r31)
-	lfs      f0, 0x384(r3)
-	fcmpo    cr0, f1, f0
-	bge      lbl_801117F8
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	li       r5, 0
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80111808
-
-lbl_801117F8:
-	mr       r3, r31
-	li       r4, 7
-	li       r5, 0
-	bl       startMotion__Q24Game9EnemyBaseFiPQ28SysShape14MotionListener
-
-lbl_80111808:
-	psq_l    f31, 72(r1), 0, qr0
-	lfd      f31, 0x40(r1)
-	psq_l    f30, 56(r1), 0, qr0
-	lfd      f30, 0x30(r1)
-	psq_l    f29, 40(r1), 0, qr0
-	lfd      f29, 0x20(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r0, 0x54(r1)
-	lwz      r30, 0x18(r1)
-	mtlr     r0
-	addi     r1, r1, 0x50
-	blr
-	*/
+	enemy->mTargetVelocity = Vector3f(0.0f);
+	Vector3f homePos       = enemy->mHomePosition;
+	Vector3f kochappyPos   = enemy->getPosition();
+	if (kochappyPos.distance(homePos) < CG_GENERALPARMS(enemy).mHomeRadius()) {
+		transit(enemy, KOCHAPPY_Wait, nullptr);
+	} else {
+		enemy->startMotion(KOCHAPPYANIM_Turn, nullptr);
+	}
 }
 
-/*
- * --INFO--
- * Address:	80111838
- * Size:	00046C
+/**
+ * @note Address: 0x80111838
+ * @note Size: 0x46C
  */
 void StateTurnToHome::exec(EnemyBase* enemy)
 {
+	if (EnemyFunc::isStartFlick(enemy, true)) {
+		transit(enemy, KOCHAPPY_Flick, nullptr);
+	} else {
+		Vector3f targetPos = enemy->mHomePosition;
+		f32 maxAngle       = CG_GENERALPARMS(enemy).mMaxAttackAngle();
+		f32 angle          = enemy->changeFaceDir(targetPos);
+		if (absF(angle) <= TORADIANS(maxAngle)) {
+			enemy->finishMotion();
+		}
+		if (enemy->mCurAnim->mIsPlaying) {
+			switch (enemy->mCurAnim->mType) {
+			case KEYEVENT_END:
+				transit(enemy, KOCHAPPY_GoHome, nullptr);
+				break;
+			}
+		}
+		Creature* target = EnemyFunc::getNearestPikminOrNavi(enemy, CG_GENERALPARMS(enemy).mSearchAngle(),
+		                                                     CG_GENERALPARMS(enemy).mSearchDistance(), nullptr, nullptr, nullptr);
+		if (target) {
+			enemy->mTargetCreature = target;
+			Creature* attackTarget = enemy->mTargetCreature;
+			if (enemy->isTargetAttackable(attackTarget, enemy->getCreatureViewAngle(attackTarget), CG_GENERALPARMS(enemy).mMaxAttackRange(),
+			                              CG_GENERALPARMS(enemy).mMaxAttackAngle())) {
+				transit(enemy, KOCHAPPY_Attack, nullptr);
+			}
+		}
+	}
+
+	if (enemy->mHealth <= 0.0f) {
+		transit(enemy, KOCHAPPY_Dead, nullptr);
+	}
 	/*
 	stwu     r1, -0x110(r1)
 	mflr     r0
@@ -2376,17 +2385,15 @@ lbl_80111C54:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80111CA4
- * Size:	000004
+/**
+ * @note Address: 0x80111CA4
+ * @note Size: 0x4
  */
 void StateTurnToHome::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	80111CA8
- * Size:	00003C
+/**
+ * @note Address: 0x80111CA8
+ * @note Size: 0x3C
  */
 StateGoHome::StateGoHome(int stateID)
     : State(stateID)
@@ -2394,26 +2401,65 @@ StateGoHome::StateGoHome(int stateID)
 	mName = "GoHome";
 }
 
-/*
- * --INFO--
- * Address:	80111CE4
- * Size:	000064
+/**
+ * @note Address: 0x80111CE4
+ * @note Size: 0x64
  */
 void StateGoHome::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kochappy = static_cast<Obj*>(enemy);
+	Obj* kochappy = OBJ(enemy);
 	kochappy->setAnimationSpeed(40.0f);
-	kochappy->startMotion(3, nullptr);
-	_10 = -1;
+	kochappy->startMotion(KOCHAPPYANIM_Move, nullptr);
+	mNextState = -1;
 }
 
-/*
- * --INFO--
- * Address:	80111D48
- * Size:	000440
+/**
+ * @note Address: 0x80111D48
+ * @note Size: 0x440
  */
 void StateGoHome::exec(EnemyBase* enemy)
 {
+	if (EnemyFunc::isStartFlick(enemy, true)) {
+		transit(enemy, KOCHAPPY_Flick, nullptr);
+	} else {
+		Vector3f targetPos = Vector3f(enemy->mHomePosition);
+		EnemyFunc::walkToTarget(enemy, targetPos, CG_GENERALPARMS(enemy).mMoveSpeed(), CG_GENERALPARMS(enemy).mTurnSpeed(),
+		                        CG_GENERALPARMS(enemy).mMaxTurnAngle());
+
+		Vector3f homePos     = enemy->mHomePosition;
+		Vector3f kochappyPos = enemy->getPosition();
+		if (kochappyPos.distance(homePos) < CG_GENERALPARMS(enemy).mHomeRadius()) {
+			enemy->finishMotion();
+			enemy->mTargetVelocity = 0.0f;
+			mNextState             = KOCHAPPY_Wait;
+		}
+		Creature* target = EnemyFunc::getNearestPikminOrNavi(enemy, CG_GENERALPARMS(enemy).mSearchAngle(),
+		                                                     CG_GENERALPARMS(enemy).mSearchDistance(), nullptr, nullptr, nullptr);
+		if (target) {
+			enemy->mTargetCreature = target;
+			Creature* attackTarget = enemy->mTargetCreature;
+			if (enemy->isTargetAttackable(attackTarget, enemy->getCreatureViewAngle(attackTarget), CG_GENERALPARMS(enemy).mMaxAttackRange(),
+			                              CG_GENERALPARMS(enemy).mMaxAttackAngle())) {
+				enemy->finishMotion();
+				OBJ(enemy)->setAnimationSpeed(60.0f);
+				mNextState = KOCHAPPY_Attack;
+			} else {
+				enemy->finishMotion();
+				mNextState = KOCHAPPY_Walk;
+			}
+		}
+		if (enemy->mCurAnim->mIsPlaying) {
+			switch (enemy->mCurAnim->mType) {
+			case KEYEVENT_END:
+				transit(enemy, mNextState, nullptr);
+				break;
+			}
+		}
+	}
+
+	if (enemy->mHealth <= 0.0f) {
+		transit(enemy, KOCHAPPY_Dead, nullptr);
+	}
 	/*
 	stwu     r1, -0x110(r1)
 	mflr     r0
@@ -2704,10 +2750,9 @@ lbl_80112138:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80112188
- * Size:	000040
+/**
+ * @note Address: 0x80112188
+ * @note Size: 0x40
  */
 void StateGoHome::cleanup(EnemyBase* enemy)
 {
@@ -2715,10 +2760,9 @@ void StateGoHome::cleanup(EnemyBase* enemy)
 	enemy->mTargetVelocity = Vector3f(0.0f);
 }
 
-/*
- * --INFO--
- * Address:	801121C8
- * Size:	00003C
+/**
+ * @note Address: 0x801121C8
+ * @note Size: 0x3C
  */
 StateDemo::StateDemo(int stateID)
     : State(stateID)
@@ -2726,10 +2770,9 @@ StateDemo::StateDemo(int stateID)
 	mName = "demo";
 }
 
-/*
- * --INFO--
- * Address:	80112204
- * Size:	00007C
+/**
+ * @note Address: 0x80112204
+ * @note Size: 0x7C
  */
 void StateDemo::init(EnemyBase* enemy, StateArg* stateArg)
 {

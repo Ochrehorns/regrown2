@@ -1,4 +1,4 @@
-#include "JSystem/JUtility/JUTException.h"
+#include "P2Macros.h"
 #include "PSSystem/SeqTrack.h"
 
 namespace PSSystem {
@@ -59,7 +59,7 @@ void SeqTrackRoot::init(JASTrack* track)
 {
 	P2ASSERTLINE(229, track != nullptr);
 	mTaskEntryMgr.mTrack = track;
-	mStandardTempo       = track->_352;
+	mStandardTempo       = track->mTempo;
 	mActiveTempo         = mStandardTempo;
 	mBeatMgr._00         = 0;
 	initSwingRatio();

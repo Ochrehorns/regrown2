@@ -1,331 +1,63 @@
 #include "Game/MapMgr.h"
-#include "Dolphin/GX/GXEnum.h"
-#include "Dolphin/GX/GXGeometry.h"
-#include "Dolphin/mtx.h"
 #include "Game/gameStages.h"
 #include "Game/GameSystem.h"
 #include "Game/TDispTriangle.h"
-#include "Game/seaMgr.h"
-#include "Game/WaterBox.h"
-#include "MapCollision.h"
-#include "Sys/GridDivider.h"
-#include "Sys/TriIndexList.h"
+#include "Game/PlatInstance.h"
 #include "Sys/TriangleTable.h"
-#include "System.h"
-#include "types.h"
-
-/*
-    Generated from dpostproc
-
-    .section .ctors, "wa"  # 0x80472F00 - 0x804732C0
-    .4byte __sinit_mapMgr_cpp
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_8047E190
-    lbl_8047E190:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-    .global lbl_8047E19C
-    lbl_8047E19C:
-        .4byte 0x6D61704D
-        .4byte 0x67722E63
-        .4byte 0x70700000
-    .global lbl_8047E1A8
-    lbl_8047E1A8:
-        .asciz "P2Assert"
-        .skip 3
-        .4byte 0x25732F61
-        .4byte 0x72632E73
-        .4byte 0x7A730000
-        .4byte 0x25732F61
-        .4byte 0x72632E61
-        .4byte 0x72630000
-        .4byte 0x6D617020
-        .4byte 0x6D6F6465
-        .4byte 0x6C000000
-        .4byte 0x6D6F6465
-        .4byte 0x6C2E626D
-        .4byte 0x64000000
-        .4byte 0x6661726D
-        .4byte 0x5F25642E
-        .4byte 0x626D6400
-        .4byte 0x74657861
-        .4byte 0x6E6D5F25
-        .4byte 0x642E6274
-        .4byte 0x6B000000
-        .4byte 0x25732F6C
-        .4byte 0x69676874
-        .4byte 0x2E696E69
-        .4byte 0x00000000
-        .4byte 0x25732F74
-        .4byte 0x65787473
-        .4byte 0x2E737A73
-        .4byte 0x00000000
-        .4byte 0x67726964
-        .4byte 0x2E62696E
-        .4byte 0x00000000
-        .4byte 0x6D617020
-        .4byte 0x636F6C6C
-        .4byte 0x6973696F
-        .4byte 0x6E000000
-        .4byte 0x77617465
-        .4byte 0x72626F78
-        .4byte 0x2E747874
-        .4byte 0x00000000
-        .4byte 0x77617465
-        .4byte 0x72626F78
-        .4byte 0x00000000
-        .4byte 0x6D617063
-        .4byte 0x6F64652E
-        .4byte 0x62696E00
-        .4byte 0x726F7574
-        .4byte 0x65496E66
-        .4byte 0x6F000000
-        .4byte 0x6C6F6F70
-        .4byte 0x2061762E
-        .4byte 0x20252E31
-        .4byte 0x66000000
-        .4byte 0x25642025
-        .4byte 0x64202564
-        .4byte 0x3C25643E
-        .4byte 0x00000000
-        .4byte 0x74726973
-        .4byte 0x2061762E
-        .4byte 0x20252E31
-        .4byte 0x66000000
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804B18A8
-    lbl_804B18A8:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-    .global __vt__Q24Game11ShapeMapMgr
-    __vt__Q24Game11ShapeMapMgr:
-        .4byte 0
-        .4byte 0
-        .4byte hasHiddenCollision__Q24Game6MapMgrFv
-        .4byte constraintBoundBox__Q24Game6MapMgrFRQ23Sys6Sphere
-        .4byte "getStartPosition__Q24Game6MapMgrFR10Vector3<f>i"
-        .4byte getDemoMatrix__Q24Game6MapMgrFv
-        .4byte getBoundBox2d__Q24Game11ShapeMapMgrFR10BoundBox2d
-        .4byte getBoundBox__Q24Game11ShapeMapMgrFR8BoundBox
-        .4byte
-   findRayIntersection__Q24Game11ShapeMapMgrFRQ23Sys16RayIntersectInfo .4byte
-   traceMove__Q24Game11ShapeMapMgrFRQ24Game8MoveInfof .4byte
-   "getMinY__Q24Game11ShapeMapMgrFR10Vector3<f>" .4byte
-   getCurrTri__Q24Game11ShapeMapMgrFRQ24Game11CurrTriInfo .4byte
-   createTriangles__Q24Game11ShapeMapMgrFRQ23Sys17CreateTriangleArg .4byte
-   setupJUTTextures__Q24Game6MapMgrFv .4byte frozenable__Q24Game6MapMgrFv .4byte
-   update__Q24Game6MapMgrFv .4byte do_update__Q24Game11ShapeMapMgrFv .4byte
-   drawCollision__Q24Game11ShapeMapMgrFR8GraphicsRQ23Sys6Sphere .4byte
-   doSimulation__Q24Game6MapMgrFf .4byte doDirectDraw__Q24Game6MapMgrFR8Graphics
-        .4byte doAnimation__Q24Game11ShapeMapMgrFv
-        .4byte doSetView__Q24Game11ShapeMapMgrFi
-        .4byte doViewCalc__Q24Game11ShapeMapMgrFv
-        .4byte doEntry__Q24Game11ShapeMapMgrFv
-        .4byte 0
-        .4byte 0
-        .4byte "@84@4@doAnimation__Q24Game11ShapeMapMgrFv"
-        .4byte "@84@4@doEntry__Q24Game11ShapeMapMgrFv"
-        .4byte "@84@4@doSetView__Q24Game11ShapeMapMgrFi"
-        .4byte "@84@4@doViewCalc__Q24Game11ShapeMapMgrFv"
-        .4byte "@84@4@doSimulation__Q24Game6MapMgrFf"
-        .4byte "@84@4@doDirectDraw__Q24Game6MapMgrFR8Graphics"
-        .4byte doSimpleDraw__16GenericObjectMgrFP8Viewport
-        .4byte loadResources__16GenericObjectMgrFv
-        .4byte resetMgr__16GenericObjectMgrFv
-        .4byte pausable__16GenericObjectMgrFv
-        .4byte "@84@4@frozenable__Q24Game6MapMgrFv"
-        .4byte getMatrixLoadType__16GenericObjectMgrFv
-    .global __vt__Q24Game6MapMgr
-    __vt__Q24Game6MapMgr:
-        .4byte 0
-        .4byte 0
-        .4byte hasHiddenCollision__Q24Game6MapMgrFv
-        .4byte constraintBoundBox__Q24Game6MapMgrFRQ23Sys6Sphere
-        .4byte "getStartPosition__Q24Game6MapMgrFR10Vector3<f>i"
-        .4byte getDemoMatrix__Q24Game6MapMgrFv
-        .4byte 0
-        .4byte 0
-        .4byte findRayIntersection__Q24Game6MapMgrFRQ23Sys16RayIntersectInfo
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte createTriangles__Q24Game6MapMgrFRQ23Sys17CreateTriangleArg
-        .4byte setupJUTTextures__Q24Game6MapMgrFv
-        .4byte frozenable__Q24Game6MapMgrFv
-        .4byte update__Q24Game6MapMgrFv
-        .4byte do_update__Q24Game6MapMgrFv
-        .4byte 0
-        .4byte doSimulation__Q24Game6MapMgrFf
-        .4byte doDirectDraw__Q24Game6MapMgrFR8Graphics
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte doEntry__16GenericObjectMgrFv
-        .4byte 0
-        .4byte 0
-        .4byte "@36@4@doSimulation__Q24Game6MapMgrFf"
-        .4byte "@36@4@doDirectDraw__Q24Game6MapMgrFR8Graphics"
-        .4byte doSimpleDraw__16GenericObjectMgrFP8Viewport
-        .4byte loadResources__16GenericObjectMgrFv
-        .4byte resetMgr__16GenericObjectMgrFv
-        .4byte pausable__16GenericObjectMgrFv
-        .4byte "@36@4@frozenable__Q24Game6MapMgrFv"
-        .4byte getMatrixLoadType__16GenericObjectMgrFv
-    .global "__vt__26Iterator<Q24Game8WaterBox>"
-    "__vt__26Iterator<Q24Game8WaterBox>":
-        .4byte 0
-        .4byte 0
-        .4byte "first__26Iterator<Q24Game8WaterBox>Fv"
-        .4byte "next__26Iterator<Q24Game8WaterBox>Fv"
-        .4byte "isDone__26Iterator<Q24Game8WaterBox>Fv"
-        .4byte "__ml__26Iterator<Q24Game8WaterBox>Fv"
-        .4byte 0
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global lbl_80515980
-    lbl_80515980:
-        .skip 0x4
-    .global lbl_80515984
-    lbl_80515984:
-        .skip 0x4
-    .global mapMgr__4Game
-    mapMgr__4Game:
-        .skip 0x4
-    .global traceMoveDebug__Q24Game6MapMgr
-    traceMoveDebug__Q24Game6MapMgr:
-        .skip 0x4
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80518860
-    lbl_80518860:
-        .4byte 0x6D61704D
-        .4byte 0x67720000
-    .global lbl_80518868
-    lbl_80518868:
-        .4byte 0x41080000
-    .global lbl_8051886C
-    lbl_8051886C:
-        .4byte 0x00000000
-    .global lbl_80518870
-    lbl_80518870:
-        .4byte 0x40490FDB
-    .global lbl_80518874
-    lbl_80518874:
-        .4byte 0x3BB60B61
-    .global lbl_80518878
-    lbl_80518878:
-        .4byte 0x41700000
-    .global lbl_8051887C
-    lbl_8051887C:
-        .4byte 0x3EC90FDB
-    .global lbl_80518880
-    lbl_80518880:
-        .4byte 0x43A2F983
-    .global lbl_80518884
-    lbl_80518884:
-        .4byte 0xC3A2F983
-    .global lbl_80518888
-    lbl_80518888:
-        .4byte 0x41200000
-    .global lbl_8051888C
-    lbl_8051888C:
-        .4byte 0x40400000
-    .global lbl_80518890
-    lbl_80518890:
-        .4byte 0x47FA0000
-        .4byte 0x00000000
-    .global lbl_80518898
-    lbl_80518898:
-        .4byte 0x43300000
-        .4byte 0x80000000
-    .global lbl_805188A0
-    lbl_805188A0:
-        .4byte 0x51BA43B7
-    .global lbl_805188A4
-    lbl_805188A4:
-        .float 1.0
-    .global lbl_805188A8
-    lbl_805188A8:
-        .4byte 0x41F00000
-    .global lbl_805188AC
-    lbl_805188AC:
-        .4byte 0x3F19999A
-    .global lbl_805188B0
-    lbl_805188B0:
-        .4byte 0x6D617020
-        .4byte 0x61726300
-    .global lbl_805188B8
-    lbl_805188B8:
-        .4byte 0xC7FA0000
-    .global lbl_805188BC
-    lbl_805188BC:
-        .4byte 0x454E542D
-        .4byte 0x4D415000
-    .global lbl_805188C4
-    lbl_805188C4:
-        .float 0.5
-    .global lbl_805188C8
-    lbl_805188C8:
-        .4byte 0x4B435000
-    .global lbl_805188CC
-    lbl_805188CC:
-        .4byte 0x47000000
-    .global lbl_805188D0
-    lbl_805188D0:
-        .4byte 0xC7000000
-        .4byte 0x00000000
-*/
+#include "Sys/RayIntersectInfo.h"
+#include "JSystem/J3D/J3DModelLoader.h"
+#include "Game/GameLight.h"
+#include "Game/Farm.h"
+#include "Game/seaMgr.h"
+#include "nans.h"
 
 namespace Game {
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000004
+static const char className[] = "mapMgr";
+static const int padding[]    = { 0, 0, 0 };
+
+MapMgr* mapMgr;
+bool MapMgr::traceMoveDebug;
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x4
  */
 TDispTriangleArray::TDispTriangleArray()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000068
+/**
+ * @note Address: N/A
+ * @note Size: 0x68
  */
 void TDispTriangleArray::alloc(int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000054
+/**
+ * @note Address: N/A
+ * @note Size: 0x54
  */
 TDispTriangle::TDispTriangle()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00000C
+/**
+ * @note Address: N/A
+ * @note Size: 0xC
  */
 void TDispTriangleArray::clear()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8016239C
- * Size:	000044
+/**
+ * @note Address: 0x8016239C
+ * @note Size: 0x44
  */
 void TDispTriangleArray::store(Sys::Triangle& triangle, Sys::VertexTable& vertexTable, int p3)
 {
@@ -334,10 +66,9 @@ void TDispTriangleArray::store(Sys::Triangle& triangle, Sys::VertexTable& vertex
 	}
 }
 
-/*
- * --INFO--
- * Address:	801623E0
- * Size:	000044
+/**
+ * @note Address: 0x801623E0
+ * @note Size: 0x44
  */
 void TDispTriangleArray::store(Matrixf& mtx, Sys::Triangle& triangle, Sys::VertexTable& vertexTable, int p4)
 {
@@ -346,20 +77,18 @@ void TDispTriangleArray::store(Matrixf& mtx, Sys::Triangle& triangle, Sys::Verte
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000074
+/**
+ * @note Address: N/A
+ * @note Size: 0x74
  */
 void TDispTriangleArray::draw(Graphics&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80162424
- * Size:	0000C0
+/**
+ * @note Address: 0x80162424
+ * @note Size: 0xC0
  */
 void TDispTriangle::store(Sys::Triangle& triangle, Sys::VertexTable& vertexTable, int p3)
 {
@@ -367,249 +96,105 @@ void TDispTriangle::store(Sys::Triangle& triangle, Sys::VertexTable& vertexTable
 	mVertices[0] = vertexTable.mObjects[triangle.mVertices.x];
 	mVertices[1] = vertexTable.mObjects[triangle.mVertices.y];
 	mVertices[2] = vertexTable.mObjects[triangle.mVertices.z];
-	_28.clear();
-	_28.typeView |= 1;
+	mFlags.clear();
+	mFlags.typeView |= 1;
 	_2C = p3;
-	PSMTXIdentity(_30.mMatrix.mtxView);
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	mr       r9, r3
-	stw      r0, 0x14(r1)
-	li       r0, 0
-	stw      r4, 0(r3)
-	addi     r3, r9, 0x30
-	lwz      r7, 0(r4)
-	lwz      r8, 0x24(r5)
-	mulli    r7, r7, 0xc
-	add      r7, r8, r7
-	lfs      f0, 0(r7)
-	stfs     f0, 4(r9)
-	lfs      f0, 4(r7)
-	stfs     f0, 8(r9)
-	lfs      f0, 8(r7)
-	stfs     f0, 0xc(r9)
-	lwz      r7, 4(r4)
-	lwz      r8, 0x24(r5)
-	mulli    r7, r7, 0xc
-	add      r7, r8, r7
-	lfs      f0, 0(r7)
-	stfs     f0, 0x10(r9)
-	lfs      f0, 4(r7)
-	stfs     f0, 0x14(r9)
-	lfs      f0, 8(r7)
-	stfs     f0, 0x18(r9)
-	lwz      r4, 8(r4)
-	lwz      r5, 0x24(r5)
-	mulli    r4, r4, 0xc
-	add      r4, r5, r4
-	lfs      f0, 0(r4)
-	stfs     f0, 0x1c(r9)
-	lfs      f0, 4(r4)
-	stfs     f0, 0x20(r9)
-	lfs      f0, 8(r4)
-	stfs     f0, 0x24(r9)
-	stb      r0, 0x28(r9)
-	stb      r0, 0x29(r9)
-	lhz      r0, 0x28(r9)
-	ori      r0, r0, 1
-	sth      r0, 0x28(r9)
-	stw      r6, 0x2c(r9)
-	bl       PSMTXIdentity
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	PSMTXIdentity(mMatrix.mMatrix.mtxView);
 }
 
-/*
- * --INFO--
- * Address:	801624E4
- * Size:	000100
+/**
+ * @note Address: 0x801624E4
+ * @note Size: 0x100
  */
-void TDispTriangle::store(Matrixf&, Sys::Triangle&, Sys::VertexTable&, int)
+void TDispTriangle::store(Matrixf& mtx, Sys::Triangle& tri, Sys::VertexTable& vertTable, int p4)
 {
-	/*
-	stwu     r1, -0x50(r1)
-	mflr     r0
-	stw      r0, 0x54(r1)
-	stmw     r27, 0x3c(r1)
-	mr       r29, r5
-	mr       r28, r4
-	mr       r27, r3
-	mr       r30, r6
-	mr       r31, r7
-	stw      r29, 0(r3)
-	mr       r3, r28
-	lwz      r0, 0(r5)
-	addi     r5, r1, 0x20
-	lwz      r4, 0x24(r6)
-	mulli    r0, r0, 0xc
-	add      r4, r4, r0
-	bl       PSMTXMultVec
-	lfs      f1, 0x24(r1)
-	mr       r3, r28
-	lfs      f2, 0x28(r1)
-	addi     r5, r1, 0x14
-	lfs      f0, 0x20(r1)
-	stfs     f0, 4(r27)
-	stfs     f1, 8(r27)
-	stfs     f2, 0xc(r27)
-	lwz      r0, 4(r29)
-	lwz      r4, 0x24(r30)
-	mulli    r0, r0, 0xc
-	add      r4, r4, r0
-	bl       PSMTXMultVec
-	lfs      f1, 0x18(r1)
-	mr       r3, r28
-	lfs      f2, 0x1c(r1)
-	addi     r5, r1, 8
-	lfs      f0, 0x14(r1)
-	stfs     f0, 0x10(r27)
-	stfs     f1, 0x14(r27)
-	stfs     f2, 0x18(r27)
-	lwz      r0, 8(r29)
-	lwz      r4, 0x24(r30)
-	mulli    r0, r0, 0xc
-	add      r4, r4, r0
-	bl       PSMTXMultVec
-	lfs      f1, 0xc(r1)
-	li       r0, 0
-	lfs      f2, 0x10(r1)
-	mr       r3, r28
-	lfs      f0, 8(r1)
-	addi     r4, r27, 0x30
-	stfs     f0, 0x1c(r27)
-	stfs     f1, 0x20(r27)
-	stfs     f2, 0x24(r27)
-	stb      r0, 0x28(r27)
-	stb      r0, 0x29(r27)
-	lhz      r0, 0x28(r27)
-	ori      r0, r0, 1
-	sth      r0, 0x28(r27)
-	stw      r31, 0x2c(r27)
-	bl       PSMTXCopy
-	lmw      r27, 0x3c(r1)
-	lwz      r0, 0x54(r1)
-	mtlr     r0
-	addi     r1, r1, 0x50
-	blr
-	*/
+	mSysTriangle = &tri;
+	mVertices[0] = mtx.mtxMult(vertTable.mObjects[tri.mVertices.x]);
+	mVertices[1] = mtx.mtxMult(vertTable.mObjects[tri.mVertices.y]);
+	mVertices[2] = mtx.mtxMult(vertTable.mObjects[tri.mVertices.z]);
+	mFlags.clear();
+	mFlags.typeView |= 1;
+	_2C = p4;
+	PSMTXCopy(mtx.mMatrix.mtxView, mMatrix.mMatrix.mtxView);
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000004
+/**
+ * @note Address: N/A
+ * @note Size: 0x4
  */
 void TDispTriangle::draw(Graphics&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	801625E4
- * Size:	000098
+/**
+ * @note Address: 0x801625E4
+ * @note Size: 0x98
  */
 MapMgr::MapMgr()
 {
-	mSeaMgr     = new SeaMgr();
+	mSeaMgr     = new SeaMgr;
 	mRouteMgr   = nullptr;
 	mCourseInfo = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8016267C
- * Size:	00007C
+/**
+ * @note Address: 0x8016267C
+ * @note Size: 0x7C
  */
 void MapMgr::getStartPosition(Vector3f& outPosition, int p2)
 {
-	if (mCourseInfo != nullptr) {
+	if (mCourseInfo) {
 		outPosition   = mCourseInfo->mStartPosition;
 		outPosition.y = getMinY(outPosition) + 8.5f;
 	} else {
 		outPosition = Vector3f(0.0f);
 	}
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	lwz      r5, 0xc(r3)
-	cmplwi   r5, 0
-	beq      lbl_801626D4
-	lfs      f0, 0x38(r5)
-	stfs     f0, 0(r31)
-	lfs      f0, 0x3c(r5)
-	stfs     f0, 4(r31)
-	lfs      f0, 0x40(r5)
-	stfs     f0, 8(r31)
-	lwz      r12, 4(r3)
-	lwz      r12, 0x28(r12)
-	mtctr    r12
-	bctrl
-	lfs      f0, lbl_80518868@sda21(r2)
-	fadds    f0, f0, f1
-	stfs     f0, 4(r31)
-	b        lbl_801626E4
-
-lbl_801626D4:
-	lfs      f0, lbl_8051886C@sda21(r2)
-	stfs     f0, 0(r31)
-	stfs     f0, 4(r31)
-	stfs     f0, 8(r31)
-
-lbl_801626E4:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801626F8
- * Size:	00002C
+/**
+ * @note Address: 0x801626F8
+ * @note Size: 0x2C
  */
 f32 MapMgr::getMapRotation()
 {
-	/*
-	lwz      r3, 0xc(r3)
-	cmplwi   r3, 0
-	beq      lbl_8016271C
-	lfs      f1, lbl_80518874@sda21(r2)
-	lfs      f0, 0x44(r3)
-	lfs      f2, lbl_80518870@sda21(r2)
-	fmuls    f0, f1, f0
-	fmuls    f1, f2, f0
-	blr
+	if (mCourseInfo) {
+		return TORADIANS(mCourseInfo->mStartAngle);
+	}
 
-lbl_8016271C:
-	lfs      f1, lbl_8051886C@sda21(r2)
-	blr
-	*/
+	return 0.0f;
 }
 
-/*
- * --INFO--
- * Address:	80162724
- * Size:	00001C
+/**
+ * @note Address: 0x80162724
+ * @note Size: 0x1C
  */
-Matrixf* MapMgr::getDemoMatrix() { return (mCourseInfo != nullptr) ? &mCourseInfo->_D0 : nullptr; }
+Matrixf* MapMgr::getDemoMatrix() { return (mCourseInfo) ? &mCourseInfo->mDemoMatrix : nullptr; }
 
-/*
- * --INFO--
- * Address:	80162740
- * Size:	000704
+/**
+ * @note Address: 0x80162740
+ * @note Size: 0x704
  */
-f32 MapMgr::getBestAngle(Vector3f&, f32, f32)
+f32 MapMgr::getBestAngle(Vector3f& vec, f32 p2, f32 p3)
 {
+	P2ASSERTLINE(488, p3 > 0.0f);
+	Vector3f pos = vec;
+	pos.y        = 15.0f + getMinY(pos);
+	f32 angles[16];
+	for (int i = 0; i < 16; i++) {
+		angles[i] = 0.0f;
+	}
+
+	for (int i = 0; i < 16; i++) {
+		f32 val      = (PI / 8) * (f32)i;
+		f32 tanTheta = p2 * (f32)tan(p3);
+
+		BeamCollisionArg beamArg(10.0f, 0, 0);
+		beamArg.mPosition = pos;
+		checkBeamCollision(beamArg);
+		angles[i] = beamArg._24;
+	}
+	return angles[0] * 0.39269909f;
 	/*
 	stwu     r1, -0x180(r1)
 	mflr     r0
@@ -1084,217 +669,213 @@ lbl_80162DC0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80162E44
- * Size:	0002A4
+/**
+ * @note Address: 0x80162E44
+ * @note Size: 0x2A4
  */
-void MapMgr::checkBeamCollision(Game::MapMgr::BeamCollisionArg&)
+void MapMgr::checkBeamCollision(BeamCollisionArg& arg)
 {
-	/*
-	stwu     r1, -0x110(r1)
-	mflr     r0
-	stw      r0, 0x114(r1)
-	stfd     f31, 0x100(r1)
-	psq_st   f31, 264(r1), 0, qr0
-	stfd     f30, 0xf0(r1)
-	psq_st   f30, 248(r1), 0, qr0
-	stfd     f29, 0xe0(r1)
-	psq_st   f29, 232(r1), 0, qr0
-	stmw     r26, 0xc8(r1)
-	li       r0, 0
-	lfs      f1, lbl_805188A0@sda21(r2)
-	stb      r0, 0x20(r4)
-	mr       r27, r4
-	lfs      f0, lbl_8051886C@sda21(r2)
-	mr       r26, r3
-	stfs     f1, 0x24(r4)
-	lfs      f2, 0x10(r4)
-	lfs      f1, 4(r4)
-	lfs      f3, 0x14(r4)
-	fsubs    f4, f2, f1
-	lfs      f2, 8(r4)
-	lfs      f1, 0xc(r4)
-	fsubs    f5, f3, f2
-	lfs      f7, 0(r4)
-	fmuls    f2, f4, f4
-	fsubs    f3, f1, f7
-	fmuls    f6, f5, f5
-	fmadds   f1, f3, f3, f2
-	fadds    f2, f6, f1
-	fcmpo    cr0, f2, f0
-	ble      lbl_80162ED4
-	ble      lbl_80162ED8
-	frsqrte  f0, f2
-	fmuls    f2, f0, f2
-	b        lbl_80162ED8
+	arg._20 = 0;
+	arg._24 = 9.9999998E+10f;
 
-lbl_80162ED4:
-	fmr      f2, f0
+	Vector3f sep = arg._0C - arg.mPosition;
+	f32 dist     = sep.normalise();
 
-lbl_80162ED8:
-	lfs      f0, lbl_8051886C@sda21(r2)
-	fcmpo    cr0, f2, f0
-	ble      lbl_80162EFC
-	lfs      f0, lbl_805188A4@sda21(r2)
-	fdivs    f0, f0, f2
-	fmuls    f3, f3, f0
-	fmuls    f4, f4, f0
-	fmuls    f5, f5, f0
-	b        lbl_80162F00
+	if (dist == 0.0f) {
+		return;
+	}
 
-lbl_80162EFC:
-	fmr      f2, f0
+	f32 norm              = dist / 30.0f;
+	Vector3f prevVelocity = sep * norm;
 
-lbl_80162F00:
-	lfs      f29, lbl_8051886C@sda21(r2)
-	fcmpu    cr0, f29, f2
-	beq      lbl_801630BC
-	lfs      f0, lbl_805188A8@sda21(r2)
-	lis      r3, sincosTable___5JMath@ha
-	lfs      f1, 0x18(r27)
-	addi     r29, r3, sincosTable___5JMath@l
-	fdivs    f6, f2, f0
-	lfs      f30, lbl_805188A4@sda21(r2)
-	stfs     f7, 0x14(r1)
-	addi     r30, r1, 0x14
-	lfs      f31, lbl_805188AC@sda21(r2)
-	addi     r31, r1, 8
-	lfs      f0, 4(r27)
-	fmuls    f2, f3, f6
-	fmuls    f3, f4, f6
-	li       r28, 0
-	stfs     f0, 0x18(r1)
-	fmuls    f4, f5, f6
-	lfs      f0, 8(r27)
-	stfs     f0, 0x1c(r1)
-	stfs     f1, 0x20(r1)
+	Sys::Sphere sphere(arg.mPosition, arg.mBeamRadius);
+	Vector3f velocity;
 
-lbl_80162F58:
-	stfs     f2, 8(r1)
-	li       r5, 0
-	lfs      f0, 0x800(r29)
-	li       r0, -1
-	stfs     f3, 0xc(r1)
-	mr       r3, r26
-	fmr      f1, f30
-	addi     r4, r1, 0x24
-	stfs     f4, 0x10(r1)
-	lfs      f2, 0(r27)
-	stfs     f2, 0x14(r1)
-	lfs      f2, 4(r27)
-	stfs     f2, 0x18(r1)
-	lfs      f2, 8(r27)
-	stfs     f2, 0x1c(r1)
-	stw      r30, 0x24(r1)
-	stw      r31, 0x28(r1)
-	stfs     f30, 0x2c(r1)
-	stfs     f29, 0x30(r1)
-	stw      r5, 0x34(r1)
-	stw      r5, 0x68(r1)
-	stb      r5, 0x98(r1)
-	stb      r5, 0x3d(r1)
-	stb      r5, 0x3c(r1)
-	stw      r5, 0x6c(r1)
-	stw      r5, 0x38(r1)
-	stb      r5, 0xb4(r1)
-	stw      r5, 0xb8(r1)
-	stfs     f0, 0x50(r1)
-	stfs     f31, 0x54(r1)
-	stw      r0, 0xbc(r1)
-	stw      r5, 0x70(r1)
-	stb      r5, 0x3e(r1)
-	lwz      r12, 4(r26)
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, platMgr__4Game@sda21(r13)
-	cmplwi   r3, 0
-	beq      lbl_80163004
-	lfs      f1, lbl_805188A4@sda21(r2)
-	addi     r4, r1, 0x24
-	bl       traceMove__Q24Game7PlatMgrFRQ24Game8MoveInfof
+	for (int i = 0; i < 30; i++) {
+		velocity         = prevVelocity;
+		sphere.mPosition = arg.mPosition;
+		MoveInfo moveInfo(&sphere, &velocity, 1.0f);
 
-lbl_80163004:
-	lwz      r0, 0x6c(r1)
-	cmplwi   r0, 0
-	bne      lbl_80163028
-	lwz      r0, 0x68(r1)
-	cmplwi   r0, 0
-	bne      lbl_80163028
-	lwz      r0, 0x70(r1)
-	cmplwi   r0, 0
-	beq      lbl_80163034
+		traceMove(moveInfo, 1.0f);
+		if (platMgr) {
+			platMgr->traceMove(moveInfo, 1.0f);
+		}
 
-lbl_80163028:
-	li       r0, 1
-	stb      r0, 0x20(r27)
-	b        lbl_80163064
+		if (moveInfo.mWallTriangle || moveInfo.mBounceTriangle || moveInfo._4C) {
+			arg._20 = 1;
+			break;
+		}
 
-lbl_80163034:
-	lfs      f0, 0x14(r1)
-	addi     r28, r28, 1
-	cmpwi    r28, 0x1e
-	stfs     f0, 0(r27)
-	lfs      f0, 0x18(r1)
-	stfs     f0, 4(r27)
-	lfs      f0, 0x1c(r1)
-	stfs     f0, 8(r27)
-	lfs      f2, 8(r1)
-	lfs      f3, 0xc(r1)
-	lfs      f4, 0x10(r1)
-	blt      lbl_80162F58
+		arg.mPosition = sphere.mPosition;
+		prevVelocity  = velocity;
+	}
 
-lbl_80163064:
-	lfs      f1, 0x10(r27)
-	lfs      f0, 4(r27)
-	lfs      f3, 0x14(r27)
-	fsubs    f4, f1, f0
-	lfs      f2, 8(r27)
-	lfs      f1, 0xc(r27)
-	lfs      f0, 0(r27)
-	fsubs    f2, f3, f2
-	fmuls    f3, f4, f4
-	fsubs    f1, f1, f0
-	lfs      f0, lbl_8051886C@sda21(r2)
-	fmuls    f2, f2, f2
-	fmadds   f1, f1, f1, f3
-	fadds    f1, f2, f1
-	fcmpo    cr0, f1, f0
-	ble      lbl_801630B4
-	ble      lbl_801630B8
-	frsqrte  f0, f1
-	fmuls    f1, f0, f1
-	b        lbl_801630B8
-
-lbl_801630B4:
-	fmr      f1, f0
-
-lbl_801630B8:
-	stfs     f1, 0x24(r27)
-
-lbl_801630BC:
-	psq_l    f31, 264(r1), 0, qr0
-	lfd      f31, 0x100(r1)
-	psq_l    f30, 248(r1), 0, qr0
-	lfd      f30, 0xf0(r1)
-	psq_l    f29, 232(r1), 0, qr0
-	lfd      f29, 0xe0(r1)
-	lmw      r26, 0xc8(r1)
-	lwz      r0, 0x114(r1)
-	mtlr     r0
-	addi     r1, r1, 0x110
-	blr
-	*/
+	Vector3f sep2 = arg._0C - arg.mPosition;
+	arg._24       = sep2.length();
 }
 
-/*
- * --INFO--
- * Address:	801630E8
- * Size:	000804
+/**
+ * @note Address: 0x801630E8
+ * @note Size: 0x804
  */
-void ShapeMapMgr::load(Game::ShapeMapMgr::LoadArg&)
+void ShapeMapMgr::load(LoadArg& arg)
 {
+	sys->heapStatusStart("loadArg", nullptr);
+
+	sys->heapStatusStart("map arc", nullptr);
+
+	char path[512];
+	sprintf(path, "%s/arc.szs", arg.mFolder);
+	JKRArchive* arc = JKRMountArchive(path, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	if (!arc) {
+		for (int i = 0; i < 512; i++) {
+			//	path[i] = 0; some wack way of clearing this
+		}
+		sprintf(path, "%s/arc.arc", arg.mFolder);
+		arc = JKRMountArchive(path, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	}
+	P2ASSERTLINE(720, arc);
+	sys->heapStatusEnd("map arc");
+
+	sys->heapStatusStart("map model", nullptr);
+	void* file = JKRFileLoader::getGlbResource("model.bmd", nullptr);
+	P2ASSERTBOOLLINE(729, file && arg.mFolder);
+	J3DModelData* model = J3DModelLoaderDataBase::load(file, 0x20040000);
+	model->newSharedDisplayList(0x40000);
+	model->makeSharedDL();
+	mMapModel = new SysShape::Model(model, 0x20000, 2);
+	mMapModel->getJ3DModel()->newDifferedDisplayList(0x200);
+	mMapModel->getJ3DModel()->calc();
+	mMapModel->getJ3DModel()->calcMaterial();
+	mMapModel->getJ3DModel()->makeDL();
+	mMapModel->getJ3DModel()->lock();
+	sys->heapStatusEnd("map model");
+
+	Farm::farmMgr = new Farm::FarmMgr(2);
+	char farmPath[512];
+	for (int i = 0; i < 10; i++) {
+		sprintf(farmPath, "farm_%d.bmd", i + 1);
+		void* file = JKRFileLoader::getGlbResource(farmPath, nullptr);
+		if (!file)
+			break;
+		Farm::farmMgr->addFarmBmd(file);
+	}
+
+	mMapModel->enableMaterialAnim(0);
+	mTexAnimCount  = 0;
+	mAnimatorCount = 0;
+
+	// You know, casual 100 .btk files
+	char btkPath[256];
+	for (int i = 0; i < 100; i++) {
+		sprintf(btkPath, "texanm_%d.btk", i + 1);
+		void* file = JKRFileLoader::getGlbResource(btkPath, nullptr);
+		if (!file)
+			break;
+		mTexAnimCount++;
+	}
+
+	if (mTexAnimCount > 0) {
+		mAnimatorCount = mTexAnimCount;
+		mTexAnims      = new Sys::MatTexAnimation[mTexAnimCount];
+		mMatAnimators  = new Sys::MatLoopAnimator[mAnimatorCount];
+		for (int i = 0; i < mTexAnimCount; i++) {
+			char btkPath[256];
+			sprintf(btkPath, "texanm_%d.btk", i + 1);
+			void* file = JKRFileLoader::getGlbResource(btkPath, nullptr);
+			mTexAnims[i].attachResource(file, mMapModel->getJ3DModel()->getModelData());
+			mMatAnimators[i].start(&mTexAnims[i]);
+		}
+	}
+	mMapModel->getJ3DModel()->calc();
+
+	// Load Lighting data
+	char lightPath[512];
+	sprintf(lightPath, "%s/light.ini", arg.mAbeFolder);
+	file = JKRDvdToMainRam(lightPath, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+	if (file) {
+		RamStream stream(file, -1);
+		stream.resetPosition(true, 1);
+		if (gameSystem) {
+			gameSystem->getLightMgr()->loadParm(stream);
+		}
+		delete[] file;
+	}
+
+	char textsPath[512];
+	sprintf(textsPath, "%s/texts.szs", arg.mFolder);
+	JKRArchive* texts = JKRMountArchive(textsPath, JKRArchive::EMM_Mem, JKRGetCurrentHeap(), JKRArchive::EMD_Tail);
+	if (texts) {
+
+		void* file = JKRFileLoader::getGlbResource("grid.bin", texts);
+		P2ASSERTLINE(887, file);
+		sys->heapStatusStart("map collision", nullptr);
+		RamStream stream(file, -1);
+		mMapCollision.read(stream);
+		sys->heapStatusEnd("map collision");
+
+		file = JKRFileLoader::getGlbResource("waterbox.txt", texts);
+		if (file) {
+			sys->heapStatusStart("waterbox", nullptr);
+			RamStream stream(file, -1);
+			stream.resetPosition(true, 1);
+			mSeaMgr->read(stream);
+			sys->heapStatusEnd("waterbox");
+		}
+
+		file = JKRFileLoader::getGlbResource("mapcode.bin", texts);
+		if (file) {
+			MapCode::Mgr* mgr = new MapCode::Mgr;
+			RamStream stream(file, -1);
+			mgr->read(stream);
+			mgr->attachCodes(mMapCollision.mDivider->mTriangleTable);
+		}
+		texts->unmount();
+	} else {
+		file = JKRDvdToMainRam(arg.mCollisionPath, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+		sys->heapStatusStart("map collision", nullptr);
+		RamStream stream(file, -1);
+		mMapCollision.read(stream);
+		sys->heapStatusEnd("map collision");
+		delete[] file;
+
+		if (arg.mWaterboxPath) {
+			void* file
+			    = JKRDvdToMainRam(arg.mWaterboxPath, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+			sys->heapStatusStart("waterbox", nullptr);
+			RamStream stream(file, -1);
+			stream.resetPosition(true, 1);
+			mSeaMgr->read(stream);
+			sys->heapStatusEnd("waterbox");
+			delete[] file;
+		}
+
+		if (arg.mMapcodePath) {
+			void* file
+			    = JKRDvdToMainRam(arg.mMapcodePath, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+			MapCode::Mgr* mgr = new MapCode::Mgr;
+			RamStream stream(file, -1);
+			mgr->read(stream);
+			mgr->attachCodes(mMapCollision.mDivider->mTriangleTable);
+			delete[] file;
+		}
+	}
+
+	if (arg.mRoutePath) {
+		void* file = JKRDvdToMainRam(arg.mRoutePath, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+		sys->heapStatusStart("routeInfo", nullptr);
+		RamStream stream(file, -1);
+		stream.resetPosition(true, 1);
+		if (!mRouteMgr) {
+			mRouteMgr = new GameRouteMgr;
+		}
+		mRouteMgr->read(stream);
+		sys->heapStatusEnd("routeInfo");
+		delete[] file;
+	}
+
+	sys->heapStatusEnd("mapMgr");
+
 	/*
 	stwu     r1, -0x2b30(r1)
 	mflr     r0
@@ -1886,44 +1467,15 @@ lbl_801638CC:
 	*/
 }
 
-/*
- * @generated{__ct__Q23Sys15MatLoopAnimatorFv}
- * --INFO--
- * Address:	801638EC
- * Size:	00003C
- */
-// MatLoopAnimator::MatLoopAnimator()
-// {
-// 	/*
-// stwu     r1, -0x10(r1)
-// mflr     r0
-// stw      r0, 0x14(r1)
-// stw      r31, 0xc(r1)
-// mr       r31, r3
-// bl       __ct__Q23Sys15MatBaseAnimatorFv
-// lis      r4, __vt__Q23Sys15MatLoopAnimator@ha
-// mr       r3, r31
-// addi     r0, r4, __vt__Q23Sys15MatLoopAnimator@l
-// stw      r0, 0(r31)
-// lwz      r31, 0xc(r1)
-// lwz      r0, 0x14(r1)
-// mtlr     r0
-// addi     r1, r1, 0x10
-// blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80163928
- * Size:	000034
+/**
+ * @note Address: 0x80163928
+ * @note Size: 0x34
  */
 WaterBox* MapMgr::findWater(::Sys::Sphere& boundingSphere) { return (mSeaMgr != nullptr) ? mSeaMgr->findWater(boundingSphere) : nullptr; }
 
-/*
- * --INFO--
- * Address:	8016395C
- * Size:	00009C
+/**
+ * @note Address: 0x8016395C
+ * @note Size: 0x9C
  */
 void ShapeMapMgr::do_update()
 {
@@ -1931,63 +1483,15 @@ void ShapeMapMgr::do_update()
 		return;
 	}
 	for (int i = 0; i < mTexAnimCount; i++) {
-		_30[i].animate(30.0f);
+		mMatAnimators[i].animate(30.0f);
 	}
 	mMapModel->getJ3DModel()->calcMaterial();
 	mMapModel->getJ3DModel()->diff();
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	lwz      r3, gameSystem__4Game@sda21(r13)
-	bl       paused__Q24Game10GameSystemFv
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801639DC
-	li       r30, 0
-	li       r31, 0
-	b        lbl_801639AC
-
-lbl_80163994:
-	lwz      r0, 0x30(r29)
-	lfs      f1, lbl_805188A8@sda21(r2)
-	add      r3, r0, r31
-	bl       animate__Q23Sys15MatBaseAnimatorFf
-	addi     r31, r31, 0xc
-	addi     r30, r30, 1
-
-lbl_801639AC:
-	lwz      r0, 0x24(r29)
-	cmpw     r30, r0
-	blt      lbl_80163994
-	lwz      r3, 0x34(r29)
-	lwz      r3, 8(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x34(r29)
-	lwz      r3, 8(r3)
-	bl       diff__8J3DModelFv
-
-lbl_801639DC:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	801639F8
- * Size:	000050
+/**
+ * @note Address: 0x801639F8
+ * @note Size: 0x50
  */
 void MapMgr::update()
 {
@@ -1998,268 +1502,109 @@ void MapMgr::update()
 	do_update();
 }
 
-/*
- * --INFO--
- * Address:	80163A48
- * Size:	000004
- */
-void MapMgr::do_update() { }
-
-/*
- * --INFO--
- * Address:	80163A4C
- * Size:	000018
+/**
+ * @note Address: 0x80163A4C
+ * @note Size: 0x18
  */
 void MapMgr::clearPerfMonitor()
 {
-	_14 = 0;
-	_18 = 0;
-	_1C = 0;
-	_20 = 0;
+	mTotalTraceCount         = 0;
+	mTotalStepCount          = 0;
+	mTotalTriCount           = 0;
+	mMissedIntersectionCount = 0;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000258
+/**
+ * @note Address: N/A
+ * @note Size: 0x258
  */
 void MapMgr::draw2d(Graphics&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80163A64
- * Size:	0000AC
+/**
+ * @note Address: 0x80163A64
+ * @note Size: 0xAC
  */
 void ShapeMapMgr::drawCollision(Graphics& gfx, ::Sys::Sphere& boundingSphere)
 {
 	gfx.initPrimDraw(nullptr);
-	gfx._084 = Color4(50, 255, 10, 255);
+	gfx.mDrawColor = Color4(50, 255, 10, 255);
 	GXSetLineWidth(' ', GX_TO_ZERO);
-	Sys::TriIndexList* triLists = _38.mDivider->findTriLists(boundingSphere);
-	Sys::GridDivider* divider   = _38.mDivider;
-	if (triLists != nullptr) {
-		triLists->draw(gfx, *divider->mVertexTable, *divider->mTriangleTable, true);
+	Sys::TriIndexList* triLists  = mMapCollision.mDivider->findTriLists(boundingSphere);
+	Sys::VertexTable& vertTable  = *mMapCollision.mDivider->mVertexTable;
+	Sys::TriangleTable& triTable = *mMapCollision.mDivider->mTriangleTable;
+	if (triLists) {
+		triLists->draw(gfx, vertTable, triTable, true);
 	}
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r5
-	stw      r30, 0x18(r1)
-	mr       r30, r4
-	li       r4, 0
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	mr       r3, r30
-	bl       initPrimDraw__8GraphicsFP7Matrixf
-	li       r0, 0x32
-	li       r5, 0xff
-	stb      r0, 0x84(r30)
-	li       r0, 0xa
-	li       r3, 0x20
-	li       r4, 0
-	stb      r5, 0x85(r30)
-	stb      r0, 0x86(r30)
-	stb      r5, 0x87(r30)
-	bl       GXSetLineWidth
-	lwz      r3, 0x50(r29)
-	mr       r4, r31
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0x50(r29)
-	cmplwi   r3, 0
-	lwz      r5, 0x18(r4)
-	lwz      r6, 0x1c(r4)
-	beq      lbl_80163AF4
-	mr       r4, r30
-	li       r7, 1
-	bl
-draw__Q23Sys12TriIndexListFR8GraphicsRQ23Sys11VertexTableRQ23Sys13TriangleTableb
-
-lbl_80163AF4:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	80163B10
- * Size:	00002C
+/**
+ * @note Address: 0x80163B10
+ * @note Size: 0x2C
  */
-void ShapeMapMgr::createTriangles(::Sys::CreateTriangleArg& arg) { _38.createTriangles(arg); }
+void ShapeMapMgr::createTriangles(::Sys::CreateTriangleArg& arg) { mMapCollision.createTriangles(arg); }
 
-} // namespace Game
-
-/*
- * --INFO--
- * Address:	80163B3C
- * Size:	000030
+/**
+ * @note Address: 0x80163B70
+ * @note Size: 0x8C
  */
-void MapCollision::createTriangles(Sys::CreateTriangleArg& arg) { mDivider->createTriangles(arg); }
-
-// namespace Sys {
-
-/*
- * --INFO--
- * Address:	80163B6C
- * Size:	000004
- */
-// void TriDivider::createTriangles(Sys::CreateTriangleArg&) { }
-
-// } // namespace Sys
-
-namespace Game {
-/*
- * --INFO--
- * Address:	80163B70
- * Size:	00008C
- */
-// void getMinY__Q24Game11ShapeMapMgrFR10Vector3f()
-f32 ShapeMapMgr::getMinY(Vector3f& origin)
+f32 ShapeMapMgr::getMinY(Vector3f& pos)
 {
 	CurrTriInfo info;
-	// FROM HERE
-	info.mTriangle = nullptr;
-	info.mMaxY     = 128000.0f;
-	info.mMinY     = -128000.0f;
-	info.mTable    = nullptr;
+	info.mPosition        = pos;
+	info.mUpdateOnNewMaxY = false;
 
-	info.mNormalVec = Vector3f(0.0f, 1.0f, 0.0f);
-
-	info._0C = true;
-	info._0D = false;
-	// TO HERE
-	// IS CONSTRUCTOR!!!
-
-	info.mPosition = origin;
-	info._0C       = false;
-
-	getCurrTri(info);
+	mMapCollision.getCurrTri(info);
 	return info.mMinY;
 }
 
-/*
- * --INFO--
- * Address:	80163BFC
- * Size:	00002C
+/**
+ * @note Address: 0x80163BFC
+ * @note Size: 0x2C
  */
-void ShapeMapMgr::getCurrTri(Game::CurrTriInfo& info) { _38.getCurrTri(info); }
+void ShapeMapMgr::getCurrTri(CurrTriInfo& info) { mMapCollision.getCurrTri(info); }
 
-/*
- * --INFO--
- * Address:	80163C28
- * Size:	000038
+/**
+ * @note Address: 0x80163C28
+ * @note Size: 0x38
  */
 void ShapeMapMgr::doAnimation()
 {
-	if (mSeaMgr != nullptr) {
+	if (mSeaMgr) {
 		mSeaMgr->doAnimation();
 	}
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x10(r3)
-	cmplwi   r3, 0
-	beq      lbl_80163C50
-	lwz      r12, 0(r3)
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80163C50:
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	80163C60
- * Size:	000060
+/**
+ * @note Address: 0x80163C60
+ * @note Size: 0x60
  */
 void ShapeMapMgr::doSetView(int viewportNumber)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	clrlwi   r4, r4, 0x10
-	stw      r30, 8(r1)
-	mr       r30, r3
-	lwz      r3, 0x34(r3)
-	bl       setCurrentViewNo__Q28SysShape5ModelFUl
-	lwz      r3, 0x10(r30)
-	cmplwi   r3, 0
-	beq      lbl_80163CA8
-	lwz      r12, 0(r3)
-	mr       r4, r31
-	lwz      r12, 0x6c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80163CA8:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mMapModel->setCurrentViewNo((u16)viewportNumber);
+	if (mSeaMgr) {
+		mSeaMgr->doSetView(viewportNumber);
+	}
 }
 
-/*
- * --INFO--
- * Address:	80163CC0
- * Size:	00004C
+/**
+ * @note Address: 0x80163CC0
+ * @note Size: 0x4C
  */
 void ShapeMapMgr::doViewCalc()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r3, 0x10(r3)
-	cmplwi   r3, 0
-	beq      lbl_80163CF0
-	lwz      r12, 0(r3)
-	lwz      r12, 0x70(r12)
-	mtctr    r12
-	bctrl
+	if (mSeaMgr) {
+		mSeaMgr->doViewCalc();
+	}
 
-lbl_80163CF0:
-	lwz      r3, 0x34(r31)
-	bl       viewCalc__Q28SysShape5ModelFv
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mMapModel->viewCalc();
 }
 
-/*
- * --INFO--
- * Address:	80163D0C
- * Size:	0000C0
+/**
+ * @note Address: 0x80163D0C
+ * @note Size: 0xC0
  */
 void ShapeMapMgr::doEntry()
 {
@@ -2275,71 +1620,44 @@ void ShapeMapMgr::doEntry()
 		mMapModel->getJ3DModel()->entry();
 	}
 	sys->mTimers->_stop("ENT-MAP");
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	addi     r4, r2, lbl_805188BC@sda21
-	li       r5, 1
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r6, sys@sda21(r13)
-	lwz      r3, 0x28(r6)
-	bl       _start__9SysTimersFPcb
-	lwz      r0, gameSystem__4Game@sda21(r13)
-	cmplwi   r0, 0
-	beq      lbl_80163D90
-	lwz      r3, 0x10(r31)
-	cmplwi   r3, 0
-	beq      lbl_80163D5C
-	lwz      r12, 0(r3)
-	lwz      r12, 0x68(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80163D5C:
-	lwz      r3, gameSystem__4Game@sda21(r13)
-	li       r4, 2
-	bl       setDrawBuffer__Q24Game10GameSystemFi
-	lwz      r3, 0x34(r31)
-	lwz      r3, 8(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0xc(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, gameSystem__4Game@sda21(r13)
-	li       r4, 0
-	bl       setDrawBuffer__Q24Game10GameSystemFi
-	b        lbl_80163DA8
-
-lbl_80163D90:
-	lwz      r3, 0x34(r31)
-	lwz      r3, 8(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0xc(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80163DA8:
-	lwz      r3, sys@sda21(r13)
-	addi     r4, r2, lbl_805188BC@sda21
-	lwz      r3, 0x28(r3)
-	bl       _stop__9SysTimersFPc
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	80163DCC
- * Size:	000214
+/**
+ * @note Address: 0x80163DCC
+ * @note Size: 0x214
  */
-u32 ShapeMapMgr::findRayIntersection(::Sys::RayIntersectInfo&)
+bool ShapeMapMgr::findRayIntersection(Sys::RayIntersectInfo& info)
 {
+	Vector3f startPos = info.mIntersectEdge.mStartPos;
+	Vector3f endPos   = info.mIntersectEdge.mEndPos;
+	f32 edgeLen       = startPos.distance(endPos);
+
+	Vector3f midPoint = (startPos + endPos) * 0.5f;
+	Sys::Sphere sphere;
+	sphere.mRadius             = edgeLen;
+	sphere.mPosition           = midPoint;
+	Sys::TriIndexList* triList = mMapCollision.mDivider->findTriLists(sphere);
+	Vector3f outPos;
+	f32 minDist = 1.28E7f;
+	bool check  = false;
+	for (triList; triList; triList = static_cast<Sys::TriIndexList*>(triList->mNext)) {
+		for (int i = 0; i < triList->getNum(); i++) {
+			Sys::Triangle* tri = mMapCollision.mDivider->mTriangleTable->getTriangle(triList->mObjects[i]);
+			Vector3f interVec;
+			if (info.condition(*tri) && tri->intersect(info.mIntersectEdge, info.mRadius, interVec)) {
+				check       = true;
+				f32 sqrDist = interVec.sqrDistance(startPos);
+				if (sqrDist < minDist) {
+					outPos        = interVec;
+					info.mNormalY = tri->mTrianglePlane.b;
+					minDist       = sqrDist;
+				}
+			}
+		}
+	}
+
+	info.mIntersectPosition = outPos;
+	return check;
 	/*
 	stwu     r1, -0xc0(r1)
 	mflr     r0
@@ -2491,1139 +1809,25 @@ lbl_80163F7C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80163FE0
- * Size:	000080
+/**
+ * @note Address: 0x80163FE0
+ * @note Size: 0x80
  */
-void ShapeMapMgr::getBoundBox2d(BoundBox2d&)
+void ShapeMapMgr::getBoundBox2d(BoundBox2d& bounds)
 {
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	lfs      f1, lbl_805188CC@sda21(r2)
-	stw      r0, 0x34(r1)
-	lfs      f0, lbl_805188D0@sda21(r2)
-	stw      r31, 0x2c(r1)
-	mr       r31, r4
-	addi     r4, r1, 8
-	stfs     f1, 8(r1)
-	stfs     f1, 0xc(r1)
-	stfs     f1, 0x10(r1)
-	stfs     f0, 0x14(r1)
-	stfs     f0, 0x18(r1)
-	stfs     f0, 0x1c(r1)
-	lwz      r3, 0x50(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lfs      f1, 0x10(r1)
-	lfs      f0, 8(r1)
-	stfs     f0, 0(r31)
-	stfs     f1, 4(r31)
-	lfs      f1, 0x1c(r1)
-	lfs      f0, 0x14(r1)
-	stfs     f0, 8(r31)
-	stfs     f1, 0xc(r31)
-	lwz      r31, 0x2c(r1)
-	lwz      r0, 0x34(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
+	BoundBox calc;
+	mMapCollision.mDivider->getBoundBox(calc);
+	bounds.fromBoundBox(calc);
 }
 
-/*
- * --INFO--
- * Address:	80164060
- * Size:	000090
+/**
+ * @note Address: 0x80164060
+ * @note Size: 0x90
  */
-void ShapeMapMgr::getBoundBox(BoundBox&)
+void ShapeMapMgr::getBoundBox(BoundBox& bounds)
 {
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	lfs      f1, lbl_805188CC@sda21(r2)
-	stw      r0, 0x34(r1)
-	lfs      f0, lbl_805188D0@sda21(r2)
-	stw      r31, 0x2c(r1)
-	mr       r31, r4
-	addi     r4, r1, 8
-	stfs     f1, 8(r1)
-	stfs     f1, 0xc(r1)
-	stfs     f1, 0x10(r1)
-	stfs     f0, 0x14(r1)
-	stfs     f0, 0x18(r1)
-	stfs     f0, 0x1c(r1)
-	lwz      r3, 0x50(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lfs      f0, 8(r1)
-	stfs     f0, 0(r31)
-	lfs      f0, 0xc(r1)
-	stfs     f0, 4(r31)
-	lfs      f0, 0x10(r1)
-	stfs     f0, 8(r31)
-	lfs      f0, 0x14(r1)
-	stfs     f0, 0xc(r31)
-	lfs      f0, 0x18(r1)
-	stfs     f0, 0x10(r31)
-	lfs      f0, 0x1c(r1)
-	stfs     f0, 0x14(r31)
-	lwz      r31, 0x2c(r1)
-	lwz      r0, 0x34(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
+	BoundBox calc;
+	mMapCollision.mDivider->getBoundBox(calc);
+	bounds = calc;
 }
-
-/*
- * --INFO--
- * Address:	801640F0
- * Size:	000008
- */
-bool MapMgr::frozenable() { return false; }
-
-/*
- * --INFO--
- * Address:	801640F8
- * Size:	000004
- */
-void MapMgr::doDirectDraw(Graphics&) { }
-
-/*
- * --INFO--
- * Address:	801640FC
- * Size:	000004
- */
-void MapMgr::doSimulation(f32) { }
-
-/*
- * --INFO--
- * Address:	80164100
- * Size:	000008
- */
-u32 MapMgr::findRayIntersection(::Sys::RayIntersectInfo&) { return 0x0; }
-
-/*
- * --INFO--
- * Address:	80164108
- * Size:	000004
- */
-void MapMgr::createTriangles(::Sys::CreateTriangleArg&) { }
-
-/*
- * --INFO--
- * Address:	8016410C
- * Size:	0001E4
- */
-// void ObjectMgr<Game::WaterBox>::doViewCalc()
-// {
-// 	/*
-// 	stwu     r1, -0x20(r1)
-// 	mflr     r0
-// 	lis      r4, "__vt__26Iterator<Q24Game8WaterBox>"@ha
-// 	stw      r0, 0x24(r1)
-// 	li       r0, 0
-// 	addi     r4, r4, "__vt__26Iterator<Q24Game8WaterBox>"@l
-// 	cmplwi   r0, 0
-// 	stw      r0, 0x14(r1)
-// 	stw      r4, 8(r1)
-// 	stw      r0, 0xc(r1)
-// 	stw      r3, 0x10(r1)
-// 	bne      lbl_80164154
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x18(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801642C0
-
-// lbl_80164154:
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x18(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801641C0
-
-// lbl_8016416C:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	mr       r4, r3
-// 	lwz      r3, 0x14(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 8(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	bne      lbl_801642C0
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-
-// lbl_801641C0:
-// 	lwz      r12, 8(r1)
-// 	addi     r3, r1, 8
-// 	lwz      r12, 0x10(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	beq      lbl_8016416C
-// 	b        lbl_801642C0
-
-// lbl_801641E0:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x34(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r0, 0x14(r1)
-// 	cmplwi   r0, 0
-// 	bne      lbl_80164230
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801642C0
-
-// lbl_80164230:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801642A4
-
-// lbl_80164250:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	mr       r4, r3
-// 	lwz      r3, 0x14(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 8(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	bne      lbl_801642C0
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-
-// lbl_801642A4:
-// 	lwz      r12, 8(r1)
-// 	addi     r3, r1, 8
-// 	lwz      r12, 0x10(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	beq      lbl_80164250
-
-// lbl_801642C0:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x1c(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r4, 0xc(r1)
-// 	cmplw    r4, r3
-// 	bne      lbl_801641E0
-// 	lwz      r0, 0x24(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x20
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	801642F0
- * Size:	000004
- */
-void WaterBox::doViewCalc() { }
-
-/*
- * --INFO--
- * Address:	801642F4
- * Size:	00004C
- */
-// void Iterator<Game::WaterBox>::isDone()
-// {
-// 	/*
-// 	stwu     r1, -0x10(r1)
-// 	mflr     r0
-// 	stw      r0, 0x14(r1)
-// 	stw      r31, 0xc(r1)
-// 	mr       r31, r3
-// 	lwz      r3, 8(r3)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x1c(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r0, 4(r31)
-// 	subf     r0, r0, r3
-// 	cntlzw   r0, r0
-// 	srwi     r3, r0, 5
-// 	lwz      r31, 0xc(r1)
-// 	lwz      r0, 0x14(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x10
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164340
- * Size:	0001F4
- */
-// void ObjectMgr<Game::WaterBox>::doSetView(int)
-// {
-// 	/*
-// 	stwu     r1, -0x20(r1)
-// 	mflr     r0
-// 	lis      r5, "__vt__26Iterator<Q24Game8WaterBox>"@ha
-// 	stw      r0, 0x24(r1)
-// 	li       r0, 0
-// 	addi     r5, r5, "__vt__26Iterator<Q24Game8WaterBox>"@l
-// 	stw      r31, 0x1c(r1)
-// 	cmplwi   r0, 0
-// 	mr       r31, r4
-// 	stw      r0, 0x14(r1)
-// 	stw      r5, 8(r1)
-// 	stw      r0, 0xc(r1)
-// 	stw      r3, 0x10(r1)
-// 	bne      lbl_80164390
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x18(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_80164500
-
-// lbl_80164390:
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x18(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801643FC
-
-// lbl_801643A8:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	mr       r4, r3
-// 	lwz      r3, 0x14(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 8(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	bne      lbl_80164500
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-
-// lbl_801643FC:
-// 	lwz      r12, 8(r1)
-// 	addi     r3, r1, 8
-// 	lwz      r12, 0x10(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	beq      lbl_801643A8
-// 	b        lbl_80164500
-
-// lbl_8016441C:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r12, 0(r3)
-// 	mr       r4, r31
-// 	lwz      r12, 0x30(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r0, 0x14(r1)
-// 	cmplwi   r0, 0
-// 	bne      lbl_80164470
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_80164500
-
-// lbl_80164470:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801644E4
-
-// lbl_80164490:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	mr       r4, r3
-// 	lwz      r3, 0x14(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 8(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	bne      lbl_80164500
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-
-// lbl_801644E4:
-// 	lwz      r12, 8(r1)
-// 	addi     r3, r1, 8
-// 	lwz      r12, 0x10(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	beq      lbl_80164490
-
-// lbl_80164500:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x1c(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r4, 0xc(r1)
-// 	cmplw    r4, r3
-// 	bne      lbl_8016441C
-// 	lwz      r0, 0x24(r1)
-// 	lwz      r31, 0x1c(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x20
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164534
- * Size:	000004
- */
-void WaterBox::doSetView(int viewportNumber) { }
-
-/*
- * --INFO--
- * Address:	80164538
- * Size:	0001E4
- */
-// void ObjectMgr<Game::WaterBox>::doEntry()
-// {
-// 	/*
-// 	stwu     r1, -0x20(r1)
-// 	mflr     r0
-// 	lis      r4, "__vt__26Iterator<Q24Game8WaterBox>"@ha
-// 	stw      r0, 0x24(r1)
-// 	li       r0, 0
-// 	addi     r4, r4, "__vt__26Iterator<Q24Game8WaterBox>"@l
-// 	cmplwi   r0, 0
-// 	stw      r0, 0x14(r1)
-// 	stw      r4, 8(r1)
-// 	stw      r0, 0xc(r1)
-// 	stw      r3, 0x10(r1)
-// 	bne      lbl_80164580
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x18(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801646EC
-
-// lbl_80164580:
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x18(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801645EC
-
-// lbl_80164598:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	mr       r4, r3
-// 	lwz      r3, 0x14(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 8(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	bne      lbl_801646EC
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-
-// lbl_801645EC:
-// 	lwz      r12, 8(r1)
-// 	addi     r3, r1, 8
-// 	lwz      r12, 0x10(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	beq      lbl_80164598
-// 	b        lbl_801646EC
-
-// lbl_8016460C:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x2c(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r0, 0x14(r1)
-// 	cmplwi   r0, 0
-// 	bne      lbl_8016465C
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801646EC
-
-// lbl_8016465C:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801646D0
-
-// lbl_8016467C:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	mr       r4, r3
-// 	lwz      r3, 0x14(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 8(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	bne      lbl_801646EC
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-
-// lbl_801646D0:
-// 	lwz      r12, 8(r1)
-// 	addi     r3, r1, 8
-// 	lwz      r12, 0x10(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	beq      lbl_8016467C
-
-// lbl_801646EC:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x1c(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r4, 0xc(r1)
-// 	cmplw    r4, r3
-// 	bne      lbl_8016460C
-// 	lwz      r0, 0x24(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x20
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	8016471C
- * Size:	000004
- */
-void WaterBox::doEntry() { }
-
-/*
- * --INFO--
- * Address:	80164720
- * Size:	0001E4
- */
-// void ObjectMgr<Game::WaterBox>::doAnimation()
-// {
-// 	/*
-// 	stwu     r1, -0x20(r1)
-// 	mflr     r0
-// 	lis      r4, "__vt__26Iterator<Q24Game8WaterBox>"@ha
-// 	stw      r0, 0x24(r1)
-// 	li       r0, 0
-// 	addi     r4, r4, "__vt__26Iterator<Q24Game8WaterBox>"@l
-// 	cmplwi   r0, 0
-// 	stw      r0, 0x14(r1)
-// 	stw      r4, 8(r1)
-// 	stw      r0, 0xc(r1)
-// 	stw      r3, 0x10(r1)
-// 	bne      lbl_80164768
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x18(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801648D4
-
-// lbl_80164768:
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x18(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801647D4
-
-// lbl_80164780:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	mr       r4, r3
-// 	lwz      r3, 0x14(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 8(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	bne      lbl_801648D4
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-
-// lbl_801647D4:
-// 	lwz      r12, 8(r1)
-// 	addi     r3, r1, 8
-// 	lwz      r12, 0x10(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	beq      lbl_80164780
-// 	b        lbl_801648D4
-
-// lbl_801647F4:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x28(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r0, 0x14(r1)
-// 	cmplwi   r0, 0
-// 	bne      lbl_80164844
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801648D4
-
-// lbl_80164844:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-// 	b        lbl_801648B8
-
-// lbl_80164864:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	mr       r4, r3
-// 	lwz      r3, 0x14(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 8(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	bne      lbl_801648D4
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r4, 0xc(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 0xc(r1)
-
-// lbl_801648B8:
-// 	lwz      r12, 8(r1)
-// 	addi     r3, r1, 8
-// 	lwz      r12, 0x10(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	beq      lbl_80164864
-
-// lbl_801648D4:
-// 	lwz      r3, 0x10(r1)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x1c(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r4, 0xc(r1)
-// 	cmplw    r4, r3
-// 	bne      lbl_801647F4
-// 	lwz      r0, 0x24(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x20
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164904
- * Size:	000004
- */
-void WaterBox::doAnimation() { }
-
 } // namespace Game
-
-/*
- * --INFO--
- * Address:	80164908
- * Size:	000038
- */
-// void Iterator<Game::WaterBox>::operator*()
-// {
-// 	/*
-// 	stwu     r1, -0x10(r1)
-// 	mflr     r0
-// 	mr       r4, r3
-// 	stw      r0, 0x14(r1)
-// 	lwz      r3, 8(r3)
-// 	lwz      r4, 4(r4)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	lwz      r0, 0x14(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x10
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164940
- * Size:	0000E4
- */
-// void Iterator<Game::WaterBox>::next()
-// {
-// 	/*
-// 	stwu     r1, -0x10(r1)
-// 	mflr     r0
-// 	stw      r0, 0x14(r1)
-// 	stw      r31, 0xc(r1)
-// 	mr       r31, r3
-// 	lwz      r0, 0xc(r3)
-// 	cmplwi   r0, 0
-// 	bne      lbl_80164980
-// 	lwz      r3, 8(r31)
-// 	lwz      r4, 4(r31)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 4(r31)
-// 	b        lbl_80164A10
-
-// lbl_80164980:
-// 	lwz      r3, 8(r31)
-// 	lwz      r4, 4(r31)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 4(r31)
-// 	b        lbl_801649F4
-
-// lbl_801649A0:
-// 	lwz      r3, 8(r31)
-// 	lwz      r4, 4(r31)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	mr       r4, r3
-// 	lwz      r3, 0xc(r31)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 8(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	bne      lbl_80164A10
-// 	lwz      r3, 8(r31)
-// 	lwz      r4, 4(r31)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 4(r31)
-
-// lbl_801649F4:
-// 	mr       r3, r31
-// 	lwz      r12, 0(r31)
-// 	lwz      r12, 0x10(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	beq      lbl_801649A0
-
-// lbl_80164A10:
-// 	lwz      r0, 0x14(r1)
-// 	lwz      r31, 0xc(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x10
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164A24
- * Size:	0000DC
- */
-// void Iterator<Game::WaterBox>::first()
-// {
-// 	/*
-// 	stwu     r1, -0x10(r1)
-// 	mflr     r0
-// 	stw      r0, 0x14(r1)
-// 	stw      r31, 0xc(r1)
-// 	mr       r31, r3
-// 	lwz      r0, 0xc(r3)
-// 	cmplwi   r0, 0
-// 	bne      lbl_80164A60
-// 	lwz      r3, 8(r31)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x18(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 4(r31)
-// 	b        lbl_80164AEC
-
-// lbl_80164A60:
-// 	lwz      r3, 8(r31)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x18(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 4(r31)
-// 	b        lbl_80164AD0
-
-// lbl_80164A7C:
-// 	lwz      r3, 8(r31)
-// 	lwz      r4, 4(r31)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x20(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	mr       r4, r3
-// 	lwz      r3, 0xc(r31)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 8(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	bne      lbl_80164AEC
-// 	lwz      r3, 8(r31)
-// 	lwz      r4, 4(r31)
-// 	lwz      r12, 0(r3)
-// 	lwz      r12, 0x14(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	stw      r3, 4(r31)
-
-// lbl_80164AD0:
-// 	mr       r3, r31
-// 	lwz      r12, 0(r31)
-// 	lwz      r12, 0x10(r12)
-// 	mtctr    r12
-// 	bctrl
-// 	clrlwi.  r0, r3, 0x18
-// 	beq      lbl_80164A7C
-
-// lbl_80164AEC:
-// 	lwz      r0, 0x14(r1)
-// 	lwz      r31, 0xc(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x10
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164B00
- * Size:	000028
- */
-// void __sinit_mapMgr_cpp()
-// {
-// 	/*
-// 	lis      r4, __float_nan@ha
-// 	li       r0, -1
-// 	lfs      f0, __float_nan@l(r4)
-// 	lis      r3, lbl_804B18A8@ha
-// 	stw      r0, lbl_80515980@sda21(r13)
-// 	stfsu    f0, lbl_804B18A8@l(r3)
-// 	stfs     f0, lbl_80515984@sda21(r13)
-// 	stfs     f0, 4(r3)
-// 	stfs     f0, 8(r3)
-// 	blr
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164B28
- * Size:	000014
- */
-// void @36 @4 @Game::MapMgr::frozenable()
-// {
-// 	/*
-// 	li       r11, 4
-// 	lwzx     r11, r3, r11
-// 	add      r3, r3, r11
-// 	addi     r3, r3, -36
-// 	b        frozenable__Q24Game6MapMgrFv
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164B3C
- * Size:	000014
- */
-// void @36 @4 @Game::MapMgr::doDirectDraw(Graphics&)
-// {
-// 	/*
-// 	li       r11, 4
-// 	lwzx     r11, r3, r11
-// 	add      r3, r3, r11
-// 	addi     r3, r3, -36
-// 	b        doDirectDraw__Q24Game6MapMgrFR8Graphics
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164B50
- * Size:	000014
- */
-// void @36 @4 @Game::MapMgr::doSimulation(float)
-// {
-// 	/*
-// 	li       r11, 4
-// 	lwzx     r11, r3, r11
-// 	add      r3, r3, r11
-// 	addi     r3, r3, -36
-// 	b        doSimulation__Q24Game6MapMgrFf
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164B64
- * Size:	000014
- */
-// void @84 @4 @Game::MapMgr::frozenable()
-// {
-// 	/*
-// 	li       r11, 4
-// 	lwzx     r11, r3, r11
-// 	add      r3, r3, r11
-// 	addi     r3, r3, -84
-// 	b        frozenable__Q24Game6MapMgrFv
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164B78
- * Size:	000014
- */
-// void @84 @4 @Game::MapMgr::doDirectDraw(Graphics&)
-// {
-// 	/*
-// 	li       r11, 4
-// 	lwzx     r11, r3, r11
-// 	add      r3, r3, r11
-// 	addi     r3, r3, -84
-// 	b        doDirectDraw__Q24Game6MapMgrFR8Graphics
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164B8C
- * Size:	000014
- */
-// void @84 @4 @Game::MapMgr::doSimulation(float)
-// {
-// 	/*
-// 	li       r11, 4
-// 	lwzx     r11, r3, r11
-// 	add      r3, r3, r11
-// 	addi     r3, r3, -84
-// 	b        doSimulation__Q24Game6MapMgrFf
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164BA0
- * Size:	000014
- */
-// void @84 @4 @Game::ShapeMapMgr::doViewCalc()
-// {
-// 	/*
-// 	li       r11, 4
-// 	lwzx     r11, r3, r11
-// 	add      r3, r3, r11
-// 	addi     r3, r3, -84
-// 	b        doViewCalc__Q24Game11ShapeMapMgrFv
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164BB4
- * Size:	000014
- */
-// void @84 @4 @Game::ShapeMapMgr::doSetView(int)
-// {
-// 	/*
-// 	li       r11, 4
-// 	lwzx     r11, r3, r11
-// 	add      r3, r3, r11
-// 	addi     r3, r3, -84
-// 	b        doSetView__Q24Game11ShapeMapMgrFi
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164BC8
- * Size:	000014
- */
-// void @84 @4 @Game::ShapeMapMgr::doEntry()
-// {
-// 	/*
-// 	li       r11, 4
-// 	lwzx     r11, r3, r11
-// 	add      r3, r3, r11
-// 	addi     r3, r3, -84
-// 	b        doEntry__Q24Game11ShapeMapMgrFv
-// 	*/
-// }
-
-/*
- * --INFO--
- * Address:	80164BDC
- * Size:	000014
- */
-// void @84 @4 @Game::ShapeMapMgr::doAnimation()
-// {
-// 	/*
-// 	li       r11, 4
-// 	lwzx     r11, r3, r11
-// 	add      r3, r3, r11
-// 	addi     r3, r3, -84
-// 	b        doAnimation__Q24Game11ShapeMapMgrFv
-// 	*/
-// }

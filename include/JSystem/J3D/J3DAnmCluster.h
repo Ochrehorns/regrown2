@@ -7,7 +7,7 @@
 
 struct J3DAnmCluster : public J3DAnmBase {
 	inline J3DAnmCluster()
-	    : _0C(nullptr)
+	    : mWeights(nullptr)
 	{
 	}
 
@@ -17,11 +17,12 @@ struct J3DAnmCluster : public J3DAnmBase {
 
 	// _00     = VTBL
 	// _00-_0C = J3DAnmBase
-	f32* _0C; // _0C
+	f32* mWeights; // _0C
 };
 
 struct J3DAnmClusterFullTable {
-	u16 _00[2]; // _00
+	u16 mMaxFrame; // _00
+	u16 mOffset;   // _02
 };
 
 /**
@@ -45,11 +46,14 @@ struct J3DAnmClusterFull : public J3DAnmCluster {
 };
 
 struct J3DAnmClusterFullData : J3DAnmFullData {
-	void* _10; // _10
-	void* _14; // _14
+	void* mTablesOffset;  // _10
+	void* mWeightsOffset; // _14
 };
 
 struct J3DAnmClusterKeyTable : public J3DAnmKeyTableBase {
+	// // _00-_06 = J3DAnmKeyTableBase
+	// u16 _06; // _06
+	// u16 _08; // _08
 };
 
 /**
@@ -71,11 +75,11 @@ struct J3DAnmClusterKey : public J3DAnmCluster {
 };
 
 struct J3DAnmClusterKeyData : public J3DFileBlockBase {
-	u8 _08;    // _08
-	s16 _0A;   // _0A
-	u8 _0C[4]; // _0C - unknown/filler
-	void* _10; // _10
-	void* _14; // _14
+	u8 mAttribute;        // _08
+	s16 mFrameLength;     // _0A
+	u8 _0C[4];            // _0C - unknown/filler
+	void* mTableOffset;   // _10
+	void* mWeightsOffset; // _14
 };
 
 #endif

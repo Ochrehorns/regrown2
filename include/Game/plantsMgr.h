@@ -33,6 +33,11 @@ namespace Game {
  * --Plant Base Class (Plants)--
  */
 namespace Plants {
+enum AnimID {
+	PLANTANIM_Default = 0, // only 1 anim for each plant
+	PLANTANIM_AnimCount,   // 1
+};
+
 struct Obj : public EnemyBase {
 	Obj();
 
@@ -245,7 +250,7 @@ struct Mgr : public EnemyMgrBaseAlwaysMovieActor {
 		for (u16 j = 0; j < mModelData->getShapeNum(); j++) {
 			shape = mModelData->mShapeTable.mItems[j];
 			P2ASSERTLINE(523, shape != nullptr);
-			shape->mFlags = (shape->mFlags & (~0xF000)) | 0x2000;
+			shape->setTexMtxLoadType(0x2000);
 		}
 	}
 	virtual J3DModelData* doLoadBmd(void* file) // _D4 (weak)
@@ -321,7 +326,7 @@ struct Mgr : public EnemyMgrBaseAlwaysMovieActor {
 		for (u16 j = 0; j < mModelData->getShapeNum(); j++) {
 			shape = mModelData->mShapeTable.mItems[j];
 			P2ASSERTLINE(582, shape != nullptr);
-			shape->mFlags = (shape->mFlags & (~0xF000)) | 0x2000;
+			shape->setTexMtxLoadType(0x2000);
 		}
 	}
 	virtual J3DModelData* doLoadBmd(void* file) // _D4 (weak)
@@ -567,8 +572,8 @@ struct Obj : public Plants::Obj {
 		Vector3f pos = mPosition;
 		Vector3f vec1, vec2;
 
-		pos.x -= 50.0f * pikmin2_sinf(mFaceDir);
-		pos.z -= 50.0f * pikmin2_cosf(mFaceDir);
+		pos.x -= 50.0f * sinf(mFaceDir);
+		pos.z -= 50.0f * cosf(mFaceDir);
 		vec2 = pos;
 		vec1 = vec2;
 		vec1.y += static_cast<EnemyParmsBase*>(mParms)->mGeneral.mPrivateRadius.mValue;

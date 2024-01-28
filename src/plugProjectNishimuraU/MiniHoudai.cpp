@@ -1,1736 +1,460 @@
-#include "types.h"
-
-/*
-    Generated from dpostproc
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__Q23efx12TChibiDeadSe
-    __vt__Q23efx12TChibiDeadSe:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx11TSimpleMtx2FPQ23efx3Arg
-        .4byte forceKill__Q23efx8TSimple2Fv
-        .4byte fade__Q23efx8TSimple2Fv
-    .global __vt__Q23efx15TChibiDeadMouth
-    __vt__Q23efx15TChibiDeadMouth:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx11TSimpleMtx1FPQ23efx3Arg
-        .4byte forceKill__Q23efx8TSimple1Fv
-        .4byte fade__Q23efx8TSimple1Fv
-    .global __vt__Q23efx11TChibiShoot
-    __vt__Q23efx11TChibiShoot:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx11TSimpleMtx3FPQ23efx3Arg
-        .4byte forceKill__Q23efx8TSimple3Fv
-        .4byte fade__Q23efx8TSimple3Fv
-    .global __vt__Q23efx12TChibiSmokeL
-    __vt__Q23efx12TChibiSmokeL:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx11TSimpleMtx1FPQ23efx3Arg
-        .4byte forceKill__Q23efx8TSimple1Fv
-        .4byte fade__Q23efx8TSimple1Fv
-    .global __vt__Q23efx12TChibiSmokeS
-    __vt__Q23efx12TChibiSmokeS:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx11TSimpleMtx1FPQ23efx3Arg
-        .4byte forceKill__Q23efx8TSimple1Fv
-        .4byte fade__Q23efx8TSimple1Fv
-    .global __vt__Q23efx15TChibiDeadLight
-    __vt__Q23efx15TChibiDeadLight:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx5TSyncFPQ23efx3Arg
-        .4byte forceKill__Q23efx5TSyncFv
-        .4byte fade__Q23efx5TSyncFv
-        .4byte 0
-        .4byte 0
-        .4byte "@4@__dt__Q23efx15TChibiDeadLightFv"
-        .4byte "@4@execute__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte "@4@executeAfter__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte execute__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte executeAfter__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte doExecuteEmitterOperation__Q23efx9TChaseMtxFP14JPABaseEmitter
-        .4byte doExecuteAfter__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte startDemoDrawOff__Q23efx5TSyncFv
-        .4byte endDemoDrawOn__Q23efx5TSyncFv
-        .4byte __dt__Q23efx15TChibiDeadLightFv
-    .global __vt__Q23efx12TChibiCharge
-    __vt__Q23efx12TChibiCharge:
-        .4byte 0
-        .4byte 0
-        .4byte create__Q23efx5TSyncFPQ23efx3Arg
-        .4byte forceKill__Q23efx5TSyncFv
-        .4byte fade__Q23efx5TSyncFv
-        .4byte 0
-        .4byte 0
-        .4byte "@4@__dt__Q23efx12TChibiChargeFv"
-        .4byte "@4@execute__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte "@4@executeAfter__Q23efx5TSyncFP14JPABaseEmitter"
-        .4byte draw__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte drawAfter__18JPAEmitterCallBackFP14JPABaseEmitter
-        .4byte execute__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte executeAfter__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte doExecuteEmitterOperation__Q23efx9TChaseMtxFP14JPABaseEmitter
-        .4byte doExecuteAfter__Q23efx5TSyncFP14JPABaseEmitter
-        .4byte startDemoDrawOff__Q23efx5TSyncFv
-        .4byte endDemoDrawOn__Q23efx5TSyncFv
-        .4byte __dt__Q23efx12TChibiChargeFv
-    .global __vt__Q34Game10MiniHoudai3Obj
-    __vt__Q34Game10MiniHoudai3Obj:
-        .4byte 0
-        .4byte 0
-        .4byte getPosition__Q24Game9EnemyBaseFv
-        .4byte checkCollision__Q24Game8CreatureFPQ24Game10CellObject
-        .4byte getBoundingSphere__Q24Game9EnemyBaseFRQ23Sys6Sphere
-        .4byte collisionUpdatable__Q24Game8CreatureFv
-        .4byte isPiki__Q24Game8CreatureFv
-        .4byte isNavi__Q24Game8CreatureFv
-        .4byte deferPikiCollision__Q24Game10CellObjectFv
-        .4byte getTypeName__Q24Game8CreatureFv
-        .4byte getObjType__Q24Game8CreatureFv
-        .4byte constructor__Q24Game9EnemyBaseFv
-        .4byte onInit__Q34Game10MiniHoudai3ObjFPQ24Game15CreatureInitArg
-        .4byte onKill__Q34Game10MiniHoudai3ObjFPQ24Game15CreatureKillArg
-        .4byte onInitPost__Q24Game9EnemyBaseFPQ24Game15CreatureInitArg
-        .4byte doAnimation__Q24Game9EnemyBaseFv
-        .4byte doEntry__Q24Game9EnemyBaseFv
-        .4byte doSetView__Q24Game9EnemyBaseFi
-        .4byte doViewCalc__Q24Game9EnemyBaseFv
-        .4byte doSimulation__Q24Game9EnemyBaseFf
-        .4byte doDirectDraw__Q34Game10MiniHoudai3ObjFR8Graphics
-        .4byte getBodyRadius__Q24Game9EnemyBaseFv
-        .4byte getCellRadius__Q24Game9EnemyBaseFv
-        .4byte "initPosition__Q24Game8CreatureFR10Vector3<f>"
-        .4byte "onInitPosition__Q24Game8CreatureFR10Vector3<f>"
-        .4byte getFaceDir__Q24Game9EnemyBaseFv
-        .4byte "setVelocity__Q24Game9EnemyBaseFR10Vector3<f>"
-        .4byte getVelocity__Q24Game9EnemyBaseFv
-        .4byte "onSetPosition__Q24Game9EnemyBaseFR10Vector3<f>"
-        .4byte "onSetPositionPost__Q24Game9EnemyBaseFR10Vector3<f>"
-        .4byte updateTrMatrix__Q24Game9EnemyBaseFv
-        .4byte isTeki__Q24Game9EnemyBaseFv
-        .4byte isPellet__Q24Game8CreatureFv
-        .4byte inWaterCallback__Q24Game9EnemyBaseFPQ24Game8WaterBox
-        .4byte outWaterCallback__Q24Game9EnemyBaseFv
-        .4byte inWater__Q24Game9EnemyBaseFv
-        .4byte getFlockMgr__Q24Game8CreatureFv
-        .4byte onStartCapture__Q24Game8CreatureFv
-        .4byte onUpdateCapture__Q24Game8CreatureFR7Matrixf
-        .4byte onEndCapture__Q24Game8CreatureFv
-        .4byte isAtari__Q24Game8CreatureFv
-        .4byte setAtari__Q24Game8CreatureFb
-        .4byte isAlive__Q24Game8CreatureFv
-        .4byte setAlive__Q24Game8CreatureFb
-        .4byte isCollisionFlick__Q24Game8CreatureFv
-        .4byte setCollisionFlick__Q24Game8CreatureFb
-        .4byte isMovieActor__Q24Game8CreatureFv
-        .4byte isMovieExtra__Q24Game8CreatureFv
-        .4byte isMovieMotion__Q24Game8CreatureFv
-        .4byte setMovieMotion__Q24Game8CreatureFb
-        .4byte isBuried__Q24Game8CreatureFv
-        .4byte isFlying__Q24Game9EnemyBaseFv
-        .4byte isUnderground__Q24Game8CreatureFv
-        .4byte isLivingThing__Q24Game8CreatureFv
-        .4byte isDebugCollision__Q24Game8CreatureFv
-        .4byte setDebugCollision__Q24Game8CreatureFb
-        .4byte doSave__Q24Game8CreatureFR6Stream
-        .4byte doLoad__Q24Game8CreatureFR6Stream
-        .4byte bounceCallback__Q24Game8CreatureFPQ23Sys8Triangle
-        .4byte collisionCallback__Q24Game9EnemyBaseFRQ24Game9CollEvent
-        .4byte platCallback__Q24Game8CreatureFRQ24Game9PlatEvent
-        .4byte getJAIObject__Q24Game9EnemyBaseFv
-        .4byte getPSCreature__Q24Game9EnemyBaseFv
-        .4byte getSound_AILOD__Q24Game8CreatureFv
-        .4byte getSound_PosPtr__Q24Game9EnemyBaseFv
-        .4byte sound_culling__Q24Game9EnemyBaseFv
-        .4byte getSound_CurrAnimFrame__Q24Game9EnemyBaseFv
-        .4byte getSound_CurrAnimSpeed__Q24Game9EnemyBaseFv
-        .4byte on_movie_begin__Q24Game8CreatureFb
-        .4byte on_movie_end__Q24Game8CreatureFb
-        .4byte movieStartAnimation__Q24Game8CreatureFUl
-        .4byte movieStartDemoAnimation__Q24Game8CreatureFPQ28SysShape8AnimInfo
-        .4byte movieSetAnimationLastFrame__Q24Game8CreatureFv
-        .4byte "movieSetTranslation__Q24Game8CreatureFR10Vector3<f>f"
-        .4byte movieSetFaceDir__Q24Game8CreatureFf
-        .4byte "movieGotoPosition__Q24Game8CreatureFR10Vector3<f>"
-        .4byte movieUserCommand__Q24Game8CreatureFUlPQ24Game11MoviePlayer
-        .4byte getShadowParam__Q34Game10MiniHoudai3ObjFRQ24Game11ShadowParam
-        .4byte needShadow__Q24Game9EnemyBaseFv
-        .4byte getLifeGaugeParam__Q24Game9EnemyBaseFRQ24Game14LifeGaugeParam
-        .4byte getLODSphere__Q24Game9EnemyBaseFRQ23Sys6Sphere
-        .4byte getLODCylinder__Q24Game8CreatureFRQ23Sys8Cylinder
-        .4byte startPick__Q24Game8CreatureFv
-        .4byte endPick__Q24Game8CreatureFb
-        .4byte getMabiki__Q24Game8CreatureFv
-        .4byte getFootmarks__Q24Game8CreatureFv
-        .4byte onStickStart__Q24Game9EnemyBaseFPQ24Game8Creature
-        .4byte onStickEnd__Q24Game9EnemyBaseFPQ24Game8Creature
-        .4byte onStickStartSelf__Q24Game8CreatureFPQ24Game8Creature
-        .4byte onStickEndSelf__Q24Game8CreatureFPQ24Game8Creature
-        .4byte isSlotFree__Q24Game8CreatureFs
-        .4byte getFreeStickSlot__Q24Game8CreatureFv
-        .4byte "getNearFreeStickSlot__Q24Game8CreatureFR10Vector3<f>"
-        .4byte getRandomFreeStickSlot__Q24Game8CreatureFv
-        .4byte onSlotStickStart__Q24Game8CreatureFPQ24Game8Creatures
-        .4byte onSlotStickEnd__Q24Game8CreatureFPQ24Game8Creatures
-        .4byte "calcStickSlotGlobal__Q24Game8CreatureFsR10Vector3<f>"
-        .4byte "getVelocityAt__Q24Game9EnemyBaseFR10Vector3<f>R10Vector3<f>"
-        .4byte "getAngularEffect__Q24Game8CreatureFR10Vector3<f>R10Vector3<f>"
-        .4byte "applyImpulse__Q24Game8CreatureFR10Vector3<f>R10Vector3<f>"
-        .4byte ignoreAtari__Q24Game8CreatureFPQ24Game8Creature
-        .4byte getSuckPos__Q24Game8CreatureFv
-        .4byte getGoalPos__Q24Game8CreatureFv
-        .4byte isSuckReady__Q24Game8CreatureFv
-        .4byte isSuckArriveWait__Q24Game8CreatureFv
-        .4byte stimulate__Q24Game9EnemyBaseFRQ24Game11Interaction
-        .4byte getCreatureName__Q24Game9EnemyBaseFv
-        .4byte getCreatureID__Q24Game9EnemyBaseFv
-        .4byte 0
-        .4byte 0
-        .4byte "@376@onKeyEvent__Q24Game9EnemyBaseFRCQ28SysShape8KeyEvent"
-        .4byte __dt__Q34Game10MiniHoudai3ObjFv
-        .4byte "birth__Q24Game9EnemyBaseFR10Vector3<f>f"
-        .4byte
-   setInitialSetting__Q34Game10MiniHoudai3ObjFPQ24Game21EnemyInitialParamBase
-        .4byte update__Q24Game9EnemyBaseFv
-        .4byte doUpdate__Q34Game10MiniHoudai3ObjFv
-        .4byte doUpdateCommon__Q34Game10MiniHoudai3ObjFv
-        .4byte doUpdateCarcass__Q34Game10MiniHoudai3ObjFv
-        .4byte doAnimationUpdateAnimator__Q24Game9EnemyBaseFv
-        .4byte doAnimationCullingOff__Q34Game10MiniHoudai3ObjFv
-        .4byte doAnimationCullingOn__Q24Game9EnemyBaseFv
-        .4byte doAnimationStick__Q24Game9EnemyBaseFv
-        .4byte doSimulationCarcass__Q24Game9EnemyBaseFf
-        .4byte doDebugDraw__Q34Game10MiniHoudai3ObjFR8Graphics
-        .4byte doSimpleDraw__Q24Game9EnemyBaseFP8Viewport
-        .4byte doSimulationGround__Q24Game9EnemyBaseFf
-        .4byte doSimulationFlying__Q24Game9EnemyBaseFf
-        .4byte doSimulationStick__Q24Game9EnemyBaseFf
-        .4byte changeMaterial__Q24Game9EnemyBaseFv
-        .4byte "getCommonEffectPos__Q24Game9EnemyBaseFR10Vector3<f>"
-        .4byte getFitEffectPos__Q24Game9EnemyBaseFv
-        .4byte viewGetShape__Q24Game9EnemyBaseFv
-        .4byte view_start_carrymotion__Q24Game9EnemyBaseFv
-        .4byte view_finish_carrymotion__Q24Game9EnemyBaseFv
-        .4byte viewStartPreCarryMotion__Q24Game9EnemyBaseFv
-        .4byte viewStartCarryMotion__Q24Game9EnemyBaseFv
-        .4byte viewOnPelletKilled__Q24Game9EnemyBaseFv
-        .4byte getOffsetForMapCollision__Q24Game9EnemyBaseFv
-        .4byte setParameters__Q24Game9EnemyBaseFv
-        .4byte initMouthSlots__Q24Game9EnemyBaseFv
-        .4byte initWalkSmokeEffect__Q34Game10MiniHoudai3ObjFv
-        .4byte getWalkSmokeEffectMgr__Q34Game10MiniHoudai3ObjFv
-        .4byte onKeyEvent__Q24Game9EnemyBaseFRCQ28SysShape8KeyEvent
-        .4byte injure__Q24Game9EnemyBaseFv
-        .4byte setCollEvent__Q24Game9EnemyBaseFRQ24Game9CollEvent
-        .4byte "getEfxHamonPos__Q24Game9EnemyBaseFP10Vector3<f>"
-        .4byte createInstanceEfxHamon__Q24Game9EnemyBaseFv
-        .4byte updateEfxHamon__Q24Game9EnemyBaseFv
-        .4byte createEfxHamon__Q24Game9EnemyBaseFv
-        .4byte fadeEfxHamon__Q24Game9EnemyBaseFv
-        .4byte getEnemyTypeID__Q34Game10MiniHoudai3ObjFv
-        .4byte getMouthSlots__Q24Game9EnemyBaseFv
-        .4byte
-   doGetLifeGaugeParam__Q34Game10MiniHoudai3ObjFRQ24Game14LifeGaugeParam .4byte
-   throwupItem__Q24Game9EnemyBaseFv .4byte
-   "getThrowupItemPosition__Q24Game9EnemyBaseFP10Vector3<f>" .4byte
-   "getThrowupItemVelocity__Q24Game9EnemyBaseFP10Vector3<f>" .4byte
-   throwupItemInDeathProcedure__Q24Game9EnemyBaseFv .4byte
-   setLODSphere__Q24Game9EnemyBaseFRQ23Sys6Sphere .4byte
-   damageCallBack__Q34Game10MiniHoudai3ObjFPQ24Game8CreaturefP8CollPart .4byte
-   pressCallBack__Q24Game9EnemyBaseFPQ24Game8CreaturefP8CollPart .4byte
-   flyCollisionCallBack__Q24Game9EnemyBaseFPQ24Game8CreaturefP8CollPart .4byte
-   hipdropCallBack__Q24Game9EnemyBaseFPQ24Game8CreaturefP8CollPart .4byte
-   dropCallBack__Q24Game9EnemyBaseFPQ24Game8Creature .4byte
-   earthquakeCallBack__Q24Game9EnemyBaseFPQ24Game8Creaturef .4byte
-   farmCallBack__Q24Game9EnemyBaseFPQ24Game8Creaturef .4byte
-   "bombCallBack__Q24Game9EnemyBaseFPQ24Game8CreatureR10Vector3<f>f" .4byte
-   eatWhitePikminCallBack__Q24Game9EnemyBaseFPQ24Game8Creaturef .4byte
-   dopeCallBack__Q24Game9EnemyBaseFPQ24Game8Creaturei .4byte
-   doDopeCallBack__Q24Game9EnemyBaseFPQ24Game8Creaturei .4byte
-   doStartStoneState__Q34Game10MiniHoudai3ObjFv .4byte
-   doFinishStoneState__Q34Game10MiniHoudai3ObjFv .4byte
-   getDamageCoeStoneState__Q24Game9EnemyBaseFv .4byte
-   doStartEarthquakeState__Q24Game9EnemyBaseFf .4byte
-   doFinishEarthquakeState__Q24Game9EnemyBaseFv .4byte
-   doStartEarthquakeFitState__Q34Game10MiniHoudai3ObjFv .4byte
-   doFinishEarthquakeFitState__Q34Game10MiniHoudai3ObjFv .4byte
-   lifeRecover__Q24Game9EnemyBaseFv .4byte
-   startCarcassMotion__Q34Game10MiniHoudai3ObjFv .4byte
-   setCarcassArg__Q24Game9EnemyBaseFRQ24Game13PelletViewArg .4byte
-   getCarcassArgHeight__Q24Game9EnemyBaseFv .4byte
-   doBecomeCarcass__Q34Game10MiniHoudai3ObjFv .4byte
-   startWaitingBirthTypeDrop__Q24Game9EnemyBaseFv .4byte
-   finishWaitingBirthTypeDrop__Q24Game9EnemyBaseFv .4byte
-   isFinishableWaitingBirthTypeDrop__Q24Game9EnemyBaseFv .4byte
-   doStartWaitingBirthTypeDrop__Q34Game10MiniHoudai3ObjFv .4byte
-   doFinishWaitingBirthTypeDrop__Q34Game10MiniHoudai3ObjFv .4byte
-   wallCallback__Q24Game9EnemyBaseFRCQ24Game8MoveInfo .4byte
-   getDownSmokeScale__Q34Game10MiniHoudai3ObjFv .4byte
-   doStartMovie__Q34Game10MiniHoudai3ObjFv .4byte
-   doEndMovie__Q34Game10MiniHoudai3ObjFv .4byte
-   setFSM__Q34Game10MiniHoudai3ObjFPQ34Game10MiniHoudai3FSM .4byte 0 .4byte 0
-        .4byte viewGetBaseScale__Q24Game10PelletViewFv
-        .4byte "@776@12@viewGetShape__Q24Game9EnemyBaseFv"
-        .4byte viewGetCollTreeJointIndex__Q24Game10PelletViewFv
-        .4byte viewGetCollTreeOffset__Q24Game10PelletViewFv
-        .4byte "@776@12@view_start_carrymotion__Q24Game9EnemyBaseFv"
-        .4byte "@776@12@view_finish_carrymotion__Q24Game9EnemyBaseFv"
-        .4byte "@776@12@viewStartPreCarryMotion__Q24Game9EnemyBaseFv"
-        .4byte "@776@12@viewStartCarryMotion__Q24Game9EnemyBaseFv"
-        .4byte "@776@12@viewOnPelletKilled__Q24Game9EnemyBaseFv"
-        .4byte "viewEntryShape__Q24Game10PelletViewFR7MatrixfR10Vector3<f>"
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_8051CF88
-    lbl_8051CF88:
-        .4byte 0x43000000
-    .global lbl_8051CF8C
-    lbl_8051CF8C:
-        .4byte 0x00000000
-    .global lbl_8051CF90
-    lbl_8051CF90:
-        .4byte 0x6B6F7369
-        .4byte 0x00000000
-    .global lbl_8051CF98
-    lbl_8051CF98:
-        .4byte 0x418C0000
-    .global lbl_8051CF9C
-    lbl_8051CF9C:
-        .4byte 0x40A00000
-    .global lbl_8051CFA0
-    lbl_8051CFA0:
-        .float 1.0
-    .global lbl_8051CFA4
-    lbl_8051CFA4:
-        .4byte 0x42C80000
-    .global lbl_8051CFA8
-    lbl_8051CFA8:
-        .4byte 0x42960000
-    .global lbl_8051CFAC
-    lbl_8051CFAC:
-        .4byte 0x42480000
-    .global lbl_8051CFB0
-    lbl_8051CFB0:
-        .4byte 0x41F00000
-    .global lbl_8051CFB4
-    lbl_8051CFB4:
-        .float 0.25
-    .global lbl_8051CFB8
-    lbl_8051CFB8:
-        .4byte 0x68616E64
-        .4byte 0x4C000000
-    .global lbl_8051CFC0
-    lbl_8051CFC0:
-        .4byte 0x68616E64
-        .4byte 0x52000000
-    .global lbl_8051CFC8
-    lbl_8051CFC8:
-        .4byte 0x41200000
-    .global lbl_8051CFCC
-    lbl_8051CFCC:
-        .4byte 0x43340000
-    .global lbl_8051CFD0
-    lbl_8051CFD0:
-        .4byte 0x47000000
-        .4byte 0x00000000
-    .global lbl_8051CFD8
-    lbl_8051CFD8:
-        .4byte 0x43300000
-        .4byte 0x80000000
-    .global lbl_8051CFE0
-    lbl_8051CFE0:
-        .4byte 0x43A2F983
-    .global lbl_8051CFE4
-    lbl_8051CFE4:
-        .4byte 0xC3A2F983
-    .global lbl_8051CFE8
-    lbl_8051CFE8:
-        .float 0.5
-    .global lbl_8051CFEC
-    lbl_8051CFEC:
-        .4byte 0x3F400000
-    .global lbl_8051CFF0
-    lbl_8051CFF0:
-        .4byte 0x43480000
-    .global lbl_8051CFF4
-    lbl_8051CFF4:
-        .4byte 0x41C80000
-    .global lbl_8051CFF8
-    lbl_8051CFF8:
-        .4byte 0x6B757469
-        .4byte 0x00000000
-    .global lbl_8051D000
-    lbl_8051D000:
-        .4byte 0x68656164
-        .4byte 0x00000000
-    .global lbl_8051D008
-    lbl_8051D008:
-        .4byte 0x73656269
-        .4byte 0x72653100
-    .global lbl_8051D010
-    lbl_8051D010:
-        .4byte 0x73656269
-        .4byte 0x72653200
-    .global lbl_8051D018
-    lbl_8051D018:
-        .4byte 0x3F666666
-        .4byte 0x00000000
-*/
+#include "Game/Entities/MiniHoudai.h"
+#include "Game/generalEnemyMgr.h"
+#include "Game/routeMgr.h"
+#include "Game/MapMgr.h"
+#include "Game/EnemyFunc.h"
+#include "LifeGaugeMgr.h"
+#include "Dolphin/rand.h"
 
 namespace Game {
-
-/*
- * --INFO--
- * Address:	802EBFF8
- * Size:	000148
+namespace MiniHoudai {
+/**
+ * @note Address: 0x802EBFF8
+ * @note Size: 0x148
  */
-MiniHoudai::Obj::Obj()
+Obj::Obj()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	extsh.   r0, r4
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	stw      r30, 8(r1)
-	beq      lbl_802EC038
-	addi     r0, r31, 0x308
-	lis      r3, __vt__Q24Game10PelletView@ha
-	stw      r0, 0x17c(r31)
-	addi     r3, r3, __vt__Q24Game10PelletView@l
-	li       r0, 0
-	stw      r3, 0x308(r31)
-	stw      r0, 0x30c(r31)
-	stw      r0, 0x310(r31)
-
-lbl_802EC038:
-	mr       r3, r31
-	li       r4, 0
-	bl       __ct__Q24Game9EnemyBaseFv
-	lis      r3, __vt__Q34Game10MiniHoudai3Obj@ha
-	addi     r0, r31, 0x308
-	addi     r5, r3, __vt__Q34Game10MiniHoudai3Obj@l
-	addi     r3, r31, 0x2c0
-	stw      r5, 0(r31)
-	addi     r4, r5, 0x1b0
-	addi     r5, r5, 0x2fc
-	stw      r4, 0x178(r31)
-	lwz      r4, 0x17c(r31)
-	stw      r5, 0(r4)
-	lwz      r4, 0x17c(r31)
-	subf     r0, r4, r0
-	stw      r0, 0xc(r4)
-	bl       __ct__Q34Game15WalkSmokeEffect3MgrFv
-	li       r3, 0x2c
-	bl       __nw__FUl
-	or.      r30, r3, r3
-	beq      lbl_802EC0CC
-	bl       __ct__Q24Game17EnemyAnimatorBaseFv
-	lis      r3, __vt__Q34Game10MiniHoudai14ProperAnimator@ha
-	lis      r4, __vt__Q28SysShape12BaseAnimator@ha
-	addi     r0, r3, __vt__Q34Game10MiniHoudai14ProperAnimator@l
-	lis      r3, __vt__Q28SysShape8Animator@ha
-	stw      r0, 0(r30)
-	addi     r4, r4, __vt__Q28SysShape12BaseAnimator@l
-	addi     r3, r3, __vt__Q28SysShape8Animator@l
-	li       r0, 0
-	stw      r4, 0x10(r30)
-	stw      r3, 0x10(r30)
-	stb      r0, 0x28(r30)
-	stw      r0, 0x1c(r30)
-	stw      r0, 0x14(r30)
-	stb      r0, 0x28(r30)
-	stw      r0, 0x20(r30)
-
-lbl_802EC0CC:
-	stw      r30, 0x184(r31)
-	li       r3, 0x1c
-	bl       __nw__FUl
-	or.      r4, r3, r3
-	beq      lbl_802EC100
-	lis      r5, __vt__Q24Game17EnemyStateMachine@ha
-	lis      r3, __vt__Q34Game10MiniHoudai3FSM@ha
-	addi     r0, r5, __vt__Q24Game17EnemyStateMachine@l
-	li       r5, -1
-	stw      r0, 0(r4)
-	addi     r0, r3, __vt__Q34Game10MiniHoudai3FSM@l
-	stw      r5, 0x18(r4)
-	stw      r0, 0(r4)
-
-lbl_802EC100:
-	lwz      r12, 0(r31)
-	mr       r3, r31
-	lwz      r12, 0x2f8(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r31
-	bl       createShotGun__Q34Game10MiniHoudai3ObjFv
-	mr       r3, r31
-	bl       createEffect__Q34Game10MiniHoudai3ObjFv
-	lwz      r0, 0x14(r1)
-	mr       r3, r31
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mAnimator = new ProperAnimator;
+	setFSM(new FSM);
+	createShotGun();
+	createEffect();
 }
 
-/*
- * --INFO--
- * Address:	802EC140
- * Size:	000004
+/**
+ * @note Address: 0x802EC140
+ * @note Size: 0x4
  */
-void MiniHoudai::Obj::setInitialSetting(Game::EnemyInitialParamBase*) { }
+void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-/*
- * --INFO--
- * Address:	802EC144
- * Size:	0000C8
+/**
+ * @note Address: 0x802EC144
+ * @note Size: 0xC8
  */
-void MiniHoudai::Obj::onInit(Game::CreatureInitArg*)
+void Obj::onInit(CreatureInitArg* initArg)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	bl       onInit__Q24Game9EnemyBaseFPQ24Game15CreatureInitArg
-	lwz      r0, 0x1e0(r31)
-	mr       r3, r31
-	rlwinm   r0, r0, 0, 0x18, 0x16
-	stw      r0, 0x1e0(r31)
-	lwz      r0, 0x1e0(r31)
-	rlwinm   r0, r0, 0, 0x1a, 0x18
-	stw      r0, 0x1e0(r31)
-	lwz      r12, 0(r31)
-	lwz      r12, 0x258(r12)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 0x61
-	bne      lbl_802EC19C
-	lwz      r0, 0x1e0(r31)
-	ori      r0, r0, 0x400
-	stw      r0, 0x1e0(r31)
+	EnemyBase::onInit(initArg);
+	disableEvent(0, EB_DeathEffectEnabled);
+	disableEvent(0, EB_Cullable);
 
-lbl_802EC19C:
-	lfs      f1, lbl_8051CF88@sda21(r2)
-	li       r0, -1
-	lfs      f0, lbl_8051CF8C@sda21(r2)
-	mr       r3, r31
-	stfs     f1, 0x2c8(r31)
-	stfs     f0, 0x2cc(r31)
-	stfs     f0, 0x2d0(r31)
-	stw      r0, 0x2d4(r31)
-	bl       resetWayPoint__Q34Game10MiniHoudai3ObjFv
-	mr       r3, r31
-	bl       setNearestWayPoint__Q34Game10MiniHoudai3ObjFv
-	mr       r3, r31
-	bl       setupShotGun__Q34Game10MiniHoudai3ObjFv
-	mr       r3, r31
-	bl       setupEffect__Q34Game10MiniHoudai3ObjFv
-	lwz      r3, 0x2bc(r31)
-	mr       r4, r31
-	li       r5, 7
-	li       r6, 0
-	lwz      r12, 0(r3)
-	lwz      r12, 0xc(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (getEnemyTypeID() == EnemyTypeID::EnemyID_FminiHoudai) {
+		enableEvent(0, EB_Constrained);
+	}
+
+	mHealthGaugeTimer = 128.0f;
+	_2CC              = 0.0f;
+	mUpdateTimer      = 0.0f;
+	mNextState        = MINIHOUDAI_NULL;
+	resetWayPoint();
+	setNearestWayPoint();
+	setupShotGun();
+	setupEffect();
+
+	mFsm->start(this, MINIHOUDAI_TurnPath, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802EC20C
- * Size:	00004C
+/**
+ * @note Address: 0x802EC20C
+ * @note Size: 0x4C
  */
-void MiniHoudai::Obj::onKill(Game::CreatureKillArg*)
+void Obj::onKill(CreatureKillArg* killArg)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	mr       r30, r3
-	bl       finishChargeEffect__Q34Game10MiniHoudai3ObjFv
-	mr       r3, r30
-	bl       forceFinishShotGun__Q34Game10MiniHoudai3ObjFv
-	mr       r3, r30
-	mr       r4, r31
-	bl       onKill__Q24Game9EnemyBaseFPQ24Game15CreatureKillArg
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	finishChargeEffect();
+	forceFinishShotGun();
+	EnemyBase::onKill(killArg);
 }
 
-/*
- * --INFO--
- * Address:	802EC258
- * Size:	000054
+/**
+ * @note Address: 0x802EC258
+ * @note Size: 0x54
  */
-void MiniHoudai::Obj::doUpdate()
+void Obj::doUpdate()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	bl       updateCaution__Q34Game10MiniHoudai3ObjFv
-	mr       r3, r31
-	bl       updateTargetDistance__Q34Game10MiniHoudai3ObjFv
-	lwz      r3, 0x2bc(r31)
-	mr       r4, r31
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r31
-	bl       doUpdateShotGun__Q34Game10MiniHoudai3ObjFv
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	updateCaution();
+	updateTargetDistance();
+	mFsm->exec(this);
+	doUpdateShotGun();
 }
 
-/*
- * --INFO--
- * Address:	802EC2AC
- * Size:	000034
+/**
+ * @note Address: 0x802EC2AC
+ * @note Size: 0x34
  */
-void MiniHoudai::Obj::doUpdateCommon()
+void Obj::doUpdateCommon()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	bl       doUpdateCommon__Q24Game9EnemyBaseFv
-	mr       r3, r31
-	bl       doUpdateCommonShotGun__Q34Game10MiniHoudai3ObjFv
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	EnemyBase::doUpdateCommon();
+	doUpdateCommonShotGun();
 }
 
-/*
- * --INFO--
- * Address:	802EC2E0
- * Size:	00003C
+/**
+ * @note Address: 0x802EC2E0
+ * @note Size: 0x3C
  */
-void MiniHoudai::Obj::doAnimationCullingOff()
+void Obj::doAnimationCullingOff()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	bl       setShotGunCallBack__Q34Game10MiniHoudai3ObjFv
-	mr       r3, r31
-	bl       doAnimationCullingOff__Q24Game9EnemyBaseFv
-	mr       r3, r31
-	bl       resetShotGunCallBack__Q34Game10MiniHoudai3ObjFv
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	setShotGunCallBack();
+	EnemyBase::doAnimationCullingOff();
+	resetShotGunCallBack();
 }
 
-/*
- * --INFO--
- * Address:	802EC31C
- * Size:	000004
+/**
+ * @note Address: 0x802EC31C
+ * @note Size: 0x4
  */
-void MiniHoudai::Obj::doDirectDraw(Graphics&) { }
+void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	802EC320
- * Size:	000020
+/**
+ * @note Address: 0x802EC320
+ * @note Size: 0x20
  */
-void MiniHoudai::Obj::doDebugDraw(Graphics&)
+void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
+
+/**
+ * @note Address: 0x802EC340
+ * @note Size: 0x4C
+ */
+void Obj::setFSM(FSM* fsm)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	bl       doDebugDraw__Q24Game9EnemyBaseFR8Graphics
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mFsm = fsm;
+	mFsm->init(this);
+	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	802EC340
- * Size:	00004C
+/**
+ * @note Address: 0x802EC38C
+ * @note Size: 0xE0
  */
-void MiniHoudai::Obj::setFSM(Game::MiniHoudai::FSM*)
+void Obj::getShadowParam(ShadowParam& param)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	stw      r4, 0x2bc(r3)
-	mr       r4, r31
-	lwz      r3, 0x2bc(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	li       r0, 0
-	stw      r0, 0x2b4(r31)
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	param.mPosition = mModel->getJoint("kosi")->getWorldMatrix()->getColumn(3);
+	param.mPosition.y -= 17.5f;
+
+	f32 minHeight = 5.0f + mPosition.y;
+	if (param.mPosition.y < minHeight) {
+		param.mPosition.y = minHeight;
+	}
+
+	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+
+	// null, dead, rebirth
+	if (getStateID() <= MINIHOUDAI_Rebirth) {
+		param.mBoundingSphere.mRadius = 100.0f;
+	} else if (isEvent(1, EB2_Earthquake)) {
+		param.mBoundingSphere.mRadius = 75.0f;
+	} else {
+		param.mBoundingSphere.mRadius = 50.0f;
+	}
+
+	param.mSize = 30.0f;
 }
 
-/*
- * --INFO--
- * Address:	802EC38C
- * Size:	0000E0
+/**
+ * @note Address: 0x802EC46C
+ * @note Size: 0x44
  */
-void MiniHoudai::Obj::getShadowParam(Game::ShadowParam&)
+bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* part)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	addi     r4, r2, lbl_8051CF90@sda21
-	stw      r30, 8(r1)
-	mr       r30, r3
-	lwz      r3, 0x174(r3)
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lfs      f4, 0x2c(r3)
-	lfs      f3, 0x1c(r3)
-	lfs      f1, 0xc(r3)
-	lfs      f0, lbl_8051CF98@sda21(r2)
-	stfs     f1, 0(r31)
-	lfs      f2, lbl_8051CF9C@sda21(r2)
-	stfs     f3, 4(r31)
-	stfs     f4, 8(r31)
-	lfs      f1, 4(r31)
-	fsubs    f0, f1, f0
-	stfs     f0, 4(r31)
-	lfs      f1, 0x190(r30)
-	lfs      f0, 4(r31)
-	fadds    f1, f2, f1
-	fcmpo    cr0, f0, f1
-	bge      lbl_802EC3FC
-	stfs     f1, 4(r31)
+	if (part) {
+		addDamage(damage, 1.0f);
+	} else {
+		addDamage(damage / 4, 1.0f);
+	}
 
-lbl_802EC3FC:
-	lfs      f1, lbl_8051CF8C@sda21(r2)
-	mr       r3, r30
-	lfs      f0, lbl_8051CFA0@sda21(r2)
-	stfs     f1, 0xc(r31)
-	stfs     f0, 0x10(r31)
-	stfs     f1, 0x14(r31)
-	bl       getStateID__Q24Game9EnemyBaseFv
-	cmpwi    r3, 1
-	bgt      lbl_802EC42C
-	lfs      f0, lbl_8051CFA4@sda21(r2)
-	stfs     f0, 0x18(r31)
-	b        lbl_802EC44C
-
-lbl_802EC42C:
-	lwz      r0, 0x1e4(r30)
-	clrlwi.  r0, r0, 0x1f
-	beq      lbl_802EC444
-	lfs      f0, lbl_8051CFA8@sda21(r2)
-	stfs     f0, 0x18(r31)
-	b        lbl_802EC44C
-
-lbl_802EC444:
-	lfs      f0, lbl_8051CFAC@sda21(r2)
-	stfs     f0, 0x18(r31)
-
-lbl_802EC44C:
-	lfs      f0, lbl_8051CFB0@sda21(r2)
-	stfs     f0, 0x1c(r31)
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	return true;
 }
 
-/*
- * --INFO--
- * Address:	802EC46C
- * Size:	000044
+/**
+ * @note Address: 0x802EC4B0
+ * @note Size: 0x34
  */
-void MiniHoudai::Obj::damageCallBack(Game::Creature*, float, CollPart*)
+void Obj::doStartStoneState()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	cmplwi   r5, 0
-	stw      r0, 0x14(r1)
-	beq      lbl_802EC48C
-	lfs      f2, lbl_8051CFA0@sda21(r2)
-	bl       addDamage__Q24Game9EnemyBaseFff
-	b        lbl_802EC49C
-
-lbl_802EC48C:
-	lfs      f0, lbl_8051CFB4@sda21(r2)
-	lfs      f2, lbl_8051CFA0@sda21(r2)
-	fmuls    f1, f1, f0
-	bl       addDamage__Q24Game9EnemyBaseFff
-
-lbl_802EC49C:
-	lwz      r0, 0x14(r1)
-	li       r3, 1
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	EnemyBase::doStartStoneState();
+	finishChargeEffect();
 }
 
-/*
- * --INFO--
- * Address:	802EC4B0
- * Size:	000034
+/**
+ * @note Address: 0x802EC4E4
+ * @note Size: 0x20
  */
-void MiniHoudai::Obj::doStartStoneState()
+void Obj::doFinishStoneState() { EnemyBase::doFinishStoneState(); }
+
+/**
+ * @note Address: 0x802EC504
+ * @note Size: 0x34
+ */
+void Obj::doStartEarthquakeFitState()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	bl       doStartStoneState__Q24Game9EnemyBaseFv
-	mr       r3, r31
-	bl       finishChargeEffect__Q34Game10MiniHoudai3ObjFv
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	EnemyBase::doStartEarthquakeFitState();
+	finishChargeEffect();
 }
 
-/*
- * --INFO--
- * Address:	802EC4E4
- * Size:	000020
+/**
+ * @note Address: 0x802EC538
+ * @note Size: 0x20
  */
-void MiniHoudai::Obj::doFinishStoneState()
+void Obj::doFinishEarthquakeFitState() { EnemyBase::doFinishEarthquakeFitState(); }
+
+/**
+ * @note Address: 0x802EC558
+ * @note Size: 0x34
+ */
+void Obj::doStartWaitingBirthTypeDrop()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	bl       doFinishStoneState__Q24Game9EnemyBaseFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	EnemyBase::doStartWaitingBirthTypeDrop();
+	effectDrawOff();
 }
 
-/*
- * --INFO--
- * Address:	802EC504
- * Size:	000034
+/**
+ * @note Address: 0x802EC58C
+ * @note Size: 0x34
  */
-void MiniHoudai::Obj::doStartEarthquakeFitState()
+void Obj::doFinishWaitingBirthTypeDrop()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	bl       doStartEarthquakeFitState__Q24Game9EnemyBaseFv
-	mr       r3, r31
-	bl       finishChargeEffect__Q34Game10MiniHoudai3ObjFv
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	EnemyBase::doFinishWaitingBirthTypeDrop();
+	effectDrawOn();
 }
 
-/*
- * --INFO--
- * Address:	802EC538
- * Size:	000020
+/**
+ * @note Address: 0x802EC5C0
+ * @note Size: 0x28
  */
-void MiniHoudai::Obj::doFinishEarthquakeFitState()
+void Obj::startCarcassMotion() { startMotion(MINIHOUDAIANIM_Carry, nullptr); }
+
+/**
+ * @note Address: 0x802EC5E8
+ * @note Size: 0x20
+ */
+void Obj::doStartMovie() { effectDrawOff(); }
+
+/**
+ * @note Address: 0x802EC608
+ * @note Size: 0x20
+ */
+void Obj::doEndMovie() { effectDrawOn(); }
+
+/**
+ * @note Address: 0x802EC628
+ * @note Size: 0x64
+ */
+void Obj::initWalkSmokeEffect()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	bl       doFinishEarthquakeFitState__Q24Game9EnemyBaseFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mWalkSmokeMgr.alloc(2);
+	mWalkSmokeMgr.setup(0, mModel, "handL", 5.0f);
+	mWalkSmokeMgr.setup(1, mModel, "handR", 5.0f);
 }
 
-/*
- * --INFO--
- * Address:	802EC558
- * Size:	000034
+/**
+ * @note Address: 0x802EC68C
+ * @note Size: 0x8
  */
-void MiniHoudai::Obj::doStartWaitingBirthTypeDrop()
+WalkSmokeEffect::Mgr* Obj::getWalkSmokeEffectMgr() { return &mWalkSmokeMgr; }
+
+/**
+ * @note Address: 0x802EC694
+ * @note Size: 0x14
+ */
+bool Obj::doBecomeCarcass()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	bl       doStartWaitingBirthTypeDrop__Q24Game9EnemyBaseFv
-	mr       r3, r31
-	bl       effectDrawOff__Q34Game10MiniHoudai3ObjFv
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mHealthGaugeTimer = 0.0f;
+	mHealth           = 0.0f;
+	return true;
 }
 
-/*
- * --INFO--
- * Address:	802EC58C
- * Size:	000034
+/**
+ * @note Address: 0x802EC6A8
+ * @note Size: 0x1FC
  */
-void MiniHoudai::Obj::doFinishWaitingBirthTypeDrop()
+void Obj::doUpdateCarcass()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	bl       doFinishWaitingBirthTypeDrop__Q24Game9EnemyBaseFv
-	mr       r3, r31
-	bl       effectDrawOn__Q34Game10MiniHoudai3ObjFv
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (mPellet->isAlive()) {
+		if (mHealthGaugeTimer < C_PROPERPARMS.mHealthGaugeTimer.mValue) {
+			mHealthGaugeTimer += sys->mDeltaTime;
+			if (lifeGaugeMgr && mHealthGaugeTimer >= C_PROPERPARMS.mHealthGaugeTimer.mValue) {
+				lifeGaugeMgr->activeLifeGauge(this, 0.0f);
+			}
+		} else if (mHealth < mMaxHealth) {
+			mHealth += (mMaxHealth / C_PROPERPARMS.mRespawnRate.mValue) * sys->getDeltaTime();
+			if (mHealth >= mMaxHealth) {
+				mPellet->kill(nullptr);
+				f32 zx = mBaseTrMatrix.mMatrix.structView.zx;
+				f32 zz = mBaseTrMatrix.mMatrix.structView.zz;
+				EnemyBirthArg birthArg;
+				birthArg.mPosition        = mPosition;
+				birthArg.mFaceDir         = JMAAtan2Radian(zx, zz);
+				birthArg.mExistenceLength = mExistDuration;
+				birthArg.mIsInPiklopedia  = (mInPiklopedia > 0); // sure.
+
+				Obj* groink = static_cast<Obj*>(generalEnemyMgr->birth(getEnemyTypeID(), birthArg));
+				if (groink) {
+					groink->init(nullptr);
+					mFsm->transit(this, MINIHOUDAI_Rebirth, nullptr);
+				}
+			}
+		}
+	} else if (lifeGaugeMgr && mHealthGaugeTimer >= C_PROPERPARMS.mHealthGaugeTimer.mValue) {
+		mHealthGaugeTimer = 0.0f;
+		mHealth           = 0.0f;
+		lifeGaugeMgr->inactiveLifeGauge(this);
+	}
 }
 
-/*
- * --INFO--
- * Address:	802EC5C0
- * Size:	000028
+/**
+ * @note Address: 0x802EC8A4
+ * @note Size: 0x64
  */
-void MiniHoudai::Obj::startCarcassMotion()
+void Obj::doGetLifeGaugeParam(LifeGaugeParam& param)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	li       r4, 6
-	li       r5, 0
-	stw      r0, 0x14(r1)
-	bl       startMotion__Q24Game9EnemyBaseFiPQ28SysShape14MotionListener
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	param.mPosition.x = mPosition.x;
+	if (mPellet) {
+		param.mPosition.y = mPosition.y + 50.0f;
+	} else {
+		param.mPosition.y = mPosition.y + C_GENERALPARMS.mLifeMeterHeight.mValue;
+	}
+
+	param.mPosition.z          = mPosition.z;
+	param.mCurHealthPercentage = (mHealth / mMaxHealth);
+	param.mRadius              = 10.0f;
 }
 
-/*
- * --INFO--
- * Address:	802EC5E8
- * Size:	000020
+/**
+ * @note Address: 0x802EC908
+ * @note Size: 0x50
  */
-void MiniHoudai::Obj::doStartMovie()
+void Obj::updateCaution()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	bl       effectDrawOff__Q34Game10MiniHoudai3ObjFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (isEvent(0, EB_Colliding) || isEvent(0, EB_TakingDamage) || mStuckPikminCount != 0) {
+		mHealthGaugeTimer = 0.0f;
+	}
+
+	if (mHealthGaugeTimer < C_GENERALPARMS.mAlertDuration.mValue) {
+		mHealthGaugeTimer += sys->mDeltaTime;
+	}
 }
 
-/*
- * --INFO--
- * Address:	802EC608
- * Size:	000020
+/**
+ * @note Address: 0x802EC958
+ * @note Size: 0x24
  */
-void MiniHoudai::Obj::doEndMovie()
+f32 Obj::getViewAngle() { return (mHealthGaugeTimer < C_GENERALPARMS.mAlertDuration()) ? 180.0f : C_GENERALPARMS.mViewAngle(); }
+
+/**
+ * @note Address: 0x802EC97C
+ * @note Size: 0x10
+ */
+void Obj::resetWayPoint()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	bl       effectDrawOn__Q34Game10MiniHoudai3ObjFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mNearestWaypoint    = nullptr;
+	mOldNearestWaypoint = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	802EC628
- * Size:	000064
+/**
+ * @note Address: 0x802EC98C
+ * @note Size: 0xB0
  */
-void MiniHoudai::Obj::initWalkSmokeEffect()
+void Obj::setNearestWayPoint()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	li       r4, 2
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	addi     r3, r31, 0x2c0
-	bl       alloc__Q34Game15WalkSmokeEffect3MgrFi
-	lwz      r5, 0x174(r31)
-	addi     r3, r31, 0x2c0
-	lfs      f1, lbl_8051CF9C@sda21(r2)
-	li       r4, 0
-	addi     r6, r2, lbl_8051CFB8@sda21
-	bl       setup__Q34Game15WalkSmokeEffect3MgrFiPQ28SysShape5ModelPcf
-	lwz      r5, 0x174(r31)
-	addi     r3, r31, 0x2c0
-	lfs      f1, lbl_8051CF9C@sda21(r2)
-	li       r4, 1
-	addi     r6, r2, lbl_8051CFC0@sda21
-	bl       setup__Q34Game15WalkSmokeEffect3MgrFiPQ28SysShape5ModelPcf
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mOldNearestWaypoint = mNearestWaypoint;
+	WPSearchArg searchArg(mPosition, nullptr, false, 10.0f);
+	mNearestWaypoint = mapMgr->mRouteMgr->getNearestWayPoint(searchArg);
+
+	if (mNearestWaypoint) {
+		mWalkTargetPosition = Vector3f(mNearestWaypoint->mPosition);
+	} else {
+		mWalkTargetPosition = mHomePosition;
+	}
 }
 
-/*
- * --INFO--
- * Address:	802EC68C
- * Size:	000008
+/**
+ * @note Address: 0x802ECA3C
+ * @note Size: 0x260
  */
-void MiniHoudai::Obj::getWalkSmokeEffectMgr()
+void Obj::setLinkWayPoint()
 {
-	/*
-	addi     r3, r3, 0x2c0
-	blr
-	*/
+	if (mNearestWaypoint) {
+		WayPoint* wpList[8];
+		int counter = 0;
+		int wpIdx   = -1;
+		if (mOldNearestWaypoint) {
+			wpIdx = mOldNearestWaypoint->mIndex;
+		}
+
+		WayPointIterator iter(mNearestWaypoint, true);
+		CI_LOOP(iter)
+		{
+			s16 currIdx = *iter;
+			if (currIdx != wpIdx) {
+				WayPoint* wp = mapMgr->mRouteMgr->getWayPoint(currIdx);
+				if (wp && !wp->isFlag(WPF_Closed)) {
+					wpList[counter] = wp;
+					counter++;
+				}
+			}
+		}
+
+		if (counter != 0) {
+			mOldNearestWaypoint = mNearestWaypoint;
+			mNearestWaypoint    = wpList[randInt(counter)];
+			mWalkTargetPosition = Vector3f(mNearestWaypoint->mPosition);
+			return;
+
+		} else if (wpIdx >= 0) {
+			WayPoint* wp = mapMgr->mRouteMgr->getWayPoint(wpIdx);
+			if (wp && !wp->isFlag(WPF_Closed)) {
+				mOldNearestWaypoint = mNearestWaypoint;
+				mNearestWaypoint    = wp;
+				mWalkTargetPosition = Vector3f(mNearestWaypoint->mPosition);
+				return;
+			}
+		}
+	}
+
+	setNearestWayPoint();
 }
 
-/*
- * --INFO--
- * Address:	802EC694
- * Size:	000014
+/**
+ * @note Address: 0x802ECC9C
+ * @note Size: 0x6C
  */
-void MiniHoudai::Obj::doBecomeCarcass()
+Creature* Obj::getSearchedTarget()
 {
-	/*
-	lfs      f0, lbl_8051CF8C@sda21(r2)
-	stfs     f0, 0x2c8(r3)
-	stfs     f0, 0x200(r3)
-	li       r3, 1
-	blr
-	*/
+	f32 viewAngle    = getViewAngle();
+	Creature* target = EnemyFunc::getNearestPikminOrNavi(this, viewAngle, C_GENERALPARMS.mSightRadius(), nullptr, nullptr, nullptr);
+
+	if (target) {
+		mHealthGaugeTimer = 0.0f;
+	}
+
+	return target;
 }
 
-/*
- * --INFO--
- * Address:	802EC6A8
- * Size:	0001FC
+/**
+ * @note Address: 0x802ECD08
+ * @note Size: 0x128
  */
-void MiniHoudai::Obj::doUpdateCarcass()
+void Obj::updateTargetDistance()
 {
-	/*
-	stwu     r1, -0x70(r1)
-	mflr     r0
-	stw      r0, 0x74(r1)
-	stfd     f31, 0x60(r1)
-	psq_st   f31, 104(r1), 0, qr0
-	stfd     f30, 0x50(r1)
-	psq_st   f30, 88(r1), 0, qr0
-	stw      r31, 0x4c(r1)
-	mr       r31, r3
-	lwz      r3, 0x17c(r3)
-	lwz      r3, 4(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0xa8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_802EC844
-	lwz      r3, 0xc0(r31)
-	lfs      f1, 0x2c8(r31)
-	lfs      f0, 0x81c(r3)
-	fcmpo    cr0, f1, f0
-	bge      lbl_802EC744
-	lwz      r3, sys@sda21(r13)
-	lfs      f0, 0x54(r3)
-	fadds    f0, f1, f0
-	stfs     f0, 0x2c8(r31)
-	lwz      r3, lifeGaugeMgr@sda21(r13)
-	cmplwi   r3, 0
-	beq      lbl_802EC880
-	lwz      r4, 0xc0(r31)
-	lfs      f1, 0x2c8(r31)
-	lfs      f0, 0x81c(r4)
-	fcmpo    cr0, f1, f0
-	cror     2, 1, 2
-	bne      lbl_802EC880
-	lfs      f1, lbl_8051CF8C@sda21(r2)
-	mr       r4, r31
-	bl       activeLifeGauge__12LifeGaugeMgrFPQ24Game8Creaturef
-	b        lbl_802EC880
+	f32 radius = (mNearestWaypoint) ? mNearestWaypoint->mRadius : C_GENERALPARMS.mHomeRadius.mValue;
 
-lbl_802EC744:
-	lfs      f2, 0x200(r31)
-	lfs      f1, 0x204(r31)
-	fcmpo    cr0, f2, f1
-	bge      lbl_802EC880
-	lfs      f0, 0x844(r3)
-	lwz      r3, sys@sda21(r13)
-	fdivs    f1, f1, f0
-	lfs      f0, 0x54(r3)
-	fmadds   f0, f1, f0, f2
-	stfs     f0, 0x200(r31)
-	lfs      f1, 0x200(r31)
-	lfs      f0, 0x204(r31)
-	fcmpo    cr0, f1, f0
-	cror     2, 1, 2
-	bne      lbl_802EC880
-	lwz      r3, 0x17c(r31)
-	li       r4, 0
-	lwz      r3, 4(r3)
-	bl       kill__Q24Game8CreatureFPQ24Game15CreatureKillArg
-	lfs      f31, 0x140(r31)
-	addi     r3, r1, 8
-	lfs      f30, 0x160(r31)
-	bl       __ct__Q24Game13EnemyBirthArgFv
-	lfs      f0, 0x18c(r31)
-	lis      r3, atanTable___5JMath@ha
-	fmr      f1, f31
-	addi     r3, r3, atanTable___5JMath@l
-	stfs     f0, 8(r1)
-	fmr      f2, f30
-	lfs      f0, 0x190(r31)
-	stfs     f0, 0xc(r1)
-	lfs      f0, 0x194(r31)
-	stfs     f0, 0x10(r1)
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	stfs     f1, 0x14(r1)
-	mr       r3, r31
-	lfs      f0, 0x2ac(r31)
-	stfs     f0, 0x34(r1)
-	lbz      r4, 0x1f3(r31)
-	neg      r0, r4
-	or       r0, r0, r4
-	srwi     r0, r0, 0x1f
-	stb      r0, 0x38(r1)
-	lwz      r12, 0(r31)
-	lwz      r12, 0x258(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, generalEnemyMgr__4Game@sda21(r13)
-	addi     r5, r1, 8
-	bl       birth__Q24Game15GeneralEnemyMgrFiRQ24Game13EnemyBirthArg
-	cmplwi   r3, 0
-	beq      lbl_802EC880
-	li       r4, 0
-	bl       init__Q24Game8CreatureFPQ24Game15CreatureInitArg
-	lwz      r3, 0x2bc(r31)
-	mr       r4, r31
-	li       r5, 1
-	li       r6, 0
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_802EC880
+	if (sqrDistanceXZ(mPosition, mWalkTargetPosition) < radius * radius) {
+		setLinkWayPoint();
+		mUpdateTimer = 0.0f;
+	}
 
-lbl_802EC844:
-	lwz      r0, lifeGaugeMgr@sda21(r13)
-	cmplwi   r0, 0
-	beq      lbl_802EC880
-	lwz      r3, 0xc0(r31)
-	lfs      f1, 0x2c8(r31)
-	lfs      f0, 0x81c(r3)
-	fcmpo    cr0, f1, f0
-	cror     2, 1, 2
-	bne      lbl_802EC880
-	lfs      f0, lbl_8051CF8C@sda21(r2)
-	mr       r4, r31
-	stfs     f0, 0x2c8(r31)
-	stfs     f0, 0x200(r31)
-	lwz      r3, lifeGaugeMgr@sda21(r13)
-	bl       inactiveLifeGauge__12LifeGaugeMgrFPQ24Game8Creature
-
-lbl_802EC880:
-	psq_l    f31, 104(r1), 0, qr0
-	lfd      f31, 0x60(r1)
-	psq_l    f30, 88(r1), 0, qr0
-	lfd      f30, 0x50(r1)
-	lwz      r0, 0x74(r1)
-	lwz      r31, 0x4c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x70
-	blr
-	*/
+	if (mUpdateTimer > 5.0f) {
+		mUpdateTimer = 0.0f;
+		setNearestWayPoint();
+		updateHomePosition();
+	}
 }
 
-/*
- * --INFO--
- * Address:	802EC8A4
- * Size:	000064
+/**
+ * @note Address: 0x802ECE30
+ * @note Size: 0xBC
  */
-void MiniHoudai::Obj::doGetLifeGaugeParam(Game::LifeGaugeParam&)
+void Obj::updateHomePosition()
 {
-	/*
-	lfs      f0, 0x18c(r3)
-	stfs     f0, 0(r4)
-	lwz      r5, 0x17c(r3)
-	lwz      r0, 4(r5)
-	cmplwi   r0, 0
-	beq      lbl_802EC8D0
-	lfs      f1, lbl_8051CFAC@sda21(r2)
-	lfs      f0, 0x190(r3)
-	fadds    f0, f1, f0
-	stfs     f0, 4(r4)
-	b        lbl_802EC8E4
-
-lbl_802EC8D0:
-	lwz      r5, 0xc0(r3)
-	lfs      f1, 0x190(r3)
-	lfs      f0, 0x12c(r5)
-	fadds    f0, f1, f0
-	stfs     f0, 4(r4)
-
-lbl_802EC8E4:
-	lfs      f1, 0x194(r3)
-	lfs      f0, lbl_8051CFC8@sda21(r2)
-	stfs     f1, 8(r4)
-	lfs      f2, 0x200(r3)
-	lfs      f1, 0x204(r3)
-	fdivs    f1, f2, f1
-	stfs     f1, 0xc(r4)
-	stfs     f0, 0x10(r4)
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802EC908
- * Size:	000050
- */
-void MiniHoudai::Obj::updateCaution()
-{
-	/*
-	lwz      r4, 0x1e0(r3)
-	rlwinm.  r0, r4, 0, 0x1b, 0x1b
-	bne      lbl_802EC928
-	rlwinm.  r0, r4, 0, 0x1e, 0x1e
-	bne      lbl_802EC928
-	lwz      r0, 0x1f4(r3)
-	cmpwi    r0, 0
-	beq      lbl_802EC930
-
-lbl_802EC928:
-	lfs      f0, lbl_8051CF8C@sda21(r2)
-	stfs     f0, 0x2c8(r3)
-
-lbl_802EC930:
-	lwz      r4, 0xc0(r3)
-	lfs      f1, 0x2c8(r3)
-	lfs      f0, 0x62c(r4)
-	fcmpo    cr0, f1, f0
-	bgelr
-	lwz      r4, sys@sda21(r13)
-	lfs      f0, 0x54(r4)
-	fadds    f0, f1, f0
-	stfs     f0, 0x2c8(r3)
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802EC958
- * Size:	000024
- */
-void MiniHoudai::Obj::getViewAngle()
-{
-	/*
-	lwz      r4, 0xc0(r3)
-	lfs      f1, 0x2c8(r3)
-	lfs      f0, 0x62c(r4)
-	fcmpo    cr0, f1, f0
-	bge      lbl_802EC974
-	lfs      f1, lbl_8051CFCC@sda21(r2)
-	blr
-
-lbl_802EC974:
-	lfs      f1, 0x424(r4)
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802EC97C
- * Size:	000010
- */
-void MiniHoudai::Obj::resetWayPoint()
-{
-	/*
-	li       r0, 0
-	stw      r0, 0x2f0(r3)
-	stw      r0, 0x2f4(r3)
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802EC98C
- * Size:	0000B0
- */
-void MiniHoudai::Obj::setNearestWayPoint()
-{
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	lfs      f0, lbl_8051CFC8@sda21(r2)
-	stw      r0, 0x34(r1)
-	li       r0, 0
-	addi     r4, r1, 8
-	stw      r31, 0x2c(r1)
-	mr       r31, r3
-	lwz      r3, 0x2f0(r3)
-	stw      r3, 0x2f4(r31)
-	lfs      f1, 0x18c(r31)
-	lwz      r3, mapMgr__4Game@sda21(r13)
-	stfs     f1, 8(r1)
-	lfs      f1, 0x190(r31)
-	stfs     f1, 0xc(r1)
-	lfs      f1, 0x194(r31)
-	stfs     f1, 0x10(r1)
-	stw      r0, 0x14(r1)
-	stb      r0, 0x18(r1)
-	stfs     f0, 0x1c(r1)
-	lwz      r3, 8(r3)
-	bl       getNearestWayPoint__Q24Game8RouteMgrFRQ24Game11WPSearchArg
-	stw      r3, 0x2f0(r31)
-	lwz      r3, 0x2f0(r31)
-	cmplwi   r3, 0
-	beq      lbl_802ECA10
-	lfs      f1, 0x50(r3)
-	lfs      f2, 0x54(r3)
-	lfs      f0, 0x4c(r3)
-	stfs     f0, 0x2e4(r31)
-	stfs     f1, 0x2e8(r31)
-	stfs     f2, 0x2ec(r31)
-	b        lbl_802ECA28
-
-lbl_802ECA10:
-	lfs      f0, 0x198(r31)
-	stfs     f0, 0x2e4(r31)
-	lfs      f0, 0x19c(r31)
-	stfs     f0, 0x2e8(r31)
-	lfs      f0, 0x1a0(r31)
-	stfs     f0, 0x2ec(r31)
-
-lbl_802ECA28:
-	lwz      r0, 0x34(r1)
-	lwz      r31, 0x2c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ECA3C
- * Size:	000260
- */
-void MiniHoudai::Obj::setLinkWayPoint()
-{
-	/*
-	stwu     r1, -0x80(r1)
-	mflr     r0
-	stw      r0, 0x84(r1)
-	stw      r31, 0x7c(r1)
-	mr       r31, r3
-	stw      r30, 0x78(r1)
-	stw      r29, 0x74(r1)
-	stw      r28, 0x70(r1)
-	lwz      r4, 0x2f0(r3)
-	cmplwi   r4, 0
-	beq      lbl_802ECBF4
-	lwz      r3, 0x2f4(r31)
-	li       r29, 0
-	li       r28, -1
-	cmplwi   r3, 0
-	beq      lbl_802ECA80
-	lha      r28, 0x36(r3)
-
-lbl_802ECA80:
-	addi     r3, r1, 8
-	li       r5, 1
-	bl       __ct__Q24Game16WayPointIteratorFPQ24Game8WayPointb
-	addi     r3, r1, 8
-	bl       first__Q24Game16WayPointIteratorFv
-	addi     r30, r1, 0x2c
-	b        lbl_802ECAF4
-
-lbl_802ECA9C:
-	addi     r3, r1, 8
-	bl       __ml__Q24Game16WayPointIteratorFv
-	extsh    r0, r3
-	cmpw     r0, r28
-	beq      lbl_802ECAEC
-	lwz      r5, mapMgr__4Game@sda21(r13)
-	mr       r4, r3
-	lwz      r3, 8(r5)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	cmplwi   r3, 0
-	beq      lbl_802ECAEC
-	lbz      r0, 0x34(r3)
-	clrlwi.  r0, r0, 0x1f
-	bne      lbl_802ECAEC
-	stw      r3, 0(r30)
-	addi     r30, r30, 4
-	addi     r29, r29, 1
-
-lbl_802ECAEC:
-	addi     r3, r1, 8
-	bl       next__Q24Game16WayPointIteratorFv
-
-lbl_802ECAF4:
-	addi     r3, r1, 8
-	bl       isDone__Q24Game16WayPointIteratorFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_802ECA9C
-	cmpwi    r29, 0
-	beq      lbl_802ECB90
-	lwz      r0, 0x2f0(r31)
-	stw      r0, 0x2f4(r31)
-	bl       rand
-	lis      r4, 0x4330
-	xoris    r0, r3, 0x8000
-	stw      r0, 0x54(r1)
-	xoris    r0, r29, 0x8000
-	lfd      f2, lbl_8051CFD8@sda21(r2)
-	addi     r3, r1, 0x2c
-	stw      r4, 0x50(r1)
-	lfs      f0, lbl_8051CFD0@sda21(r2)
-	lfd      f1, 0x50(r1)
-	stw      r0, 0x5c(r1)
-	fsubs    f1, f1, f2
-	stw      r4, 0x58(r1)
-	fdivs    f1, f1, f0
-	lfd      f0, 0x58(r1)
-	fsubs    f0, f0, f2
-	fmuls    f0, f0, f1
-	fctiwz   f0, f0
-	stfd     f0, 0x60(r1)
-	lwz      r0, 0x64(r1)
-	slwi     r0, r0, 2
-	lwzx     r0, r3, r0
-	stw      r0, 0x2f0(r31)
-	lwz      r3, 0x2f0(r31)
-	lfs      f1, 0x50(r3)
-	lfs      f2, 0x54(r3)
-	lfs      f0, 0x4c(r3)
-	stfs     f0, 0x2e4(r31)
-	stfs     f1, 0x2e8(r31)
-	stfs     f2, 0x2ec(r31)
-	b        lbl_802ECC7C
-
-lbl_802ECB90:
-	cmpwi    r28, 0
-	blt      lbl_802ECBF4
-	lwz      r3, mapMgr__4Game@sda21(r13)
-	extsh    r4, r28
-	lwz      r3, 8(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	cmplwi   r3, 0
-	beq      lbl_802ECBF4
-	lbz      r0, 0x34(r3)
-	clrlwi.  r0, r0, 0x1f
-	bne      lbl_802ECBF4
-	lwz      r0, 0x2f0(r31)
-	stw      r0, 0x2f4(r31)
-	stw      r3, 0x2f0(r31)
-	lwz      r3, 0x2f0(r31)
-	lfs      f1, 0x50(r3)
-	lfs      f2, 0x54(r3)
-	lfs      f0, 0x4c(r3)
-	stfs     f0, 0x2e4(r31)
-	stfs     f1, 0x2e8(r31)
-	stfs     f2, 0x2ec(r31)
-	b        lbl_802ECC7C
-
-lbl_802ECBF4:
-	lwz      r3, 0x2f0(r31)
-	li       r0, 0
-	lfs      f0, lbl_8051CFC8@sda21(r2)
-	addi     r4, r1, 0x14
-	stw      r3, 0x2f4(r31)
-	lfs      f1, 0x18c(r31)
-	lwz      r3, mapMgr__4Game@sda21(r13)
-	stfs     f1, 0x14(r1)
-	lfs      f1, 0x190(r31)
-	stfs     f1, 0x18(r1)
-	lfs      f1, 0x194(r31)
-	stfs     f1, 0x1c(r1)
-	stw      r0, 0x20(r1)
-	stb      r0, 0x24(r1)
-	stfs     f0, 0x28(r1)
-	lwz      r3, 8(r3)
-	bl       getNearestWayPoint__Q24Game8RouteMgrFRQ24Game11WPSearchArg
-	stw      r3, 0x2f0(r31)
-	lwz      r3, 0x2f0(r31)
-	cmplwi   r3, 0
-	beq      lbl_802ECC64
-	lfs      f1, 0x50(r3)
-	lfs      f2, 0x54(r3)
-	lfs      f0, 0x4c(r3)
-	stfs     f0, 0x2e4(r31)
-	stfs     f1, 0x2e8(r31)
-	stfs     f2, 0x2ec(r31)
-	b        lbl_802ECC7C
-
-lbl_802ECC64:
-	lfs      f0, 0x198(r31)
-	stfs     f0, 0x2e4(r31)
-	lfs      f0, 0x19c(r31)
-	stfs     f0, 0x2e8(r31)
-	lfs      f0, 0x1a0(r31)
-	stfs     f0, 0x2ec(r31)
-
-lbl_802ECC7C:
-	lwz      r0, 0x84(r1)
-	lwz      r31, 0x7c(r1)
-	lwz      r30, 0x78(r1)
-	lwz      r29, 0x74(r1)
-	lwz      r28, 0x70(r1)
-	mtlr     r0
-	addi     r1, r1, 0x80
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ECC9C
- * Size:	00006C
- */
-void MiniHoudai::Obj::getSearchedTarget()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r4, 0xc0(r3)
-	lfs      f1, 0x2c8(r3)
-	lfs      f0, 0x62c(r4)
-	fcmpo    cr0, f1, f0
-	bge      lbl_802ECCCC
-	lfs      f1, lbl_8051CFCC@sda21(r2)
-	b        lbl_802ECCD0
-
-lbl_802ECCCC:
-	lfs      f1, 0x424(r4)
-
-lbl_802ECCD0:
-	lfs      f2, 0x3d4(r4)
-	li       r4, 0
-	li       r5, 0
-	li       r6, 0
-	bl
-"getNearestPikminOrNavi__Q24Game9EnemyFuncFPQ24Game8CreatureffPfP23Condition<Q24Game4Navi>P23Condition<Q24Game4Piki>"
-	cmplwi   r3, 0
-	beq      lbl_802ECCF4
-	lfs      f0, lbl_8051CF8C@sda21(r2)
-	stfs     f0, 0x2c8(r31)
-
-lbl_802ECCF4:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ECD08
- * Size:	000128
- */
-void MiniHoudai::Obj::updateTargetDistance()
-{
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stw      r31, 0x2c(r1)
-	mr       r31, r3
-	lwz      r3, 0x2f0(r3)
-	cmplwi   r3, 0
-	beq      lbl_802ECD30
-	lfs      f0, 0x58(r3)
-	b        lbl_802ECD38
-
-lbl_802ECD30:
-	lwz      r3, 0xc0(r31)
-	lfs      f0, 0x384(r3)
-
-lbl_802ECD38:
-	lfs      f2, 0x194(r31)
-	fmuls    f0, f0, f0
-	lfs      f1, 0x2ec(r31)
-	lfs      f3, 0x18c(r31)
-	fsubs    f2, f2, f1
-	lfs      f1, 0x2e4(r31)
-	fsubs    f3, f3, f1
-	fmuls    f1, f2, f2
-	fmadds   f1, f3, f3, f1
-	fcmpo    cr0, f1, f0
-	bge      lbl_802ECD74
-	mr       r3, r31
-	bl       setLinkWayPoint__Q34Game10MiniHoudai3ObjFv
-	lfs      f0, lbl_8051CF8C@sda21(r2)
-	stfs     f0, 0x2d0(r31)
-
-lbl_802ECD74:
-	lfs      f1, 0x2d0(r31)
-	lfs      f0, lbl_8051CF9C@sda21(r2)
-	fcmpo    cr0, f1, f0
-	ble      lbl_802ECE1C
-	lfs      f1, lbl_8051CF8C@sda21(r2)
-	li       r0, 0
-	lfs      f0, lbl_8051CFC8@sda21(r2)
-	addi     r4, r1, 8
-	stfs     f1, 0x2d0(r31)
-	lwz      r3, 0x2f0(r31)
-	stw      r3, 0x2f4(r31)
-	lfs      f1, 0x18c(r31)
-	lwz      r3, mapMgr__4Game@sda21(r13)
-	stfs     f1, 8(r1)
-	lfs      f1, 0x190(r31)
-	stfs     f1, 0xc(r1)
-	lfs      f1, 0x194(r31)
-	stfs     f1, 0x10(r1)
-	stw      r0, 0x14(r1)
-	stb      r0, 0x18(r1)
-	stfs     f0, 0x1c(r1)
-	lwz      r3, 8(r3)
-	bl       getNearestWayPoint__Q24Game8RouteMgrFRQ24Game11WPSearchArg
-	stw      r3, 0x2f0(r31)
-	lwz      r3, 0x2f0(r31)
-	cmplwi   r3, 0
-	beq      lbl_802ECDFC
-	lfs      f1, 0x50(r3)
-	lfs      f2, 0x54(r3)
-	lfs      f0, 0x4c(r3)
-	stfs     f0, 0x2e4(r31)
-	stfs     f1, 0x2e8(r31)
-	stfs     f2, 0x2ec(r31)
-	b        lbl_802ECE14
-
-lbl_802ECDFC:
-	lfs      f0, 0x198(r31)
-	stfs     f0, 0x2e4(r31)
-	lfs      f0, 0x19c(r31)
-	stfs     f0, 0x2e8(r31)
-	lfs      f0, 0x1a0(r31)
-	stfs     f0, 0x2ec(r31)
-
-lbl_802ECE14:
-	mr       r3, r31
-	bl       updateHomePosition__Q34Game10MiniHoudai3ObjFv
-
-lbl_802ECE1C:
-	lwz      r0, 0x34(r1)
-	lwz      r31, 0x2c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ECE30
- * Size:	0000BC
- */
-void MiniHoudai::Obj::updateHomePosition()
-{
+	mHomePosition = Vector3f(sinf(mFaceDir) * C_GENERALPARMS.mHomeRadius.mValue + mPosition.x, mPosition.y,
+	                         cosf(mFaceDir) * C_GENERALPARMS.mHomeRadius.mValue + mPosition.z);
 	/*
 	stwu     r1, -0x20(r1)
 	lfs      f0, lbl_8051CF8C@sda21(r2)
@@ -1788,13 +512,50 @@ lbl_802ECED0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802ECEEC
- * Size:	00032C
+/**
+ * @note Address: 0x802ECEEC
+ * @note Size: 0x32C
  */
-void MiniHoudai::Obj::isAttackableTarget()
+bool Obj::isAttackableTarget()
 {
+	Vector3f shotGunPos = mShotgunMgr->getShotGunPosition();
+	Vector3f dir        = getDirection(mFaceDir);
+	Vector3f perpDir(-dir.z, 0.0f, dir.x);
+
+	f32 offset   = C_GENERALPARMS.mSearchDistance.mValue * 0.5f;
+	Vector3f pos = Vector3f(dir.x * offset + mPosition.x, dir.y * offset + mPosition.y, dir.z * offset + mPosition.z);
+	f32 rad      = C_GENERALPARMS.mSearchDistance.mValue * 0.75f;
+	Sys::Sphere sphere(pos, rad);
+	// sphere.mRadius = C_GENERALPARMS.mSearchDistance.mValue * 0.75f;
+	CellIteratorArg iterArg(sphere);
+	iterArg.mOptimise = true;
+	CellIterator iter(iterArg);
+	CI_LOOP(iter)
+	{
+		Creature* target = static_cast<Creature*>(*iter);
+		if (target->isAlive()) {
+			bool targetable = target->isNavi();
+			if (!targetable) {
+				if (target->isPiki() && static_cast<Piki*>(target)->isPikmin()) {
+					targetable = true;
+				}
+			}
+
+			if (targetable) {
+				Vector3f targetPos = target->getPosition();
+				targetPos -= shotGunPos;
+				if (absVal(targetPos.y) < 200.0f && absVal(dot(perpDir, targetPos)) < 25.0f) {
+					f32 dotProd = dot(dir, targetPos);
+					if (dotProd > 1.0f && dotProd < C_GENERALPARMS.mSearchDistance.mValue) {
+						mTargetPosition = target->getPosition();
+						return true;
+					}
+				}
+			}
+		}
+	}
+
+	return false;
 	/*
 	stwu     r1, -0x130(r1)
 	mflr     r0
@@ -2026,1069 +787,216 @@ lbl_802ED1CC:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	802ED218
- * Size:	000048
+/**
+ * @note Address: 0x802ED218
+ * @note Size: 0x48
  */
-void MiniHoudai::Obj::createShotGun()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	li       r3, 0x34
-	bl       __nw__FUl
-	or.      r0, r3, r3
-	beq      lbl_802ED248
-	mr       r4, r31
-	bl __ct__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFPQ34Game10MiniHoudai3Obj
-	mr       r0, r3
+void Obj::createShotGun() { mShotgunMgr = new MiniHoudaiShotGunMgr(this); }
 
-lbl_802ED248:
-	stw      r0, 0x2f8(r31)
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+/**
+ * @note Address: 0x802ED260
+ * @note Size: 0x24
+ */
+void Obj::setupShotGun() { mShotgunMgr->setupShotGun(); }
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x24
+ */
+void Obj::setShotGunTarget(Vector3f& pos) { mShotgunMgr->setShotGunTarget(pos); }
+
+/**
+ * @note Address: 0x802ED284
+ * @note Size: 0x24
+ */
+void Obj::resetShotGunCallBack() { mShotgunMgr->resetCallBack(); }
+
+/**
+ * @note Address: 0x802ED2A8
+ * @note Size: 0x24
+ */
+void Obj::setShotGunCallBack() { mShotgunMgr->setCallBack(); }
+
+/**
+ * @note Address: 0x802ED2CC
+ * @note Size: 0x24
+ */
+void Obj::doUpdateShotGun() { mShotgunMgr->doUpdate(); }
+
+/**
+ * @note Address: 0x802ED2F0
+ * @note Size: 0x24
+ */
+void Obj::doUpdateCommonShotGun() { mShotgunMgr->doUpdateCommon(); }
+
+/**
+ * @note Address: 0x802ED314
+ * @note Size: 0x24
+ */
+void Obj::startShotGunRotation() { mShotgunMgr->startRotation(); }
+
+/**
+ * @note Address: 0x802ED338
+ * @note Size: 0x24
+ */
+void Obj::finishShotGunRotation() { mShotgunMgr->finishRotation(); }
+
+/**
+ * @note Address: 0x802ED35C
+ * @note Size: 0x24
+ */
+bool Obj::isShotGunRotation() { return mShotgunMgr->isShotGunRotation(); }
+
+/**
+ * @note Address: 0x802ED380
+ * @note Size: 0x24
+ */
+bool Obj::isShotGunLockOn() { return mShotgunMgr->isShotGunLockOn(); }
+
+/**
+ * @note Address: 0x802ED3A4
+ * @note Size: 0x24
+ */
+bool Obj::isFinishShotGun() { return mShotgunMgr->isFinishShotGun(); }
+
+/**
+ * @note Address: 0x802ED3C8
+ * @note Size: 0x24
+ */
+void Obj::emitShotGun() { mShotgunMgr->emitShotGun(); }
+
+/**
+ * @note Address: 0x802ED3EC
+ * @note Size: 0x2C
+ */
+void Obj::setShotGunTargetPosition() { mShotgunMgr->setShotGunTarget(mTargetPosition); }
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x24
+ */
+void Obj::shotGunDoDebugDraw(Graphics& gfx) { mShotgunMgr->doDebugDraw(gfx); }
+
+/**
+ * @note Address: 0x802ED418
+ * @note Size: 0x24
+ */
+void Obj::forceFinishShotGun() { mShotgunMgr->forceFinishShotGun(); }
+
+/**
+ * @note Address: 0x802ED43C
+ * @note Size: 0x138
+ */
+void Obj::createEffect()
+{
+	mEfxCharge    = new efx::TChibiCharge;
+	mEfxDeadLight = new efx::TChibiDeadLight;
 }
 
-/*
- * --INFO--
- * Address:	802ED260
- * Size:	000024
+/**
+ * @note Address: 0x802ED574
+ * @note Size: 0x58
  */
-void MiniHoudai::Obj::setupShotGun()
+void Obj::setupEffect()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2f8(r3)
-	bl       setupShotGun__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mEfxCharge->mMtx    = mModel->getJoint("kuti")->getWorldMatrix();
+	mEfxDeadLight->mMtx = mModel->getJoint("head")->getWorldMatrix();
 }
 
-} // namespace Game
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000024
+/**
+ * @note Address: 0x802ED5CC
+ * @note Size: 0xA0
  */
-void setShotGunTarget__Q34Game10MiniHoudai3ObjFR10Vector3f()
+void Obj::createSmokeSmallEffect(bool useSebire1Joint)
 {
-	// UNUSED FUNCTION
+	Matrixf* mat;
+	if (useSebire1Joint) {
+		mat = mModel->getJoint("sebire1")->getWorldMatrix();
+	} else {
+		mat = mModel->getJoint("sebire2")->getWorldMatrix();
+	}
+
+	efx::TChibiSmokeS smokeSmall(mat);
+	smokeSmall.create(nullptr);
 }
 
-namespace Game {
-
-/*
- * --INFO--
- * Address:	802ED284
- * Size:	000024
+/**
+ * @note Address: 0x802ED66C
+ * @note Size: 0xE8
  */
-void MiniHoudai::Obj::resetShotGunCallBack()
+void Obj::createSmokeLargeEffect()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2f8(r3)
-	bl       resetCallBack__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	efx::TChibiSmokeL smokeLarge1(mModel->getJoint("sebire1")->getWorldMatrix());
+	smokeLarge1.create(nullptr);
+	efx::TChibiSmokeL smokeLarge2(mModel->getJoint("sebire2")->getWorldMatrix());
+	smokeLarge2.create(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802ED2A8
- * Size:	000024
+/**
+ * @note Address: 0x802ED754
+ * @note Size: 0x24
  */
-void MiniHoudai::Obj::setShotGunCallBack()
+void Obj::createDownEffect(f32 scale) { EnemyBase::createBounceEffect(mPosition, scale); }
+
+/**
+ * @note Address: 0x802ED778
+ * @note Size: 0x34
+ */
+void Obj::startChargeEffect() { mEfxCharge->create(nullptr); }
+
+/**
+ * @note Address: 0x802ED7AC
+ * @note Size: 0x30
+ */
+void Obj::finishChargeEffect() { mEfxCharge->fade(); }
+
+/**
+ * @note Address: 0x802ED7DC
+ * @note Size: 0x34
+ */
+void Obj::createDeadLightEffect() { mEfxDeadLight->create(nullptr); }
+
+/**
+ * @note Address: 0x802ED810
+ * @note Size: 0x1D4
+ */
+void Obj::createDeadBombEmitEffect()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2f8(r3)
-	bl       setCallBack__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	Matrixf* kutiMtx = mModel->getJoint("kuti")->getWorldMatrix();
+	efx::TChibiShoot shootFX(kutiMtx);
+	shootFX.create(nullptr);
+
+	efx::TChibiDeadMouth mouthFX(kutiMtx);
+	mouthFX.create(nullptr);
+
+	efx::TChibiDeadSe deadSe1(mModel->getJoint("sebire1")->getWorldMatrix());
+	deadSe1.create(nullptr);
+
+	efx::TChibiDeadSe deadSe2(mModel->getJoint("sebire2")->getWorldMatrix());
+	deadSe2.create(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802ED2CC
- * Size:	000024
+/**
+ * @note Address: 0x802ED9E4
+ * @note Size: 0x58
  */
-void MiniHoudai::Obj::doUpdateShotGun()
+void Obj::effectDrawOn()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2f8(r3)
-	bl       doUpdate__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mShotgunMgr->effectDrawOn();
+	mEfxCharge->endDemoDrawOn();
+	mEfxDeadLight->endDemoDrawOn();
 }
 
-/*
- * --INFO--
- * Address:	802ED2F0
- * Size:	000024
+/**
+ * @note Address: 0x802EDA3C
+ * @note Size: 0x58
  */
-void MiniHoudai::Obj::doUpdateCommonShotGun()
+void Obj::effectDrawOff()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2f8(r3)
-	bl       doUpdateCommon__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mShotgunMgr->effectDrawOff();
+	mEfxCharge->startDemoDrawOff();
+	mEfxDeadLight->startDemoDrawOff();
 }
 
-/*
- * --INFO--
- * Address:	802ED314
- * Size:	000024
- */
-void MiniHoudai::Obj::startShotGunRotation()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2f8(r3)
-	bl       startRotation__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED338
- * Size:	000024
- */
-void MiniHoudai::Obj::finishShotGunRotation()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2f8(r3)
-	bl       finishRotation__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED35C
- * Size:	000024
- */
-void MiniHoudai::Obj::isShotGunRotation()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2f8(r3)
-	bl       isShotGunRotation__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED380
- * Size:	000024
- */
-void MiniHoudai::Obj::isShotGunLockOn()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2f8(r3)
-	bl       isShotGunLockOn__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED3A4
- * Size:	000024
- */
-void MiniHoudai::Obj::isFinishShotGun()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2f8(r3)
-	bl       isFinishShotGun__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED3C8
- * Size:	000024
- */
-void MiniHoudai::Obj::emitShotGun()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2f8(r3)
-	bl       emitShotGun__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED3EC
- * Size:	00002C
- */
-void MiniHoudai::Obj::setShotGunTargetPosition()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	mr       r4, r3
-	stw      r0, 0x14(r1)
-	addi     r4, r4, 0x2d8
-	lwz      r3, 0x2f8(r3)
-	bl
-	"setShotGunTarget__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFR10Vector3<f>"
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	........
- * Size:	000024
- */
-void MiniHoudai::Obj::shotGunDoDebugDraw(Graphics&)
-{
-	// UNUSED FUNCTION
-}
-
-/*
- * --INFO--
- * Address:	802ED418
- * Size:	000024
- */
-void MiniHoudai::Obj::forceFinishShotGun()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2f8(r3)
-	bl       forceFinishShotGun__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED43C
- * Size:	000138
- */
-void MiniHoudai::Obj::createEffect()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	li       r3, 0x14
-	bl       __nw__FUl
-	cmplwi   r3, 0
-	beq      lbl_802ED4D4
-	lis      r4, __vt__Q23efx5TBase@ha
-	lis      r5, __vt__18JPAEmitterCallBack@ha
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx5TSync@ha
-	stw      r0, 0(r3)
-	addi     r0, r5, __vt__18JPAEmitterCallBack@l
-	addi     r5, r4, __vt__Q23efx5TSync@l
-	lis      r4, __vt__Q23efx9TChaseMtx@ha
-	stw      r0, 4(r3)
-	addi     r7, r4, __vt__Q23efx9TChaseMtx@l
-	lis      r4, __vt__Q23efx12TChibiCharge@ha
-	addi     r0, r5, 0x14
-	stw      r5, 0(r3)
-	addi     r4, r4, __vt__Q23efx12TChibiCharge@l
-	li       r9, 0
-	li       r8, 0x2b2
-	stw      r0, 4(r3)
-	addi     r6, r7, 0x14
-	li       r5, 0x230
-	addi     r0, r4, 0x14
-	stw      r9, 8(r3)
-	sth      r8, 0xc(r3)
-	stb      r9, 0xe(r3)
-	stw      r7, 0(r3)
-	stw      r6, 4(r3)
-	stw      r9, 0x10(r3)
-	sth      r5, 0xc(r3)
-	stw      r4, 0(r3)
-	stw      r0, 4(r3)
-
-lbl_802ED4D4:
-	stw      r3, 0x300(r31)
-	li       r3, 0x14
-	bl       __nw__FUl
-	cmplwi   r3, 0
-	beq      lbl_802ED55C
-	lis      r4, __vt__Q23efx5TBase@ha
-	lis      r5, __vt__18JPAEmitterCallBack@ha
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx5TSync@ha
-	stw      r0, 0(r3)
-	addi     r0, r5, __vt__18JPAEmitterCallBack@l
-	addi     r5, r4, __vt__Q23efx5TSync@l
-	lis      r4, __vt__Q23efx9TChaseMtx@ha
-	stw      r0, 4(r3)
-	addi     r7, r4, __vt__Q23efx9TChaseMtx@l
-	lis      r4, __vt__Q23efx15TChibiDeadLight@ha
-	addi     r0, r5, 0x14
-	stw      r5, 0(r3)
-	addi     r4, r4, __vt__Q23efx15TChibiDeadLight@l
-	li       r9, 0
-	li       r8, 0x2b2
-	stw      r0, 4(r3)
-	addi     r6, r7, 0x14
-	li       r5, 0x231
-	addi     r0, r4, 0x14
-	stw      r9, 8(r3)
-	sth      r8, 0xc(r3)
-	stb      r9, 0xe(r3)
-	stw      r7, 0(r3)
-	stw      r6, 4(r3)
-	stw      r9, 0x10(r3)
-	sth      r5, 0xc(r3)
-	stw      r4, 0(r3)
-	stw      r0, 4(r3)
-
-lbl_802ED55C:
-	stw      r3, 0x304(r31)
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED574
- * Size:	000058
- */
-void MiniHoudai::Obj::setupEffect()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	addi     r4, r2, lbl_8051CFF8@sda21
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r3, 0x174(r3)
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lwz      r5, 0x300(r31)
-	addi     r4, r2, lbl_8051D000@sda21
-	stw      r3, 0x10(r5)
-	lwz      r3, 0x174(r31)
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lwz      r4, 0x304(r31)
-	stw      r3, 0x10(r4)
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED5CC
- * Size:	0000A0
- */
-void MiniHoudai::Obj::createSmokeSmallEffect(bool)
-{
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	clrlwi.  r0, r4, 0x18
-	beq      lbl_802ED5F8
-	lwz      r3, 0x174(r3)
-	addi     r4, r2, lbl_8051D008@sda21
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	mr       r7, r3
-	b        lbl_802ED60C
-
-lbl_802ED5F8:
-	lwz      r3, 0x174(r3)
-	addi     r4, r2, lbl_8051D010@sda21
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	mr       r7, r3
-
-lbl_802ED60C:
-	lis      r4, __vt__Q23efx5TBase@ha
-	lis      r3, __vt__Q23efx8TSimple1@ha
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx11TSimpleMtx1@ha
-	stw      r0, 8(r1)
-	addi     r0, r3, __vt__Q23efx8TSimple1@l
-	lis      r3, __vt__Q23efx12TChibiSmokeS@ha
-	li       r6, 0x23e
-	stw      r0, 8(r1)
-	addi     r4, r4, __vt__Q23efx11TSimpleMtx1@l
-	li       r5, 0
-	addi     r0, r3, __vt__Q23efx12TChibiSmokeS@l
-	stw      r4, 8(r1)
-	addi     r3, r1, 8
-	li       r4, 0
-	sth      r6, 0xc(r1)
-	stw      r5, 0x10(r1)
-	stw      r7, 0x14(r1)
-	stw      r0, 8(r1)
-	bl       create__Q23efx11TSimpleMtx1FPQ23efx3Arg
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED66C
- * Size:	0000E8
- */
-void MiniHoudai::Obj::createSmokeLargeEffect()
-{
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	addi     r4, r2, lbl_8051D008@sda21
-	stw      r0, 0x34(r1)
-	stw      r31, 0x2c(r1)
-	mr       r31, r3
-	lwz      r3, 0x174(r3)
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lis      r5, __vt__Q23efx5TBase@ha
-	lis      r4, __vt__Q23efx8TSimple1@ha
-	addi     r0, r5, __vt__Q23efx5TBase@l
-	lis      r5, __vt__Q23efx11TSimpleMtx1@ha
-	stw      r0, 0x18(r1)
-	addi     r0, r4, __vt__Q23efx8TSimple1@l
-	lis      r4, __vt__Q23efx12TChibiSmokeL@ha
-	li       r7, 0x23d
-	stw      r0, 0x18(r1)
-	addi     r5, r5, __vt__Q23efx11TSimpleMtx1@l
-	li       r6, 0
-	addi     r0, r4, __vt__Q23efx12TChibiSmokeL@l
-	stw      r5, 0x18(r1)
-	li       r4, 0
-	stw      r3, 0x24(r1)
-	addi     r3, r1, 0x18
-	sth      r7, 0x1c(r1)
-	stw      r6, 0x20(r1)
-	stw      r0, 0x18(r1)
-	bl       create__Q23efx11TSimpleMtx1FPQ23efx3Arg
-	lwz      r3, 0x174(r31)
-	addi     r4, r2, lbl_8051D010@sda21
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lis      r5, __vt__Q23efx5TBase@ha
-	lis      r4, __vt__Q23efx8TSimple1@ha
-	addi     r0, r5, __vt__Q23efx5TBase@l
-	lis      r5, __vt__Q23efx11TSimpleMtx1@ha
-	stw      r0, 8(r1)
-	addi     r0, r4, __vt__Q23efx8TSimple1@l
-	lis      r4, __vt__Q23efx12TChibiSmokeL@ha
-	li       r7, 0x23d
-	stw      r0, 8(r1)
-	addi     r5, r5, __vt__Q23efx11TSimpleMtx1@l
-	li       r6, 0
-	addi     r0, r4, __vt__Q23efx12TChibiSmokeL@l
-	stw      r5, 8(r1)
-	li       r4, 0
-	stw      r3, 0x14(r1)
-	addi     r3, r1, 8
-	sth      r7, 0xc(r1)
-	stw      r6, 0x10(r1)
-	stw      r0, 8(r1)
-	bl       create__Q23efx11TSimpleMtx1FPQ23efx3Arg
-	lwz      r0, 0x34(r1)
-	lwz      r31, 0x2c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED754
- * Size:	000024
- */
-void MiniHoudai::Obj::createDownEffect(float)
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	addi     r4, r3, 0x18c
-	stw      r0, 0x14(r1)
-	bl       "createBounceEffect__Q24Game9EnemyBaseFRC10Vector3<f>f"
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED778
- * Size:	000034
- */
-void MiniHoudai::Obj::startChargeEffect()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	li       r4, 0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x300(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED7AC
- * Size:	000030
- */
-void MiniHoudai::Obj::finishChargeEffect()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x300(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED7DC
- * Size:	000034
- */
-void MiniHoudai::Obj::createDeadLightEffect()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	li       r4, 0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x304(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED810
- * Size:	0001D4
- */
-void MiniHoudai::Obj::createDeadBombEmitEffect()
-{
-	/*
-	stwu     r1, -0x70(r1)
-	mflr     r0
-	addi     r4, r2, lbl_8051CFF8@sda21
-	stw      r0, 0x74(r1)
-	stw      r31, 0x6c(r1)
-	stw      r30, 0x68(r1)
-	mr       r30, r3
-	lwz      r3, 0x174(r3)
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lis      r4, __vt__Q23efx5TBase@ha
-	li       r5, 0
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	mr       r31, r3
-	lis      r3, __vt__Q23efx8TSimple3@ha
-	stw      r0, 0x40(r1)
-	addi     r0, r3, __vt__Q23efx8TSimple3@l
-	lis      r3, __vt__Q23efx11TSimpleMtx3@ha
-	stw      r0, 0x40(r1)
-	addi     r0, r3, __vt__Q23efx11TSimpleMtx3@l
-	lis      r3, __vt__Q23efx11TChibiShoot@ha
-	li       r4, 0x23a
-	stw      r0, 0x40(r1)
-	addi     r0, r3, __vt__Q23efx11TChibiShoot@l
-	li       r7, 0x23b
-	li       r6, 0x23c
-	sth      r4, 0x44(r1)
-	addi     r3, r1, 0x40
-	li       r4, 0
-	sth      r7, 0x46(r1)
-	sth      r6, 0x48(r1)
-	stw      r5, 0x4c(r1)
-	stw      r5, 0x50(r1)
-	stw      r5, 0x54(r1)
-	stw      r31, 0x58(r1)
-	stw      r0, 0x40(r1)
-	bl       create__Q23efx11TSimpleMtx3FPQ23efx3Arg
-	lis      r4, __vt__Q23efx5TBase@ha
-	lis      r3, __vt__Q23efx8TSimple1@ha
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx11TSimpleMtx1@ha
-	stw      r0, 8(r1)
-	addi     r0, r3, __vt__Q23efx8TSimple1@l
-	lis      r3, __vt__Q23efx15TChibiDeadMouth@ha
-	li       r6, 0x232
-	stw      r0, 8(r1)
-	addi     r4, r4, __vt__Q23efx11TSimpleMtx1@l
-	li       r5, 0
-	addi     r0, r3, __vt__Q23efx15TChibiDeadMouth@l
-	stw      r4, 8(r1)
-	addi     r3, r1, 8
-	li       r4, 0
-	sth      r6, 0xc(r1)
-	stw      r5, 0x10(r1)
-	stw      r31, 0x14(r1)
-	stw      r0, 8(r1)
-	bl       create__Q23efx11TSimpleMtx1FPQ23efx3Arg
-	lwz      r3, 0x174(r30)
-	addi     r4, r2, lbl_8051D008@sda21
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lis      r4, __vt__Q23efx5TBase@ha
-	li       r6, 0
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx8TSimple2@ha
-	stw      r0, 0x2c(r1)
-	addi     r0, r4, __vt__Q23efx8TSimple2@l
-	lis      r5, __vt__Q23efx11TSimpleMtx2@ha
-	lis      r4, __vt__Q23efx12TChibiDeadSe@ha
-	stw      r0, 0x2c(r1)
-	addi     r0, r5, __vt__Q23efx11TSimpleMtx2@l
-	li       r7, 0x233
-	li       r5, 0x234
-	stw      r0, 0x2c(r1)
-	addi     r0, r4, __vt__Q23efx12TChibiDeadSe@l
-	li       r4, 0
-	stw      r3, 0x3c(r1)
-	addi     r3, r1, 0x2c
-	sth      r7, 0x30(r1)
-	sth      r5, 0x32(r1)
-	stw      r6, 0x34(r1)
-	stw      r6, 0x38(r1)
-	stw      r0, 0x2c(r1)
-	bl       create__Q23efx11TSimpleMtx2FPQ23efx3Arg
-	lwz      r3, 0x174(r30)
-	addi     r4, r2, lbl_8051D010@sda21
-	bl       getJoint__Q28SysShape5ModelFPc
-	bl       getWorldMatrix__Q28SysShape5JointFv
-	lis      r4, __vt__Q23efx5TBase@ha
-	li       r6, 0
-	addi     r0, r4, __vt__Q23efx5TBase@l
-	lis      r4, __vt__Q23efx8TSimple2@ha
-	stw      r0, 0x18(r1)
-	addi     r0, r4, __vt__Q23efx8TSimple2@l
-	lis      r5, __vt__Q23efx11TSimpleMtx2@ha
-	lis      r4, __vt__Q23efx12TChibiDeadSe@ha
-	stw      r0, 0x18(r1)
-	addi     r0, r5, __vt__Q23efx11TSimpleMtx2@l
-	li       r7, 0x233
-	li       r5, 0x234
-	stw      r0, 0x18(r1)
-	addi     r0, r4, __vt__Q23efx12TChibiDeadSe@l
-	li       r4, 0
-	stw      r3, 0x28(r1)
-	addi     r3, r1, 0x18
-	sth      r7, 0x1c(r1)
-	sth      r5, 0x1e(r1)
-	stw      r6, 0x20(r1)
-	stw      r6, 0x24(r1)
-	stw      r0, 0x18(r1)
-	bl       create__Q23efx11TSimpleMtx2FPQ23efx3Arg
-	lwz      r0, 0x74(r1)
-	lwz      r31, 0x6c(r1)
-	lwz      r30, 0x68(r1)
-	mtlr     r0
-	addi     r1, r1, 0x70
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802ED9E4
- * Size:	000058
- */
-void MiniHoudai::Obj::effectDrawOn()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r3, 0x2f8(r3)
-	bl       effectDrawOn__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r3, 0x300(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x44(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x304(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x44(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802EDA3C
- * Size:	000058
- */
-void MiniHoudai::Obj::effectDrawOff()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	lwz      r3, 0x2f8(r3)
-	bl       effectDrawOff__Q34Game10MiniHoudai20MiniHoudaiShotGunMgrFv
-	lwz      r3, 0x300(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x40(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x304(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x40(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-namespace efx {
-
-/*
- * --INFO--
- * Address:	802EDA94
- * Size:	00009C
- */
-TChibiDeadLight::~TChibiDeadLight()
-{
-	/*
-stwu     r1, -0x10(r1)
-mflr     r0
-stw      r0, 0x14(r1)
-stw      r31, 0xc(r1)
-mr       r31, r4
-stw      r30, 8(r1)
-or.      r30, r3, r3
-beq      lbl_802EDB14
-lis      r3, __vt__Q23efx15TChibiDeadLight@ha
-addi     r3, r3, __vt__Q23efx15TChibiDeadLight@l
-stw      r3, 0(r30)
-addi     r0, r3, 0x14
-stw      r0, 4(r30)
-beq      lbl_802EDB04
-lis      r3, __vt__Q23efx9TChaseMtx@ha
-addi     r3, r3, __vt__Q23efx9TChaseMtx@l
-stw      r3, 0(r30)
-addi     r0, r3, 0x14
-stw      r0, 4(r30)
-beq      lbl_802EDB04
-lis      r4, __vt__Q23efx5TSync@ha
-addi     r3, r30, 4
-addi     r5, r4, __vt__Q23efx5TSync@l
-li       r4, 0
-stw      r5, 0(r30)
-addi     r0, r5, 0x14
-stw      r0, 4(r30)
-bl       __dt__18JPAEmitterCallBackFv
-
-lbl_802EDB04:
-extsh.   r0, r31
-ble      lbl_802EDB14
-mr       r3, r30
-bl       __dl__FPv
-
-lbl_802EDB14:
-lwz      r0, 0x14(r1)
-mr       r3, r30
-lwz      r31, 0xc(r1)
-lwz      r30, 8(r1)
-mtlr     r0
-addi     r1, r1, 0x10
-blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802EDB30
- * Size:	00009C
- */
-TChibiCharge::~TChibiCharge()
-{
-	/*
-stwu     r1, -0x10(r1)
-mflr     r0
-stw      r0, 0x14(r1)
-stw      r31, 0xc(r1)
-mr       r31, r4
-stw      r30, 8(r1)
-or.      r30, r3, r3
-beq      lbl_802EDBB0
-lis      r3, __vt__Q23efx12TChibiCharge@ha
-addi     r3, r3, __vt__Q23efx12TChibiCharge@l
-stw      r3, 0(r30)
-addi     r0, r3, 0x14
-stw      r0, 4(r30)
-beq      lbl_802EDBA0
-lis      r3, __vt__Q23efx9TChaseMtx@ha
-addi     r3, r3, __vt__Q23efx9TChaseMtx@l
-stw      r3, 0(r30)
-addi     r0, r3, 0x14
-stw      r0, 4(r30)
-beq      lbl_802EDBA0
-lis      r4, __vt__Q23efx5TSync@ha
-addi     r3, r30, 4
-addi     r5, r4, __vt__Q23efx5TSync@l
-li       r4, 0
-stw      r5, 0(r30)
-addi     r0, r5, 0x14
-stw      r0, 4(r30)
-bl       __dt__18JPAEmitterCallBackFv
-
-lbl_802EDBA0:
-extsh.   r0, r31
-ble      lbl_802EDBB0
-mr       r3, r30
-bl       __dl__FPv
-
-lbl_802EDBB0:
-lwz      r0, 0x14(r1)
-mr       r3, r30
-lwz      r31, 0xc(r1)
-lwz      r30, 8(r1)
-mtlr     r0
-addi     r1, r1, 0x10
-blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802EDBCC
- * Size:	0000BC
- */
-MiniHoudai::Obj::~Obj()
-{
-	/*
-stwu     r1, -0x10(r1)
-mflr     r0
-stw      r0, 0x14(r1)
-stw      r31, 0xc(r1)
-or.      r31, r3, r3
-stw      r30, 8(r1)
-mr       r30, r4
-beq      lbl_802EDC6C
-lis      r3, __vt__Q34Game10MiniHoudai3Obj@ha
-addi     r0, r31, 0x308
-addi     r4, r3, __vt__Q34Game10MiniHoudai3Obj@l
-stw      r4, 0(r31)
-addi     r3, r4, 0x1b0
-addi     r4, r4, 0x2fc
-stw      r3, 0x178(r31)
-lwz      r3, 0x17c(r31)
-stw      r4, 0(r3)
-lwz      r3, 0x17c(r31)
-subf     r0, r3, r0
-stw      r0, 0xc(r3)
-beq      lbl_802EDC5C
-lis      r3, __vt__Q24Game9EnemyBase@ha
-addi     r0, r31, 0x2bc
-addi     r4, r3, __vt__Q24Game9EnemyBase@l
-addi     r3, r31, 0x290
-stw      r4, 0(r31)
-addi     r5, r4, 0x1b0
-addi     r6, r4, 0x2f8
-li       r4, -1
-stw      r5, 0x178(r31)
-lwz      r5, 0x17c(r31)
-stw      r6, 0(r5)
-lwz      r5, 0x17c(r31)
-subf     r0, r5, r0
-stw      r0, 0xc(r5)
-bl       __dt__5CNodeFv
-
-lbl_802EDC5C:
-extsh.   r0, r30
-ble      lbl_802EDC6C
-mr       r3, r31
-bl       __dl__FPv
-
-lbl_802EDC6C:
-lwz      r0, 0x14(r1)
-mr       r3, r31
-lwz      r31, 0xc(r1)
-lwz      r30, 8(r1)
-mtlr     r0
-addi     r1, r1, 0x10
-blr
-	*/
-}
-
-} // namespace efx
-
-/*
- * --INFO--
- * Address:	802EDC88
- * Size:	000008
- */
-void MiniHoudai::Obj::getDownSmokeScale()
-{
-	/*
-	lfs      f1, lbl_8051D018@sda21(r2)
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802EDC90
- * Size:	000008
- */
-@4 @efx::TChibiCharge::~TChibiCharge()
-{
-	/*
-	addi     r3, r3, -4
-	b        __dt__Q23efx12TChibiChargeFv
-	*/
-}
-
-/*
- * --INFO--
- * Address:	802EDC98
- * Size:	000008
- */
-@4 @efx::TChibiDeadLight::~TChibiDeadLight()
-{
-	/*
-	addi     r3, r3, -4
-	b        __dt__Q23efx15TChibiDeadLightFv
-	*/
-}
+} // namespace MiniHoudai
 } // namespace Game

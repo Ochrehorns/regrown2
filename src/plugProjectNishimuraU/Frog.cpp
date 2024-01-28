@@ -1,5 +1,4 @@
 #include "Game/Entities/Frog.h"
-#include "Game/Entities/SmokyFrog.h"
 #include "Game/CameraMgr.h"
 #include "Game/rumble.h"
 #include "Game/AIConstants.h"
@@ -70,7 +69,7 @@ void Obj::doUpdate()
  */
 void Obj::doSimulationFlying(f32 step)
 {
-	f32 remainingAirTime = C_PROPERPARMS.mAirTime.mValue - mAirTimer;
+	f32 remainingAirTime = C_PROPERPARMS.mAirTime() - mAirTimer;
 	if (remainingAirTime > 0.0f) {
 		Vector3f prevVel   = mCurrentVelocity;
 		f32 speed          = prevVel.length2D();
@@ -95,7 +94,7 @@ void Obj::doSimulationFlying(f32 step)
 
 	mCurrentVelocity.y -= step * _aiConstants->mGravity.mData;
 	if (mCurrentVelocity.y > 0.0f) {
-		turnToTarget2(mTargetPosition, C_PARMS->mGeneral.mRotationalSpeed.mValue, C_PARMS->mGeneral.mRotationalAccel.mValue);
+		turnToTarget2(mTargetPosition, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
 	} else {
 		mCurrentVelocity.y = 0.0f;
 	}
@@ -150,7 +149,7 @@ void Obj::getShadowParam(ShadowParam& param)
 				param.mPosition.y -= 17.5f;
 			}
 
-			param.mBoundingSphere.mRadius = 0.75f * C_PROPERPARMS.mJumpSpeed.mValue;
+			param.mBoundingSphere.mRadius = 0.75f * C_PROPERPARMS.mJumpSpeed();
 		}
 	} else {
 		param.mBoundingSphere.mRadius = 22.5f;
@@ -172,7 +171,7 @@ void Obj::collisionCallback(CollEvent& event)
 			if (mIsFalling) {
 				if (creature->mBounceTriangle) {
 					if (creature->isNavi() || creature->isPiki()) {
-						InteractPress press(this, C_PARMS->mGeneral.mAttackDamage.mValue, nullptr);
+						InteractPress press(this, C_GENERALPARMS.mAttackDamage.mValue, nullptr);
 						event.mCollidingCreature->stimulate(press);
 					}
 				}
@@ -308,7 +307,7 @@ void Obj::updateCaution()
 		mAlertTimer = 0.0f;
 	}
 
-	if (mAlertTimer < C_PARMS->mGeneral.mAlertDuration.mValue) {
+	if (mAlertTimer < C_GENERALPARMS.mAlertDuration()) {
 		mAlertTimer += sys->mDeltaTime;
 	}
 }
@@ -319,10 +318,10 @@ void Obj::updateCaution()
  */
 f32 Obj::getViewAngle()
 {
-	if (mAlertTimer < C_PARMS->mGeneral.mAlertDuration.mValue) {
+	if (mAlertTimer < C_GENERALPARMS.mAlertDuration()) {
 		return 180.0f;
 	}
-	return C_PARMS->mGeneral.mViewAngle.mValue;
+	return C_GENERALPARMS.mViewAngle();
 }
 
 /**
@@ -338,9 +337,9 @@ void Obj::startJumpAttack()
 
 	f32 speed = mCurrentVelocity.normalise2D();
 
-	f32 factor = (2.0f * speed) / C_PROPERPARMS.mAirTime.mValue;
+	f32 factor = (2.0f * speed) / C_PROPERPARMS.mAirTime();
 	mCurrentVelocity.x *= factor;
-	mCurrentVelocity.y = C_PROPERPARMS.mJumpSpeed.mValue;
+	mCurrentVelocity.y = C_PROPERPARMS.mJumpSpeed();
 	mCurrentVelocity.z *= factor;
 }
 
@@ -350,7 +349,7 @@ void Obj::startJumpAttack()
  */
 void Obj::resetHomePosition()
 {
-	f32 dist        = 0.5f * C_PARMS->mGeneral.mHomeRadius.mValue;
+	f32 dist        = 0.5f * C_GENERALPARMS.mHomeRadius();
 	mHomePosition.x = dist * sinf(mFaceDir) + mPosition.x;
 	mHomePosition.y = mPosition.y;
 	mHomePosition.z = dist * cosf(mFaceDir) + mPosition.z;
@@ -362,9 +361,9 @@ void Obj::resetHomePosition()
  */
 void Obj::pressOnGround()
 {
-	EnemyFunc::flickStickPikmin(this, C_PARMS->mGeneral.mShakeRateMaybe.mValue, C_PARMS->mGeneral.mShakeKnockback.mValue,
-	                            C_PARMS->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
-	mToFlick = 0.0f;
+	EnemyFunc::flickStickPikmin(this, C_GENERALPARMS.mShakeChance(), C_GENERALPARMS.mShakeKnockback(), C_GENERALPARMS.mShakeDamage(),
+	                            FLICK_BACKWARD_ANGLE, nullptr);
+	mFlickTimer = 0.0f;
 	Sys::Sphere boundingSphere;
 	getBoundingSphere(boundingSphere);
 
@@ -387,10 +386,6 @@ void Obj::pressOnGround()
 		dropFX.create(&fxArg);
 
 		createDropEffect(fxPos, getDownSmokeScale());
-	}
-
-	if (getEnemyTypeID() == EnemyTypeID::EnemyID_SmokyFrog) {
-		static_cast<SmokyFrog::Obj*>(this)->createGas();
 	}
 
 	cameraMgr->startVibration(6, fxPos, 2);

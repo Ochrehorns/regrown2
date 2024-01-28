@@ -3,16 +3,15 @@
 #include "JSystem/J3D/J3DAnmLoader.h"
 #include "nans.h"
 
-static const char idk[]  = "\0\0\0\0\0\0\0\0\0";
-static const char name[] = "ebiP2TitleUnit";
+static const u32 padding[]    = { 0, 0, 0 };
+static const char className[] = "ebiP2TitleUnit";
 
 namespace ebi {
 namespace title {
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000A8
+/**
+ * @note Address: N/A
+ * @note Size: 0xA8
  */
 void E3DModel_set2DCoordToBaseTRMatrix_(J3DModel* model, Vector2f& pos, Vector2f& angle, f32 scale)
 {
@@ -42,10 +41,9 @@ void E3DModel_set2DCoordToBaseTRMatrix_(J3DModel* model, Vector2f& pos, Vector2f
 	PSMTXConcat(mtx, temp, mtx);
 }
 
-/*
- * --INFO--
- * Address:	803C0AF8
- * Size:	000088
+/**
+ * @note Address: 0x803C0AF8
+ * @note Size: 0x88
  */
 bool TParamBase::loadSettingFile(JKRArchive* arc, char* path)
 {
@@ -59,42 +57,38 @@ bool TParamBase::loadSettingFile(JKRArchive* arc, char* path)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	803C0B80
- * Size:	0000B0
+/**
+ * @note Address: 0x803C0B80
+ * @note Size: 0xB0
  */
-void TObjBase::calcModelBaseMtx_() { E3DModel_set2DCoordToBaseTRMatrix_(mModel, mPos, mAngle, mParms[1]); }
+void TObjBase::calcModelBaseMtx_() { E3DModel_set2DCoordToBaseTRMatrix_(mModel, mPosition, mAngle, mParms[1]); }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000040
+/**
+ * @note Address: N/A
+ * @note Size: 0x40
  */
 void TObjBase::pushOut_(Vector2f&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	803C0C30
- * Size:	000094
+/**
+ * @note Address: 0x803C0C30
+ * @note Size: 0x94
  */
 void TObjBase::pushOut(TObjBase* otherObj)
 {
 	if (isCalc() && otherObj->isCalc()) {
 		EGECircle2f bounds;
 		bounds.mRadius = mParms[2] + otherObj->mParms[2];
-		bounds.mCenter = mPos;
-		bounds.out(&otherObj->mPos);
+		bounds.mCenter = mPosition;
+		bounds.out(&otherObj->mPosition);
 	}
 }
 
-/*
- * --INFO--
- * Address:	803C0CC4
- * Size:	000220
+/**
+ * @note Address: 0x803C0CC4
+ * @note Size: 0x220
  */
 void TMapBase::setArchive(JKRArchive* arc)
 {
@@ -121,19 +115,18 @@ void TMapBase::setArchive(JKRArchive* arc)
 
 	mModel = new J3DModel(mMainModelData, 0x20000, 1);
 
-	mFrameCtrlWait.init(mAnimWait->mMaxFrame);
-	mFrameCtrlWait.mAttr      = 2;
-	mFrameCtrlWait.mAnimSpeed = sys->mDeltaTime * 60.0f * 0.5f;
+	mFrameCtrlWait.init(mAnimWait->mFrameLength);
+	mFrameCtrlWait.mAttribute = 2;
+	mFrameCtrlWait.mRate      = sys->mDeltaTime * 60.0f * 0.5f;
 
-	mFrameCtrlWind.init(mAnimWind->mMaxFrame);
-	mFrameCtrlWind.mAttr      = 2;
-	mFrameCtrlWind.mAnimSpeed = sys->mDeltaTime * 60.0f * 0.5f;
+	mFrameCtrlWind.init(mAnimWind->mFrameLength);
+	mFrameCtrlWind.mAttribute = 2;
+	mFrameCtrlWind.mRate      = sys->mDeltaTime * 60.0f * 0.5f;
 }
 
-/*
- * --INFO--
- * Address:	803C0EE4
- * Size:	000048
+/**
+ * @note Address: 0x803C0EE4
+ * @note Size: 0x48
  */
 void TMapBase::startWind(f32 time)
 {
@@ -143,10 +136,9 @@ void TMapBase::startWind(f32 time)
 	mWindTimerMax = wind;
 }
 
-/*
- * --INFO--
- * Address:	803C0F2C
- * Size:	00027C
+/**
+ * @note Address: 0x803C0F2C
+ * @note Size: 0x27C
  */
 void TMapBase::update()
 {
@@ -159,14 +151,14 @@ void TMapBase::update()
 	switch (mState) {
 	case 0:
 		mFrameCtrlWait.update();
-		mAnimWait->mCurrentFrame                            = mFrameCtrlWait.mCurrTime;
+		mAnimWait->mCurrentFrame                            = mFrameCtrlWait.mFrame;
 		mModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = mAnimMtxCalcWait;
 		break;
 	case 1:
 		mFrameCtrlWait.update();
 		mFrameCtrlWind.update();
-		mAnimWait->mCurrentFrame = mFrameCtrlWait.mCurrTime;
-		mAnimWind->mCurrentFrame = mFrameCtrlWind.mCurrTime;
+		mAnimWait->mCurrentFrame = mFrameCtrlWait.mFrame;
+		mAnimWind->mCurrentFrame = mFrameCtrlWind.mFrame;
 		J3DMtxCalcAnmBase* anm   = mAnimMtxCalcWind;
 		if (mWindTimer) {
 			mWindTimer--;
@@ -179,7 +171,7 @@ void TMapBase::update()
 		}
 
 		calc      = 1.0f - calc;
-		f32 calc2 = (calc <= 0.2f) ? calc / 0.2f : (calc <= 0.8f) ? 1.0f : calc * -5.0f + 5.0f;
+		f32 calc2 = determineAnimRate(calc);
 		anm->setWeight(0, 1.0f - calc2);
 		anm->setWeight(1, calc2);
 		mModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = anm;
@@ -191,10 +183,9 @@ void TMapBase::update()
 	mModel->viewCalc();
 }
 
-/*
- * --INFO--
- * Address:	803C11A8
- * Size:	000150
+/**
+ * @note Address: 0x803C11A8
+ * @note Size: 0x150
  */
 void TBGEnemyBase::setArchive(JKRArchive* arc)
 {
@@ -216,29 +207,27 @@ void TBGEnemyBase::setArchive(JKRArchive* arc)
 	mModel = new J3DModel(mMainModelData, 0x20000, 1);
 }
 
-/*
- * --INFO--
- * Address:	803C12F8
- * Size:	00005C
+/**
+ * @note Address: 0x803C12F8
+ * @note Size: 0x5C
  */
 void TBGEnemyBase::start()
 {
-	mFrameCtrl.init(mAnim->mMaxFrame);
-	mFrameCtrl.mAttr      = 0;
-	mFrameCtrl.mAnimSpeed = sys->mDeltaTime * 60.0f * 0.5f;
+	mFrameCtrl.init(mAnim->mFrameLength);
+	mFrameCtrl.mAttribute = 0;
+	mFrameCtrl.mRate      = sys->mDeltaTime * 60.0f * 0.5f;
 }
 
-/*
- * --INFO--
- * Address:	803C1354
- * Size:	000124
+/**
+ * @note Address: 0x803C1354
+ * @note Size: 0x124
  */
 void TBGEnemyBase::update()
 {
 	calcModelBaseMtx_();
 
 	mFrameCtrl.update();
-	mAnim->mCurrentFrame                                = mFrameCtrl.mCurrTime;
+	mAnim->mCurrentFrame                                = mFrameCtrl.mFrame;
 	mModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = mAnimMtxCalc;
 
 	mModel->calc();
@@ -246,10 +235,9 @@ void TBGEnemyBase::update()
 	mModel->viewCalc();
 }
 
-/*
- * --INFO--
- * Address:	803C1478
- * Size:	0002D8
+/**
+ * @note Address: 0x803C1478
+ * @note Size: 0x2D8
  */
 void TBlackPlane::setArchive(JKRArchive* arc)
 {
@@ -273,233 +261,33 @@ void TBlackPlane::setArchive(JKRArchive* arc)
 
 	mAnimColor->searchUpdateMaterialID(mModel->mModelData);
 
-	for (u16 i = 0; i < (u16)(int)mModel->mModelData->getMaterialNum(); i++) {
+	for (u16 i = 0; i < mModel->getModelData()->getMaterialNum(); i++) {
 		J3DMaterialAnm* anm = new J3DMaterialAnm;
 		mModel->mModelData->getMaterialNodePointer(i)->change();
-		mModel->mModelData->getMaterialNodePointer(i)->mAnm = anm;
+		mModel->mModelData->getMaterialNodePointer(i)->mMaterialAnm = anm;
 	}
 
-	j3dSys.ErrorReport(mModel->mModelData->mMaterialTable.entryTevRegAnimator(mAnimColor));
-	/*
-stwu     r1, -0x20(r1)
-mflr     r0
-stw      r0, 0x24(r1)
-stw      r31, 0x1c(r1)
-mr       r31, r3
-stw      r30, 0x18(r1)
-stw      r29, 0x14(r1)
-mr       r29, r4
-mr       r3, r29
-addi     r4, r2, lbl_8051F860@sda21
-stw      r28, 0x10(r1)
-lwz      r12, 0(r29)
-lwz      r12, 0x14(r12)
-mtctr    r12
-bctrl
-or.      r28, r3, r3
-bne      lbl_803C14D8
-lis      r3, lbl_80496200@ha
-lis      r5, lbl_80496214@ha
-addi     r3, r3, lbl_80496200@l
-li       r4, 0x102
-addi     r5, r5, lbl_80496214@l
-crclr    6
-bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803C14D8:
-mr       r3, r28
-lis      r4, 0x1010
-bl       load__22J3DModelLoaderDataBaseFPCvUl
-stw      r3, 0x2c(r31)
-mr       r3, r29
-addi     r4, r2, lbl_8051F868@sda21
-lwz      r12, 0(r29)
-lwz      r12, 0x14(r12)
-mtctr    r12
-bctrl
-or.      r28, r3, r3
-bne      lbl_803C1524
-lis      r3, lbl_80496200@ha
-lis      r5, lbl_80496214@ha
-addi     r3, r3, lbl_80496200@l
-li       r4, 0x10c
-addi     r5, r5, lbl_80496214@l
-crclr    6
-bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803C1524:
-mr       r3, r28
-bl       load__20J3DAnmLoaderDataBaseFPCv
-stw      r3, 0x44(r31)
-mr       r3, r29
-addi     r4, r2, lbl_8051F870@sda21
-lwz      r12, 0(r29)
-lwz      r12, 0x14(r12)
-mtctr    r12
-bctrl
-or.      r28, r3, r3
-bne      lbl_803C156C
-lis      r3, lbl_80496200@ha
-lis      r5, lbl_80496214@ha
-addi     r3, r3, lbl_80496200@l
-li       r4, 0x111
-addi     r5, r5, lbl_80496214@l
-crclr    6
-bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803C156C:
-mr       r3, r28
-bl       load__20J3DAnmLoaderDataBaseFPCv
-stw      r3, 0x60(r31)
-lwz      r3, 0x2c(r31)
-lwz      r4, 0x44(r31)
-lwz      r0, 0x18(r3)
-clrlwi   r3, r0, 0x1c
-bl       J3DNewMtxCalcAnm__FUlP15J3DAnmTransform
-stw      r3, 0x48(r31)
-li       r3, 0xdc
-lfs      f0, lbl_8051F83C@sda21(r2)
-stfs     f0, 0x14(r31)
-bl       __nw__FUl
-or.      r29, r3, r3
-beq      lbl_803C15E0
-lis      r3, __vt__8J3DModel@ha
-lwz      r30, 0x2c(r31)
-addi     r0, r3, __vt__8J3DModel@l
-mr       r28, r29
-stw      r0, 0(r29)
-addi     r3, r28, 0x88
-bl       init__15J3DVertexBufferFv
-mr       r3, r28
-bl       initialize__8J3DModelFv
-mr       r3, r28
-mr       r4, r30
-lis      r5, 2
-li       r6, 1
-bl       entryModelData__8J3DModelFP12J3DModelDataUlUl
-
-lbl_803C15E0:
-stw      r29, 0x28(r31)
-lwz      r4, 0x28(r31)
-lwz      r3, 0x60(r31)
-lwz      r4, 4(r4)
-bl       searchUpdateMaterialID__15J3DAnmTevRegKeyFP12J3DModelData
-li       r29, 0
-b        lbl_803C16FC
-
-lbl_803C15FC:
-li       r3, 0xf4
-bl       __nw__FUl
-or.      r30, r3, r3
-beq      lbl_803C16C0
-lis      r3, __vt__14J3DMaterialAnm@ha
-lis      r4, __ct__14J3DMatColorAnmFv@ha
-addi     r0, r3, __vt__14J3DMaterialAnm@l
-li       r6, 8
-lis      r3, __dt__14J3DMatColorAnmFv@ha
-stw      r0, 0(r30)
-addi     r5, r3, __dt__14J3DMatColorAnmFv@l
-addi     r4, r4, __ct__14J3DMatColorAnmFv@l
-addi     r3, r30, 4
-li       r7, 2
-bl       __construct_array
-lis      r3, __ct__12J3DTexMtxAnmFv@ha
-lis      r5, __dt__12J3DTexMtxAnmFv@ha
-addi     r4, r3, __ct__12J3DTexMtxAnmFv@l
-li       r6, 8
-addi     r3, r30, 0x14
-addi     r5, r5, __dt__12J3DTexMtxAnmFv@l
-li       r7, 8
-bl       __construct_array
-lis      r3, __ct__11J3DTexNoAnmFv@ha
-lis      r5, __dt__11J3DTexNoAnmFv@ha
-addi     r4, r3, __ct__11J3DTexNoAnmFv@l
-li       r6, 0xc
-addi     r3, r30, 0x54
-addi     r5, r5, __dt__11J3DTexNoAnmFv@l
-li       r7, 8
-bl       __construct_array
-lis      r3, __ct__14J3DTevColorAnmFv@ha
-lis      r5, __dt__14J3DTevColorAnmFv@ha
-addi     r4, r3, __ct__14J3DTevColorAnmFv@l
-li       r6, 8
-addi     r3, r30, 0xb4
-addi     r5, r5, __dt__14J3DTevColorAnmFv@l
-li       r7, 4
-bl       __construct_array
-lis      r3, __ct__15J3DTevKColorAnmFv@ha
-lis      r5, __dt__15J3DTevKColorAnmFv@ha
-addi     r4, r3, __ct__15J3DTevKColorAnmFv@l
-li       r6, 8
-addi     r3, r30, 0xd4
-addi     r5, r5, __dt__15J3DTevKColorAnmFv@l
-li       r7, 4
-bl       __construct_array
-mr       r3, r30
-bl       initialize__14J3DMaterialAnmFv
-
-lbl_803C16C0:
-lwz      r3, 0x28(r31)
-rlwinm   r28, r29, 2, 0xe, 0x1d
-lwz      r3, 4(r3)
-lwz      r3, 0x60(r3)
-lwzx     r3, r3, r28
-lwz      r12, 0(r3)
-lwz      r12, 0x2c(r12)
-mtctr    r12
-bctrl
-lwz      r3, 0x28(r31)
-addi     r29, r29, 1
-lwz      r3, 4(r3)
-lwz      r3, 0x60(r3)
-lwzx     r3, r3, r28
-stw      r30, 0x3c(r3)
-
-lbl_803C16FC:
-lwz      r4, 0x28(r31)
-clrlwi   r3, r29, 0x10
-lwz      r5, 4(r4)
-lhz      r0, 0x5c(r5)
-cmplw    r3, r0
-blt      lbl_803C15FC
-lwz      r4, 0x60(r31)
-addi     r3, r5, 0x58
-bl       entryTevRegAnimator__16J3DMaterialTableFP15J3DAnmTevRegKey
-lis      r5, j3dSys@ha
-mr       r4, r3
-addi     r3, r5, j3dSys@l
-bl       ErrorReport__6J3DSysCF10J3DErrType
-lwz      r0, 0x24(r1)
-lwz      r31, 0x1c(r1)
-lwz      r30, 0x18(r1)
-lwz      r29, 0x14(r1)
-lwz      r28, 0x10(r1)
-mtlr     r0
-addi     r1, r1, 0x20
-blr
-	*/
+	j3dSys.ErrorReport(mModel->mModelData->getMaterialTable().entryTevRegAnimator(mAnimColor));
 }
 
-/*
- * --INFO--
- * Address:	803C1750
- * Size:	0000A0
+/**
+ * @note Address: 0x803C1750
+ * @note Size: 0xA0
  */
 void TBlackPlane::start()
 {
-	mFrameCtrl.init(mAnim->mMaxFrame - 2);
-	mFrameCtrl.mAttr      = 0;
-	mFrameCtrl.mAnimSpeed = sys->mDeltaTime * 60.0f * 0.5f;
+	mFrameCtrl.init(mAnim->mFrameLength - 2);
+	mFrameCtrl.mAttribute = 0;
+	mFrameCtrl.mRate      = sys->mDeltaTime * 60.0f * 0.5f;
 
-	mFrameCtrlColor.init(mAnimColor->mMaxFrame - 2);
-	mFrameCtrlColor.mAttr      = 0;
-	mFrameCtrlColor.mAnimSpeed = sys->mDeltaTime * 60.0f * 0.5f;
+	mFrameCtrlColor.init(mAnimColor->mFrameLength - 2);
+	mFrameCtrlColor.mAttribute = 0;
+	mFrameCtrlColor.mRate      = sys->mDeltaTime * 60.0f * 0.5f;
 }
 
-/*
- * --INFO--
- * Address:	803C17F0
- * Size:	000110
+/**
+ * @note Address: 0x803C17F0
+ * @note Size: 0x110
  */
 void TBlackPlane::updateBeforeCamera()
 {
@@ -508,17 +296,16 @@ void TBlackPlane::updateBeforeCamera()
 	mFrameCtrl.update();
 	mFrameCtrlColor.update();
 
-	mAnimColor->mCurrentFrame                           = mFrameCtrlColor.mCurrTime;
-	mAnim->mCurrentFrame                                = mFrameCtrl.mCurrTime;
+	mAnimColor->mCurrentFrame                           = mFrameCtrlColor.mFrame;
+	mAnim->mCurrentFrame                                = mFrameCtrl.mFrame;
 	mModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = mAnimMtxCalc;
 
 	mModel->calc();
 }
 
-/*
- * --INFO--
- * Address:	803C1900
- * Size:	000050
+/**
+ * @note Address: 0x803C1900
+ * @note Size: 0x50
  */
 void TBlackPlane::updateAfterCamera()
 {
@@ -526,21 +313,19 @@ void TBlackPlane::updateAfterCamera()
 	mModel->viewCalc();
 }
 
-/*
- * --INFO--
- * Address:	803C1950
- * Size:	00004C
+/**
+ * @note Address: 0x803C1950
+ * @note Size: 0x4C
  */
 void TBlackPlane::setLogo()
 {
-	mFrameCtrl.mCurrTime      = mFrameCtrl.mEndFrame;
-	mFrameCtrlColor.mCurrTime = mFrameCtrlColor.mEndFrame;
+	mFrameCtrl.mFrame      = mFrameCtrl.mEnd;
+	mFrameCtrlColor.mFrame = mFrameCtrlColor.mEnd;
 }
 
-/*
- * --INFO--
- * Address:	803C199C
- * Size:	000078
+/**
+ * @note Address: 0x803C199C
+ * @note Size: 0x78
  */
 Vector3f TBlackPlane::getCameraPos()
 {

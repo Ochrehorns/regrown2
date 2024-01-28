@@ -219,9 +219,28 @@ struct PlayCamera : public LookAtCamera {
 	virtual Vector3f getLookAtPosition_() { return mLookAtPosition; } // _58 (weak)
 	virtual bool isSpecialCamera();                                   // _70
 	virtual void updateMatrix();                                      // _74
-	virtual bool doUpdate();                                          // _78
+	virtual void doUpdate();                                          // _78
 	virtual void startVibration(int) { }                              // _7C (weak)
 	virtual void init();                                              // _80
+
+	inline f32 adjustAngle(f32 in, f32 out)
+	{
+		CameraParms* parms = mCameraParms;
+
+		if (in >= out) {
+			f32 x = in - out;
+			if (TAU - x < x) {
+				in -= TAU;
+			}
+		} else {
+			f32 x = out - in;
+			if (TAU - x < x) {
+				in += TAU;
+			}
+		}
+
+		mCameraAngleCurrent += parms->mRotSpeed.mValue * (in - out);
+	}
 
 	void setCameraParms(CameraParms* parms);
 	void setVibrationParms(VibrationParms* parms);
@@ -248,18 +267,18 @@ struct PlayCamera : public LookAtCamera {
 	void otherVibFinished(int id);
 	bool isModCameraFinished();
 	void setCollisionCameraTargetPhi(int);
-	void getCollisionCameraTargetPhi(f32, f32);
+	f32 getCollisionCameraTargetPhi(f32, f32);
 
 	// _00 		= VTBL
 	// _00-_198	= LookAtCamera
 	Navi* mTargetObj;                // _198
 	int mChangePlayerState;          // _19C (is 1 during a player transition, 0 otherwise)
 	int mCameraZoomLevel;            // _1A0 (what's toggled between when you press R)
-	u32 mCameraSelAngle;             // _1A4 (what's toggled between when you press Z)
+	int mCameraSelAngle;             // _1A4 (what's toggled between when you press Z)
 	f32 mCurrTargetDistance;         // _1A8
 	f32 mGoalTargetDistance;         // _1AC
 	f32 mCameraAngleCurrent;         // _1B0
-	f32 mCameraAngleGoal;            // _1B4
+	f32 mCameraAngleTarget;          // _1B4
 	f32 mCurrVerticalAngle;          // _1B8
 	f32 mGoalVerticalAngle;          // _1BC
 	f32 mGoalFOV;                    // _1C0

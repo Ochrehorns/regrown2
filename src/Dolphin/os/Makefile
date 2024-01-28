@@ -7,20 +7,19 @@ OS_FILES:=\
 	$(BUILD_DIR)/src/Dolphin/os/OSCache.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSContext.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSError.o\
-	$(BUILD_DIR)/asm/Dolphin/os/OSFont.o\
+	$(BUILD_DIR)/src/Dolphin/os/OSFont.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSInterrupt.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSLink.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSMessage.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSMemory.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSMutex.o\
-	$(BUILD_DIR)/asm/Dolphin/os/OSReboot.o\
+	$(BUILD_DIR)/src/Dolphin/os/OSReboot.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSReset.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSResetSW.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSRtc.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSSync.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSThread.o\
 	$(BUILD_DIR)/src/Dolphin/os/OSTime.o\
-	$(BUILD_DIR)/asm/Dolphin/os/__mem.o\
 	$(BUILD_DIR)/src/Dolphin/os/__start.o\
 	$(BUILD_DIR)/src/Dolphin/os/__ppc_eabi_init.o\
 

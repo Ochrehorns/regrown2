@@ -17,10 +17,13 @@ namespace Game {
 
 static const int unusedPikiMgrArray[] = { 0, 0, 0 };
 
-/*
- * --INFO--
- * Address:	8015CD14
- * Size:	0000B4
+bool PikiMgr::throwPikiDebug;
+PikiMgr* pikiMgr;
+int PikiMgr::mBirthMode;
+
+/**
+ * @note Address: 0x8015CD14
+ * @note Size: 0xB4
  */
 PikiMgr::PikiMgr()
 {
@@ -38,10 +41,9 @@ PikiMgr::PikiMgr()
 	mFlags[1] = 0;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000050
+/**
+ * @note Address: N/A
+ * @note Size: 0x50
  */
 void PikiMgr::init()
 {
@@ -50,38 +52,20 @@ void PikiMgr::init()
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8015E68C
- * Size:	000038
+/**
+ * @note Address: 0x8015E68C
+ * @note Size: 0x38
  */
 void PikiMgr::resetMgr()
 {
-	resetMgr(); // should be MonoObjectMgr::resetMgr
+	MonoObjectMgr::resetMgr(); // should be MonoObjectMgr::resetMgr
 	mDopedPikis = 0;
 	mFlags[0]   = 0;
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	bl       "resetMgr__27MonoObjectMgr<Q24Game4Piki>Fv"
-	li       r0, 0
-	stw      r0, 0x30(r31)
-	stb      r0, 0x38(r31)
-	lwz      r31, 0xc(r1)
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	8015E6C4
- * Size:	000064
+/**
+ * @note Address: 0x8015E6C4
+ * @note Size: 0x64
  */
 void PikiMgr::onAlloc()
 {
@@ -90,10 +74,9 @@ void PikiMgr::onAlloc()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8015E738
- * Size:	000060
+/**
+ * @note Address: 0x8015E738
+ * @note Size: 0x60
  */
 void PikiMgr::setupPiki(Piki* piki)
 {
@@ -102,15 +85,14 @@ void PikiMgr::setupPiki(Piki* piki)
 	piki->mParms     = mParms;
 }
 
-/*
- * --INFO--
- * Address:	8015E798
- * Size:	000324
+/**
+ * @note Address: 0x8015E798
+ * @note Size: 0x324
  */
 Piki* PikiMgr::birth()
 {
 	switch (mBirthMode) {
-	case 0: {
+	case PikiMgr::PSM_Normal: {
 		int pikiCount   = mActiveCount;
 		int sproutCount = 0;
 		if (ItemPikihead::mgr) {
@@ -122,10 +104,10 @@ Piki* PikiMgr::birth()
 		return nullptr;
 	}
 
-	case 1:
+	case PikiMgr::PSM_Force:
 		return MonoObjectMgr::birth();
 
-	case 2: {
+	case PikiMgr::PSM_Replace: {
 		int pikiCount   = mActiveCount;
 		int sproutCount = 0;
 		if (ItemPikihead::mgr) {
@@ -166,10 +148,9 @@ Piki* PikiMgr::birth()
 	return MonoObjectMgr::birth();
 }
 
-/*
- * --INFO--
- * Address:	8015EABC
- * Size:	0000CC
+/**
+ * @note Address: 0x8015EABC
+ * @note Size: 0xCC
  */
 void PikiMgr::loadResources(int modelFlag)
 {
@@ -184,16 +165,15 @@ void PikiMgr::loadResources(int modelFlag)
 	load(modelFlag);
 }
 
-/*
- * --INFO--
- * Address:	8015EBD8
- * Size:	000298
+/**
+ * @note Address: 0x8015EBD8
+ * @note Size: 0x298
  */
 void PikiMgr::load(int modelFlag)
 {
 	JKRHeap* heap = JKRGetCurrentHeap();
 	heap->getFreeSize();
-	JKRArchive* arc = JKRArchive::mount("/user/Kando/piki/pikis.szs", JKRArchive::EMM_Mem, sys->mSysHeap, JKRArchive::EMD_Head);
+	JKRArchive* arc = JKRMountArchive("/user/Kando/piki/pikis.szs", JKRArchive::EMM_Mem, sys->mSysHeap, JKRArchive::EMD_Head);
 	mModelArchive   = arc;
 	heap->getFreeSize();
 	JUT_ASSERTLINE(450, arc, "pikis.szs not found !\n");
@@ -205,11 +185,11 @@ void PikiMgr::load(int modelFlag)
 	loadBmd(Bulbmin, "piki_kochappy");
 	loadBmd(Carrot, "piki_ninjin");
 
-	mLeafModel      = J3DModelLoaderDataBase::load(arc->getResource("happa_model/leaf.bmd"), 0x20000000);
-	mBudModel       = J3DModelLoaderDataBase::load(arc->getResource("happa_model/bud.bmd"), 0x240000);
-	mFlowerModel    = J3DModelLoaderDataBase::load(arc->getResource("happa_model/flower.bmd"), 0x240000);
-	mRedBudModel    = J3DModelLoaderDataBase::load(arc->getResource("happa_model/bud_red.bmd"), 0x240000);
-	mRedFlowerModel = J3DModelLoaderDataBase::load(arc->getResource("happa_model/flower_red.bmd"), 0x240000);
+	mHappaModel[0] = J3DModelLoaderDataBase::load(arc->getResource("happa_model/leaf.bmd"), 0x20000000);
+	mHappaModel[1] = J3DModelLoaderDataBase::load(arc->getResource("happa_model/bud.bmd"), 0x240000);
+	mHappaModel[2] = J3DModelLoaderDataBase::load(arc->getResource("happa_model/flower.bmd"), 0x240000);
+	mHappaModel[3] = J3DModelLoaderDataBase::load(arc->getResource("happa_model/bud_red.bmd"), 0x240000);
+	mHappaModel[4] = J3DModelLoaderDataBase::load(arc->getResource("happa_model/flower_red.bmd"), 0x240000);
 
 	sys->heapStatusStart("pikmin-ModelMgr", nullptr);
 	mModelMgr = new SysShape::ModelMgr(PikiColorCount, &mBluPikiModel, 100, 0x20000, modelFlag,
@@ -217,196 +197,16 @@ void PikiMgr::load(int modelFlag)
 	sys->heapStatusEnd("pikmin-ModelMgr");
 
 	for (int i = 0; i < 5; i++) {
-		J3DModelData* model = (&mLeafModel)[i];
+		J3DModelData* model = mHappaModel[i];
 		model->newSharedDisplayList(0x40000);
-		model->simpleCalcMaterial(0, j3dDefaultMtx);
+		model->simpleCalcMaterial(0, *(Mtx*)j3dDefaultMtx);
 		model->makeSharedDL();
 	}
-
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	lis      r5, lbl_8047D7A0@ha
-	stw      r0, 0x34(r1)
-	stmw     r27, 0x1c(r1)
-	mr       r29, r3
-	mr       r30, r4
-	addi     r31, r5, lbl_8047D7A0@l
-	lwz      r27, sCurrentHeap__7JKRHeap@sda21(r13)
-	mr       r3, r27
-	bl       getFreeSize__7JKRHeapFv
-	lwz      r5, sys@sda21(r13)
-	addi     r3, r31, 0x854
-	li       r4, 1
-	li       r6, 1
-	lwz      r5, 0x38(r5)
-	bl
-mount__10JKRArchiveFPCcQ210JKRArchive10EMountModeP7JKRHeapQ210JKRArchive15EMountDirection
-	mr       r28, r3
-	mr       r3, r27
-	stw      r28, 0x7c(r29)
-	bl       getFreeSize__7JKRHeapFv
-	cmplwi   r28, 0
-	bne      lbl_8015EC48
-	addi     r3, r31, 0x818
-	addi     r5, r31, 0x870
-	li       r4, 0x1c2
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8015EC48:
-	mr       r3, r29
-	addi     r5, r31, 0x888
-	li       r4, 0
-	bl       loadBmd__Q24Game7PikiMgrFiPc
-	mr       r3, r29
-	addi     r5, r31, 0x898
-	li       r4, 1
-	bl       loadBmd__Q24Game7PikiMgrFiPc
-	mr       r3, r29
-	addi     r5, r31, 0x8a4
-	li       r4, 2
-	bl       loadBmd__Q24Game7PikiMgrFiPc
-	mr       r3, r29
-	addi     r5, r31, 0x8b4
-	li       r4, 4
-	bl       loadBmd__Q24Game7PikiMgrFiPc
-	mr       r3, r29
-	addi     r5, r31, 0x8c4
-	li       r4, 3
-	bl       loadBmd__Q24Game7PikiMgrFiPc
-	mr       r3, r29
-	addi     r5, r31, 0x8d4
-	li       r4, 5
-	bl       loadBmd__Q24Game7PikiMgrFiPc
-	mr       r3, r29
-	addi     r5, r31, 0x8e4
-	li       r4, 6
-	bl       loadBmd__Q24Game7PikiMgrFiPc
-	mr       r3, r28
-	addi     r4, r31, 0x8f0
-	lwz      r12, 0(r28)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	lis      r4, 0x2000
-	bl       load__22J3DModelLoaderDataBaseFPCvUl
-	stw      r3, 0x58(r29)
-	mr       r3, r28
-	addi     r4, r31, 0x908
-	lwz      r12, 0(r28)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	lis      r4, 0x24
-	bl       load__22J3DModelLoaderDataBaseFPCvUl
-	stw      r3, 0x5c(r29)
-	mr       r3, r28
-	addi     r4, r31, 0x91c
-	lwz      r12, 0(r28)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	lis      r4, 0x24
-	bl       load__22J3DModelLoaderDataBaseFPCvUl
-	stw      r3, 0x60(r29)
-	mr       r3, r28
-	addi     r4, r31, 0x934
-	lwz      r12, 0(r28)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	lis      r4, 0x24
-	bl       load__22J3DModelLoaderDataBaseFPCvUl
-	stw      r3, 0x64(r29)
-	mr       r3, r28
-	addi     r4, r31, 0x94c
-	lwz      r12, 0(r28)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	lis      r4, 0x24
-	bl       load__22J3DModelLoaderDataBaseFPCvUl
-	stw      r3, 0x68(r29)
-	addi     r4, r31, 0x968
-	li       r5, 0
-	lwz      r3, sys@sda21(r13)
-	bl       heapStatusStart__6SystemFPcP7JKRHeap
-	li       r3, 0x1c
-	bl       __nw__FUl
-	or.      r28, r3, r3
-	beq      lbl_8015EE04
-	li       r3, 0x14
-	bl       __nw__FUl
-	or.      r9, r3, r3
-	beq      lbl_8015EDE4
-	lis      r3, lbl_804B16A4@ha
-	lis      r4, "__vt__30IDelegate1<PQ28SysShape5Model>"@ha
-	addi     r7, r3, lbl_804B16A4@l
-	lis      r3, "__vt__45Delegate1<Q24Game7PikiMgr,PQ28SysShape5Model>"@ha
-	lwz      r6, 0(r7)
-	addi     r4, r4, "__vt__30IDelegate1<PQ28SysShape5Model>"@l
-	lwz      r5, 4(r7)
-	addi     r0, r3, "__vt__45Delegate1<Q24Game7PikiMgr,PQ28SysShape5Model>"@l
-	lwz      r3, 8(r7)
-	stw      r6, 8(r1)
-	stw      r4, 0(r9)
-	stw      r0, 0(r9)
-	stw      r29, 4(r9)
-	stw      r6, 8(r9)
-	stw      r5, 0xc(r9)
-	stw      r5, 0xc(r1)
-	stw      r3, 0x10(r1)
-	stw      r3, 0x10(r9)
-
-lbl_8015EDE4:
-	mr       r3, r28
-	mr       r8, r30
-	addi     r5, r29, 0x3c
-	li       r4, 7
-	li       r6, 0x64
-	lis      r7, 2
-	bl
-"__ct__Q28SysShape8ModelMgrFiPP12J3DModelDataiUlUlP30IDelegate1<PQ28SysShape5Model>"
-	mr       r28, r3
-
-lbl_8015EE04:
-	stw      r28, 0x70(r29)
-	addi     r4, r31, 0x968
-	lwz      r3, sys@sda21(r13)
-	bl       heapStatusEnd__6SystemFPc
-	lis      r3, j3dDefaultMtx@ha
-	mr       r28, r29
-	addi     r29, r3, j3dDefaultMtx@l
-	li       r27, 0
-
-lbl_8015EE24:
-	lwz      r30, 0x58(r28)
-	lis      r4, 4
-	mr       r3, r30
-	bl       newSharedDisplayList__12J3DModelDataFUl
-	mr       r3, r30
-	mr       r5, r29
-	li       r4, 0
-	bl       simpleCalcMaterial__12J3DModelDataFUsPA4_f
-	mr       r3, r30
-	bl       makeSharedDL__12J3DModelDataFv
-	addi     r27, r27, 1
-	addi     r28, r28, 4
-	cmpwi    r27, 5
-	blt      lbl_8015EE24
-	lmw      r27, 0x1c(r1)
-	lwz      r0, 0x34(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
 }
 
-/*
- * --INFO--
- * Address:	8015EE70
- * Size:	000098
+/**
+ * @note Address: 0x8015EE70
+ * @note Size: 0x98
  */
 void PikiMgr::loadBmd(int id, char* name)
 {
@@ -418,10 +218,9 @@ void PikiMgr::loadBmd(int id, char* name)
 	(&mBluPikiModel)[id] = data;
 }
 
-/*
- * --INFO--
- * Address:	8015EF08
- * Size:	00004C
+/**
+ * @note Address: 0x8015EF08
+ * @note Size: 0x4C
  */
 void PikiMgr::createModelCallback(SysShape::Model* model)
 {
@@ -430,24 +229,21 @@ void PikiMgr::createModelCallback(SysShape::Model* model)
 	model->mJ3dModel->lock();
 }
 
-/*
- * --INFO--
- * Address:	8015EF54
- * Size:	000024
+/**
+ * @note Address: 0x8015EF54
+ * @note Size: 0x24
  */
 SysShape::Model* PikiMgr::createModel(int id, int num) { return mModelMgr->createModel(id, num); }
 
-/*
- * --INFO--
- * Address:	8015EF78
- * Size:	000008
+/**
+ * @note Address: 0x8015EF78
+ * @note Size: 0x8
  */
 SysShape::Model* PikiMgr::createLeafModel(int id, int num) { return nullptr; }
 
-/*
- * --INFO--
- * Address:	8015EF80
- * Size:	000280
+/**
+ * @note Address: 0x8015EF80
+ * @note Size: 0x280
  */
 void PikiMgr::setMovieDraw(bool drawOn)
 {
@@ -658,10 +454,9 @@ lbl_8015F1E0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8015F200
- * Size:	000084
+/**
+ * @note Address: 0x8015F200
+ * @note Size: 0x84
  */
 void PikiMgr::debugShapeDL(char* text)
 {
@@ -672,16 +467,19 @@ void PikiMgr::debugShapeDL(char* text)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8015F284
- * Size:	000198
+/**
+ * @note Address: 0x8015F284
+ * @note Size: 0x198
  */
 void PikiMgr::doSimpleDraw(Viewport* vp)
 {
 	for (int i = 0; i < 5; i++) {
-		j3dSys; // no clue
-		J3DMaterial* mat = (&mLeafModel)[i]->mJointTree.mRootNode->mMaterial;
+		J3DModelData& modelData = *mHappaModel[i];
+		J3DMaterial* mat        = modelData.mJointTree.mRootNode->mMaterial;
+		j3dSys.mVtxPos          = modelData.getVertexData()->getVtxPosArray();
+		j3dSys.mVtxNorm         = modelData.getVertexData()->getVtxNrmArray();
+		j3dSys.mVtxColor        = modelData.getVertexData()->getVtxColorArray(0);
+		J3DShape::sOldVcdVatCmd = nullptr;
 		for (mat; mat != nullptr; mat = mat->mNext) {
 			mat->loadSharedDL();
 			mat->mShape->loadPreDrawSetting();
@@ -832,10 +630,9 @@ lbl_8015F3F0:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8015F41C
- * Size:	0001D8
+/**
+ * @note Address: 0x8015F41C
+ * @note Size: 0x1D8
  */
 void PikiMgr::doAnimation()
 {
@@ -871,10 +668,9 @@ void PikiMgr::doAnimation()
 	sys->mTimers->_stop("doaPIKI");
 }
 
-/*
- * --INFO--
- * Address:	8015F5F4
- * Size:	000058
+/**
+ * @note Address: 0x8015F5F4
+ * @note Size: 0x58
  */
 void PikiMgr::setVsXlu(int p1, bool p2)
 {
@@ -893,14 +689,13 @@ void PikiMgr::setVsXlu(int p1, bool p2)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8015F64C
- * Size:	0001FC
+/**
+ * @note Address: 0x8015F64C
+ * @note Size: 0x1FC
  */
 void PikiMgr::doEntry()
 {
-	if (gameSystem->mMode == GSM_VERSUS_MODE) {
+	if (gameSystem->isVersusMode()) {
 		u8 flag = mFlags[1];
 		for (int i = 0; i < mMax; i++) {
 			if (!mOpenIds[i]) {
@@ -1092,17 +887,15 @@ lbl_8015F828:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8015F848
- * Size:	000004
+/**
+ * @note Address: 0x8015F848
+ * @note Size: 0x4
  */
 void PikiMgr::setupSoundViewerAndBas() { }
 
-/*
- * --INFO--
- * Address:	8015F84C
- * Size:	000074
+/**
+ * @note Address: 0x8015F84C
+ * @note Size: 0x74
  */
 int PikiMgr::getColorTransportScale(int color)
 {
@@ -1114,10 +907,9 @@ int PikiMgr::getColorTransportScale(int color)
 	return 1;
 }
 
-/*
- * --INFO--
- * Address:	8015F8C0
- * Size:	00003C
+/**
+ * @note Address: 0x8015F8C0
+ * @note Size: 0x3C
  */
 void PikiMgr::allocStorePikmins()
 {
@@ -1125,10 +917,9 @@ void PikiMgr::allocStorePikmins()
 	clearStorePikmins();
 }
 
-/*
- * --INFO--
- * Address:	8015F8FC
- * Size:	00006C
+/**
+ * @note Address: 0x8015F8FC
+ * @note Size: 0x6C
  */
 void PikiMgr::clearStorePikmins()
 {
@@ -1137,10 +928,9 @@ void PikiMgr::clearStorePikmins()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0002C0
+/**
+ * @note Address: N/A
+ * @note Size: 0x2C0
  */
 // void saveStorePikmins__Q24Game7PikiMgrFP23Condition<Game::Piki>()
 void PikiMgr::saveStorePikmins(Condition<Piki>*)
@@ -1148,20 +938,18 @@ void PikiMgr::saveStorePikmins(Condition<Piki>*)
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000C8
+/**
+ * @note Address: N/A
+ * @note Size: 0xC8
  */
 void PikiMgr::getStorePikmin(int, int)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	8015F968
- * Size:	00034C
+/**
+ * @note Address: 0x8015F968
+ * @note Size: 0x34C
  */
 // void moveAllPikmins__Q24Game7PikiMgrFR10Vector3f
 // fP23Condition<Game::Piki>()
@@ -1171,7 +959,7 @@ void PikiMgr::moveAllPikmins(Vector3f& pos, f32 range, Condition<Piki>* cond)
 	CI_LOOP(iterator)
 	{
 		Piki* piki = *iterator;
-		if (piki->mFlags.typeView & 2 && (!cond || cond->satisfy(piki))) {
+		if (piki->mFlags.isSet(2) && (!cond || cond->satisfy(piki))) {
 			f32 angle = randFloat() * TAU;
 			f32 dist  = randFloat() * range;
 			f32 x     = cos(angle) * dist;
@@ -1421,10 +1209,9 @@ lbl_8015FC58:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8015FCB4
- * Size:	000298
+/**
+ * @note Address: 0x8015FCB4
+ * @note Size: 0x298
  */
 void PikiMgr::forceEnterPikmins(u8 check)
 {
@@ -1629,10 +1416,9 @@ lbl_8015FF14:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8015FF4C
- * Size:	00060C
+/**
+ * @note Address: 0x8015FF4C
+ * @note Size: 0x60C
  */
 void PikiMgr::killDayEndPikmins(PikiContainer& container)
 {
@@ -2118,10 +1904,9 @@ lbl_8016050C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80160558
- * Size:	000258
+/**
+ * @note Address: 0x80160558
+ * @note Size: 0x258
  */
 void PikiMgr::killAllPikmins()
 {
@@ -2143,10 +1928,9 @@ void PikiMgr::killAllPikmins()
 	}
 }
 
-/*
- * --INFO--
- * Address:	801607B0
- * Size:	0002C8
+/**
+ * @note Address: 0x801607B0
+ * @note Size: 0x2C8
  */
 void PikiMgr::caveSaveFormationPikmins(bool doKill)
 {
@@ -2381,10 +2165,9 @@ lbl_80160A48:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	80160A78
- * Size:	0002C4
+/**
+ * @note Address: 0x80160A78
+ * @note Size: 0x2C4
  */
 void PikiMgr::caveSaveAllPikmins(bool check1, bool check2)
 {
@@ -2394,7 +2177,7 @@ void PikiMgr::caveSaveAllPikmins(bool check1, bool check2)
 	CI_LOOP(iterator)
 	{
 		Piki* piki = *iterator;
-		if (piki->isAlive() && (!check2 || (int)piki->getKind() != Bulbmin) && ((int)piki->getKind() != Bulbmin || piki->isPikmin())) {
+		if (piki->isAlive() && (!check2 || piki->getKind() != Bulbmin) && (piki->getKind() != Bulbmin || piki->isPikmin())) {
 			list[i++] = piki;
 		}
 	}
@@ -2408,20 +2191,18 @@ void PikiMgr::caveSaveAllPikmins(bool check1, bool check2)
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000290
+/**
+ * @note Address: N/A
+ * @note Size: 0x290
  */
 void PikiMgr::saveFormationPikmins(PikiContainer&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	80160D3C
- * Size:	0002A8
+/**
+ * @note Address: 0x80160D3C
+ * @note Size: 0x2A8
  */
 void PikiMgr::saveAllPikmins(PikiContainer& container)
 {

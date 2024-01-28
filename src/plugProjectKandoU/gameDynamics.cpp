@@ -1,641 +1,143 @@
-#include "types.h"
+#include "DynamicsParms.h"
+#include "Game/Rigid.h"
 
-/*
-    Generated from dpostproc
+DynamicsParms* DynamicsParms::mInstance;
 
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_8047C648
-    lbl_8047C648:
-        .4byte 0x44796E61
-        .4byte 0x6D696373
-        .4byte 0x00000000
-        .4byte 0x90568374
-        .4byte 0x838A834E
-        .4byte 0x83568387
-        .4byte 0x83930000
-        .4byte 0x5374612D
-        .4byte 0x5061726D
-        .4byte 0x00000000
-        .4byte 0x6D696372
-        .4byte 0x6F20636F
-        .4byte 0x6C6C6973
-        .4byte 0x696F6E00
-        .4byte 0x5265736F
-        .4byte 0x6C76658E
-        .4byte 0x9E82CC96
-        .4byte 0x808E4300
-        .4byte 0x656C6173
-        .4byte 0x74696369
-        .4byte 0x74790000
-        .4byte 0x96808E43
-        .4byte 0x3A74616E
-        .4byte 0x76656C00
-        .4byte 0x8CC592E8
-        .4byte 0x96808E43
-        .4byte 0x00000000
-        .4byte 0x8CC592E8
-        .4byte 0x96808E43
-        .4byte 0x926C0000
-        .4byte 0x89F1935D
-        .4byte 0x89658BBF
-        .4byte 0x82C882B5
-        .4byte 0x82C982B7
-        .4byte 0x82E90000
-        .4byte 0x89F1935D
-        .4byte 0x8382815B
-        .4byte 0x83818393
-        .4byte 0x83672044
-        .4byte 0x616D7000
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global __vt__13DynamicsParms
-    __vt__13DynamicsParms:
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte "@12@__dt__13DynamicsParmsFv"
-        .4byte __dt__13DynamicsParmsFv
-    .global "__vt__7Parm<b>"
-    "__vt__7Parm<b>":
-        .4byte 0
-        .4byte 0
-        .4byte "size__7Parm<b>Fv"
-        .4byte "write__7Parm<b>FR6Stream"
-        .4byte "read__7Parm<b>FR6Stream"
-        .4byte 0
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global mInstance__13DynamicsParms
-    mInstance__13DynamicsParms:
-        .skip 0x8
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80518238
-    lbl_80518238:
-        .4byte 0x430C0000
-    .global lbl_8051823C
-    lbl_8051823C:
-        .4byte 0x00000000
-    .global lbl_80518240
-    lbl_80518240:
-        .4byte 0x459C4000
-    .global lbl_80518244
-    lbl_80518244:
-        .4byte 0x53746174
-        .4byte 0x69630000
-    .global lbl_8051824C
-    lbl_8051824C:
-        .4byte 0x41200000
-    .global lbl_80518250
-    lbl_80518250:
-        .4byte 0x3C75C28F
-    .global lbl_80518254
-    lbl_80518254:
-        .float 0.3
-    .global lbl_80518258
-    lbl_80518258:
-        .float 1.0
-    .global lbl_8051825C
-    lbl_8051825C:
-        .4byte 0x96808E43
-        .4byte 0x00000000
-    .global lbl_80518264
-    lbl_80518264:
-        .4byte 0x42C80000
-    .global lbl_80518268
-    lbl_80518268:
-        .4byte 0x461C4000
-    .global lbl_8051826C
-    lbl_8051826C:
-        .float 0.05
-    .global lbl_80518270
-    lbl_80518270:
-        .float 0.5
-    .global lbl_80518274
-    lbl_80518274:
-        .4byte 0x447A0000
-    .global lbl_80518278
-    lbl_80518278:
-        .4byte 0x448C0000
-        .4byte 0x00000000
-*/
-
-/*
- * --INFO--
- * Address:	80139C60
- * Size:	000334
+/**
+ * @note Address: 0x80139C60
+ * @note Size: 0x334
  */
 DynamicsParms::DynamicsParms()
+    : Parameters(nullptr, "Dynamics")
+    , mNewFriction(this, 'd009', "êVÉtÉäÉNÉVÉáÉì", true, false, true) // 'new friction'
+    , mStaParm(this, 'd011', "Sta-Parm", 140.0f, 0.0f, 5000.0f)
+    , mStatic(this, 'd010', "Static", 10.0f, 0.0f, 5000.0f)
+    , mMicroCollision(this, 'd000', "micro collision", 0.015f, 0.0f, 10.0f)
+    , mFrictionDuringResolve(this, 'd001', "ResolveéûÇÃñÄéC", false, false, true) // 'friction during Resolve'
+    , mElasticity(this, 'd002', "elasticity", 0.3f, 0.0f, 1.0f)
+    , mFriction(this, 'd003', "ñÄéC", true, false, true)                          // 'friction'
+    , mFrictionTangentVelocity(this, 'd004', "ñÄéC:tanvel", true, false, true)    // 'friction:tanvel' - tangent velocity?
+    , mFixedFriction(this, 'd005', "å≈íËñÄéC", true, false, true)                 // 'fixed friction'
+    , mFixedFrictionValue(this, 'd006', "å≈íËñÄéCíl", 100.0f, 0.0f, 10000.0f)     // 'fixed friction value'
+    , mNoRotationEffect(this, 'd007', "âÒì]âeãøÇ»ÇµÇ…Ç∑ÇÈ", true, false, true)    // 'no rotation effect'
+    , mRotatingMomentDamp(this, 'd008', "âÒì]ÉÇÅ[ÉÅÉìÉg Damp", 0.05f, 0.0f, 1.0f) // 'rotating moment Damp'
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	extsh.   r0, r4
-	lis      r4, lbl_8047C648@ha
-	stw      r31, 0xc(r1)
-	addi     r31, r4, lbl_8047C648@l
-	stw      r30, 8(r1)
-	mr       r30, r3
-	beq      lbl_80139C90
-	addi     r0, r30, 0x1c0
-	stw      r0, 0(r30)
-
-lbl_80139C90:
-	li       r3, 0
-	addi     r0, r31, 0
-	stw      r3, 4(r30)
-	addi     r3, r30, 0xc
-	stw      r0, 8(r30)
-	bl       __ct__11JKRDisposerFv
-	lis      r3, __vt__13DynamicsParms@ha
-	lis      r5, 0x64303039@ha
-	addi     r3, r3, __vt__13DynamicsParms@l
-	mr       r4, r30
-	stw      r3, 0x1bc(r30)
-	addi     r0, r3, 8
-	addi     r3, r30, 0x24
-	addi     r5, r5, 0x64303039@l
-	stw      r0, 0xc(r30)
-	addi     r6, r31, 0xc
-	bl       __ct__8BaseParmFP10ParametersUlPc
-	lis      r3, "__vt__7Parm<b>"@ha
-	lis      r5, 0x64303131@ha
-	addi     r0, r3, "__vt__7Parm<b>"@l
-	li       r7, 1
-	stw      r0, 0x24(r30)
-	li       r0, 0
-	mr       r4, r30
-	addi     r3, r30, 0x40
-	stb      r7, 0x3c(r30)
-	addi     r5, r5, 0x64303131@l
-	addi     r6, r31, 0x1c
-	stb      r0, 0x3e(r30)
-	stb      r7, 0x3f(r30)
-	bl       __ct__8BaseParmFP10ParametersUlPc
-	lis      r3, "__vt__7Parm<f>"@ha
-	lis      r5, 0x64303130@ha
-	addi     r0, r3, "__vt__7Parm<f>"@l
-	lfs      f0, lbl_80518238@sda21(r2)
-	stw      r0, 0x40(r30)
-	mr       r4, r30
-	lfs      f1, lbl_8051823C@sda21(r2)
-	addi     r3, r30, 0x68
-	stfs     f0, 0x58(r30)
-	addi     r5, r5, 0x64303130@l
-	lfs      f0, lbl_80518240@sda21(r2)
-	addi     r6, r2, lbl_80518244@sda21
-	stfs     f1, 0x60(r30)
-	stfs     f0, 0x64(r30)
-	bl       __ct__8BaseParmFP10ParametersUlPc
-	lis      r3, "__vt__7Parm<f>"@ha
-	lis      r5, 0x64303030@ha
-	addi     r0, r3, "__vt__7Parm<f>"@l
-	lfs      f0, lbl_8051824C@sda21(r2)
-	stw      r0, 0x68(r30)
-	mr       r4, r30
-	lfs      f1, lbl_8051823C@sda21(r2)
-	addi     r3, r30, 0x90
-	stfs     f0, 0x80(r30)
-	addi     r5, r5, 0x64303030@l
-	lfs      f0, lbl_80518240@sda21(r2)
-	addi     r6, r31, 0x28
-	stfs     f1, 0x88(r30)
-	stfs     f0, 0x8c(r30)
-	bl       __ct__8BaseParmFP10ParametersUlPc
-	lis      r3, "__vt__7Parm<f>"@ha
-	lis      r5, 0x64303031@ha
-	addi     r0, r3, "__vt__7Parm<f>"@l
-	lfs      f0, lbl_80518250@sda21(r2)
-	stw      r0, 0x90(r30)
-	mr       r4, r30
-	lfs      f1, lbl_8051823C@sda21(r2)
-	addi     r3, r30, 0xb8
-	stfs     f0, 0xa8(r30)
-	addi     r5, r5, 0x64303031@l
-	lfs      f0, lbl_8051824C@sda21(r2)
-	addi     r6, r31, 0x38
-	stfs     f1, 0xb0(r30)
-	stfs     f0, 0xb4(r30)
-	bl       __ct__8BaseParmFP10ParametersUlPc
-	lis      r3, "__vt__7Parm<b>"@ha
-	lis      r5, 0x64303032@ha
-	addi     r0, r3, "__vt__7Parm<b>"@l
-	li       r7, 0
-	stw      r0, 0xb8(r30)
-	li       r0, 1
-	mr       r4, r30
-	addi     r3, r30, 0xd4
-	stb      r7, 0xd0(r30)
-	addi     r5, r5, 0x64303032@l
-	addi     r6, r31, 0x48
-	stb      r7, 0xd2(r30)
-	stb      r0, 0xd3(r30)
-	bl       __ct__8BaseParmFP10ParametersUlPc
-	lis      r3, "__vt__7Parm<f>"@ha
-	lis      r5, 0x64303033@ha
-	addi     r0, r3, "__vt__7Parm<f>"@l
-	lfs      f0, lbl_80518254@sda21(r2)
-	stw      r0, 0xd4(r30)
-	mr       r4, r30
-	lfs      f1, lbl_8051823C@sda21(r2)
-	addi     r3, r30, 0xfc
-	stfs     f0, 0xec(r30)
-	addi     r5, r5, 0x64303033@l
-	lfs      f0, lbl_80518258@sda21(r2)
-	addi     r6, r2, lbl_8051825C@sda21
-	stfs     f1, 0xf4(r30)
-	stfs     f0, 0xf8(r30)
-	bl       __ct__8BaseParmFP10ParametersUlPc
-	lis      r3, "__vt__7Parm<b>"@ha
-	lis      r5, 0x64303034@ha
-	addi     r0, r3, "__vt__7Parm<b>"@l
-	li       r7, 1
-	stw      r0, 0xfc(r30)
-	li       r0, 0
-	mr       r4, r30
-	addi     r3, r30, 0x118
-	stb      r7, 0x114(r30)
-	addi     r5, r5, 0x64303034@l
-	addi     r6, r31, 0x54
-	stb      r0, 0x116(r30)
-	stb      r7, 0x117(r30)
-	bl       __ct__8BaseParmFP10ParametersUlPc
-	lis      r3, "__vt__7Parm<b>"@ha
-	lis      r5, 0x64303035@ha
-	addi     r0, r3, "__vt__7Parm<b>"@l
-	li       r7, 1
-	stw      r0, 0x118(r30)
-	li       r0, 0
-	mr       r4, r30
-	addi     r3, r30, 0x134
-	stb      r7, 0x130(r30)
-	addi     r5, r5, 0x64303035@l
-	addi     r6, r31, 0x60
-	stb      r0, 0x132(r30)
-	stb      r7, 0x133(r30)
-	bl       __ct__8BaseParmFP10ParametersUlPc
-	lis      r3, "__vt__7Parm<b>"@ha
-	lis      r5, 0x64303036@ha
-	addi     r0, r3, "__vt__7Parm<b>"@l
-	li       r7, 1
-	stw      r0, 0x134(r30)
-	li       r0, 0
-	mr       r4, r30
-	addi     r3, r30, 0x150
-	stb      r7, 0x14c(r30)
-	addi     r5, r5, 0x64303036@l
-	addi     r6, r31, 0x6c
-	stb      r0, 0x14e(r30)
-	stb      r7, 0x14f(r30)
-	bl       __ct__8BaseParmFP10ParametersUlPc
-	lis      r3, "__vt__7Parm<f>"@ha
-	lis      r5, 0x64303037@ha
-	addi     r0, r3, "__vt__7Parm<f>"@l
-	lfs      f0, lbl_80518264@sda21(r2)
-	stw      r0, 0x150(r30)
-	mr       r4, r30
-	lfs      f1, lbl_8051823C@sda21(r2)
-	addi     r3, r30, 0x178
-	stfs     f0, 0x168(r30)
-	addi     r5, r5, 0x64303037@l
-	lfs      f0, lbl_80518268@sda21(r2)
-	addi     r6, r31, 0x78
-	stfs     f1, 0x170(r30)
-	stfs     f0, 0x174(r30)
-	bl       __ct__8BaseParmFP10ParametersUlPc
-	lis      r3, "__vt__7Parm<b>"@ha
-	lis      r5, 0x64303038@ha
-	addi     r0, r3, "__vt__7Parm<b>"@l
-	li       r7, 1
-	stw      r0, 0x178(r30)
-	li       r0, 0
-	mr       r4, r30
-	addi     r3, r30, 0x194
-	stb      r7, 0x190(r30)
-	addi     r5, r5, 0x64303038@l
-	addi     r6, r31, 0x8c
-	stb      r0, 0x192(r30)
-	stb      r7, 0x193(r30)
-	bl       __ct__8BaseParmFP10ParametersUlPc
-	lis      r3, "__vt__7Parm<f>"@ha
-	lfs      f2, lbl_8051826C@sda21(r2)
-	addi     r0, r3, "__vt__7Parm<f>"@l
-	lfs      f1, lbl_8051823C@sda21(r2)
-	stw      r0, 0x194(r30)
-	mr       r3, r30
-	lfs      f0, lbl_80518258@sda21(r2)
-	stfs     f2, 0x1ac(r30)
-	stfs     f1, 0x1b4(r30)
-	stfs     f0, 0x1b8(r30)
-	stw      r30, mInstance__13DynamicsParms@sda21(r13)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mInstance = this;
 }
 
-/*
- * --INFO--
- * Address:	80139F94
- * Size:	000074
+/**
+ * @note Address: 0x80139F94
+ * @note Size: 0x74
  */
-DynamicsParms::~DynamicsParms()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	or.      r30, r3, r3
-	beq      lbl_80139FEC
-	lis      r3, __vt__13DynamicsParms@ha
-	li       r0, 0
-	addi     r4, r3, __vt__13DynamicsParms@l
-	addi     r3, r30, 0xc
-	stw      r4, 0x1bc(r30)
-	addi     r5, r4, 8
-	li       r4, 0
-	stw      r5, 0xc(r30)
-	stw      r0, mInstance__13DynamicsParms@sda21(r13)
-	bl       __dt__11JKRDisposerFv
-	extsh.   r0, r31
-	ble      lbl_80139FEC
-	mr       r3, r30
-	bl       __dl__FPv
+DynamicsParms::~DynamicsParms() { mInstance = nullptr; }
 
-lbl_80139FEC:
-	lwz      r0, 0x14(r1)
-	mr       r3, r30
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	8013A008
- * Size:	000048
+/**
+ * @note Address: 0x8013A008
+ * @note Size: 0x48
  */
 void DynamicsParms::globalInstance()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r0, mInstance__13DynamicsParms@sda21(r13)
-	cmplwi   r0, 0
-	bne      lbl_8013A040
-	li       r3, 0x1c4
-	bl       __nw__FUl
-	or.      r0, r3, r3
-	beq      lbl_8013A03C
-	li       r4, 1
-	bl       __ct__13DynamicsParmsFv
-	mr       r0, r3
-
-lbl_8013A03C:
-	stw      r0, mInstance__13DynamicsParms@sda21(r13)
-
-lbl_8013A040:
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (!mInstance) {
+		mInstance = new DynamicsParms;
+	}
 }
 
-namespace Game {
-
-/*
- * --INFO--
- * Address:	8013A050
- * Size:	000054
+/**
+ * @note Address: 0x8013A050
+ * @note Size: 0x54
  */
-Rigid::Rigid()
+Game::Rigid::Rigid() { mFlags.clear(); }
+
+/**
+ * @note Address: 0x8013A0D8
+ * @note Size: 0x8C
+ */
+void Game::Rigid::initPosition(Vector3f& posVec, Vector3f& quatVec)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	lis      r4, __ct__Q24Game11RigidConfigFv@ha
-	li       r5, 0
-	stw      r0, 0x14(r1)
-	addi     r4, r4, __ct__Q24Game11RigidConfigFv@l
-	li       r6, 0x88
-	li       r7, 2
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	addi     r3, r31, 0x34
-	bl       __construct_array
-	li       r0, 0
-	mr       r3, r31
-	stb      r0, 0x175(r31)
-	stb      r0, 0x175(r31)
-	lwz      r31, 0xc(r1)
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	initPositionIndex(posVec, 0, quatVec);
+	initPositionIndex(posVec, 1, quatVec);
+	PSMTXIdentity(mConfigs[0]._58.mMatrix.mtxView);
+	PSMTXIdentity(mConfigs[1]._58.mMatrix.mtxView);
+	PSMTXIdentity(_144.mMatrix.mtxView);
+	mTimeStep = 1.0f;
+	updateMatrix(0);
 }
 
-/*
- * --INFO--
- * Address:	8013A0A4
- * Size:	000034
+/**
+ * @note Address: 0x8013A164
+ * @note Size: 0x8C
  */
-RigidConfig::RigidConfig()
+void Game::Rigid::initPositionIndex(Vector3f& posVec, int configIdx, Vector3f& quatVec)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	addi     r3, r31, 0x48
-	bl       __ct__4QuatFv
-	lwz      r0, 0x14(r1)
-	mr       r3, r31
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	RigidConfig* config = &mConfigs[configIdx];
+	config->mPosition   = posVec;
+	config->_18         = Vector3f(0.0f);
+	config->mVelocity   = Vector3f(0.0f);
+	config->_24         = Vector3f(0.0f);
+	config->_30         = Vector3f(0.0f);
+	config->_3C         = Vector3f(0.0f);
+	config->_48.set(quatVec);
 }
 
-/*
- * --INFO--
- * Address:	8013A0D8
- * Size:	00008C
+/**
+ * @note Address: 0x8013A1F0
+ * @note Size: 0x38
  */
-void Rigid::initPosition(Vector3f&, Vector3f&)
+void Game::Rigid::updateMatrix(int configIdx)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r5
-	li       r5, 0
-	stw      r30, 0x18(r1)
-	mr       r30, r4
-	mr       r6, r31
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	bl       "initPositionIndex__Q24Game5RigidFR10Vector3<f>iR10Vector3<f>"
-	mr       r3, r29
-	mr       r4, r30
-	mr       r6, r31
-	li       r5, 1
-	bl       "initPositionIndex__Q24Game5RigidFR10Vector3<f>iR10Vector3<f>"
-	addi     r3, r29, 0x8c
-	bl       PSMTXIdentity
-	addi     r3, r29, 0x114
-	bl       PSMTXIdentity
-	addi     r3, r29, 0x144
-	bl       PSMTXIdentity
-	lfs      f0, lbl_80518258@sda21(r2)
-	mr       r3, r29
-	li       r4, 0
-	stfs     f0, 0(r29)
-	bl       updateMatrix__Q24Game5RigidFi
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	RigidConfig* config = &mConfigs[configIdx];
+	_04.makeTQ(config->mPosition, config->_48);
 }
 
-/*
- * --INFO--
- * Address:	8013A164
- * Size:	00008C
+/**
+ * @note Address: 0x8013A228
+ * @note Size: 0x6C
  */
-void Rigid::initPositionIndex(Vector3f&, int, Vector3f&)
+void Game::Rigid::computeForces(int configIdx)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	mulli    r5, r5, 0x88
-	lfs      f0, lbl_8051823C@sda21(r2)
-	stw      r0, 0x14(r1)
-	addi     r5, r5, 0x34
-	lfs      f1, 0(r4)
-	add      r5, r3, r5
-	stfs     f1, 0(r5)
-	addi     r3, r5, 0x48
-	lfs      f1, 4(r4)
-	stfs     f1, 4(r5)
-	lfs      f1, 8(r4)
-	mr       r4, r6
-	stfs     f1, 8(r5)
-	stfs     f0, 0x18(r5)
-	stfs     f0, 0x1c(r5)
-	stfs     f0, 0x20(r5)
-	stfs     f0, 0xc(r5)
-	stfs     f0, 0x10(r5)
-	stfs     f0, 0x14(r5)
-	stfs     f0, 0x24(r5)
-	stfs     f0, 0x28(r5)
-	stfs     f0, 0x2c(r5)
-	stfs     f0, 0x30(r5)
-	stfs     f0, 0x34(r5)
-	stfs     f0, 0x38(r5)
-	stfs     f0, 0x3c(r5)
-	stfs     f0, 0x40(r5)
-	stfs     f0, 0x44(r5)
-	bl       "set__4QuatFR10Vector3<f>"
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	RigidConfig* config = &mConfigs[configIdx];
+	config->_18         = Vector3f(0.0f);
+	config->_3C         = Vector3f(0.0f);
+
+	f32 dampVal = DynamicsParms::mInstance->mRotatingMomentDamp.mValue;
+	if (dampVal > 0.0f) {
+		config->_30 = config->_30 - config->_30 * dampVal;
+	}
 }
 
-/*
- * --INFO--
- * Address:	8013A1F0
- * Size:	000038
+/**
+ * @note Address: 0x8013A294
+ * @note Size: 0x268
  */
-void Rigid::updateMatrix(int)
+static f32 getYDegree(Quat& quat, Vector3f& vec)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	mulli    r4, r4, 0x88
-	mr       r5, r3
-	stw      r0, 0x14(r1)
-	addi     r3, r5, 4
-	addi     r4, r4, 0x34
-	add      r4, r5, r4
-	addi     r5, r4, 0x48
-	bl       "makeTQ__7MatrixfFR10Vector3<f>R4Quat"
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
+	Quat q1(0.0f, Vector3f(0.0f, 1.0f, 0.0f)); // 0x9c
+	Quat q2;                                   // 0x8c
+	Quat q3;                                   // 0x7c
+	q3 = quat.inverse();                       // 0x60
 
-/*
- * --INFO--
- * Address:	8013A228
- * Size:	00006C
- */
-void Rigid::computeForces(int)
-{
-	/*
-	mulli    r4, r4, 0x88
-	lfs      f0, lbl_8051823C@sda21(r2)
-	addi     r4, r4, 0x34
-	add      r4, r3, r4
-	stfs     f0, 0x18(r4)
-	stfs     f0, 0x1c(r4)
-	stfs     f0, 0x20(r4)
-	stfs     f0, 0x3c(r4)
-	stfs     f0, 0x40(r4)
-	stfs     f0, 0x44(r4)
-	lwz      r3, mInstance__13DynamicsParms@sda21(r13)
-	lfs      f3, 0x1ac(r3)
-	fcmpo    cr0, f3, f0
-	blelr
-	lfs      f2, 0x30(r4)
-	lfs      f5, 0x34(r4)
-	fmuls    f0, f2, f3
-	lfs      f4, 0x38(r4)
-	fmuls    f1, f5, f3
-	fmuls    f3, f4, f3
-	fsubs    f2, f2, f0
-	fsubs    f1, f5, f1
-	fsubs    f0, f4, f3
-	stfs     f2, 0x30(r4)
-	stfs     f1, 0x34(r4)
-	stfs     f0, 0x38(r4)
-	blr
-	*/
-}
+	Quat q4; // 0x24
+	q4.w = quat.w * q1.w - (quat.x * q1.x + q1.y * quat.y + quat.z * q1.z);
+	q4.x = quat.y * q1.z - quat.z * q1.y + q1.x * quat.w + quat.x * q1.w;
+	q4.y = quat.z * q1.x - quat.x * q1.z + q1.y * quat.w + quat.y * q1.w;
+	q4.z = quat.x * q1.y - quat.y * q1.x + q1.z * quat.w + quat.z * q1.w;
 
-} // namespace Game
+	q2 = Quat(q4.w, Vector3f(q4.x, q4.y, q4.z));
 
-/*
- * --INFO--
- * Address:	8013A294
- * Size:	000268
- */
-void getYDegree(Quat&, Vector3f&)
-{
+	Quat q5; // 0x8
+	q5.w = q2.w * q3.w - (q2.x * q3.x + q3.y * q2.y + q2.z * q3.z);
+	q5.x = q2.y * q3.z - q2.z * q3.y + q3.x * q2.w + q2.x * q3.w;
+	q5.y = q2.z * q3.x - q2.x * q3.z + q3.y * q2.w + q2.y * q3.w;
+	q5.z = q2.x * q3.y - q2.y * q3.x + q3.z * q2.w + q2.z * q3.w;
+
+	q2 = Quat(q5.w, Vector3f(q5.x, q5.y, q5.z));
+
+	vec.x = q2.x;
+	vec.y = q2.y;
+	vec.z = q2.z;
+
+	return q2.y;
+
 	/*
 	stwu     r1, -0xc0(r1)
 	mflr     r0
@@ -794,15 +296,39 @@ void getYDegree(Quat&, Vector3f&)
 	*/
 }
 
-namespace Game {
-
-/*
- * --INFO--
- * Address:	8013A4FC
- * Size:	000678
+/**
+ * @note Address: 0x8013A4FC
+ * @note Size: 0x678
  */
-void Rigid::integrate(float, int)
+void Game::Rigid::integrate(f32 timeStep, int configIdx)
 {
+	RigidConfig* thisConfig  = &mConfigs[configIdx]; // r31
+	RigidConfig* otherConfig = &mConfigs[1 - configIdx];
+
+	otherConfig->mPosition = thisConfig->mPosition;
+	otherConfig->_48       = thisConfig->_48;
+	Matrixf matQ; // 0x1d0
+	Matrixf matC; // 0x1a0
+	Matrixf matT; // 0x170
+
+	matQ.makeQ(thisConfig->_48);
+	PSMTXTranspose(matQ.mMatrix.mtxView, matT.mMatrix.mtxView);
+	PSMTXConcat(matQ.mMatrix.mtxView, _144.mMatrix.mtxView, matC.mMatrix.mtxView);
+	PSMTXConcat(matC.mMatrix.mtxView, matT.mMatrix.mtxView, thisConfig->_58.mMatrix.mtxView);
+
+	thisConfig->mPosition += thisConfig->mVelocity * timeStep;
+	thisConfig->_30 += thisConfig->_3C * timeStep;
+	thisConfig->mVelocity += thisConfig->_18 * (timeStep * mTimeStep);
+
+	thisConfig->_24 = thisConfig->_58.mtxMult(thisConfig->_30);
+
+	Quat q1;                        // 0x160
+	Quat q2(0.0f, thisConfig->_24); // 0x150
+
+	// quat math
+
+	thisConfig->_48.normalise();
+	_04.makeTQ(thisConfig->mPosition, thisConfig->_48);
 	/*
 	stwu     r1, -0x240(r1)
 	mflr     r0
@@ -1229,13 +755,21 @@ lbl_8013AB2C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8013AB74
- * Size:	000300
+/**
+ * @note Address: 0x8013AB74
+ * @note Size: 0x300
  */
-void Rigid::resolveCollision(int, Vector3f&, Vector3f&, float)
+bool Game::Rigid::resolveCollision(int index, Vector3f& p2, Vector3f& p3, f32 p4)
 {
+	if (DynamicsParms::mInstance->mMicroCollision.mValue == 1120.0f) {
+		;
+	}
+	RigidConfig& config = mConfigs[index];
+	Vector3f v1         = p2 - config.mPosition;
+	Vector3f v2         = (config.mVelocity + cross(v1, config._24));
+	v2.negate();
+	v2     = v2 * p3;
+	f32 v3 = v2.x + v2.y + v2.z;
 	/*
 	stwu     r1, -0x90(r1)
 	mflr     r0
@@ -1435,27 +969,5 @@ lbl_8013AE30:
 	mtlr     r0
 	addi     r1, r1, 0x90
 	blr
-	*/
-}
-
-} // namespace Game
-
-/*
- * --INFO--
- * Address:	8013AE74
- * Size:	000008
- */
-u32 Parm<bool>::size() { return 0x1; }
-
-/*
- * --INFO--
- * Address:	8013AE7C
- * Size:	000008
- */
-void DynamicsParms::@12 @__dt()
-{
-	/*
-	addi     r3, r3, -12
-	b        __dt__13DynamicsParmsFv
 	*/
 }

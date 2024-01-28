@@ -1,13 +1,12 @@
 #include "PowerPC_EABI_Support/MetroTRK/trk.h"
 
-/*
- * --INFO--
- * Address:	800BB848
- * Size:	000044
+/**
+ * @note Address: 0x800BB848
+ * @note Size: 0x44
  */
-TRKResult TRKMessageSend(TRK_Msg* msg)
+DSError TRKMessageSend(MessageBuffer* msg)
 {
-	u32 write_val = TRKWriteUARTN(&msg->mMsg, msg->mMsgLength);
-	MWTRACE(1, "MessageSend : cc_write returned %ld\n", write_val);
-	return EXIT_SUCCESS;
+	DSError writeErr = TRKWriteUARTN(&msg->data, msg->length);
+	MWTRACE(1, "MessageSend : cc_write returned %ld\n", writeErr);
+	return DS_NoError;
 }

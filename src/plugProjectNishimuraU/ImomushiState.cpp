@@ -8,10 +8,9 @@ namespace Imomushi {
 
 const char statename[] = "246-ImomushiState";
 
-/*
- * --INFO--
- * Address:	802BA0D8
- * Size:	0004D4
+/**
+ * @note Address: 0x802BA0D8
+ * @note Size: 0x4D4
  */
 void FSM::init(EnemyBase* enemy)
 {
@@ -34,27 +33,25 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateZukanMove);
 }
 
-/*
- * --INFO--
- * Address:	802BA5AC
- * Size:	000050
+/**
+ * @note Address: 0x802BA5AC
+ * @note Size: 0x50
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->deathProcedure();
 	imomushi->mTargetVelocity = 0.0f;
-	imomushi->startMotion(0, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_Dead, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802BA5FC
- * Size:	000044
+/**
+ * @note Address: 0x802BA5FC
+ * @note Size: 0x44
  */
 void StateDead::exec(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	if (imomushi->mCurAnim->mIsPlaying) {
 		if ((u32)imomushi->mCurAnim->mType == KEYEVENT_END) {
 			imomushi->kill(nullptr);
@@ -62,35 +59,32 @@ void StateDead::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BA640
- * Size:	000004
+/**
+ * @note Address: 0x802BA640
+ * @note Size: 0x4
  */
 void StateDead::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802BA644
- * Size:	00004C
+/**
+ * @note Address: 0x802BA644
+ * @note Size: 0x4C
  */
 void StateFallDive::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* imomushi             = static_cast<Obj*>(enemy);
+	Obj* imomushi             = OBJ(enemy);
 	imomushi->mNextState      = IMOMUSHI_NULL;
 	imomushi->mTargetCreature = nullptr;
 	imomushi->mTargetVelocity = Vector3f(0.0f);
-	imomushi->startMotion(6, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_FallDive, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802BA690
- * Size:	000140
+/**
+ * @note Address: 0x802BA690
+ * @note Size: 0x140
  */
 void StateFallDive::exec(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	Vector3f vel  = imomushi->getVelocity();
 	Vector3f pos  = imomushi->getPosition();
 	f32 minY      = mapMgr->getMinY(pos);
@@ -106,35 +100,32 @@ void StateFallDive::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BA7D0
- * Size:	000004
+/**
+ * @note Address: 0x802BA7D0
+ * @note Size: 0x4
  */
 void StateFallDive::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802BA7D4
- * Size:	00004C
+/**
+ * @note Address: 0x802BA7D4
+ * @note Size: 0x4C
  */
 void StateFallMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* imomushi             = static_cast<Obj*>(enemy);
+	Obj* imomushi             = OBJ(enemy);
 	imomushi->mNextState      = IMOMUSHI_NULL;
 	imomushi->mTargetCreature = nullptr;
 	imomushi->mTargetVelocity = Vector3f(0.0f);
-	imomushi->startMotion(5, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_FallMove, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802BA820
- * Size:	000178
+/**
+ * @note Address: 0x802BA820
+ * @note Size: 0x178
  */
 void StateFallMove::exec(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	Vector3f vel  = imomushi->getVelocity();
 	Vector3f pos  = imomushi->getPosition();
 	f32 minY      = mapMgr->getMinY(pos);
@@ -152,21 +143,19 @@ void StateFallMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BA998
- * Size:	000004
+/**
+ * @note Address: 0x802BA998
+ * @note Size: 0x4
  */
 void StateFallMove::cleanup(EnemyBase* enemy) { }
 
-/*
- * --INFO--
- * Address:	802BA99C
- * Size:	0000C8
+/**
+ * @note Address: 0x802BA99C
+ * @note Size: 0xC8
  */
 void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->setAtari(false);
 	imomushi->enableEvent(0, EB_Invulnerable);
 	imomushi->mIsUnderground = true;
@@ -178,35 +167,32 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	imomushi->enableEvent(0, EB_ModelHidden);
 	imomushi->mTargetVelocity = Vector3f(0.0f);
 	imomushi->mStateTimer     = 0.0f;
-	imomushi->startMotion(1, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_Appear, nullptr);
 	imomushi->stopMotion();
 }
 
-/*
- * --INFO--
- * Address:	802BAA64
- * Size:	0000A8
+/**
+ * @note Address: 0x802BAA64
+ * @note Size: 0xA8
  */
 void StateStay::exec(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->mStateTimer += sys->mDeltaTime;
-	if ((imomushi->mStateTimer > 6.0f)
-	    && !(EnemyFunc::isTherePikmin(imomushi, CG_PARMS(imomushi)->mGeneral.mPrivateRadius.mValue, nullptr))) {
+	if ((imomushi->mStateTimer > 6.0f) && !(EnemyFunc::isTherePikmin(imomushi, CG_GENERALPARMS(imomushi).mPrivateRadius.mValue, nullptr))) {
 		if (imomushi->mTargetCreature = imomushi->getRandFruitsPlant()) {
 			transit(imomushi, IMOMUSHI_Appear, nullptr);
 		}
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BAB0C
- * Size:	000090
+/**
+ * @note Address: 0x802BAB0C
+ * @note Size: 0x90
  */
 void StateStay::cleanup(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->setAtari(true);
 	imomushi->disableEvent(0, EB_Invulnerable);
 	imomushi->mIsUnderground = false;
@@ -217,32 +203,30 @@ void StateStay::cleanup(EnemyBase* enemy)
 	imomushi->disableEvent(0, EB_ModelHidden);
 }
 
-/*
- * --INFO--
- * Address:	802BAB9C
- * Size:	000080
+/**
+ * @note Address: 0x802BAB9C
+ * @note Size: 0x80
  */
 void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->lifeIncrement();
 	imomushi->hardConstraintOn();
 	imomushi->enableEvent(0, EB_NoInterrupt);
 	imomushi->enableEvent(0, EB_LifegaugeVisible);
 	imomushi->mTargetVelocity = Vector3f(0.0f);
 	imomushi->setEmotionExcitement();
-	imomushi->startMotion(1, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_Appear, nullptr);
 	imomushi->createAppearEffect();
 }
 
-/*
- * --INFO--
- * Address:	802BAC1C
- * Size:	0000D8
+/**
+ * @note Address: 0x802BAC1C
+ * @note Size: 0xD8
  */
 void StateAppear::exec(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	if (imomushi->mCurAnim->mIsPlaying && (u32)imomushi->mCurAnim->mType == KEYEVENT_END) {
 		if (imomushi->mHealth <= 0.0f) {
 			transit(imomushi, IMOMUSHI_Dead, nullptr);
@@ -254,82 +238,76 @@ void StateAppear::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BACF4
- * Size:	00003C
+/**
+ * @note Address: 0x802BACF4
+ * @note Size: 0x3C
  */
 void StateAppear::cleanup(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->hardConstraintOff();
 	imomushi->disableEvent(0, EB_NoInterrupt);
 }
 
-/*
- * --INFO--
- * Address:	802BAD30
- * Size:	000074
+/**
+ * @note Address: 0x802BAD30
+ * @note Size: 0x74
  */
 void StateDive::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->hardConstraintOn();
 	imomushi->enableEvent(0, EB_BitterImmune);
 	imomushi->mTargetCreature = nullptr;
 	imomushi->mTargetVelocity = Vector3f(0.0f);
 	imomushi->setEmotionCaution();
-	imomushi->startMotion(2, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_Dive, nullptr);
 	imomushi->createDisAppearEffect();
 }
 
-/*
- * --INFO--
- * Address:	802BADA4
- * Size:	000050
+/**
+ * @note Address: 0x802BADA4
+ * @note Size: 0x50
  */
 void StateDive::exec(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	if (imomushi->mCurAnim->mIsPlaying && (u32)imomushi->mCurAnim->mType == KEYEVENT_END) {
 		transit(imomushi, IMOMUSHI_Stay, nullptr);
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BADF4
- * Size:	00003C
+/**
+ * @note Address: 0x802BADF4
+ * @note Size: 0x3C
  */
 void StateDive::cleanup(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->hardConstraintOff();
 	imomushi->disableEvent(0, EB_BitterImmune);
 }
 
-/*
- * --INFO--
- * Address:	802BAE30
- * Size:	000048
+/**
+ * @note Address: 0x802BAE30
+ * @note Size: 0x48
  */
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* imomushi        = static_cast<Obj*>(enemy);
+	Obj* imomushi        = OBJ(enemy);
 	imomushi->mNextState = IMOMUSHI_NULL;
-	imomushi->startMotion(3, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_Move, nullptr);
 	imomushi->startMoveTraceEffect();
 }
 
-/*
- * --INFO--
- * Address:	802BAE78
- * Size:	000238
+/**
+ * @note Address: 0x802BAE78
+ * @note Size: 0x238
  */
 void StateMove::exec(EnemyBase* enemy)
 {
 	Creature* creature;
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 
 	if (imomushi->mHealth <= 0.0f) {
 		transit(imomushi, IMOMUSHI_Dead, nullptr);
@@ -354,9 +332,8 @@ void StateMove::exec(EnemyBase* enemy)
 				}
 			}
 
-			EnemyFunc::walkToTarget(imomushi, creaturePos, CG_PARMS(imomushi)->mGeneral.mMoveSpeed.mValue,
-			                        CG_PARMS(imomushi)->mGeneral.mRotationalAccel.mValue,
-			                        CG_PARMS(imomushi)->mGeneral.mRotationalSpeed.mValue);
+			EnemyFunc::walkToTarget(imomushi, creaturePos, CG_GENERALPARMS(imomushi).mMoveSpeed.mValue,
+			                        CG_GENERALPARMS(imomushi).mTurnSpeed.mValue, CG_GENERALPARMS(imomushi).mMaxTurnAngle.mValue);
 		}
 
 	} else {
@@ -380,39 +357,36 @@ void StateMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BB0B0
- * Size:	000024
+/**
+ * @note Address: 0x802BB0B0
+ * @note Size: 0x24
  */
 void StateMove::cleanup(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->finishMoveTraceEffect();
 }
 
-/*
- * --INFO--
- * Address:	802BB0D4
- * Size:	000048
+/**
+ * @note Address: 0x802BB0D4
+ * @note Size: 0x48
  */
 void StateGoHome::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* imomushi        = static_cast<Obj*>(enemy);
+	Obj* imomushi        = OBJ(enemy);
 	imomushi->mNextState = IMOMUSHI_NULL;
-	imomushi->startMotion(3, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_Move, nullptr);
 	imomushi->startMoveTraceEffect();
 }
 
-/*
- * --INFO--
- * Address:	802BB11C
- * Size:	00014C
+/**
+ * @note Address: 0x802BB11C
+ * @note Size: 0x14C
  */
 void StateGoHome::exec(EnemyBase* enemy)
 // does NOT match
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 
 	if (imomushi->mHealth <= 0.0f) {
 		transit(imomushi, IMOMUSHI_Dead, nullptr);
@@ -423,16 +397,16 @@ void StateGoHome::exec(EnemyBase* enemy)
 		imomushi->mTargetVelocity = Vector3f(0.0f);
 
 	} else {
-
-		Vector3f pos     = imomushi->getPosition();
+		Vector3f pos     = imomushi->getPosition() - imomushi->mHomePosition;
+		f32 sqrMagXZ     = pos.x * pos.x + pos.z * pos.z;
 		Vector3f homePos = imomushi->mHomePosition;
 		// the mismatch is from sqrDistanceXZ
-		if (sqrDistanceXZ(pos, homePos) < imomushi->getSqrHomeRadius()) {
+		if (sqrMagXZ < SQUARE(CG_GENERALPARMS(imomushi).mHomeRadius.mValue)) {
 			imomushi->mNextState = IMOMUSHI_Dive;
 			imomushi->finishMotion();
 		}
-		EnemyFunc::walkToTarget(imomushi, homePos, CG_PARMS(imomushi)->mGeneral.mMoveSpeed.mValue,
-		                        CG_PARMS(imomushi)->mGeneral.mRotationalAccel.mValue, CG_PARMS(imomushi)->mGeneral.mRotationalSpeed.mValue);
+		EnemyFunc::walkToTarget(imomushi, homePos, CG_GENERALPARMS(imomushi).mMoveSpeed.mValue, CG_GENERALPARMS(imomushi).mTurnSpeed.mValue,
+		                        CG_GENERALPARMS(imomushi).mMaxTurnAngle.mValue);
 	}
 
 	if ((imomushi->mCurAnim->mIsPlaying) && ((u32)imomushi->mCurAnim->mType == KEYEVENT_END)) {
@@ -440,48 +414,45 @@ void StateGoHome::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BB268
- * Size:	000024
+/**
+ * @note Address: 0x802BB268
+ * @note Size: 0x24
  */
 void StateGoHome::cleanup(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->finishMoveTraceEffect();
 }
 
-/*
- * --INFO--
- * Address:	802BB28C
- * Size:	00014C
+/**
+ * @note Address: 0x802BB28C
+ * @note Size: 0x14C
  */
 void StateClimb::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* imomushi        = static_cast<Obj*>(enemy);
+	Obj* imomushi        = OBJ(enemy);
 	imomushi->mNextState = IMOMUSHI_NULL;
 	Vector3f pos         = imomushi->getPosition();
 	imomushi->setStickDiff(pos.x, pos.z);
 	imomushi->startClimbPlant(static_cast<CollPart*>(imomushi->mTargetCreature->mCollTree->mPart->mChild));
 	imomushi->mTargetVelocity = Vector3f(0.0f);
-	imomushi->startMotion(4, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_Climb, nullptr);
 
 	const f32 faceDir = imomushi->getFaceDir();
-	f32 cos           = pikmin2_cosf(faceDir);
-	f32 sin           = pikmin2_sinf(faceDir);
+	f32 cos           = cosf(faceDir);
+	f32 sin           = sinf(faceDir);
 
 	imomushi->_2D8 = Vector3f(sin, 0.01f, cos);
 	imomushi->_2E4 = Vector3f(-sin, 0.0f, -cos);
 }
 
-/*
- * --INFO--
- * Address:	802BB3D8
- * Size:	000170
+/**
+ * @note Address: 0x802BB3D8
+ * @note Size: 0x170
  */
 void StateClimb::exec(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	if (imomushi->mHealth <= 0.0f) {
 		transit(imomushi, IMOMUSHI_FallDive, nullptr);
 		return;
@@ -518,26 +489,24 @@ void StateClimb::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BB548
- * Size:	000024
+/**
+ * @note Address: 0x802BB548
+ * @note Size: 0x24
  */
 void StateClimb::cleanup(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->endStick();
 }
 
-/*
- * --INFO--
- * Address:	802BB56C
- * Size:	00009C
+/**
+ * @note Address: 0x802BB56C
+ * @note Size: 0x9C
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Creature* target;
-	Obj* imomushi         = static_cast<Obj*>(enemy);
+	Obj* imomushi         = OBJ(enemy);
 	imomushi->mNextState  = IMOMUSHI_NULL;
 	imomushi->mStateTimer = 0.0f;
 	target                = imomushi->mTargetCreature;
@@ -545,17 +514,16 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	imomushi->endStick();
 	imomushi->startStick(target, collpart);
 	imomushi->mTargetVelocity = Vector3f(0.0f);
-	imomushi->startMotion(7, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_Eat, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802BB608
- * Size:	00015C
+/**
+ * @note Address: 0x802BB608
+ * @note Size: 0x15C
  */
 void StateAttack::exec(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 
 	if (imomushi->mHealth <= 0.0f) {
 		transit(imomushi, IMOMUSHI_FallDive, nullptr);
@@ -588,44 +556,41 @@ void StateAttack::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BB764
- * Size:	000024
+/**
+ * @note Address: 0x802BB764
+ * @note Size: 0x24
  */
 void StateAttack::cleanup(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->endStick();
 }
 
-/*
- * --INFO--
- * Address:	802BB788
- * Size:	000094
+/**
+ * @note Address: 0x802BB788
+ * @note Size: 0x94
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Creature* target;
-	Obj* imomushi        = static_cast<Obj*>(enemy);
+	Obj* imomushi        = OBJ(enemy);
 	imomushi->mNextState = IMOMUSHI_NULL;
 	target               = imomushi->mTargetCreature;
 	CollPart* collpart   = target->mCollTree->getCollPart('tops');
 	imomushi->endStick();
 	imomushi->startStick(target, collpart);
 	imomushi->mTargetVelocity = Vector3f(0.0f);
-	imomushi->startMotion(4, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_Climb, nullptr);
 }
 
-/*
- * --INFO--
- * Address:	802BB81C
- * Size:	000138
+/**
+ * @note Address: 0x802BB81C
+ * @note Size: 0x138
  */
 void StateWait::exec(EnemyBase* enemy)
 {
 	Creature* sticker;
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 
 	if (imomushi->mHealth <= 0.0f) {
 		transit(imomushi, IMOMUSHI_FallDive, nullptr);
@@ -656,122 +621,113 @@ void StateWait::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BB954
- * Size:	000024
+/**
+ * @note Address: 0x802BB954
+ * @note Size: 0x24
  */
 void StateWait::cleanup(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->endStick();
 }
 
-/*
- * --INFO--
- * Address:	802BB978
- * Size:	00006C
+/**
+ * @note Address: 0x802BB978
+ * @note Size: 0x6C
  */
 void StateZukanStay::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->resetZukanStateTimer();
 	imomushi->enableEvent(0, EB_BitterImmune);
 	imomushi->hardConstraintOn();
 	imomushi->mTargetVelocity = Vector3f(0.0f);
-	imomushi->startMotion(1, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_Appear, nullptr);
 	imomushi->stopMotion();
 }
 
-/*
- * --INFO--
- * Address:	802BB9E4
- * Size:	000058
+/**
+ * @note Address: 0x802BB9E4
+ * @note Size: 0x58
  */
 void StateZukanStay::exec(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->mStateTimer += sys->mDeltaTime;
 	if (imomushi->mStateTimer > 5.0f) {
 		transit(imomushi, IMOMUSHI_ZukanAppear, nullptr);
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BBA3C
- * Size:	000030
+/**
+ * @note Address: 0x802BBA3C
+ * @note Size: 0x30
  */
 void StateZukanStay::cleanup(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->disableEvent(0, EB_BitterImmune);
 	imomushi->hardConstraintOff();
 }
 
-/*
- * --INFO--
- * Address:	802BBA6C
- * Size:	00005C
+/**
+ * @note Address: 0x802BBA6C
+ * @note Size: 0x5C
  */
 void StateZukanAppear::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->enableEvent(0, EB_NoInterrupt);
 	imomushi->mTargetVelocity = Vector3f(0.0f);
-	imomushi->startMotion(1, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_Appear, nullptr);
 	imomushi->createAppearEffect();
 }
 
-/*
- * --INFO--
- * Address:	802BBAC8
- * Size:	000050
+/**
+ * @note Address: 0x802BBAC8
+ * @note Size: 0x50
  */
 void StateZukanAppear::exec(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	if ((imomushi->mCurAnim->mIsPlaying) && ((u32)imomushi->mCurAnim->mType == KEYEVENT_END)) {
 		transit(imomushi, IMOMUSHI_ZukanMove, nullptr);
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BBB18
- * Size:	000010
+/**
+ * @note Address: 0x802BBB18
+ * @note Size: 0x10
  */
 void StateZukanAppear::cleanup(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->disableEvent(0, EB_NoInterrupt);
 }
 
-/*
- * --INFO--
- * Address:	802BBB28
- * Size:	000058
+/**
+ * @note Address: 0x802BBB28
+ * @note Size: 0x58
  */
 void StateZukanMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->setZukanTargetPosition();
 	imomushi->mTargetVelocity = 0.0f;
-	imomushi->startMotion(3, nullptr);
+	imomushi->startMotion(IMOMUSHIANIM_Move, nullptr);
 	imomushi->startMoveTraceEffect();
 }
 
-/*
- * --INFO--
- * Address:	802BBB80
- * Size:	0000BC
+/**
+ * @note Address: 0x802BBB80
+ * @note Size: 0xBC
  */
 void StateZukanMove::exec(EnemyBase* enemy)
 {
-	Obj* imomushi   = static_cast<Obj*>(enemy);
+	Obj* imomushi   = OBJ(enemy);
 	Vector3f target = Vector3f(imomushi->mZukanTargetPosition);
-	EnemyFunc::walkToTarget(imomushi, target, CG_PARMS(imomushi)->mGeneral.mMoveSpeed.mValue,
-	                        CG_PARMS(imomushi)->mGeneral.mRotationalAccel.mValue, CG_PARMS(imomushi)->mGeneral.mRotationalSpeed.mValue);
+	EnemyFunc::walkToTarget(imomushi, target, CG_GENERALPARMS(imomushi).mMoveSpeed.mValue, CG_GENERALPARMS(imomushi).mTurnSpeed.mValue,
+	                        CG_GENERALPARMS(imomushi).mMaxTurnAngle.mValue);
 	if (imomushi->isInZukanTargetArea()) {
 		imomushi->setZukanTargetPosition();
 	}
@@ -780,14 +736,13 @@ void StateZukanMove::exec(EnemyBase* enemy)
 	}
 }
 
-/*
- * --INFO--
- * Address:	802BBC3C
- * Size:	000024
+/**
+ * @note Address: 0x802BBC3C
+ * @note Size: 0x24
  */
 void StateZukanMove::cleanup(EnemyBase* enemy)
 {
-	Obj* imomushi = static_cast<Obj*>(enemy);
+	Obj* imomushi = OBJ(enemy);
 	imomushi->finishMoveTraceEffect();
 }
 } // namespace Imomushi

@@ -1,10 +1,10 @@
 JUTILITY_FILES:=\
 	$(BUILD_DIR)/src/JSystem/JUtility/JUTAssert.o\
-	$(BUILD_DIR)/asm/JSystem/JUtility/JUTConsole.o\
+	$(BUILD_DIR)/src/JSystem/JUtility/JUTConsole.o\
 	$(BUILD_DIR)/src/JSystem/JUtility/JUTDbPrint.o\
 	$(BUILD_DIR)/src/JSystem/JUtility/JUTDirectFile.o\
-	$(BUILD_DIR)/asm/JSystem/JUtility/JUTDirectPrint.o\
-	$(BUILD_DIR)/asm/JSystem/JUtility/JUTException.o\
+	$(BUILD_DIR)/src/JSystem/JUtility/JUTDirectPrint.o\
+	$(BUILD_DIR)/src/JSystem/JUtility/JUTException.o\
 	$(BUILD_DIR)/src/JSystem/JUtility/JUTFader.o\
 	$(BUILD_DIR)/src/JSystem/JUtility/JUTFont.o\
 	$(BUILD_DIR)/asm/JSystem/JUtility/JUTGamePad.o\
@@ -16,10 +16,10 @@ JUTILITY_FILES:=\
 	$(BUILD_DIR)/src/JSystem/JUtility/JUTResource.o\
 	$(BUILD_DIR)/src/JSystem/JUtility/JUTRomFont.o\
 	$(BUILD_DIR)/src/JSystem/JUtility/JUTFontData_Ascfont_fix12.o\
-	$(BUILD_DIR)/asm/JSystem/JUtility/JUTTexture.o\
+	$(BUILD_DIR)/src/JSystem/JUtility/JUTTexture.o\
 	$(BUILD_DIR)/src/JSystem/JUtility/JUTVideo.o\
 	$(BUILD_DIR)/src/JSystem/JUtility/JUTXfb.o\
-	$(BUILD_DIR)/asm/JSystem/JUtility/JUTCacheFont.o\
+	$(BUILD_DIR)/src/JSystem/JUtility/JUTCacheFont.o\
 
 DEPENDS += $(JUTILITY_FILES:.o=.d)
 

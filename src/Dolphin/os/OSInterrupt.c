@@ -1,7 +1,7 @@
 #include "Dolphin/os.h"
 #include "Dolphin/hw_regs.h"
 
-static asm void ExternalInterruptHandler(register __OSException exception, register OSContext* context);
+ASM static void ExternalInterruptHandler(register __OSException exception, register OSContext* context);
 
 extern void __RAS_OSDisableInterrupts_begin(void);
 extern void __RAS_OSDisableInterrupts_end(void);
@@ -25,73 +25,66 @@ static OSInterruptMask InterruptPrioTable[] = {
 
 volatile OSTime __OSLastInterruptTime;
 volatile __OSInterrupt __OSLastInterrupt;
-volatile u32 __OSLastInterruptSrr0;
+vu32 __OSLastInterruptSrr0;
 
-/*
- * --INFO--
- * Address:	800EEC38
- * Size:	000014
+/**
+ * @note Address: 0x800EEC38
+ * @note Size: 0x14
  */
-asm BOOL OSDisableInterrupts()
-{
-	// clang-format off
-    nofralloc
+ASM BOOL OSDisableInterrupts() {
+#ifdef __MWERKS__ // clang-format off
+	nofralloc
 entry    __RAS_OSDisableInterrupts_begin
-    mfmsr   r3
-    rlwinm  r4, r3, 0, 17, 15
-    mtmsr   r4
+	mfmsr   r3
+	rlwinm  r4, r3, 0, 17, 15
+	mtmsr   r4
 entry    __RAS_OSDisableInterrupts_end
-    rlwinm  r3, r3, 17, 31, 31
-    blr
-	// clang-format on
+	rlwinm  r3, r3, 17, 31, 31
+	blr
+#endif // clang-format on
 }
 
-/*
- * --INFO--
- * Address:	800EEC4C
- * Size:	000014
+/**
+ * @note Address: 0x800EEC4C
+ * @note Size: 0x14
  */
-asm BOOL OSEnableInterrupts()
-{
-	// clang-format off
-    nofralloc
+ASM BOOL OSEnableInterrupts() {
+#ifdef __MWERKS__ // clang-format off
+	nofralloc
 
-    mfmsr   r3
-    ori     r4, r3, 0x8000
-    mtmsr   r4
-    rlwinm  r3, r3, 17, 31, 31
-    blr
-	// clang-format on
+	mfmsr   r3
+	ori     r4, r3, 0x8000
+	mtmsr   r4
+	rlwinm  r3, r3, 17, 31, 31
+	blr
+#endif // clang-format on
 }
 
-/*
- * --INFO--
- * Address:	800EEC60
- * Size:	000024
+/**
+ * @note Address: 0x800EEC60
+ * @note Size: 0x24
  */
-asm BOOL OSRestoreInterrupts(register BOOL level) {
-	// clang-format off
+ASM BOOL OSRestoreInterrupts(register BOOL level) {
+#ifdef __MWERKS__ // clang-format off
+	nofralloc
 
-    nofralloc
-
-    cmpwi   level, 0
-    mfmsr   r4
-    beq     _disable
-    ori     r5, r4, 0x8000
-    b       _restore
+	cmpwi   level, 0
+	mfmsr   r4
+	beq     _disable
+	ori     r5, r4, 0x8000
+	b       _restore
 _disable:
-    rlwinm  r5, r4, 0, 17, 15
+	rlwinm  r5, r4, 0, 17, 15
 _restore:
-    mtmsr   r5
-    rlwinm  r3, r4, 17, 31, 31
-    blr
-	// clang-format on
+	mtmsr   r5
+	rlwinm  r3, r4, 17, 31, 31
+	blr
+#endif // clang-format on
 }
 
-/*
- * --INFO--
- * Address:	800EEC84
- * Size:	00001C
+/**
+ * @note Address: 0x800EEC84
+ * @note Size: 0x1C
  */
 __OSInterruptHandler __OSSetInterruptHandler(__OSInterrupt interrupt, __OSInterruptHandler handler)
 {
@@ -102,17 +95,15 @@ __OSInterruptHandler __OSSetInterruptHandler(__OSInterrupt interrupt, __OSInterr
 	return oldHandler;
 }
 
-/*
- * --INFO--
- * Address:	800EECA0
- * Size:	000014
+/**
+ * @note Address: 0x800EECA0
+ * @note Size: 0x14
  */
 __OSInterruptHandler __OSGetInterruptHandler(__OSInterrupt interrupt) { return InterruptHandlerTable[interrupt]; }
 
-/*
- * --INFO--
- * Address:	800EECB4
- * Size:	000074
+/**
+ * @note Address: 0x800EECB4
+ * @note Size: 0x74
  */
 void __OSInterruptInit()
 {
@@ -130,10 +121,9 @@ void __OSInterruptInit()
 	__OSSetExceptionHandler(4, ExternalInterruptHandler);
 }
 
-/*
- * --INFO--
- * Address:	800EED28
- * Size:	0002D8
+/**
+ * @note Address: 0x800EED28
+ * @note Size: 0x2D8
  */
 static u32 SetInterruptMask(OSInterruptMask mask, OSInterruptMask current)
 {
@@ -298,10 +288,9 @@ static u32 SetInterruptMask(OSInterruptMask mask, OSInterruptMask current)
 	return mask;
 }
 
-/*
- * --INFO--
- * Address:	800EF000
- * Size:	000088
+/**
+ * @note Address: 0x800EF000
+ * @note Size: 0x88
  */
 OSInterruptMask __OSMaskInterrupts(OSInterruptMask global)
 {
@@ -323,10 +312,9 @@ OSInterruptMask __OSMaskInterrupts(OSInterruptMask global)
 	return prev;
 }
 
-/*
- * --INFO--
- * Address:	800EF088
- * Size:	000088
+/**
+ * @note Address: 0x800EF088
+ * @note Size: 0x88
  */
 OSInterruptMask __OSUnmaskInterrupts(OSInterruptMask global)
 {
@@ -348,10 +336,9 @@ OSInterruptMask __OSUnmaskInterrupts(OSInterruptMask global)
 	return prev;
 }
 
-/*
- * --INFO--
- * Address:	800EF110
- * Size:	000344
+/**
+ * @note Address: 0x800EF110
+ * @note Size: 0x344
  */
 void __OSDispatchInterrupt(__OSException exception, OSContext* context)
 {
@@ -474,19 +461,18 @@ void __OSDispatchInterrupt(__OSException exception, OSContext* context)
 	OSLoadContext(context);
 }
 
-/*
- * --INFO--
- * Address:	800EF454
- * Size:	000050
+/**
+ * @note Address: 0x800EF454
+ * @note Size: 0x50
  */
-static asm void ExternalInterruptHandler(register __OSException exception, register OSContext* context)
+ASM static void ExternalInterruptHandler(register __OSException exception, register OSContext* context)
 {
 #pragma unused(exception)
-	// clang-format off
-	nofralloc 
+#ifdef __MWERKS__ // clang-format off
+	nofralloc
 	OS_EXCEPTION_SAVE_GPRS(context)
 
 	stwu r1, -8(r1)
 	b __OSDispatchInterrupt
-	// clang-format on
+#endif // clang-format on
 }

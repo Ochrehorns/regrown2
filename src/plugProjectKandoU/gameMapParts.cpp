@@ -7,682 +7,30 @@
 #include "Game/gamePlayData.h"
 #include "Game/generalEnemyMgr.h"
 #include "Game/Cave/Node.h"
-
-/*
-    Generated from dpostproc
-
-    .section .ctors, "wa"  # 0x80472F00 - 0x804732C0
-    .4byte __sinit_gameMapParts_cpp
-
-    .section .rodata  # 0x804732E0 - 0x8049E220
-    .global lbl_8047FC70
-    lbl_8047FC70:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x67616D65
-        .4byte 0x4D617050
-        .4byte 0x61727473
-        .4byte 0x00000000
-        .4byte 0x09232064
-        .4byte 0x6973742F
-        .4byte 0x646F6F72
-        .4byte 0x2D69642F
-        .4byte 0x74656B69
-        .4byte 0x666C6167
-        .4byte 0x0D0A0000
-        .4byte 0x09232069
-        .4byte 0x6E646578
-        .4byte 0x0D0A0000
-        .4byte 0x09232064
-        .4byte 0x69722F6F
-        .4byte 0x6666732F
-        .4byte 0x7770696E
-        .4byte 0x6465780D
-        .4byte 0x0A000000
-        .4byte 0x09232064
-        .4byte 0x6F6F7220
-        .4byte 0x6C696E6B
-        .4byte 0x730D0A00
-        .4byte 0x09232064
-        .4byte 0x582F645A
-        .4byte 0x203B2063
-        .4byte 0x656C6C20
-        .4byte 0x73697A65
-        .4byte 0x0D0A0000
-    .global lbl_8047FCF4
-    lbl_8047FCF4:
-        .4byte 0x67616D65
-        .4byte 0x4D617050
-        .4byte 0x61727473
-        .4byte 0x2E637070
-        .4byte 0x00000000
-        .4byte 0x82E082A4
-        .4byte 0x8E6782ED
-        .4byte 0x82C882A2
-        .4byte 0x0A000000
-        .4byte 0x2573203A
-        .4byte 0x206E6F74
-        .4byte 0x20666F75
-        .4byte 0x6E642021
-        .4byte 0x0A000000
-        .4byte 0x25732F61
-        .4byte 0x72632E73
-        .4byte 0x7A730000
-        .asciz "P2Assert"
-        .skip 3
-        .4byte 0x76696577
-        .4byte 0x2E626D64
-        .4byte 0x00000000
-        .4byte 0x74657874
-        .4byte 0x7572652E
-        .4byte 0x62746900
-        .4byte 0x25735F25
-        .4byte 0x642E6274
-        .4byte 0x6B000000
-        .4byte 0x25732F74
-        .4byte 0x65787473
-        .4byte 0x2E737A73
-        .4byte 0x00000000
-        .4byte 0x67726964
-        .4byte 0x2E62696E
-        .4byte 0x00000000
-        .4byte 0x6D617063
-        .4byte 0x6F64652E
-        .4byte 0x62696E00
-        .4byte 0x77617465
-        .4byte 0x72626F78
-        .4byte 0x2E747874
-        .4byte 0x00000000
-        .4byte 0x726F7574
-        .4byte 0x652E7478
-        .4byte 0x74000000
-        .4byte 0x75736572
-        .4byte 0x2F4B616E
-        .4byte 0x646F2F6D
-        .4byte 0x61702F76
-        .4byte 0x72626F78
-        .4byte 0x2F25732E
-        .4byte 0x737A7300
-        .4byte 0x6D6F6465
-        .4byte 0x6C2E626D
-        .4byte 0x64000000
-        .4byte 0x6E6F206D
-        .4byte 0x6F64656C
-        .4byte 0x2E626D64
-        .4byte 0x20696E20
-        .4byte 0x25730A00
-        .4byte 0x75736572
-        .4byte 0x2F4D756B
-        .4byte 0x6B692F6D
-        .4byte 0x6170756E
-        .4byte 0x6974732F
-        .4byte 0x756E6974
-        .4byte 0x732F2573
-        .4byte 0x00000000
-        .4byte 0x2573206E
-        .4byte 0x6F742066
-        .4byte 0x6F756E64
-        .4byte 0x20210A00
-        .4byte 0x75736572
-        .4byte 0x2F416265
-        .4byte 0x2F636176
-        .4byte 0x652F2573
-        .4byte 0x00000000
-        .4byte 0x6E6F206C
-        .4byte 0x69676874
-        .4byte 0x2066696C
-        .4byte 0x65202825
-        .4byte 0x73290A00
-        .4byte 0x75736572
-        .4byte 0x2F4D756B
-        .4byte 0x6B692F6D
-        .4byte 0x6170756E
-        .4byte 0x6974732F
-        .4byte 0x6172632F
-        .4byte 0x25732F74
-        .4byte 0x65787473
-        .4byte 0x2E737A73
-        .4byte 0x00000000
-        .4byte 0x6E6F2074
-        .4byte 0x65787441
-        .4byte 0x52632021
-        .4byte 0x0A000000
-        .4byte 0x6C61796F
-        .4byte 0x75742E74
-        .4byte 0x78740000
-        .4byte 0x3234362D
-        .4byte 0x43726561
-        .4byte 0x74655261
-        .4byte 0x6E646F6D
-        .4byte 0x4D617000
-        .4byte 0x4D6F6465
-        .4byte 0x6C20616E
-        .4byte 0x6420436F
-        .4byte 0x6C6C6973
-        .4byte 0x696F6E00
-        .4byte 0x3234362D
-        .4byte 0x506C6163
-        .4byte 0x65526F6F
-        .4byte 0x6D730000
-    .global lbl_8047FEBC
-    lbl_8047FEBC:
-        .4byte 0x75736572
-        .4byte 0x2F4D756B
-        .4byte 0x6B692F6D
-        .4byte 0x6170756E
-        .4byte 0x6974732F
-        .4byte 0x6172632F
-        .4byte 0x25730000
-    .global lbl_8047FED8
-    lbl_8047FED8:
-        .4byte 0x6E6F2073
-        .4byte 0x75636820
-        .4byte 0x756E6974
-        .4byte 0x2025730A
-        .4byte 0x00000000
-    .global lbl_8047FEEC
-    lbl_8047FEEC:
-        .4byte 0x7369626F
-        .4byte 0x75646573
-        .4byte 0x7520210A
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .float 1.0
-        .float 1.0
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0xBF800000
-        .4byte 0xBF800000
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x6361705F
-        .4byte 0x636F6E63
-        .4byte 0x00000000
-    .global lbl_8047FF38
-    lbl_8047FF38:
-        .4byte 0x4974656D
-        .4byte 0x47617465
-        .4byte 0x496E6974
-        .4byte 0x41726700
-    .global lbl_8047FF48
-    lbl_8047FF48:
-        .4byte 0x4974656D
-        .4byte 0x42696746
-        .4byte 0x6F756E74
-        .4byte 0x61696E3A
-        .4byte 0x3A496E69
-        .4byte 0x74417267
-        .4byte 0x00000000
-    .global lbl_8047FF64
-    lbl_8047FF64:
-        .4byte 0x4974656D
-        .4byte 0x486F6C65
-        .4byte 0x3A3A496E
-        .4byte 0x69744172
-        .4byte 0x67000000
-        .4byte 0x50656C6C
-        .4byte 0x6574496E
-        .4byte 0x69744172
-        .4byte 0x67000000
-        .4byte 0x23202564
-        .4byte 0x2F25640D
-        .4byte 0x0A000000
-        .4byte 0x00000000
-
-    .section .data, "wa"  # 0x8049E220 - 0x804EFC20
-    .global lbl_804B5C20
-    lbl_804B5C20:
-        .4byte 0x00000000
-        .4byte 0x00000000
-        .4byte 0x00000000
-    .global lbl_804B5C2C
-    lbl_804B5C2C:
-        .4byte lbl_801B7350
-        .4byte lbl_801B74A8
-        .4byte lbl_801B75B4
-        .4byte lbl_801B6FA4
-        .4byte lbl_801B7120
-        .4byte lbl_801B728C
-        .4byte lbl_801B71A4
-        .4byte lbl_801B7218
-    .global __vt__Q24Game10RoomMapMgr
-    __vt__Q24Game10RoomMapMgr:
-        .4byte 0
-        .4byte 0
-        .4byte hasHiddenCollision__Q24Game10RoomMapMgrFv
-        .4byte constraintBoundBox__Q24Game10RoomMapMgrFRQ23Sys6Sphere
-        .4byte "getStartPosition__Q24Game10RoomMapMgrFR10Vector3<f>i"
-        .4byte getDemoMatrix__Q24Game10RoomMapMgrFv
-        .4byte getBoundBox2d__Q24Game10RoomMapMgrFR10BoundBox2d
-        .4byte getBoundBox__Q24Game10RoomMapMgrFR8BoundBox
-        .4byte
-   findRayIntersection__Q24Game10RoomMapMgrFRQ23Sys16RayIntersectInfo .4byte
-   traceMove__Q24Game10RoomMapMgrFRQ24Game8MoveInfof .4byte
-   "getMinY__Q24Game10RoomMapMgrFR10Vector3<f>" .4byte
-   getCurrTri__Q24Game10RoomMapMgrFRQ24Game11CurrTriInfo .4byte
-   createTriangles__Q24Game10RoomMapMgrFRQ23Sys17CreateTriangleArg .4byte
-   setupJUTTextures__Q24Game10RoomMapMgrFv .4byte frozenable__Q24Game6MapMgrFv
-        .4byte update__Q24Game6MapMgrFv
-        .4byte do_update__Q24Game6MapMgrFv
-        .4byte drawCollision__Q24Game10RoomMapMgrFR8GraphicsRQ23Sys6Sphere
-        .4byte doSimulation__Q24Game10RoomMapMgrFf
-        .4byte doDirectDraw__Q24Game10RoomMapMgrFR8Graphics
-        .4byte doAnimation__Q24Game10RoomMapMgrFv
-        .4byte doEntry__Q24Game10RoomMapMgrFv
-        .4byte doSetView__Q24Game10RoomMapMgrFi
-        .4byte doViewCalc__Q24Game10RoomMapMgrFv
-        .4byte traceMove_new__Q24Game10RoomMapMgrFRQ24Game8MoveInfof
-        .4byte traceMove_original__Q24Game10RoomMapMgrFRQ24Game8MoveInfof
-        .4byte 0
-        .4byte 0
-        .4byte "@280@4@doAnimation__Q24Game10RoomMapMgrFv"
-        .4byte "@280@4@doEntry__Q24Game10RoomMapMgrFv"
-        .4byte "@280@4@doSetView__Q24Game10RoomMapMgrFi"
-        .4byte "@280@4@doViewCalc__Q24Game10RoomMapMgrFv"
-        .4byte "@280@4@doSimulation__Q24Game10RoomMapMgrFf"
-        .4byte "@280@4@doDirectDraw__Q24Game10RoomMapMgrFR8Graphics"
-        .4byte doSimpleDraw__16GenericObjectMgrFP8Viewport
-        .4byte loadResources__16GenericObjectMgrFv
-        .4byte resetMgr__16GenericObjectMgrFv
-        .4byte pausable__16GenericObjectMgrFv
-        .4byte "@280@4@frozenable__Q24Game6MapMgrFv"
-        .4byte getMatrixLoadType__16GenericObjectMgrFv
-    .global __vt__Q24Game4Door
-    __vt__Q24Game4Door:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q24Game4DoorFv
-        .4byte getChildCount__5CNodeFv
-    .global __vt__Q24Game16MapUnitInterface
-    __vt__Q24Game16MapUnitInterface:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q24Game16MapUnitInterfaceFv
-        .4byte getChildCount__5CNodeFv
-        .4byte constructor__Q24Game9PartsViewFv
-        .4byte doAnimation__Q24Game9PartsViewFv
-        .4byte doEntry__Q24Game9PartsViewFv
-        .4byte doSetView__Q24Game9PartsViewFi
-        .4byte doViewCalc__Q24Game9PartsViewFv
-        .4byte doSimulation__Q24Game9PartsViewFf
-        .4byte doDirectDraw__Q24Game9PartsViewFR8Graphics
-    .global "__vt__25Iterator<Q24Game7MapRoom>"
-    "__vt__25Iterator<Q24Game7MapRoom>":
-        .4byte 0
-        .4byte 0
-        .4byte "first__25Iterator<Q24Game7MapRoom>Fv"
-        .4byte "next__25Iterator<Q24Game7MapRoom>Fv"
-        .4byte "isDone__25Iterator<Q24Game7MapRoom>Fv"
-        .4byte "__ml__25Iterator<Q24Game7MapRoom>Fv"
-    .global "__vt__26Container<Q24Game7MapRoom>"
-    "__vt__26Container<Q24Game7MapRoom>":
-        .4byte 0
-        .4byte 0
-        .4byte "__dt__26Container<Q24Game7MapRoom>Fv"
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__26Container<Q24Game7MapRoom>FPv"
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte "getAt__26Container<Q24Game7MapRoom>Fi"
-        .4byte "getTo__26Container<Q24Game7MapRoom>Fv"
-    .global "__vt__26ObjectMgr<Q24Game7MapRoom>"
-    "__vt__26ObjectMgr<Q24Game7MapRoom>":
-        .4byte 0
-        .4byte 0
-        .4byte "__dt__26ObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__26Container<Q24Game7MapRoom>FPv"
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte "getAt__26Container<Q24Game7MapRoom>Fi"
-        .4byte "getTo__26Container<Q24Game7MapRoom>Fv"
-        .4byte 0
-        .4byte 0
-        .4byte "@28@doAnimation__26ObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "@28@doEntry__26ObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "@28@doSetView__26ObjectMgr<Q24Game7MapRoom>Fi"
-        .4byte "@28@doViewCalc__26ObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "@28@doSimulation__26ObjectMgr<Q24Game7MapRoom>Ff"
-        .4byte "@28@doDirectDraw__26ObjectMgr<Q24Game7MapRoom>FR8Graphics"
-        .4byte doSimpleDraw__16GenericObjectMgrFP8Viewport
-        .4byte loadResources__16GenericObjectMgrFv
-        .4byte resetMgr__16GenericObjectMgrFv
-        .4byte pausable__16GenericObjectMgrFv
-        .4byte frozenable__16GenericObjectMgrFv
-        .4byte getMatrixLoadType__16GenericObjectMgrFv
-        .4byte "doAnimation__26ObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "doEntry__26ObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "doSetView__26ObjectMgr<Q24Game7MapRoom>Fi"
-        .4byte "doViewCalc__26ObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "doSimulation__26ObjectMgr<Q24Game7MapRoom>Ff"
-        .4byte "doDirectDraw__26ObjectMgr<Q24Game7MapRoom>FR8Graphics"
-    .global "__vt__30MonoObjectMgr<Q24Game7MapRoom>"
-    "__vt__30MonoObjectMgr<Q24Game7MapRoom>":
-        .4byte 0
-        .4byte 0
-        .4byte "__dt__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__26Container<Q24Game7MapRoom>FPv"
-        .4byte "getNext__30MonoObjectMgr<Q24Game7MapRoom>FPv"
-        .4byte "getStart__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "getEnd__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "get__30MonoObjectMgr<Q24Game7MapRoom>FPv"
-        .4byte "getAt__30MonoObjectMgr<Q24Game7MapRoom>Fi"
-        .4byte "getTo__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte 0
-        .4byte 0
-        .4byte "@28@doAnimation__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "@28@doEntry__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "@28@doSetView__30MonoObjectMgr<Q24Game7MapRoom>Fi"
-        .4byte "@28@doViewCalc__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "@28@doSimulation__30MonoObjectMgr<Q24Game7MapRoom>Ff"
-        .4byte "@28@doDirectDraw__30MonoObjectMgr<Q24Game7MapRoom>FR8Graphics"
-        .4byte doSimpleDraw__16GenericObjectMgrFP8Viewport
-        .4byte loadResources__16GenericObjectMgrFv
-        .4byte "@28@resetMgr__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte pausable__16GenericObjectMgrFv
-        .4byte frozenable__16GenericObjectMgrFv
-        .4byte getMatrixLoadType__16GenericObjectMgrFv
-        .4byte "doAnimation__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "doEntry__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "doSetView__30MonoObjectMgr<Q24Game7MapRoom>Fi"
-        .4byte "doViewCalc__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "doSimulation__30MonoObjectMgr<Q24Game7MapRoom>Ff"
-        .4byte "doDirectDraw__30MonoObjectMgr<Q24Game7MapRoom>FR8Graphics"
-        .4byte "birth__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "resetMgr__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "clearMgr__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-        .4byte "onAlloc__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-    .global __vt__Q24Game7MapRoom
-    __vt__Q24Game7MapRoom:
-        .4byte 0
-        .4byte 0
-        .4byte getPosition__Q24Game7MapRoomFv
-        .4byte checkCollision__Q24Game10CellObjectFPQ24Game10CellObject
-        .4byte getBoundingSphere__Q24Game7MapRoomFRQ23Sys6Sphere
-        .4byte collisionUpdatable__Q24Game7MapRoomFv
-        .4byte isPiki__Q24Game10CellObjectFv
-        .4byte isNavi__Q24Game10CellObjectFv
-        .4byte deferPikiCollision__Q24Game10CellObjectFv
-        .4byte getTypeName__Q24Game7MapRoomFv
-        .4byte getObjType__Q24Game7MapRoomFv
-        .4byte constructor__Q24Game7MapRoomFv
-        .4byte doAnimation__Q24Game7MapRoomFv
-        .4byte doEntry__Q24Game7MapRoomFv
-        .4byte doSetView__Q24Game7MapRoomFi
-        .4byte doViewCalc__Q24Game7MapRoomFv
-        .4byte doSimulation__Q24Game7MapRoomFf
-        .4byte doDirectDraw__Q24Game7MapRoomFR8Graphics
-    .global __vt__Q24Game15ItemGateInitArg
-    __vt__Q24Game15ItemGateInitArg:
-        .4byte 0
-        .4byte 0
-        .4byte getName__Q24Game15ItemGateInitArgFv
-    .global __vt__Q34Game15ItemBigFountain7InitArg
-    __vt__Q34Game15ItemBigFountain7InitArg:
-        .4byte 0
-        .4byte 0
-        .4byte getName__Q34Game15ItemBigFountain7InitArgFv
-    .global __vt__Q34Game8ItemHole7InitArg
-    __vt__Q34Game8ItemHole7InitArg:
-        .4byte 0
-        .4byte 0
-        .4byte getName__Q34Game8ItemHole7InitArgFv
-    .global "__vt__25Iterator<Q24Game7MapUnit>"
-    "__vt__25Iterator<Q24Game7MapUnit>":
-        .4byte 0
-        .4byte 0
-        .4byte "first__25Iterator<Q24Game7MapUnit>Fv"
-        .4byte "next__25Iterator<Q24Game7MapUnit>Fv"
-        .4byte "isDone__25Iterator<Q24Game7MapUnit>Fv"
-        .4byte "__ml__25Iterator<Q24Game7MapUnit>Fv"
-    .global __vt__Q24Game10MapUnitMgr
-    __vt__Q24Game10MapUnitMgr:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q24Game10MapUnitMgrFv
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__26Container<Q24Game7MapUnit>FPv"
-        .4byte "getNext__30NodeObjectMgr<Q24Game7MapUnit>FPv"
-        .4byte "getStart__30NodeObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "getEnd__30NodeObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "get__30NodeObjectMgr<Q24Game7MapUnit>FPv"
-        .4byte getAt__Q24Game10MapUnitMgrFi
-        .4byte "getTo__26Container<Q24Game7MapUnit>Fv"
-        .4byte 0
-        .4byte 0
-        .4byte "@28@doAnimation__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "@28@doEntry__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "@28@doSetView__26ObjectMgr<Q24Game7MapUnit>Fi"
-        .4byte "@28@doViewCalc__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "@28@doSimulation__26ObjectMgr<Q24Game7MapUnit>Ff"
-        .4byte "@28@doDirectDraw__26ObjectMgr<Q24Game7MapUnit>FR8Graphics"
-        .4byte doSimpleDraw__16GenericObjectMgrFP8Viewport
-        .4byte loadResources__16GenericObjectMgrFv
-        .4byte "@28@resetMgr__30NodeObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte pausable__16GenericObjectMgrFv
-        .4byte frozenable__16GenericObjectMgrFv
-        .4byte getMatrixLoadType__16GenericObjectMgrFv
-        .4byte "doAnimation__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "doEntry__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "doSetView__26ObjectMgr<Q24Game7MapUnit>Fi"
-        .4byte "doViewCalc__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "doSimulation__26ObjectMgr<Q24Game7MapUnit>Ff"
-        .4byte "doDirectDraw__26ObjectMgr<Q24Game7MapUnit>FR8Graphics"
-        .4byte "resetMgr__30NodeObjectMgr<Q24Game7MapUnit>Fv"
-    .global "__vt__28TObjectNode<Q24Game7MapUnit>"
-    "__vt__28TObjectNode<Q24Game7MapUnit>":
-        .4byte 0
-        .4byte 0
-        .4byte "__dt__28TObjectNode<Q24Game7MapUnit>Fv"
-        .4byte getChildCount__5CNodeFv
-    .global "__vt__30NodeObjectMgr<Q24Game7MapUnit>"
-    "__vt__30NodeObjectMgr<Q24Game7MapUnit>":
-        .4byte 0
-        .4byte 0
-        .4byte "__dt__30NodeObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__26Container<Q24Game7MapUnit>FPv"
-        .4byte "getNext__30NodeObjectMgr<Q24Game7MapUnit>FPv"
-        .4byte "getStart__30NodeObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "getEnd__30NodeObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "get__30NodeObjectMgr<Q24Game7MapUnit>FPv"
-        .4byte "getAt__26Container<Q24Game7MapUnit>Fi"
-        .4byte "getTo__26Container<Q24Game7MapUnit>Fv"
-        .4byte 0
-        .4byte 0
-        .4byte "@28@doAnimation__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "@28@doEntry__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "@28@doSetView__26ObjectMgr<Q24Game7MapUnit>Fi"
-        .4byte "@28@doViewCalc__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "@28@doSimulation__26ObjectMgr<Q24Game7MapUnit>Ff"
-        .4byte "@28@doDirectDraw__26ObjectMgr<Q24Game7MapUnit>FR8Graphics"
-        .4byte doSimpleDraw__16GenericObjectMgrFP8Viewport
-        .4byte loadResources__16GenericObjectMgrFv
-        .4byte "@28@resetMgr__30NodeObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte pausable__16GenericObjectMgrFv
-        .4byte frozenable__16GenericObjectMgrFv
-        .4byte getMatrixLoadType__16GenericObjectMgrFv
-        .4byte "doAnimation__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "doEntry__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "doSetView__26ObjectMgr<Q24Game7MapUnit>Fi"
-        .4byte "doViewCalc__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "doSimulation__26ObjectMgr<Q24Game7MapUnit>Ff"
-        .4byte "doDirectDraw__26ObjectMgr<Q24Game7MapUnit>FR8Graphics"
-        .4byte "resetMgr__30NodeObjectMgr<Q24Game7MapUnit>Fv"
-    .global "__vt__26ObjectMgr<Q24Game7MapUnit>"
-    "__vt__26ObjectMgr<Q24Game7MapUnit>":
-        .4byte 0
-        .4byte 0
-        .4byte "__dt__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__26Container<Q24Game7MapUnit>FPv"
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte "getAt__26Container<Q24Game7MapUnit>Fi"
-        .4byte "getTo__26Container<Q24Game7MapUnit>Fv"
-        .4byte 0
-        .4byte 0
-        .4byte "@28@doAnimation__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "@28@doEntry__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "@28@doSetView__26ObjectMgr<Q24Game7MapUnit>Fi"
-        .4byte "@28@doViewCalc__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "@28@doSimulation__26ObjectMgr<Q24Game7MapUnit>Ff"
-        .4byte "@28@doDirectDraw__26ObjectMgr<Q24Game7MapUnit>FR8Graphics"
-        .4byte doSimpleDraw__16GenericObjectMgrFP8Viewport
-        .4byte loadResources__16GenericObjectMgrFv
-        .4byte resetMgr__16GenericObjectMgrFv
-        .4byte pausable__16GenericObjectMgrFv
-        .4byte frozenable__16GenericObjectMgrFv
-        .4byte getMatrixLoadType__16GenericObjectMgrFv
-        .4byte "doAnimation__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "doEntry__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "doSetView__26ObjectMgr<Q24Game7MapUnit>Fi"
-        .4byte "doViewCalc__26ObjectMgr<Q24Game7MapUnit>Fv"
-        .4byte "doSimulation__26ObjectMgr<Q24Game7MapUnit>Ff"
-        .4byte "doDirectDraw__26ObjectMgr<Q24Game7MapUnit>FR8Graphics"
-    .global "__vt__26Container<Q24Game7MapUnit>"
-    "__vt__26Container<Q24Game7MapUnit>":
-        .4byte 0
-        .4byte 0
-        .4byte "__dt__26Container<Q24Game7MapUnit>Fv"
-        .4byte getChildCount__5CNodeFv
-        .4byte "getObject__26Container<Q24Game7MapUnit>FPv"
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte 0
-        .4byte "getAt__26Container<Q24Game7MapUnit>Fi"
-        .4byte "getTo__26Container<Q24Game7MapUnit>Fv"
-    .global __vt__Q24Game7MapUnit
-    __vt__Q24Game7MapUnit:
-        .4byte 0
-        .4byte 0
-        .4byte constructor__Q24Game7MapUnitFv
-        .4byte doAnimation__Q24Game7MapUnitFv
-        .4byte doEntry__Q24Game7MapUnitFv
-        .4byte doSetView__Q24Game7MapUnitFi
-        .4byte doViewCalc__Q24Game7MapUnitFv
-        .4byte doSimulation__Q24Game7MapUnitFf
-        .4byte doDirectDraw__Q24Game7MapUnitFR8Graphics
-    .global __vt__Q24Game8DoorLink
-    __vt__Q24Game8DoorLink:
-        .4byte 0
-        .4byte 0
-        .4byte __dt__Q24Game8DoorLinkFv
-        .4byte getChildCount__5CNodeFv
-        .4byte 0
-
-    .section .sbss # 0x80514D80 - 0x80516360
-    .global lbl_80515A78
-    lbl_80515A78:
-        .skip 0x4
-    .global lbl_80515A7C
-    lbl_80515A7C:
-        .skip 0x4
-    .global numRoomCulled__Q24Game10RoomMapMgr
-    numRoomCulled__Q24Game10RoomMapMgr:
-        .skip 0x4
-    .global mUseCylinderViewCulling__Q24Game10RoomMapMgr
-    mUseCylinderViewCulling__Q24Game10RoomMapMgr:
-        .skip 0x4
-
-    .section .sdata2, "a"     # 0x80516360 - 0x80520E40
-    .global lbl_80519440
-    lbl_80519440:
-        .4byte 0x00000000
-    .global lbl_80519444
-    lbl_80519444:
-        .4byte 0x47000000
-    .global lbl_80519448
-    lbl_80519448:
-        .4byte 0xC7000000
-    .global lbl_8051944C
-    lbl_8051944C:
-        .4byte 0x432A0000
-    .global lbl_80519450
-    lbl_80519450:
-        .4byte 0x47FA0000
-    .global lbl_80519454
-    lbl_80519454:
-        .4byte 0xC7FA0000
-    .global lbl_80519458
-    lbl_80519458:
-        .float 1.0
-    .global lbl_8051945C
-    lbl_8051945C:
-        .float 0.5
-    .global lbl_80519460
-    lbl_80519460:
-        .4byte 0x41F00000
-    .global lbl_80519464
-    lbl_80519464:
-        .4byte 0x43A00000
-    .global lbl_80519468
-    lbl_80519468:
-        .4byte 0xC2B40000
-        .4byte 0x00000000
-    .global lbl_80519470
-    lbl_80519470:
-        .4byte 0x43300000
-        .4byte 0x80000000
-    .global lbl_80519478
-    lbl_80519478:
-        .4byte 0x41200000
-    .global lbl_8051947C
-    lbl_8051947C:
-        .4byte 0x3C800000
-    .global lbl_80519480
-    lbl_80519480:
-        .4byte 0x3F19999A
-    .global lbl_80519484
-    lbl_80519484:
-        .4byte 0x4B435000
-    .global lbl_80519488
-    lbl_80519488:
-        .4byte 0x48A02800
-    .global lbl_8051948C
-    lbl_8051948C:
-        .4byte 0x40490FDB
-    .global lbl_80519490
-    lbl_80519490:
-        .4byte 0x3BB60B61
-    .global lbl_80519494
-    lbl_80519494:
-        .4byte 0x42C80000
-    .global lbl_80519498
-    lbl_80519498:
-        .4byte 0x454E542D
-        .4byte 0x4D415000
-    .global lbl_805194A0
-    lbl_805194A0:
-        .4byte 0x726F6F6D
-        .4byte 0x00000000
-*/
+#include "Game/PelletBirthBuffer.h"
+#include "JSystem/JUtility/JUTTexture.h"
+#include "Dolphin/rand.h"
+#include "Sys/TriangleTable.h"
+#include "VsOtakaraName.h"
+#include "nans.h"
 
 namespace Game {
 
-/*
- * --INFO--
- * Address:	801B6468
- * Size:	000024
+static const int unusedArray[] = { 0, 0, 0 };
+static const char unusedName[] = "gameMapParts";
+
+int RoomMapMgr::numRoomCulled            = 0;
+bool RoomMapMgr::mUseCylinderViewCulling = false;
+
+/**
+ * @note Address: 0x801B6468
+ * @note Size: 0x24
  */
 Door* MapUnitInterface::getDoor(int idx) { return (Door*)mDoor.getChildAt(idx); }
 
-/*
- * --INFO--
- * Address:	801B648C
- * Size:	00001C
+/**
+ * @note Address: 0x801B648C
+ * @note Size: 0x1C
  */
 void MapUnitInterface::getCellSize(int& x, int& y)
 {
@@ -690,47 +38,61 @@ void MapUnitInterface::getCellSize(int& x, int& y)
 	y = mMapUnit->mCellSize.y;
 }
 
-/*
- * --INFO--
- * Address:	801B64A8
- * Size:	000024
+/**
+ * @note Address: 0x801B64A8
+ * @note Size: 0x24
  */
 DoorLink* Door::getLink(int idx) { return static_cast<DoorLink*>(mRootLink.getChildAt(idx)); }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
-void DoorLink::write(Stream&)
+void DoorLink::write(Stream& stream)
 {
-	// UNUSED FUNCTION
+	stream.textWriteTab(stream.mTabCount);
+	stream.writeFloat(mDistance);
+	stream.writeInt(mDoorID);
+	stream.writeInt(mTekiFlags);
+	stream.textWriteText("\t# dist/door-id/tekiflag\r\n");
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000064
+/**
+ * @note Address: N/A
+ * @note Size: 0x64
  */
-void DoorLink::read(Stream&)
+void DoorLink::read(Stream& stream)
 {
-	// UNUSED FUNCTION
+	mDistance  = stream.readFloat();
+	mDoorID    = stream.readInt();
+	int v0     = stream.readInt();
+	mTekiFlags = v0 != 0;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000124
+/**
+ * @note Address: N/A
+ * @note Size: 0x124
  */
-void Door::write(Stream&)
+void Door::write(Stream& stream)
 {
-	// UNUSED FUNCTION
+	stream.textWriteTab(stream.mTabCount);
+	stream.writeInt(mIndex);
+	stream.textWriteText("\t# index\r\n");
+
+	stream.textWriteTab(stream.mTabCount);
+	stream.writeInt(mDir);
+	stream.writeInt(mOffs);
+	stream.writeInt(mWpIndex);
+	stream.textWriteText("\t# dir/offs/wpindex\r\n");
+
+	stream.textWriteTab(stream.mTabCount);
+	FOREACH_NODE(DoorLink, mRootLink.mChild, link) { link->write(stream); }
+	stream.textWriteText("\t# door links\r\n");
 }
 
-/*
- * --INFO--
- * Address:	801B64CC
- * Size:	000104
+/**
+ * @note Address: 0x801B64CC
+ * @note Size: 0x104
  */
 void Door::read(Stream& stream)
 {
@@ -740,29 +102,16 @@ void Door::read(Stream& stream)
 	mWpIndex   = stream.readInt();
 	mLinkCount = stream.readInt();
 	for (int i = 0; i < mLinkCount; i++) {
-		// inlined constructor
-		DoorLink* link  = new Game::DoorLink();
-		link->mDistance = stream.readFloat();
-		link->mDoorID   = stream.readInt();
-		int v0          = stream.readInt();
-
-		// TODO: WTF does this evaluate to?
-		// neg       r0, r3 <-- -stream.readInt()
-		// mr        r4, r31
-		// or        r0, r0, r3 <-- (r0 | r3) aka (-v0 | v0)
-		// addi      r3, r28, 0x20 # ' '
-		// srwi      r0, r0, 31 <-- conversion to byte
-		// stb       r0, 0x20(r31)
-		link->mTekiFlags = (-v0 | v0); // < 0?
+		DoorLink* link = new DoorLink();
+		link->read(stream);
 
 		mRootLink.add(link);
 	}
 }
 
-/*
- * --INFO--
- * Address:	801B65D0
- * Size:	0000AC
+/**
+ * @note Address: 0x801B65D0
+ * @note Size: 0xAC
  */
 MapUnit::MapUnit()
 {
@@ -775,30 +124,32 @@ MapUnit::MapUnit()
 	mImgResource = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000CC
+/**
+ * @note Address: N/A
+ * @note Size: 0xCC
  */
 void MapUnit::setupSizeInfo()
 {
-	// UNUSED FUNCTION
+	mCollision.getBoundBox(mBoundingBox);
+	mBoundingBox.mMax.x = 170.0f; // this float is used in here somewhere, and this is inlined in makeOneRoom
+	                              // UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000080
+/**
+ * @note Address: N/A
+ * @note Size: 0x80
  */
-void MapUnit::save(Stream&)
+void MapUnit::save(Stream& stream)
 {
-	// UNUSED FUNCTION
+	stream.textWriteTab(stream.mTabCount);
+	stream.writeShort(mCellSize.x);
+	stream.writeShort(mCellSize.y);
+	stream.textWriteText("\t# dX/dZ ; cell size\r\n");
 }
 
-/*
- * --INFO--
- * Address:	801B66AC
- * Size:	00004C
+/**
+ * @note Address: 0x801B66AC
+ * @note Size: 0x4C
  */
 void MapUnit::load(Stream& stream)
 {
@@ -806,118 +157,89 @@ void MapUnit::load(Stream& stream)
 	mCellSize.y = stream.readShort();
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000B8
+/**
+ * @note Address: N/A
+ * @note Size: 0xB8
  */
 MapUnitMgr::MapUnitMgr()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	801B6918
- * Size:	000088
+/**
+ * @note Address: 0x801B6918
+ * @note Size: 0x88
  */
-MapUnit* MapUnitMgr::getAt(int i)
+MapUnit* MapUnitMgr::getAt(int idx)
 {
-	/*
-	cmpwi    r4, 0
-	lwz      r5, 0x30(r3)
-	li       r6, 0
-	ble      lbl_801B6988
-	cmpwi    r4, 8
-	addi     r3, r4, -8
-	ble      lbl_801B6970
-	addi     r0, r3, 7
-	srwi     r0, r0, 3
-	mtctr    r0
-	cmpwi    r3, 0
-	ble      lbl_801B6970
+	TObjectNode<MapUnit>* node = static_cast<TObjectNode<MapUnit>*>(mNode.mChild);
+	for (int i = 0; i < idx; i++) {
+		node = node->getNext();
+	}
 
-lbl_801B6948:
-	lwz      r3, 4(r5)
-	addi     r6, r6, 8
-	lwz      r3, 4(r3)
-	lwz      r3, 4(r3)
-	lwz      r3, 4(r3)
-	lwz      r3, 4(r3)
-	lwz      r3, 4(r3)
-	lwz      r3, 4(r3)
-	lwz      r5, 4(r3)
-	bdnz     lbl_801B6948
+	if (node) {
+		return node->mContents;
+	}
 
-lbl_801B6970:
-	subf     r0, r6, r4
-	mtctr    r0
-	cmpw     r6, r4
-	bge      lbl_801B6988
-
-lbl_801B6980:
-	lwz      r5, 4(r5)
-	bdnz     lbl_801B6980
-
-lbl_801B6988:
-	cmplwi   r5, 0
-	beq      lbl_801B6998
-	lwz      r3, 0x18(r5)
-	blr
-
-lbl_801B6998:
-	li       r3, 0
-	blr
-	*/
+	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00020C
+/**
+ * @note Address: N/A
+ * @note Size: 0x20C
  */
-void MapUnitMgr::findMapUnit(char*)
+MapUnit* MapUnitMgr::findMapUnit(char* unitName)
 {
-	// UNUSED FUNCTION
+	Iterator<MapUnit> iter(this);
+	CI_LOOP(iter)
+	{
+		MapUnit* unit = *iter;
+		if (strcmp(unitName, unit->mName) != 0) {
+			continue;
+		}
+
+		return unit;
+	}
+
+	return nullptr;
 }
-/*
- * --INFO--
- * Address:	........
- * Size:	000038
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x38
  */
 void MapUnitMgr::testConstruct()
 {
+	JUT_PANICLINE(500, "‚à‚¤Žg‚í‚È‚¢\n"); // 'don't use it anymore'
+	JUT_PANICLINE(501, "%s : not found !\n", nullptr);
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000068
+/**
+ * @note Address: N/A
+ * @note Size: 0x68
  */
 void MapUnitMgr::loadShape(char*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	801B69EC
- * Size:	000440
+/**
+ * @note Address: 0x801B69EC
+ * @note Size: 0x440
  * TODO
  */
-void MapUnitMgr::makeUnit(Game::MapUnit* unit, char* path)
+void MapUnitMgr::makeUnit(MapUnit* unit, char* folder)
 {
-	char _path[512];
+	char path[512];
 
-	sprintf(_path, "%s/arc.szs", path);
-	JKRArchive* archive = JKRArchive::mount(_path, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	sprintf(path, "%s/arc.szs", folder);
+	JKRArchive* archive = JKRMountArchive(path, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 	P2ASSERTLINE(651, archive);
 
 	void* viewModelData = archive->getResource("view.bmd");
 	P2ASSERTLINE(657, viewModelData);
 
-	// unit->_0C = J3DModelData*
 	unit->mModelData = J3DModelLoaderDataBase::load(viewModelData,
 	                                                0x20000000); // 0x20000000 is some flag
 	unit->mModelData->newSharedDisplayList(0x40000);
@@ -934,27 +256,20 @@ void MapUnitMgr::makeUnit(Game::MapUnit* unit, char* path)
 	int foundFiles        = 0;
 	unit->mAnimationCount = 0;
 	for (int i = 0; i < 100; ++i) {
-		char path[256]; // Assuming a reasonable maximum path length
-
 		// Construct the filename
-		sprintf(path, "%s_%d.btk", path, i + 1);
+		sprintf(path, "%s_%d.btk", folder, i + 1);
 
 		int pathLen   = strlen(path);
 		char* strIter = &path[pathLen];
 
-		if (pathLen > 0) {
+		while (pathLen > 0) {
 			// Backtrack to the last instance of '/'
-			while (*strIter != '/') {
-				--strIter;
-				--pathLen;
-				if (pathLen == 0) {
-					// Once we've reached the start of the string, check if there was a file available
-					if (!archive->getResource(strIter)) {
-						break;
-					}
-					foundFiles++;
-				}
+			if (*strIter == '/') {
+				strIter++;
+				break;
 			}
+			strIter--;
+			pathLen--;
 		}
 
 		if (!archive->getResource(strIter)) {
@@ -964,44 +279,38 @@ void MapUnitMgr::makeUnit(Game::MapUnit* unit, char* path)
 		foundFiles++;
 	}
 
-	if (foundFiles) {
+	if (foundFiles > 0) {
 		unit->mAnimationCount = foundFiles;
 		unit->mAnimations     = new Sys::MatTexAnimation[foundFiles];
 
-		int animationIndex  = 0;
-		int animationOffset = 0;
+		for (int i = 0; i < foundFiles; i++) {
+			sprintf(path, "%s_%d.btk", folder, i + 1);
+			int pathLength      = strlen(path);
+			char* animationName = &path[pathLength];
 
-		while (animationIndex < foundFiles) {
-			char animationPath[512];
-			sprintf(animationPath, "%s_%d.btk", path, animationIndex + 1);
-			int pathLength      = strlen(animationPath);
-			char* animationName = &animationPath[pathLength];
-			int nameLength      = pathLength;
-
-			if (pathLength > 0) {
-				while (*animationName != '/') {
-					--animationName;
-					--pathLength;
-					if (!--nameLength)
-						break;
+			while (pathLength > 0) {
+				if (*animationName == '/') {
+					animationName++;
+					break;
 				}
-				++animationName;
+				animationName--;
+				pathLength--;
 			}
 
-			++animationIndex;
+			unit->mAnimations[i].attachResource(archive->getResource(animationName), unit->mModelData);
 		}
 	}
 
 	// Load collision data
-	sprintf(_path, "%s/texts.szs", path);
-	JKRArchive* collisionArchive = JKRArchive::mount(_path, JKRArchive::EMM_Mem, JKRHeap::sCurrentHeap, JKRArchive::EMD_Tail);
-	P2ASSERTLINE(777, collisionArchive);
+	sprintf(path, "%s/texts.szs", folder);
+	archive = JKRMountArchive(path, JKRArchive::EMM_Mem, JKRHeap::sCurrentHeap, JKRArchive::EMD_Tail);
+	P2ASSERTLINE(777, archive);
 
-	void* gridResource = collisionArchive->getResource("grid.bin");
+	void* gridResource = archive->getResource("grid.bin");
 	if (gridResource) {
 		RamStream stream(gridResource, -1);
 		unit->mCollision.read(stream);
-		delete gridResource;
+		delete[] gridResource;
 
 		unit->mCollision.getBoundBox(unit->mBoundingBox);
 		unit->_A8 = 1;
@@ -1010,7 +319,7 @@ void MapUnitMgr::makeUnit(Game::MapUnit* unit, char* path)
 	}
 
 	// Load map code data
-	void* mapCodeResource = collisionArchive->getResource("mapcode.bin");
+	void* mapCodeResource = archive->getResource("mapcode.bin");
 	if (mapCodeResource) {
 		MapCode::Mgr* mgr = new MapCode::Mgr();
 
@@ -1020,7 +329,7 @@ void MapUnitMgr::makeUnit(Game::MapUnit* unit, char* path)
 	}
 
 	// Load sea data
-	void* waterBoxResource = collisionArchive->getResource("waterbox.txt");
+	void* waterBoxResource = archive->getResource("waterbox.txt");
 	if (waterBoxResource) {
 		RamStream stream(waterBoxResource, -1);
 		stream.resetPosition(true, 1);
@@ -1028,123 +337,69 @@ void MapUnitMgr::makeUnit(Game::MapUnit* unit, char* path)
 	}
 
 	// Load route data
-	void* routeResource = collisionArchive->getResource("route.txt");
+	void* routeResource = archive->getResource("route.txt");
 	if (routeResource) {
 		RamStream stream(routeResource, -1);
 		stream.resetPosition(true, 1);
 		unit->mRouteMgr.read(stream);
 	}
 
-	collisionArchive->unmount();
+	archive->unmount();
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000048
+/**
+ * @note Address: N/A
+ * @note Size: 0x48
  */
 void MapUnitMgr::load(char*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	801B6E2C
- * Size:	0000DC
+/**
+ * @note Address: 0x801B6E2C
+ * @note Size: 0xDC
  */
 MapRoom::MapRoom()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	lis      r4, __vt__Q24Game15TPositionObject@ha
-	stw      r0, 0x14(r1)
-	addi     r0, r4, __vt__Q24Game15TPositionObject@l
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	stw      r0, 0(r3)
-	addi     r3, r31, 4
-	bl       __ct__Q210SweepPrune6ObjectFv
-	lis      r3, __vt__Q24Game10CellObject@ha
-	lis      r4, __ct__Q24Game7CellLegFv@ha
-	addi     r0, r3, __vt__Q24Game10CellObject@l
-	li       r5, 0
-	stw      r0, 0(r31)
-	addi     r3, r31, 0x54
-	addi     r4, r4, __ct__Q24Game7CellLegFv@l
-	li       r6, 0x14
-	li       r7, 4
-	bl       __construct_array
-	addi     r3, r31, 0xa8
-	bl       __ct__Q24Game15CollisionBufferFv
-	li       r0, 1
-	lis      r3, __vt__Q24Game7MapRoom@ha
-	stb      r0, 0x64(r31)
-	li       r4, 0
-	addi     r0, r3, __vt__Q24Game7MapRoom@l
-	addi     r3, r31, 0xd8
-	stb      r4, 0x78(r31)
-	stb      r4, 0x8c(r31)
-	stb      r4, 0xa0(r31)
-	stw      r31, 0x60(r31)
-	stw      r31, 0x74(r31)
-	stw      r31, 0x88(r31)
-	stw      r31, 0x9c(r31)
-	stw      r4, 0xa4(r31)
-	stw      r0, 0(r31)
-	stb      r4, 0x188(r31)
-	stb      r4, 0x189(r31)
-	stw      r4, 0x13c(r31)
-	stw      r4, 0x138(r31)
-	bl       PSMTXIdentity
-	li       r3, -1
-	li       r0, 0
-	sth      r3, 0x184(r31)
-	mr       r3, r31
-	stw      r0, 0x180(r31)
-	stw      r0, 0x18c(r31)
-	stb      r0, 0xbc(r31)
-	stw      r0, 0xc0(r31)
-	lwz      r31, 0xc(r1)
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	mModel = nullptr;
+	mUnit  = nullptr;
+	PSMTXIdentity(_0D8.mMatrix.mtxView);
+	mIndex     = -1;
+	mLink      = nullptr;
+	mWpIndices = nullptr;
+	mIsVisited = false;
+	mInterface = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000FC
+/**
+ * @note Address: N/A
+ * @note Size: 0xFC
  */
 void MapRoom::countItems()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000170
+/**
+ * @note Address: N/A
+ * @note Size: 0x170
  */
 void MapRoom::countEnemys()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	801B6F10
- * Size:	0007B8
+/**
+ * @note Address: 0x801B6F10
+ * @note Size: 0x7B8
  */
-void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matching
+void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool isFinalFloor)
 {
 	if (!mObjectLayoutInfo) {
 		return;
 	}
-	for (int nodeType = 0; nodeType < 8; nodeType++) {
+	for (int nodeType = 0; nodeType < OBJLAYOUT_TypeCount; nodeType++) {
 		for (int nodeIdx = 0; nodeIdx < mObjectLayoutInfo->getCount(nodeType); nodeIdx++) {
 			ObjectLayoutNode* node = static_cast<ObjectLayoutNode*>(mObjectLayoutInfo->getNode(nodeType, nodeIdx));
 			for (int subIdx = 0; subIdx < node->getBirthCount(); subIdx++) {
@@ -1153,11 +408,12 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					ItemHole::Item* hole = static_cast<ItemHole::Item*>(ItemHole::mgr->birth());
 					Vector3f birthPos;
 					node->getBirthPosition(birthPos.x, birthPos.z);
+					birthPos.y = 0.0f;
 					CurrTriInfo triInfo;
 					triInfo.mPosition = birthPos;
 					f32 minY          = 0.0f;
 					if (mapMgr) {
-						triInfo._0C = 0;
+						triInfo.mUpdateOnNewMaxY = 0;
 						mapMgr->getCurrTri(triInfo);
 						minY = triInfo.mMinY;
 					}
@@ -1169,7 +425,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					} else {
 						hole->init(nullptr);
 					}
-					hole->mFaceDirection = node->getDirection();
+					hole->mFaceDir = node->getDirection();
 					hole->setPosition(birthPos, false);
 					if (floorInfo->useKaidanBarrel()) {
 						ItemBarrel::Item* barrel = static_cast<ItemBarrel::Item*>(ItemBarrel::mgr->birth());
@@ -1259,7 +515,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 						if (isWaterwraith) {
 							BlackMan::Obj* waterwraith = static_cast<BlackMan::Obj*>(enemy);
 							waterwraith->setTimer(floorInfo->mParms.mWaterwraithTimer);
-							static_cast<RoomMapMgr*>(mapMgr)->mBlackMan = waterwraith;
+							static_cast<RoomMapMgr*>(mapMgr)->mWraith = waterwraith;
 						}
 					}
 					break;
@@ -1274,7 +530,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					node->getBirthPosition(birthPos.x, birthPos.z);
 					if (mapMgr) {
 						birthPos.y = mapMgr->getMinY(birthPos);
-						birthPos.y += pellet->getCylinderHeight() / 2;
+						birthPos.y += 0.5f * pellet->getCylinderHeight();
 					} else {
 						birthPos.y = 0.0f;
 					}
@@ -1296,7 +552,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 						break;
 					}
 					RoomDoorInfo* doorinfo = &mDoorInfos[doorIdx];
-					Vector3f birthPos      = doorinfo->mWaypoint->mPosition;
+					Vector3f birthPos      = Vector3f(doorinfo->mWaypoint->mPosition);
 					f32 dir                = JMath::atanTable_.atan2_(doorinfo->mLookAtPos.x, doorinfo->mLookAtPos.z);
 					ItemGateInitArg gateArg;
 					gateArg.mFaceDir = dir;
@@ -1313,693 +569,115 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 			}
 		}
 	}
-	/*
-	stwu     r1, -0x190(r1)
-	mflr     r0
-	stw      r0, 0x194(r1)
-	stmw     r16, 0x150(r1)
-	mr       r27, r3
-	mr       r29, r4
-	lwz      r0, 0xc4(r3)
-	cmplwi   r0, 0
-	beq      lbl_801B76B4
-	addi     r25, r1, 0x88
-	addi     r17, r1, 0x7c
-	addi     r18, r1, 0x70
-	addi     r19, r1, 0x64
-	addi     r20, r1, 0x58
-	addi     r26, r1, 0x4c
-	addi     r21, r1, 0x40
-	li       r28, 0
-	li       r23, 0
-
-lbl_801B6F58:
-	li       r16, 0
-	b        lbl_801B7684
-
-lbl_801B6F60:
-	lwz      r3, 0xc4(r27)
-	mr       r4, r28
-	mr       r5, r16
-	lwz      r12, 0(r3)
-	lwz      r12, 0xc(r12)
-	mtctr    r12
-	bctrl
-	li       r30, 0
-	mr       r31, r3
-	b        lbl_801B7664
-
-lbl_801B6F88:
-	cmplwi   r28, 7
-	bgt      lbl_801B7660
-	lis      r3, lbl_804B5C2C@ha
-	addi     r3, r3, lbl_804B5C2C@l
-	lwzx     r0, r3, r23
-	mtctr    r0
-	bctr
-	.global  lbl_801B6FA4
-
-lbl_801B6FA4:
-	lwz      r3, mgr__Q24Game8ItemHole@sda21(r13)
-	bl       birth__Q24Game12TNodeItemMgrFv
-	mr       r0, r3
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	mr       r24, r0
-	mr       r5, r25
-	addi     r4, r1, 0x80
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, mapMgr__4Game@sda21(r13)
-	li       r4, 0
-	lfs      f5, lbl_80519440@sda21(r2)
-	li       r0, 1
-	lfs      f4, lbl_80519450@sda21(r2)
-	cmplwi   r3, 0
-	lfs      f3, lbl_80519454@sda21(r2)
-	lfs      f2, lbl_80519458@sda21(r2)
-	lfs      f1, 0x80(r1)
-	lfs      f0, 0(r25)
-	stfs     f5, 0x84(r1)
-	stw      r4, 0x12c(r1)
-	stfs     f4, 0x130(r1)
-	stfs     f3, 0x134(r1)
-	stw      r4, 0x128(r1)
-	stfs     f5, 0x138(r1)
-	stfs     f2, 0x13c(r1)
-	stfs     f5, 0x140(r1)
-	stb      r0, 0x124(r1)
-	stb      r4, 0x125(r1)
-	stfs     f1, 0x118(r1)
-	stfs     f5, 0x11c(r1)
-	stfs     f0, 0x120(r1)
-	beq      lbl_801B704C
-	stb      r4, 0x124(r1)
-	addi     r4, r1, 0x118
-	lwz      r12, 4(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	lfs      f5, 0x134(r1)
-
-lbl_801B704C:
-	stfs     f5, 0x84(r1)
-	li       r3, 0
-	lwz      r4, gameSystem__4Game@sda21(r13)
-	lwz      r0, 0x44(r4)
-	cmpwi    r0, 2
-	beq      lbl_801B706C
-	cmpwi    r0, 3
-	bne      lbl_801B7070
-
-lbl_801B706C:
-	li       r3, 1
-
-lbl_801B7070:
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B70A8
-	lis      r4, __vt__Q24Game15CreatureInitArg@ha
-	lis      r3, __vt__Q34Game8ItemHole7InitArg@ha
-	addi     r4, r4, __vt__Q24Game15CreatureInitArg@l
-	li       r0, 2
-	stw      r4, 0x18(r1)
-	addi     r5, r3, __vt__Q34Game8ItemHole7InitArg@l
-	mr       r3, r24
-	addi     r4, r1, 0x18
-	stw      r5, 0x18(r1)
-	stw      r0, 0x1c(r1)
-	bl       init__Q24Game8CreatureFPQ24Game15CreatureInitArg
-	b        lbl_801B70B4
-
-lbl_801B70A8:
-	mr       r3, r24
-	li       r4, 0
-	bl       init__Q24Game8CreatureFPQ24Game15CreatureInitArg
-
-lbl_801B70B4:
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	stfs     f1, 0x1e8(r24)
-	mr       r3, r24
-	addi     r4, r1, 0x80
-	li       r5, 0
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-	mr       r3, r29
-	bl       useKaidanBarrel__Q34Game4Cave9FloorInfoFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B7660
-	lwz      r3, mgr__Q24Game10ItemBarrel@sda21(r13)
-	lwz      r12, 0(r3)
-	lwz      r12, 0xbc(r12)
-	mtctr    r12
-	bctrl
-	li       r4, 0
-	mr       r22, r3
-	bl       init__Q24Game8CreatureFPQ24Game15CreatureInitArg
-	mr       r3, r22
-	addi     r4, r1, 0x80
-	li       r5, 0
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-	b        lbl_801B7660
-	.global  lbl_801B7120
-
-lbl_801B7120:
-	lwz      r3, gameSystem__4Game@sda21(r13)
-	lwz      r0, 0x44(r3)
-	cmpwi    r0, 1
-	beq      lbl_801B7660
-	lwz      r3, mgr__Q24Game9ItemOnyon@sda21(r13)
-	li       r4, 1
-	li       r5, 0
-	bl       birth__Q34Game9ItemOnyon3MgrFii
-	mr       r0, r3
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	mr       r22, r0
-	mr       r5, r17
-	addi     r4, r1, 0x74
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lfs      f0, lbl_80519440@sda21(r2)
-	mr       r3, r22
-	li       r4, 0
-	stfs     f0, 0x78(r1)
-	bl       init__Q24Game8CreatureFPQ24Game15CreatureInitArg
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	stfs     f1, 0x228(r22)
-	mr       r3, r22
-	addi     r4, r1, 0x74
-	li       r5, 0
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-	b        lbl_801B7660
-	.global  lbl_801B71A4
-
-lbl_801B71A4:
-	lwz      r3, mgr__Q24Game9ItemOnyon@sda21(r13)
-	li       r4, 0
-	li       r5, 0
-	bl       birth__Q34Game9ItemOnyon3MgrFii
-	mr       r0, r3
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	mr       r22, r0
-	mr       r5, r18
-	addi     r4, r1, 0x68
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lfs      f0, lbl_80519440@sda21(r2)
-	mr       r3, r22
-	li       r4, 0
-	stfs     f0, 0x6c(r1)
-	bl       init__Q24Game8CreatureFPQ24Game15CreatureInitArg
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	stfs     f1, 0x228(r22)
-	mr       r3, r22
-	addi     r4, r1, 0x68
-	li       r5, 0
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-	b        lbl_801B7660
-	.global  lbl_801B7218
-
-lbl_801B7218:
-	lwz      r3, mgr__Q24Game9ItemOnyon@sda21(r13)
-	li       r4, 0
-	li       r5, 1
-	bl       birth__Q34Game9ItemOnyon3MgrFii
-	mr       r0, r3
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	mr       r22, r0
-	mr       r5, r19
-	addi     r4, r1, 0x5c
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lfs      f0, lbl_80519440@sda21(r2)
-	mr       r3, r22
-	li       r4, 0
-	stfs     f0, 0x60(r1)
-	bl       init__Q24Game8CreatureFPQ24Game15CreatureInitArg
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	stfs     f1, 0x228(r22)
-	mr       r3, r22
-	addi     r4, r1, 0x5c
-	li       r5, 0
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-	b        lbl_801B7660
-	.global  lbl_801B728C
-
-lbl_801B728C:
-	lwz      r3, mgr__Q24Game15ItemBigFountain@sda21(r13)
-	bl       birth__Q34Game15ItemBigFountain3MgrFv
-	mr       r0, r3
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	mr       r22, r0
-	mr       r5, r20
-	addi     r4, r1, 0x50
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lfs      f0, lbl_80519440@sda21(r2)
-	li       r3, 0
-	lwz      r4, gameSystem__4Game@sda21(r13)
-	stfs     f0, 0x54(r1)
-	lwz      r0, 0x44(r4)
-	cmpwi    r0, 2
-	beq      lbl_801B72DC
-	cmpwi    r0, 3
-	bne      lbl_801B72E0
-
-lbl_801B72DC:
-	li       r3, 1
-
-lbl_801B72E0:
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B7318
-	lis      r4, __vt__Q24Game15CreatureInitArg@ha
-	lis      r3, __vt__Q34Game15ItemBigFountain7InitArg@ha
-	addi     r4, r4, __vt__Q24Game15CreatureInitArg@l
-	li       r0, 3
-	stw      r4, 0x10(r1)
-	addi     r5, r3, __vt__Q34Game15ItemBigFountain7InitArg@l
-	mr       r3, r22
-	addi     r4, r1, 0x10
-	stw      r5, 0x10(r1)
-	stw      r0, 0x14(r1)
-	bl       init__Q24Game8CreatureFPQ24Game15CreatureInitArg
-	b        lbl_801B7324
-
-lbl_801B7318:
-	mr       r3, r22
-	li       r4, 0
-	bl       init__Q24Game8CreatureFPQ24Game15CreatureInitArg
-
-lbl_801B7324:
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	stfs     f1, 0x1ec(r22)
-	mr       r3, r22
-	addi     r4, r1, 0x50
-	li       r5, 0
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-	b        lbl_801B7660
-	.global  lbl_801B7350
-
-lbl_801B7350:
-	lfs      f0, lbl_80519440@sda21(r2)
-	mr       r3, r31
-	mr       r5, r26
-	addi     r4, r1, 0x44
-	stfs     f0, 0x48(r1)
-	lwz      r12, 0(r31)
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, mapMgr__4Game@sda21(r13)
-	addi     r4, r1, 0x44
-	lwz      r12, 4(r3)
-	lwz      r12, 0x28(r12)
-	mtctr    r12
-	bctrl
-	stfs     f1, 0x48(r1)
-	addi     r3, r1, 0xe4
-	bl       __ct__Q24Game13EnemyBirthArgFv
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lfs      f3, 0x44(r1)
-	mr       r3, r31
-	lfs      f2, 0x48(r1)
-	lfs      f0, 0(r26)
-	stfs     f1, 0xf0(r1)
-	stfs     f3, 0xe4(r1)
-	stfs     f2, 0xe8(r1)
-	stfs     f0, 0xec(r1)
-	lwz      r12, 0(r31)
-	lwz      r12, 0x28(r12)
-	mtctr    r12
-	bctrl
-	sth      r3, 0xfc(r1)
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stb      r3, 0xf4(r1)
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r31
-	li       r22, 1
-	lwz      r12, 0(r31)
-	li       r24, 0
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 0x63
-	bne      lbl_801B744C
-	lwz      r3, playData__4Game@sda21(r13)
-	lbz      r0, 0x6c(r3)
-	cmplwi   r0, 0
-	beq      lbl_801B7448
-	li       r24, 1
-	b        lbl_801B744C
-
-lbl_801B7448:
-	li       r22, 0
-
-lbl_801B744C:
-	clrlwi.  r0, r22, 0x18
-	beq      lbl_801B7660
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, generalEnemyMgr__4Game@sda21(r13)
-	addi     r5, r1, 0xe4
-	bl       birth__Q24Game15GeneralEnemyMgrFiRQ24Game13EnemyBirthArg
-	or.      r22, r3, r3
-	beq      lbl_801B7488
-	li       r4, 0
-	bl       init__Q24Game8CreatureFPQ24Game15CreatureInitArg
-
-lbl_801B7488:
-	clrlwi.  r0, r24, 0x18
-	beq      lbl_801B7660
-	lfs      f1, 0x2c0(r29)
-	mr       r3, r22
-	bl       setTimer__Q34Game8BlackMan3ObjFf
-	lwz      r3, mapMgr__4Game@sda21(r13)
-	stw      r22, 0x114(r3)
-	b        lbl_801B7660
-	.global  lbl_801B74A8
-
-lbl_801B74A8:
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	addi     r3, r1, 0xbc
-	bl       __ct__Q24Game18PelletIndexInitArgFi
-	lwz      r3, pelletMgr__4Game@sda21(r13)
-	addi     r4, r1, 0xbc
-	bl       birth__Q24Game9PelletMgrFPQ24Game13PelletInitArg
-	or.      r24, r3, r3
-	beq      lbl_801B7660
-	mr       r3, r31
-	mr       r5, r21
-	lwz      r12, 0(r31)
-	addi     r4, r1, 0x38
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, mapMgr__4Game@sda21(r13)
-	cmplwi   r3, 0
-	beq      lbl_801B7538
-	lwz      r12, 4(r3)
-	addi     r4, r1, 0x38
-	lwz      r12, 0x28(r12)
-	mtctr    r12
-	bctrl
-	stfs     f1, 0x3c(r1)
-	mr       r3, r24
-	bl       getCylinderHeight__Q24Game6PelletFv
-	lfs      f2, lbl_8051945C@sda21(r2)
-	lfs      f0, 0x3c(r1)
-	fmadds   f0, f2, f1, f0
-	stfs     f0, 0x3c(r1)
-	b        lbl_801B7540
-
-lbl_801B7538:
-	lfs      f0, lbl_80519440@sda21(r2)
-	stfs     f0, 0x3c(r1)
-
-lbl_801B7540:
-	mr       r3, r24
-	addi     r4, r1, 0x38
-	li       r5, 0
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lfs      f0, lbl_80519440@sda21(r2)
-	lis      r3, "zero__10Vector3<f>"@ha
-	addi     r4, r3, "zero__10Vector3<f>"@l
-	stfs     f1, 0x30(r1)
-	addi     r3, r1, 0x8c
-	addi     r5, r1, 0x2c
-	stfs     f0, 0x2c(r1)
-	stfs     f0, 0x34(r1)
-	bl       "makeTR__7MatrixfFR10Vector3<f>R10Vector3<f>"
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r24
-	addi     r4, r1, 0x8c
-	bl       setOrientation__Q24Game6PelletFR7Matrixf
-	mr       r3, r24
-	bl       allocateTexCaster__Q24Game6PelletFv
-	b        lbl_801B7660
-	.global  lbl_801B75B4
-
-lbl_801B75B4:
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, -1
-	beq      lbl_801B7660
-	lwz      r4, 0xd4(r27)
-	slwi     r0, r3, 4
-	lis      r3, atanTable___5JMath@ha
-	add      r5, r4, r0
-	lwz      r4, 0(r5)
-	addi     r3, r3, atanTable___5JMath@l
-	lfs      f1, 0x50(r4)
-	lfs      f2, 0x54(r4)
-	lfs      f0, 0x4c(r4)
-	stfs     f0, 0x20(r1)
-	stfs     f1, 0x24(r1)
-	stfs     f2, 0x28(r1)
-	lfs      f1, 4(r5)
-	lfs      f2, 0xc(r5)
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	lis      r4, __vt__Q24Game15CreatureInitArg@ha
-	lis      r3, __vt__Q24Game15ItemGateInitArg@ha
-	addi     r4, r4, __vt__Q24Game15CreatureInitArg@l
-	stfs     f1, 0xc(r1)
-	addi     r0, r3, __vt__Q24Game15ItemGateInitArg@l
-	lwz      r3, itemGateMgr__4Game@sda21(r13)
-	stw      r4, 8(r1)
-	stw      r0, 8(r1)
-	bl       birth__Q24Game11ItemGateMgrFv
-	addi     r4, r1, 8
-	mr       r22, r3
-	bl       init__Q24Game8CreatureFPQ24Game15CreatureInitArg
-	lwz      r6, 0x18(r31)
-	mr       r3, r22
-	addi     r4, r1, 0x20
-	li       r5, 0
-	lwz      r6, 0(r6)
-	lfs      f0, 0x1c(r6)
-	stfs     f0, 0x204(r22)
-	stfs     f0, 0x200(r22)
-	bl       "setPosition__Q24Game8CreatureFR10Vector3<f>b"
-
-lbl_801B7660:
-	addi     r30, r30, 1
-
-lbl_801B7664:
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	cmpw     r30, r3
-	blt      lbl_801B6F88
-	addi     r16, r16, 1
-
-lbl_801B7684:
-	lwz      r3, 0xc4(r27)
-	mr       r4, r28
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	cmpw     r16, r3
-	blt      lbl_801B6F60
-	addi     r28, r28, 1
-	addi     r23, r23, 4
-	cmpwi    r28, 8
-	blt      lbl_801B6F58
-
-lbl_801B76B4:
-	lmw      r16, 0x150(r1)
-	lwz      r0, 0x194(r1)
-	mtlr     r0
-	addi     r1, r1, 0x190
-	blr
-	*/
 }
-} // namespace Game
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00001C
+/**
+ * @note Address: N/A
+ * @note Size: 0x1C
  */
-void getCenterPosition__Q24Game7MapRoomFR10Vector3f()
+void MapRoom::getCenterPosition(Vector3f&)
 {
 	// UNUSED FUNCTION
 }
 
-namespace Game {
-
-/*
- * --INFO--
- * Address:	........
- * Size:	00016C
+/**
+ * @note Address: N/A
+ * @note Size: 0x16C
  */
-void MapRoom::create(Game::MapUnit*, Matrixf&)
+void MapRoom::create(MapUnit*, Matrixf&)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000064
+/**
+ * @note Address: N/A
+ * @note Size: 0x64
  */
-RoomDoorInfo* MapRoom::createDoorInfo(Game::MapUnitInterface*)
+RoomDoorInfo* MapRoom::createDoorInfo(MapUnitInterface*)
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	801B76E4
- * Size:	000004
+/**
+ * @note Address: 0x801B76E4
+ * @note Size: 0x4
  */
 RoomDoorInfo::RoomDoorInfo() { }
 
-/*
- * --INFO--
- * Address:	801B76E8
- * Size:	0000D4
+/**
+ * @note Address: 0x801B76E8
+ * @note Size: 0xD4
  */
 void MapRoom::doAnimation()
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stmw     r27, 0xc(r1)
-	mr       r27, r3
-	lbz      r0, mUseCylinderViewCulling__Q24Game10RoomMapMgr@sda21(r13)
-	cmplwi   r0, 0
-	beq      lbl_801B777C
-	lwz      r3, sys@sda21(r13)
-	li       r29, 0
-	li       r28, 0
-	lwz      r30, 0x24(r3)
-	b        lbl_801B7758
-
-lbl_801B771C:
-	mr       r3, r30
-	mr       r4, r28
-	bl       getViewport__8GraphicsFi
-	mr       r31, r3
-	bl       viewable__8ViewportFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B7754
-	lwz      r3, 0x44(r31)
-	addi     r4, r27, 0x160
-	bl       isCylinderVisible__9CullPlaneFRQ23Sys8Cylinder
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B7754
-	li       r29, 1
-	b        lbl_801B7764
-
-lbl_801B7754:
-	addi     r28, r28, 1
-
-lbl_801B7758:
-	lwz      r0, 0x264(r30)
-	cmpw     r28, r0
-	blt      lbl_801B771C
-
-lbl_801B7764:
-	clrlwi.  r0, r29, 0x18
-	bne      lbl_801B77A8
-	lwz      r3, numRoomCulled__Q24Game10RoomMapMgr@sda21(r13)
-	addi     r0, r3, 1
-	stw      r0, numRoomCulled__Q24Game10RoomMapMgr@sda21(r13)
-	b        lbl_801B77A8
-
-lbl_801B777C:
-	lwz      r3, 0x13c(r27)
-	addi     r4, r27, 0x140
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B77A8
-	lwz      r3, numRoomCulled__Q24Game10RoomMapMgr@sda21(r13)
-	addi     r0, r3, 1
-	stw      r0, numRoomCulled__Q24Game10RoomMapMgr@sda21(r13)
-
-lbl_801B77A8:
-	lmw      r27, 0xc(r1)
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	if (RoomMapMgr::mUseCylinderViewCulling) {
+		Graphics* gfx  = sys->mGfx;
+		bool isVisible = false;
+		for (int i = 0; i < gfx->mActiveViewports; i++) {
+			Viewport* vp = gfx->getViewport(i);
+			if (vp->viewable() && vp->mCamera->isCylinderVisible(_160)) {
+				isVisible = true;
+				break;
+			}
+		}
+		if (!isVisible) {
+			RoomMapMgr::numRoomCulled++;
+		}
+	} else if (!mModel->isVisible(mBoundingSphere)) {
+		RoomMapMgr::numRoomCulled++;
+	}
 }
 
-/*
- * --INFO--
- * Address:	801B77BC
- * Size:	0001F4
+/**
+ * @note Address: 0x801B77BC
+ * @note Size: 0x1F4
  */
 void MapRoom::doEntry()
 {
+	if (RoomMapMgr::mUseCylinderViewCulling) {
+		Graphics* gfx  = sys->mGfx;
+		bool isVisible = false;
+		for (int i = 0; i < gfx->mActiveViewports; i++) {
+			Viewport* vp = gfx->getViewport(i);
+			if (vp->viewable() && vp->mCamera->isCylinderVisible(_160)) {
+				isVisible = true;
+				break;
+			}
+		}
+		if (isVisible) {
+			mModel->mJ3dModel->entry();
+		}
+	} else {
+		bool isVisible = false;
+		Graphics* gfx  = sys->mGfx;
+
+		for (int i = 0; i < gfx->mActiveViewports; i++) {
+			Viewport* vp = gfx->getViewport(i);
+			if (vp->viewable() && vp->mCamera->isVisible(_150)) {
+				isVisible = true;
+				break;
+			}
+		}
+		if (isVisible) {
+			if (!gameSystem->paused()) {
+				for (int i = 0; i < mAnimationCount; i++) {
+					mAnimators[i].animate(30.0f);
+				}
+			}
+
+			mModel->show();
+		} else {
+			if (BaseHIOParms::sEntryOptMapRoom && !gameSystem->isMultiplayerMode()) {
+				return;
+			}
+			mModel->hide();
+		}
+
+		mModel->mJ3dModel->entry();
+	}
+
+	mModel->mJ3dModel->calcMaterial();
+	mModel->mJ3dModel->diff();
 	/*
 	stwu     r1, -0x20(r1)
 	mflr     r0
@@ -2167,474 +845,292 @@ lbl_801B799C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801B79B0
- * Size:	000124
+/**
+ * @note Address: 0x801B79B0
+ * @note Size: 0x124
  */
 void MapRoom::doSetView(int viewportNumber)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r4
-	clrlwi   r4, r4, 0x10
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	lwz      r3, 0x13c(r3)
-	bl       setCurrentViewNo__Q28SysShape5ModelFUl
-	lwz      r3, sys@sda21(r13)
-	li       r30, 0
-	li       r4, 0
-	lwz      r3, 0x24(r3)
-	lwz      r0, 0x264(r3)
-	mtctr    r0
-	cmpwi    r0, 0
-	ble      lbl_801B7A60
+	mModel->setCurrentViewNo((u16)viewportNumber);
+	bool isVisible = false;
+	Graphics* gfx  = sys->mGfx;
+	for (int i = 0; i < gfx->mActiveViewports; i++) {
+		if (i != viewportNumber) {
+			continue;
+		}
 
-lbl_801B79FC:
-	cmpw     r4, r31
-	bne      lbl_801B7A58
-	bl       getViewport__8GraphicsFi
-	mr       r31, r3
-	bl       viewable__8ViewportFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B7A60
-	lbz      r0, mUseCylinderViewCulling__Q24Game10RoomMapMgr@sda21(r13)
-	lwz      r3, 0x44(r31)
-	cmplwi   r0, 0
-	beq      lbl_801B7A40
-	addi     r4, r29, 0x160
-	bl       isCylinderVisible__9CullPlaneFRQ23Sys8Cylinder
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B7A60
-	li       r30, 1
-	b        lbl_801B7A60
+		Viewport* vp = gfx->getViewport(i);
+		if (vp->viewable()) {
+			LookAtCamera* cam = vp->mCamera;
+			if (RoomMapMgr::mUseCylinderViewCulling) {
+				if (cam->isCylinderVisible(_160)) {
+					isVisible = true;
+				}
+				break;
+			}
 
-lbl_801B7A40:
-	addi     r4, r29, 0x150
-	bl       isVisible__9CullPlaneFRQ23Sys6Sphere
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B7A60
-	li       r30, 1
-	b        lbl_801B7A60
+			if (cam->isVisible(_150)) {
+				isVisible = true;
+			}
+		}
+		break;
+	}
 
-lbl_801B7A58:
-	addi     r4, r4, 1
-	bdnz     lbl_801B79FC
+	if (Creature::usePacketCulling) {
+		if (isVisible) {
+			mModel->showPackets();
+		} else {
+			mModel->hidePackets();
+		}
+		return;
+	}
 
-lbl_801B7A60:
-	lbz      r0, usePacketCulling__Q24Game8Creature@sda21(r13)
-	cmplwi   r0, 0
-	beq      lbl_801B7AA4
-	clrlwi.  r0, r30, 0x18
-	beq      lbl_801B7A8C
-	lwz      r3, 0x13c(r29)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_801B7AB8
-
-lbl_801B7A8C:
-	lwz      r3, 0x13c(r29)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_801B7AB8
-
-lbl_801B7AA4:
-	lwz      r3, 0x13c(r29)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-
-lbl_801B7AB8:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	mModel->showPackets();
 }
 
-/*
- * --INFO--
- * Address:	801B7AD4
- * Size:	000024
+/**
+ * @note Address: 0x801B7AD4
+ * @note Size: 0x24
  */
-void MapRoom::doViewCalc()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x13c(r3)
-	bl       viewCalc__Q28SysShape5ModelFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
+void MapRoom::doViewCalc() { mModel->viewCalc(); }
 
-/*
- * --INFO--
- * Address:	801B7AF8
- * Size:	000004
+/**
+ * @note Address: 0x801B7AF8
+ * @note Size: 0x4
  */
-void MapRoom::doSimulation(float) { }
+void MapRoom::doSimulation(f32) { }
 
-/*
- * --INFO--
- * Address:	801B7AFC
- * Size:	000004
+/**
+ * @note Address: 0x801B7AFC
+ * @note Size: 0x4
  */
 void MapRoom::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	801B7B00
- * Size:	0001E8
+/**
+ * @note Address: 0x801B7B00
+ * @note Size: 0x1E8
  */
-RoomMapMgr::RoomMapMgr(Game::Cave::CaveInfo*)
+RoomMapMgr::RoomMapMgr(Cave::CaveInfo* info)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	extsh.   r0, r4
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	mr       r30, r5
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	stw      r28, 0x10(r1)
-	beq      lbl_801B7B40
-	addi     r0, r29, 0x118
-	lis      r3, __vt__16GenericObjectMgr@ha
-	stw      r0, 0(r29)
-	addi     r0, r3, __vt__16GenericObjectMgr@l
-	stw      r0, 0x118(r29)
+	mStartPositions[0] = Vector3f(0.0f);
+	mStartPositions[1] = Vector3f(0.0f);
 
-lbl_801B7B40:
-	mr       r3, r29
-	li       r4, 0
-	bl       __ct__Q24Game6MapMgrFv
-	lis      r3, __vt__Q24Game10RoomMapMgr@ha
-	addi     r0, r29, 0x118
-	addi     r4, r3, __vt__Q24Game10RoomMapMgr@l
-	addi     r3, r29, 0x24
-	stw      r4, 4(r29)
-	addi     r5, r4, 0x68
-	lwz      r4, 0(r29)
-	stw      r5, 0(r4)
-	lwz      r4, 0(r29)
-	subf     r0, r4, r0
-	stw      r0, 4(r4)
-	bl       __ct__Q24Game9CaveVRBoxFv
-	addi     r3, r29, 0x40
-	bl       __ct__Q23Sys8TriangleFv
-	addi     r3, r29, 0xac
-	bl       "__ct__30MonoObjectMgr<Q24Game7MapRoom>Fv"
-	lfs      f1, lbl_80519444@sda21(r2)
-	lis      r3, "__ct__10Vector3<f>Fv"@ha
-	addi     r4, r3, "__ct__10Vector3<f>Fv"@l
-	lfs      f0, lbl_80519448@sda21(r2)
-	stfs     f1, 0xdc(r29)
-	addi     r3, r29, 0xfc
-	li       r5, 0
-	li       r6, 0xc
-	stfs     f1, 0xe0(r29)
-	li       r7, 2
-	stfs     f1, 0xe4(r29)
-	stfs     f0, 0xe8(r29)
-	stfs     f0, 0xec(r29)
-	stfs     f0, 0xf0(r29)
-	bl       __construct_array
-	lfs      f0, lbl_80519440@sda21(r2)
-	li       r3, 0x3c
-	stfs     f0, 0xfc(r29)
-	stfs     f0, 0x100(r29)
-	stfs     f0, 0x104(r29)
-	stfs     f0, 0x108(r29)
-	stfs     f0, 0x10c(r29)
-	stfs     f0, 0x110(r29)
-	bl       __nw__FUl
-	or.      r31, r3, r3
-	beq      lbl_801B7C78
-	bl       __ct__5CNodeFv
-	lis      r4, __vt__16GenericContainer@ha
-	lis      r3, "__vt__26Container<Q24Game7MapUnit>"@ha
-	addi     r0, r4, __vt__16GenericContainer@l
-	lis      r5, __vt__16GenericObjectMgr@ha
-	stw      r0, 0(r31)
-	addi     r0, r3, "__vt__26Container<Q24Game7MapUnit>"@l
-	lis      r4, "__vt__26ObjectMgr<Q24Game7MapUnit>"@ha
-	lis      r3, "__vt__30NodeObjectMgr<Q24Game7MapUnit>"@ha
-	stw      r0, 0(r31)
-	li       r0, 0
-	addi     r6, r4, "__vt__26ObjectMgr<Q24Game7MapUnit>"@l
-	addi     r4, r3, "__vt__30NodeObjectMgr<Q24Game7MapUnit>"@l
-	stb      r0, 0x18(r31)
-	addi     r0, r5, __vt__16GenericObjectMgr@l
-	addi     r28, r31, 0x20
-	addi     r5, r6, 0x2c
-	stw      r0, 0x1c(r31)
-	addi     r0, r4, 0x2c
-	mr       r3, r28
-	stw      r6, 0(r31)
-	stw      r5, 0x1c(r31)
-	stw      r4, 0(r31)
-	stw      r0, 0x1c(r31)
-	bl       __ct__5CNodeFv
-	lis      r4, "__vt__28TObjectNode<Q24Game7MapUnit>"@ha
-	lis      r3, __vt__Q24Game10MapUnitMgr@ha
-	addi     r0, r4, "__vt__28TObjectNode<Q24Game7MapUnit>"@l
-	stw      r0, 0(r28)
-	addi     r3, r3, __vt__Q24Game10MapUnitMgr@l
-	addi     r0, r3, 0x2c
-	stw      r3, 0(r31)
-	stw      r0, 0x1c(r31)
+	mMapUnitMgr = new MapUnitMgr;
 
-lbl_801B7C78:
-	stw      r31, 0xa8(r29)
-	li       r0, 0
-	lfs      f3, lbl_80519444@sda21(r2)
-	mr       r3, r29
-	lfs      f2, lbl_80519448@sda21(r2)
-	stfs     f3, 0xdc(r29)
-	lfs      f1, lbl_80519440@sda21(r2)
-	stfs     f3, 0xe0(r29)
-	lfs      f0, lbl_80519458@sda21(r2)
-	stfs     f3, 0xe4(r29)
-	stfs     f2, 0xe8(r29)
-	stfs     f2, 0xec(r29)
-	stfs     f2, 0xf0(r29)
-	stw      r30, 0x28(r29)
-	stw      r0, 0x2c(r29)
-	stw      r0, 0x30(r29)
-	stfs     f1, 0x4c(r29)
-	stfs     f0, 0x50(r29)
-	stfs     f1, 0x54(r29)
-	stw      r0, 0x114(r29)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	lwz      r28, 0x10(r1)
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	mBoundbox.mMin = Vector3f(32768.0f);
+	mBoundbox.mMax = Vector3f(-32768.0f);
+
+	mCaveInfo                  = info;
+	mFloorInfo                 = nullptr;
+	mSublevel                  = 0;
+	mTriangle.mTrianglePlane.a = 0.0f;
+	mTriangle.mTrianglePlane.b = 1.0f;
+	mTriangle.mTrianglePlane.c = 0.0f;
+
+	mWraith = nullptr;
 }
 
-} // namespace Game
-
-namespace Game {
-
-/*
- * --INFO--
- * Address:	801B7D88
- * Size:	0001FC
+/**
+ * @note Address: 0x801B7D88
+ * @note Size: 0x1FC
  */
-void RoomMapMgr::getMapRoom(short)
+MapRoom* RoomMapMgr::getMapRoom(s16 idx)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lis      r5, "__vt__25Iterator<Q24Game7MapRoom>"@ha
-	addi     r3, r3, 0xac
-	stw      r0, 0x24(r1)
-	li       r0, 0
-	addi     r5, r5, "__vt__25Iterator<Q24Game7MapRoom>"@l
-	stw      r31, 0x1c(r1)
-	cmplwi   r0, 0
-	mr       r31, r4
-	stw      r5, 8(r1)
-	stw      r0, 0x14(r1)
-	stw      r0, 0xc(r1)
-	stw      r3, 0x10(r1)
-	bne      lbl_801B7DDC
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B7E64
+	Iterator<MapRoom> iter(&mRoomMgr);
+	CI_LOOP(iter)
+	{
+		MapRoom* room = *iter;
+		if (room->mIndex == idx) {
+			return room;
+		}
+	}
 
-lbl_801B7DDC:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B7E48
-
-lbl_801B7DF4:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B7E64
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B7E48:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B7DF4
-
-lbl_801B7E64:
-	extsh    r31, r31
-	b        lbl_801B7F4C
-
-lbl_801B7E6C:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	lha      r0, 0x184(r3)
-	cmpw     r0, r31
-	bne      lbl_801B7E90
-	b        lbl_801B7F70
-
-lbl_801B7E90:
-	lwz      r0, 0x14(r1)
-	cmplwi   r0, 0
-	bne      lbl_801B7EBC
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B7F4C
-
-lbl_801B7EBC:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B7F30
-
-lbl_801B7EDC:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B7F4C
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B7F30:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B7EDC
-
-lbl_801B7F4C:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0xc(r1)
-	cmplw    r4, r3
-	bne      lbl_801B7E6C
-	li       r3, 0
-
-lbl_801B7F70:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	return nullptr;
 }
 
-} // namespace Game
-
-namespace Game {
-
-/*
- * --INFO--
- * Address:	801B7FD0
- * Size:	00000C
+/**
+ * @note Address: 0x801B7FD0
+ * @note Size: 0xC
  */
-CaveVRBox::CaveVRBox()
+CaveVRBox::CaveVRBox() { mModel = nullptr; }
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x158
+ */
+void CaveVRBox::create(char* name)
 {
-	/*
-	li       r0, 0
-	stw      r0, 0(r3)
-	blr
-	*/
+	char vrBoxFileName[512];
+	sprintf(vrBoxFileName, "user/Kando/map/vrbox/%s.szs", name);
+	if (DVDConvertPathToEntrynum(vrBoxFileName) != -1) {
+		JKRArchive* vrBoxArc = JKRMountArchive(vrBoxFileName, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+		if (vrBoxArc) {
+			void* res = vrBoxArc->getResource("model.bmd");
+			if (res) {
+				J3DModelData* model = J3DModelLoaderDataBase::load(res, 0x20000000);
+				model->newSharedDisplayList(0x40000);
+				model->makeSharedDL();
+				mModel = new SysShape::Model(model, 0, 2);
+				Matrixf mtx;
+				PSMTXIdentity(mtx.mMatrix.mtxView);
+				PSMTXCopy(mtx.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
+				mModel->mJ3dModel->calc();
+				mModel->mJ3dModel->calcMaterial();
+				mModel->mJ3dModel->makeDL();
+				mModel->mJ3dModel->lock();
+
+			} else {
+				JUT_PANICLINE(1552, "no model.bmd in %s\n", vrBoxFileName);
+			}
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000158
+/**
+ * @note Address: 0x801B7FDC
+ * @note Size: 0xA48
  */
-void CaveVRBox::create(char*)
+void RoomMapMgr::createRandomMap(int floorNum, Cave::EditMapUnit* edit)
 {
-	// UNUSED FUNCTION
-}
+	// set floor info and level
+	Cave::FloorInfo* floorInfo = mCaveInfo->getFloorInfo(floorNum);
+	mFloorInfo                 = floorInfo;
+	mSublevel                  = floorNum;
 
-/*
- * --INFO--
- * Address:	801B7FDC
- * Size:	000A48
- */
-void RoomMapMgr::createRandomMap(int, Game::Cave::EditMapUnit*)
-{
+	// probably printed debug info
+	floorInfo->getTekiMax();
+	floorInfo->getTekiInfoNum();
+	floorInfo->getTekiWeightSum();
+	floorInfo->getItemMax();
+	floorInfo->getItemInfoNum();
+	floorInfo->getItemWeightSum();
+	floorInfo->getGateMax();
+	floorInfo->getGateInfoNum();
+	floorInfo->getGateWeightSum();
+
+	// get map unit file
+	char unitFileName[512];
+	sprintf(unitFileName, "user/Mukki/mapunits/units/%s", floorInfo->mParms.mCaveUnitFile.mValue);
+
+	void* unitFile
+	    = JKRDvdRipper::loadToMainRAM(unitFileName, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+	JUT_ASSERTLINE(1609, unitFile, "%s not found !\n", unitFileName);
+
+	RamStream unitStream(unitFile, -1);
+	unitStream.resetPosition(true, 1);
+
+	// set up map unit interfaces
+	int interfaceCount           = unitStream.readInt();
+	MapUnitInterface* interfaces = new MapUnitInterface[interfaceCount];
+	for (int i = 0; i < interfaceCount; i++) {
+		interfaces[i].read(unitStream);
+	}
+
+	mMapUnitInterface      = interfaces;
+	mMapUnitInterfaceCount = interfaceCount;
+
+	// set up lighting information
+	char lightingFileName[512];
+	sprintf(lightingFileName, "user/Abe/cave/%s", floorInfo->mParms.mLightingFile.mValue);
+
+	if (DVDConvertPathToEntrynum(lightingFileName) != -1) {
+		void* lightingFile = JKRDvdRipper::loadToMainRAM(lightingFileName, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0,
+		                                                 nullptr, nullptr);
+		if (lightingFile) {
+			RamStream lightingStream(lightingFile, -1);
+			lightingStream.resetPosition(true, 1);
+			gameSystem->getLightMgr()->loadParm(lightingStream);
+			delete[] lightingFile;
+		} else {
+			JUT_PANICLINE(1649, "no light file (%s)\n", lightingFileName);
+		}
+	}
+
+	// set up VR box
+	mVRBox.create(floorInfo->mParms.mVrBox.mValue);
+
+	for (int i = 0; i < interfaceCount; i++) {
+		char layoutName[512];
+		sprintf(layoutName, "user/Mukki/mapunits/arc/%s/texts.szs", interfaces[i].mName);
+		JKRArchive* layoutArc = JKRMountArchive(layoutName, JKRArchive::EMM_Mem, JKRGetCurrentHeap(), JKRArchive::EMD_Tail);
+		JUT_ASSERTLINE(1687, layoutArc, "no textARc !\n");
+		void* res = layoutArc->getResource("layout.txt");
+		if (res) {
+			RamStream layoutStream(res, -1);
+			layoutStream.resetPosition(true, 1);
+			interfaces[i].mBaseGen->read(layoutStream);
+		}
+
+		layoutArc->unmount();
+	}
+
+	PelletBirthBuffer::clear();
+
+	// make map.
+	sys->heapStatusStart("246-CreateRandomMap", nullptr);
+	nishimuraCreateRandomMap(interfaces, interfaceCount, floorInfo, floorNum == mCaveInfo->getFloorMax() - 1, edit);
+	sys->heapStatusEnd("246-CreateRandomMap");
+
+	delete[] unitFile;
+
+	// set models and collision
+	sys->heapStatusStart("Model and Collision", nullptr);
+	completeUnitData();
+	sys->heapStatusEnd("Model and Collision");
+
+	mRouteMgr = new EditorRouteMgr();
+
+	// place rooms
+	sys->heapStatusStart("246-PlaceRooms", nullptr);
+	nishimuraPlaceRooms();
+	mRouteMgr->makeInvertLinks();
+	sys->heapStatusEnd("246-PlaceRooms");
+
+	mCount = 0;
+
+	// count up how many rooms we have
+	Iterator<MapRoom> iter(&mRoomMgr);
+	CI_LOOP(iter)
+	{
+		if ((*iter)->mUnitKind == Cave::UNITKIND_Room) {
+			mCount++;
+		}
+	}
+
+	// arrange rooms in list
+	mRoomList   = new MapRoom*[mCount];
+	int roomIdx = 0;
+	CI_LOOP(iter)
+	{
+		if ((*iter)->mUnitKind == Cave::UNITKIND_Room) {
+			mRoomList[roomIdx] = *iter;
+			roomIdx++;
+		}
+	}
+
+	// set up VR box matrix
+	if (mVRBox.mModel) {
+		Matrixf mtx;
+		Vector3f scale(1.0f);
+		Vector3f translation = (mBoundbox.mMin + mBoundbox.mMax) * 0.5f;
+		translation.y        = 0.0f;
+		mtx.makeST(scale, translation);
+		PSMTXCopy(mtx.mMatrix.mtxView, mVRBox.mModel->mJ3dModel->mPosMtx);
+		mVRBox.mModel->mJ3dModel->calc();
+	}
+
+	// set map boundaries
+	Vector3f minPoint = mBoundbox.mMin;
+	minPoint.x -= 320.0f;
+	minPoint.z -= 320.0f;
+	mBoundbox.include(minPoint);
+
+	Vector3f maxPoint = mBoundbox.mMax;
+	maxPoint.x += 320.0f;
+	maxPoint.z += 320.0f;
+	mBoundbox.include(maxPoint);
+
+	deleteTemp();
 	/*
 	stwu     r1, -0x1530(r1)
 	mflr     r0
@@ -3396,1021 +1892,156 @@ lbl_801B8A08:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801B8A24
- * Size:	0000EC
- */
-MapUnitInterface::~MapUnitInterface()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	or.      r31, r3, r3
-	stw      r30, 8(r1)
-	mr       r30, r4
-	beq      lbl_801B8AF4
-	lis      r3, __vt__Q24Game16MapUnitInterface@ha
-	addi     r0, r3, __vt__Q24Game16MapUnitInterface@l
-	stw      r0, 0(r31)
-	beq      lbl_801B8AE4
-	lis      r3, __vt__Q24Game9PartsView@ha
-	addic.   r0, r31, 0x118
-	addi     r0, r3, __vt__Q24Game9PartsView@l
-	stw      r0, 0(r31)
-	beq      lbl_801B8A9C
-	lis      r4, __vt__Q24Game4Door@ha
-	addic.   r3, r31, 0x138
-	addi     r0, r4, __vt__Q24Game4Door@l
-	stw      r0, 0x118(r31)
-	beq      lbl_801B8A90
-	lis      r4, __vt__Q24Game8DoorLink@ha
-	addi     r0, r4, __vt__Q24Game8DoorLink@l
-	stw      r0, 0x138(r31)
-	li       r4, 0
-	bl       __dt__5CNodeFv
-
-lbl_801B8A90:
-	addi     r3, r31, 0x118
-	li       r4, 0
-	bl       __dt__5CNodeFv
-
-lbl_801B8A9C:
-	addic.   r0, r31, 0x70
-	beq      lbl_801B8AD8
-	lis      r4, __vt__Q24Game14EditorRouteMgr@ha
-	addic.   r3, r31, 0x90
-	addi     r0, r4, __vt__Q24Game14EditorRouteMgr@l
-	stw      r0, 0x70(r31)
-	beq      lbl_801B8ACC
-	lis      r4, __vt__Q34Game14EditorRouteMgr6WPNode@ha
-	addi     r0, r4, __vt__Q34Game14EditorRouteMgr6WPNode@l
-	stw      r0, 0x90(r31)
-	li       r4, 0
-	bl       __dt__5CNodeFv
-
-lbl_801B8ACC:
-	addi     r3, r31, 0x70
-	li       r4, 0
-	bl       __dt__Q24Game8RouteMgrFv
-
-lbl_801B8AD8:
-	mr       r3, r31
-	li       r4, 0
-	bl       __dt__5CNodeFv
-
-lbl_801B8AE4:
-	extsh.   r0, r30
-	ble      lbl_801B8AF4
-	mr       r3, r31
-	bl       __dl__FPv
-
-lbl_801B8AF4:
-	lwz      r0, 0x14(r1)
-	mr       r3, r31
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	801B8B10
- * Size:	00003C
- */
-MapUnitInterface::MapUnitInterface()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	bl       __ct__Q24Game9PartsViewFv
-	lis      r4, __vt__Q24Game16MapUnitInterface@ha
-	mr       r3, r31
-	addi     r0, r4, __vt__Q24Game16MapUnitInterface@l
-	stw      r0, 0(r31)
-	lwz      r31, 0xc(r1)
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-/*
- * --INFO--
- * Address:	801B8C28
- * Size:	000224
+/**
+ * @note Address: 0x801B8C28
+ * @note Size: 0x224
  */
 void RoomMapMgr::completeUnitData()
 {
-	/*
-	stwu     r1, -0x230(r1)
-	mflr     r0
-	lis      r4, "__vt__25Iterator<Q24Game7MapUnit>"@ha
-	stw      r0, 0x234(r1)
-	li       r0, 0
-	addi     r4, r4, "__vt__25Iterator<Q24Game7MapUnit>"@l
-	stw      r31, 0x22c(r1)
-	cmplwi   r0, 0
-	stw      r30, 0x228(r1)
-	stw      r29, 0x224(r1)
-	mr       r29, r3
-	lwz      r3, 0xa8(r3)
-	stw      r4, 8(r1)
-	stw      r0, 0x14(r1)
-	stw      r0, 0xc(r1)
-	stw      r3, 0x10(r1)
-	bne      lbl_801B8C84
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B8D0C
-
-lbl_801B8C84:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B8CF0
-
-lbl_801B8C9C:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B8D0C
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B8CF0:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B8C9C
-
-lbl_801B8D0C:
-	lis      r3, lbl_8047FEBC@ha
-	addi     r31, r3, lbl_8047FEBC@l
-	b        lbl_801B8E10
-
-lbl_801B8D18:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r30, r3
-	mr       r4, r31
-	lwz      r5, 8(r30)
-	addi     r3, r1, 0x18
-	crclr    6
-	bl       sprintf
-	lwz      r3, 0xa8(r29)
-	mr       r4, r30
-	addi     r5, r1, 0x18
-	bl       makeUnit__Q24Game10MapUnitMgrFPQ24Game7MapUnitPc
-	lwz      r0, 0x14(r1)
-	cmplwi   r0, 0
-	bne      lbl_801B8D80
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B8E10
-
-lbl_801B8D80:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B8DF4
-
-lbl_801B8DA0:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B8E10
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B8DF4:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B8DA0
-
-lbl_801B8E10:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0xc(r1)
-	cmplw    r4, r3
-	bne      lbl_801B8D18
-	lwz      r0, 0x234(r1)
-	lwz      r31, 0x22c(r1)
-	lwz      r30, 0x228(r1)
-	lwz      r29, 0x224(r1)
-	mtlr     r0
-	addi     r1, r1, 0x230
-	blr
-	*/
+	Iterator<MapUnit> iter(mMapUnitMgr);
+	CI_LOOP(iter)
+	{
+		MapUnit* unit = *iter;
+		char unitName[512];
+		sprintf(unitName, "user/Mukki/mapunits/arc/%s", unit->mName);
+		mMapUnitMgr->makeUnit(unit, unitName);
+	}
 }
 
-/*
- * --INFO--
- * Address:	801B8E4C
- * Size:	000234
+/**
+ * @note Address: 0x801B8E4C
+ * @note Size: 0x234
  */
 void RoomMapMgr::setupJUTTextures()
 {
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	lis      r4, "__vt__25Iterator<Q24Game7MapUnit>"@ha
-	stw      r0, 0x34(r1)
-	li       r0, 0
-	addi     r4, r4, "__vt__25Iterator<Q24Game7MapUnit>"@l
-	stw      r31, 0x2c(r1)
-	mr       r31, r3
-	cmplwi   r0, 0
-	stw      r30, 0x28(r1)
-	stw      r29, 0x24(r1)
-	lwz      r3, 0xa8(r3)
-	stw      r4, 8(r1)
-	stw      r0, 0x14(r1)
-	stw      r0, 0xc(r1)
-	stw      r3, 0x10(r1)
-	bne      lbl_801B8EA8
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B903C
+	Iterator<MapUnit> iter(mMapUnitMgr);
+	CI_LOOP(iter)
+	{
+		MapUnit* unit  = *iter;
+		unit->mTexture = new JUTTexture(unit->mImgResource);
+	}
 
-lbl_801B8EA8:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B8F14
-
-lbl_801B8EC0:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B903C
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B8F14:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B8EC0
-	b        lbl_801B903C
-
-lbl_801B8F34:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r29, r3
-	li       r3, 0x40
-	bl       __nw__FUl
-	or.      r30, r3, r3
-	beq      lbl_801B8F7C
-	lwz      r4, 0x30(r29)
-	li       r0, 0
-	li       r5, 0
-	stw      r0, 0x28(r30)
-	bl       storeTIMG__10JUTTextureFPC7ResTIMGUc
-	lbz      r0, 0x3b(r30)
-	rlwinm   r0, r0, 0, 0x1e, 0x1e
-	stb      r0, 0x3b(r30)
-
-lbl_801B8F7C:
-	stw      r30, 0x2c(r29)
-	lwz      r0, 0x14(r1)
-	cmplwi   r0, 0
-	bne      lbl_801B8FAC
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B903C
-
-lbl_801B8FAC:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B9020
-
-lbl_801B8FCC:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B903C
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B9020:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B8FCC
-
-lbl_801B903C:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0xc(r1)
-	cmplw    r4, r3
-	bne      lbl_801B8F34
-	mr       r3, r31
-	bl       nishimuraSetTexture__Q24Game10RoomMapMgrFv
-	lwz      r0, 0x34(r1)
-	lwz      r31, 0x2c(r1)
-	lwz      r30, 0x28(r1)
-	lwz      r29, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
+	nishimuraSetTexture();
 }
 
-/*
- * --INFO--
- * Address:	801B9080
- * Size:	0002BC
+/**
+ * @note Address: 0x801B9080
+ * @note Size: 0x2BC
  */
-void RoomMapMgr::useUnit(char*)
+void RoomMapMgr::useUnit(char* unitName)
 {
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	lis      r5, "__vt__25Iterator<Q24Game7MapUnit>"@ha
-	stw      r0, 0x34(r1)
-	li       r0, 0
-	addi     r5, r5, "__vt__25Iterator<Q24Game7MapUnit>"@l
-	stmw     r26, 0x18(r1)
-	mr       r30, r3
-	cmplwi   r0, 0
-	mr       r31, r4
-	lwz      r3, 0xa8(r3)
-	stw      r5, 8(r1)
-	stw      r0, 0x14(r1)
-	stw      r0, 0xc(r1)
-	stw      r3, 0x10(r1)
-	bne      lbl_801B90D8
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B9250
+	MapUnit* unit     = mMapUnitMgr->findMapUnit(unitName);
+	MapUnit* currUnit = unit; // ??
+	if (unit) {               // ??
+		return;
+	}
 
-lbl_801B90D8:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B9144
+	TObjectNode<MapUnit>* node = new TObjectNode<MapUnit>;
 
-lbl_801B90F0:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B9250
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
+	for (int i = 0; i < mMapUnitInterfaceCount; i++) {
+		if (strcmp(unitName, mMapUnitInterface[i].mMapUnit->mName) == 0) {
+			currUnit = mMapUnitInterface[i].mMapUnit;
+		}
+	}
 
-lbl_801B9144:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B90F0
-	b        lbl_801B9250
+	JUT_ASSERTLINE(1884, currUnit, "no such unit %s\n", unitName);
 
-lbl_801B9164:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r29, r3
-	mr       r3, r31
-	lwz      r4, 8(r29)
-	bl       strcmp
-	cmpwi    r3, 0
-	bne      lbl_801B9194
-	b        lbl_801B9274
-
-lbl_801B9194:
-	lwz      r0, 0x14(r1)
-	cmplwi   r0, 0
-	bne      lbl_801B91C0
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B9250
-
-lbl_801B91C0:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B9234
-
-lbl_801B91E0:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B9250
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B9234:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B91E0
-
-lbl_801B9250:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0xc(r1)
-	cmplw    r4, r3
-	bne      lbl_801B9164
-	li       r29, 0
-
-lbl_801B9274:
-	cmplwi   r29, 0
-	mr       r27, r29
-	bne      lbl_801B9328
-	li       r3, 0x1c
-	bl       __nw__FUl
-	or.      r29, r3, r3
-	beq      lbl_801B92A0
-	bl       __ct__5CNodeFv
-	lis      r3, "__vt__28TObjectNode<Q24Game7MapUnit>"@ha
-	addi     r0, r3, "__vt__28TObjectNode<Q24Game7MapUnit>"@l
-	stw      r0, 0(r29)
-
-lbl_801B92A0:
-	li       r26, 0
-	li       r28, 0
-	b        lbl_801B92E0
-
-lbl_801B92AC:
-	lwz      r4, 0xf8(r30)
-	addi     r0, r28, 0x18
-	mr       r3, r31
-	lwzx     r4, r4, r0
-	lwz      r4, 8(r4)
-	bl       strcmp
-	cmpwi    r3, 0
-	bne      lbl_801B92D8
-	lwz      r3, 0xf8(r30)
-	addi     r0, r28, 0x18
-	lwzx     r27, r3, r0
-
-lbl_801B92D8:
-	addi     r28, r28, 0x16c
-	addi     r26, r26, 1
-
-lbl_801B92E0:
-	lwz      r0, 0xf4(r30)
-	cmpw     r26, r0
-	blt      lbl_801B92AC
-	cmplwi   r27, 0
-	bne      lbl_801B9314
-	lis      r3, lbl_8047FCF4@ha
-	lis      r4, lbl_8047FED8@ha
-	addi     r5, r4, lbl_8047FED8@l
-	mr       r6, r31
-	addi     r3, r3, lbl_8047FCF4@l
-	li       r4, 0x75c
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_801B9314:
-	stw      r27, 0x18(r29)
-	mr       r4, r29
-	lwz      r3, 0xa8(r30)
-	addi     r3, r3, 0x20
-	bl       add__5CNodeFP5CNode
-
-lbl_801B9328:
-	lmw      r26, 0x18(r1)
-	lwz      r0, 0x34(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
+	node->mContents = currUnit;
+	mMapUnitMgr->mNode.add(node);
 }
 
-/*
- * --INFO--
- * Address:	801B933C
- * Size:	000210
+/**
+ * @note Address: 0x801B933C
+ * @note Size: 0x210
  */
-JUTTexture* RoomMapMgr::getTexture(char*)
+JUTTexture* RoomMapMgr::getTexture(char* unitName)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lis      r5, "__vt__25Iterator<Q24Game7MapUnit>"@ha
-	stw      r0, 0x24(r1)
-	li       r0, 0
-	cmplwi   r0, 0
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	mr       r30, r4
-	addi     r4, r5, "__vt__25Iterator<Q24Game7MapUnit>"@l
-	lwz      r3, 0xa8(r3)
-	stw      r4, 8(r1)
-	stw      r0, 0x14(r1)
-	stw      r0, 0xc(r1)
-	stw      r3, 0x10(r1)
-	bne      lbl_801B9394
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B9510
+	Iterator<MapUnit> iter(mMapUnitMgr);
+	CI_LOOP(iter)
+	{
+		MapUnit* unit = *iter;
+		if (strcmp(unit->mName, unitName) == 0) {
+			return unit->mTexture;
+		}
+	}
 
-lbl_801B9394:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B9400
-
-lbl_801B93AC:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B9510
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B9400:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B93AC
-	b        lbl_801B9510
-
-lbl_801B9420:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r31, r3
-	mr       r4, r30
-	lwz      r3, 8(r3)
-	bl       strcmp
-	cmpwi    r3, 0
-	bne      lbl_801B9454
-	lwz      r3, 0x2c(r31)
-	b        lbl_801B9534
-
-lbl_801B9454:
-	lwz      r0, 0x14(r1)
-	cmplwi   r0, 0
-	bne      lbl_801B9480
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B9510
-
-lbl_801B9480:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B94F4
-
-lbl_801B94A0:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B9510
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B94F4:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B94A0
-
-lbl_801B9510:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0xc(r1)
-	cmplw    r4, r3
-	bne      lbl_801B9420
-	li       r3, 0
-
-lbl_801B9534:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	801B954C
- * Size:	0001F4
+/**
+ * @note Address: 0x801B954C
+ * @note Size: 0x1F4
  */
-void RoomMapMgr::allocRooms(int)
+void RoomMapMgr::allocRooms(int count)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r3
-	addi     r3, r31, 0xac
-	bl       "alloc__30MonoObjectMgr<Q24Game7MapRoom>Fi"
-	li       r0, 0
-	lis      r3, "__vt__25Iterator<Q24Game7MapRoom>"@ha
-	addi     r4, r3, "__vt__25Iterator<Q24Game7MapRoom>"@l
-	addi     r3, r31, 0xac
-	cmplwi   r0, 0
-	stw      r4, 8(r1)
-	stw      r0, 0x14(r1)
-	stw      r0, 0xc(r1)
-	stw      r3, 0x10(r1)
-	bne      lbl_801B95A8
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B970C
-
-lbl_801B95A8:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B9614
-
-lbl_801B95C0:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B970C
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B9614:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B95C0
-	b        lbl_801B970C
-
-lbl_801B9634:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	li       r0, -1
-	sth      r0, 0x184(r3)
-	lwz      r0, 0x14(r1)
-	cmplwi   r0, 0
-	bne      lbl_801B967C
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B970C
-
-lbl_801B967C:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B96F0
-
-lbl_801B969C:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801B970C
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B96F0:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B969C
-
-lbl_801B970C:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0xc(r1)
-	cmplw    r4, r3
-	bne      lbl_801B9634
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	mRoomMgr.alloc(count);
+	Iterator<MapRoom> iter(&mRoomMgr);
+	CI_LOOP(iter) { (*iter)->mIndex = -1; }
 }
 
-/*
- * --INFO--
- * Address:	801B9740
- * Size:	000050
+/**
+ * @note Address: 0x801B9740
+ * @note Size: 0x50
  */
-void RoomMapMgr::makeRoom(char*, float, float, int, int, Game::RoomLink*, Game::ObjectLayoutInfo*)
+void RoomMapMgr::makeRoom(char* unitName, f32 centreX, f32 centreY, int direction, int index, RoomLink* link, ObjectLayoutInfo* layoutInfo)
 {
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x10(r1)
-	  mflr      r0
-	  xoris     r5, r5, 0x8000
-	  lfd       f3, -0x4EF0(r2)
-	  stw       r0, 0x14(r1)
-	  lis       r0, 0x4330
-	  lfs       f4, -0x4EF8(r2)
-	  stw       r5, 0xC(r1)
-	  extsh     r5, r6
-	  mr        r6, r7
-	  mr        r7, r8
-	  stw       r0, 0x8(r1)
-	  lfd       f0, 0x8(r1)
-	  fsubs     f0, f0, f3
-	  fmuls     f3, f4, f0
-	  bl        0x3198
-	  lwz       r0, 0x14(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x10
-	  blr
-	*/
+	makeOneRoom(centreX, centreY, -90.0f * (f32)direction, unitName, index, link, layoutInfo);
 }
 
-/*
- * --INFO--
- * Address:	801B9790
- * Size:	0003B4
+/**
+ * @note Address: 0x801B9790
+ * @note Size: 0x3B4
  */
 void RoomMapMgr::placeObjects()
 {
+	Iterator<MapRoom> iter(&mRoomMgr);
+	CI_LOOP(iter)
+	{
+		MapRoom* room = *iter;
+		room->placeObjects(mFloorInfo, mSublevel == mCaveInfo->getFloorMax() - 1);
+	}
+
+	// oh boy
+	if (!mRouteMgr) {
+		return;
+	}
+
+	// last chance to get out before we make a GLITCHY SEESAW
+	if (mFloorInfo->mParms.mGlitchySeesaw.mValue == 0) {
+		return;
+	}
+
+	// don't say I didn't warn you.
+	int wpCount = mRouteMgr->mCount;
+
+	// find some random waypoint indices that aren't the same
+	int idx2 = -1;
+	int idx1 = -1;
+	while (idx1 == idx2) {
+		idx1 = (f32)wpCount * randFloat();
+		idx2 = (f32)wpCount * randFloat();
+	}
+
+	// these poor waypoints are gonna suffer
+	WayPoint* wps[2];
+	wps[0] = mRouteMgr->getWayPoint(idx1);
+	wps[1] = mRouteMgr->getWayPoint(idx2);
+
+	// place seesaws.
+	for (int i = 0; i < 2; i++) {
+		ItemDownFloor::Item* seesaw = static_cast<ItemDownFloor::Item*>(ItemDownFloor::mgr->birth());
+		if (seesaw) {
+			Vector3f position      = wps[i]->getPosition();
+			seesaw->mBagMaxWeight  = 20;
+			seesaw->mModelType     = DFMODEL_LargeBlock;
+			seesaw->mDownFloorType = DFTYPE_DownBlock;
+			seesaw->mIsDemoBlock   = true;
+			seesaw->mID.setID('0000');
+			seesaw->init(nullptr);
+			seesaw->mFaceDir = 0.0f;
+			seesaw->setPosition(position, false);
+		}
+	}
 	/*
 	stwu     r1, -0xa0(r1)
 	mflr     r0
@@ -4678,64 +2309,75 @@ lbl_801B9B20:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801B9B44
- * Size:	000024
+/**
+ * @note Address: 0x801B9B44
+ * @note Size: 0x24
  */
-void RoomMapMgr::getBoundBox2d(BoundBox2d&)
+void RoomMapMgr::getBoundBox2d(BoundBox2d& boundbox)
 {
-	/*
-	lfs      f1, 0xe4(r3)
-	lfs      f0, 0xdc(r3)
-	stfs     f0, 0(r4)
-	stfs     f1, 4(r4)
-	lfs      f1, 0xf0(r3)
-	lfs      f0, 0xe8(r3)
-	stfs     f0, 8(r4)
-	stfs     f1, 0xc(r4)
-	blr
-	*/
+	boundbox.mMin = Vector2f(mBoundbox.mMin.x, mBoundbox.mMin.z);
+	boundbox.mMax = Vector2f(mBoundbox.mMax.x, mBoundbox.mMax.z);
 }
 
-/*
- * --INFO--
- * Address:	801B9B68
- * Size:	000034
+/**
+ * @note Address: 0x801B9B68
+ * @note Size: 0x34
  */
-void RoomMapMgr::getBoundBox(BoundBox&)
-{
-	/*
-	lfs      f0, 0xdc(r3)
-	stfs     f0, 0(r4)
-	lfs      f0, 0xe0(r3)
-	stfs     f0, 4(r4)
-	lfs      f0, 0xe4(r3)
-	stfs     f0, 8(r4)
-	lfs      f0, 0xe8(r3)
-	stfs     f0, 0xc(r4)
-	lfs      f0, 0xec(r3)
-	stfs     f0, 0x10(r4)
-	lfs      f0, 0xf0(r3)
-	stfs     f0, 0x14(r4)
-	blr
-	*/
-}
+void RoomMapMgr::getBoundBox(BoundBox& boundbox) { boundbox = mBoundbox; }
 
-/*
- * --INFO--
- * Address:	801B9B9C
- * Size:	000004
+/**
+ * @note Address: 0x801B9B9C
+ * @note Size: 0x4
  */
 void RoomMapMgr::drawCollision(Graphics&, Sys::Sphere&) { }
 
-/*
- * --INFO--
- * Address:	801B9BA0
- * Size:	0001F0
+/**
+ * @note Address: 0x801B9BA0
+ * @note Size: 0x1F0
  */
-void RoomMapMgr::traceMove(Game::MoveInfo&, float)
+Sys::TriIndexList* RoomMapMgr::traceMove(MoveInfo& moveInfo, f32 rate)
 {
+	int counter = 1;
+	Sys::TriIndexList* list;
+	f32 rad   = moveInfo.mMoveSphere->mRadius;
+	f32 speed = moveInfo.mVelocity->length();
+
+	do {
+		if (rate * speed > rad) {
+			counter *= 2;
+			rate *= 0.5f;
+			continue;
+		}
+		break;
+	} while (counter <= 4);
+
+	for (int i = 0; i < counter; i++) {
+		list = traceMove_new(moveInfo, rate);
+	}
+
+	if (mFloorInfo->hasHiddenCollision() && !moveInfo.mBounceTriangle
+	    && (moveInfo.mMoveSphere->mPosition.y - moveInfo.mMoveSphere->mRadius) < 0.0f) {
+		moveInfo.mMoveSphere->mPosition.y = moveInfo.mMoveSphere->mRadius;
+		if (moveInfo.mVelocity->y < 0.0f) {
+			moveInfo.mVelocity->y = -moveInfo.mVelocity->y * (moveInfo.mTraceRadius - 1.0f);
+		}
+
+		Vector3f bottomSpherePos = moveInfo.mMoveSphere->mPosition;
+		bottomSpherePos.y -= moveInfo.mMoveSphere->mRadius;
+
+		moveInfo.mBounceTriangle = &mTriangle;
+		moveInfo.mPosition       = Vector3f(0.0f, 1.0f, 0.0f);
+		moveInfo.mUpDirection    = Vector3f(0.0f, 1.0f, 0.0f);
+
+		moveInfo.mBaseSpherePos = bottomSpherePos;
+
+		if (moveInfo.mIntersectCallback) {
+			Vector3f up(0.0f, 1.0f, 0.0f);
+			moveInfo.mIntersectCallback->invoke(bottomSpherePos, up);
+		}
+	}
+
+	return list;
 	/*
 	stwu     r1, -0x50(r1)
 	mflr     r0
@@ -4880,342 +2522,136 @@ lbl_801B9D70:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801B9D90
- * Size:	000024
+/**
+ * @note Address: 0x801B9D90
+ * @note Size: 0x24
  */
-bool RoomMapMgr::hasHiddenCollision()
+bool RoomMapMgr::hasHiddenCollision() { return mFloorInfo->hasHiddenCollision(); }
+
+/**
+ * @note Address: 0x801B9DB4
+ * @note Size: 0x8C
+ */
+void RoomMapMgr::constraintBoundBox(Sys::Sphere& boundSphere)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	lwz      r3, 0x2c(r3)
-	bl       hasHiddenCollision__Q34Game4Cave9FloorInfoFv
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (boundSphere.mPosition.x - boundSphere.mRadius <= mBoundbox.mMin.x) {
+		boundSphere.mPosition.x = mBoundbox.mMin.x + boundSphere.mRadius;
+	} else if (boundSphere.mPosition.x + boundSphere.mRadius >= mBoundbox.mMax.x) {
+		boundSphere.mPosition.x = mBoundbox.mMax.x - boundSphere.mRadius;
+	}
+
+	if (boundSphere.mPosition.z - boundSphere.mRadius <= mBoundbox.mMin.z) {
+		boundSphere.mPosition.z = mBoundbox.mMin.z + boundSphere.mRadius;
+	} else if (boundSphere.mPosition.z + boundSphere.mRadius >= mBoundbox.mMax.z) {
+		boundSphere.mPosition.z = mBoundbox.mMax.z - boundSphere.mRadius;
+	}
 }
 
-/*
- * --INFO--
- * Address:	801B9DB4
- * Size:	00008C
- */
-void RoomMapMgr::constraintBoundBox(Sys::Sphere&)
-{
-	/*
-	lfs      f3, 0(r4)
-	lfs      f1, 0xc(r4)
-	lfs      f2, 0xdc(r3)
-	fsubs    f0, f3, f1
-	fcmpo    cr0, f0, f2
-	cror     2, 0, 2
-	bne      lbl_801B9DDC
-	fadds    f0, f2, f1
-	stfs     f0, 0(r4)
-	b        lbl_801B9DF8
-
-lbl_801B9DDC:
-	fadds    f0, f3, f1
-	lfs      f2, 0xe8(r3)
-	fcmpo    cr0, f0, f2
-	cror     2, 1, 2
-	bne      lbl_801B9DF8
-	fsubs    f0, f2, f1
-	stfs     f0, 0(r4)
-
-lbl_801B9DF8:
-	lfs      f3, 8(r4)
-	lfs      f1, 0xc(r4)
-	lfs      f2, 0xe4(r3)
-	fsubs    f0, f3, f1
-	fcmpo    cr0, f0, f2
-	cror     2, 0, 2
-	bne      lbl_801B9E20
-	fadds    f0, f2, f1
-	stfs     f0, 8(r4)
-	blr
-
-lbl_801B9E20:
-	fadds    f0, f3, f1
-	lfs      f2, 0xf0(r3)
-	fcmpo    cr0, f0, f2
-	cror     2, 1, 2
-	bnelr
-	fsubs    f0, f2, f1
-	stfs     f0, 8(r4)
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	801B9E40
- * Size:	0001F4
+/**
+ * @note Address: 0x801B9E40
+ * @note Size: 0x1F4
  */
 void RoomMapMgr::entryToMapRoomCellMgr()
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lis      r4, "__vt__25Iterator<Q24Game7MapRoom>"@ha
-	addi     r3, r3, 0xac
-	stw      r0, 0x24(r1)
-	li       r0, 0
-	addi     r4, r4, "__vt__25Iterator<Q24Game7MapRoom>"@l
-	cmplwi   r0, 0
-	stw      r4, 8(r1)
-	stw      r0, 0x14(r1)
-	stw      r0, 0xc(r1)
-	stw      r3, 0x10(r1)
-	bne      lbl_801B9E8C
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801BA004
-
-lbl_801B9E8C:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B9EF8
-
-lbl_801B9EA4:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801BA004
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B9EF8:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B9EA4
-	b        lbl_801BA004
-
-lbl_801B9F18:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, mapRoomCellMgr__4Game@sda21(r13)
-	mr       r4, r3
-	cmplwi   r0, 0
-	beq      lbl_801B9F48
-	mr       r3, r0
-	addi     r5, r4, 0x190
-	bl       entry__Q24Game11CellPyramidFPQ24Game10CellObjectRQ23Sys6Sphere
-
-lbl_801B9F48:
-	lwz      r0, 0x14(r1)
-	cmplwi   r0, 0
-	bne      lbl_801B9F74
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801BA004
-
-lbl_801B9F74:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801B9FE8
-
-lbl_801B9F94:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801BA004
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801B9FE8:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801B9F94
-
-lbl_801BA004:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0xc(r1)
-	cmplw    r4, r3
-	bne      lbl_801B9F18
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	Iterator<MapRoom> iter(&mRoomMgr);
+	CI_LOOP(iter)
+	{
+		MapRoom* room = *iter;
+		if (mapRoomCellMgr) {
+			mapRoomCellMgr->entry(room, room->_190);
+		}
+	}
 }
 
-/*
- * --INFO--
- * Address:	801BA034
- * Size:	000128
+/**
+ * @note Address: 0x801BA034
+ * @note Size: 0x128
  */
-void RoomMapMgr::findRoomIndex(Sys::Sphere&)
+s16 RoomMapMgr::findRoomIndex(Sys::Sphere& sphere)
 {
-	/*
-	stwu     r1, -0x90(r1)
-	mflr     r0
-	stw      r0, 0x94(r1)
-	addi     r3, r1, 0x20
-	stw      r31, 0x8c(r1)
-	stw      r30, 0x88(r1)
-	mr       r30, r4
-	bl       __ct__Q24Game15CellIteratorArgFRQ23Sys6Sphere
-	lwz      r5, mapRoomCellMgr__4Game@sda21(r13)
-	li       r0, 1
-	stb      r0, 0x3c(r1)
-	addi     r3, r1, 0x40
-	addi     r4, r1, 0x20
-	stw      r5, 0x38(r1)
-	bl       __ct__Q24Game12CellIteratorFRQ24Game15CellIteratorArg
-	addi     r3, r1, 0x40
-	bl       first__Q24Game12CellIteratorFv
-	b        lbl_801BA130
+	CellIteratorArg iterArg(sphere);
+	iterArg.mCellMgr  = mapRoomCellMgr;
+	iterArg.mOptimise = true;
+	CellIterator iter(iterArg);
+	CI_LOOP(iter)
+	{
+		MapRoom* room = static_cast<MapRoom*>(*iter);
+		Vector3f pos  = sphere.mPosition;
+		pos           = room->_108.mtxMult(pos);
 
-lbl_801BA07C:
-	addi     r3, r1, 0x40
-	bl       __ml__Q24Game12CellIteratorFv
-	lfs      f0, 0(r30)
-	mr       r31, r3
-	addi     r3, r31, 0x108
-	addi     r4, r1, 0x14
-	stfs     f0, 0x14(r1)
-	addi     r5, r1, 8
-	lfs      f0, 4(r30)
-	stfs     f0, 0x18(r1)
-	lfs      f0, 8(r30)
-	stfs     f0, 0x1c(r1)
-	bl       PSMTXMultVec
-	lfs      f2, 8(r1)
-	lfs      f1, 0xc(r1)
-	lfs      f0, 0x10(r1)
-	stfs     f2, 0x14(r1)
-	stfs     f1, 0x18(r1)
-	stfs     f0, 0x1c(r1)
-	lwz      r3, 0x138(r31)
-	lfs      f6, 0xc(r30)
-	lfs      f1, 0x7c(r3)
-	lfs      f3, 0x84(r3)
-	fsubs    f1, f1, f6
-	lfs      f4, 0x88(r3)
-	lfs      f5, 0x90(r3)
-	fsubs    f3, f3, f6
-	fadds    f4, f4, f6
-	fcmpo    cr0, f1, f2
-	fadds    f5, f5, f6
-	cror     2, 0, 2
-	bne      lbl_801BA128
-	fcmpo    cr0, f3, f0
-	cror     2, 0, 2
-	bne      lbl_801BA128
-	fcmpo    cr0, f2, f4
-	cror     2, 0, 2
-	bne      lbl_801BA128
-	fcmpo    cr0, f0, f5
-	cror     2, 0, 2
-	bne      lbl_801BA128
-	lha      r3, 0x184(r31)
-	b        lbl_801BA144
+		Vector2f min(room->mUnit->mBoundingBox.mMin.x, room->mUnit->mBoundingBox.mMin.z);
+		min.x -= sphere.mRadius;
+		min.y -= sphere.mRadius;
+		Vector2f max(room->mUnit->mBoundingBox.mMax.x, room->mUnit->mBoundingBox.mMax.z);
+		max.x += sphere.mRadius;
+		max.y += sphere.mRadius;
 
-lbl_801BA128:
-	addi     r3, r1, 0x40
-	bl       next__Q24Game12CellIteratorFv
+		if (min.x <= pos.x && min.y <= pos.z && pos.x <= max.x && pos.z <= max.y) {
+			return room->mIndex;
+		}
+	}
 
-lbl_801BA130:
-	addi     r3, r1, 0x40
-	bl       isDone__Q24Game12CellIteratorFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801BA07C
-	li       r3, -1
-
-lbl_801BA144:
-	lwz      r0, 0x94(r1)
-	lwz      r31, 0x8c(r1)
-	lwz      r30, 0x88(r1)
-	mtlr     r0
-	addi     r1, r1, 0x90
-	blr
-	*/
+	return -1;
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00003C
+/**
+ * @note Address: N/A
+ * @note Size: 0x3C
  */
 void MapRoom::createGlobalCollision()
 {
 	// UNUSED FUNCTION
 }
 
-/*
- * --INFO--
- * Address:	801BA15C
- * Size:	0009FC
+/**
+ * @note Address: 0x801BA15C
+ * @note Size: 0x9FC
  */
 void RoomMapMgr::createGlobalCollision()
 {
+	if (BaseHIOParms::sMapRoomFinal == 0) {
+		P2DEBUG("Before: %d", JKRGetCurrentHeap()->getTotalFreeSize());
+		Iterator<MapRoom> iter(&mRoomMgr);
+		CI_LOOP(iter)
+		{
+			MapRoom* room    = *iter;
+			room->mCollision = room->mUnit->mCollision.clone(room->_0D8);
+		}
+		P2DEBUG("After: %d", JKRGetCurrentHeap()->getTotalFreeSize());
+		return;
+	}
+
+	P2DEBUG("Before: %d", JKRGetCurrentHeap()->getTotalFreeSize());
+	Sys::VertexTable* vertTable  = new Sys::VertexTable();
+	Sys::TriangleTable* triTable = new Sys::TriangleTable();
+	BoundBox box;
+
+	int vertCount = 0;
+	int triCount  = 0;
+
+	Iterator<MapRoom> iterAlloc(&mRoomMgr);
+	CI_LOOP(iterAlloc)
+	{
+		Sys::TriDivider* divider = (*iterAlloc)->mUnit->mCollision.mDivider;
+		vertCount += divider->mVertexTable->mLimit;
+		triCount += divider->mTriangleTable->mLimit;
+	}
+
+	vertTable->alloc(vertCount);
+	triTable->alloc(triCount);
+
+	mTriCount       = triCount;
+	mRoomTriIndices = new int[mTriCount];
+
+	for (int i = 0; i < triCount; i++) {
+		Sys::Triangle tri;
+		triTable->addOne(tri);
+	}
+
+	Iterator<MapRoom> iterCreate(&mRoomMgr);
+	CI_LOOP(iterCreate) { MapRoom* room = *iterCreate; }
+
+	P2DEBUG("After: %d", JKRGetCurrentHeap()->getTotalFreeSize());
 	/*
 	stwu     r1, -0x140(r1)
 	mflr     r0
@@ -5938,191 +3374,11 @@ lbl_801BAB44:
 	*/
 }
 
-} // namespace Game
-
-/*
- * --INFO--
- * Address:	801BAB58
- * Size:	0000B8
+/**
+ * @note Address: 0x801BAD60
+ * @note Size: 0x328
  */
-void addOne__Q23Sys11VertexTableFR10Vector3f()
-{
-	/*
-	lwz      r7, 0x1c(r3)
-	lwz      r0, 0x20(r3)
-	cmpw     r7, r0
-	bge      lbl_801BAB94
-	lwz      r6, 0x24(r3)
-	addi     r5, r7, 1
-	mulli    r0, r7, 0xc
-	stw      r5, 0x1c(r3)
-	lfs      f0, 0(r4)
-	add      r5, r6, r0
-	stfs     f0, 0(r5)
-	lfs      f0, 4(r4)
-	stfs     f0, 4(r5)
-	lfs      f0, 8(r4)
-	stfs     f0, 8(r5)
-
-lbl_801BAB94:
-	lfs      f1, 0(r4)
-	lfs      f0, 0x28(r3)
-	fcmpo    cr0, f1, f0
-	bge      lbl_801BABA8
-	stfs     f1, 0x28(r3)
-
-lbl_801BABA8:
-	lfs      f1, 4(r4)
-	lfs      f0, 0x2c(r3)
-	fcmpo    cr0, f1, f0
-	bge      lbl_801BABBC
-	stfs     f1, 0x2c(r3)
-
-lbl_801BABBC:
-	lfs      f1, 8(r4)
-	lfs      f0, 0x30(r3)
-	fcmpo    cr0, f1, f0
-	bge      lbl_801BABD0
-	stfs     f1, 0x30(r3)
-
-lbl_801BABD0:
-	lfs      f1, 0(r4)
-	lfs      f0, 0x34(r3)
-	fcmpo    cr0, f1, f0
-	ble      lbl_801BABE4
-	stfs     f1, 0x34(r3)
-
-lbl_801BABE4:
-	lfs      f1, 4(r4)
-	lfs      f0, 0x38(r3)
-	fcmpo    cr0, f1, f0
-	ble      lbl_801BABF8
-	stfs     f1, 0x38(r3)
-
-lbl_801BABF8:
-	lfs      f1, 8(r4)
-	lfs      f0, 0x3c(r3)
-	fcmpo    cr0, f1, f0
-	blelr
-	stfs     f1, 0x3c(r3)
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	801BAC10
- * Size:	0000E8
- */
-void ArrayContainer<Sys::Triangle>::addOne(Sys::Triangle&)
-{
-	/*
-	lwz      r7, 0x1c(r3)
-	lwz      r0, 0x20(r3)
-	cmpw     r7, r0
-	bgelr
-	lwz      r6, 0x24(r3)
-	addi     r5, r7, 1
-	mulli    r0, r7, 0x60
-	stw      r5, 0x1c(r3)
-	lwz      r3, 0(r4)
-	add      r5, r6, r0
-	lwz      r0, 4(r4)
-	stw      r3, 0(r5)
-	stw      r0, 4(r5)
-	lwz      r0, 8(r4)
-	stw      r0, 8(r5)
-	lfs      f0, 0xc(r4)
-	stfs     f0, 0xc(r5)
-	lfs      f0, 0x10(r4)
-	stfs     f0, 0x10(r5)
-	lfs      f0, 0x14(r4)
-	stfs     f0, 0x14(r5)
-	lfs      f0, 0x18(r4)
-	stfs     f0, 0x18(r5)
-	lfs      f0, 0x1c(r4)
-	stfs     f0, 0x1c(r5)
-	lfs      f0, 0x20(r4)
-	stfs     f0, 0x20(r5)
-	lfs      f0, 0x24(r4)
-	stfs     f0, 0x24(r5)
-	lfs      f0, 0x28(r4)
-	stfs     f0, 0x28(r5)
-	lfs      f0, 0x2c(r4)
-	stfs     f0, 0x2c(r5)
-	lfs      f0, 0x30(r4)
-	stfs     f0, 0x30(r5)
-	lfs      f0, 0x34(r4)
-	stfs     f0, 0x34(r5)
-	lfs      f0, 0x38(r4)
-	stfs     f0, 0x38(r5)
-	lfs      f0, 0x3c(r4)
-	stfs     f0, 0x3c(r5)
-	lfs      f0, 0x40(r4)
-	stfs     f0, 0x40(r5)
-	lfs      f0, 0x44(r4)
-	stfs     f0, 0x44(r5)
-	lfs      f0, 0x48(r4)
-	stfs     f0, 0x48(r5)
-	lfs      f0, 0x4c(r4)
-	stfs     f0, 0x4c(r5)
-	lfs      f0, 0x50(r4)
-	stfs     f0, 0x50(r5)
-	lfs      f0, 0x54(r4)
-	stfs     f0, 0x54(r5)
-	lfs      f0, 0x58(r4)
-	stfs     f0, 0x58(r5)
-	lbz      r0, 0x5c(r4)
-	stb      r0, 0x5c(r5)
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	801BACF8
- * Size:	000068
- */
-void ArrayContainer<Sys::Triangle>::alloc(int)
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	mr       r30, r3
-	mulli    r3, r31, 0x60
-	addi     r3, r3, 0x10
-	bl       __nwa__FUl
-	lis      r4, __ct__Q23Sys8TriangleFv@ha
-	mr       r7, r31
-	addi     r4, r4, __ct__Q23Sys8TriangleFv@l
-	li       r5, 0
-	li       r6, 0x60
-	bl       __construct_new_array
-	stw      r3, 0x24(r30)
-	li       r0, 0
-	stw      r31, 0x20(r30)
-	stw      r0, 0x1c(r30)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
-}
-
-namespace Game {
-
-/*
- * --INFO--
- * Address:	801BAD60
- * Size:	000328
- */
-void RoomMapMgr::traceMove_new(Game::MoveInfo&, float)
+Sys::TriIndexList* RoomMapMgr::traceMove_new(MoveInfo&, f32)
 {
 	/*
 	stwu     r1, -0xe0(r1)
@@ -6349,12 +3605,11 @@ lbl_801BB038:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801BB088
- * Size:	000740
+/**
+ * @note Address: 0x801BB088
+ * @note Size: 0x740
  */
-void RoomMapMgr::traceMove_original(Game::MoveInfo&, float)
+void RoomMapMgr::traceMove_original(MoveInfo&, f32)
 {
 	/*
 	stwu     r1, -0x150(r1)
@@ -6884,12 +4139,11 @@ lbl_801BB7B4:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801BB7C8
- * Size:	0004F0
+/**
+ * @note Address: 0x801BB7C8
+ * @note Size: 0x4F0
  */
-void RoomMapMgr::findRayIntersection(Sys::RayIntersectInfo&)
+bool RoomMapMgr::findRayIntersection(Sys::RayIntersectInfo&)
 {
 	/*
 	stwu     r1, -0x160(r1)
@@ -7243,27 +4497,28 @@ lbl_801BBC1C:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801BBCB8
- * Size:	00008C
+/**
+ * @note Address: 0x801BBCB8
+ * @note Size: 0x8C
  */
 f32 RoomMapMgr::getMinY(Vector3f& pos)
 {
 	CurrTriInfo info;
-	info.mPosition = pos;
-	info._0C       = 0;
+	info.mPosition        = pos;
+	info.mUpdateOnNewMaxY = 0;
 	getCurrTri(info);
 	return info.mMinY;
 }
 
-/*
- * --INFO--
- * Address:	801BBD44
- * Size:	000770
+/**
+ * @note Address: 0x801BBD44
+ * @note Size: 0x770
  */
 void RoomMapMgr::createTriangles(Sys::CreateTriangleArg&)
 {
+	Vector3f vecs[768];
+	Iterator<MapRoom> iter(&mRoomMgr);
+	CI_LOOP(iter) { }
 	/*
 	stwu     r1, -0x2cd0(r1)
 	mflr     r0
@@ -7792,12 +5047,11 @@ lbl_801BC490:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801BC4B4
- * Size:	000460
+/**
+ * @note Address: 0x801BC4B4
+ * @note Size: 0x460
  */
-void RoomMapMgr::getCurrTri(Game::CurrTriInfo&)
+void RoomMapMgr::getCurrTri(CurrTriInfo&)
 {
 	/*
 	stwu     r1, -0x60(r1)
@@ -8117,13 +5371,282 @@ lbl_801BC900:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801BC914
- * Size:	0016B8
+/**
+ * @note Address: 0x801BC914
+ * @note Size: 0x16B8
  */
-void RoomMapMgr::makeOneRoom(float, float, float, char*, short, Game::RoomLink*, Game::ObjectLayoutInfo*)
+void RoomMapMgr::makeOneRoom(f32 centreX, f32 centreY, f32 direction, char* unitName, s16 roomIdx, RoomLink* link,
+                             ObjectLayoutInfo* layoutInfo)
 {
+	f32 faceAngle           = TORADIANS(direction); // f31
+	MapRoom* room           = mRoomMgr.birth();     // r31
+	room->mIndex            = roomIdx;
+	room->mLink             = link;
+	room->mObjectLayoutInfo = static_cast<Cave::ObjectLayout*>(layoutInfo);
+
+	for (int i = 0; i < room->mObjectLayoutInfo->getCount(0); i++) {
+		ObjectLayoutNode* node = room->mObjectLayoutInfo->getNode(0, i);
+		PelletMgr::OtakaraItemCode itemCode;
+		itemCode.mValue = node->getExtraCode();
+
+		PelletInitArg initArg;
+
+		if (pelletMgr->makePelletInitArg(initArg, itemCode)) {
+			if (pelletMgr->setUse(&initArg)) {
+				if (Pellet::sFromTekiEnable) {
+					PelletBirthBuffer::entry(initArg);
+				}
+			} else {
+				itemCode.mValue = 0;
+			}
+		}
+
+		u8 num = node->getBirthCount();
+
+		generalEnemyMgr->addEnemyNum(node->getObjectId(), num, nullptr);
+	}
+
+	for (int i = 0; i < room->mObjectLayoutInfo->getCount(1); i++) {
+		ObjectLayoutNode* node = room->mObjectLayoutInfo->getNode(1, i);
+
+		PelletIndexInitArg initArg(node->getObjectId());
+		pelletMgr->setUse(&initArg);
+	}
+
+	if (gameSystem && gameSystem->isVersusMode()) {
+		PelletList::cKind kind;
+		PelletConfig* config = PelletList::Mgr::getConfigAndKind(const_cast<char*>(VsOtakaraName::cCoin), kind);
+
+		if (config) {
+			PelletIndexInitArg initArg(pelletMgr->encode(kind, config->mParams.mIndex));
+			pelletMgr->setUse(&initArg);
+		}
+	}
+
+	Matrixf mtx1;                                                   // 0x214
+	Vector3f translation(centreX * 170.0f, 0.0f, centreY * 170.0f); // 0xD0
+	Vector3f rotation1(0.0f, faceAngle, 0.0f);                      // 0xC4
+	mtx1.makeTR(translation, rotation1);
+
+	MapUnit* unit = mMapUnitMgr->findMapUnit(unitName); // r22
+
+	room->mUnit = unit;
+	PSMTXCopy(mtx1.mMatrix.mtxView, room->_0D8.mMatrix.mtxView);
+	PSMTXInverse(mtx1.mMatrix.mtxView, room->_108.mMatrix.mtxView);
+	room->mModel = new SysShape::Model(unit->mModelData, 0x20000, 2);
+	room->mModel->mJ3dModel->newDifferedTexMtx(TexDiff_0);
+	room->mModel->mJ3dModel->newDifferedDisplayList(0x200);
+
+	PSMTXCopy(room->_0D8.mMatrix.mtxView, room->mModel->mJ3dModel->mPosMtx);
+	room->mModel->mJ3dModel->calc();
+	room->mModel->mJ3dModel->calcMaterial();
+	room->mModel->mJ3dModel->makeDL();
+	room->mModel->mJ3dModel->lock();
+
+	room->mAnimationCount = unit->mAnimationCount;
+	room->mAnimators      = new Sys::MatLoopAnimator[room->mAnimationCount];
+
+	for (int i = 0; i < room->mAnimationCount; i++) {
+		room->mAnimators[i].start(&unit->mAnimations[i]);
+	}
+
+	Matrixf boundMtx;                          // 0x1E4
+	BoundBox bBox(unit->mBoundingBox);         // 0xF4
+	Vector3f rotation2(0.0f, faceAngle, 0.0f); // 0xB8
+	boundMtx.makeTR(translation, rotation2);
+
+	bBox.transform(boundMtx);
+
+	mBoundbox.include(bBox);
+
+	bBox.makeBoundSphere(room->mBoundingSphere);
+
+	BoundBox bBox2(bBox);
+	bBox2.mMin.y = 0.0f;
+	bBox2.mMax.y = 0.0f;
+	bBox2.makeBoundSphere(room->_190);
+
+	Vector3f modelCenter = room->mModel->getRoughCenter(); // f30, f29, f28
+
+	f32 val = 0.0f;
+	for (int i = 0; i < room->mModel->mJointCount; i++) {
+		if (val < room->mModel->mJoints[i].mJ3d->mBoundingSphereRadius) {
+			val = room->mModel->mJoints[i].mJ3d->mBoundingSphereRadius;
+		}
+	}
+
+	if (strcmp(unitName, "cap_conc") == 0) {
+		val += 30.0f;
+	}
+
+	room->_150.mPosition = modelCenter + translation;
+	room->_150.mRadius   = val;
+
+	Vector3f startCyl = Vector3f(room->mBoundingSphere.mPosition);
+	Vector3f endCyl   = Vector3f(room->mBoundingSphere.mPosition);
+	endCyl.y -= 100.0f;
+
+	room->_160.set(startCyl, endCyl, room->mBoundingSphere.mRadius);
+
+	mSeaMgr->addSeaMgr(&unit->mSeaMgr, mtx1);
+	MapUnitInterface* mui = getMUI(unit); // r27
+
+	room->mUnitKind  = mui->mUnitKind;
+	room->mInterface = mui;
+	room->mDoorNum   = mui->mDoorCount;
+
+	room->mDoorInfos = new RoomDoorInfo[room->mDoorNum];
+
+	room->mFlags = mui->_6E;
+
+	for (int i = 0; i < mui->mDoorCount; i++) {
+		Door* door   = mui->getDoor(i);
+		WayPoint* wp = unit->mRouteMgr.getWayPoint(door->mWpIndex);
+
+		wp->mDoFloorSnap = 1;
+		wp->_76          = i;
+	}
+
+	int counter = 0;
+	Iterator<WayPoint> iterWP(&unit->mRouteMgr);
+	CI_LOOP(iterWP)
+	{
+		*iterWP;
+		counter++;
+	}
+
+	room->mWpIndices = new (-0x20) int[counter];
+
+	int nextIdx = 0;
+
+	CI_LOOP(iterWP)
+	{
+		WayPoint* wp = *iterWP; // r25
+		if (wp->mDoFloorSnap) {
+			RoomLink* targetLink = nullptr; // r23
+			FOREACH_NODE(RoomLink, link->mChild, linkNode)
+			{
+				if (linkNode->mLinkIndex == wp->_76) {
+					targetLink = linkNode;
+					break;
+				}
+			}
+
+			P2ASSERTLINE(3459, targetLink);
+			MapRoom* aliveRoom = getMapRoom(targetLink->mAliveMapIndex); // r21
+
+			Door* door = mui->getDoor(wp->_76); // r22
+
+			Vector3f doorDirs[4] = { (Vector3f) { 1.0f, 0.0f, 0.0f }, (Vector3f) { 0.0f, 0.0f, 1.0f }, (Vector3f) { 0.0f, 0.0f, 0.0f },
+				                     (Vector3f) { 0.0f, 1.0f, 0.0f } }; // 0x1B4
+
+			if (!aliveRoom) {
+				P2ASSERTBOOLLINE(3480, wp->mIndex >= 0 && wp->mIndex < counter);
+
+				WayPoint* newWP = new WayPoint();
+
+				static_cast<EditorRouteMgr*>(mRouteMgr)->addWayPoint(newWP);
+
+				room->mWpIndices[wp->mIndex] = newWP->mIndex;
+
+				newWP->mRadius   = wp->mRadius;
+				newWP->mPosition = mtx1.mtxMult(wp->mPosition);
+
+				if (wp->mDoFloorSnap) {
+					newWP->mPosition.y = 0.0f;
+				} else {
+					newWP->mPosition.y = mapMgr->getMinY(newWP->mPosition);
+				}
+
+				wp = newWP;
+
+			} else {
+				WayPoint* newWP = aliveRoom->mUnit->mRouteMgr.getWayPoint(targetLink->mBirthDoorIndex); // r23
+				P2ASSERTLINE(3504, aliveRoom->mWpIndices);
+
+				room->mWpIndices[wp->mIndex] = aliveRoom->mWpIndices[newWP->mIndex];
+
+				wp = mRouteMgr->getWayPoint(room->mWpIndices[wp->mIndex]);
+			}
+
+			RoomDoorInfo* doorInfo = &room->mDoorInfos[nextIdx++];
+			doorInfo->mWaypoint    = wp;
+
+			WayPoint::RoomList* roomList = new WayPoint::RoomList(room->mIndex);
+
+			wp->mRoomList.add(roomList);
+
+			Matrixf mtx2;
+			Vector3f rotation3(0.0f, faceAngle, 0.0f);
+			mtx2.makeTR(Vector3f::zero, rotation3);
+
+			doorInfo->mLookAtPos = mtx2.getColumn(3) + (Vector3f)(doorDirs[door->mDir]); // not right, just a placeholder
+
+		} else {
+			P2ASSERTBOOLLINE(3530, wp->mIndex >= 0 && wp->mIndex < counter);
+
+			WayPoint* newWP = new WayPoint();
+
+			static_cast<EditorRouteMgr*>(mRouteMgr)->addWayPoint(newWP);
+
+			room->mWpIndices[wp->mIndex] = newWP->mIndex;
+
+			newWP->mRadius   = wp->mRadius;
+			newWP->mPosition = mtx1.mtxMult(wp->mPosition);
+
+			if (wp->mDoFloorSnap) {
+				newWP->mPosition.y = 0.0f;
+			} else {
+				newWP->mPosition.y = mapMgr->getMinY(newWP->mPosition);
+			}
+
+			WayPoint::RoomList* roomList = new WayPoint::RoomList(room->mIndex);
+
+			newWP->mRoomList.add(roomList);
+		}
+	}
+
+	CI_LOOP(iterWP)
+	{
+		WayPoint* wp1 = *iterWP;                                               // r22
+		WayPoint* wp2 = mRouteMgr->getWayPoint(room->mWpIndices[wp1->mIndex]); // r24
+
+		if (wp1->mDoFloorSnap) {
+			int numFromLinks = wp2->mNumFromLinks;
+			if (wp2->mNumFromLinks == 0) {
+				wp2->mNumFromLinks = wp1->mNumFromLinks;
+				for (int i = 0; i < 8; i++) {
+					if (wp1->mFromLinks[i] == -1) {
+						wp2->mFromLinks[i] = -1;
+					} else {
+						wp2->mFromLinks[i] = room->mWpIndices[wp1->mFromLinks[i]];
+					}
+				}
+			} else {
+				for (int i = 0; i < wp1->mNumFromLinks; i++) {
+					int totalLinks = numFromLinks + i;
+					P2ASSERTLINE(3572, totalLinks < 8);
+					if (wp1->mFromLinks[i] == -1) {
+						wp2->mFromLinks[totalLinks] = -1;
+					} else {
+						wp2->mFromLinks[totalLinks] = room->mWpIndices[wp1->mFromLinks[i]];
+					}
+				}
+
+				wp2->mNumFromLinks += wp1->mNumFromLinks;
+			}
+		} else {
+			wp2->mNumFromLinks = wp1->mNumFromLinks;
+			for (int i = 0; i < 8; i++) {
+				if (wp1->mFromLinks[i] == -1) {
+					wp2->mFromLinks[i] = -1;
+				} else {
+					wp2->mFromLinks[i] = room->mWpIndices[wp1->mFromLinks[i]];
+				}
+			}
+		}
+	}
+
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x2D0(r1)
@@ -9811,643 +7334,123 @@ void RoomMapMgr::makeOneRoom(float, float, float, char*, short, Game::RoomLink*,
 	*/
 }
 
-/*
- * --INFO--
- * Address:	801BDFCC
- * Size:	0001F4
+/**
+ * @note Address: 0x801BDFCC
+ * @note Size: 0x1F4
  */
 void RoomMapMgr::deleteTemp()
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lis      r4, "__vt__25Iterator<Q24Game7MapRoom>"@ha
-	addi     r3, r3, 0xac
-	stw      r0, 0x24(r1)
-	li       r0, 0
-	addi     r4, r4, "__vt__25Iterator<Q24Game7MapRoom>"@l
-	stw      r31, 0x1c(r1)
-	cmplwi   r0, 0
-	stw      r4, 8(r1)
-	stw      r0, 0x14(r1)
-	stw      r0, 0xc(r1)
-	stw      r3, 0x10(r1)
-	bne      lbl_801BE01C
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801BE18C
-
-lbl_801BE01C:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801BE088
-
-lbl_801BE034:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801BE18C
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801BE088:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801BE034
-	b        lbl_801BE18C
-
-lbl_801BE0A8:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r31, r3
-	lwz      r3, 0x18c(r3)
-	bl       __dla__FPv
-	li       r0, 0
-	stw      r0, 0x18c(r31)
-	lwz      r0, 0x14(r1)
-	cmplwi   r0, 0
-	bne      lbl_801BE0FC
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801BE18C
-
-lbl_801BE0FC:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801BE170
-
-lbl_801BE11C:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801BE18C
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801BE170:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801BE11C
-
-lbl_801BE18C:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0xc(r1)
-	cmplw    r4, r3
-	bne      lbl_801BE0A8
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	Iterator<MapRoom> iter(&mRoomMgr);
+	CI_LOOP(iter)
+	{
+		MapRoom* room = *iter;
+		delete[] room->mWpIndices;
+		room->mWpIndices = nullptr;
+	}
 }
 
-/*
- * --INFO--
- * Address:	801BE1C0
- * Size:	000094
+/**
+ * @note Address: 0x801BE1C0
+ * @note Size: 0x94
  */
-void RoomMapMgr::getMUI(Game::MapUnit*)
+MapUnitInterface* RoomMapMgr::getMUI(MapUnit* unit)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	li       r31, 0
-	stw      r30, 0x18(r1)
-	li       r30, 0
-	stw      r29, 0x14(r1)
-	mr       r29, r4
-	stw      r28, 0x10(r1)
-	mr       r28, r3
-	b        lbl_801BE224
+	for (int i = 0; i < mMapUnitInterfaceCount; i++) {
+		if (strcmp(unit->mName, mMapUnitInterface[i].mName) == 0) {
+			return &mMapUnitInterface[i];
+		}
+	}
 
-lbl_801BE1F0:
-	lwz      r4, 0xf8(r28)
-	addi     r0, r31, 0x14
-	lwz      r3, 8(r29)
-	lwzx     r4, r4, r0
-	bl       strcmp
-	cmpwi    r3, 0
-	bne      lbl_801BE21C
-	mulli    r0, r30, 0x16c
-	lwz      r3, 0xf8(r28)
-	add      r3, r3, r0
-	b        lbl_801BE234
-
-lbl_801BE21C:
-	addi     r31, r31, 0x16c
-	addi     r30, r30, 1
-
-lbl_801BE224:
-	lwz      r0, 0xf4(r28)
-	cmpw     r30, r0
-	blt      lbl_801BE1F0
-	li       r3, 0
-
-lbl_801BE234:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	lwz      r28, 0x10(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	return nullptr;
 }
 
-/*
- * --INFO--
- * Address:	801BE254
- * Size:	000060
+/**
+ * @note Address: 0x801BE254
+ * @note Size: 0x60
  */
 void RoomMapMgr::doAnimation()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	li       r0, 0
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	addi     r3, r31, 0xac
-	stw      r0, numRoomCulled__Q24Game10RoomMapMgr@sda21(r13)
-	lwz      r12, 0xac(r31)
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x10(r31)
-	cmplwi   r3, 0
-	beq      lbl_801BE2A0
-	lwz      r12, 0(r3)
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-
-lbl_801BE2A0:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	numRoomCulled = 0;
+	mRoomMgr.doAnimation();
+	if (mSeaMgr) {
+		mSeaMgr->doAnimation();
+	}
 }
 
-/*
- * --INFO--
- * Address:	801BE2B4
- * Size:	0000DC
+/**
+ * @note Address: 0x801BE2B4
+ * @note Size: 0xDC
  */
 void RoomMapMgr::doEntry()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	addi     r4, r2, lbl_80519498@sda21
-	li       r5, 1
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	stw      r30, 8(r1)
-	mr       r30, r3
-	lwz      r6, sys@sda21(r13)
-	lwz      r3, 0x28(r6)
-	bl       _start__9SysTimersFPcb
-	lwz      r4, gameSystem__4Game@sda21(r13)
-	cmplwi   r4, 0
-	beq      lbl_801BE368
-	lwz      r3, 0x10(r30)
-	lwz      r31, 0x58(r4)
-	cmplwi   r3, 0
-	beq      lbl_801BE30C
-	lwz      r12, 0(r3)
-	lwz      r12, 0x68(r12)
-	mtctr    r12
-	bctrl
+	sys->mTimers->_start("ENT-MAP", true);
 
-lbl_801BE30C:
-	mr       r3, r31
-	li       r4, 2
-	bl       setDrawBuffer__Q24Game15BaseGameSectionFi
-	addi     r3, r30, 0xac
-	lwz      r12, 0xac(r30)
-	lwz      r12, 0x68(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x24(r30)
-	cmplwi   r0, 0
-	beq      lbl_801BE35C
-	mr       r3, r31
-	li       r4, 6
-	bl       setDrawBuffer__Q24Game15BaseGameSectionFi
-	lwz      r3, 0x24(r30)
-	lwz      r3, 8(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0xc(r12)
-	mtctr    r12
-	bctrl
+	if (gameSystem) {
+		BaseGameSection* section = gameSystem->getSection();
+		if (mSeaMgr) {
+			mSeaMgr->doEntry();
+		}
 
-lbl_801BE35C:
-	mr       r3, r31
-	li       r4, 0
-	bl       setDrawBuffer__Q24Game15BaseGameSectionFi
+		section->setDrawBuffer(2);
+		mRoomMgr.doEntry();
+		if (mVRBox.mModel) {
+			section->setDrawBuffer(6);
+			mVRBox.mModel->mJ3dModel->entry();
+		}
 
-lbl_801BE368:
-	lwz      r3, sys@sda21(r13)
-	addi     r4, r2, lbl_80519498@sda21
-	lwz      r3, 0x28(r3)
-	bl       _stop__9SysTimersFPc
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+		section->setDrawBuffer(0);
+	}
+
+	sys->mTimers->_stop("ENT-MAP");
 }
 
-/*
- * --INFO--
- * Address:	801BE390
- * Size:	00007C
+/**
+ * @note Address: 0x801BE390
+ * @note Size: 0x7C
  */
 void RoomMapMgr::doSetView(int viewportNumber)
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	mr       r30, r3
-	addi     r3, r30, 0xac
-	lwz      r12, 0xac(r30)
-	lwz      r12, 0x6c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x10(r30)
-	cmplwi   r3, 0
-	beq      lbl_801BE3E0
-	lwz      r12, 0(r3)
-	mr       r4, r31
-	lwz      r12, 0x6c(r12)
-	mtctr    r12
-	bctrl
+	mRoomMgr.doSetView(viewportNumber);
+	if (mSeaMgr) {
+		mSeaMgr->doSetView(viewportNumber);
+	}
 
-lbl_801BE3E0:
-	lwz      r3, 0x24(r30)
-	cmplwi   r3, 0
-	beq      lbl_801BE3F4
-	mr       r4, r31
-	bl       setCurrentViewNo__Q28SysShape5ModelFUl
-
-lbl_801BE3F4:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (mVRBox.mModel) {
+		mVRBox.mModel->setCurrentViewNo(viewportNumber);
+	}
 }
 
-/*
- * --INFO--
- * Address:	801BE40C
- * Size:	000068
+/**
+ * @note Address: 0x801BE40C
+ * @note Size: 0x68
  */
 void RoomMapMgr::doViewCalc()
 {
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	addi     r3, r31, 0xac
-	lwz      r12, 0xac(r31)
-	lwz      r12, 0x70(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x10(r31)
-	cmplwi   r3, 0
-	beq      lbl_801BE450
-	lwz      r12, 0(r3)
-	lwz      r12, 0x70(r12)
-	mtctr    r12
-	bctrl
+	mRoomMgr.doViewCalc();
+	if (mSeaMgr) {
+		mSeaMgr->doViewCalc();
+	}
 
-lbl_801BE450:
-	lwz      r3, 0x24(r31)
-	cmplwi   r3, 0
-	beq      lbl_801BE460
-	bl       viewCalc__Q28SysShape5ModelFv
-
-lbl_801BE460:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	if (mVRBox.mModel) {
+		mVRBox.mModel->viewCalc();
+	}
 }
 
-/*
- * --INFO--
- * Address:	801BE474
- * Size:	000004
+/**
+ * @note Address: 0x801BE474
+ * @note Size: 0x4
  */
-void RoomMapMgr::doSimulation(float) { }
+void RoomMapMgr::doSimulation(f32) { }
 
-/*
- * --INFO--
- * Address:	801BE478
- * Size:	000210
+/**
+ * @note Address: 0x801BE478
+ * @note Size: 0x210
  */
-void RoomMapMgr::doDirectDraw(Graphics&)
+void RoomMapMgr::doDirectDraw(Graphics& gfx)
 {
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	mr       r31, r4
-	li       r4, 0
-	stw      r30, 0x18(r1)
-	mr       r30, r3
-	mr       r3, r31
-	bl       initPrimDraw__8GraphicsFP7Matrixf
-	li       r0, 0
-	lis      r3, "__vt__25Iterator<Q24Game7MapRoom>"@ha
-	addi     r4, r3, "__vt__25Iterator<Q24Game7MapRoom>"@l
-	addi     r3, r30, 0xac
-	cmplwi   r0, 0
-	stw      r4, 8(r1)
-	stw      r0, 0x14(r1)
-	stw      r0, 0xc(r1)
-	stw      r3, 0x10(r1)
-	bne      lbl_801BE4E0
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801BE650
-
-lbl_801BE4E0:
-	lwz      r12, 0(r3)
-	lwz      r12, 0x18(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801BE54C
-
-lbl_801BE4F8:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801BE650
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801BE54C:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801BE4F8
-	b        lbl_801BE650
-
-lbl_801BE56C:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	lwz      r12, 0(r3)
-	mr       r4, r31
-	lwz      r12, 0x44(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x14(r1)
-	cmplwi   r0, 0
-	bne      lbl_801BE5C0
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801BE650
-
-lbl_801BE5C0:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-	b        lbl_801BE634
-
-lbl_801BE5E0:
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x20(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r3
-	lwz      r3, 0x14(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_801BE650
-	lwz      r3, 0x10(r1)
-	lwz      r4, 0xc(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	stw      r3, 0xc(r1)
-
-lbl_801BE634:
-	lwz      r12, 8(r1)
-	addi     r3, r1, 8
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_801BE5E0
-
-lbl_801BE650:
-	lwz      r3, 0x10(r1)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r4, 0xc(r1)
-	cmplw    r4, r3
-	bne      lbl_801BE56C
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	801BE688
- * Size:	000024
- */
-void RoomMapMgr::getStartPosition(Vector3f& position, int index)
-{
-	position = mCourseInfo[index].mStartPosition;
-	/*
-	mulli    r0, r5, 0xc
-	add      r3, r3, r0
-	lfs      f0, 0xfc(r3)
-	stfs     f0, 0(r4)
-	lfs      f0, 0x100(r3)
-	stfs     f0, 4(r4)
-	lfs      f0, 0x104(r3)
-	stfs     f0, 8(r4)
-	blr
-	*/
-}
-
-/*
- * --INFO--
- * Address:	801BE6B4
- * Size:	000084
- */
-Door::~Door()
-{
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	or.      r30, r3, r3
-	beq      lbl_801BE71C
-	lis      r3, __vt__Q24Game4Door@ha
-	addic.   r0, r30, 0x20
-	addi     r0, r3, __vt__Q24Game4Door@l
-	stw      r0, 0(r30)
-	beq      lbl_801BE700
-	lis      r4, __vt__Q24Game8DoorLink@ha
-	addi     r3, r30, 0x20
-	addi     r0, r4, __vt__Q24Game8DoorLink@l
-	li       r4, 0
-	stw      r0, 0x20(r30)
-	bl       __dt__5CNodeFv
-
-lbl_801BE700:
-	mr       r3, r30
-	li       r4, 0
-	bl       __dt__5CNodeFv
-	extsh.   r0, r31
-	ble      lbl_801BE71C
-	mr       r3, r30
-	bl       __dl__FPv
-
-lbl_801BE71C:
-	lwz      r0, 0x14(r1)
-	mr       r3, r30
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
+	gfx.initPrimDraw(nullptr);
+	Iterator<MapRoom> iter(&mRoomMgr);
+	CI_LOOP(iter) { (*iter)->doDirectDraw(gfx); }
 }
 
 } // namespace Game

@@ -15,10 +15,9 @@
 namespace Game {
 namespace Queen {
 
-/*
- * --INFO--
- * Address:	802894D4
- * Size:	00017C
+/**
+ * @note Address: 0x802894D4
+ * @note Size: 0x17C
  */
 Obj::Obj()
 {
@@ -29,17 +28,15 @@ Obj::Obj()
 	createEffect();
 }
 
-/*
- * --INFO--
- * Address:	80289650
- * Size:	000004
+/**
+ * @note Address: 0x80289650
+ * @note Size: 0x4
  */
 void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-/*
- * --INFO--
- * Address:	80289654
- * Size:	000100
+/**
+ * @note Address: 0x80289654
+ * @note Size: 0x100
  */
 void Obj::onInit(CreatureInitArg* initArg)
 {
@@ -67,10 +64,9 @@ void Obj::onInit(CreatureInitArg* initArg)
 	}
 }
 
-/*
- * --INFO--
- * Address:	80289754
- * Size:	000058
+/**
+ * @note Address: 0x80289754
+ * @note Size: 0x58
  */
 void Obj::onKill(CreatureKillArg* killArg)
 {
@@ -80,10 +76,9 @@ void Obj::onKill(CreatureKillArg* killArg)
 	EnemyBase::onKill(killArg);
 }
 
-/*
- * --INFO--
- * Address:	802897AC
- * Size:	0000B8
+/**
+ * @note Address: 0x802897AC
+ * @note Size: 0xB8
  */
 void Obj::setParameters()
 {
@@ -91,15 +86,15 @@ void Obj::setParameters()
 	mDoEasyRoll     = false;
 
 	if (gameSystem) {
-		if (gameSystem->mMode == GSM_PIKLOPEDIA) {
+		if (gameSystem->isZukanMode()) {
 			mCanCreateLarva = false;
 
-		} else if (gameSystem->mIsInCave && gameSystem->mMode == GSM_STORY_MODE) {
+		} else if (gameSystem->mIsInCave && gameSystem->isStoryMode()) {
 			SingleGameSection* section = static_cast<SingleGameSection*>(gameSystem->mSection);
 			if (section && section->getCaveID() == 'f_01') { // if in Hole of Beasts
-				mCanCreateLarva                  = false;
-				mDoEasyRoll                      = true;
-				C_PARMS->mGeneral.mHealth.mValue = C_PROPERPARMS.mHoBHealth.mValue;
+				mCanCreateLarva               = false;
+				mDoEasyRoll                   = true;
+				C_GENERALPARMS.mHealth.mValue = C_PROPERPARMS.mHoBHealth.mValue;
 			}
 		}
 	}
@@ -107,10 +102,9 @@ void Obj::setParameters()
 	EnemyBase::setParameters();
 }
 
-/*
- * --INFO--
- * Address:	80289864
- * Size:	000050
+/**
+ * @note Address: 0x80289864
+ * @note Size: 0x50
  */
 void Obj::doUpdate()
 {
@@ -119,10 +113,9 @@ void Obj::doUpdate()
 	mFsm->exec(this);
 }
 
-/*
- * --INFO--
- * Address:	802898B4
- * Size:	000034
+/**
+ * @note Address: 0x802898B4
+ * @note Size: 0x34
  */
 void Obj::doUpdateCommon()
 {
@@ -130,10 +123,9 @@ void Obj::doUpdateCommon()
 	updateBossBGM();
 }
 
-/*
- * --INFO--
- * Address:	802898E8
- * Size:	000054
+/**
+ * @note Address: 0x802898E8
+ * @note Size: 0x54
  */
 void Obj::doAnimationCullingOff()
 {
@@ -143,24 +135,21 @@ void Obj::doAnimationCullingOff()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028993C
- * Size:	000004
+/**
+ * @note Address: 0x8028993C
+ * @note Size: 0x4
  */
 void Obj::doDirectDraw(Graphics&) { }
 
-/*
- * --INFO--
- * Address:	80289940
- * Size:	000020
+/**
+ * @note Address: 0x80289940
+ * @note Size: 0x20
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-/*
- * --INFO--
- * Address:	80289960
- * Size:	00004C
+/**
+ * @note Address: 0x80289960
+ * @note Size: 0x4C
  */
 void Obj::setFSM(FSM* fsm)
 {
@@ -169,10 +158,9 @@ void Obj::setFSM(FSM* fsm)
 	mCurrentLifecycleState = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	802899AC
- * Size:	00008C
+/**
+ * @note Address: 0x802899AC
+ * @note Size: 0x8C
  */
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
@@ -183,10 +171,9 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 	shadowParam.mSize                     = 45.0f;
 }
 
-/*
- * --INFO--
- * Address:	80289A38
- * Size:	0000B0
+/**
+ * @note Address: 0x80289A38
+ * @note Size: 0xB0
  */
 bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* part)
 {
@@ -205,17 +192,15 @@ bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* part)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80289AE8
- * Size:	000008
+/**
+ * @note Address: 0x80289AE8
+ * @note Size: 0x8
  */
 bool Obj::earthquakeCallBack(Creature* creature, f32 damage) { return false; }
 
-/*
- * --INFO--
- * Address:	80289AF0
- * Size:	00004C
+/**
+ * @note Address: 0x80289AF0
+ * @note Size: 0x4C
  */
 void Obj::doStartStoneState()
 {
@@ -226,15 +211,14 @@ void Obj::doStartStoneState()
 	startStoneStateBossAttackLoopBGM();
 }
 
-/*
- * --INFO--
- * Address:	80289B3C
- * Size:	000088
+/**
+ * @note Address: 0x80289B3C
+ * @note Size: 0x88
  */
 void Obj::doFinishStoneState()
 {
 	EnemyBase::doFinishStoneState();
-	EnemyFunc::flickStickPikmin(this, 1.0f, 10.0f, 0.0f, -1000.0f, nullptr);
+	EnemyFunc::flickStickPikmin(this, 1.0f, 10.0f, 0.0f, FLICK_BACKWARD_ANGLE, nullptr);
 
 	int stateID = getStateID();
 	if (stateID == QUEEN_Damage) {
@@ -246,10 +230,9 @@ void Obj::doFinishStoneState()
 	finishStoneStateBossAttackLoopBGM();
 }
 
-/*
- * --INFO--
- * Address:	80289BC4
- * Size:	000084
+/**
+ * @note Address: 0x80289BC4
+ * @note Size: 0x84
  */
 bool Obj::ignoreAtari(Creature* creature)
 {
@@ -260,45 +243,41 @@ bool Obj::ignoreAtari(Creature* creature)
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	80289C48
- * Size:	000028
+/**
+ * @note Address: 0x80289C48
+ * @note Size: 0x28
  */
-void Obj::startCarcassMotion() { startMotion(8, nullptr); }
+void Obj::startCarcassMotion() { startMotion(QUEENANIM_Carry, nullptr); }
 
-/*
- * --INFO--
- * Address:	80289C70
- * Size:	000020
+/**
+ * @note Address: 0x80289C70
+ * @note Size: 0x20
  */
 void Obj::doStartMovie() { effectDrawOff(); }
 
-/*
- * --INFO--
- * Address:	80289C90
- * Size:	000020
+/**
+ * @note Address: 0x80289C90
+ * @note Size: 0x20
  */
 void Obj::doEndMovie() { effectDrawOn(); }
 
-/*
- * --INFO--
- * Address:	80289CB0
- * Size:	0002EC
+/**
+ * @note Address: 0x80289CB0
+ * @note Size: 0x2EC
  */
 void Obj::rollingAttack()
 {
 	Vector3f pos     = getPosition();
 	const f32 angle  = getFaceDir();
-	f32 attackRadius = *C_PARMS->mGeneral.mAttackRadius();
-	f32 attackAngle  = *C_PARMS->mGeneral.mAttackHitAngle();
+	f32 attackRadius = C_GENERALPARMS.mAttackRadius();
+	f32 attackAngle  = C_GENERALPARMS.mAttackHitAngle();
 
 	Vector3f forward = getDirection(angle);
 	Vector3f back(-forward.z, 0.0f, forward.x);
 
 	Sys::Sphere sphere(mPosition, 250.0f);
 	CellIteratorArg iterArg(sphere);
-	iterArg.mIsSphereCollisionDisabled = true;
+	iterArg.mOptimise = true;
 	CellIterator iter(iterArg);
 
 	CI_LOOP(iter)
@@ -310,7 +289,7 @@ void Obj::rollingAttack()
 			if (absVal(sep.y) < 50.0f) {
 				if (absVal(back.dot(sep)) < attackAngle) {
 					if (absVal(forward.dot(sep)) < attackRadius) {
-						InteractPress press(this, C_PARMS->mGeneral.mAttackDamage.mValue, nullptr);
+						InteractPress press(this, C_GENERALPARMS.mAttackDamage.mValue, nullptr);
 						creature->stimulate(press);
 					}
 				}
@@ -319,10 +298,9 @@ void Obj::rollingAttack()
 	}
 }
 
-/*
- * --INFO--
- * Address:	80289F9C
- * Size:	0003A8
+/**
+ * @note Address: 0x80289F9C
+ * @note Size: 0x3A8
  */
 void Obj::flickPikmin(f32 angle)
 {
@@ -337,15 +315,15 @@ void Obj::flickPikmin(f32 angle)
 			CollPart* stuckPart = stuck->mStuckCollPart;
 			if (stuckPart) {
 				if (stuckPart->mCurrentID == 'nose' || stuckPart->mCurrentID == 'head' || stuckPart->mCurrentID == 'bod1') {
-					InteractFlick flick(this, C_PARMS->mGeneral.mShakeKnockback.mValue, C_PARMS->mGeneral.mShakeDamage.mValue, angle);
+					InteractFlick flick(this, C_GENERALPARMS.mShakeKnockback.mValue, C_GENERALPARMS.mShakeDamage.mValue, angle);
 					stuck->stimulate(flick);
 
 				} else if (stuckPart->mCurrentID == 'bod5') {
-					InteractFlick flick(this, C_PARMS->mGeneral.mShakeKnockback.mValue, C_PARMS->mGeneral.mShakeDamage.mValue, bodyAngle);
+					InteractFlick flick(this, C_GENERALPARMS.mShakeKnockback.mValue, C_GENERALPARMS.mShakeDamage.mValue, bodyAngle);
 					stuck->stimulate(flick);
 
 				} else {
-					InteractFlick flick(this, 0.0f, 0.0f, -1000.0f);
+					InteractFlick flick(this, 0.0f, 0.0f, FLICK_BACKWARD_ANGLE);
 					stuck->stimulate(flick);
 				}
 			}
@@ -353,10 +331,9 @@ void Obj::flickPikmin(f32 angle)
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028A344
- * Size:	0001A8
+/**
+ * @note Address: 0x8028A344
+ * @note Size: 0x1A8
  */
 bool Obj::isRollingAttackLeft()
 {
@@ -365,7 +342,7 @@ bool Obj::isRollingAttackLeft()
 		Navi* navi  = naviMgr->getActiveNavi();
 		if (navi) {
 			f32 angle       = HALF_PI + getFaceDir();
-			Vector3f angles = Vector3f(pikmin2_sinf(angle), 0.0f, pikmin2_cosf(angle));
+			Vector3f angles = Vector3f(sinf(angle), 0.0f, cosf(angle));
 			Vector3f sep    = navi->getPosition() - mPosition;
 			sep.y           = 0.0f;
 
@@ -381,14 +358,13 @@ bool Obj::isRollingAttackLeft()
 	return randWeightFloat(1.0f) < 0.5f;
 }
 
-/*
- * --INFO--
- * Address:	8028A4EC
- * Size:	0002D4
+/**
+ * @note Address: 0x8028A4EC
+ * @note Size: 0x2D4
  */
 void Obj::createCrashFallRock()
 {
-	if (gameSystem && gameSystem->mIsInCave && gameSystem->mMode == GSM_STORY_MODE) {
+	if (gameSystem && gameSystem->mIsInCave && gameSystem->isStoryMode()) {
 		SingleGameSection* section = static_cast<SingleGameSection*>(gameSystem->mSection);
 		if (section && section->getCaveID() == 'l_02') {
 			// only cause falling rocks in Hole of Heroes (not HoB or FC)
@@ -414,7 +390,7 @@ void Obj::createCrashFallRock()
 					if (rock) {
 						rock->init(nullptr);
 						rock->disableEvent(0, EB_Cullable);
-						CG_PARMS(rock)->mGeneral.mSightRadius.mValue = 1000.0f;
+						CG_GENERALPARMS(rock).mSightRadius.mValue = 1000.0f;
 					}
 				}
 			}
@@ -617,25 +593,23 @@ lbl_8028A744:
 	*/
 }
 
-/*
- * --INFO--
- * Address:	8028A7C0
- * Size:	00019C
+/**
+ * @note Address: 0x8028A7C0
+ * @note Size: 0x19C
  */
 void Obj::createBabyChappy()
 {
 	Baby::Mgr* babyMgr = static_cast<Baby::Mgr*>(generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_Baby));
 	if (babyMgr) {
 		EnemyBirthArg birthArg;
-		birthArg.mPosition = mModel->getJoint("body_end")->getWorldMatrix()->getBasis(3);
+		birthArg.mPosition = mModel->getJoint("body_end")->getWorldMatrix()->getColumn(3);
 		birthArg.mFaceDir  = PI + getFaceDir();
 
 		Baby::Obj* baby = static_cast<Baby::Obj*>(babyMgr->birth(birthArg));
 		if (baby) {
 			f32 angle           = birthArg.mFaceDir;
 			Queen::Parms* parms = C_PARMS;
-			Vector3f vel        = Vector3f(*parms->mGeneral.mSearchDistance() * pikmin2_sinf(angle), 0.0f,
-                                    *parms->mGeneral.mSearchDistance() * pikmin2_cosf(angle));
+			Vector3f vel = Vector3f(parms->mGeneral.mSearchDistance() * sinf(angle), 0.0f, parms->mGeneral.mSearchDistance() * cosf(angle));
 			baby->init(nullptr);
 			baby->setVelocity(vel);
 			baby->mTargetVelocity = vel;
@@ -643,10 +617,9 @@ void Obj::createBabyChappy()
 	}
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	00021C
+/**
+ * @note Address: N/A
+ * @note Size: 0x21C
  */
 int Obj::getBabyChappyCount()
 {
@@ -666,10 +639,9 @@ int Obj::getBabyChappyCount()
 	return count;
 }
 
-/*
- * --INFO--
- * Address:	8028A9A8
- * Size:	000274
+/**
+ * @note Address: 0x8028A9A8
+ * @note Size: 0x274
  */
 void Obj::updateCreateBaby()
 {
@@ -684,10 +656,9 @@ void Obj::updateCreateBaby()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028AC1C
- * Size:	00003C
+/**
+ * @note Address: 0x8028AC1C
+ * @note Size: 0x3C
  */
 bool Obj::isCreateBaby()
 {
@@ -698,24 +669,21 @@ bool Obj::isCreateBaby()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8028AC58
- * Size:	000018
+/**
+ * @note Address: 0x8028AC58
+ * @note Size: 0x18
  */
-bool Obj::isHitCounterUp() { return mToFlick > _2D0; }
+bool Obj::isHitCounterUp() { return mFlickTimer > _2D0; }
 
-/*
- * --INFO--
- * Address:	8028AC70
- * Size:	000028
+/**
+ * @note Address: 0x8028AC70
+ * @note Size: 0x28
  */
 void Obj::resetJointShadow() { shadowMgr->delNormalShadow(this); }
 
-/*
- * --INFO--
- * Address:	8028AC98
- * Size:	000040
+/**
+ * @note Address: 0x8028AC98
+ * @note Size: 0x40
  */
 void Obj::releaseJointShadow()
 {
@@ -723,22 +691,20 @@ void Obj::releaseJointShadow()
 	shadowMgr->delJointShadow(this);
 }
 
-/*
- * --INFO--
- * Address:	8028ACD8
- * Size:	0000C8
+/**
+ * @note Address: 0x8028ACD8
+ * @note Size: 0xC8
  */
 void Obj::startBossChargeBGM()
 {
 	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 	PSM::checkBoss(soundObj);
-	soundObj->jumpRequest(2);
+	soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_AttackPrep);
 }
 
-/*
- * --INFO--
- * Address:	8028ADA0
- * Size:	0000DC
+/**
+ * @note Address: 0x8028ADA0
+ * @note Size: 0xDC
  */
 void Obj::startBossAttackLoopBGM()
 {
@@ -746,14 +712,13 @@ void Obj::startBossAttackLoopBGM()
 		mIsAttackLoopBGM         = true;
 		PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 		PSM::checkBoss(soundObj);
-		soundObj->jumpRequest(8);
+		soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_AttackLong);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028AE7C
- * Size:	0000D8
+/**
+ * @note Address: 0x8028AE7C
+ * @note Size: 0xD8
  */
 void Obj::finishBossAttackLoopBGM()
 {
@@ -761,42 +726,39 @@ void Obj::finishBossAttackLoopBGM()
 		mIsAttackLoopBGM         = false;
 		PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 		PSM::checkBoss(soundObj);
-		soundObj->jumpRequest(1);
+		soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_MainLoop);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028AF54
- * Size:	0000D4
+/**
+ * @note Address: 0x8028AF54
+ * @note Size: 0xD4
  */
 void Obj::startStoneStateBossAttackLoopBGM()
 {
 	if (mIsAttackLoopBGM) {
 		PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 		PSM::checkBoss(soundObj);
-		soundObj->jumpRequest(1);
+		soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_MainLoop);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028B028
- * Size:	0000D4
+/**
+ * @note Address: 0x8028B028
+ * @note Size: 0xD4
  */
 void Obj::finishStoneStateBossAttackLoopBGM()
 {
 	if (mIsAttackLoopBGM) {
 		PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
 		PSM::checkBoss(soundObj);
-		soundObj->jumpRequest(8);
+		soundObj->jumpRequest(PSM::EnemyMidBoss::BossBgm_AttackLong);
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028B0FC
- * Size:	0000FC
+/**
+ * @note Address: 0x8028B0FC
+ * @note Size: 0xFC
  */
 void Obj::updateBossBGM()
 {
@@ -809,10 +771,9 @@ void Obj::updateBossBGM()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028B1F8
- * Size:	0000A8
+/**
+ * @note Address: 0x8028B1F8
+ * @note Size: 0xA8
  */
 void Obj::resetMidBossAppearBGM()
 {
@@ -827,10 +788,9 @@ void Obj::resetMidBossAppearBGM()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028B2A0
- * Size:	000080
+/**
+ * @note Address: 0x8028B2A0
+ * @note Size: 0x80
  */
 void Obj::setMidBossAppearBGM()
 {
@@ -842,10 +802,9 @@ void Obj::setMidBossAppearBGM()
 	}
 }
 
-/*
- * --INFO--
- * Address:	8028B320
- * Size:	000534
+/**
+ * @note Address: 0x8028B320
+ * @note Size: 0x534
  */
 void Obj::createEffect()
 {
@@ -863,10 +822,9 @@ void Obj::createEffect()
 	mEfxHanacho   = new efx::TQueenHanacho;
 }
 
-/*
- * --INFO--
- * Address:	8028B854
- * Size:	000078
+/**
+ * @note Address: 0x8028B854
+ * @note Size: 0x78
  */
 void Obj::setupEffect()
 {
@@ -875,17 +833,15 @@ void Obj::setupEffect()
 	mEfxHanacho->mMtx = mModel->getJoint("head")->getWorldMatrix();
 }
 
-/*
- * --INFO--
- * Address:	8028B8CC
- * Size:	000034
+/**
+ * @note Address: 0x8028B8CC
+ * @note Size: 0x34
  */
 void Obj::createBornEffect() { mEfxLay->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	8028B900
- * Size:	000080
+/**
+ * @note Address: 0x8028B900
+ * @note Size: 0x80
  */
 void Obj::startRollingEffect()
 {
@@ -898,10 +854,9 @@ void Obj::startRollingEffect()
 	mEfxRoll->create(nullptr);
 }
 
-/*
- * --INFO--
- * Address:	8028B980
- * Size:	0000E0
+/**
+ * @note Address: 0x8028B980
+ * @note Size: 0xE0
  */
 void Obj::finishRollingEffect(bool doCrash)
 {
@@ -926,10 +881,9 @@ void Obj::finishRollingEffect(bool doCrash)
 	mEfxRoll->fade();
 }
 
-/*
- * --INFO--
- * Address:	8028BA60
- * Size:	000064
+/**
+ * @note Address: 0x8028BA60
+ * @note Size: 0x64
  */
 void Obj::forceFinishRollingEffect()
 {
@@ -938,59 +892,51 @@ void Obj::forceFinishRollingEffect()
 	mEfxRoll->fade();
 }
 
-/*
- * --INFO--
- * Address:	8028BAC4
- * Size:	000034
+/**
+ * @note Address: 0x8028BAC4
+ * @note Size: 0x34
  */
 void Obj::startDamageEffect() { mEfxDamage->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	8028BAF8
- * Size:	000030
+/**
+ * @note Address: 0x8028BAF8
+ * @note Size: 0x30
  */
 void Obj::finishDamageEffect() { mEfxDamage->fade(); }
 
-/*
- * --INFO--
- * Address:	8028BB28
- * Size:	000034
+/**
+ * @note Address: 0x8028BB28
+ * @note Size: 0x34
  */
 void Obj::createFlickEffect() { mEfxFlick->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	8028BB5C
- * Size:	000034
+/**
+ * @note Address: 0x8028BB5C
+ * @note Size: 0x34
  */
 void Obj::createDeadEffect() { mEfxDead->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	8028BB90
- * Size:	000034
+/**
+ * @note Address: 0x8028BB90
+ * @note Size: 0x34
  */
 void Obj::createWakeUpEffect() { mEfxWakeup->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	8028BBC4
- * Size:	000034
+/**
+ * @note Address: 0x8028BBC4
+ * @note Size: 0x34
  */
 void Obj::startSleepEffect() { mEfxHanacho->create(nullptr); }
 
-/*
- * --INFO--
- * Address:	8028BBF8
- * Size:	000030
+/**
+ * @note Address: 0x8028BBF8
+ * @note Size: 0x30
  */
 void Obj::finishSleepEffect() { mEfxHanacho->fade(); }
 
-/*
- * --INFO--
- * Address:	8028BC28
- * Size:	000118
+/**
+ * @note Address: 0x8028BC28
+ * @note Size: 0x118
  */
 void Obj::effectDrawOn()
 {
@@ -1008,10 +954,9 @@ void Obj::effectDrawOn()
 	mEfxHanacho->endDemoDrawOn();
 }
 
-/*
- * --INFO--
- * Address:	8028BD40
- * Size:	000118
+/**
+ * @note Address: 0x8028BD40
+ * @note Size: 0x118
  */
 void Obj::effectDrawOff()
 {
@@ -1028,34 +973,6 @@ void Obj::effectDrawOff()
 	mEfxWakeup->startDemoDrawOff();
 	mEfxHanacho->startDemoDrawOff();
 }
-
-/*
- * --INFO--
- * Address:	8028C494
- * Size:	000004
- */
-void Obj::inWaterCallback(WaterBox*) { }
-
-/*
- * --INFO--
- * Address:	8028C498
- * Size:	000004
- */
-void Obj::outWaterCallback() { }
-
-/*
- * --INFO--
- * Address:	8028C49C
- * Size:	000008
- */
-f32 Obj::getDamageCoeStoneState() { return 0.25f; }
-
-/*
- * --INFO--
- * Address:	8028C4A4
- * Size:	000008
- */
-EnemyTypeID::EEnemyTypeID Obj::getEnemyTypeID() { return EnemyTypeID::EnemyID_Queen; }
 
 } // namespace Queen
 } // namespace Game

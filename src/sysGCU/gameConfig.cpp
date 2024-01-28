@@ -1,6 +1,5 @@
 #include "string.h"
 #include "System.h"
-#include "types.h"
 #include "Dolphin/print.h"
 #include "Game/GameConfig.h"
 
@@ -12,21 +11,19 @@ namespace Game {
 
 GameConfig gGameConfig;
 
-/*
- * --INFO--
- * Address:	........
- * Size:	000078
+/**
+ * @note Address: N/A
+ * @note Size: 0x78
  */
 // void GameConfig::setConstSetting()
 // {
 // 	// UNUSED FUNCTION
 // }
 
-/*
+/**
  * __ct__Q24Game10GameConfigFv
- * --INFO--
- * Address:	80432170
- * Size:	000130
+ * @note Address: 0x80432170
+ * @note Size: 0x130
  */
 GameConfig::GameConfig()
     : mParms()
@@ -101,19 +98,17 @@ GameConfig::GameConfig()
 	mParms.mVsFifo.mData               = 0;
 }
 
-/*
- * --INFO--
- * Address:	804322A0
- * Size:	000070
+/**
+ * @note Address: 0x804322A0
+ * @note Size: 0x70
  */
 // WEAK - in header.
 // GameConfig::Parms::~Parms() { }
 
-/*
+/**
  * __ct__Q34Game10GameConfig5ParmsFv
- * --INFO--
- * Address:	80432310
- * Size:	000460
+ * @note Address: 0x80432310
+ * @note Size: 0x460
  */
 // WEAK - in header.
 // GameConfig::Parms::Parms()
@@ -159,64 +154,28 @@ GameConfig::GameConfig()
 // {
 // }
 
-/*
- * --INFO--
- * Address:	80432770
- * Size:	000128
+/**
+ * @note Address: 0x80432770
+ * @note Size: 0x128
  */
 bool GameConfig::load(char*)
 {
 	if (strcmp(gGameConfig.mParms.mLanguage.mData, "eng") == 0) {
-		sys->mRegion = System::LANG_ENGLISH;
+		sys->mRegion = System::LANG_English;
 	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "fra") == 0) {
-		sys->mRegion = System::LANG_FRENCH;
+		sys->mRegion = System::LANG_French;
 	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "ger") == 0) {
-		sys->mRegion = System::LANG_GERMAN;
+		sys->mRegion = System::LANG_German;
 	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "hol") == 0) {
-		sys->mRegion = System::LANG_ENGLISH;
+		sys->mRegion = System::LANG_English;
 	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "ita") == 0) {
-		sys->mRegion = System::LANG_ITALIAN;
+		sys->mRegion = System::LANG_Italian;
 	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "jpn") == 0) {
-		sys->mRegion = System::LANG_JAPANESE;
+		sys->mRegion = System::LANG_Japanese;
 	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "spa") == 0) {
-		sys->mRegion = System::LANG_SPANISH;
+		sys->mRegion = System::LANG_Spanish;
 	}
 	return false;
 }
-
-// /*
-//  * sinit
-//  * --INFO--
-//  * Address:	80432898
-//  * Size:	00003C
-//  */
-// void __sinit_gameConfig_cpp()
-// {
-// 	/*
-// 	stwu     r1, -0x10(r1)
-// 	mflr     r0
-// 	lis      r3, gGameConfig__4Game@ha
-// 	stw      r0, 0x14(r1)
-// 	addi     r3, r3, gGameConfig__4Game@l
-// 	bl       __ct__Q24Game10GameConfigFv
-// 	lis      r4, __dt__Q24Game10GameConfigFv@ha
-// 	lis      r5, lbl_804F7C38@ha
-// 	addi     r4, r4, __dt__Q24Game10GameConfigFv@l
-// 	addi     r5, r5, lbl_804F7C38@l
-// 	bl       __register_global_object
-// 	lwz      r0, 0x14(r1)
-// 	mtlr     r0
-// 	addi     r1, r1, 0x10
-// 	blr
-// 	*/
-// }
-
-/*
- * __dt__Q24Game10GameConfigFv
- * --INFO--
- * Address:	804328D4
- * Size:	000074
- */
-// GameConfig::~GameConfig() {}
 
 } // namespace Game

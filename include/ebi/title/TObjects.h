@@ -16,10 +16,17 @@ struct J3DMtxCalcAnmBase;
 
 namespace ebi {
 namespace title {
+enum CreatureType {
+	TITLECREATURE_NULL   = -1,
+	TITLECREATURE_Pikmin = 0,
+	TITLECREATURE_Kogane = 5,
+	TITLECREATURE_Chappy = 6,
+};
+
 struct TObjBase {
 	inline TObjBase()
 	{
-		mPos      = Vector2f(0.0f);
+		mPosition = Vector2f(0.0f);
 		mAngle    = Vector2f(0.0f, -1.0f);
 		mParms[0] = 0.0f;
 		mParms[1] = 1.0f;
@@ -29,8 +36,8 @@ struct TObjBase {
 		mModel    = nullptr;
 	}
 
-	virtual u32 getCreatureType() { return -1; } // _08 (weak)
-	virtual bool isCalc() { return true; }       // _0C (weak)
+	virtual u32 getCreatureType() { return TITLECREATURE_NULL; } // _08 (weak)
+	virtual bool isCalc() { return true; }                       // _0C (weak)
 
 	void calcModelBaseMtx_();
 	void pushOut(TObjBase*);
@@ -38,10 +45,10 @@ struct TObjBase {
 	void pushOut_(Vector2f&);
 
 	// _00 = VTBL
-	Vector2f mPos;    // _04
-	Vector2f mAngle;  // _0C
-	f32 mParms[5];    // _14
-	J3DModel* mModel; // _28
+	Vector2f mPosition; // _04
+	Vector2f mAngle;    // _0C
+	f32 mParms[5];      // _14, 0=?, 1=scale, 2=collRadius, 3=?, 4=?
+	J3DModel* mModel;   // _28
 };
 
 struct TBGEnemyBase : public TObjBase {
@@ -103,6 +110,20 @@ struct TMapBase : public TObjBase {
 		u32 count        = 0.0f / sys->mDeltaTime;
 		mWindTimer       = count;
 		mWindTimerMax    = count;
+	}
+
+	f32 determineAnimRate(f32 calc)
+	{
+		if (calc <= 0.2f) {
+			return calc / 0.2f;
+		}
+
+		if (calc <= 0.8f) {
+			return 1.0f;
+		}
+
+		f32 factor = -5.0000005f;
+		return factor * calc + -(factor);
 	}
 
 	void setArchive(JKRArchive*);
