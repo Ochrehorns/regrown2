@@ -28,10 +28,10 @@ struct JKRDvdRipper {
 	};
 
 	static void* loadToMainRAM(const char*, u8*, JKRExpandSwitch, u32, JKRHeap*, EAllocDirection, u32, int*, u32*);
-	static void* loadToMainRAM(long, u8*, JKRExpandSwitch, u32, JKRHeap*, EAllocDirection, u32, int*, u32*);
-	static void* loadToMainRAM(JKRDvdFile*, unsigned char*, JKRExpandSwitch, u32, JKRHeap*, EAllocDirection, u32, int*, u32*);
+	static void* loadToMainRAM(s32, u8*, JKRExpandSwitch, u32, JKRHeap*, EAllocDirection, u32, int*, u32*);
+	static void* loadToMainRAM(JKRDvdFile*, u8*, JKRExpandSwitch, u32, JKRHeap*, EAllocDirection, u32, int*, u32*);
 	static void* loadToMainRAMAsync(const char*, u8*, JKRExpandSwitch, u32, JKRHeap*, u32*);
-	static void* loadToMainRAMAsync(long, u8*, JKRExpandSwitch, u32, JKRHeap*, u32*);
+	static void* loadToMainRAMAsync(s32, u8*, JKRExpandSwitch, u32, JKRHeap*, u32*);
 
 	static void syncAll(int);
 	static void countLeftSync();
@@ -52,5 +52,17 @@ inline void* JKRLoadToMainRAM(char* filename)
 }
 
 int JKRDecompressFromDVD(JKRDvdFile*, void*, u32, u32, u32, u32, u32*);
+
+inline void* JKRDvdToMainRam(s32 entryNum, u8* dst, JKRExpandSwitch expandSwitch, u32 fileSize, JKRHeap* heap,
+                             JKRDvdRipper::EAllocDirection allocDirection, u32 startOffset, int* pCompression, u32* pSize)
+{
+	return JKRDvdRipper::loadToMainRAM(entryNum, dst, expandSwitch, fileSize, heap, allocDirection, startOffset, pCompression, pSize);
+}
+
+inline void* JKRDvdToMainRam(char* path, u8* dst, JKRExpandSwitch expandSwitch, u32 fileSize, JKRHeap* heap,
+                             JKRDvdRipper::EAllocDirection allocDirection, u32 startOffset, int* pCompression, u32* pSize)
+{
+	return JKRDvdRipper::loadToMainRAM(path, dst, expandSwitch, fileSize, heap, allocDirection, startOffset, pCompression, pSize);
+}
 
 #endif

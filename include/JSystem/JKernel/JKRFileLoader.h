@@ -6,12 +6,13 @@
 
 struct JKRArchive;
 struct JKRFileFinder;
+struct ResTIMG;
 struct JKRFileLoader : public JKRDisposer {
 	JKRFileLoader();
 
 	virtual ~JKRFileLoader();                                                                          // _08
 	virtual void unmount();                                                                            // _0C
-	virtual bool becomeCurrent(const char*)                                                       = 0; // _10
+	virtual bool becomeCurrent(const char* path)                                                  = 0; // _10
 	virtual void* getResource(const char* path)                                                   = 0; // _14
 	virtual void* getResource(u32 type, const char* name)                                         = 0; // _18
 	virtual size_t readResource(void* resourceBuffer, u32 bufferSize, const char* path)           = 0; // _1C
@@ -19,17 +20,18 @@ struct JKRFileLoader : public JKRDisposer {
 	virtual void removeResourceAll()                                                              = 0; // _24
 	virtual bool removeResource(void*)                                                            = 0; // _28
 	virtual bool detachResource(void*)                                                            = 0; // _2C
-	virtual long getResSize(const void*) const                                                    = 0; // _30
+	virtual s32 getResSize(const void*) const                                                     = 0; // _30
 	virtual u32 countFile(const char*) const                                                      = 0; // _34
 	virtual JKRFileFinder* getFirstFile(const char*) const                                        = 0; // _38
 
 	static void* getGlbResource(char const*);
 	static void* getGlbResource(char const*, JKRFileLoader*);
 	static JKRFileLoader* findVolume(char const**);
-	static const char* fetchVolumeName(char*, long, char const*);
+	static const char* fetchVolumeName(char*, s32, char const*);
 
 	bool isMounted() const { return mIsMounted; }
 	u32 getVolumeType() const { return mMagicWord; }
+	static JSUList<JKRFileLoader>& getVolumeList() { return sVolumeList; }
 
 	static JKRFileLoader* sCurrentVolume;
 	static JSUList<JKRFileLoader> sVolumeList;
@@ -37,10 +39,15 @@ struct JKRFileLoader : public JKRDisposer {
 	// _00     = VTBL
 	// _00-_18 = JKRDisposer
 	JSULink<JKRFileLoader> mFileLoaderLink; // _18
-	char* mVolumeName;                      // _28
+	const char* mVolumeName;                // _28
 	u32 mMagicWord;                         // _2C
 	bool mIsMounted;                        // _30
 	u32 mMountCount;                        // _34
 };
+
+// is the built-in ResTIMG cast right? either way, it makes CarryInfoMgr::loadResource() match
+inline void* JKRGetResource(char const* name, JKRFileLoader* file) { return JKRFileLoader::getGlbResource(name, file); }
+inline ResTIMG* JKRGetImageResource(char const* name) { return (ResTIMG*)JKRFileLoader::getGlbResource(name); }
+inline ResTIMG* JKRGetImageResource(char const* name, JKRFileLoader* arc) { return (ResTIMG*)JKRFileLoader::getGlbResource(name, arc); }
 
 #endif
