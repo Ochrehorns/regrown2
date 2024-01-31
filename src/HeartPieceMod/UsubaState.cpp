@@ -62,8 +62,6 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->startMotion(USUBAANIM_Dead, nullptr);
 
 	usuba->endElec();
-
-	
 }
 
 /*
@@ -183,9 +181,6 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 
 	mIsRising = false;
 
-
-	
-
 	// Vector3f position = usuba->getPosition();
 	// cameraMgr->startVibration(6, position, 2);
 	// rumbleMgr->startRumble(15, position, 2);
@@ -212,11 +207,11 @@ void StateAppear::exec(EnemyBase* enemy)
 			                             CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue,
 			                             FLICK_BACKWARD_ANGLE, nullptr);
 			EnemyFunc::flickNearbyNavi(enemy, CG_PARMS(enemy)->mGeneral.mShakeRange.mValue,
-								CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue,
-								FLICK_BACKWARD_ANGLE, nullptr);
+			                           CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue,
+			                           FLICK_BACKWARD_ANGLE, nullptr);
 			EnemyFunc::flickStickPikmin(enemy, CG_PARMS(enemy)->mGeneral.mShakeChance.mValue,
-								CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue,
-								FLICK_BACKWARD_ANGLE, nullptr);
+			                            CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue,
+			                            FLICK_BACKWARD_ANGLE, nullptr);
 			usuba->disableEvent(0, EB_NoInterrupt);
 			mIsRising = true;
 			break;
@@ -574,16 +569,15 @@ void StateWait::exec(EnemyBase* enemy)
 
 	if (usuba->mCurAnim->mIsPlaying && usuba->mCurAnim->mType == KEYEVENT_END) {
 		if (target) {
-			usuba->mTargetCreature = target;
+			usuba->mTargetCreature  = target;
 			Vector3f targetPosition = target->getPosition();
-			f32 theSqrDistance = sqrDistanceXZ(targetPosition, usuba->mPosition);
+			f32 theSqrDistance      = sqrDistanceXZ(targetPosition, usuba->mPosition);
 			bool isTooCloseForSwoop = theSqrDistance < SQUARE(100.0f);
-			bool isTooFarForFire = theSqrDistance > SQUARE(300.0f);
+			bool isTooFarForFire    = theSqrDistance > SQUARE(300.0f);
 
 			if (!isTooFarForFire && (isTooCloseForSwoop || randFloat() <= CG_PROPERPARMS(usuba).mFireBreathChance())) {
 				transit(usuba, USUBA_AttackBreath, nullptr);
-			}
-			else {
+			} else {
 				transit(usuba, USUBA_AttackDive, nullptr);
 			}
 			return;
@@ -712,17 +706,14 @@ void StateAttackBreath::exec(EnemyBase* enemy)
 		if (sqrDistanceXZ(targetPos, usuba->mPosition) < SQUARE(100.0f)) {
 
 			Vector3f distanceVec = targetPos - usuba->mPosition;
-			distanceVec.y = 0.0f;
-			f32 power = _normaliseXZ(distanceVec);
+			distanceVec.y        = 0.0f;
+			f32 power            = _normaliseXZ(distanceVec);
 
 			enemy->mTargetVelocity = distanceVec * (-CG_PARMS(usuba)->mGeneral.mMoveSpeed());
-		}
-		else {
+		} else {
 			enemy->mTargetVelocity = Vector3f(0.0f);
-			
 		}
-	}
-	else {
+	} else {
 		enemy->mTargetVelocity = Vector3f(0.0f);
 	}
 
@@ -823,7 +814,7 @@ void StateAttackDive::exec(EnemyBase* enemy)
 			vel.y = vertSpeed;
 			usuba->setVelocity(vel);
 			usuba->changeFaceDir2(target);
-		
+
 		} else if (frame < 55.0f) { // after hit ground
 			usuba->mIsInDive = true;
 			usuba->catchTarget();
@@ -832,8 +823,7 @@ void StateAttackDive::exec(EnemyBase* enemy)
 			usuba->setHeightVelocity();
 			f32 decayRate          = CG_PROPERPARMS(usuba).mFp32();
 			usuba->mTargetVelocity = usuba->mTargetVelocity * decayRate;
-		}
-		else {
+		} else {
 			usuba->mTargetVelocity = 0.0f;
 		}
 	} else {
@@ -841,8 +831,7 @@ void StateAttackDive::exec(EnemyBase* enemy)
 	}
 
 	if (usuba->mCurAnim->mIsPlaying) {
-		switch (usuba->mCurAnim->mType)
-		{
+		switch (usuba->mCurAnim->mType) {
 		case KEYEVENT_2:
 			// obtuse sarai math to make it actually go towards the piki
 			usuba->getJAIObject()->startSound(PSSE_EN_SARAI_BUZZ, 0);
@@ -864,7 +853,7 @@ void StateAttackDive::exec(EnemyBase* enemy)
 		case KEYEVENT_3:
 			usuba->disableEvent(0, EB_NoInterrupt);
 			break;
-		case KEYEVENT_END: 
+		case KEYEVENT_END:
 			transit(usuba, USUBA_Move, nullptr);
 			break;
 		}

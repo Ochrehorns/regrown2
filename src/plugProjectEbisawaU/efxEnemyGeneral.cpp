@@ -206,7 +206,6 @@ bool TEnemyPiyo::create(Arg* arg)
 		scale = 2.45f;
 		break;
 
-
 	case Game::EnemyTypeID::EnemyID_Kogane:
 	case Game::EnemyTypeID::EnemyID_Wealthy:
 	case Game::EnemyTypeID::EnemyID_Fart:

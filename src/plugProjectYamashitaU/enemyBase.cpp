@@ -293,7 +293,6 @@ bool BirthTypeDropAutoState::isFinishableWaitingBirthTypeDrop(EnemyBase*)
 	return false;
 }
 
-
 /**
  * Checks if the BirthTypeDropTreasureState is finishable for waiting birth type drop.
  *

@@ -80,7 +80,6 @@
 #include "Game/Entities/Hydrant.h"
 #include "Game/Entities/SmokyFrog.h"
 
-
 static const char matchText[] = "enemyBase";
 
 namespace Game {
@@ -663,7 +662,7 @@ void GeneralEnemyMgr::allocateEnemys(u8 type, int heapSize)
 
 	for (int i = 0; i < gEnemyInfoNum; i++) {
 		int enemyNum = getEnemyNum(gEnemyInfo[i].mId, true);
-		OSReport("%i test(id)%i %x\n",enemyNum, gEnemyInfo[i].mId, mHeap->getFreeSize());
+		OSReport("%i test(id)%i %x\n", enemyNum, gEnemyInfo[i].mId, mHeap->getFreeSize());
 		if ((gEnemyInfo[i].mFlags & 0x1) && (enemyNum > 0)) {
 			createEnemyMgr(type, gEnemyInfo[i].mId, enemyNum);
 		}
@@ -749,19 +748,19 @@ void GeneralEnemyMgr::addEnemyNum(int enemyID, u8 max, GenObjectEnemy* genObj)
 /*
 u8 GeneralEnemyMgr::getEnemyNum(int enemyID, bool doFullCount)
 {
-	u8 count = 0;
+    u8 count = 0;
 
-	if (doFullCount) {
-		if (mEnemyNumInfo.mEnemyNumList) {
-			// ISSUE IN HERE
-			count = getEnemyCount(enemyID, getEnemyMgrID(enemyID));
-		}
-	} else {
-		// ISSUE IN HERE
-		count = mEnemyNumInfo.getEnemyNumData(enemyID);
-	}
+    if (doFullCount) {
+        if (mEnemyNumInfo.mEnemyNumList) {
+            // ISSUE IN HERE
+            count = getEnemyCount(enemyID, getEnemyMgrID(enemyID));
+        }
+    } else {
+        // ISSUE IN HERE
+        count = mEnemyNumInfo.getEnemyNumData(enemyID);
+    }
 
-	return count;
+    return count;
 }
 */
 

@@ -207,7 +207,8 @@ void Obj::collisionCallback(CollEvent& event)
 		collCreature->stimulate(denki);
 
 		if (mIsInDive) {
-			InteractFlick flick (this, C_PARMS->mGeneral.mShakeKnockback.mValue, C_PARMS->mGeneral.mShakeDamage, roundAng(getFaceDir() - PI));
+			InteractFlick flick(this, C_PARMS->mGeneral.mShakeKnockback.mValue, C_PARMS->mGeneral.mShakeDamage,
+			                    roundAng(getFaceDir() - PI));
 			collCreature->stimulate(flick);
 		}
 	}
@@ -419,12 +420,13 @@ FakePiki* Obj::getAttackableTarget()
  * Address:	80273D5C
  * Size:	000024
  */
-int Obj::catchTarget() {
+int Obj::catchTarget()
+{
 	// EnemyFunc::flickNearbyPikmin(this, C_PARMS->mGeneral.mShakeRange.mValue,
 	// 	C_PARMS->mGeneral.mShakeKnockback.mValue, C_PARMS->mGeneral.mShakeDamage.mValue,
 	// 	FLICK_BACKWARD_ANGLE, nullptr
 	// );
-	
+
 	return 0;
 }
 
@@ -459,7 +461,7 @@ bool Obj::attackTargets()
 			f32 lineprogress;
 
 			if (DroughtMath::getSqrDistanceToLine(creaturePos, lineStart, lineEnd, lineprogress) < SQUARE(50.0f) && lineprogress > 0.2f) {
-				InteractFire fire (this, C_PARMS->mGeneral.mAttackDamage());
+				InteractFire fire(this, C_PARMS->mGeneral.mAttackDamage());
 				creature->stimulate(fire);
 			}
 		}
@@ -481,7 +483,8 @@ bool Obj::attackTargets()
 
 void Obj::createChargeSE() { getJAIObject()->startSound(PSSE_EN_TANK_BREATH, 0); }
 
-void Obj::createDischargeSE() {
+void Obj::createDischargeSE()
+{
 	getJAIObject()->startSound(PSSE_EN_BIGTAKARA_FIRE_ROOT, 0);
 	getJAIObject()->startSound(PSSE_EN_BIGTAKARA_FIRE_BODY, 0);
 	getJAIObject()->startSound(PSSE_EN_BIGTAKARA_FIRE_TAIL, 0);
@@ -545,7 +548,7 @@ void Obj::createGroundFire()
 
 void Obj::startFireBreath()
 {
-	mIsBreathingFire = true;
+	mIsBreathingFire   = true;
 	mFireProgressTimer = 0.2f;
 	createFireEffect();
 	createDischargeSE();
@@ -553,7 +556,7 @@ void Obj::startFireBreath()
 
 void Obj::endFireBreath()
 {
-	mIsBreathingFire = false;
+	mIsBreathingFire   = false;
 	mFireProgressTimer = 0.2f;
 	fadeFireEffect();
 }

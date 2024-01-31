@@ -18,7 +18,7 @@ bool THallow::create(Arg* arg)
 		for (int i = 0; i < ARRAY_SIZE(mEmitters); i++) {
 			mEmitters[i]->mLocalScl.set(emitterScale, 1.0f, emitterScale);
 			mEmitters[i]->mGlobalPScl = paritcleScale;
-			mEmitters[i]->mLifeTime = (int)(scaleArg->mTime * 30);
+			mEmitters[i]->mLifeTime   = (int)(scaleArg->mTime * 30);
 		}
 		return true;
 	}
