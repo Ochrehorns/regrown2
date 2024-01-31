@@ -84,11 +84,13 @@ struct Obj : public EnemyBase {
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
-	FSM* mFsm;           // _2BC
-	f32 mStateTimer;     // _2C0
-	Vector3f mTargetPos; // _2C4
+	FSM* mFsm;                    // _2BC
+	f32 mStateTimer;              // _2C0
+	Vector3f mTargetPos;          // _2C4
 
-private:
+	bool mIsInDive;
+	
+	private:
 	void createFireEffect();
 	void createFireHitGroundEffect();
 
@@ -98,6 +100,11 @@ private:
 	void startFirefly();
 	void fadeFirefly();
 
+	bool mIsBreathingFire;        // _2D0
+	bool mIsFirePoolActive;
+	bool mIsElecBody;
+	
+
 	Vector3f mFireGroundHitPos;
 	f32 mGroundedFireTimer;
 
@@ -105,9 +112,11 @@ private:
 	efx::TUsubaFirefly* mFireflyEfx;
 	efx::TUsubaFireGround* mFireGroundEfx;
 
-	bool mIsBreathingFire; // _2D0
-	bool mIsFirePoolActive;
-	bool mIsElecBody;
+	f32 mFireProgressTimer;
+
+	
+
+	
 };
 
 struct Mgr : public EnemyMgrBase {
@@ -145,8 +154,9 @@ struct Parms : public EnemyParmsBase {
 		    , mFp31(this, 'fp31', "ハント下降係数", 0.3f, 0.0f, 1.0f)                        // 'hunt descent factor'
 		    , mFp32(this, 'fp32', "ハント後減衰率", 0.95f, 0.0f, 1.0f)                       // 'post-hunt decay rate'
 		    , mFp41(this, 'fp41', "Fall Meck 速度", 200.0f, 0.0f, 1000.0f)                   // 'Fall Meck speed'
-		    , mFirePoolLingerTime(this, 'fp0A', "Fire Pool Lingering TIme", 5.0f, 0.0f, 30.0f)
-		    , mFirePoolSpawnDistance(this, 'fp0B', "Fire Pool Spawn Distance", 200.0f, 0.0f, 1000.0f)
+			, mFirePoolLingerTime(this, 'fp0A', "Fire Pool Lingering TIme", 5.0f, 0.0f, 30.0f)
+			, mFirePoolSpawnDistance(this, 'fp0B', "Fire Pool Spawn Distance", 200.0f, 0.0f, 1000.0f)
+			, mFireBreathChance(this, 'fp0C', "Fire Breath Chance", 0.0f, 0.0f, 1.0f)
 		{
 		}
 
@@ -165,7 +175,8 @@ struct Parms : public EnemyParmsBase {
 		Parm<f32> mFp32;                // _9E4, fp32
 		Parm<f32> mFp41;                // _A0C, fp41
 		Parm<f32> mFirePoolLingerTime;
-		Parm<f32> mFirePoolSpawnDistance;
+		Parm<f32> mFirePoolSpawnDistance; 
+		Parm<f32> mFireBreathChance;
 	};
 
 	Parms() { }
@@ -293,6 +304,8 @@ struct StateAttackBreath : public State {
 	virtual void init(EnemyBase*, StateArg*); // _08
 	virtual void exec(EnemyBase*);            // _0C
 	virtual void cleanup(EnemyBase*);         // _10
+
+	bool mIsFireDone;
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
