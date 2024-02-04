@@ -1045,7 +1045,7 @@ void GameState::update_GameChallenge(VsGameSection* section)
 	disp.mPokos            = section->mPokoCount;
 	disp.mFloorExtendTimer = mFloorExtendTimer;
 	disp.mTimeLimit        = section->mTimeLimit;
-	disp.mDeadPiki         = section->mDeadPikiCount;
+	disp.mDeadPiki         = Radar::Mgr::getNumOtakaraItems();
 
 	Navi* olimar                    = naviMgr->getAt(0);
 	disp.mOlimarData.mFollowPikis   = GameStat::formationPikis.mCounter[0];
