@@ -1,9 +1,9 @@
 GC_FILES:=\
 	$(BUILD_DIR)/asm/sysGCU/system.o\
 	$(BUILD_DIR)/asm/sysGCU/section.o\
-	$(BUILD_DIR)/src/sysGCU/gameflow.o\
+	$(BUILD_DIR)/asm/sysGCU/gameflow.o\
 	$(BUILD_DIR)/src/sysGCU/menuSection.o\
-	$(BUILD_DIR)/src/sysGCU/dvdThread.o\
+	$(BUILD_DIR)/asm/sysGCU/dvdThread.o\
 	$(BUILD_DIR)/src/sysGCU/appThread.o\
 	$(BUILD_DIR)/src/sysGCU/controller.o\
 	$(BUILD_DIR)/asm/sysGCU/graphics.o\
@@ -14,8 +14,8 @@ GC_FILES:=\
 	$(BUILD_DIR)/src/sysGCU/sysTimers.o\
 	$(BUILD_DIR)/src/sysGCU/modelMgr.o\
 	$(BUILD_DIR)/asm/sysGCU/heapStatus.o\
-	$(BUILD_DIR)/src/sysGCU/light.o\
-	$(BUILD_DIR)/src/sysGCU/wipe.o\
+	$(BUILD_DIR)/asm/sysGCU/light.o\
+	$(BUILD_DIR)/asm/sysGCU/wipe.o\
 	$(BUILD_DIR)/asm/sysGCU/moviePlayer.o\
 	$(BUILD_DIR)/asm/sysGCU/JSTObjectActor.o\
 	$(BUILD_DIR)/asm/sysGCU/JSTObjectCamera.o\
@@ -29,16 +29,16 @@ GC_FILES:=\
 	$(BUILD_DIR)/asm/sysGCU/resourceMgr.o\
 	$(BUILD_DIR)/src/sysGCU/resourceMgr2D.o\
 	$(BUILD_DIR)/asm/sysGCU/sysMaterialAnim.o\
-	$(BUILD_DIR)/src/sysGCU/P2DScreen.o\
+	$(BUILD_DIR)/asm/sysGCU/P2DScreen.o\
 	$(BUILD_DIR)/asm/sysGCU/movieMessage.o\
-	$(BUILD_DIR)/src/sysGCU/moviePlayerPauseAndDraw.o\
+	$(BUILD_DIR)/asm/sysGCU/moviePlayerPauseAndDraw.o\
 	$(BUILD_DIR)/src/sysGCU/JSTObjectSpecialActor.o\
 	$(BUILD_DIR)/src/sysGCU/messageSequence.o\
 	$(BUILD_DIR)/asm/sysGCU/messageMgr.o\
-	$(BUILD_DIR)/src/sysGCU/messageObj.o\
+	$(BUILD_DIR)/asm/sysGCU/messageObj.o\
 	$(BUILD_DIR)/asm/sysGCU/messageRendering.o\
 	$(BUILD_DIR)/src/sysGCU/message.o\
-	$(BUILD_DIR)/src/sysGCU/modelEffect.o\
+	$(BUILD_DIR)/asm/sysGCU/modelEffect.o\
 	$(BUILD_DIR)/src/sysGCU/messageReference.o\
 	$(BUILD_DIR)/src/sysGCU/simpleMessage.o\
 	$(BUILD_DIR)/src/sysGCU/sysShapeAnimation.o\
@@ -62,10 +62,10 @@ GC_FILES:=\
 	$(BUILD_DIR)/asm/sysGCU/captionMessage.o\
 	$(BUILD_DIR)/src/sysGCU/screenScene.o\
 	$(BUILD_DIR)/asm/sysGCU/screenMgr.o\
-	$(BUILD_DIR)/src/sysGCU/screenObj.o\
+	$(BUILD_DIR)/asm/sysGCU/screenObj.o\
 	$(BUILD_DIR)/asm/sysGCU/JSTObjectParticleActor.o\
 	$(BUILD_DIR)/src/sysGCU/moviePlayerAudio.o\
-	$(BUILD_DIR)/src/sysGCU/illustratedBookMessage.o\
+	$(BUILD_DIR)/asm/sysGCU/illustratedBookMessage.o\
 	$(BUILD_DIR)/src/sysGCU/sysDrawBuffer.o\
 	$(BUILD_DIR)/src/sysGCU/dvdErrorMessage.o\
 	$(BUILD_DIR)/src/sysGCU/pikmin2AramMgr.o\

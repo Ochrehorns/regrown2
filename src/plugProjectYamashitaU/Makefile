@@ -3,7 +3,8 @@ YAMASHITA_FILES:=\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/pelplant.o\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/pelplantState.o\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/enemyInteractBattle.o\
-	$(BUILD_DIR)/asm/plugProjectYamashitaU/generalEnemyMgr.o\
+	$(BUILD_DIR)/src/plugProjectYamashitaU/generalEnemyMgr.o\
+	$(BUILD_DIR)/asm/plugProjectYamashitaU/generalEnemyMgrASM.o\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/kochappyAnimator.o\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/kochappy.o\
 	$(BUILD_DIR)/asm/plugProjectYamashitaU/kochappyState.o\
@@ -48,7 +49,8 @@ YAMASHITA_FILES:=\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/enemyEffectNode.o\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/enemyMgrBase.o\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/enemyFSM.o\
-	$(BUILD_DIR)/asm/plugProjectYamashitaU/singleGS_ZukanParms.o\
+	$(BUILD_DIR)/src/plugProjectYamashitaU/singleGS_ZukanParms.o\
+	$(BUILD_DIR)/asm/plugProjectYamashitaU/singleGS_ZukanParms_a.o\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/treasureLightMgr.o\
 	$(BUILD_DIR)/src/plugProjectYamashitaU/effectAnimator.o\
 
