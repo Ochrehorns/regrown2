@@ -24,10 +24,7 @@ struct Container : public GenericContainer {
 	// virtual ~Container() { } // _08 (weak)
 
 	// Wrapper for ::get().
-	virtual void* getObject(void* index) // _10 (weak)
-	{
-		return get(index);
-	}
+	virtual void* getObject(void* index); // _10 (weak)
 
 	virtual void* getEnd()       = 0; // _1C
 	virtual void* getStart()     = 0; // _18
@@ -48,6 +45,12 @@ struct Container : public GenericContainer {
 
 	u8 _18; // _18
 };
+
+template <typename T>
+void* Container<T>::getObject(void* index)
+{
+	return get(index);
+}
 
 template <typename T>
 struct ArrayContainer : public Container<T> {
@@ -128,13 +131,11 @@ struct ArrayContainer : public Container<T> {
 
 	virtual void addOne(T& object) // _40 (weak)
 	{
-		int index = mCount;
-		if (index >= mLimit) {
+		if (mCount >= mLimit) {
 			return;
 		}
-		T& arrayObject = mObjects[index];
-		mCount++;
-		arrayObject = object;
+
+		mObjects[mCount++] = object;
 	}
 
 	virtual void setArray(T* objects, int count) // _44 (weak)
@@ -144,6 +145,8 @@ struct ArrayContainer : public Container<T> {
 		mCount   = count;
 	}
 	/////////////////// END VTABLE
+
+	int getNum() { return mCount; }
 
 	// The number of used objects.
 	int mCount; // _1C

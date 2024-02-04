@@ -18,8 +18,8 @@ struct ObjectMgr : public Container<T>, GenericObjectMgr {
 	{
 		Iterator<T> iter(this);
 		iter.first();
-		while (iter.mIndex != iter.mContainer->getEnd()) {
-			iter.mContainer->get(iter.mIndex)->doAnimation();
+		while (!iter.isDone()) {
+			(*iter)->doAnimation();
 			iter.next();
 		}
 	}
@@ -27,8 +27,8 @@ struct ObjectMgr : public Container<T>, GenericObjectMgr {
 	{
 		Iterator<T> iter(this);
 		iter.first();
-		while (iter.mIndex != iter.mContainer->getEnd()) {
-			iter.mContainer->get(iter.mIndex)->doEntry();
+		while (!iter.isDone()) {
+			(*iter)->doEntry();
 			iter.next();
 		}
 	}
@@ -36,8 +36,8 @@ struct ObjectMgr : public Container<T>, GenericObjectMgr {
 	{
 		Iterator<T> iter(this);
 		iter.first();
-		while (iter.mIndex != iter.mContainer->getEnd()) {
-			iter.mContainer->get(iter.mIndex)->doSetView(viewportNumber);
+		while (!iter.isDone()) {
+			(*iter)->doSetView(viewportNumber);
 			iter.next();
 		}
 	}
@@ -45,8 +45,8 @@ struct ObjectMgr : public Container<T>, GenericObjectMgr {
 	{
 		Iterator<T> iter(this);
 		iter.first();
-		while (iter.mIndex != iter.mContainer->getEnd()) {
-			iter.mContainer->get(iter.mIndex)->doViewCalc();
+		while (!iter.isDone()) {
+			(*iter)->doViewCalc();
 			iter.next();
 		}
 	}
@@ -54,8 +54,8 @@ struct ObjectMgr : public Container<T>, GenericObjectMgr {
 	{
 		Iterator<T> iter(this);
 		iter.first();
-		while (iter.mIndex != iter.mContainer->getEnd()) {
-			iter.mContainer->get(iter.mIndex)->doSimulation(constraint);
+		while (!iter.isDone()) {
+			(*iter)->doSimulation(constraint);
 			iter.next();
 		}
 	}
@@ -63,8 +63,8 @@ struct ObjectMgr : public Container<T>, GenericObjectMgr {
 	{
 		Iterator<T> iter(this);
 		iter.first();
-		while (iter.mIndex != iter.mContainer->getEnd()) {
-			iter.mContainer->get(iter.mIndex)->doDirectDraw(graphics);
+		while (!iter.isDone()) {
+			(*iter)->doDirectDraw(graphics);
 			iter.next();
 		}
 	}
@@ -77,10 +77,14 @@ struct ObjectMgr : public Container<T>, GenericObjectMgr {
 
 template <typename T>
 struct TObjectNode : public CNode {
+	TObjectNode() { }
+	TObjectNode(T* obj) { mContents = obj; }
 	virtual ~TObjectNode() { } // _08 (weak)
 
 	TObjectNode<T>* getNext() { return static_cast<TObjectNode<T>*>(mNext); }
 
+	// _00     = VTBL
+	// _00-_18 = CNode
 	T* mContents; // _18
 };
 
@@ -110,6 +114,9 @@ struct NodeObjectMgr : public ObjectMgr<T> {
 		return nullptr;
 	}
 
+	// this has to be here for weak ordering in gamePlatMgr
+	void delNode(T* obj);
+
 	// second VTBL:
 	virtual void resetMgr() // _20
 	{
@@ -119,33 +126,21 @@ struct NodeObjectMgr : public ObjectMgr<T> {
 		mNode.mNext   = nullptr;
 	}
 
-	void delNode(T* contents);
-	// needs to not be inlined in ItemMgr::killAllExceptOnyonMgr();
-	/*
-	{
-	    // for (TObjectNode<T>* node = (TObjectNode<T>*)mNode.mChild; node != nullptr; node =
-	(TObjectNode<T>*)node->mNext) {
-	    // 	if (node->mContents == contents) {
-	    // 		node->del();
-	    // 		return;
-	    // 	}
-	    // }
-	    TObjectNode<T>* node = (TObjectNode<T>*)mNode.mChild;
-	    while (true) {
-	        if (node == nullptr) {
-	            return;
-	        }
-	        if (node->mContents == contents) {
-	            break;
-	        }
-	        node = (TObjectNode<T>*)node->mNext;
-	    }
-	    node->del();
-	    return;
-	}
-	*/
-
+	// _00     = VTBL
+	// _00-_20 = ObjectMgr
 	TObjectNode<T> mNode; // _20
 };
+
+template <typename T>
+void NodeObjectMgr<T>::delNode(T* obj)
+{
+	FOREACH_NODE(TObjectNode<T>, mNode.mChild, node)
+	{
+		if (node->mContents == obj) {
+			node->del();
+			return;
+		}
+	}
+}
 
 #endif

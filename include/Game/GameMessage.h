@@ -12,9 +12,9 @@ struct VsGameSection;
 struct Pellet;
 
 struct GameMessage {
-	virtual bool actCommon(BaseGameSection*);   // _08 (weak)
-	virtual bool actSingle(SingleGameSection*); // _0C (weak)
-	virtual bool actVs(VsGameSection*);         // _10 (weak)
+	virtual bool actCommon(BaseGameSection*) { return true; }   // _08 (weak)
+	virtual bool actSingle(SingleGameSection*) { return true; } // _0C (weak)
+	virtual bool actVs(VsGameSection*) { return true; }         // _10 (weak)
 
 	// _00 = VTBL
 };
@@ -44,11 +44,17 @@ struct GameMessagePelletDead : public GameMessage {
 };
 
 struct GameMessageVsAddEnemy : public GameMessage {
+	GameMessageVsAddEnemy(EnemyTypeID::EEnemyTypeID id, int count)
+	{
+		mEnemyID = id;
+		mCount   = count;
+	}
+
 	virtual bool actVs(VsGameSection*); // _10
 
 	// _00 = VTBL
-	EnemyTypeID::EEnemyTypeID _04; // _04 (enemy ID)
-	int _08;                       // _08 (spawn num)
+	EnemyTypeID::EEnemyTypeID mEnemyID; // _04 (enemy ID)
+	int mCount;                         // _08 (spawn num)
 };
 
 struct GameMessageVsBattleFinished : public GameMessage {
@@ -121,6 +127,7 @@ struct GameMessageVsRedOrSuckStart : public GameMessage {
 };
 
 struct GameMessageVsUseCard : public GameMessage {
+	GameMessageVsUseCard(int id) { _04 = id; }
 	virtual bool actVs(VsGameSection*); // _10
 
 	// _00 = VTBL

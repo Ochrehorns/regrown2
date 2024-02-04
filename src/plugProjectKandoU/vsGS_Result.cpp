@@ -89,7 +89,7 @@ void ResultState::prepareMorimuraInfo(VsGameSection* section)
 
 	if (isNormalEnd()) {
 		mResultInfo->setDisplayFlag(CHAL2D_SuccessEnd);
-		if (section->_205) {
+		if (section->mIsChallengePerfect) {
 			mResultInfo->setDisplayFlag(CHAL2D_PerfectEnd);
 		}
 	}
@@ -117,7 +117,7 @@ void ResultState::prepareMorimuraInfo(VsGameSection* section)
 			sys->getPlayCommonData()->challenge_setClear(stageIndex);
 		}
 
-		if (section->_205) {
+		if (section->mIsChallengePerfect) {
 			sys->getPlayCommonData()->challenge_setKunsho(stageIndex);
 		}
 	}

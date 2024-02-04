@@ -796,6 +796,12 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 		}
 
 	} else if (config->is("s09_holein")) {
+
+		// for regrown, ending a floor without all treasures collected will ruin perfect
+		if (Radar::Mgr::getNumOtakaraItems() != 0) {
+			section->mIsChallengePerfect = false;
+		}
+
 		PSMCancelToPauseOffMainBgm();
 		section->mCurrentFloor++;
 		LoadArg arg;
@@ -833,6 +839,12 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 		transit(section, VGS_Result, &arg);
 
 	} else if (config->is("s0C_cv_escape")) {
+
+		// for regrown, ending a floor without all treasures collected will ruin perfect
+		if (Radar::Mgr::getNumOtakaraItems() != 0) {
+			section->mIsChallengePerfect = false;
+		}
+
 		PSMCancelToPauseOffMainBgm();
 		ResultArg arg;
 		arg.mEndFlag.clear();
@@ -922,7 +934,7 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		og::Screen::DispMemberChallenge1P disp;
 
 		disp.mDataGame.mFloorNum = section->getCurrFloor();
-		disp.mDeadPikiCount      = section->mDeadPikiCount;
+		disp.mDeadPikiCount      = Radar::Mgr::getNumOtakaraItems(); // changed for regrown
 		disp.mPokoCount          = section->mPokoCount;
 		disp.mFloorExtendTimer   = mFloorExtendTimer;
 		disp.mTimeLimit          = section->mTimeLimit;

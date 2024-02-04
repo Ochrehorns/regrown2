@@ -59,10 +59,10 @@ void TitleState::init(VsGameSection* section, StateArg* arg)
 		section->clearHeap();
 	}
 
-	section->_205           = true;
-	section->mDeadPikiCount = false;
-	mHeap                   = nullptr;
-	mExpHeap                = nullptr;
+	section->mIsChallengePerfect = true;
+	section->mDeadPikiCount      = false;
+	mHeap                        = nullptr;
+	mExpHeap                     = nullptr;
 
 	mTitleStage = VSTITLE_PrepareInfo;
 	_2C         = 0;
