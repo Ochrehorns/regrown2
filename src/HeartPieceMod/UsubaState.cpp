@@ -60,8 +60,10 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	                            CG_PARMS(usuba)->mGeneral.mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
 	usuba->mFlickTimer = 0.0f;
 	usuba->startMotion(USUBAANIM_Dead, nullptr);
+	enemy->getJAIObject()->startSound(PSSE_EN_OTAKARA_DEAD, 0);
 
 	usuba->endElec();
+	usuba->fadeFirefly();
 }
 
 /*
@@ -82,14 +84,15 @@ void StateDead::exec(EnemyBase* enemy)
 			enemy->kill(nullptr);
 			return;
 		case KEYEVENT_2:
-			enemy->getJAIObject()->startSound(PSSE_EN_YOROI_DEAD, 0);
 			enemy->disableEvent(0, EB_Untargetable);
 			break;
 		case KEYEVENT_3:
 			enemy->enableEvent(0, EB_Untargetable);
-			OBJ(enemy)->createDownEffect();
-			enemy->getJAIObject()->startSound(PSSE_EN_FROG_LAND, 0);
-			rumbleMgr->startRumble(11, enemy->mPosition, 2);
+			if (enemy->mPosition.y - minY < 10.0f) {
+				OBJ(enemy)->createDownEffect();
+				enemy->getJAIObject()->startSound(PSSE_EN_FROG_LAND, 0);
+				rumbleMgr->startRumble(11, enemy->mPosition, 2);
+			}
 			break;
 		}
 	}
@@ -220,7 +223,7 @@ void StateAppear::exec(EnemyBase* enemy)
 			break;
 		case KEYEVENT_END:
 			if (usuba->mHealth <= 0.0f) {
-				transit(usuba, USUBA_Dead, nullptr);
+				transit(usuba, USUBA_Fall, nullptr);
 				return;
 			}
 
@@ -328,8 +331,6 @@ void StateGround::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->disableEvent(0, EB_Untargetable);
 	usuba->setEmotionExcitement();
 	usuba->startMotion(USUBAANIM_Ground, nullptr);
-
-	enemy->getJAIObject()->startSound(PSSE_EN_BOMBSARAI_STRUGGLE, 0);
 }
 
 /*
@@ -340,11 +341,16 @@ void StateGround::init(EnemyBase* enemy, StateArg* stateArg)
 void StateGround::exec(EnemyBase* enemy)
 {
 	Obj* usuba = OBJ(enemy);
-	if (usuba->mHealth <= 0.0f || usuba->mStateTimer > CG_PROPERPARMS(usuba).mGroundTime.mValue) {
+	if (usuba->mHealth <= 0.0f || usuba->mStateTimer > CG_PROPERPARMS(usuba).mGroundTime()) {
 		usuba->finishMotion();
 	}
 
 	usuba->mStateTimer += sys->mDeltaTime;
+
+	if (usuba->mFlickTimer >= 1.0f) {
+		transit(usuba, USUBA_Damage, nullptr);
+		return;
+	}
 
 	if (usuba->mCurAnim->mIsPlaying && usuba->mCurAnim->mType == KEYEVENT_END) {
 		if (usuba->mHealth <= 0.0f) {
@@ -370,11 +376,13 @@ void StateGround::cleanup(EnemyBase* enemy) { }
 void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* usuba             = OBJ(enemy);
-	usuba->mStateTimer     = 0.0f;
 	usuba->mTargetVelocity = Vector3f(0.0f);
+	usuba->mStateTimer = 0.0f;
 	usuba->disableEvent(0, EB_Untargetable);
 	usuba->setEmotionExcitement();
 	usuba->startMotion(USUBAANIM_Damage, nullptr);
+
+	enemy->getJAIObject()->startSound(PSSE_EN_BOMBSARAI_STRUGGLE, 0);
 	// usuba->flickStickTarget();
 }
 
@@ -386,7 +394,7 @@ void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 void StateDamage::exec(EnemyBase* enemy)
 {
 	Obj* usuba = OBJ(enemy);
-	if (usuba->mHealth <= 0.0f || usuba->mStateTimer > CG_PROPERPARMS(usuba).mGroundTime.mValue || usuba->getStickPikminNum() == 0) {
+	if (usuba->mHealth <= 0.0f || usuba->mStateTimer > CG_PROPERPARMS(usuba).mGroundTime() || usuba->getStickPikminNum() == 0) {
 		usuba->finishMotion();
 	}
 
@@ -569,17 +577,7 @@ void StateWait::exec(EnemyBase* enemy)
 
 	if (usuba->mCurAnim->mIsPlaying && usuba->mCurAnim->mType == KEYEVENT_END) {
 		if (target) {
-			usuba->mTargetCreature  = target;
-			Vector3f targetPosition = target->getPosition();
-			f32 theSqrDistance      = sqrDistanceXZ(targetPosition, usuba->mPosition);
-			bool isTooCloseForSwoop = theSqrDistance < SQUARE(100.0f);
-			bool isTooFarForFire    = theSqrDistance > SQUARE(300.0f);
-
-			if (!isTooFarForFire && (isTooCloseForSwoop || randFloat() <= CG_PROPERPARMS(usuba).mFireBreathChance())) {
-				transit(usuba, USUBA_AttackBreath, nullptr);
-			} else {
-				transit(usuba, USUBA_AttackDive, nullptr);
-			}
+			usuba->setAttackTarget(target);
 			return;
 		}
 
@@ -644,8 +642,7 @@ void StateMove::exec(EnemyBase* enemy)
 
 	if (usuba->mCurAnim->mIsPlaying && usuba->mCurAnim->mType == KEYEVENT_END) {
 		if (target) {
-			usuba->mTargetCreature = target;
-			transit(usuba, USUBA_AttackBreath, nullptr);
+			usuba->setAttackTarget(target);
 			return;
 		}
 
@@ -734,7 +731,7 @@ void StateAttackBreath::exec(EnemyBase* enemy)
 		break;
 	case KEYEVENT_END:
 		if (usuba->mHealth <= 0.0f) {
-			transit(enemy, USUBA_Dead, nullptr);
+			transit(enemy, USUBA_Fall, nullptr);
 			return;
 		}
 		if (EnemyFunc::isStartFlick(usuba, false)) {
@@ -759,6 +756,10 @@ void StateAttackBreath::cleanup(EnemyBase* enemy)
 	usuba->disableEvent(0, EB_NoInterrupt);
 
 	usuba->setEmotionCaution();
+
+	if (usuba->isFireActive()) {
+		usuba->endFireBreath();
+	}
 }
 
 /*
@@ -779,6 +780,7 @@ void StateAttackDive::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->startBossAttackBGM();
 
 	usuba->getJAIObject()->startSound(PSSE_EN_SARAI_ATTACK, 0);
+	usuba->startElecClawEffect();
 }
 
 /*
@@ -871,6 +873,7 @@ void StateAttackDive::cleanup(EnemyBase* enemy)
 	enemy->disableEvent(0, EB_NoInterrupt);
 	enemy->mTargetCreature = nullptr;
 	enemy->setEmotionCaution();
+	OBJ(enemy)->endElecClawEffect();
 }
 
 } // namespace Usuba

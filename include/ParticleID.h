@@ -916,4 +916,12 @@
 #define PID_UsubaFlameGroundFire  (0x2bf)
 #define PID_UsubaFlameGroundSmoke (0x2c0)
 
+#define PID_HallowElecGlow (0x2c1)
+#define PID_HallowElecBolts (0x02c2)
+
+#define PID_HydrantWaterHit (0x2c3)
+#define PID_HydrantWaterSplash (0x2c4)
+#define PID_HydrantWaterSplashBubbles (0x2c5)
+#define PID_HydrantWaterBubble (0x2c6)
+
 #endif

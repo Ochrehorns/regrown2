@@ -50,6 +50,7 @@ struct Obj : public EnemyBase {
 	}
 
 	virtual void collisionCallback(CollEvent& coll);
+	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part);
 	//////////////// VTABLE END
 
 	f32 setHeightVelocity();
@@ -82,6 +83,15 @@ struct Obj : public EnemyBase {
 	void startBossFlickBGM();
 	void updateBossBGM();
 
+	void startFirefly();
+	void fadeFirefly();
+
+
+	void setAttackTarget(Creature* target);
+
+	void startElecClawEffect();
+	void endElecClawEffect();
+
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
 	FSM* mFsm;           // _2BC
@@ -97,8 +107,14 @@ private:
 	void fadeFireEffect();
 	void fadeFireHitGroundEffect();
 
-	void startFirefly();
-	void fadeFirefly();
+	void startElecBodyEffect();
+	void endElecBodyEffect();
+
+	
+
+	
+
+	Vector3f getFireBreathEndPoint();
 
 	bool mIsBreathingFire; // _2D0
 	bool mIsFirePoolActive;
@@ -110,6 +126,18 @@ private:
 	efx::TUsubaFireNew* mFireEfx; // _2D4
 	efx::TUsubaFirefly* mFireflyEfx;
 	efx::TUsubaFireGround* mFireGroundEfx;
+
+	enum EBodyEffectIndex {
+		JOINT_TailJoint3 = 0,
+		JOINT_TailJoint5 = 1,
+
+		JOINT_RClawJoint = 0,
+		JOINT_LClawJoint = 1
+	};
+	
+
+	efx::TUsubaElecBody* mBodyEfx[2];
+	efx::TUsubaElecBody* mClawEfx[2];
 
 	f32 mFireProgressTimer;
 };
@@ -199,8 +227,8 @@ struct ProperAnimator : public EnemyAnimatorBase {
 };
 
 enum AnimID {
-	USUBAANIM_Damage       = 0,  // 'stunHurt'
-	USUBAANIM_Ground       = 1,  // 'stunIdle'
+	USUBAANIM_Damage       = 1,  // 'stunHurt'
+	USUBAANIM_Ground       = 0,  // 'stunIdle'
 	USUBAANIM_Recover      = 2,  // 'stunRecover'
 	USUBAANIM_AttackBreath = 3,  // 'attackBreath'
 	USUBAANIM_AttackDive   = 4,  // 'attackDive'
@@ -385,6 +413,7 @@ struct StateGround : public State {
 	virtual void init(EnemyBase*, StateArg*); // _08
 	virtual void exec(EnemyBase*);            // _0C
 	virtual void cleanup(EnemyBase*);         // _10
+
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

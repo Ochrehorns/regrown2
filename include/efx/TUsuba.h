@@ -156,6 +156,13 @@ struct TUsubaFireGround : public TForever2 {
 	}
 };
 
+struct TUsubaElecBody : public TChaseMtx2 {
+	TUsubaElecBody()
+	    : TChaseMtx2(nullptr, PID_HallowElecBolts, PID_HallowElecGlow)
+	{
+	}
+};
+
 } // namespace efx
 
 #endif

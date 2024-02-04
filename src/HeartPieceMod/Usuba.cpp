@@ -132,6 +132,8 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mFsm->start(this, USUBA_Stay, nullptr);
 	resetBossAppearBGM();
 
+	startFirefly();
+
 	mIsInDive = false;
 }
 
@@ -212,6 +214,10 @@ void Obj::collisionCallback(CollEvent& event)
 			collCreature->stimulate(flick);
 		}
 	}
+}
+
+bool Obj::damageCallBack(Creature* source, f32 damage, CollPart* part) {
+	return EnemyBase::damageCallBack(source, damage, part);
 }
 
 /*
@@ -344,7 +350,7 @@ void Obj::setRandTarget()
 int Obj::getNextStateOnHeight()
 {
 	if (mHealth <= 0.0f) {
-		return USUBA_Dead;
+		return USUBA_Fall;
 	}
 
 	int stuckPiki = getStickPikminNum();
@@ -375,6 +381,20 @@ int Obj::getNextStateOnHeight()
 	}
 
 	return USUBA_NULL;
+}
+
+void Obj::setAttackTarget(Creature* target) {
+	mTargetCreature = target;
+	Vector3f targetPosition = target->getPosition();
+	f32 theSqrDistance      = sqrDistanceXZ(targetPosition, mPosition);
+	bool isTooCloseForSwoop = theSqrDistance < SQUARE(100.0f);
+	bool isTooFarForFire    = theSqrDistance > SQUARE(300.0f);
+
+	if (!isTooFarForFire && (isTooCloseForSwoop || randFloat() <= C_PROPERPARMS.mFireBreathChance())) {
+		mFsm->transit(this, USUBA_AttackBreath, nullptr);
+	} else {
+		mFsm->transit(this, USUBA_AttackDive, nullptr);
+	}
 }
 
 /*
@@ -437,11 +457,26 @@ int Obj::catchTarget()
  */
 void Obj::createDownEffect() { EnemyBase::createBounceEffect(mPosition, getDownSmokeScale()); }
 
+Vector3f Obj::getFireBreathEndPoint() {
+	const f32 fireBreathSize = 250.0f;
+
+	Vector3f rootPosition = mModel->getJoint("root")->getWorldMatrix()->getTranslation();
+	f32 faceDir = getFaceDir();
+
+	f32 usubaFloor = mapMgr->getMinY(rootPosition);
+
+	return Vector3f(
+		rootPosition.x + fireBreathSize * pikmin2_sinf(faceDir),
+		usubaFloor,
+		rootPosition.y + fireBreathSize * pikmin2_cosf(faceDir)
+	);
+}
+
 bool Obj::attackTargets()
 {
 	if (mIsBreathingFire) {
 
-		Vector3f lineEnd   = mFireGroundHitPos;
+		Vector3f lineEnd   = getFireBreathEndPoint();
 		Vector3f lineStart = mModel->getJoint("root")->getWorldMatrix()->getTranslation();
 
 		Sys::Sphere sphereStart(lineStart, 0.0f);
@@ -466,7 +501,7 @@ bool Obj::attackTargets()
 			}
 		}
 	} // this sphere is within the fire-breath line, hence the else
-	else if (mIsFirePoolActive) {
+	if (mIsFirePoolActive) {
 		Sys::Sphere fireball(mFireGroundHitPos, 50.0f);
 		CellIteratorArg ciArg2 = fireball;
 		CellIterator iCell2    = ciArg2;
@@ -510,21 +545,38 @@ void Obj::setupEffect()
 	for (int i = 0; i < mModel->mJointCount; i++) {
 		OSReport("Joint %i %s\n", i, mModel->mJoints[i].mName);
 	}
+	
+	Matrixf* rootMtxPtr = mModel->getJoint("root")->getWorldMatrix();
 
-	mFireEfx->mMtx = mModel->getJoint("root")->getWorldMatrix();
 
-	mFireflyEfx->mMtx = mModel->getJoint("root")->getWorldMatrix();
+	mFireEfx->mMtx = rootMtxPtr;
+
+	mBodyEfx[JOINT_TailJoint3]->setMtxptr(mModel->getJoint("tailjnt3")->getWorldMatrix()->mMatrix.mtxView);
+	mBodyEfx[JOINT_TailJoint5]->setMtxptr(mModel->getJoint("tailjnt5")->getWorldMatrix()->mMatrix.mtxView);
+
+	mClawEfx[JOINT_RClawJoint]->setMtxptr(mModel->getJoint("Rhand")->getWorldMatrix()->mMatrix.mtxView);
+	mClawEfx[JOINT_LClawJoint]->setMtxptr(mModel->getJoint("Lhand")->getWorldMatrix()->mMatrix.mtxView);
+
+	mFireflyEfx->mMtx = rootMtxPtr;
 }
 
-void Obj::startFirefly() { mFireflyEfx->create(nullptr); }
+void Obj::startFirefly() { 
+	mFireflyEfx->create(nullptr);
+}
 
-void Obj::fadeFirefly() { mFireflyEfx->fade(); }
+void Obj::fadeFirefly() { 
+	mFireflyEfx->fade();
+}
 
 void Obj::createEffect()
 {
 	mFireEfx       = new efx::TUsubaFireNew;
 	mFireflyEfx    = new efx::TUsubaFirefly;
 	mFireGroundEfx = new efx::TUsubaFireGround;
+	mBodyEfx[0]    = new efx::TUsubaElecBody;
+	mBodyEfx[1]    = new efx::TUsubaElecBody;
+	mClawEfx[0]    = new efx::TUsubaElecBody;
+	mClawEfx[1]    = new efx::TUsubaElecBody;
 } // mFireEfx = new efx::TUsubaEffect(nullptr); }
 
 void Obj::createGroundFire()
@@ -573,16 +625,40 @@ void Obj::fadeFireEffect() { mFireEfx->fade(); }
 
 void Obj::fadeFireHitGroundEffect() { mFireGroundEfx->fade(); }
 
+void Obj::startElecBodyEffect() {
+	for (int i = 0; i < 2; i++) {
+		mBodyEfx[i]->create(nullptr);
+	}
+}
+
+void Obj::endElecBodyEffect() {
+	for (int i = 0; i < 2; i++) {
+		mBodyEfx[i]->fade();
+	}
+}
+
+void Obj::startElecClawEffect() {
+	for (int i = 0; i < 2; i++) {
+		mClawEfx[i]->create(nullptr);
+	}
+}
+
+void Obj::endElecClawEffect() {
+	for (int i = 0; i < 2; i++) {
+		mClawEfx[i]->fade();
+	}
+}
+
 void Obj::startElec()
 {
 	mIsElecBody = true;
-	startFirefly();
+	startElecBodyEffect();
 }
 
 void Obj::endElec()
 {
 	mIsElecBody = false;
-	fadeFirefly();
+	endElecBodyEffect();
 }
 
 } // namespace Usuba
