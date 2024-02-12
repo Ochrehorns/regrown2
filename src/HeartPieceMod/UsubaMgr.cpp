@@ -35,5 +35,10 @@ void Mgr::createObj(int count) { mObj = new Obj[count]; }
  */
 EnemyBase* Mgr::getEnemy(int index) { return &mObj[index]; }
 
+
+J3DModelData* Mgr::doLoadBmd(void* filename) {
+    return J3DModelLoaderDataBase::load(filename, 0x21020030);
+}
+
 } // namespace Usuba
 } // namespace Game

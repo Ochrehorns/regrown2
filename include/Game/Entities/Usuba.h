@@ -153,6 +153,8 @@ struct Mgr : public EnemyMgrBase {
 	{
 		return EnemyTypeID::EnemyID_Usuba;
 	}
+	virtual J3DModelData* doLoadBmd(void* filename); // _D4 (weak)
+	
 
 	// _00 		= VTBL
 	// _00-_44	= EnemyMgrBase
