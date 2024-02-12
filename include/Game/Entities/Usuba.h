@@ -86,7 +86,6 @@ struct Obj : public EnemyBase {
 	void startFirefly();
 	void fadeFirefly();
 
-
 	void setAttackTarget(Creature* target);
 
 	void startElecClawEffect();
@@ -110,10 +109,6 @@ private:
 	void startElecBodyEffect();
 	void endElecBodyEffect();
 
-	
-
-	
-
 	Vector3f getFireBreathEndPoint();
 
 	bool mIsBreathingFire; // _2D0
@@ -134,7 +129,6 @@ private:
 		JOINT_RClawJoint = 0,
 		JOINT_LClawJoint = 1
 	};
-	
 
 	efx::TUsubaElecBody* mBodyEfx[2];
 	efx::TUsubaElecBody* mClawEfx[2];
@@ -153,8 +147,11 @@ struct Mgr : public EnemyMgrBase {
 	{
 		return EnemyTypeID::EnemyID_Usuba;
 	}
-	virtual J3DModelData* doLoadBmd(void* filename); // _D4 (weak)
-	
+	virtual void loadModelData();                   // _C8
+	virtual J3DModelData* doLoadBmd(void* filename) // _D4 (weak)
+	{
+		return J3DModelLoaderDataBase::load(filename, 0x21240030);
+	}
 
 	// _00 		= VTBL
 	// _00-_44	= EnemyMgrBase
@@ -415,7 +412,6 @@ struct StateGround : public State {
 	virtual void init(EnemyBase*, StateArg*); // _08
 	virtual void exec(EnemyBase*);            // _0C
 	virtual void cleanup(EnemyBase*);         // _10
-
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
