@@ -89,8 +89,8 @@ void Obj::attackNaviPosition()
 	{
 		Navi* navi = (*iter);
 		if (navi->isAlive()) {
-			f32 minAttackRange = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackAngle();
-			f32 maxAttackRange = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackRange();
+			f32 minAttackRange = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackAngle.mValue;
+			f32 maxAttackRange = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackRange.mValue;
 
 			f32 angledist = getCreatureViewAngle(navi);
 
