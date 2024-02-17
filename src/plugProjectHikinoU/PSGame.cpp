@@ -682,8 +682,8 @@ PSSystem::Scene* PikSceneMgr::newAndSetCurrentScene(SceneInfo& info)
 
 	// dumb workaround for lack of PSMainSide_Scene
 	// making this null tricks the game to think its submerged castle (disable some boss bgm stuff)
-	if (info.isCaveFloor() && info.mSceneType == SceneInfo::COURSE_TUTORIAL) {
-		if (static_cast<CaveFloorInfo&>(info).getCaveNoFromID() == 0 && !static_cast<CaveFloorInfo&>(info).isBossFloor()) {
+	if (info.isCaveFloor() && info.mSceneType == SceneInfo::COURSE_LAST) {
+		if (static_cast<CaveFloorInfo&>(info).getCaveNoFromID() == 3 && !static_cast<CaveFloorInfo&>(info).isBossFloor()) {
 			static_cast<PSM::Scene_Cave*>(newscene)->mBossFaderMgr = nullptr;
 		}
 	}
@@ -797,7 +797,7 @@ void PikSceneMgr::initAdditionalBgm(SceneInfo& info, PSSystem::Scene* scene)
 	// FOR REGROWN: Add an extra check to play it in the final cave
 	if (info.isCaveFloor() && !cinfo.isBossFloor()) {
 		if ((cinfo.getCaveNoFromID() == 3 && info.mSceneType == SceneInfo::COURSE_YAKUSHIMA)
-		    || (cinfo.getCaveNoFromID() == 0 && info.mSceneType == SceneInfo::COURSE_TUTORIAL)) {
+		    || (cinfo.getCaveNoFromID() == 3 && info.mSceneType == SceneInfo::COURSE_LAST)) {
 			seq = newBgmSeq("kuro_post.bms", sound);
 			P2ASSERTLINE(1353, seq);
 			scene->appendSeq(seq);
@@ -863,7 +863,7 @@ PSSystem::BgmSeq* PikSceneMgr::initMainBgm(SceneInfo& info, u8* wScene)
 		// FOR REGROWN: Add an extra check to play it in the final cave
 		if (info.isCaveFloor() && !cinfo.isBossFloor()) {
 			if ((cinfo.getCaveNoFromID() == 3 && info.mSceneType == SceneInfo::COURSE_YAKUSHIMA)
-			    || (cinfo.getCaveNoFromID() == 0 && info.mSceneType == SceneInfo::COURSE_TUTORIAL)) {
+			    || (cinfo.getCaveNoFromID() == 3 && info.mSceneType == SceneInfo::COURSE_LAST)) {
 				bgm = newBgmSeq("kuro_pre.bms", sound);
 				P2ASSERTLINE(1566, bgm);
 				*wScene = PSSystem::WaveScene::WSCENE48_SubmergedCastle;
