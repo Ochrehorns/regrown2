@@ -6,13 +6,18 @@
 #include "efx/TFrog.h"
 #include "efx/TSmokyFrog.h"
 #include "PS.h"
+#include "LoadResource.h"
 
 #define GAS_CLOUD_MODIFIER (1.0f)
 
 namespace Game {
 namespace SmokyFrog {
 
-Obj::Obj() { createEffect(); }
+Obj::Obj() 
+{ 
+	createEffect(); 
+	mMatLoopAnimator = new Sys::MatLoopAnimator;
+}
 
 void Obj::onInit(CreatureInitArg* initArg)
 {
@@ -25,6 +30,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mIsFalling   = false;
 	setupEffect();
 	mFsm->start(this, Frog::FROG_Wait, nullptr);
+	mMatLoopAnimator->start(C_MGR->mTexAnimation);
 }
 
 void Obj::setParameters()

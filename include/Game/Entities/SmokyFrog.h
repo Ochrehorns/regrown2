@@ -22,6 +22,7 @@ struct Obj : public MaroFrog::Obj {
 		return EnemyTypeID::EnemyID_SmokyFrog;
 	}
 	virtual void attackNaviPosition(); // _300
+	virtual void changeMaterial() { mMatLoopAnimator->animate(30.0f); }
 
 	void createEffect();
 	void createGas();
@@ -30,6 +31,7 @@ struct Obj : public MaroFrog::Obj {
 	// _00 		= VTBL
 	// _00-_2E0	= Frog::Obj
 	f32 mAttackTimer; // _2E0
+	Sys::MatLoopAnimator* mMatLoopAnimator;
 };
 
 struct Mgr : public EnemyMgrBase {
@@ -43,10 +45,13 @@ struct Mgr : public EnemyMgrBase {
 	{
 		return EnemyTypeID::EnemyID_SmokyFrog;
 	}
+	virtual SysShape::Model* createModel();
+	virtual void loadTexData();
 
 	// _00 		= VTBL
 	// _00-_44	= EnemyMgrBase
 	Obj* mObj; // _44, array of Objs
+	Sys::MatTexAnimation* mTexAnimation;
 };
 } // namespace SmokyFrog
 } // namespace Game
