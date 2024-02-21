@@ -1644,6 +1644,7 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 		mIsBigIconList[Zukan_UmiMushi]    = true;
 		mIsBigIconList[Zukan_BigTreasure] = true;
 		mIsBigIconList[Zukan_Houdai]      = true;
+		mIsBigIconList[Zukan_Hydrant]     = true;
 		mIsBigIconList[Zukan_BigFoot]     = true;
 		mIsBigIconList[Zukan_Damagumo]    = true;
 		mIsBigIconList[Zukan_Queen]       = true;
