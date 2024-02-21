@@ -167,6 +167,10 @@ bool TEnemyPiyo::create(Arg* arg)
 		docreate = false;
 		return docreate;
 
+	case Game::EnemyTypeID::EnemyID_SnakeWhite:
+		docreate = false;
+		return docreate;
+
 	case Game::EnemyTypeID::EnemyID_SnakeWhole:
 		scale = 1.25f;
 		break;
@@ -597,6 +601,10 @@ bool TEnemyDead::create(Arg* arg)
 		scale = 1.5f;
 		break;
 
+	case Game::EnemyTypeID::EnemyID_SnakeWhite:
+		scale = 1.5f;
+		break;
+
 	case Game::EnemyTypeID::EnemyID_KingChappy:
 		scale = 2.0f;
 		break;
@@ -815,6 +823,7 @@ bool TEnemyWalkSmoke::create(Arg* arg)
 
 	case Game::EnemyTypeID::EnemyID_Mar:
 	case Game::EnemyTypeID::EnemyID_SnakeCrow:
+	case Game::EnemyTypeID::EnemyID_SnakeWhite:
 	case Game::EnemyTypeID::EnemyID_Hanachirashi:
 	case Game::EnemyTypeID::EnemyID_Kurage:
 	case Game::EnemyTypeID::EnemyID_SnakeWhole:
@@ -1210,6 +1219,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		break;
 
 	case Game::EnemyTypeID::EnemyID_SnakeCrow:
+	case Game::EnemyTypeID::EnemyID_SnakeWhite:
 	case Game::EnemyTypeID::EnemyID_SnakeWhole:
 		mType  = 0;
 		mScale = 0.0f;
@@ -1707,6 +1717,10 @@ bool TEnemyHamonChasePos::create(Arg* arg)
 		scale = 1.3f;
 		break;
 
+	case Game::EnemyTypeID::EnemyID_SnakeWhite:
+		scale = 1.3f;
+		break;
+
 	case Game::EnemyTypeID::EnemyID_SnakeWhole:
 		scale = 1.3f;
 		break;
@@ -2026,6 +2040,7 @@ f32 TEnemyHamon::getLimitDepth_()
 	case Game::EnemyTypeID::EnemyID_RandPom:
 	case Game::EnemyTypeID::EnemyID_Qurione:
 	case Game::EnemyTypeID::EnemyID_SnakeCrow:
+	case Game::EnemyTypeID::EnemyID_SnakeWhite:
 	case Game::EnemyTypeID::EnemyID_SnakeWhole:
 	case Game::EnemyTypeID::EnemyID_KingChappy:
 	case Game::EnemyTypeID::EnemyID_MiniHoudai:
