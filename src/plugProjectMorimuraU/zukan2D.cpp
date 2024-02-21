@@ -70,7 +70,7 @@ int TItemZukan::mCategoryArray[TREASUREHOARD_CATEGORY_NUM] = {
 	183, // Odd Logo Series
 	196, // Explorer's Friend Series
 	201, // Titan Dweevil Series
-	249, // Lost Media Series
+	252, // Lost Media Series
 };
 
 // this table connects piklopedia order to the actual game enemy id order
@@ -149,16 +149,18 @@ TEnemyZukanIndex eIDInfo[ENEMY_ZUKAN_COUNT] = {
 	{ TEnemyZukan::Zukan_Damagumo, Game::EnemyTypeID::EnemyID_Damagumo },
 	{ TEnemyZukan::Zukan_BigFoot, Game::EnemyTypeID::EnemyID_BigFoot },
 	{ TEnemyZukan::Zukan_Houdai, Game::EnemyTypeID::EnemyID_Houdai },
-	{ TEnemyZukan::Zukan_BigTreasure, Game::EnemyTypeID::EnemyID_BigTreasure },
+	{ TEnemyZukan::Zukan_Hydrant, Game::EnemyTypeID::EnemyID_Hydrant },
 	{ TEnemyZukan::Zukan_UmiMushi, Game::EnemyTypeID::EnemyID_UmiMushi },
 	{ TEnemyZukan::Zukan_OoPanModoki, Game::EnemyTypeID::EnemyID_OoPanModoki },
 	{ TEnemyZukan::Zukan_SnakeCrow, Game::EnemyTypeID::EnemyID_SnakeCrow },
+	{ TEnemyZukan::Zukan_SnakeWhite, Game::EnemyTypeID::EnemyID_SnakeWhite },
 	{ TEnemyZukan::Zukan_SnakeWhole, Game::EnemyTypeID::EnemyID_SnakeWhole },
 	{ TEnemyZukan::Zukan_DangoMushi, Game::EnemyTypeID::EnemyID_DangoMushi },
 	{ TEnemyZukan::Zukan_BlackMan, Game::EnemyTypeID::EnemyID_BlackMan },
 	{ TEnemyZukan::Zukan_SmokyFrog, Game::EnemyTypeID::EnemyID_SmokyFrog },
 	{ TEnemyZukan::Zukan_HallowMushi, Game::EnemyTypeID::EnemyID_HallowMushi },
 	{ TEnemyZukan::Zukan_Usuba, Game::EnemyTypeID::EnemyID_Usuba },
+	{ TEnemyZukan::Zukan_BigTreasure, Game::EnemyTypeID::EnemyID_BigTreasure },
 };
 
 /**
@@ -1637,6 +1639,7 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 		mIsBigIconList[Zukan_BlackMan]    = true;
 		mIsBigIconList[Zukan_OoPanModoki] = true;
 		mIsBigIconList[Zukan_SnakeWhole]  = true;
+		mIsBigIconList[Zukan_SnakeWhite]  = true;
 		mIsBigIconList[Zukan_SnakeCrow]   = true;
 		mIsBigIconList[Zukan_UmiMushi]    = true;
 		mIsBigIconList[Zukan_BigTreasure] = true;

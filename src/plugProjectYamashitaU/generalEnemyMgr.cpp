@@ -54,6 +54,7 @@
 #include "Game/Entities/Rock.h"
 #include "Game/Entities/ShijimiChou.h"
 #include "Game/Entities/SnakeCrow.h"
+#include "Game/Entities/SnakeWhite.h"
 #include "Game/Entities/SnakeWhole.h"
 #include "Game/Entities/Sokkuri.h"
 #include "Game/Entities/Tadpole.h"
@@ -399,6 +400,9 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 		break;
 	case EnemyTypeID::EnemyID_Hydrant:
 		mgr = new Hydrant::Mgr(limit, type);
+		break;
+	case EnemyTypeID::EnemyID_SnakeWhite:
+		mgr = new SnakeWhite::Mgr(limit, type);
 		break;
 	}
 

@@ -112,6 +112,7 @@ EnemyInfo gEnemyInfo[] = {
    {"Usuba",              EnemyTypeID::EnemyID_Usuba,          -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Boss},
    {"HallowMushi",        EnemyTypeID::EnemyID_HallowMushi,    -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Boss},
    {"Hydrant",            EnemyTypeID::EnemyID_Hydrant,        -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Boss},
+   {"SnakeWhite",         EnemyTypeID::EnemyID_SnakeWhite,     -1,                                1,      0x0037,    "",             "SnakeCrow",    "SnakeCrow",    "",         "",         "SnakeCrow",    "SnakeCrow",    -1,                               0,    BDT_Boss},
 };
 // clang-format on
 

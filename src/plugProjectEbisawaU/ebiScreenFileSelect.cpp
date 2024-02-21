@@ -81,7 +81,7 @@ void TScreenDataWindow_data::setArchive(JKRArchive* arc)
 
 	mPokos           = 0;
 	mTreasures       = 0;
-	mTreasureMax     = 201; // Yes they really hardcode this
+	mTreasureMax     = 252; // Yes they really hardcode this
 	mPlayTimeHours   = 0;
 	mPlayTimeMinutes = 0;
 	mCaveID          = 0;
