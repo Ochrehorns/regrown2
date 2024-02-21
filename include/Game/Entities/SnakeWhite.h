@@ -20,7 +20,11 @@ struct Obj : public SnakeCrow::Obj {
 };
 
 struct Mgr : public EnemyMgrBase {
-	Mgr(int objLimit, u8 modelType);
+	Mgr(int objLimit, u8 modelType)
+    : EnemyMgrBase(objLimit, modelType)
+{
+	mName = "SnakeWhiteMgr"; // snake white manager
+}
 
 	// virtual ~Mgr();                                     // _58 (weak)
 	virtual void createObj(int count) { mObj = new Obj[count]; }    // _A0
