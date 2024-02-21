@@ -3,17 +3,15 @@
 
 #include "efx/TChaseMtx.h"
 
-namespace efx
-{
+namespace efx {
 
 struct TPlasmSparkle : public TChaseMtx {
 	TPlasmSparkle()
 	    : TChaseMtx(PID_PlasmWraithShimmer, nullptr)
 	{
 	}
-};    
+};
 
 } // namespace efx
-
 
 #endif

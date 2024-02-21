@@ -216,9 +216,7 @@ void Obj::collisionCallback(CollEvent& event)
 	}
 }
 
-bool Obj::damageCallBack(Creature* source, f32 damage, CollPart* part) {
-	return EnemyBase::damageCallBack(source, damage, part);
-}
+bool Obj::damageCallBack(Creature* source, f32 damage, CollPart* part) { return EnemyBase::damageCallBack(source, damage, part); }
 
 /*
  * --INFO--
@@ -383,8 +381,9 @@ int Obj::getNextStateOnHeight()
 	return USUBA_NULL;
 }
 
-void Obj::setAttackTarget(Creature* target) {
-	mTargetCreature = target;
+void Obj::setAttackTarget(Creature* target)
+{
+	mTargetCreature         = target;
 	Vector3f targetPosition = target->getPosition();
 	f32 theSqrDistance      = sqrDistanceXZ(targetPosition, mPosition);
 	bool isTooCloseForSwoop = theSqrDistance < SQUARE(100.0f);
@@ -457,19 +456,17 @@ int Obj::catchTarget()
  */
 void Obj::createDownEffect() { EnemyBase::createBounceEffect(mPosition, getDownSmokeScale()); }
 
-Vector3f Obj::getFireBreathEndPoint() {
+Vector3f Obj::getFireBreathEndPoint()
+{
 	const f32 fireBreathSize = 250.0f;
 
 	Vector3f rootPosition = mModel->getJoint("root")->getWorldMatrix()->getTranslation();
-	f32 faceDir = getFaceDir();
+	f32 faceDir           = getFaceDir();
 
 	f32 usubaFloor = mapMgr->getMinY(rootPosition);
 
-	return Vector3f(
-		rootPosition.x + fireBreathSize * pikmin2_sinf(faceDir),
-		usubaFloor,
-		rootPosition.y + fireBreathSize * pikmin2_cosf(faceDir)
-	);
+	return Vector3f(rootPosition.x + fireBreathSize * pikmin2_sinf(faceDir), usubaFloor,
+	                rootPosition.y + fireBreathSize * pikmin2_cosf(faceDir));
 }
 
 bool Obj::attackTargets()
@@ -545,9 +542,8 @@ void Obj::setupEffect()
 	for (int i = 0; i < mModel->mJointCount; i++) {
 		OSReport("Joint %i %s\n", i, mModel->mJoints[i].mName);
 	}
-	
-	Matrixf* rootMtxPtr = mModel->getJoint("root")->getWorldMatrix();
 
+	Matrixf* rootMtxPtr = mModel->getJoint("root")->getWorldMatrix();
 
 	mFireEfx->mMtx = rootMtxPtr;
 
@@ -560,13 +556,9 @@ void Obj::setupEffect()
 	mFireflyEfx->mMtx = rootMtxPtr;
 }
 
-void Obj::startFirefly() { 
-	mFireflyEfx->create(nullptr);
-}
+void Obj::startFirefly() { mFireflyEfx->create(nullptr); }
 
-void Obj::fadeFirefly() { 
-	mFireflyEfx->fade();
-}
+void Obj::fadeFirefly() { mFireflyEfx->fade(); }
 
 void Obj::createEffect()
 {
@@ -625,25 +617,29 @@ void Obj::fadeFireEffect() { mFireEfx->fade(); }
 
 void Obj::fadeFireHitGroundEffect() { mFireGroundEfx->fade(); }
 
-void Obj::startElecBodyEffect() {
+void Obj::startElecBodyEffect()
+{
 	for (int i = 0; i < 2; i++) {
 		mBodyEfx[i]->create(nullptr);
 	}
 }
 
-void Obj::endElecBodyEffect() {
+void Obj::endElecBodyEffect()
+{
 	for (int i = 0; i < 2; i++) {
 		mBodyEfx[i]->fade();
 	}
 }
 
-void Obj::startElecClawEffect() {
+void Obj::startElecClawEffect()
+{
 	for (int i = 0; i < 2; i++) {
 		mClawEfx[i]->create(nullptr);
 	}
 }
 
-void Obj::endElecClawEffect() {
+void Obj::endElecClawEffect()
+{
 	for (int i = 0; i < 2; i++) {
 		mClawEfx[i]->fade();
 	}

@@ -37,7 +37,7 @@ EnemyBase* Mgr::getEnemy(int index) { return &mObj[index]; }
 
 void Mgr::loadModelData()
 {
-    EnemyMgrBase::loadModelData();
+	EnemyMgrBase::loadModelData();
 	J3DShape* shape;
 	for (u16 j = 0; j < mModelData->getShapeNum(); j++) {
 		shape = mModelData->mShapeTable.mItems[j];

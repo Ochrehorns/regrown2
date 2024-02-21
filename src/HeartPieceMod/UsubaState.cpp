@@ -377,7 +377,7 @@ void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* usuba             = OBJ(enemy);
 	usuba->mTargetVelocity = Vector3f(0.0f);
-	usuba->mStateTimer = 0.0f;
+	usuba->mStateTimer     = 0.0f;
 	usuba->disableEvent(0, EB_Untargetable);
 	usuba->setEmotionExcitement();
 	usuba->startMotion(USUBAANIM_Damage, nullptr);

@@ -13,9 +13,9 @@
 namespace Game {
 namespace SmokyFrog {
 
-Obj::Obj() 
-{ 
-	createEffect(); 
+Obj::Obj()
+{
+	createEffect();
 	mMatLoopAnimator = new Sys::MatLoopAnimator;
 }
 

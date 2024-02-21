@@ -36,10 +36,7 @@ struct Mgr : public EnemyMgrBase {
 		return EnemyTypeID::EnemyID_Hydrant;
 	}
 	virtual void loadModelData();
-	virtual J3DModelData* doLoadBmd(void* filename)
-	{
-		return J3DModelLoaderDataBase::load(filename, 0x21240030);
-	}
+	virtual J3DModelData* doLoadBmd(void* filename) { return J3DModelLoaderDataBase::load(filename, 0x21240030); }
 
 	// _00 		= VTBL
 	// _00-_44	= EnemyMgrBase
