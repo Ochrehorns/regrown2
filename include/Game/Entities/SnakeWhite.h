@@ -10,8 +10,6 @@
 namespace Game {
 namespace SnakeWhite {
 struct Obj : public SnakeCrow::Obj {
-	Obj();
-
 	virtual ~Obj() { }                                 // _1BC (weak)
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _258 (weak)
 	{
