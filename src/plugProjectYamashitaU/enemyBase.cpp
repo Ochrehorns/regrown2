@@ -3090,7 +3090,8 @@ PSM::EnemyBase* EnemyBase::createPSEnemyBase()
 {
 	PSM::EnemyBase* base = nullptr;
 
-	if (getEnemyTypeID() == EnemyTypeID::EnemyID_KumaChappy || getEnemyTypeID() == EnemyTypeID::EnemyID_FireChappy) {
+	if (getEnemyTypeID() == EnemyTypeID::EnemyID_KumaChappy || getEnemyTypeID() == EnemyTypeID::EnemyID_FireChappy
+	    || getEnemyTypeID() == EnemyTypeID::EnemyID_SleepyBulbear) {
 		base = new PSM::Enemy_SpecialChappy(this, 4);
 		return base;
 	}
