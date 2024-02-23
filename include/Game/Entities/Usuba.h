@@ -60,7 +60,6 @@ struct Obj : public EnemyBase {
 	void createAppearEffect();
 	void createEffect();
 	void setupEffect();
-	void createChargeSE();
 	void createDischargeSE();
 
 	void startFireBreath();

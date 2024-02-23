@@ -513,8 +513,6 @@ bool Obj::attackTargets()
 	return true;
 }
 
-void Obj::createChargeSE() { getJAIObject()->startSound(PSSE_EN_TANK_BREATH, 0); }
-
 void Obj::createDischargeSE()
 {
 	getJAIObject()->startSound(PSSE_EN_BIGTAKARA_FIRE_ROOT, 0);
