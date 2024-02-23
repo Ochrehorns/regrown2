@@ -2179,43 +2179,6 @@ if __name__ == "__main__":
     n.newline()
 
     ###
-    # Check DOL hash
-    ###
-    if args.check:
-        n.comment("Check DOL hash")
-        n.rule(
-            name="check",
-            command=f"{dtk} shasum -c $in -o $out",
-            description="CHECK $in",
-        )
-        n.build(
-            outputs=path(build_path / "main.dol.ok"),
-            rule="check",
-            inputs=f"sha1/pikmin2.{version}.sha1",
-            implicit=path([build_path / "main.dol", dtk]),
-        )
-        n.newline()
-
-    ###
-    # Progress script
-    ###
-    if args.map:
-        n.comment("Check progress")
-        calc_progress = tools_path / "calcprogress.py"
-        n.rule(
-            name="progress",
-            command=f"$python {calc_progress} $in -o $out",
-            description="PROGRESS $in",
-        )
-        n.build(
-            outputs=path(build_path / "main.dol.progress"),
-            rule="progress",
-            inputs=path([build_path / "main.dol", map_path]),
-            implicit=path([calc_progress]),
-        )
-        n.newline()
-
-    ###
     # Regenerate on change
     ###
     n.comment("Reconfigure on change")
@@ -2235,14 +2198,8 @@ if __name__ == "__main__":
     # Default rule
     ###
     n.comment("Default rule")
-    if args.check:
-        dol_out = build_path / "main.dol.ok"
-    else:
-        dol_out = build_path / "main.dol"
-    if args.map:
-        n.default(path([dol_out, build_path / "main.dol.progress"]))
-    else:
-        n.default(path([dol_out]))
+    dol_out = build_path / "main.dol"
+    n.default(path([dol_out]))
 
     ###
     # Write build.ninja

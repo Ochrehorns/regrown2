@@ -52,3 +52,5 @@ __pycache__
 newlines.py
 objdiff.json
 docs/
+
+tools/progress.csv
