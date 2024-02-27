@@ -5,9 +5,9 @@
 #include "Game/pelletMgr.h"
 #include "Game/BasePelletMgr.h"
 
-// the maximum carcass pellets that can be active at once
-#define PELLET_CARCASS_MAXCOUNT    (64) // (known by some as the fabled "corpse limit")
-#define PELLET_CARCASS_MAXCOLLPART (128)
+// the maximum carcass pellets that can be active at once (lowered for regrown)
+#define PELLET_CARCASS_MAXCOUNT    (48) // (known by some as the fabled "corpse limit")
+#define PELLET_CARCASS_MAXCOLLPART (96)
 
 namespace Game {
 namespace PelletCarcass {

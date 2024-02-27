@@ -5,9 +5,9 @@
 #include "Game/pelletMgr.h"
 #include "Game/BasePelletMgr.h"
 
-// the maximum item pellets that can be active at once
-#define PELLET_ITEM_MAXCOUNT    (11)
-#define PELLET_ITEM_MAXCOLLPART (128)
+// the maximum item pellets that can be active at once (lowered for regrown)
+#define PELLET_ITEM_MAXCOUNT    (4)
+#define PELLET_ITEM_MAXCOLLPART (32)
 
 namespace Game {
 namespace PelletItem {

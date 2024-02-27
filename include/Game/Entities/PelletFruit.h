@@ -5,10 +5,10 @@
 #include "Game/pelletMgr.h"
 #include "Game/BasePelletMgr.h"
 
-// the maximum berry pellets that can be active at once
-#define PELLET_FRUIT_MAXCOUNT    (64)
-#define PELLET_FRUIT_MAXMODEL    (64)
-#define PELLET_FRUIT_MAXCOLLPART (128)
+// the maximum berry pellets that can be active at once (lowered for regrown)
+#define PELLET_FRUIT_MAXCOUNT    (32)
+#define PELLET_FRUIT_MAXMODEL    (32)
+#define PELLET_FRUIT_MAXCOLLPART (64)
 
 namespace Game {
 namespace PelletFruit {

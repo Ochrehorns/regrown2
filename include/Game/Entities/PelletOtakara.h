@@ -5,9 +5,9 @@
 #include "Game/pelletMgr.h"
 #include "Game/BasePelletMgr.h"
 
-// the maximum treasure pellets that can be active at once
-#define PELLET_OTAKARA_MAXCOUNT    (32)
-#define PELLET_OTAKARA_MAXCOLLPART (256)
+// the maximum treasure pellets that can be active at once (lowered for regrown)
+#define PELLET_OTAKARA_MAXCOUNT    (24)
+#define PELLET_OTAKARA_MAXCOLLPART (128)
 
 struct J3DMaterial;
 

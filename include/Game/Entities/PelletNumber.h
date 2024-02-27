@@ -15,10 +15,10 @@ namespace PelletNumber {
 #define PELLET_NUMBER_TEN    (10)
 #define PELLET_NUMBER_TWENTY (20)
 
-// the maximum number pellets that can be active at once
-#define PELLET_NUMBER_MAXCOUNT    (48)
-#define PELLET_NUMBER_MAXMODEL    (64)
-#define PELLET_NUMBER_MAXCOLLPART (128)
+// the maximum number pellets that can be active at once (lowered for regrown)
+#define PELLET_NUMBER_MAXCOUNT    (36)
+#define PELLET_NUMBER_MAXMODEL    (48)
+#define PELLET_NUMBER_MAXCOLLPART (96)
 
 struct Object : public Pellet {
 	Object() { }
