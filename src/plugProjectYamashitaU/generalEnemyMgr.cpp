@@ -632,6 +632,21 @@ IEnemyMgrBase* GeneralEnemyMgr::getIEnemyMgrBase(int enemyID)
  */
 void GeneralEnemyMgr::allocateEnemys(u8 type, int heapSize)
 {
+	// for regrowns overworlds, make enemy heap size depend on the map
+	if (gameSystem->isStoryMode() && !gameSystem->mIsInCave) {
+		switch (gameSystem->mSection->getCurrentCourseInfo()->mCourseIndex) {
+		case 0: // valley of repose
+		case 1: // awakening wood
+			break;
+		case 2: // perplexing pool (might need adjustment for later days idk)
+			heapSize = 0x1c0800;
+			break;
+		case 3: // wistful wild
+			heapSize = 0x180800;
+			break;
+		}
+	}
+
 	if (heapSize < 0) {
 		mHeapSize = 0x00200800;
 		if (gameSystem) {
