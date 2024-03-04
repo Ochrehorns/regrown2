@@ -25,9 +25,9 @@ Mgr::Mgr(int p1, u8 p2)
  */
 void Mgr::loadModelData()
 {
-	int ids[3] = { EnemyTypeID::EnemyID_Kabuto, EnemyTypeID::EnemyID_Rkabuto, EnemyTypeID::EnemyID_Fkabuto };
+	int ids[4] = { EnemyTypeID::EnemyID_Kabuto, EnemyTypeID::EnemyID_Rkabuto, EnemyTypeID::EnemyID_Fkabuto, EnemyTypeID::EnemyID_Bkabuto };
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		EnemyMgrBase* mgr = generalEnemyMgr->getEnemyMgr(ids[i]);
 		if (mgr) {
 			J3DModelData* storedModelData = mgr->getJ3DModelData();
@@ -52,9 +52,9 @@ void Mgr::loadModelData()
  */
 void Mgr::loadAnimData()
 {
-	int ids[3] = { EnemyTypeID::EnemyID_Kabuto, EnemyTypeID::EnemyID_Rkabuto, EnemyTypeID::EnemyID_Fkabuto };
+	int ids[4] = { EnemyTypeID::EnemyID_Kabuto, EnemyTypeID::EnemyID_Rkabuto, EnemyTypeID::EnemyID_Fkabuto, EnemyTypeID::EnemyID_Bkabuto };
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		EnemyMgrBase* mgr = generalEnemyMgr->getEnemyMgr(ids[i]);
 		if (mgr) {
 			SysShape::AnimMgr* storedAnimMgr = mgr->mAnimMgr;

@@ -76,16 +76,16 @@ void Obj::onInit(CreatureInitArg* carg)
 	arg.mMatrix   = mModel->getJoint("root")->getWorldMatrix();
 	arg.mId       = 'cbot';
 	arg.mPlatform = static_cast<Clam::Mgr*>(mMgr)->mPlatBottom;
-	//arg.mRadius   = 90.0f;
-	mPlatBottom   = platMgr->addInstance(arg);
+	// arg.mRadius   = 90.0f;
+	mPlatBottom = platMgr->addInstance(arg);
 
 	PlatAddInstanceArg arg2;
 	arg2.mItem     = (BaseItem*)this;
 	arg2.mMatrix   = mModel->getJoint("top")->getWorldMatrix();
 	arg2.mId       = 'ctop';
 	arg2.mPlatform = static_cast<Clam::Mgr*>(mMgr)->mPlatTop;
-	//arg2.mRadius   = 90.0f;
-	mPlatTop       = platMgr->addInstance(arg2);
+	// arg2.mRadius   = 90.0f;
+	mPlatTop = platMgr->addInstance(arg2);
 
 	birthPearl();
 

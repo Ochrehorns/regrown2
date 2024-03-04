@@ -149,6 +149,7 @@ enum EEnemyTypeID {//ID      Common Name
     EnemyID_SnakeWhite     = 107, // Burrowing Snarrow
     EnemyID_Clam           = 108, // Pearly Clam-clamp (the clam itself)
     EnemyID_Pearl          = 109, // Pearl
+    EnemyID_Bkabuto        = 110, // Adolescent Cannon Beetle
     EnemyID_COUNT,
 };
 EEnemyTypeID mEnemyID; // _00

@@ -454,6 +454,50 @@ struct Mgr : public Kabuto::Mgr {
 };
 } // namespace RedKabuto
 
+/* Adolescent Cannon Beetle */
+namespace BlackKabuto {
+struct Obj : public Kabuto::Obj {
+	Obj() {};
+
+	virtual ~Obj() { }                                 // _1BC (weak)
+	virtual void changeMaterial() {};                  // _200
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _258 (weak)
+	{
+		return EnemyTypeID::EnemyID_Bkabuto;
+	}
+
+	// _00		= VTBL
+	// _00-_2E4 = Kabuto::Obj
+};
+
+struct Mgr : public Kabuto::Mgr {
+	Mgr(int objLimit, u8 modelType)
+	    : Kabuto::Mgr(objLimit, modelType)
+	{
+		mName = "BKabutoMgr"; // black beetle manager
+	}
+
+	// virtual ~Mgr() { }                                 // _58 (weak)
+	virtual void createObj(int count) { mObj = new Obj[count]; } // _A0
+	virtual EnemyBase* getEnemy(int idx) { return &mObj[idx]; }  // _A4
+	virtual void doAlloc() { init(new Kabuto::Parms); }          // _A8
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID()           // _AC (weak)
+	{
+		return EnemyTypeID::EnemyID_Bkabuto;
+	}
+	virtual void loadTexData() { }      // _D0
+	virtual ResTIMG* getChangeTexture() // _E0 (weak)
+	{
+		return nullptr;
+	}
+
+	// _00		= VTBL
+	// _00-_44	= EnemyMgrBase
+	// ResTIMG* mChangeTexture; // _44
+	Obj* mObj; // _44, array of Objs
+};
+} // namespace BlackKabuto
+
 /* Buried Cannon Beetle Larva */
 namespace FixKabuto {
 struct Obj : public Kabuto::Obj {

@@ -115,6 +115,7 @@ EnemyInfo gEnemyInfo[] = {
    {"SnakeWhite",         EnemyTypeID::EnemyID_SnakeWhite,     -1,                                1,      0x0037,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Boss},
    {"Clam",               EnemyTypeID::EnemyID_Clam,           -1,                                1,      0x0097,    "",             "",             "",             "",         "",         "",             "",             EnemyTypeID::EnemyID_Pearl,       1,    BDT_Normal},
    {"Pearl",              EnemyTypeID::EnemyID_Pearl,          -1,                                1,      0x0097,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Normal},
+   {"Bkabuto",            EnemyTypeID::EnemyID_Bkabuto,        -1,                                1,      0x0097,    "",             "Kabuto",       "Kabuto",       "",         "",         "",             "",             EnemyTypeID::EnemyID_Stone,       5,    BDT_Normal},
 };
 // clang-format on
 

@@ -191,6 +191,7 @@ bool TEnemyPiyo::create(Arg* arg)
 	case Game::EnemyTypeID::EnemyID_Kabuto:
 	case Game::EnemyTypeID::EnemyID_Rkabuto:
 	case Game::EnemyTypeID::EnemyID_Fkabuto:
+	case Game::EnemyTypeID::EnemyID_Bkabuto:
 		scale = 1.4f;
 		break;
 
@@ -621,6 +622,7 @@ bool TEnemyDead::create(Arg* arg)
 	case Game::EnemyTypeID::EnemyID_Kabuto:
 	case Game::EnemyTypeID::EnemyID_Rkabuto:
 	case Game::EnemyTypeID::EnemyID_Fkabuto:
+	case Game::EnemyTypeID::EnemyID_Bkabuto:
 		scale = 1.5f;
 		break;
 
@@ -850,6 +852,7 @@ bool TEnemyWalkSmoke::create(Arg* arg)
 	case Game::EnemyTypeID::EnemyID_Kabuto:
 	case Game::EnemyTypeID::EnemyID_Rkabuto:
 	case Game::EnemyTypeID::EnemyID_Fkabuto:
+	case Game::EnemyTypeID::EnemyID_Bkabuto:
 		scale   = 1.6f;
 		isSmall = true;
 		break;
@@ -1244,6 +1247,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 	case Game::EnemyTypeID::EnemyID_Kabuto:
 	case Game::EnemyTypeID::EnemyID_Rkabuto:
 	case Game::EnemyTypeID::EnemyID_Fkabuto:
+	case Game::EnemyTypeID::EnemyID_Bkabuto:
 		mType  = 1;
 		mScale = 0.8f;
 		break;
@@ -1741,6 +1745,7 @@ bool TEnemyHamonChasePos::create(Arg* arg)
 	case Game::EnemyTypeID::EnemyID_Kabuto:
 	case Game::EnemyTypeID::EnemyID_Rkabuto:
 	case Game::EnemyTypeID::EnemyID_Fkabuto:
+	case Game::EnemyTypeID::EnemyID_Bkabuto:
 		scale = 1.3f;
 		break;
 
@@ -1999,8 +2004,9 @@ f32 TEnemyHamon::getLimitDepth_()
 		break;
 
 	case Game::EnemyTypeID::EnemyID_Kabuto:
-	case Game::EnemyTypeID::EnemyID_Fkabuto:
 	case Game::EnemyTypeID::EnemyID_Rkabuto:
+	case Game::EnemyTypeID::EnemyID_Fkabuto:
+	case Game::EnemyTypeID::EnemyID_Bkabuto:
 		depth = 55.0f;
 		break;
 

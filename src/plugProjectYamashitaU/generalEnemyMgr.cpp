@@ -412,6 +412,9 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 	case EnemyTypeID::EnemyID_Pearl:
 		mgr = new Pearl::Mgr(limit, type);
 		break;
+	case EnemyTypeID::EnemyID_Bkabuto:
+		mgr = new BlackKabuto::Mgr(limit, type);
+		break;
 	}
 
 	mgr->alloc();
