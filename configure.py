@@ -1564,6 +1564,22 @@ LIBS = [
         ],
     },
     {
+        "lib": "PikHackProject",
+        "cflags": "$cflags_pikmin",
+        "mw_version": "2.6",
+        "host": True,
+        "objects": [
+            ["PikHackProject/Clam", True],
+            ["PikHackProject/ClamMgr", True],
+            ["PikHackProject/ClamState", True],
+            ["PikHackProject/ClamAnimator", True],
+            ["PikHackProject/Pearl", True],
+            ["PikHackProject/PearlMgr", True],
+            ["PikHackProject/PearlState", True],
+            ["PikHackProject/PearlAnimator", True],
+        ],
+    },
+    {
         "lib": "sysBootupU",
         "cflags": "$cflags_pikmin",
         "mw_version": "2.6",

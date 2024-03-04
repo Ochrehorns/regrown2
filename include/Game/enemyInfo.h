@@ -147,6 +147,8 @@ enum EEnemyTypeID {//ID      Common Name
     EnemyID_HallowMushi    = 105, // Hallowed Crawbster
     EnemyID_Hydrant        = 106, // Man-Of-War
     EnemyID_SnakeWhite     = 107, // Burrowing Snarrow
+    EnemyID_Clam           = 108, // Pearly Clam-clamp (the clam itself)
+    EnemyID_Pearl          = 109, // Pearl
     EnemyID_COUNT,
 };
 EEnemyTypeID mEnemyID; // _00

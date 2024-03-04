@@ -80,6 +80,8 @@
 #include "Game/Entities/Usuba.h"
 #include "Game/Entities/Hydrant.h"
 #include "Game/Entities/SmokyFrog.h"
+#include "Game/Entities/Clam.h"
+#include "Game/Entities/Pearl.h"
 
 static const char matchText[] = "enemyBase";
 
@@ -403,6 +405,12 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 		break;
 	case EnemyTypeID::EnemyID_SnakeWhite:
 		mgr = new SnakeWhite::Mgr(limit, type);
+		break;
+	case EnemyTypeID::EnemyID_Clam:
+		mgr = new Clam::Mgr(limit, type);
+		break;
+	case EnemyTypeID::EnemyID_Pearl:
+		mgr = new Pearl::Mgr(limit, type);
 		break;
 	}
 

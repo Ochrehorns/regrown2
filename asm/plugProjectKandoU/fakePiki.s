@@ -2036,7 +2036,7 @@ lbl_constructor:
 /* 8013E470 0013B3B0  C0 23 00 10 */	lfs f1, 0x10(r3)
 /* 8013E474 0013B3B4  C0 02 9F B4 */	lfs f0, lbl_80518314@sda21(r2)
 /* 8013E478 0013B3B8  FC 01 00 40 */	fcmpo cr0, f1, f0
-/* 8013E47C 0013B3BC  40 81 00 08 */	ble .L_8013E484
+/* 8013E47C 0013B3BC  40 81 00 08 */	nop # fix for clam plat collision
 /* 8013E480 0013B3C0  90 7F 02 48 */	stw r3, 0x248(r31)
 .L_8013E484:
 /* 8013E484 0013B3C4  80 1F 01 7C */	lwz r0, 0x17c(r31)
