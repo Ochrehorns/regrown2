@@ -16,7 +16,7 @@ const char filename[] = "246-KabutoMgr";
 Mgr::Mgr(int p1, u8 p2)
     : EnemyMgrBase(p1, p2)
 {
-	mName = "ÉJÉuÉgÉ}ÉlÅ[ÉWÉÉ"; // beetle manager
+	mName = "∆íJ∆íu∆íg∆í}∆íl¬Å[∆íW∆í∆í"; // beetle manager
 }
 
 /**
@@ -25,9 +25,9 @@ Mgr::Mgr(int p1, u8 p2)
  */
 void Mgr::loadModelData()
 {
-	int ids[4] = { EnemyTypeID::EnemyID_Kabuto, EnemyTypeID::EnemyID_Rkabuto, EnemyTypeID::EnemyID_Fkabuto, EnemyTypeID::EnemyID_Bkabuto };
+	int ids[3] = { EnemyTypeID::EnemyID_Kabuto, EnemyTypeID::EnemyID_Rkabuto, EnemyTypeID::EnemyID_Fkabuto };
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 3; i++) {
 		EnemyMgrBase* mgr = generalEnemyMgr->getEnemyMgr(ids[i]);
 		if (mgr) {
 			J3DModelData* storedModelData = mgr->getJ3DModelData();
