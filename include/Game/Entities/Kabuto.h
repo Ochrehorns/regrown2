@@ -478,6 +478,15 @@ struct Mgr : public Kabuto::Mgr {
 	}
 
 	// virtual ~Mgr() { }                                 // _58 (weak)
+	virtual void loadModelData()
+	{
+		EnemyMgrBase::loadModelData();
+
+		for (u16 j = 0; j < mModelData->getShapeNum(); j++) {
+			J3DShape* shape = mModelData->mShapeTable.mItems[j];
+			shape->setTexMtxLoadType(0x2000);
+		}
+	}
 	virtual void createObj(int count) { mObj = new Obj[count]; } // _A0
 	virtual EnemyBase* getEnemy(int idx) { return &mObj[idx]; }  // _A4
 	virtual void doAlloc() { init(new Kabuto::Parms); }          // _A8

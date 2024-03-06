@@ -27,7 +27,7 @@ void Mgr::loadModelData()
 {
 	int ids[4] = { EnemyTypeID::EnemyID_Kabuto, EnemyTypeID::EnemyID_Rkabuto, EnemyTypeID::EnemyID_Fkabuto, EnemyTypeID::EnemyID_Bkabuto };
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 3; i++) {
 		EnemyMgrBase* mgr = generalEnemyMgr->getEnemyMgr(ids[i]);
 		if (mgr) {
 			J3DModelData* storedModelData = mgr->getJ3DModelData();
