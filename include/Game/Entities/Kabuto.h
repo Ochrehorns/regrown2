@@ -459,8 +459,48 @@ namespace BlackKabuto {
 struct Obj : public Kabuto::Obj {
 	Obj() {};
 
-	virtual ~Obj() { }                                 // _1BC (weak)
-	virtual void changeMaterial() {};                  // _200
+	virtual ~Obj() { }                // _1BC (weak)
+	virtual void changeMaterial() {}; // _200
+	virtual bool damageCallBack(Creature* creature, f32 damage, CollPart* collpart)
+	{
+		if (isEvent(0, EB_Bittered)) {
+			addDamage(damage, 1.0f);
+			return true;
+		}
+		if (collpart && collpart->mCurrentID != 'body') {
+			addDamage(damage, 1.0f);
+			return true;
+		}
+		return false;
+	}
+	virtual void setParameters()
+	{
+		EnemyBase::setParameters();
+
+		setScale(1.2f);
+		mCurLodSphere.mRadius = mScaleModifier * static_cast<Kabuto::Parms*>(mParms)->mGeneral.mOffCameraRadius.mValue;
+		// update collision
+		Sys::Sphere collSphere;
+		mCollTree->mPart->getSphere(collSphere);
+		collSphere.mRadius *= mScaleModifier;
+		mBoundingSphere = collSphere;
+		mCollTree->mPart->setScale(mScaleModifier);
+		mCollTree->update();
+	}; // _200
+	virtual void getShadowParam(ShadowParam& shadowParam)
+	{
+		shadowParam.mPosition                 = mModel->getJoint("center")->getWorldMatrix()->getColumn(3);
+		shadowParam.mPosition.y               = mPosition.y + 5.0f;
+		shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+
+		if (isEvent(1, EB2_Earthquake)) {
+			shadowParam.mBoundingSphere.mRadius = 50.0f;
+		} else {
+			shadowParam.mBoundingSphere.mRadius = 10.0f;
+		}
+
+		shadowParam.mSize = 25.0f * mScaleModifier;
+	}
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _258 (weak)
 	{
 		return EnemyTypeID::EnemyID_Bkabuto;
