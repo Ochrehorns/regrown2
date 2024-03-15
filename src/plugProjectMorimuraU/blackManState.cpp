@@ -1,15 +1,26 @@
 #include "Game/Entities/BlackMan.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/generalEnemyMgr.h"
 #include "Game/CameraMgr.h"
 #include "Game/rumble.h"
 #include "Game/MapMgr.h"
+#include "Game/routeMgr.h"
+#include "Radar.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "PSM/EnemyBoss.h"
 #include "nans.h"
-
 namespace Game {
 namespace BlackMan {
+
+inline bool isGold()
+{
+	return (gameSystem->mSection                               /*&& gameSystem->mSection->getCaveID() == 'l_04'*/
+	        && (gameSystem->mSection->getCurrFloor() + 1 == 1) // change to l_04 and == 31 for final
+	        && !gameSystem->isZukanMode());
+}
+
+extern Obj* curB;
 
 /**
  * @note Address: 0x803A3AF0
@@ -27,6 +38,7 @@ void FSM::init(EnemyBase* enemy)
 	registerState(new StateRecover(WRAITH_Recover));
 	registerState(new StateFlick(WRAITH_Flick));
 	registerState(new StateTired(WRAITH_Tired));
+	registerState(new StateGoldFreeze(WRAITH_GFreeze));
 }
 
 /**
@@ -212,7 +224,11 @@ void StateFreeze::init(EnemyBase* enemy, StateArg* stateArg)
 void StateFreeze::exec(EnemyBase* enemy)
 {
 	Obj* wraith = OBJ(enemy);
-	wraith->mFreezeTimer++;
+
+	if (!isGold()) {
+		wraith->mFreezeTimer++;
+	}
+
 	if (wraith->mHealth <= 0.0f) {
 		transit(wraith, WRAITH_Dead, nullptr);
 		return;
@@ -249,6 +265,91 @@ void StateFreeze::exec(EnemyBase* enemy)
  * @note Size: 0x24
  */
 void StateFreeze::cleanup(EnemyBase* enemy)
+{
+	Obj* wraith = OBJ(enemy);
+	wraith->collisionStOff();
+}
+
+/**
+ * @note Address: 0x803A40B4
+ * @note Size: 0x3C
+ */
+StateGoldFreeze::StateGoldFreeze(int stateID)
+    : State(stateID)
+{
+	mName = "gfreeze";
+}
+
+/**
+ * @note Address: 0x803A40F0
+ * @note Size: 0x90
+ */
+void StateGoldFreeze::init(EnemyBase* enemy, StateArg* stateArg)
+{
+	Obj* wraith = OBJ(enemy);
+	wraith->collisionStOff();
+
+	bool check = false;
+	if (enemy->getCurrAnimIndex() == WRAITHANIM_Flick2) {
+		check = true;
+	}
+	enemy->startMotion(WRAITHANIM_Bend2, nullptr);
+	if (check) {
+		enemy->setMotionFrame(3.0f);
+	}
+
+	enemy->mCurrentVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity  = Vector3f(0.0f);
+}
+
+/**
+ * @note Address: 0x803A4180
+ * @note Size: 0x2F4
+ */
+void StateGoldFreeze::exec(EnemyBase* enemy)
+{
+	Obj* wraith = OBJ(enemy);
+
+	if (!isGold()) {
+		wraith->mFreezeTimer++;
+	}
+
+	if (wraith->mHealth <= 0.0f) {
+		transit(wraith, WRAITH_Dead, nullptr);
+		return;
+	}
+
+	if (EnemyFunc::isStartFlick(wraith, false)) {
+		wraith->mPostFlickState = 2;
+		transit(wraith, WRAITH_Flick, nullptr);
+		return;
+	}
+
+	if (wraith->mCurAnim->mIsPlaying) {
+		if ((u32)wraith->mCurAnim->mType == KEYEVENT_2) {
+			Vector3f position = wraith->getPosition();
+			cameraMgr->startVibration(12, position, 2);
+			rumbleMgr->startRumble(14, position, RUMBLEID_Both);
+
+			f32 faceDir = wraith->getFaceDir();
+			position.x += 32.0f * sinf(faceDir) - 4.0f * cosf(faceDir);
+			position.z += 32.0f * cosf(faceDir) - 4.0f * sinf(faceDir);
+			wraith->createBounceEffect(position, 0.42f);
+
+		} else if ((u32)wraith->mCurAnim->mType == KEYEVENT_END) {
+			transit(wraith, WRAITH_Walk, nullptr);
+			wraith->collisionStOff();
+		}
+	} else if (wraith->mFreezeTimer > wraith->getParms()->mProperParms.mFreezeTimerLength.mValue) {
+		wraith->finishMotion();
+	}
+}
+
+/**
+ * @note Address: 0x803A4474
+ * @note Size: 0x24
+ */
+void StateGoldFreeze::cleanup(EnemyBase* enemy)
 {
 	Obj* wraith = OBJ(enemy);
 	wraith->collisionStOff();
@@ -657,6 +758,179 @@ void StateTired::exec(EnemyBase* enemy)
 	if (_10 > wraith->getParms()->mProperParms.mStandStillTimerLength.mValue) {
 		enemy->finishMotion();
 	}
+}
+
+/**
+ * @note Address: 0x803A5FE8
+ * @note Size: 0x6B4
+ */
+void Obj::onInit(CreatureInitArg* arg)
+{
+	EnemyBase::onInit(arg);
+	disableEvent(0, EB_Cullable);
+	disableEvent(0, EB_LeaveCarcass);
+	disableEvent(0, EB_DeathEffectEnabled);
+	mEscapePhase = C_PARMS->_A10;
+
+	if (isGold()) {
+		mFSM->start(this, WRAITH_GFreeze, nullptr);
+		mEscapePhase = 2;
+	} else {
+		EnemyMgrBase* tyreMgr = generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_Tyre);
+		if (tyreMgr) {
+			EnemyBirthArg birthArg;
+			birthArg.mPosition = mPosition;
+			birthArg.mFaceDir  = mFaceDir;
+			mTyre              = static_cast<Tyre::Obj*>(tyreMgr->birth(birthArg));
+			mTyre->init(nullptr);
+			mTyre->mOwner = this;
+		}
+		mFSM->start(this, WRAITH_Fall, nullptr);
+	}
+	// OSReport("currFloor %i\n", gameSystem->mSection->getCurrFloor() + 1);
+	P2ASSERTLINE(178, mMatLoopAnimator);
+
+	mMatLoopAnimator->start(C_MGR->mTexAnimation);
+
+	mPostFlickState = -1;
+
+	mNextRoutePos           = mPosition;
+	mHomePosition           = mNextRoutePos;
+	mTargetPosition         = mHomePosition;
+	mPathFindingHandle      = 0;
+	mFoundPath              = 0;
+	mPath                   = nullptr;
+	_2E4                    = 0;
+	mRouteFindTimer         = 0;
+	mRouteFindCooldownTimer = 0;
+	mFreezeTimer            = 0;
+	mEscapeMoveSpeed        = 0.0f;
+	curB                    = nullptr;
+
+	P2ASSERTLINE(209, mModel);
+
+	J3DModelData* modelData = mModel->mJ3dModel->mModelData;
+
+	P2ASSERTLINE(212, modelData);
+
+	mChestJointIndex     = mModel->getJointIndex("chest");
+	mLeftHandJointIndex  = mModel->getJointIndex("handLend");
+	mRightHandJointIndex = mModel->getJointIndex("handRend");
+	mLeftFootJointIndex  = mModel->getJointIndex("footL");
+	mRightFootJointIndex = mModel->getJointIndex("footR");
+
+	if (mTyre) {
+
+		SysShape::Model* tyreModel = mTyre->mModel;
+		mLeftHandMtx               = tyreModel->getMatrix(tyreModel->getJointIndex("tyreFL"));
+
+		modelData->mJointTree.mJoints[mLeftHandJointIndex]->mFunction = lHandCallBack;
+
+		tyreModel                                                      = mTyre->mModel;
+		mRightHandMtx                                                  = tyreModel->getMatrix(tyreModel->getJointIndex("TyreFR"));
+		modelData->mJointTree.mJoints[mRightHandJointIndex]->mFunction = rHandCallBack;
+
+		tyreModel                                                     = mTyre->mModel;
+		mLeftFootMtx                                                  = tyreModel->getMatrix(tyreModel->getJointIndex("TyreBL"));
+		modelData->mJointTree.mJoints[mLeftFootJointIndex]->mFunction = lFootCallBack;
+
+		tyreModel                                                      = mTyre->mModel;
+		mRightFootMtx                                                  = tyreModel->getMatrix(tyreModel->getJointIndex("tyreBR"));
+		modelData->mJointTree.mJoints[mRightFootJointIndex]->mFunction = rFootCallBack;
+
+		mModel->hidePackets();
+		mTyre->mModel->hidePackets();
+		modelData->mJointTree.mJoints[mChestJointIndex]->mFunction = bodyCallBack;
+	}
+
+	mWaistJointIndex = mModel->getJointIndex("waist");
+
+	if (mTyre) {
+		mPosition.y += C_PARMS->_A50;
+		mTyre->onSetPosition(mPosition);
+	}
+
+	WPSearchArg wpSearch(mPosition, nullptr, 0, 10.0f);
+	s16 wpIndex            = mapMgr->mRouteMgr->getNearestWayPoint(wpSearch)->mIndex;
+	mNextWaypointIndex     = wpIndex;
+	mPreviousWaypointIndex = wpIndex;
+	mCurrentWaypointIndex  = wpIndex;
+
+	mNextRoutePos   = mPosition;
+	mHomePosition   = mNextRoutePos;
+	mTargetPosition = mHomePosition;
+
+	if (isFinalFloor()) {
+		PSM::disableAppearFlag(mSoundObj);
+	} else if (mTyre && !mPelletDropCode.isNull() && Radar::mgr) {
+		Radar::Mgr::exit(this);
+	}
+
+	mTargetColor = Color4(0xb5, 0xc0, 0xae, 0xff); // Transparent Color
+	_388         = Color4(0xff, 0x20, 0x16, 0xff);
+	mFadeColor   = Color4(0x30, 0x3f, 0x57, 0x00);
+	mActiveColor = mTargetColor;
+
+	modelData = mModel->mJ3dModel->mModelData;
+
+	// if you need this many P2ASSERTs then maybe you're the one who needs sanity checked
+	P2ASSERTLINE(294, modelData);
+
+	u16 kageMatIdx = modelData->mMaterialTable.mMaterialNames->getIndex("kage_mat");
+
+	_37C = modelData->mMaterialTable.mMaterials[kageMatIdx];
+
+	if (gameSystem && gameSystem->isZukanMode()) {
+		mWraithFallTimer = 0.0f;
+	}
+
+	mEfxDead->mMtx = mModel->mJoints[mChestJointIndex].getWorldMatrix();
+}
+
+bool BlackMan::Obj::hipdropCallBack(Game::Creature* creature, f32 damage, CollPart* part)
+{
+	int stateID = getStateID();
+	if (stateID == WRAITH_Tired) {
+		mFreezeTimer = 0;
+		mFSM->transit(this, 2, nullptr);
+		return EnemyBase::hipdropCallBack(creature, damage, part);
+	}
+	if (stateID == WRAITH_Freeze || stateID == WRAITH_Bend || stateID == WRAITH_GFreeze || isEvent(0, EB_Bittered)) {
+		if (mTyre) {
+			if (isEvent(0, EB_Bittered)) {
+				damage = 0.1f;
+			}
+			if (mTyre->mHealth < 1.0f) {
+				damage = 0.0f;
+			}
+			mTyre->EnemyBase::addDamage(damage, 1.0f);
+			enableEvent(0, EB_SquashOnDamageAnim);
+			EnemyBase::addDamage(0.0f, 1.0f);
+			return false;
+		}
+
+		return EnemyBase::hipdropCallBack(creature, damage, part);
+	}
+	return false;
+}
+
+/**
+ * @note Address: 0x803A7E04
+ * @note Size: 0xDC
+ */
+bool BlackMan::Obj::earthquakeCallBack(Game::Creature* creature, f32 bounceFactor)
+{
+	if (mTyre) {
+		mTyre->earthquakeCallBack(creature, bounceFactor);
+		return EnemyBase::earthquakeCallBack(creature, bounceFactor);
+	}
+
+	if (C_PARMS->_A12 && (getStateID() == WRAITH_Walk || getStateID() == WRAITH_Tired || getStateID() == WRAITH_GFreeze)) {
+		mFreezeTimer = 0;
+		mEscapeTimer = 0;
+		mFSM->transit(this, WRAITH_Freeze, nullptr);
+	}
+	return EnemyBase::earthquakeCallBack(creature, bounceFactor);
 }
 
 } // namespace BlackMan

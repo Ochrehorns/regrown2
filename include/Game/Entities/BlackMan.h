@@ -384,7 +384,8 @@ enum StateID {
 	WRAITH_Flick   = 6,
 	WRAITH_Recover = 7,
 	WRAITH_Tired   = 8,
-	WRAITH_Count   = 9,
+	WRAITH_GFreeze = 9,
+	WRAITH_Count   = 10,
 };
 
 struct State : public EnemyFSMState {
@@ -492,6 +493,18 @@ struct StateWalk : public State {
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
 };
+
+struct StateGoldFreeze : public State {
+	StateGoldFreeze(int);
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
 /////////////////////////////////////////////////////////////////
 } // namespace BlackMan
 } // namespace Game
