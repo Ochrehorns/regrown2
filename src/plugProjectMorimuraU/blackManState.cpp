@@ -13,13 +13,6 @@
 namespace Game {
 namespace BlackMan {
 
-inline bool isGold()
-{
-	return (gameSystem->mSection                               /*&& gameSystem->mSection->getCaveID() == 'l_04'*/
-	        && (gameSystem->mSection->getCurrFloor() + 1 == 1) // change to l_04 and == 31 for final
-	        && !gameSystem->isZukanMode());
-}
-
 extern Obj* curB;
 
 /**

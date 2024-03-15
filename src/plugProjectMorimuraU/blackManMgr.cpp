@@ -36,7 +36,23 @@ EnemyBase* Mgr::birth(EnemyBirthArg& birthArg) { return EnemyMgrBase::birth(birt
  */
 void Mgr::loadModelData()
 {
-	EnemyMgrBase::loadModelData();
+	// EnemyMgrBase::loadModelData();
+	EnemyInfo* info = EnemyInfoFunc::getEnemyInfo(getEnemyTypeID(), 0xFFFF);
+	char* modelName = info->mModelName;
+	if (*modelName == 0) {
+		modelName = EnemyInfoFunc::getEnemyName(getEnemyTypeID(), 0xFFFF);
+	}
+
+	char file[250];
+	if (isGold()) {
+		sprintf(file, "/enemy/data/Plasm/model.szs");
+	} else {
+		sprintf(file, "/enemy/data/%s/model.szs", modelName);
+	}
+	LoadResource::Arg arg(file);
+	LoadResource::Node* node = gLoadResourceMgr->mountArchive(arg);
+	EnemyMgrBase::loadModelData(node->mArchive);
+
 	J3DShape* shape;
 	for (u16 j = 0; j < mModelData->getShapeNum(); j++) {
 		shape = mModelData->mShapeTable.mItems[j];
