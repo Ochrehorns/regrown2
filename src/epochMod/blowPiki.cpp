@@ -84,17 +84,14 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 	if (gameSystem->isStoryMode()) {
 		isGot = playData->firstCarryPellet(pelt);
 	}
-	if (pelt->getKind() == PELTYPE_TREASURE) {
-		isGot = false; // no common treasure cutscenes
+	if (gameSystem->isStoryMode() && pelt->getKind() == PELTYPE_TREASURE && gameSystem->mIsInCave) {
+		isGot = false; // no common treasure cutscenes in caves
 	}
 	if (pelt->getKind() == PELTYPE_BERRY) {
 		isGot = true;
 	}
 	if (pelt->getKind() == PELTYPE_NUMBER) {
 		isGot = true;
-	}
-	if (isBattery(pelt)) {
-		isGot = true; // battery d1 gets its cutscene so day can end properly
 	}
 
 	if (!strcmp(pelt->mConfig->mParams.mName.mData, "key")) {
