@@ -49,7 +49,7 @@ void StateAttack::init(EnemyBase* obj, StateArg* arg)
 
 void StateAttack::exec(EnemyBase* obj)
 {
-	if (obj->mCurAnim->mType == 1000 && obj->mCurAnim->mIsPlaying) {
+	if (obj->mCurAnim->mType == KEYEVENT_END && obj->mCurAnim->mIsPlaying) {
 		OBJ(obj)->mFsm->transit(obj, ClamState_Shut, nullptr);
 	}
 
@@ -97,7 +97,7 @@ void StateShut::exec(EnemyBase* obj)
 	}
 
 	// on anim finished, go to eat animation if it got any pikmin
-	if (clam->mCurAnim->mType = 1000 && clam->mCurAnim->mIsPlaying) {
+	if (clam->mCurAnim->mType = KEYEVENT_END && clam->mCurAnim->mIsPlaying) {
 		if (!clam->mKilledPiki) {
 			clam->mFsm->transit(clam, ClamState_Wait, 0);
 		} else {
@@ -112,7 +112,7 @@ void StateEat::init(EnemyBase* obj, StateArg* arg) { obj->startMotion(2, nullptr
 
 void StateEat::exec(EnemyBase* obj)
 {
-	if (obj->mCurAnim->mType = 1000 && obj->mCurAnim->mIsPlaying) {
+	if (obj->mCurAnim->mType = KEYEVENT_END && obj->mCurAnim->mIsPlaying) {
 		OBJ(obj)->mFsm->transit(obj, ClamState_Wait, 0);
 	}
 }

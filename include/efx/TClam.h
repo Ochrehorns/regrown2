@@ -10,14 +10,14 @@ namespace efx {
 
 struct TClamSparkles : public TChaseMtx {
 	TClamSparkles()
-	    : TChaseMtx(713, nullptr)
+	    : TChaseMtx(PID_ClamSparkles, nullptr)
 	{
 	}
 };
 
 struct TClamShut : public TSimpleMtx1 {
 	inline TClamShut()
-	    : TSimpleMtx1(nullptr, 712)
+	    : TSimpleMtx1(nullptr, PID_ClamShut)
 	{
 	}
 
@@ -27,7 +27,7 @@ struct TClamShut : public TSimpleMtx1 {
 
 struct TClamDead : public TSimpleMtx1 {
 	inline TClamDead()
-	    : TSimpleMtx1(nullptr, 711)
+	    : TSimpleMtx1(nullptr, PID_ClamDead)
 	{
 	}
 

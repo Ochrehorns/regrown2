@@ -901,6 +901,25 @@
 
 #define PID_SyncDefault (0x2B2) // default TSync PID
 
+// NEW PARTICLE ID
+#define PID_UsubaFirefly          (0x2bc)
+#define PID_PlasmWraithShimmer    (0x2bd)
+#define PID_UsubaFlamethrower     (0x2be)
+#define PID_UsubaFlameGroundFire  (0x2bf)
+#define PID_UsubaFlameGroundSmoke (0x2c0)
+
+#define PID_HallowElecGlow  (0x2c1)
+#define PID_HallowElecBolts (0x2c2)
+
+#define PID_HydrantWaterHit           (0x2c3)
+#define PID_HydrantWaterSplash        (0x2c4)
+#define PID_HydrantWaterSplashBubbles (0x2c5)
+#define PID_HydrantWaterBubble        (0x2c6)
+
+#define PID_ClamDead     (0x2c7)
+#define PID_ClamShut     (0x2c8)
+#define PID_ClamSparkles (0x2c9)
+
 // WORLD MAP JPC
 #define PID_WMap_RocketSparks  (2)
 #define PID_WMap_RocketGlow    (3)
@@ -909,19 +928,5 @@
 #define PID_WMap_NewMap2       (6)
 #define PID_WMap_ShootingStar1 (7)
 #define PID_WMap_ShootingStar  (8)
-
-#define PID_UsubaFirefly          (0x2bc)
-#define PID_PlasmWraithShimmer    (0x2bd)
-#define PID_UsubaFlamethrower     (0x2be)
-#define PID_UsubaFlameGroundFire  (0x2bf)
-#define PID_UsubaFlameGroundSmoke (0x2c0)
-
-#define PID_HallowElecGlow  (0x2c1)
-#define PID_HallowElecBolts (0x02c2)
-
-#define PID_HydrantWaterHit           (0x2c3)
-#define PID_HydrantWaterSplash        (0x2c4)
-#define PID_HydrantWaterSplashBubbles (0x2c5)
-#define PID_HydrantWaterBubble        (0x2c6)
 
 #endif
