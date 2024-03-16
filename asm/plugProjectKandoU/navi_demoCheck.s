@@ -703,6 +703,10 @@ lbl_constructor:
 /* 8021FC44 0021CB84  54 60 06 3E */	clrlwi r0, r3, 0x18
 /* 8021FC48 0021CB88  28 00 00 03 */	cmplwi r0, 3
 /* 8021FC4C 0021CB8C  40 82 00 F4 */	bne .L_8021FD40
+mr r3, r26
+bl isBattery__4GameFPQ24Game6Pellet
+clrlwi. r0, r3, 0x18
+beq .L_8021FD40
 /* 8021FC50 0021CB90  7F 44 D3 78 */	mr r4, r26
 /* 8021FC54 0021CB94  38 61 00 B0 */	addi r3, r1, 0xb0
 /* 8021FC58 0021CB98  81 9A 00 00 */	lwz r12, 0(r26)
@@ -2297,6 +2301,10 @@ lbl_constructor:
 /* 8021FC44 0021CB84  54 60 06 3E */	clrlwi r0, r3, 0x18
 /* 8021FC48 0021CB88  28 00 00 03 */	cmplwi r0, 3
 /* 8021FC4C 0021CB8C  40 82 00 F4 */	bne .L_8021FD40
+mr r3, r26
+bl isBattery__4GameFPQ24Game6Pellet
+clrlwi. r0, r3, 0x18
+beq .L_8021FD40
 /* 8021FC50 0021CB90  7F 44 D3 78 */	mr r4, r26
 /* 8021FC54 0021CB94  38 61 00 B0 */	addi r3, r1, 0xb0
 /* 8021FC58 0021CB98  81 9A 00 00 */	lwz r12, 0(r26)

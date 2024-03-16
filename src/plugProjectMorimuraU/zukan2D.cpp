@@ -24,7 +24,7 @@ f32 TZukanBase::mPodIconOffsetX     = 480.0f;
 f32 TZukanBase::mLargeCategoryScale = 2.0f;
 f32 TZukanBase::mCategoryAlphaRate  = 0.6f;
 u8 TZukanBase::mDrawLineType        = 2;
-bool TZukanBase::mShowAllObjects    = true; // DEBUG. REMOVE FOR RELEASE
+bool TZukanBase::mShowAllObjects;
 bool TZukanBase::mAllNewSupply;
 bool TZukanBase::mZukanShortenTest;
 bool TZukanBase::mZukanCategoryTest;

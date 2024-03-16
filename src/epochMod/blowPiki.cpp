@@ -73,10 +73,8 @@ void autopluck(NaviWalkState* walkstate, Navi* captain)
 	walkstate->execAI(captain);
 }
 
-/**
- * @note Address: 0x801A4D58
- * @note Size: 0xD6C
- */
+bool isBattery(Pellet* pelt) { return !strcmp(pelt->mConfig->mParams.mName.mData, "denchi_1_red"); }
+
 bool PelletGoalState::checkMovie(Pellet* pelt)
 {
 	bool isGot = false;
@@ -95,7 +93,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 	if (pelt->getKind() == PELTYPE_NUMBER) {
 		isGot = true;
 	}
-	if (!strcmp(pelt->mConfig->mParams.mName.mData, "denchi_1_red")) {
+	if (isBattery(pelt)) {
 		isGot = true; // battery d1 gets its cutscene so day can end properly
 	}
 
