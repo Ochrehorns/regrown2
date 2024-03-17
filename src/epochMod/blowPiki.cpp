@@ -86,6 +86,10 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 	}
 	if (gameSystem->isStoryMode() && pelt->getKind() == PELTYPE_TREASURE && gameSystem->mIsInCave) {
 		isGot = false; // no common treasure cutscenes in caves
+		if (!strcmp(pelt->mConfig->mParams.mName.mData, "prophecy") || !strcmp(pelt->mConfig->mParams.mName.mData, "miracle_matter")
+		    || !strcmp(pelt->mConfig->mParams.mName.mData, "dragon_diety")) {
+			isGot = playData->firstCarryPellet(pelt); // except for these three because rakton said so
+		}
 	}
 	if (pelt->getKind() == PELTYPE_BERRY) {
 		isGot = true;
@@ -106,6 +110,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 	}
 
 	if (!strcmp(pelt->mConfig->mParams.mName.mData, "loozy")) {
+		isGot = playData->firstCarryPellet(pelt);
 		sys->getPlayCommonData()->enableLouieRescue();
 		sys->mPlayData->mChallengeOpen = true;
 		playData->mStoryFlags |= STORY_LouieRescued;
