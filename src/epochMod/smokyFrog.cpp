@@ -3,10 +3,13 @@
 #include "Game/CameraMgr.h"
 #include "Game/rumble.h"
 #include "Game/Navi.h"
+#include "Game/MapMgr.h"
 #include "efx/TFrog.h"
 #include "efx/TSmokyFrog.h"
 #include "PS.h"
 #include "LoadResource.h"
+#include "PSM/EnemyBoss.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 
 #define GAS_CLOUD_MODIFIER (1.0f)
 
@@ -16,7 +19,54 @@ namespace SmokyFrog {
 Obj::Obj()
 {
 	createEffect();
+	setFSM(new FSM);
 	mMatLoopAnimator = new Sys::MatLoopAnimator;
+}
+
+void Obj::constructor() 
+{
+	EnemyBase::constructor();
+	resetBossAppearBGM();
+}
+
+/*
+ * --INFO--
+ * Address:	80295268
+ * Size:	0000FC
+ */
+void Obj::updateBossBGM()
+{
+	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
+	PSM::checkBoss(soundObj);
+	if (mStuckPikminCount != 0) {
+		soundObj->postPikiAttack(true);
+	} else {
+		soundObj->postPikiAttack(false);
+	}
+}
+
+/*
+ * --INFO--
+ * Address:	80295364
+ * Size:	0000D0
+ */
+void Obj::resetBossAppearBGM()
+{
+	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
+	PSM::checkBoss(soundObj);
+	soundObj->setAppearFlag(false);
+}
+
+/*
+ * --INFO--
+ * Address:	80295434
+ * Size:	0000CC
+ */
+void Obj::setBossAppearBGM()
+{
+	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
+	PSM::checkBoss(soundObj);
+	soundObj->setAppearFlag(true);
 }
 
 void Obj::onInit(CreatureInitArg* initArg)
@@ -25,11 +75,18 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mAlertTimer  = 128.0f;
 	mAirTimer    = 0.0f;
 	mAttackTimer = 128.0f;
+	mShadowScale = 0.0f;
 	mNextState   = Frog::FROG_NULL;
 	mIsInAir     = false;
 	mIsFalling   = false;
 	setupEffect();
-	mFsm->start(this, Frog::FROG_Wait, nullptr);
+	shadowMgr->delShadow(this);
+	if (gameSystem && gameSystem->isZukanMode()) {
+		mFsm->start(this, SMOKYFROG_Appear, nullptr);
+	} else {
+		mFsm->start(this, SMOKYFROG_Stay, nullptr);
+	}
+	resetBossAppearBGM();
 	mMatLoopAnimator->start(C_MGR->mTexAnimation);
 }
 
@@ -38,7 +95,7 @@ void Obj::setParameters()
 	EnemyBase::setParameters();
 
 	setScale(static_cast<Frog::Parms*>(mParms)->mProperParms.mScaleMult.mValue); // don't assign parm shit in the ctor
-	mCurLodSphere.mRadius = mScaleModifier * static_cast<Frog::Parms*>(mParms)->mGeneral.mOffCameraRadius.mValue;
+	// mCurLodSphere.mRadius = mScaleModifier * static_cast<Frog::Parms*>(mParms)->mGeneral.mOffCameraRadius.mValue;
 	// update collision
 	Sys::Sphere collSphere;
 	mCollTree->mPart->getSphere(collSphere);
@@ -66,6 +123,9 @@ void Obj::getShadowParam(ShadowParam& param)
 		} else {
 			if (getStateID() == Frog::FROG_JumpWait) {
 				param.mPosition.y -= 17.5f;
+			} else if (getStateID() == SMOKYFROG_Stay || SMOKYFROG_Appear) {
+				// set shadow position to min ground level, the + 0.5f is to prevent z-fighting
+				param.mPosition.y = mapMgr->getMinY(param.mPosition) + 0.5f;
 			}
 
 			param.mBoundingSphere.mRadius = 0.75f * static_cast<Frog::Parms*>(mParms)->mProperParms.mJumpSpeed.mValue;
@@ -75,12 +135,40 @@ void Obj::getShadowParam(ShadowParam& param)
 	}
 
 	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
-	param.mSize                     = 17.5f * static_cast<Frog::Parms*>(mParms)->mProperParms.mScaleMult.mValue;
+	param.mSize                     = 17.5f * static_cast<Frog::Parms*>(mParms)->mProperParms.mScaleMult.mValue * mShadowScale;
+}
+
+void Obj::getLODCylinder(Sys::Cylinder& cylinder)
+{
+	// have to do some really dumb stuff to keep the cylinder visible on the ground here (sourced from your local pikhacker)
+	cylinder.mCenter = mCurLodSphere.mPosition;
+	cylinder.mCenter.y = mapMgr->getMinY(cylinder.mCenter) + (SMOKYFROG_START_HEIGHT * 0.5f);
+	
+	cylinder.mRadius = mCurLodSphere.mRadius;
+	cylinder.mLength = SMOKYFROG_START_HEIGHT;
+
+	cylinder.mAxis = Vector3f(0.0f, 1.0f, 0.0f);
+}
+
+bool Obj::needShadow()
+{
+	if (EnemyBase::needShadow()) 
+		return true;
+
+	if (mShadowScale > 0.0f) {
+		int state = getStateID();
+		if (state == SMOKYFROG_Stay || state == SMOKYFROG_Appear) {
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 void Obj::doUpdateCommon()
 {
 	EnemyBase::doUpdateCommon();
+	updateBossBGM();
 	if (mAttackTimer < 1.0f) {
 		mAttackTimer += sys->mDeltaTime;
 		interactGasAttack();
@@ -145,6 +233,22 @@ void Obj::interactGasAttack()
 			}
 		}
 	}
+}
+
+bool Obj::addShadowScale()
+{
+	if (mShadowScale < 1.0f) {
+		mShadowScale += 0.6f * sys->mDeltaTime;
+		if (mShadowScale >= 1.0f) {
+			mShadowScale = 1.0f;
+			return true;
+		}
+	} else {
+		return true;
+	}
+
+	// we haven't hit max scale (1) yet
+	return false;
 }
 
 } // namespace SmokyFrog

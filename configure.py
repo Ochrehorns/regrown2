@@ -1530,6 +1530,7 @@ LIBS = [
         "objects": [
             ["epochMod/blowPiki", True],
             ["epochMod/smokyFrog", True],
+            ["epochMod/smokyFrogState", True],
             ["epochMod/SmokyFrogMgr", True],
             ["epochMod/SleepyBulbear", True],
             ["epochMod/SleepyBulbearMgr", True],

@@ -389,7 +389,7 @@ void Obj::pressOnGround()
 		createDropEffect(fxPos, getDownSmokeScale());
 	}
 
-	if (getEnemyTypeID() == EnemyTypeID::EnemyID_SmokyFrog) {
+	if (getEnemyTypeID() == EnemyTypeID::EnemyID_SmokyFrog && getStateID() != SmokyFrog::SMOKYFROG_Appear) {
 		static_cast<SmokyFrog::Obj*>(this)->createGas();
 	}
 
