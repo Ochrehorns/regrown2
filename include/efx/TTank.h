@@ -136,6 +136,17 @@ struct TTankEffect {
 	TTankFireYodare mEfxFireYodare; // _8C
 };
 
+struct TPtankEffect {
+	TPtankEffect(Mtx mtx)
+	    : mEfxFire(mtx)
+	    , mEfxFireYodare(mtx)
+	{
+	}
+
+	TTankFire mEfxFire;             // _00
+	TTankFireYodare mEfxFireYodare; // _8C
+};
+
 struct TTankWatHit : public TOneEmitterSimple {
 	TTankWatHit()
 	    : TOneEmitterSimple(PID_TankWatHit)

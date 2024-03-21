@@ -1,8 +1,14 @@
 PIKHACK_FILES:=\
+	$(BUILD_DIR)/src/PikHackProject/Ptank.o\
+	$(BUILD_DIR)/src/PikHackProject/PtankMgr.o\
 	$(BUILD_DIR)/src/PikHackProject/Clam.o\
 	$(BUILD_DIR)/src/PikHackProject/ClamMgr.o\
 	$(BUILD_DIR)/src/PikHackProject/ClamState.o\
 	$(BUILD_DIR)/src/PikHackProject/ClamAnimator.o\
+	$(BUILD_DIR)/src/PikHackProject/Pearl.o\
+	$(BUILD_DIR)/src/PikHackProject/PearlMgr.o\
+	$(BUILD_DIR)/src/PikHackProject/PearlState.o\
+	$(BUILD_DIR)/src/PikHackProject/PearlAnimator.o\
 
 DEPENDS += $(PIKHACK_FILES:.o=.d)
 

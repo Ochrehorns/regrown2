@@ -1570,6 +1570,8 @@ LIBS = [
         "mw_version": "2.6",
         "host": True,
         "objects": [
+            ["PikHackProject/PTank", True],
+            ["PikHackProject/PTankMgr", True],
             ["PikHackProject/Clam", True],
             ["PikHackProject/ClamMgr", True],
             ["PikHackProject/ClamState", True],

@@ -180,6 +180,9 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 	case EnemyTypeID::EnemyID_Wtank:
 		mgr = new Wtank::Mgr(limit, type);
 		break;
+	case EnemyTypeID::EnemyID_Ptank:
+		mgr = new Ptank::Mgr(limit, type);
+		break;
 	case EnemyTypeID::EnemyID_Catfish:
 		mgr = new Catfish::Mgr(limit, type);
 		break;

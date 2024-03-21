@@ -58,6 +58,7 @@ bool TEnemyPiyo::create(Arg* arg)
 
 	case Game::EnemyTypeID::EnemyID_Tank:
 	case Game::EnemyTypeID::EnemyID_Wtank:
+	case Game::EnemyTypeID::EnemyID_Ptank:
 		scale = 0.88f;
 		break;
 
@@ -498,6 +499,7 @@ bool TEnemyDead::create(Arg* arg)
 
 	case Game::EnemyTypeID::EnemyID_Tank:
 	case Game::EnemyTypeID::EnemyID_Wtank:
+	case Game::EnemyTypeID::EnemyID_Ptank:
 		scale = 1.0f;
 		break;
 
@@ -745,6 +747,7 @@ bool TEnemyWalkSmoke::create(Arg* arg)
 
 	case Game::EnemyTypeID::EnemyID_Tank:
 	case Game::EnemyTypeID::EnemyID_Wtank:
+	case Game::EnemyTypeID::EnemyID_Ptank:
 		scale   = 1.0f;
 		isSmall = true;
 		break;
@@ -1092,6 +1095,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 
 	case Game::EnemyTypeID::EnemyID_Tank:
 	case Game::EnemyTypeID::EnemyID_Wtank:
+	case Game::EnemyTypeID::EnemyID_Ptank:
 		mType  = 1;
 		mScale = 0.6f;
 		break;
@@ -1612,6 +1616,7 @@ bool TEnemyHamonChasePos::create(Arg* arg)
 
 	case Game::EnemyTypeID::EnemyID_Tank:
 	case Game::EnemyTypeID::EnemyID_Wtank:
+	case Game::EnemyTypeID::EnemyID_Ptank:
 		scale = 0.8f;
 		break;
 
@@ -1902,6 +1907,7 @@ f32 TEnemyHamon::getLimitDepth_()
 
 	case Game::EnemyTypeID::EnemyID_Tank:
 	case Game::EnemyTypeID::EnemyID_Wtank:
+	case Game::EnemyTypeID::EnemyID_Ptank:
 		depth = 34.0f;
 		break;
 
