@@ -19,8 +19,8 @@ struct TKageBend1 : public TSimpleMtx2 {
 };
 
 struct TKageDead1 : public TChaseMtx {
-	inline TKageDead1()
-	    : TChaseMtx(PID_KageDead1, nullptr)
+	inline TKageDead1(bool isGold)
+	    : TChaseMtx((isGold) ? PID_WraithDead1 : PID_KageDead1, nullptr)
 	{
 	}
 
@@ -33,8 +33,8 @@ struct TKageDead1 : public TChaseMtx {
 };
 
 struct TKageDead2 : public TSimple1 {
-	inline TKageDead2()
-	    : TSimple1(PID_KageDead2)
+	inline TKageDead2(bool isGold)
+	    : TSimple1((isGold) ? PID_WraithDead2 : PID_KageDead1)
 	{
 	}
 
@@ -45,8 +45,8 @@ struct TKageDead2 : public TSimple1 {
 };
 
 struct TKageFlick : public TChasePos {
-	inline TKageFlick(Vector3f* chasePos)
-	    : TChasePos(chasePos, PID_KageFlick)
+	inline TKageFlick(Vector3f* chasePos, bool isGold)
+	    : TChasePos(chasePos, (isGold) ? PID_WraithFlick : PID_KageFlick)
 	{
 	}
 
@@ -58,8 +58,8 @@ struct TKageFlick : public TChasePos {
 
 struct TKageMove : public TChasePosYRot {
 
-	inline TKageMove(Vector3f* pos, f32* rot)
-	    : TChasePosYRot(pos, rot, PID_KageMove)
+	inline TKageMove(Vector3f* pos, f32* rot, bool isGold)
+	    : TChasePosYRot(pos, rot, (isGold) ? PID_WraithMove : PID_KageMove)
 	{
 	}
 	virtual ~TKageMove() { } // _48 (weak)
@@ -71,8 +71,8 @@ struct TKageMove : public TChasePosYRot {
 };
 
 struct TKageRecov : public TSimple2 {
-	TKageRecov()
-	    : TSimple2(PID_KageRecov_1, PID_KageRecov_2)
+	TKageRecov(bool isGold)
+	    : TSimple2(PID_KageRecov_1, (isGold) ? PID_WraithRecov_2 : PID_KageRecov_2)
 	{
 	}
 	// _00      = VTBL

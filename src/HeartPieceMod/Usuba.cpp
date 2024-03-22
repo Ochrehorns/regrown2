@@ -617,14 +617,14 @@ void Obj::fadeFireHitGroundEffect() { mFireGroundEfx->fade(); }
 
 void Obj::startElecBodyEffect()
 {
-	for (int i = 0; i < 2; i++) {
+	for (int i = 1; i < 2; i++) {
 		mBodyEfx[i]->create(nullptr);
 	}
 }
 
 void Obj::endElecBodyEffect()
 {
-	for (int i = 0; i < 2; i++) {
+	for (int i = 1; i < 2; i++) {
 		mBodyEfx[i]->fade();
 	}
 }

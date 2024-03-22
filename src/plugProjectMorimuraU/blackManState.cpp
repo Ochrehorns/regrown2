@@ -768,6 +768,7 @@ void Obj::onInit(CreatureInitArg* arg)
 	if (isGold()) {
 		mFSM->start(this, WRAITH_GFreeze, nullptr);
 		mEscapePhase = 2;
+		StartPlasmEffects();
 	} else {
 		EnemyMgrBase* tyreMgr = generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_Tyre);
 		if (tyreMgr) {
@@ -878,6 +879,8 @@ void Obj::onInit(CreatureInitArg* arg)
 	}
 
 	mEfxDead->mMtx = mModel->mJoints[mChestJointIndex].getWorldMatrix();
+
+	
 }
 
 bool BlackMan::Obj::hipdropCallBack(Game::Creature* creature, f32 damage, CollPart* part)

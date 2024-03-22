@@ -63,3 +63,4 @@
 -include src/epochMod/Makefile
 -include src/DroughtMod/Makefile
 -include src/HeartPieceMod/Makefile
+-include src/PikHackProject/Makefile

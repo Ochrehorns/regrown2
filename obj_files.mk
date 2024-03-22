@@ -20,6 +20,7 @@ MODDING:=\
 	$(BUILD_DIR)/src/epochMod/epochMod.a\
 	$(BUILD_DIR)/src/DroughtMod/DroughtMod.a\
 	$(BUILD_DIR)/src/HeartPieceMod/HeartPieceMod.a\
+	$(BUILD_DIR)/src/PikHackProject/v.a\
 
 SYS:=\
 	$(BUILD_DIR)/src/sysBootupU/sysBootupU.a\

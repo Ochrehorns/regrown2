@@ -136,6 +136,10 @@ struct Obj : public EnemyBase {
 	bool isFinalFloor();
 	void appearFanfare();
 
+	void SetupPlasmEffects();
+	void StartPlasmEffects();
+	void KillPlasmEffects();
+
 	inline Parms* getParms() { return C_PARMS; }
 
 	inline void xfbUpdate(J3DModel* j3dModel, J3DModelData* modelData)
