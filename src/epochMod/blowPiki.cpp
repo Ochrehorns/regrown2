@@ -78,6 +78,7 @@ bool isBattery(Pellet* pelt) { return !strcmp(pelt->mConfig->mParams.mName.mData
 bool PelletGoalState::checkMovie(Pellet* pelt)
 {
 	bool isGot = false;
+	bool isColossal = false;
 	// For treasure, upgrades, and corpses, only check for a cutscene if the pellet was collected for the first time. (only berries and
 	// number pellets dont check) This leads to a bug where the first corpse cutscene wont play for enemies youve already collected at an
 	// onion above ground
@@ -90,6 +91,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 		    || !strcmp(pelt->mConfig->mParams.mName.mData, "dragon_diety")) {
 			isGot = playData->firstCarryPellet(pelt); // except for these three because rakton said so
 		}
+		isColossal = !isGot;
 	}
 	if (pelt->getKind() == PELTYPE_BERRY) {
 		isGot = true;
