@@ -23,9 +23,9 @@ Mgr::Mgr(int objLimit, u8 modelType)
  */
 void Mgr::loadModelData()
 {
-	int ids[2] = { EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank };
+	int ids[3] = { EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank, EnemyTypeID::EnemyID_Ptank };
 
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 3; i++) {
 		EnemyMgrBase* mgr = generalEnemyMgr->getEnemyMgr(ids[i]);
 		if (mgr) {
 			J3DModelData* storedModelData = mgr->getJ3DModelData();
@@ -46,9 +46,9 @@ void Mgr::loadModelData()
  */
 void Mgr::loadAnimData()
 {
-	int ids[2] = { EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank };
+	int ids[3] = { EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank, EnemyTypeID::EnemyID_Ptank };
 
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 3; i++) {
 		EnemyMgrBase* mgr = generalEnemyMgr->getEnemyMgr(ids[i]);
 		if (mgr) {
 			SysShape::AnimMgr* storedAnimMgr = mgr->mAnimMgr;
