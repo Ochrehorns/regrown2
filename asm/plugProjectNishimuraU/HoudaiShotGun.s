@@ -367,7 +367,8 @@
 /* 802C3C7C 002C0BBC  90 A1 01 3C */	stw r5, 0x13c(r1)
 /* 802C3C80 002C0BC0  90 A1 01 40 */	stw r5, 0x140(r1)
 /* 802C3C84 002C0BC4  90 01 01 28 */	stw r0, 0x128(r1)
-/* 802C3C88 002C0BC8  48 0E B4 DD */	bl create__Q23efx8TSimple4FPQ23efx3Arg
+mr r5, r28
+/* 802C3C88 002C0BC8  48 0E B4 DD */	bl WaterHitParticle__4GameFPQ23efx5TBaseRQ23efx3ArgPQ34Game6Houdai17HoudaiShotGunNode
 /* 802C3C8C 002C0BCC  48 00 01 F0 */	b .L_802C3E7C
 .L_802C3C90:
 /* 802C3C90 002C0BD0  80 01 01 F4 */	lwz r0, 0x1f4(r1)
@@ -410,7 +411,8 @@
 /* 802C3D24 002C0C64  90 A1 01 20 */	stw r5, 0x120(r1)
 /* 802C3D28 002C0C68  90 A1 01 24 */	stw r5, 0x124(r1)
 /* 802C3D2C 002C0C6C  90 01 01 0C */	stw r0, 0x10c(r1)
-/* 802C3D30 002C0C70  48 0E B4 35 */	bl create__Q23efx8TSimple4FPQ23efx3Arg
+mr r5, r28
+/* 802C3D30 002C0C70  48 0E B4 35 */	bl WaterHitParticle__4GameFPQ23efx5TBaseRQ23efx3ArgPQ34Game6Houdai17HoudaiShotGunNode
 /* 802C3D34 002C0C74  48 00 01 48 */	b .L_802C3E7C
 .L_802C3D38:
 /* 802C3D38 002C0C78  3C 60 80 4B */	lis r3, __vt__Q23efx5TBase@ha
@@ -449,7 +451,8 @@
 /* 802C3DBC 002C0CFC  90 A1 01 60 */	stw r5, 0x160(r1)
 /* 802C3DC0 002C0D00  90 A1 01 64 */	stw r5, 0x164(r1)
 /* 802C3DC4 002C0D04  90 01 01 44 */	stw r0, 0x144(r1)
-/* 802C3DC8 002C0D08  48 0E B4 45 */	bl create__Q23efx8TSimple5FPQ23efx3Arg
+mr r5, r28
+/* 802C3DC8 002C0D08  48 0E B4 45 */	bl WaterHitParticle__4GameFPQ23efx5TBaseRQ23efx3ArgPQ34Game6Houdai17HoudaiShotGunNode
 /* 802C3DCC 002C0D0C  48 00 00 B0 */	b .L_802C3E7C
 .L_802C3DD0:
 /* 802C3DD0 002C0D10  80 01 01 F8 */	lwz r0, 0x1f8(r1)
@@ -494,7 +497,8 @@
 /* 802C3E6C 002C0DAC  90 A1 00 E8 */	stw r5, 0xe8(r1)
 /* 802C3E70 002C0DB0  90 A1 00 EC */	stw r5, 0xec(r1)
 /* 802C3E74 002C0DB4  90 01 00 D8 */	stw r0, 0xd8(r1)
-/* 802C3E78 002C0DB8  48 12 87 31 */	bl create__Q23efx11THdamaHit2WFPQ23efx3Arg
+mr r5, r28
+/* 802C3E78 002C0DB8  48 12 87 31 */	bl WaterHitParticle__4GameFPQ23efx5TBaseRQ23efx3ArgPQ34Game6Houdai17HoudaiShotGunNode
 .L_802C3E7C:
 /* 802C3E7C 002C0DBC  80 7C 00 1C */	lwz r3, 0x1c(r28)
 /* 802C3E80 002C0DC0  81 83 00 00 */	lwz r12, 0(r3)
@@ -950,159 +954,6 @@ b .L_802C4408
 /* 802C44CC 002C140C  38 21 03 80 */	addi r1, r1, 0x380
 /* 802C44D0 002C1410  4E 80 00 20 */	blr 
 .endfn update__Q34Game6Houdai17HoudaiShotGunNodeFv
-
-.fn __ct__Q34Game6Houdai16HoudaiShotGunMgrFPQ34Game6Houdai3Obj, global
-/* 802C44D4 002C1414  94 21 FF D0 */	stwu r1, -0x30(r1)
-/* 802C44D8 002C1418  7C 08 02 A6 */	mflr r0
-/* 802C44DC 002C141C  C0 02 E2 28 */	lfs f0, lbl_8051C588@sda21(r2)
-/* 802C44E0 002C1420  90 01 00 34 */	stw r0, 0x34(r1)
-/* 802C44E4 002C1424  38 00 00 00 */	li r0, 0
-/* 802C44E8 002C1428  BF 01 00 10 */	stmw r24, 0x10(r1)
-/* 802C44EC 002C142C  7C 79 1B 78 */	mr r25, r3
-/* 802C44F0 002C1430  90 83 00 00 */	stw r4, 0(r3)
-/* 802C44F4 002C1434  38 60 00 38 */	li r3, 0x38
-/* 802C44F8 002C1438  98 19 00 04 */	stb r0, 4(r25)
-/* 802C44FC 002C143C  98 19 00 05 */	stb r0, 5(r25)
-/* 802C4500 002C1440  98 19 00 06 */	stb r0, 6(r25)
-/* 802C4504 002C1444  D0 19 00 0C */	stfs f0, 0xc(r25)
-/* 802C4508 002C1448  D0 19 00 08 */	stfs f0, 8(r25)
-/* 802C450C 002C144C  4B D5 F9 99 */	bl __nw__FUl
-/* 802C4510 002C1450  7C 7A 1B 79 */	or. r26, r3, r3
-/* 802C4514 002C1454  41 82 00 1C */	beq .L_802C4530
-/* 802C4518 002C1458  83 79 00 00 */	lwz r27, 0(r25)
-/* 802C451C 002C145C  48 14 CE 75 */	bl __ct__5CNodeFv
-/* 802C4520 002C1460  3C 60 80 4D */	lis r3, __vt__Q34Game6Houdai17HoudaiShotGunNode@ha
-/* 802C4524 002C1464  38 03 15 48 */	addi r0, r3, __vt__Q34Game6Houdai17HoudaiShotGunNode@l
-/* 802C4528 002C1468  90 1A 00 00 */	stw r0, 0(r26)
-/* 802C452C 002C146C  93 7A 00 18 */	stw r27, 0x18(r26)
-.L_802C4530:
-/* 802C4530 002C1470  93 59 00 34 */	stw r26, 0x34(r25)
-/* 802C4534 002C1474  38 60 00 38 */	li r3, 0x38
-/* 802C4538 002C1478  4B D5 F9 6D */	bl __nw__FUl
-/* 802C453C 002C147C  7C 7A 1B 79 */	or. r26, r3, r3
-/* 802C4540 002C1480  41 82 00 1C */	beq .L_802C455C
-/* 802C4544 002C1484  83 79 00 00 */	lwz r27, 0(r25)
-/* 802C4548 002C1488  48 14 CE 49 */	bl __ct__5CNodeFv
-/* 802C454C 002C148C  3C 60 80 4D */	lis r3, __vt__Q34Game6Houdai17HoudaiShotGunNode@ha
-/* 802C4550 002C1490  38 03 15 48 */	addi r0, r3, __vt__Q34Game6Houdai17HoudaiShotGunNode@l
-/* 802C4554 002C1494  90 1A 00 00 */	stw r0, 0(r26)
-/* 802C4558 002C1498  93 7A 00 18 */	stw r27, 0x18(r26)
-.L_802C455C:
-/* 802C455C 002C149C  3C C0 80 4E */	lis r6, __vt__Q23efx5TSync@ha
-/* 802C4560 002C14A0  3C A0 80 4E */	lis r5, __vt__Q23efx9TChasePos@ha
-/* 802C4564 002C14A4  3C 80 80 4F */	lis r4, __vt__Q23efx11THdamaShell@ha
-/* 802C4568 002C14A8  3C 60 80 51 */	lis r3, "zero__10Vector3<f>"@ha
-/* 802C456C 002C14AC  38 C6 69 8C */	addi r6, r6, __vt__Q23efx5TSync@l
-/* 802C4570 002C14B0  38 A5 69 40 */	addi r5, r5, __vt__Q23efx9TChasePos@l
-/* 802C4574 002C14B4  38 84 A0 08 */	addi r4, r4, __vt__Q23efx11THdamaShell@l
-/* 802C4578 002C14B8  93 59 00 38 */	stw r26, 0x38(r25)
-/* 802C457C 002C14BC  3B 66 00 14 */	addi r27, r6, 0x14
-/* 802C4580 002C14C0  3B A5 00 14 */	addi r29, r5, 0x14
-/* 802C4584 002C14C4  3B 84 00 14 */	addi r28, r4, 0x14
-/* 802C4588 002C14C8  3B E3 41 E4 */	addi r31, r3, "zero__10Vector3<f>"@l
-/* 802C458C 002C14CC  3B 40 00 00 */	li r26, 0
-.L_802C4590:
-/* 802C4590 002C14D0  38 60 00 38 */	li r3, 0x38
-/* 802C4594 002C14D4  4B D5 F9 11 */	bl __nw__FUl
-/* 802C4598 002C14D8  7C 7E 1B 79 */	or. r30, r3, r3
-/* 802C459C 002C14DC  41 82 00 1C */	beq .L_802C45B8
-/* 802C45A0 002C14E0  83 19 00 00 */	lwz r24, 0(r25)
-/* 802C45A4 002C14E4  48 14 CD ED */	bl __ct__5CNodeFv
-/* 802C45A8 002C14E8  3C 60 80 4D */	lis r3, __vt__Q34Game6Houdai17HoudaiShotGunNode@ha
-/* 802C45AC 002C14EC  38 03 15 48 */	addi r0, r3, __vt__Q34Game6Houdai17HoudaiShotGunNode@l
-/* 802C45B0 002C14F0  90 1E 00 00 */	stw r0, 0(r30)
-/* 802C45B4 002C14F4  93 1E 00 18 */	stw r24, 0x18(r30)
-.L_802C45B8:
-/* 802C45B8 002C14F8  38 60 00 14 */	li r3, 0x14
-/* 802C45BC 002C14FC  4B D5 F8 E9 */	bl __nw__FUl
-/* 802C45C0 002C1500  28 03 00 00 */	cmplwi r3, 0
-/* 802C45C4 002C1504  41 82 00 6C */	beq .L_802C4630
-/* 802C45C8 002C1508  3C A0 80 4B */	lis r5, __vt__Q23efx5TBase@ha
-/* 802C45CC 002C150C  3C 80 80 4A */	lis r4, __vt__18JPAEmitterCallBack@ha
-/* 802C45D0 002C1510  38 05 A7 F8 */	addi r0, r5, __vt__Q23efx5TBase@l
-/* 802C45D4 002C1514  3C C0 80 4E */	lis r6, __vt__Q23efx5TSync@ha
-/* 802C45D8 002C1518  90 03 00 00 */	stw r0, 0(r3)
-/* 802C45DC 002C151C  38 04 E2 7C */	addi r0, r4, __vt__18JPAEmitterCallBack@l
-/* 802C45E0 002C1520  3C A0 80 4E */	lis r5, __vt__Q23efx9TChasePos@ha
-/* 802C45E4 002C1524  3C 80 80 4F */	lis r4, __vt__Q23efx11THdamaShell@ha
-/* 802C45E8 002C1528  90 03 00 04 */	stw r0, 4(r3)
-/* 802C45EC 002C152C  38 06 69 8C */	addi r0, r6, __vt__Q23efx5TSync@l
-/* 802C45F0 002C1530  39 00 00 00 */	li r8, 0
-/* 802C45F4 002C1534  38 E0 02 B2 */	li r7, 0x2b2
-/* 802C45F8 002C1538  90 03 00 00 */	stw r0, 0(r3)
-/* 802C45FC 002C153C  38 C5 69 40 */	addi r6, r5, __vt__Q23efx9TChasePos@l
-/* 802C4600 002C1540  38 A0 00 9B */	li r5, 0x9b
-/* 802C4604 002C1544  38 04 A0 08 */	addi r0, r4, __vt__Q23efx11THdamaShell@l
-/* 802C4608 002C1548  93 63 00 04 */	stw r27, 4(r3)
-/* 802C460C 002C154C  91 03 00 08 */	stw r8, 8(r3)
-/* 802C4610 002C1550  B0 E3 00 0C */	sth r7, 0xc(r3)
-/* 802C4614 002C1554  99 03 00 0E */	stb r8, 0xe(r3)
-/* 802C4618 002C1558  90 C3 00 00 */	stw r6, 0(r3)
-/* 802C461C 002C155C  93 A3 00 04 */	stw r29, 4(r3)
-/* 802C4620 002C1560  91 03 00 10 */	stw r8, 0x10(r3)
-/* 802C4624 002C1564  B0 A3 00 0C */	sth r5, 0xc(r3)
-/* 802C4628 002C1568  90 03 00 00 */	stw r0, 0(r3)
-/* 802C462C 002C156C  93 83 00 04 */	stw r28, 4(r3)
-.L_802C4630:
-/* 802C4630 002C1570  90 7E 00 1C */	stw r3, 0x1c(r30)
-/* 802C4634 002C1574  7F C4 F3 78 */	mr r4, r30
-/* 802C4638 002C1578  C0 1F 00 00 */	lfs f0, 0(r31)
-/* 802C463C 002C157C  D0 1E 00 20 */	stfs f0, 0x20(r30)
-/* 802C4640 002C1580  C0 1F 00 04 */	lfs f0, 4(r31)
-/* 802C4644 002C1584  D0 1E 00 24 */	stfs f0, 0x24(r30)
-/* 802C4648 002C1588  C0 1F 00 08 */	lfs f0, 8(r31)
-/* 802C464C 002C158C  D0 1E 00 28 */	stfs f0, 0x28(r30)
-/* 802C4650 002C1590  C0 1F 00 00 */	lfs f0, 0(r31)
-/* 802C4654 002C1594  D0 1E 00 2C */	stfs f0, 0x2c(r30)
-/* 802C4658 002C1598  C0 1F 00 04 */	lfs f0, 4(r31)
-/* 802C465C 002C159C  D0 1E 00 30 */	stfs f0, 0x30(r30)
-/* 802C4660 002C15A0  C0 1F 00 08 */	lfs f0, 8(r31)
-/* 802C4664 002C15A4  D0 1E 00 34 */	stfs f0, 0x34(r30)
-/* 802C4668 002C15A8  80 79 00 38 */	lwz r3, 0x38(r25)
-/* 802C466C 002C15AC  48 14 CD 9D */	bl add__5CNodeFP5CNode
-/* 802C4670 002C15B0  3B 5A 00 01 */	addi r26, r26, 1
-/* 802C4674 002C15B4  2C 1A 00 0A */	cmpwi r26, 0xa
-/* 802C4678 002C15B8  41 80 FF 18 */	blt .L_802C4590
-/* 802C467C 002C15BC  38 60 00 10 */	li r3, 0x10
-/* 802C4680 002C15C0  4B D5 F8 25 */	bl __nw__FUl
-/* 802C4684 002C15C4  28 03 00 00 */	cmplwi r3, 0
-/* 802C4688 002C15C8  41 82 00 68 */	beq .L_802C46F0
-/* 802C468C 002C15CC  3C A0 80 4B */	lis r5, __vt__Q23efx5TBase@ha
-/* 802C4690 002C15D0  3C 80 80 4A */	lis r4, __vt__18JPAEmitterCallBack@ha
-/* 802C4694 002C15D4  38 05 A7 F8 */	addi r0, r5, __vt__Q23efx5TBase@l
-/* 802C4698 002C15D8  3C C0 80 4E */	lis r6, __vt__Q23efx5TSync@ha
-/* 802C469C 002C15DC  90 03 00 00 */	stw r0, 0(r3)
-/* 802C46A0 002C15E0  38 04 E2 7C */	addi r0, r4, __vt__18JPAEmitterCallBack@l
-/* 802C46A4 002C15E4  3C A0 80 4B */	lis r5, __vt__Q23efx8TForever@ha
-/* 802C46A8 002C15E8  3C 80 80 4D */	lis r4, __vt__Q23efx11THdamaSight@ha
-/* 802C46AC 002C15EC  90 03 00 04 */	stw r0, 4(r3)
-/* 802C46B0 002C15F0  38 06 69 8C */	addi r0, r6, __vt__Q23efx5TSync@l
-/* 802C46B4 002C15F4  38 C5 2C 24 */	addi r6, r5, __vt__Q23efx8TForever@l
-/* 802C46B8 002C15F8  38 84 14 B4 */	addi r4, r4, __vt__Q23efx11THdamaSight@l
-/* 802C46BC 002C15FC  90 03 00 00 */	stw r0, 0(r3)
-/* 802C46C0 002C1600  39 00 00 00 */	li r8, 0
-/* 802C46C4 002C1604  38 E0 00 9F */	li r7, 0x9f
-/* 802C46C8 002C1608  38 A6 00 14 */	addi r5, r6, 0x14
-/* 802C46CC 002C160C  93 63 00 04 */	stw r27, 4(r3)
-/* 802C46D0 002C1610  38 04 00 14 */	addi r0, r4, 0x14
-/* 802C46D4 002C1614  91 03 00 08 */	stw r8, 8(r3)
-/* 802C46D8 002C1618  B0 E3 00 0C */	sth r7, 0xc(r3)
-/* 802C46DC 002C161C  99 03 00 0E */	stb r8, 0xe(r3)
-/* 802C46E0 002C1620  90 C3 00 00 */	stw r6, 0(r3)
-/* 802C46E4 002C1624  90 A3 00 04 */	stw r5, 4(r3)
-/* 802C46E8 002C1628  90 83 00 00 */	stw r4, 0(r3)
-/* 802C46EC 002C162C  90 03 00 04 */	stw r0, 4(r3)
-.L_802C46F0:
-/* 802C46F0 002C1630  90 79 00 30 */	stw r3, 0x30(r25)
-/* 802C46F4 002C1634  38 00 00 00 */	li r0, 0
-/* 802C46F8 002C1638  7F 23 CB 78 */	mr r3, r25
-/* 802C46FC 002C163C  90 0D 97 20 */	stw r0, sHoudaiShotGunMgr__Q24Game6Houdai@sda21(r13)
-/* 802C4700 002C1640  BB 01 00 10 */	lmw r24, 0x10(r1)
-/* 802C4704 002C1644  80 01 00 34 */	lwz r0, 0x34(r1)
-/* 802C4708 002C1648  7C 08 03 A6 */	mtlr r0
-/* 802C470C 002C164C  38 21 00 30 */	addi r1, r1, 0x30
-/* 802C4710 002C1650  4E 80 00 20 */	blr 
-.endfn __ct__Q34Game6Houdai16HoudaiShotGunMgrFPQ34Game6Houdai3Obj
 
 .fn setupShotGun__Q34Game6Houdai16HoudaiShotGunMgrFv, global
 /* 802C4714 002C1654  94 21 FF E0 */	stwu r1, -0x20(r1)

@@ -39,7 +39,6 @@ Obj::Obj()
 
 	createIKSystem();
 	createShadowSystem();
-	createShotGun();
 	createEffect();
 }
 
@@ -56,6 +55,7 @@ void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 void Obj::onInit(CreatureInitArg* initArg)
 {
 	// TODO: Finish
+	createShotGun();
 	EnemyBase::onInit(initArg);
 	EnemyBase::hardConstraintOn();
 	disableEvent(0, EB_Cullable);

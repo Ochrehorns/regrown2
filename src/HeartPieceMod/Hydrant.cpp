@@ -1,9 +1,14 @@
 #include "Game/Entities/Hydrant.h"
+#include "Game/Entities/Houdai.h"
 
 namespace Game {
 namespace Hydrant {
 
-Obj::Obj() { }
+
+
+Obj::Obj() {
+
+}
 
 void Obj::doInteractBubble(Creature* target)
 {
@@ -19,5 +24,69 @@ void Obj::doInteractBubble(Creature* target)
 	}
 }
 
+
+
+
 } // namespace Hydrant
+
+// WaterHitParticle__4GameFPQ23efx5TBaseRQ23efx3ArgPQ34Game6Houdai17HoudaiShotGunNode
+void WaterHitParticle(efx::TBase* original, efx::Arg& arg, Houdai::HoudaiShotGunNode* obj) {
+	OSReport("WaterHitParticle\n");
+	if (obj->mOwner->isHydrant()) {
+		efx::THydrantHit hit;
+		hit.create(&arg);
+	}
+	else {
+		original->create(&arg);
+	}
+}
+
+namespace Houdai
+{
+
+static HoudaiShotGunMgr* sHoudaiShotGunMgr;
+
+HoudaiShotGunMgr::HoudaiShotGunMgr(Obj* houdai)
+    : mOwner(houdai)
+    , mIsShotGunRotation(false)
+    , mIsShotGunLockedOn(false)
+    , mIsShotGunFinished(false)
+{
+	OSReport("HoudaiShotGunMgr\n");
+
+	mPitch         = 0.0f;
+	mYaw           = 0.0f;
+	mActiveNodes   = new HoudaiShotGunNode(mOwner);
+	mInactiveNodes = new HoudaiShotGunNode(mOwner);
+
+	for (int i = 0; i < 10; i++) {
+		HoudaiShotGunNode* node = new HoudaiShotGunNode(mOwner);
+		if (houdai->isHydrant()) {
+			OSReport("HydantShell\n");
+			node->mEfxShell = (efx::THdamaShell*)(new efx::THydrantShell);	
+		}
+		else {
+			node->mEfxShell = new efx::THdamaShell;
+		}
+		node->mPosition         = Vector3f::zero;
+		node->mVelocity         = Vector3f::zero;
+
+		mInactiveNodes->add(node);
+	}
+
+	mEfxSight = new efx::THdamaSight();
+
+	sHoudaiShotGunMgr = nullptr;
+}
+
+void Obj::createShotGun() { 
+	mShotGunMgr = new HoudaiShotGunMgr(this);
+}
+
+
+
+
+} // namespace Houdai
+
+
 } // namespace Game

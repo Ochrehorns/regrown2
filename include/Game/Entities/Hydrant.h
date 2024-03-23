@@ -20,6 +20,7 @@ struct Obj : public Houdai::Obj {
 
 	void doInteractBubble(Creature* target);
 
+
 	// _00 		= VTBL
 	// _00-_420	= Houdai::Obj
 };
@@ -42,6 +43,7 @@ struct Mgr : public EnemyMgrBase {
 	// _00-_44	= EnemyMgrBase
 	Obj* mObj; // _44, array of Objs
 };
+
 } // namespace Hydrant
 } // namespace Game
 

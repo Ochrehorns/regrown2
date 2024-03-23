@@ -298,7 +298,11 @@ struct HoudaiGroundCallBack : public JointGroundCallBack {
 };
 
 struct HoudaiShotGunNode : public CNode {
-	HoudaiShotGunNode(Obj* houdai);
+	HoudaiShotGunNode(Obj* owner)
+    : mOwner(owner)
+	{
+	}
+
 
 	virtual ~HoudaiShotGunNode() { } // _08 (weak)
 
@@ -308,6 +312,8 @@ struct HoudaiShotGunNode : public CNode {
 	void setPosition(Vector3f& pos);
 	void setVelocity(Vector3f& vel);
 	void startShotGun();
+
+	bool WaterHitParticle(efx::Arg& arg);
 
 	HoudaiShotGunNode* getChild() const { return static_cast<HoudaiShotGunNode*>(mChild); }
 

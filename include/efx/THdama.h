@@ -196,6 +196,21 @@ struct THdamaShell : public TChasePos {
 	// _00-_14	= TChasePos
 };
 
+struct THydrantShell : public TChasePos {
+	inline THydrantShell()
+	    : TChasePos(PID_HydrantWaterBubble)
+	{
+	}
+
+	virtual bool create(Arg* arg) {
+		((THdamaShell*)this)->TChasePos::create(arg);
+	}
+	virtual ~THydrantShell() { } // _48 (weak)
+
+	// _00		= VTBL
+	// _00-_14	= TChasePos
+};
+
 struct THdamaShoot : public TSimpleMtx3 {
 	inline THdamaShoot(Matrixf* mtx)
 	    : TSimpleMtx3(mtx, PID_HDamaShoot_1, PID_HDamaShoot_2, PID_HDamaShoot_3)
@@ -204,6 +219,16 @@ struct THdamaShoot : public TSimpleMtx3 {
 
 	// _00		= VTBL
 	// _00-_1C	= TSimpleMtx3
+};
+
+struct THydrantHit : public TSimple3 {
+	inline THydrantHit() // needs fixing
+	    : TSimple3(PID_HydrantWaterHit, PID_HydrantWaterSplash, PID_HydrantWaterSplashBubbles)
+	{
+	}
+
+	// _00		= VTBL
+	// _00-_1C	= TSimple4
 };
 
 struct THdamaShootA : public TSimple1 {
