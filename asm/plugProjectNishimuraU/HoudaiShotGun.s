@@ -1287,6 +1287,10 @@ b .L_802C4408
 /* 802C4BA4 002C1AE4  90 A1 00 38 */	stw r5, 0x38(r1)
 /* 802C4BA8 002C1AE8  91 01 00 3C */	stw r8, 0x3c(r1)
 /* 802C4BAC 002C1AEC  90 01 00 24 */	stw r0, 0x24(r1)
+lwz r3, 0(r31)
+bl isHydrant__Q34Game6Houdai3ObjFv
+clrlwi. r0, r3, 0x18
+bne .L_802C4BB4
 /* 802C4BB0 002C1AF0  48 0E A9 05 */	bl create__Q23efx11TSimpleMtx3FPQ23efx3Arg
 .L_802C4BB4:
 /* 802C4BB4 002C1AF4  E3 E1 00 D8 */	psq_l f31, 216(r1), 0, qr0

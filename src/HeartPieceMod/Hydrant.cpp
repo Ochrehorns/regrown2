@@ -12,8 +12,13 @@ Obj::Obj() {
 
 void Obj::doInteractBubble(Creature* target)
 {
-	if (target->isNavi() || (target->isPiki() && static_cast<Piki*>(target)->isPikmin())) {
+	if (target->isPiki() && static_cast<Piki*>(target)->isPikmin()) {
 		InteractBubble bubble(this, static_cast<Houdai::Parms*>(mParms)->mGeneral.mAttackDamage.mValue);
+		target->stimulate(bubble);
+		return;
+	}
+	else if (target->isNavi()) {
+		InteractFlick bubble(this, 0.0f, static_cast<Houdai::Parms*>(mParms)->mGeneral.mAttackDamage.mValue, 0.0f);
 		target->stimulate(bubble);
 		return;
 	}

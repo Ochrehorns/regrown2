@@ -543,6 +543,13 @@
 /* 801A0A58 0019D998  7D 89 03 A6 */	mtctr r12
 /* 801A0A5C 0019D99C  4E 80 04 21 */	bctrl 
 /* 801A0A60 0019D9A0  2C 03 00 42 */	cmpwi r3, 0x42
+beq .L_801A0A68
+mr r3, r30
+lwz r12, 0(r30)
+lwz r12, 0x258(r12)
+mtctr r12
+bctrl 
+cmpwi r3, 0x6A
 /* 801A0A64 0019D9A4  40 82 00 08 */	bne .L_801A0A6C
 .L_801A0A68:
 /* 801A0A68 0019D9A8  3B E0 00 01 */	li r31, 1
