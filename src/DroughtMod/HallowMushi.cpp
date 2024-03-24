@@ -30,6 +30,7 @@ void Obj::createEffect()
 	mClawEffectBolts->create(nullptr);
 	mClawEffectGlow  = new efx::TElecClawGlow;
 	mClawEffectGlow->mMtx  = mModel->getJoint("hand_R")->getWorldMatrix();
+	mClawEffectGlow->create(nullptr);
 }
 
 void Obj::onInit(CreatureInitArg* arg)
@@ -397,7 +398,7 @@ void StateFlick::cleanup(EnemyBase* enemy)
 	crab->setEmotionCaution();
 	if (crab->getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
 		HallowMushi::Obj* hallow = static_cast<HallowMushi::Obj*>(crab);
-		hallow->mClawEffectGlow->fade();
+		// hallow->mClawEffectGlow->fade();
 	}
 }
 
@@ -406,6 +407,7 @@ void Obj::startRollingMoveEffect() {
 	if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
 		HallowMushi::Obj* hallow = static_cast<HallowMushi::Obj*>(this);
 		hallow->mClawEffectBolts->fade();
+		hallow->mClawEffectGlow->fade();
 	}
 }
 
@@ -418,6 +420,7 @@ void Obj::finishRollingMoveEffect() {
 	if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
 		HallowMushi::Obj* hallow = static_cast<HallowMushi::Obj*>(this);
 		hallow->mClawEffectBolts->create(nullptr);
+		hallow->mClawEffectGlow->create(nullptr);
 	}
 }
 
