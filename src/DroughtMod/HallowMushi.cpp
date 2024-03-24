@@ -11,7 +11,6 @@
 #include "Game/rumble.h"
 #include "nans.h"
 
-
 namespace Game {
 
 namespace HallowMushi {
@@ -25,11 +24,11 @@ void Obj::createEffect()
 		mTrailArray[i].mActive = false;
 	}
 
-	mClawEffectBolts = new efx::TElecClawBolts;
+	mClawEffectBolts       = new efx::TElecClawBolts;
 	mClawEffectBolts->mMtx = mModel->getJoint("hand_R")->getWorldMatrix();
 	mClawEffectBolts->create(nullptr);
-	mClawEffectGlow  = new efx::TElecClawGlow;
-	mClawEffectGlow->mMtx  = mModel->getJoint("hand_R")->getWorldMatrix();
+	mClawEffectGlow       = new efx::TElecClawGlow;
+	mClawEffectGlow->mMtx = mModel->getJoint("hand_R")->getWorldMatrix();
 	mClawEffectGlow->create(nullptr);
 }
 
@@ -402,7 +401,8 @@ void StateFlick::cleanup(EnemyBase* enemy)
 	}
 }
 
-void Obj::startRollingMoveEffect() { 
+void Obj::startRollingMoveEffect()
+{
 	mEfxRun->create(nullptr);
 	if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
 		HallowMushi::Obj* hallow = static_cast<HallowMushi::Obj*>(this);
@@ -415,7 +415,8 @@ void Obj::startRollingMoveEffect() {
  * @note Address: 0x802FF244
  * @note Size: 0x30
  */
-void Obj::finishRollingMoveEffect() { 
+void Obj::finishRollingMoveEffect()
+{
 	mEfxRun->fade();
 	if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
 		HallowMushi::Obj* hallow = static_cast<HallowMushi::Obj*>(this);

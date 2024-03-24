@@ -1,11 +1,9 @@
 #include "Game/Entities/BlackMan.h"
 #include "efx/TPlasm.h"
 
-namespace Game
-{
+namespace Game {
 
 namespace BlackMan {
-
 
 Obj::Obj()
     : mPostFlickState(-1)
@@ -52,7 +50,7 @@ Obj::Obj()
 	mEfxFrontFlick = new efx::TKageFlick(&mHandPositions[0], gold);
 	mEfxBackFlick  = new efx::TKageFlick(&mHandPositions[1], gold);
 
-    SetupPlasmEffects();
+	SetupPlasmEffects();
 }
 
 void Obj::onKill(Game::CreatureKillArg* arg)
@@ -63,22 +61,26 @@ void Obj::onKill(Game::CreatureKillArg* arg)
 	KillPlasmEffects();
 }
 
-
 efx::TPlasmSparkle* sPlasmSparkle;
 
-void Obj::SetupPlasmEffects() {
-    if (isGold()) {
-        sPlasmSparkle = new efx::TPlasmSparkle;
-        sPlasmSparkle->mMtx = &mBaseTrMatrix;
-    }
+void Obj::SetupPlasmEffects()
+{
+	if (isGold()) {
+		sPlasmSparkle       = new efx::TPlasmSparkle;
+		sPlasmSparkle->mMtx = &mBaseTrMatrix;
+	}
 }
 
-void Obj::StartPlasmEffects() {
-    if (isGold()) sPlasmSparkle->create(nullptr);
+void Obj::StartPlasmEffects()
+{
+	if (isGold())
+		sPlasmSparkle->create(nullptr);
 }
 
-void Obj::KillPlasmEffects() {
-    if (isGold()) sPlasmSparkle->fade();
+void Obj::KillPlasmEffects()
+{
+	if (isGold())
+		sPlasmSparkle->fade();
 }
 
 } // namespace BlackMan

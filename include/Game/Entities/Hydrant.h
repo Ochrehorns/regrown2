@@ -20,7 +20,6 @@ struct Obj : public Houdai::Obj {
 
 	void doInteractBubble(Creature* target);
 
-
 	// _00 		= VTBL
 	// _00-_420	= Houdai::Obj
 };

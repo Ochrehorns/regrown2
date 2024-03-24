@@ -299,10 +299,9 @@ struct HoudaiGroundCallBack : public JointGroundCallBack {
 
 struct HoudaiShotGunNode : public CNode {
 	HoudaiShotGunNode(Obj* owner)
-    : mOwner(owner)
+	    : mOwner(owner)
 	{
 	}
-
 
 	virtual ~HoudaiShotGunNode() { } // _08 (weak)
 

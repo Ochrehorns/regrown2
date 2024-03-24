@@ -202,9 +202,7 @@ struct THydrantShell : public TChasePos {
 	{
 	}
 
-	virtual bool create(Arg* arg) {
-		((THdamaShell*)this)->TChasePos::create(arg);
-	}
+	virtual bool create(Arg* arg) { ((THdamaShell*)this)->TChasePos::create(arg); }
 	virtual ~THydrantShell() { } // _48 (weak)
 
 	// _00		= VTBL

@@ -14,30 +14,31 @@ namespace SmokyFrog {
 #define SMOKYFROG_APPEAR_VEL   (-500.0f)
 
 enum StateID {
-	SMOKYFROG_Stay	 = 10,
+	SMOKYFROG_Stay   = 10,
 	SMOKYFROG_Appear = 11,
-	SMOKYFROG_StateCount, // 12 
+	SMOKYFROG_StateCount, // 12
 };
 
 struct Obj : public MaroFrog::Obj {
 	Obj();
 
 	virtual void constructor();
-	virtual void onInit(CreatureInitArg* settings);     // _30
-	virtual void getShadowParam(ShadowParam& settings); // _134
-	virtual void getLODCylinder(Sys::Cylinder& cylinder); // needed for shadow to draw 
+	virtual void onInit(CreatureInitArg* settings);       // _30
+	virtual void getShadowParam(ShadowParam& settings);   // _134
+	virtual void getLODCylinder(Sys::Cylinder& cylinder); // needed for shadow to draw
 	virtual bool needShadow();
-	virtual void doUpdateCommon();                      // _1D0
-	virtual void setParameters();                       // _228
-	virtual ~Obj() { }                                  // _1BC (weak)
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID()  // _258 (weak)
+	virtual void doUpdateCommon();                     // _1D0
+	virtual void setParameters();                      // _228
+	virtual ~Obj() { }                                 // _1BC (weak)
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _258 (weak)
 	{
 		return EnemyTypeID::EnemyID_SmokyFrog;
 	}
 	virtual void attackNaviPosition(); // _300
-	virtual void changeMaterial() 
-	{ 
-		if (isAlive()) mMatLoopAnimator->animate(30.0f); 
+	virtual void changeMaterial()
+	{
+		if (isAlive())
+			mMatLoopAnimator->animate(30.0f);
 	}
 
 	void createEffect();
@@ -87,7 +88,7 @@ struct FSM : public Game::Frog::FSM {
 
 struct StateStay : public Frog::State {
 	inline StateStay()
-		: State(SMOKYFROG_Stay, "stay")
+	    : State(SMOKYFROG_Stay, "stay")
 	{
 	}
 
@@ -98,7 +99,7 @@ struct StateStay : public Frog::State {
 
 struct StateAppear : public Frog::State {
 	inline StateAppear()
-		: State(SMOKYFROG_Appear, "appear")
+	    : State(SMOKYFROG_Appear, "appear")
 	{
 	}
 

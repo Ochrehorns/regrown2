@@ -4,11 +4,7 @@
 namespace Game {
 namespace Hydrant {
 
-
-
-Obj::Obj() {
-
-}
+Obj::Obj() { }
 
 void Obj::doInteractBubble(Creature* target)
 {
@@ -16,8 +12,7 @@ void Obj::doInteractBubble(Creature* target)
 		InteractBubble bubble(this, static_cast<Houdai::Parms*>(mParms)->mGeneral.mAttackDamage.mValue);
 		target->stimulate(bubble);
 		return;
-	}
-	else if (target->isNavi()) {
+	} else if (target->isNavi()) {
 		InteractFlick bubble(this, 0.0f, static_cast<Houdai::Parms*>(mParms)->mGeneral.mAttackDamage.mValue, 0.0f);
 		target->stimulate(bubble);
 		return;
@@ -29,25 +24,21 @@ void Obj::doInteractBubble(Creature* target)
 	}
 }
 
-
-
-
 } // namespace Hydrant
 
 // WaterHitParticle__4GameFPQ23efx5TBaseRQ23efx3ArgPQ34Game6Houdai17HoudaiShotGunNode
-void WaterHitParticle(efx::TBase* original, efx::Arg& arg, Houdai::HoudaiShotGunNode* obj) {
+void WaterHitParticle(efx::TBase* original, efx::Arg& arg, Houdai::HoudaiShotGunNode* obj)
+{
 	OSReport("WaterHitParticle\n");
 	if (obj->mOwner->isHydrant()) {
 		efx::THydrantHit hit;
 		hit.create(&arg);
-	}
-	else {
+	} else {
 		original->create(&arg);
 	}
 }
 
-namespace Houdai
-{
+namespace Houdai {
 
 static HoudaiShotGunMgr* sHoudaiShotGunMgr;
 
@@ -68,13 +59,12 @@ HoudaiShotGunMgr::HoudaiShotGunMgr(Obj* houdai)
 		HoudaiShotGunNode* node = new HoudaiShotGunNode(mOwner);
 		if (houdai->isHydrant()) {
 			OSReport("HydantShell\n");
-			node->mEfxShell = (efx::THdamaShell*)(new efx::THydrantShell);	
-		}
-		else {
+			node->mEfxShell = (efx::THdamaShell*)(new efx::THydrantShell);
+		} else {
 			node->mEfxShell = new efx::THdamaShell;
 		}
-		node->mPosition         = Vector3f::zero;
-		node->mVelocity         = Vector3f::zero;
+		node->mPosition = Vector3f::zero;
+		node->mVelocity = Vector3f::zero;
 
 		mInactiveNodes->add(node);
 	}
@@ -84,14 +74,8 @@ HoudaiShotGunMgr::HoudaiShotGunMgr(Obj* houdai)
 	sHoudaiShotGunMgr = nullptr;
 }
 
-void Obj::createShotGun() { 
-	mShotGunMgr = new HoudaiShotGunMgr(this);
-}
-
-
-
+void Obj::createShotGun() { mShotGunMgr = new HoudaiShotGunMgr(this); }
 
 } // namespace Houdai
-
 
 } // namespace Game

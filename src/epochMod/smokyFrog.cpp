@@ -23,7 +23,7 @@ Obj::Obj()
 	mMatLoopAnimator = new Sys::MatLoopAnimator;
 }
 
-void Obj::constructor() 
+void Obj::constructor()
 {
 	EnemyBase::constructor();
 	resetBossAppearBGM();
@@ -141,9 +141,9 @@ void Obj::getShadowParam(ShadowParam& param)
 void Obj::getLODCylinder(Sys::Cylinder& cylinder)
 {
 	// have to do some really dumb stuff to keep the cylinder visible on the ground here (sourced from your local pikhacker)
-	cylinder.mCenter = mCurLodSphere.mPosition;
+	cylinder.mCenter   = mCurLodSphere.mPosition;
 	cylinder.mCenter.y = mapMgr->getMinY(cylinder.mCenter) + (SMOKYFROG_START_HEIGHT * 0.5f);
-	
+
 	cylinder.mRadius = mCurLodSphere.mRadius;
 	cylinder.mLength = SMOKYFROG_START_HEIGHT;
 
@@ -152,7 +152,7 @@ void Obj::getLODCylinder(Sys::Cylinder& cylinder)
 
 bool Obj::needShadow()
 {
-	if (EnemyBase::needShadow()) 
+	if (EnemyBase::needShadow())
 		return true;
 
 	if (mShadowScale > 0.0f) {
@@ -161,7 +161,7 @@ bool Obj::needShadow()
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 

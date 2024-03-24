@@ -178,8 +178,8 @@ struct Parms : public EnemyParmsBase {
 		    , mFirePoolLingerTime(this, 'fp0A', "Fire Pool Lingering TIme", 5.0f, 0.0f, 30.0f)
 		    , mFirePoolSpawnDistance(this, 'fp0B', "Fire Pool Spawn Distance", 200.0f, 0.0f, 1000.0f)
 		    , mFireBreathChance(this, 'fp0C', "Fire Breath Chance", 0.0f, 0.0f, 1.0f)
-			, mMinSwoopDistance(this, 'fp0D', "Minimum Swoop Distance", 100.0f, 0.0f, 10000.0f)
-			, mMaxFireDistance(this, 'fp0E', "Maximum Fire Distance", 300.0f, 0.0f, 10000.0f)
+		    , mMinSwoopDistance(this, 'fp0D', "Minimum Swoop Distance", 100.0f, 0.0f, 10000.0f)
+		    , mMaxFireDistance(this, 'fp0E', "Maximum Fire Distance", 300.0f, 0.0f, 10000.0f)
 		{
 		}
 

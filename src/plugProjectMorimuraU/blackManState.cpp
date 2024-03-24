@@ -879,8 +879,6 @@ void Obj::onInit(CreatureInitArg* arg)
 	}
 
 	mEfxDead->mMtx = mModel->mJoints[mChestJointIndex].getWorldMatrix();
-
-	
 }
 
 bool BlackMan::Obj::hipdropCallBack(Game::Creature* creature, f32 damage, CollPart* part)

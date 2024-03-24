@@ -18,22 +18,19 @@ struct THallow : public TSimple1 {
 	// _00-_0C  = TSimple1
 };
 
-struct TElecClawBolts : public TChaseMtx
-{
+struct TElecClawBolts : public TChaseMtx {
 	TElecClawBolts()
 	    : TChaseMtx(PID_HallowElecBolts, nullptr)
 	{
 	}
 };
 
-struct TElecClawGlow : public TChaseMtx
-{
+struct TElecClawGlow : public TChaseMtx {
 	TElecClawGlow()
 	    : TChaseMtx(PID_HallowElecGlow, nullptr)
 	{
 	}
 };
-
 
 } // namespace efx
 

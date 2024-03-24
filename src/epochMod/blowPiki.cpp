@@ -77,7 +77,7 @@ bool isBattery(Pellet* pelt) { return !strcmp(pelt->mConfig->mParams.mName.mData
 
 bool PelletGoalState::checkMovie(Pellet* pelt)
 {
-	bool isGot = false;
+	bool isGot      = false;
 	bool isColossal = false;
 	// For treasure, upgrades, and corpses, only check for a cutscene if the pellet was collected for the first time. (only berries and
 	// number pellets dont check) This leads to a bug where the first corpse cutscene wont play for enemies youve already collected at an
@@ -88,8 +88,9 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 	if (gameSystem->isStoryMode() && pelt->getKind() == PELTYPE_TREASURE && gameSystem->mIsInCave) {
 		isGot = false; // no common treasure cutscenes in caves
 		if (!strcmp(pelt->mConfig->mParams.mName.mData, "prophecy") || !strcmp(pelt->mConfig->mParams.mName.mData, "miracle_matter")
-		    || !strcmp(pelt->mConfig->mParams.mName.mData, "dragon_diety")) {
-			isGot = playData->firstCarryPellet(pelt); // except for these three because rakton said so
+		    || !strcmp(pelt->mConfig->mParams.mName.mData, "dragon_diety") || !strcmp(pelt->mConfig->mParams.mName.mData, "doll")
+		    || !strcmp(pelt->mConfig->mParams.mName.mData, "robot_head")) {
+			isGot = playData->firstCarryPellet(pelt); // except for these five because rakton said so
 		}
 		isColossal = !isGot;
 	}

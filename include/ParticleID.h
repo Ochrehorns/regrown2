@@ -920,11 +920,11 @@
 #define PID_ClamShut     (0x2c8)
 #define PID_ClamSparkles (0x2c9)
 
-#define PID_WraithDead1 (0x2B6)
-#define PID_WraithDead2 (0x2B7)
-#define PID_WraithFlick (0x2BB)
-#define PID_WraithMove (0x2B8)
-#define PID_WraithRun (0x2BA)
+#define PID_WraithDead1   (0x2B6)
+#define PID_WraithDead2   (0x2B7)
+#define PID_WraithFlick   (0x2BB)
+#define PID_WraithMove    (0x2B8)
+#define PID_WraithRun     (0x2BA)
 #define PID_WraithRecov_2 (0x2B9)
 
 // WORLD MAP JPC
