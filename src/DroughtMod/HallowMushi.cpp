@@ -3,6 +3,14 @@
 #include "Dolphin/rand.h"
 #include "Game/Navi.h"
 #include "Game/Stickers.h"
+#include "types.h"
+
+#include "Game/EnemyAnimKeyEvent.h"
+#include "Game/EnemyFunc.h"
+#include "Game/CameraMgr.h"
+#include "Game/rumble.h"
+#include "nans.h"
+
 
 namespace Game {
 
@@ -16,6 +24,12 @@ void Obj::createEffect()
 		mTrailArray[i].mEffect = new efx::THallow;
 		mTrailArray[i].mActive = false;
 	}
+
+	mClawEffectBolts = new efx::TElecClawBolts;
+	mClawEffectBolts->mMtx = mModel->getJoint("hand_R")->getWorldMatrix();
+	mClawEffectBolts->create(nullptr);
+	mClawEffectGlow  = new efx::TElecClawGlow;
+	mClawEffectGlow->mMtx  = mModel->getJoint("hand_R")->getWorldMatrix();
 }
 
 void Obj::onInit(CreatureInitArg* arg)
@@ -315,6 +329,98 @@ void Obj::setBodyCollisionBase(bool arg)
 		static_cast<HallowMushi::Obj*>(this)->HallowMushi::Obj::setBodyCollision(arg);
 	}
 }
+
+void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
+{
+	Obj* crab            = OBJ(enemy);
+	crab->mNextState     = DANGOMUSHI_NULL;
+	crab->mStateTimer    = 0.0f;
+	crab->mIsArmSwinging = false;
+	crab->mIsBall        = false;
+	crab->setEmotionExcitement();
+	crab->mTargetVelocity = Vector3f(0.0f);
+	crab->startBlendAnimation(DANGOANIM_Attack2, false);
+
+	if (crab->getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
+		HallowMushi::Obj* hallow = static_cast<HallowMushi::Obj*>(crab);
+		hallow->mClawEffectGlow->create(nullptr);
+	}
+}
+
+/**
+ * @note Address: 0x802FBAE8
+ * @note Size: 0x1E0
+ */
+void StateFlick::exec(EnemyBase* enemy)
+{
+	Obj* crab = OBJ(enemy);
+	if (crab->flickHandCollision()) {
+		crab->createWallBreakEffect();
+		crab->getJAIObject()->startSound(PSSE_EN_DANGO_ARM_GROUND, 0);
+		Vector3f crabPos = crab->getPosition();
+		cameraMgr->startVibration(25, crabPos, 2);
+		rumbleMgr->startRumble(14, crabPos, 2);
+		transit(crab, DANGOMUSHI_Wait, (DangoStateArg*)("blend"));
+		return;
+	}
+
+	if (crab->mCurAnim->mIsPlaying) {
+		if (crab->mCurAnim->mType == KEYEVENT_END_BLEND) {
+			crab->endBlendAnimation();
+
+		} else if (crab->mCurAnim->mType == KEYEVENT_2) {
+			crab->mIsArmSwinging = true;
+			if (crab->getMotionFrame() < 30.0f) {
+				crab->createFlickAttackEffect();
+			}
+
+		} else if (crab->mCurAnim->mType == KEYEVENT_3) {
+			crab->mIsArmSwinging = false;
+			Vector3f crabPos     = crab->getPosition();
+			cameraMgr->startVibration(15, crabPos, 2);
+			rumbleMgr->startRumble(11, crabPos, 2);
+
+		} else if (crab->mCurAnim->mType == KEYEVENT_END) {
+			transit(crab, DANGOMUSHI_Wait, nullptr);
+		}
+	}
+}
+
+/**
+ * @note Address: 0x802FBCC8
+ * @note Size: 0x2C
+ */
+void StateFlick::cleanup(EnemyBase* enemy)
+{
+	Obj* crab            = OBJ(enemy);
+	crab->mIsArmSwinging = false;
+	crab->setEmotionCaution();
+	if (crab->getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
+		HallowMushi::Obj* hallow = static_cast<HallowMushi::Obj*>(crab);
+		hallow->mClawEffectGlow->fade();
+	}
+}
+
+void Obj::startRollingMoveEffect() { 
+	mEfxRun->create(nullptr);
+	if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
+		HallowMushi::Obj* hallow = static_cast<HallowMushi::Obj*>(this);
+		hallow->mClawEffectBolts->fade();
+	}
+}
+
+/**
+ * @note Address: 0x802FF244
+ * @note Size: 0x30
+ */
+void Obj::finishRollingMoveEffect() { 
+	mEfxRun->fade();
+	if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
+		HallowMushi::Obj* hallow = static_cast<HallowMushi::Obj*>(this);
+		hallow->mClawEffectBolts->create(nullptr);
+	}
+}
+
 } // namespace DangoMushi
 
 } // namespace Game

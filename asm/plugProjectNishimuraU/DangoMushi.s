@@ -3782,37 +3782,6 @@
 /* 802FF20C 002FC14C  4E 80 00 20 */	blr 
 .endfn "createBodyWallCrashEffect__Q34Game10DangoMushi3ObjF10Vector3<f>"
 
-.fn startRollingMoveEffect__Q34Game10DangoMushi3ObjFv, global
-/* 802FF210 002FC150  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 802FF214 002FC154  7C 08 02 A6 */	mflr r0
-/* 802FF218 002FC158  38 80 00 00 */	li r4, 0
-/* 802FF21C 002FC15C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 802FF220 002FC160  80 63 02 FC */	lwz r3, 0x2fc(r3)
-/* 802FF224 002FC164  81 83 00 00 */	lwz r12, 0(r3)
-/* 802FF228 002FC168  81 8C 00 08 */	lwz r12, 8(r12)
-/* 802FF22C 002FC16C  7D 89 03 A6 */	mtctr r12
-/* 802FF230 002FC170  4E 80 04 21 */	bctrl 
-/* 802FF234 002FC174  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 802FF238 002FC178  7C 08 03 A6 */	mtlr r0
-/* 802FF23C 002FC17C  38 21 00 10 */	addi r1, r1, 0x10
-/* 802FF240 002FC180  4E 80 00 20 */	blr 
-.endfn startRollingMoveEffect__Q34Game10DangoMushi3ObjFv
-
-.fn finishRollingMoveEffect__Q34Game10DangoMushi3ObjFv, global
-/* 802FF244 002FC184  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 802FF248 002FC188  7C 08 02 A6 */	mflr r0
-/* 802FF24C 002FC18C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 802FF250 002FC190  80 63 02 FC */	lwz r3, 0x2fc(r3)
-/* 802FF254 002FC194  81 83 00 00 */	lwz r12, 0(r3)
-/* 802FF258 002FC198  81 8C 00 10 */	lwz r12, 0x10(r12)
-/* 802FF25C 002FC19C  7D 89 03 A6 */	mtctr r12
-/* 802FF260 002FC1A0  4E 80 04 21 */	bctrl 
-/* 802FF264 002FC1A4  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 802FF268 002FC1A8  7C 08 03 A6 */	mtlr r0
-/* 802FF26C 002FC1AC  38 21 00 10 */	addi r1, r1, 0x10
-/* 802FF270 002FC1B0  4E 80 00 20 */	blr 
-.endfn finishRollingMoveEffect__Q34Game10DangoMushi3ObjFv
-
 .fn createEnemyBounceEffect__Q34Game10DangoMushi3ObjFv, global
 /* 802FF274 002FC1B4  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 802FF278 002FC1B8  7C 08 02 A6 */	mflr r0

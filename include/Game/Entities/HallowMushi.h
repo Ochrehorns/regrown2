@@ -48,6 +48,8 @@ struct Obj : public DangoMushi::Obj {
 	int mTrailCount;
 	Trail* mTrailArray;
 	f32 mLastTrailTimer;
+	efx::TElecClawBolts* mClawEffectBolts;
+	efx::TElecClawGlow* mClawEffectGlow;
 };
 
 struct Mgr : public EnemyMgrBase {

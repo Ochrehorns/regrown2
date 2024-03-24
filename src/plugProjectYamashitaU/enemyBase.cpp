@@ -803,6 +803,8 @@ void StateMachine::init(EnemyBase* enemy)
 	registerState(new StoneState);
 	registerState(new EarthquakeState);
 	registerState(new FitState);
+
+	registerState(new BirthTypeDropAutoState);
 }
 
 /**
