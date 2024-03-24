@@ -573,6 +573,10 @@ void Obj::createEffect()
 
 void Obj::createGroundFire()
 {
+	if (mIsFirePoolActive) {
+		fadeFireHitGroundEffect();
+	}
+
 	mGroundedFireTimer = C_PROPERPARMS.mFirePoolLingerTime();
 	mIsFirePoolActive  = true;
 
