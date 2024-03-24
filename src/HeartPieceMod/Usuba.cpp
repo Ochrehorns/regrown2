@@ -386,8 +386,10 @@ void Obj::setAttackTarget(Creature* target)
 	mTargetCreature         = target;
 	Vector3f targetPosition = target->getPosition();
 	f32 theSqrDistance      = sqrDistanceXZ(targetPosition, mPosition);
-	bool isTooCloseForSwoop = theSqrDistance < SQUARE(100.0f);
-	bool isTooFarForFire    = theSqrDistance > SQUARE(300.0f);
+	f32 minSwoop = C_PROPERPARMS.mMinSwoopDistance();
+	f32 maxFire = C_PROPERPARMS.mMaxFireDistance();
+	bool isTooCloseForSwoop = theSqrDistance < SQUARE(minSwoop);
+	bool isTooFarForFire    = theSqrDistance > SQUARE(maxFire);
 
 	if (!isTooFarForFire && (isTooCloseForSwoop || randFloat() <= C_PROPERPARMS.mFireBreathChance())) {
 		mFsm->transit(this, USUBA_AttackBreath, nullptr);
