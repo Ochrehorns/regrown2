@@ -89,7 +89,7 @@ TEnemyZukanIndex eIDInfo[ENEMY_ZUKAN_COUNT] = {
 	{ TEnemyZukan::Zukan_LeafChappy, Game::EnemyTypeID::EnemyID_LeafChappy },
 	{ TEnemyZukan::Zukan_Tank, Game::EnemyTypeID::EnemyID_Tank },
 	{ TEnemyZukan::Zukan_Wtank, Game::EnemyTypeID::EnemyID_Wtank },
-	{ TEnemyZukan::Zukan_Ptank, Game::EnemyTypeID::EnemyID_Pearl },
+	{ TEnemyZukan::Zukan_Ptank, Game::EnemyTypeID::EnemyID_Ptank },
 	{ TEnemyZukan::Zukan_Kabuto, Game::EnemyTypeID::EnemyID_Kabuto },
 	{ TEnemyZukan::Zukan_Rkabuto, Game::EnemyTypeID::EnemyID_Rkabuto },
 	{ TEnemyZukan::Zukan_Bkabuto, Game::EnemyTypeID::EnemyID_Bkabuto },
