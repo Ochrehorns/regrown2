@@ -94,6 +94,7 @@ void StateShut::exec(EnemyBase* obj)
 		efx::TClamShut shutefx;
 		shutefx.mMtx = mtx;
 		shutefx.create(nullptr);
+		obj->mSoundObj->startSound(PSSE_EN_LAND_SOIL_L, 0);
 	}
 
 	// on anim finished, go to eat animation if it got any pikmin

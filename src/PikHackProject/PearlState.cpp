@@ -26,6 +26,7 @@ void StateIdle::init(EnemyBase* obj, StateArg* arg)
 void StateIdle::exec(EnemyBase* obj)
 {
 	if (obj->mHealth <= 0.0f && obj->isAlive()) {
+		obj->mSoundObj->startSound(PSSE_EN_PIKIMAKI_HIT, 0);
 		OBJ(obj)->mFsm->transit(obj, PearlState_Dead, nullptr);
 	}
 }
@@ -63,14 +64,14 @@ void StateDead::init(EnemyBase* obj, StateArg* arg)
 		Vector3f vel(sinf(facedir) * 120.0f, 180.0f, cosf(facedir) * 120.0f);
 		shippart->setVelocity(vel);
 		shippart->mScale = 1.0f;
-		obj->mSoundObj->startSound(0x4800, 0); // todo: sound
+		obj->mSoundObj->startSound(PSSE_EN_ENEMY_LOOSE_ITEM, 0);
 	}
 
 	efx::TClamDead deadefx;
 	deadefx.mMtx = &obj->mBaseTrMatrix;
 	deadefx.create(nullptr);
 
-	obj->mSoundObj->startSound(0x5800, 0); // todo: sound
+	obj->mSoundObj->startSound(0x598e, 0);
 }
 
 void StateDead::exec(EnemyBase* obj)
