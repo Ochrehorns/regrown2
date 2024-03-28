@@ -29,6 +29,8 @@
 #include "Dolphin/rand.h"
 #include "PikiAi.h"
 #include "JSystem/J3D/J3DModelLoader.h"
+#include "Screen/screenMgr.h"
+#include "og/newScreen/Cave.h"
 
 Game::ItemOnyon::Mgr* Game::ItemOnyon::mgr;
 static bool sVolveFlag;
@@ -517,6 +519,16 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 				if (pellet->mConfig->mParams.mMoney.mData > 0) {
 					playData->obtainPellet_Cave(pellet);
 				}
+
+				// reset treasures radar
+				if (Screen::Mgr::sScreenMgr->mBackupScene) {
+					og::newScreen::ObjCave* obj
+					    = static_cast<og::newScreen::ObjCave*>(Screen::Mgr::sScreenMgr->mBackupScene->searchObj("cave screen"));
+					if (obj) {
+						obj->mOtakara->mIsInit = false;
+					}
+				}
+
 				// brought to the ship (the game just assumes you're above ground)
 			} else if (item->mOnyonType == ONYON_TYPE_SHIP) {
 				if (pellet->mConfig->mParams.mMoney.mData > 0) {
