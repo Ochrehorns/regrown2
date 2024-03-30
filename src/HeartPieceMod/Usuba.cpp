@@ -200,19 +200,38 @@ void Obj::doDirectDraw(Graphics&) { }
  */
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
+void Obj::InteractElectricBody(Creature* creature) {
+	InteractDenki denki(this, C_PARMS->mGeneral.mAttackDamage(), &Vector3f::zero);
+	creature->stimulate(denki);
+
+	if (mIsInDive) {
+		InteractFlick flick(this, C_PARMS->mGeneral.mShakeKnockback.mValue, C_PARMS->mGeneral.mShakeDamage,
+							roundAng(getFaceDir() - PI));
+		creature->stimulate(flick);
+	}
+}
+
 void Obj::collisionCallback(CollEvent& event)
 {
 	EnemyBase::collisionCallback(event);
 	Creature* collCreature = event.mCollidingCreature;
 	if (isElecBody() && collCreature) {
-		InteractDenki denki(this, C_PARMS->mGeneral.mAttackDamage(), &Vector3f::zero);
-		collCreature->stimulate(denki);
+		InteractElectricBody(collCreature);
+	}
+}
 
-		if (mIsInDive) {
-			InteractFlick flick(this, C_PARMS->mGeneral.mShakeKnockback.mValue, C_PARMS->mGeneral.mShakeDamage,
-			                    roundAng(getFaceDir() - PI));
-			collCreature->stimulate(flick);
-		}
+void Obj::divebombCatch() {
+	Vector3f diveBombHitOrigin = mPosition;
+
+	diveBombHitOrigin.y -= (USUBA_DIVE_MIN_HEIGHT / 2);
+
+	Sys::Sphere diveBombHitbox(diveBombHitOrigin, 10.0f);
+	CellIteratorArg arg (diveBombHitbox);
+	CellIterator iCell = arg;
+
+	CI_LOOP(iCell) {
+		Creature* creature = static_cast<Creature*>(*iCell);
+		InteractElectricBody(creature);
 	}
 }
 

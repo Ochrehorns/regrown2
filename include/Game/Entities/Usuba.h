@@ -15,6 +15,7 @@
  */
 
 #define USUBA_MAX_STICK_PIKI (15)
+#define USUBA_DIVE_MIN_HEIGHT (45.0f)
 
 namespace Game {
 namespace Usuba {
@@ -89,6 +90,9 @@ struct Obj : public EnemyBase {
 
 	void startElecClawEffect();
 	void endElecClawEffect();
+
+	void InteractElectricBody(Creature* creature);
+	void divebombCatch();
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase

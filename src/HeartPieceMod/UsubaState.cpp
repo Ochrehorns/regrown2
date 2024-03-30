@@ -115,6 +115,9 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	// usuba->mNextState = USUBA_NULL;
 	usuba->enableEvent(0, EB_BitterImmune);
 	usuba->disableEvent(0, EB_Animating);
+	usuba->disableEvent(0, EB_LifegaugeVisible);
+	usuba->enableEvent(0, EB_Invulnerable);
+	usuba->hardConstraintOn();
 	usuba->enableEvent(0, EB_ModelHidden);
 	usuba->enableEvent(0, EB_Cullable);
 	usuba->mTargetCreature = nullptr;
@@ -152,7 +155,9 @@ void StateStay::exec(EnemyBase* enemy)
  * Address:	80270D24
  * Size:	000004
  */
-void StateStay::cleanup(EnemyBase* enemy) { }
+void StateStay::cleanup(EnemyBase* enemy) {
+	enemy->hardConstraintOff();
+}
 
 // TODO: modify appear state (poached from snakecrow)
 /*
@@ -171,6 +176,8 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->disableEvent(0, EB_ModelHidden);
 	usuba->disableEvent(0, EB_BitterImmune);
 	usuba->enableEvent(0, EB_Animating);
+	usuba->enableEvent(0, EB_LifegaugeVisible);
+	usuba->disableEvent(0, EB_Invulnerable);
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->setEmotionExcitement();
 	usuba->startMotion(USUBAANIM_Appear, nullptr);
@@ -773,6 +780,7 @@ void StateAttackDive::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->startElecClawEffect();
 }
 
+
 /*
  * --INFO--
  * Address:	8027190C
@@ -789,7 +797,7 @@ void StateAttackDive::exec(EnemyBase* enemy)
 			usuba->changeFaceDir2(target);
 		} else if (frame < 38.0f) { // after begin drop
 
-			f32 targetHeight = target->getPosition().y + 17.5f;
+			f32 targetHeight = target->getPosition().y + USUBA_DIVE_MIN_HEIGHT;
 			f32 usubaHeight  = usuba->getPosition().y;
 
 			Vector3f vel = usuba->getVelocity();
@@ -806,10 +814,11 @@ void StateAttackDive::exec(EnemyBase* enemy)
 			vel.y = vertSpeed;
 			usuba->setVelocity(vel);
 			usuba->changeFaceDir2(target);
-
+			usuba->divebombCatch();
 		} else if (frame < 55.0f) { // after hit ground
 			usuba->mIsInDive = true;
 			usuba->catchTarget();
+			usuba->divebombCatch();
 		} else if (frame < 57.0f) { // after return to height
 			usuba->mIsInDive = false;
 			usuba->setHeightVelocity();
