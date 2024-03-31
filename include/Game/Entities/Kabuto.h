@@ -467,7 +467,7 @@ struct Obj : public Kabuto::Obj {
 			addDamage(damage, 1.0f);
 			return true;
 		}
-		if (collpart && collpart->mCurrentID != 'body') {
+		if (collpart && collpart->mCurrentID == 'hips') {
 			addDamage(damage, 1.0f);
 			return true;
 		}
