@@ -41,6 +41,7 @@ void Obj::startEffect()
 	efx::TOtaGas gas;
 	efx::Arg arg(mJoint->getWorldMatrix()->getTranslation());
 	gas.create(&arg);
+	getJAIObject()->startSound(PSSE_EN_FART_GAS, 0);
 }
 
 void Obj::startYodare() { }

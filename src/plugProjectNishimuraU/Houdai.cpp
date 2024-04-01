@@ -645,7 +645,13 @@ bool Obj::isFinishShotGun() { return mShotGunMgr->isFinishShotGun(); }
 void Obj::emitShotGun()
 {
 	mShotGunMgr->emitShotGun();
-	getJAIObject()->startSound(PSSE_EN_HOUDAI_SHOT, 0);
+
+	if (isHydrant()) {
+		getJAIObject()->startSound(PSSE_EN_BIGTAKARA_W_SHOT, 0);
+		return;
+	}
+
+	getJAIObject()->startSound(PSSE_EN_HOUDAI_SHOT, 0);	
 }
 
 /**
