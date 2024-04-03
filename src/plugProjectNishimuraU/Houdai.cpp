@@ -651,7 +651,7 @@ void Obj::emitShotGun()
 		return;
 	}
 
-	getJAIObject()->startSound(PSSE_EN_HOUDAI_SHOT, 0);	
+	getJAIObject()->startSound(PSSE_EN_HOUDAI_SHOT, 0);
 }
 
 /**

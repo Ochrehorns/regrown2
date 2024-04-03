@@ -14,7 +14,7 @@
  * --Header for Usuba (Usuba)--
  */
 
-#define USUBA_MAX_STICK_PIKI (15)
+#define USUBA_MAX_STICK_PIKI  (15)
 #define USUBA_DIVE_MIN_HEIGHT (45.0f)
 
 namespace Game {

@@ -3461,8 +3461,6 @@ void EnemyBase::resetDroppingMassZero()
 	mMass = mFriction;
 }
 
-
-
 } // namespace Game
 
 JAISound* PSStartEnemyGhostSE(Game::EnemyBase* enemy, float)

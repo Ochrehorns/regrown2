@@ -155,9 +155,7 @@ void StateStay::exec(EnemyBase* enemy)
  * Address:	80270D24
  * Size:	000004
  */
-void StateStay::cleanup(EnemyBase* enemy) {
-	enemy->hardConstraintOff();
-}
+void StateStay::cleanup(EnemyBase* enemy) { enemy->hardConstraintOff(); }
 
 // TODO: modify appear state (poached from snakecrow)
 /*
@@ -779,7 +777,6 @@ void StateAttackDive::init(EnemyBase* enemy, StateArg* stateArg)
 
 	usuba->startElecClawEffect();
 }
-
 
 /*
  * --INFO--
