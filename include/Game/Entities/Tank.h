@@ -359,7 +359,7 @@ struct Obj : public Tank::Obj {
 
 	// _00 		= VTBL
 	// _00-_308	= Tank::Obj
-	efx::TOtaGas* mTankEffect; // _308
+	efx::TPtankEffect* mTankEffect; // _308
 	                           // _30C = PelletView
 };
 

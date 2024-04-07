@@ -5004,61 +5004,6 @@ lbl_constructor:
 /* 803AADC8 003A7D08  4E 80 00 20 */	blr 
 .endfn tyreFlick__Q34Game8BlackMan3ObjFv
 
-.fn deadEffect__Q34Game8BlackMan3ObjFv, global
-/* 803AADCC 003A7D0C  94 21 FF D0 */	stwu r1, -0x30(r1)
-/* 803AADD0 003A7D10  7C 08 02 A6 */	mflr r0
-/* 803AADD4 003A7D14  90 01 00 34 */	stw r0, 0x34(r1)
-/* 803AADD8 003A7D18  93 E1 00 2C */	stw r31, 0x2c(r1)
-/* 803AADDC 003A7D1C  7C 7F 1B 78 */	mr r31, r3
-/* 803AADE0 003A7D20  4B D5 AA 95 */	bl createDeadBombEffect__Q24Game9EnemyBaseFv
-/* 803AADE4 003A7D24  7F E3 FB 78 */	mr r3, r31
-/* 803AADE8 003A7D28  81 9F 00 00 */	lwz r12, 0(r31)
-/* 803AADEC 003A7D2C  81 8C 02 64 */	lwz r12, 0x264(r12)
-/* 803AADF0 003A7D30  7D 89 03 A6 */	mtctr r12
-/* 803AADF4 003A7D34  4E 80 04 21 */	bctrl 
-/* 803AADF8 003A7D38  C0 22 10 D8 */	lfs f1, lbl_8051F438@sda21(r2)
-/* 803AADFC 003A7D3C  7F E3 FB 78 */	mr r3, r31
-/* 803AAE00 003A7D40  48 0C 36 15 */	bl PSStartEnemyFatalHitSE__FPQ24Game9EnemyBasef
-/* 803AAE04 003A7D44  3C 80 80 4B */	lis r4, __vt__Q23efx5TBase@ha
-/* 803AAE08 003A7D48  3C 60 80 4E */	lis r3, __vt__Q23efx8TSimple1@ha
-/* 803AAE0C 003A7D4C  38 04 A7 F8 */	addi r0, r4, __vt__Q23efx5TBase@l
-/* 803AAE10 003A7D50  3C 80 80 4F */	lis r4, __vt__Q23efx10TKageDead2@ha
-/* 803AAE14 003A7D54  90 01 00 08 */	stw r0, 8(r1)
-/* 803AAE18 003A7D58  38 A3 6A 78 */	addi r5, r3, __vt__Q23efx8TSimple1@l
-/* 803AAE1C 003A7D5C  3C 60 80 4B */	lis r3, __vt__Q23efx3Arg@ha
-/* 803AAE20 003A7D60  38 00 02 98 */	li r0, 0x298
-/* 803AAE24 003A7D64  90 A1 00 08 */	stw r5, 8(r1)
-/* 803AAE28 003A7D68  38 E4 A1 4C */	addi r7, r4, __vt__Q23efx10TKageDead2@l
-/* 803AAE2C 003A7D6C  38 C3 A7 EC */	addi r6, r3, __vt__Q23efx3Arg@l
-/* 803AAE30 003A7D70  38 80 00 00 */	li r4, 0
-/* 803AAE34 003A7D74  B0 01 00 0C */	sth r0, 0xc(r1)
-/* 803AAE38 003A7D78  3C 60 80 4E */	lis r3, __vt__Q23efx11ArgPrmColor@ha
-/* 803AAE3C 003A7D7C  38 A3 5D 20 */	addi r5, r3, __vt__Q23efx11ArgPrmColor@l
-/* 803AAE40 003A7D80  38 00 00 FF */	li r0, 0xff
-/* 803AAE44 003A7D84  90 81 00 10 */	stw r4, 0x10(r1)
-/* 803AAE48 003A7D88  38 61 00 08 */	addi r3, r1, 8
-/* 803AAE4C 003A7D8C  38 81 00 14 */	addi r4, r1, 0x14
-/* 803AAE50 003A7D90  90 E1 00 08 */	stw r7, 8(r1)
-/* 803AAE54 003A7D94  90 C1 00 14 */	stw r6, 0x14(r1)
-/* 803AAE58 003A7D98  C0 1F 03 04 */	lfs f0, 0x304(r31)
-/* 803AAE5C 003A7D9C  D0 01 00 18 */	stfs f0, 0x18(r1)
-/* 803AAE60 003A7DA0  C0 1F 03 08 */	lfs f0, 0x308(r31)
-/* 803AAE64 003A7DA4  D0 01 00 1C */	stfs f0, 0x1c(r1)
-/* 803AAE68 003A7DA8  C0 1F 03 0C */	lfs f0, 0x30c(r31)
-/* 803AAE6C 003A7DAC  D0 01 00 20 */	stfs f0, 0x20(r1)
-/* 803AAE70 003A7DB0  90 A1 00 14 */	stw r5, 0x14(r1)
-/* 803AAE74 003A7DB4  98 01 00 24 */	stb r0, 0x24(r1)
-/* 803AAE78 003A7DB8  98 01 00 25 */	stb r0, 0x25(r1)
-/* 803AAE7C 003A7DBC  98 01 00 26 */	stb r0, 0x26(r1)
-/* 803AAE80 003A7DC0  98 01 00 27 */	stb r0, 0x27(r1)
-/* 803AAE84 003A7DC4  48 04 08 31 */	bl create__Q23efx10TKageDead2FPQ23efx3Arg
-/* 803AAE88 003A7DC8  80 01 00 34 */	lwz r0, 0x34(r1)
-/* 803AAE8C 003A7DCC  83 E1 00 2C */	lwz r31, 0x2c(r1)
-/* 803AAE90 003A7DD0  7C 08 03 A6 */	mtlr r0
-/* 803AAE94 003A7DD4  38 21 00 30 */	addi r1, r1, 0x30
-/* 803AAE98 003A7DD8  4E 80 00 20 */	blr 
-.endfn deadEffect__Q34Game8BlackMan3ObjFv
-
 .fn deadTraceEffect__Q34Game8BlackMan3ObjFv, global
 /* 803AAE9C 003A7DDC  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 803AAEA0 003A7DE0  7C 08 02 A6 */	mflr r0

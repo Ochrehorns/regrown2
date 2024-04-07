@@ -1,5 +1,7 @@
 #include "Game/Entities/BlackMan.h"
 #include "efx/TPlasm.h"
+#include "PS.h"
+
 
 namespace Game {
 
@@ -82,6 +84,17 @@ void Obj::KillPlasmEffects()
 	if (isGold())
 		sPlasmSparkle->fade();
 }
+
+void BlackMan::Obj::deadEffect()
+{
+	EnemyBase::createDeadBombEffect();
+	throwupItem();
+	PSStartEnemyFatalHitSE(this, 0.0f);
+	efx::TKageDead2 deadFX(isGold());
+	efx::ArgPrmColor fxArg(mChestJointPosition);
+	deadFX.create(&fxArg);
+}
+
 
 } // namespace BlackMan
 
