@@ -135,6 +135,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 	startFirefly();
 
 	mIsInDive = false;
+	mIsFirePoolActive = false;
 }
 
 /*
@@ -489,7 +490,7 @@ Vector3f Obj::getFireBreathEndPoint()
 	f32 usubaFloor = mapMgr->getMinY(rootPosition);
 
 	return Vector3f(rootPosition.x + fireBreathSize * pikmin2_sinf(faceDir), usubaFloor,
-	                rootPosition.y + fireBreathSize * pikmin2_cosf(faceDir));
+	                rootPosition.z + fireBreathSize * pikmin2_cosf(faceDir));
 }
 
 bool Obj::attackTargets()
@@ -515,7 +516,7 @@ bool Obj::attackTargets()
 
 			f32 lineprogress;
 
-			if (DroughtMath::getSqrDistanceToLine(creaturePos, lineStart, lineEnd, lineprogress) < SQUARE(50.0f) && lineprogress > 0.2f) {
+			if (DroughtMath::getSqrDistanceToLine(creaturePos, lineStart, lineEnd, lineprogress) < SQUARE(40.0f) && lineprogress > 0.2f) {
 				InteractFire fire(this, C_PARMS->mGeneral.mAttackDamage());
 				creature->stimulate(fire);
 			}
