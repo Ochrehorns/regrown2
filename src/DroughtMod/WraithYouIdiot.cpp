@@ -2,7 +2,6 @@
 #include "efx/TPlasm.h"
 #include "PS.h"
 
-
 namespace Game {
 
 namespace BlackMan {
@@ -94,7 +93,6 @@ void BlackMan::Obj::deadEffect()
 	efx::ArgPrmColor fxArg(mChestJointPosition);
 	deadFX.create(&fxArg);
 }
-
 
 } // namespace BlackMan
 

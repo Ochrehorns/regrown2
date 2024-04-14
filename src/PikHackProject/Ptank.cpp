@@ -34,13 +34,14 @@ void Obj::changeMaterial()
 
 void Obj::createEffect() { mTankEffect = new efx::TPtankEffect(nullptr); }
 
-void Obj::setupEffect() {
+void Obj::setupEffect()
+{
 	efx::TPtankEffect* effect;
 	Matrixf* mtx = mJoint->getWorldMatrix();
 	effect       = mTankEffect;
 
 	effect->mEfxGas.setMtxptr(mtx->mMatrix.mtxView);
-	effect->mEfxGasYodare.mMtx   = mtx;
+	effect->mEfxGasYodare.mMtx = mtx;
 }
 
 void Obj::startEffect()
@@ -49,25 +50,29 @@ void Obj::startEffect()
 	getJAIObject()->startSound(PSSE_EN_FART_GAS, 0);
 }
 
-void Obj::startYodare() {
+void Obj::startYodare()
+{
 	efx::TPtankEffect* tankEffect = mTankEffect;
 	tankEffect->mEfxGas.fade();
 	tankEffect->mEfxGasYodare.create(nullptr);
 }
 
-void Obj::finishEffect() {
+void Obj::finishEffect()
+{
 	efx::TPtankEffect* effect = mTankEffect;
 	effect->mEfxGas.fade();
 	effect->mEfxGasYodare.fade();
 }
 
-void Obj::effectDrawOn() {
+void Obj::effectDrawOn()
+{
 	efx::TPtankEffect* effect = mTankEffect;
 	effect->mEfxGas.endDemoDrawOn();
 	effect->mEfxGasYodare.endDemoDrawOn();
 }
 
-void Obj::effectDrawOff() {
+void Obj::effectDrawOff()
+{
 	efx::TPtankEffect* effect = mTankEffect;
 	effect->mEfxGas.startDemoDrawOff();
 	effect->mEfxGasYodare.startDemoDrawOff();
@@ -79,7 +84,8 @@ void Obj::interactCreature(Creature* creature)
 	creature->stimulate(act);
 }
 
-void Obj::stopEffectRadius(f32 radius) {
+void Obj::stopEffectRadius(f32 radius)
+{
 	efx::TPtankEffect* effect             = mTankEffect;
 	effect->mEfxGas.mParticleCallBack._04 = radius;
 }

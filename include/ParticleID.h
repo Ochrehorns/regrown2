@@ -927,10 +927,10 @@
 #define PID_WraithRun     (0x2BA)
 #define PID_WraithRecov_2 (0x2B9)
 
-#define PID_GasYodare (0x2D0)
-#define PID_TankGas1 (0x2CB)
-#define PID_TankGas2 (0x2CC)
-#define PID_TankGas3 (0x2CD)
+#define PID_GasYodare  (0x2D0)
+#define PID_TankGas1   (0x2CB)
+#define PID_TankGas2   (0x2CC)
+#define PID_TankGas3   (0x2CD)
 #define PID_TankGasHit (0x2CE)
 
 // WORLD MAP JPC

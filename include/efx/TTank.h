@@ -148,7 +148,6 @@ struct TTankGasYodare : public TChaseMtx {
 	// _00-_14  = TChaseMtx
 };
 
-
 struct TTankGasHit : public TOneEmitterSimple {
 	TTankGasHit()
 	    : TOneEmitterSimple(PID_TankGasHit)
@@ -161,11 +160,9 @@ struct TTankGasHit : public TOneEmitterSimple {
 	// _00-_18  = TOneEmitterSimple
 };
 
-
-
 struct TTankGas : public TChaseMtx3 {
 	TTankGas(Mtx mtx)
-		: TChaseMtx3(mtx, PID_TankGas1, PID_TankGas2, PID_TankGas3)
+	    : TChaseMtx3(mtx, PID_TankGas1, PID_TankGas2, PID_TankGas3)
 	{
 	}
 
@@ -199,18 +196,16 @@ struct TTankGas : public TChaseMtx3 {
 	TTankGasHit mEfxHit;
 };
 
-struct TPtankEffect
-{
+struct TPtankEffect {
 	inline TPtankEffect(Mtx mtx)
 	    : mEfxGas(mtx)
 	    , mEfxGasYodare(mtx)
 	{
 	}
 
-	TTankGas mEfxGas;             // _00
+	TTankGas mEfxGas; // _00
 	TTankGasYodare mEfxGasYodare;
 };
-
 
 struct TTankWatHit : public TOneEmitterSimple {
 	TTankWatHit()

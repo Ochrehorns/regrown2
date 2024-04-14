@@ -134,7 +134,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 
 	startFirefly();
 
-	mIsInDive = false;
+	mIsInDive         = false;
 	mIsFirePoolActive = false;
 }
 
