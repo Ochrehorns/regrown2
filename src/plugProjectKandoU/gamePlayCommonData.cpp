@@ -180,11 +180,7 @@ void PlayCommonData::entryHighscores_common(Game::Highscore** highscores, int ne
  * @note Address: 0x8023470C
  * @note Size: 0xC
  */
-bool PlayCommonData::isChallengeGamePlayable()
-{
-	return 1; // testing
-	return mChallengeData.mFlags.isSet(PlayChallengeGameData::PCGDF_IsPlayable);
-}
+bool PlayCommonData::isChallengeGamePlayable() { return mChallengeData.mFlags.isSet(PlayChallengeGameData::PCGDF_IsPlayable); }
 
 /**
  * @note Address: 0x80234718
