@@ -2854,7 +2854,7 @@
 /* 80458D3C 00455C7C  81 83 00 00 */	lwz r12, 0(r3)
 /* 80458D40 00455C80  81 8C 00 08 */	lwz r12, 8(r12)
 /* 80458D44 00455C84  7D 89 03 A6 */	mtctr r12
-/* 80458D48 00455C88  4E 80 04 21 */	bctrl 
+/* 80458D48 00455C88  4E 80 04 21 */	li r3, 0 					# fix for Ground mix in caves
 /* 80458D4C 00455C8C  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 80458D50 00455C90  40 82 00 24 */	bne .L_80458D74
 /* 80458D54 00455C94  4B ED EF 55 */	bl PSGetDirectedMainBgm__Fv

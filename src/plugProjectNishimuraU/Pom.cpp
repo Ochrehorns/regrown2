@@ -21,6 +21,7 @@ Obj::Obj()
 {
 	mAnimator = new ProperAnimator;
 	setFSM(new FSM);
+	mPlantPSM = new PSM::Tsuyukusa(this);
 }
 
 /**
@@ -78,6 +79,14 @@ void Obj::doUpdate()
 			disableEvent(0, EB_DamageAnimEnabled);
 		} else {
 			hardConstraintOn();
+		}
+	}
+
+	if (mPlantPSM && gameSystem->isFlag(GAMESYS_IsPlaying) && gameSystem->isFlag(GAMESYS_IsSoundFXActive)) {
+		if (isAlive()) {
+			mPlantPSM->noukouFrameWork(true);
+		} else {
+			mPlantPSM->noukouFrameWork(false);
 		}
 	}
 }

@@ -7,6 +7,7 @@
 #include "Game/EnemyMgrBase.h"
 #include "Game/EnemyBase.h"
 #include "JSystem/JUtility/JUTNameTab.h"
+#include "PSM/Tsuyukusa.h"
 #include "Collinfo.h"
 
 /**
@@ -69,7 +70,8 @@ struct Obj : public EnemyBase {
 	f32 mSwingTimer;                  // _2E4, how long pom has been open since touch/swallow
 	f32 mQueenColorTimer;             // _2E8, how long queen pom has been on current color
 	EnemyTypeID::EEnemyTypeID mPomID; // _2EC, B=3, R=4, Y=5, P=6, W=7, Q=8, base=82
-	                                  // _2F0 = PelletView
+	PSM::Tsuyukusa* mPlantPSM;
+	// _2F4 = PelletView
 };
 
 struct Mgr : public EnemyMgrBase {
