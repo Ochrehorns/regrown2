@@ -255,6 +255,8 @@ void Camera::setAtOffset(const Vector3f& vec)
  */
 void Camera::doUpdate()
 {
+	mAspectRatio = 1.33f; // fix for regrown because I have no idea whats changing it to 0.8
+
 	Vector3f cameraPos = Vector3f::zero; // f31, f30, f29
 	Sys::Sphere targetSphere;            // 0x24
 	if (mTargetObject) {
@@ -380,6 +382,9 @@ void Camera::doUpdate()
 	Vector3f lookOffset = _2C4;
 	lookOffset *= 10.0f;
 	mLookAtPosition = _1AC + lookOffset;
+
+	mAspectRatio = 1.33f; // doing it here too because Im not taking chances
+
 	/*
 	stwu     r1, -0x120(r1)
 	mflr     r0
