@@ -1547,6 +1547,7 @@ LIBS = [
             ["DroughtMod/HallowMushiMgr", True],
             ["DroughtMod/efxDrought", True],
             ["DroughtMod/WraithYouIdiot", True],
+            ["DroughtMod/PTankEffect", True],
         ],
     },
     {
