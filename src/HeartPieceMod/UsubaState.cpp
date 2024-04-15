@@ -228,7 +228,7 @@ void StateAppear::exec(EnemyBase* enemy)
 				return;
 			}
 
-			transit(usuba, USUBA_Wait, nullptr);
+			transit(usuba, USUBA_Move, nullptr);
 			break;
 		}
 	}
@@ -539,12 +539,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	usuba->mTargetVelocity = Vector3f(0.0f);
 	usuba->mTargetCreature = nullptr;
 	usuba->enableEvent(0, EB_Untargetable);
-
-	if (randWeightFloat(1.0f) < 0.5f) {
-		usuba->startMotion(USUBAANIM_Wait, nullptr);
-	} else {
-		usuba->startMotion(USUBAANIM_Move, nullptr);
-	}
+	usuba->startMotion(USUBAANIM_Move, nullptr);
 }
 
 /*
@@ -619,7 +614,7 @@ void StateMove::exec(EnemyBase* enemy)
 
 	FakePiki* target = usuba->getAttackableTarget();
 
-	if (target || usuba->mStateTimer > 10.0f || sqrDistanceXZ(pos, targetPos) < 625.0f) {
+	if (target || usuba->mStateTimer > 10.0f || sqrDistanceXZ(pos, targetPos) < 5625.0f) {
 		usuba->mTargetVelocity = Vector3f(0.0f);
 		usuba->finishMotion();
 	} else {
