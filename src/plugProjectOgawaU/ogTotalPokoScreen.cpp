@@ -60,7 +60,7 @@ void TotalPokoScreen::setTotalPoko(u32 newPokoCount)
 	mPreviousPokoCount = mCurrentPokoCount;
 	mCurrentPokoCount  = newPokoCount;
 
-	if (mIsOpen && mTimer <= 0.0f && !mNeedAdd) {
+	if (mIsOpen && !mNeedAdd) {
 		mNeedAdd = true;
 
 		if (!newScreen::checkMovieActive()) {
@@ -116,40 +116,19 @@ void TotalPokoScreen::update()
 {
 	P2DScreen::Mgr::update();
 
-	if (mIsOpen) {
-		mTimer -= sys->mDeltaTime;
+	if (mNeedAdd) {
+		mDisplayPokoCount = mCurrentPokoCount;
+		mCallBackCounterRV->startPuyoUp(20.0f);
 
-		if (mCurrPos.y < mStandardPos.y) {
-			mCurrPos.y += 20.0f;
-
-			if (mCurrPos.y >= mStandardPos.y) {
-				mCurrPos.y = mStandardPos.y;
-				mScaleMgr->up(0.3f, 20.0f, 0.5f, 0.0f);
-			}
+		if (!newScreen::checkMovieActive()) {
+			ogSound->setPlusTotalPoko();
 		}
 
-		if (mTimer < 0.0f) {
-			mTimer = 0.0f;
-
-			if (mNeedAdd) {
-				mDisplayPokoCount = mCurrentPokoCount;
-				mCallBackCounterRV->startPuyoUp(20.0f);
-
-				if (!newScreen::checkMovieActive()) {
-					ogSound->setPlusTotalPoko();
-				}
-
-				mNeedAdd = false;
-			}
-		}
-	} else {
-		if (mCurrPos.y > -80.0f) {
-			mCurrPos.y -= 20.0f;
-		}
+		mNeedAdd = false;
 	}
 
-	mPane->updateScale(mScaleMgr->calc());
 	mPane->move(mCurrPos.x, mCurrPos.y);
 }
+
 } // namespace Screen
 } // namespace og

@@ -21,6 +21,7 @@ struct NaviLifeGauge;
 struct OtakaraSensor;
 struct PikminCounter;
 struct SunMeter;
+struct TotalPokoScreen;
 } // namespace Screen
 
 namespace newScreen {
@@ -87,6 +88,7 @@ struct ObjGround : public ::Screen::ObjBase {
 	u8 _64;                                  // _64
 	u32 mPokos;                              // _68
 	f32 _6C;                                 // _6C
+	og::Screen::TotalPokoScreen* mTotalPoko; // _70
 
 	static struct StaticValues {
 		inline StaticValues()

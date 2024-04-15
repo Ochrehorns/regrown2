@@ -87,7 +87,7 @@ void ObjCave::doCreate(JKRArchive* arc)
 	}
 
 	mPikiCounter->setCallBack(arc);
-	mTotalPoko->setCallBack(arc, msVal._08, msVal._0C, msVal._10, msVal._14);
+	mTotalPoko->setCallBack(arc, -39.0f, 64.0f, 0.70f, 0.70f);
 	mPaneChika  = og::Screen::TagSearch(mPikiCounter, 'Pchika');
 	mPaneFinalf = og::Screen::TagSearch(mPikiCounter, 'Nfinalf');
 
@@ -101,10 +101,12 @@ void ObjCave::doCreate(JKRArchive* arc)
 
 	mPokos = mDisp->mDataGame.mPokoCount;
 	mTotalPoko->setTotalPoko(mPokos);
-	mTotalPokoTimer                  = 0.0f;
-	mPikiCounter->mIsTotalPokoActive = false;
-	mTotalPoko->closeTotalPoko();
-	mTotalPoko->hideTotalPoko();
+	mTotalPoko->mIsOpen           = true;
+	mTotalPoko->mDisplayPokoCount = mPokos;
+	// mTotalPokoTimer                  = 0.0f;
+	// mPikiCounter->mIsTotalPokoActive = false;
+	// mTotalPoko->closeTotalPoko();
+	// mTotalPoko->hideTotalPoko();
 
 	mOtakara = new og::Screen::OtakaraSensor;
 
@@ -140,34 +142,33 @@ void ObjCave::commonUpdate()
 			mPikiCounter->setParam(disp->mDataGame, disp->mLouieData);
 		}
 
-		if (mTotalPokoActive) {
-			mTotalPokoTimer += sys->mDeltaTime;
-			if (mTotalPokoTimer > 2.0f) {
-				mTotalPokoActive = false;
-			}
+		// if (mTotalPokoActive) {
+		// 	mTotalPokoTimer += sys->mDeltaTime;
+		// 	if (mTotalPokoTimer > 2.0f) {
+		// 		mTotalPokoActive = false;
+		// 	}
 
-			int pokos = mDisp->mDataGame.mPokoCount;
-			if (pokos != mPokos) {
-				mPokos = pokos;
-				mTotalPoko->setTotalPoko(mPokos);
-				mTotalPokoTimer = 0.0f;
-			}
-
-		} else if (mDisp->mDataGame.mPokoCount != mPokos) {
-			mTotalPokoActive = true;
-			mPokos           = mDisp->mDataGame.mPokoCount;
+		int pokos = mDisp->mDataGame.mPokoCount;
+		if (pokos != mPokos) {
+			mPokos = pokos;
 			mTotalPoko->setTotalPoko(mPokos);
-			mTotalPokoTimer = 0.0f;
 		}
 
-		if (mTotalPokoActive) {
-			mPikiCounter->mIsTotalPokoActive = true;
-			mTotalPoko->showTotalPoko();
+		// } else if (mDisp->mDataGame.mPokoCount != mPokos) {
+		// 	mTotalPokoActive = true;
+		// 	mPokos           = mDisp->mDataGame.mPokoCount;
+		// 	mTotalPoko->setTotalPoko(mPokos);
+		// 	mTotalPokoTimer = 0.0f;
+		// }
 
-		} else {
-			mPikiCounter->mIsTotalPokoActive = false;
-			mTotalPoko->closeTotalPoko();
-		}
+		// if (mTotalPokoActive) {
+		// 	mPikiCounter->mIsTotalPokoActive = true;
+		// 	mTotalPoko->showTotalPoko();
+
+		// } else {
+		// 	mPikiCounter->mIsTotalPokoActive = false;
+		// 	mTotalPoko->closeTotalPoko();
+		// }
 
 		if (mDisp->mPayDebt) {
 			mLifeGauge2->setType(og::Screen::CallBack_LifeGauge::LIFEGAUGE_PRESIDENT);

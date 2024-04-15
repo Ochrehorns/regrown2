@@ -6,6 +6,7 @@
 #include "og/Screen/NaviLifeGauge.h"
 #include "og/Screen/PikminCounter.h"
 #include "og/Screen/BloGroup.h"
+#include "og/Screen/TotalPokoScreen.h"
 #include "trig.h"
 #include "System.h"
 #include "nans.h"
@@ -67,14 +68,16 @@ void ObjGround::doCreate(JKRArchive* arc)
 	mLifeGauge2   = new og::Screen::NaviLifeGauge;
 	mPikiCounter  = new og::Screen::PikminCounter;
 	mSensorScreen = new P2DScreen::Mgr_tuning;
+	mTotalPoko    = new og::Screen::TotalPokoScreen;
 
-	mBloGroup = new og::Screen::BloGroup(6);
+	mBloGroup = new og::Screen::BloGroup(7);
 	mBloGroup->addBlo("sun_meter.blo", mSunMeter, 0x1040000, arc);
 	mBloGroup->addBlo("doping.blo", mDoping, 0x1040000, arc);
 	mBloGroup->addBlo("orima.blo", mLifeGauge1, 0x1040000, arc);
 	mBloGroup->addBlo("orima.blo", mLifeGauge2, 0x1040000, arc);
 	mBloGroup->addBlo("gr_pikmin.blo", mPikiCounter, 0x1040000, arc);
 	mBloGroup->addBlo("sensor.blo", mSensorScreen, 0x1040000, arc);
+	mBloGroup->addBlo("grand_cave_poko.blo", mTotalPoko, 0x1040000, arc);
 
 	mSunMeter->setCallBack();
 	mDoping->setCallBack(arc);
@@ -88,6 +91,11 @@ void ObjGround::doCreate(JKRArchive* arc)
 	mPikiCounter->setCallBack(arc);
 	mPokos = mDisp->mDataGame.mPokoCount;
 	_6C    = 0.0f;
+
+	mTotalPoko->setCallBack(arc, -18.0f, 41.0f, 0.65f, 0.65f);
+	mTotalPoko->setTotalPoko(mPokos);
+	mTotalPoko->mIsOpen           = true;
+	mTotalPoko->mDisplayPokoCount = mPokos;
 
 	mOtakara = new og::Screen::OtakaraSensor;
 	mOtakara->init(mSensorScreen->search('Nhari'), mSensorScreen->search('Nsensor'), mDisp->mRadarState);
@@ -151,6 +159,12 @@ void ObjGround::commonUpdate()
 	if (mDisp->mHasSpicy) {
 		mDoping->openDopingDown();
 		mDoping->openDopingKey();
+	}
+
+	int pokos = mDisp->mDataGame.mPokoCount;
+	if (pokos != mPokos) {
+		mPokos = pokos;
+		mTotalPoko->setTotalPoko(mPokos);
 	}
 
 	mDoping->adjPos(msVal.mDopingX, msVal.mDopingY);
