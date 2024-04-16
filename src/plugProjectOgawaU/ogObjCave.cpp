@@ -87,7 +87,7 @@ void ObjCave::doCreate(JKRArchive* arc)
 	}
 
 	mPikiCounter->setCallBack(arc);
-	mTotalPoko->setCallBack(arc, -39.0f, 64.0f, 0.70f, 0.70f);
+	mTotalPoko->setCallBack(arc, -39.0f, 74.0f, 0.70f, 0.70f);
 	mPaneChika  = og::Screen::TagSearch(mPikiCounter, 'Pchika');
 	mPaneFinalf = og::Screen::TagSearch(mPikiCounter, 'Nfinalf');
 

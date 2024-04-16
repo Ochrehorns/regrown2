@@ -92,7 +92,7 @@ void ObjGround::doCreate(JKRArchive* arc)
 	mPokos = mDisp->mDataGame.mPokoCount;
 	_6C    = 0.0f;
 
-	mTotalPoko->setCallBack(arc, -18.0f, 41.0f, 0.65f, 0.65f);
+	mTotalPoko->setCallBack(arc, -18.0f, 51.0f, 0.65f, 0.65f);
 	mTotalPoko->setTotalPoko(mPokos);
 	mTotalPoko->mIsOpen           = true;
 	mTotalPoko->mDisplayPokoCount = mPokos;
