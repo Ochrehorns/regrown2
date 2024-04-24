@@ -27,6 +27,7 @@ struct Obj : public MaroFrog::Obj {
 	virtual void getShadowParam(ShadowParam& settings);   // _134
 	virtual void getLODCylinder(Sys::Cylinder& cylinder); // needed for shadow to draw
 	virtual bool needShadow();
+	virtual void doFinishStoneState();
 	virtual void doUpdateCommon();                     // _1D0
 	virtual void setParameters();                      // _228
 	virtual ~Obj() { }                                 // _1BC (weak)

@@ -175,6 +175,17 @@ void Obj::doUpdateCommon()
 	}
 }
 
+void Obj::doFinishStoneState()
+{
+	MaroFrog::Obj::doFinishStoneState();
+
+	EnemyParmsBase::Parms& parms = static_cast<EnemyParmsBase*>(mParms)->mGeneral;
+	f32 flickChance = parms.mShakeChance;
+	f32 knockback 	= parms.mShakeKnockback;
+	f32 damage 		= parms.mShakeDamage;
+	EnemyFunc::flickStickPikmin(this, flickChance, knockback, damage, FLICK_BACKWARD_ANGLE, nullptr);
+}
+
 void Obj::attackNaviPosition()
 {
 	Iterator<Navi> iter(naviMgr);
