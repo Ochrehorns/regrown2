@@ -5,6 +5,7 @@
 #include "JSystem/J2D/J2DPane.h"
 #include "og/Screen/OtakaraSensor.h"
 #include "og/Screen/DispMember.h"
+#include "TreasureGetScreen.h"
 
 namespace P2DScreen {
 struct Mgr_tuning;
@@ -79,6 +80,7 @@ struct ObjCave : public ::Screen::ObjBase {
 	J2DPane* mPaneChika;                         // _70
 	J2DPane* mPaneFinalf;                        // _74
 	bool mDoSensorEff;                           // _78
+	TreasureGetScreen* mTreasureScreen;          // _58
 
 	static struct StaticValues {
 		inline StaticValues()

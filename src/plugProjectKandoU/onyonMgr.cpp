@@ -31,6 +31,7 @@
 #include "JSystem/J3D/J3DModelLoader.h"
 #include "Screen/screenMgr.h"
 #include "og/newScreen/Cave.h"
+#include "TreasureGetScreen.h"
 
 Game::ItemOnyon::Mgr* Game::ItemOnyon::mgr;
 static bool sVolveFlag;
@@ -519,6 +520,9 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 				if (pellet->mConfig->mParams.mMoney.mData > 0) {
 					playData->obtainPellet_Cave(pellet);
 				}
+
+				if (pellet->getKind() == PELTYPE_TREASURE)
+					OpenTreasureScreen(pellet->getConfigIndex());
 
 				// reset treasures radar
 				if (Screen::Mgr::sScreenMgr->mBackupScene) {

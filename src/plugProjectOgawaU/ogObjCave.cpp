@@ -62,21 +62,24 @@ void ObjCave::doCreate(JKRArchive* arc)
 		JUT_PANICLINE(189, "ERR! in ObjCave CreateŽ¸”sI\n");
 	}
 
-	mDoping       = new og::Screen::DopingScreen;
-	mLifeGauge1   = new og::Screen::NaviLifeGauge;
-	mLifeGauge2   = new og::Screen::NaviLifeGauge;
-	mPikiCounter  = new og::Screen::PikminCounterCave;
-	mTotalPoko    = new og::Screen::TotalPokoScreen;
-	mSensorScreen = new P2DScreen::Mgr_tuning;
+	mDoping         = new og::Screen::DopingScreen;
+	mLifeGauge1     = new og::Screen::NaviLifeGauge;
+	mLifeGauge2     = new og::Screen::NaviLifeGauge;
+	mPikiCounter    = new og::Screen::PikminCounterCave;
+	mTotalPoko      = new og::Screen::TotalPokoScreen;
+	mSensorScreen   = new P2DScreen::Mgr_tuning;
+	mTreasureScreen = new TreasureGetScreen;
 
-	mBloGroup = new og::Screen::BloGroup(6);
+	mBloGroup = new og::Screen::BloGroup(7);
 	mBloGroup->addBlo("doping.blo", mDoping, 0x1040000, arc);
 	mBloGroup->addBlo("orima.blo", mLifeGauge1, 0x1040000, arc);
 	mBloGroup->addBlo("orima.blo", mLifeGauge2, 0x1040000, arc);
 	mBloGroup->addBlo("cave_pikmin.blo", mPikiCounter, 0x1040000, arc);
 	mBloGroup->addBlo("grand_cave_poko.blo", mTotalPoko, 0x1040000, arc);
 	mBloGroup->addBlo("sensor.blo", mSensorScreen, 0x1040000, arc);
+	mBloGroup->addBlo("mg_window.blo", mTreasureScreen, 0x1040000, arc);
 
+	mTreasureScreen->onCreate(arc);
 	mDoping->setCallBack(arc);
 	mLifeGauge1->setCallBack(&mDisp->mOlimarData, og::Screen::CallBack_LifeGauge::LIFEGAUGE_OLIMAR);
 	disp = mDisp;

@@ -1582,6 +1582,7 @@ LIBS = [
             ["PikHackProject/PearlMgr", True],
             ["PikHackProject/PearlState", True],
             ["PikHackProject/PearlAnimator", True],
+            ["PikHackProject/TreasureGetScreen", True],
         ],
     },
     {
