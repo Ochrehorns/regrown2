@@ -513,10 +513,18 @@ mr r5, r28
 /* 802C3EA4 002C0DE4  48 1A A2 11 */	bl PSStartSoundVec__FUlP3Vec
 /* 802C3EA8 002C0DE8  48 00 00 10 */	b .L_802C3EB8
 .L_802C3EAC:
+lwz r3, 0x18(r28)
+bl isHydrant__Q34Game6Houdai3ObjFv
+clrlwi. r0, r3, 0x18
+bne .L_HYDRANT_SOUND
+/* 802C3EAC 002C0DEC  38 9C 00 20 */	addi r4, r28, 0x20
+/* 802C3EB0 002C0DF0  38 60 59 35 */	li r3, 0x5935
+b .L_802C3EB8
+.L_HYDRANT_SOUND:
 /* 802C3EAC 002C0DEC  38 9C 00 20 */	addi r4, r28, 0x20
 /* 802C3EB0 002C0DF0  38 60 59 35 */	li r3, 0x5953
-/* 802C3EB4 002C0DF4  48 1A A2 01 */	bl PSStartSoundVec__FUlP3Vec
 .L_802C3EB8:
+/* 802C3EB4 002C0DF4  48 1A A2 01 */	bl PSStartSoundVec__FUlP3Vec
 /* 802C3EB8 002C0DF8  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802C3EBC 002C0DFC  38 A1 00 60 */	addi r5, r1, 0x60
 /* 802C3EC0 002C0E00  38 80 00 0B */	li r4, 0xb
@@ -1291,6 +1299,7 @@ lwz r3, 0(r31)
 bl isHydrant__Q34Game6Houdai3ObjFv
 clrlwi. r0, r3, 0x18
 bne .L_802C4BB4
+addi r3, r1, 0x24
 /* 802C4BB0 002C1AF0  48 0E A9 05 */	bl create__Q23efx11TSimpleMtx3FPQ23efx3Arg
 .L_802C4BB4:
 /* 802C4BB4 002C1AF4  E3 E1 00 D8 */	psq_l f31, 216(r1), 0, qr0

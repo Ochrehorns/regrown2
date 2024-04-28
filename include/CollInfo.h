@@ -12,6 +12,7 @@
 #include "SysShape/MtxObject.h"
 #include "Vector3.h"
 #include "Condition.h"
+#include "Sys/Sphere.h"
 
 struct CollPartMgr;
 
@@ -107,7 +108,7 @@ struct CollPartMgr : public MonoObjectMgr<CollPart> {
 
 struct FindCollPartArg {
 	Condition<CollPart>* mCondition; // _00
-	Vector3f mPosition;              // _04
+	Sys::Sphere mPosition;           // _04
 };
 
 struct MouthCollPart : public CollPart {

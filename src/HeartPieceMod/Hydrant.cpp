@@ -29,7 +29,7 @@ void Obj::doInteractBubble(Creature* target)
 // WaterHitParticle__4GameFPQ23efx5TBaseRQ23efx3ArgPQ34Game6Houdai17HoudaiShotGunNode
 void WaterHitParticle(efx::TBase* original, efx::Arg& arg, Houdai::HoudaiShotGunNode* obj)
 {
-	OSReport("WaterHitParticle\n");
+	// OSReport("WaterHitParticle\n");
 	if (obj->mOwner->isHydrant()) {
 		efx::THydrantHit hit;
 		hit.create(&arg);
@@ -48,7 +48,7 @@ HoudaiShotGunMgr::HoudaiShotGunMgr(Obj* houdai)
     , mIsShotGunLockedOn(false)
     , mIsShotGunFinished(false)
 {
-	OSReport("HoudaiShotGunMgr\n");
+	// OSReport("HoudaiShotGunMgr\n");
 
 	mPitch         = 0.0f;
 	mYaw           = 0.0f;
@@ -58,7 +58,7 @@ HoudaiShotGunMgr::HoudaiShotGunMgr(Obj* houdai)
 	for (int i = 0; i < 10; i++) {
 		HoudaiShotGunNode* node = new HoudaiShotGunNode(mOwner);
 		if (houdai->isHydrant()) {
-			OSReport("HydantShell\n");
+			// OSReport("HydantShell\n");
 			node->mEfxShell = (efx::THdamaShell*)(new efx::THydrantShell);
 		} else {
 			node->mEfxShell = new efx::THdamaShell;
@@ -79,3 +79,35 @@ void Obj::createShotGun() { mShotGunMgr = new HoudaiShotGunMgr(this); }
 } // namespace Houdai
 
 } // namespace Game
+
+#include "PikiAI.h"
+
+void PikiAI::ActAttack::calcAttackPos()
+{
+	bool isLongLegs = false;
+	if (mCreature->isTeki()) {
+		Game::EnemyBase* enemy = static_cast<Game::EnemyBase*>(mCreature);
+		if (enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Damagumo || enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_BigFoot
+		    || enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Houdai || enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Hydrant) {
+			isLongLegs = true;
+		}
+	}
+
+	if (isLongLegs) {
+		FindCollPartArg findArg;
+		FindCondition condition;
+		findArg.mCondition = &condition;
+		mParent->getBoundingSphere(findArg.mPosition);
+		CollPart* part = mCreature->mCollTree->findCollPart(findArg);
+		if (part) {
+			mAttackSphere.mPosition = part->mPosition;
+			mAttackSphere.mRadius   = part->mRadius;
+		} else {
+			mAttackSphere.mPosition = mCreature->getPosition();
+			mAttackSphere.mRadius   = mCreature->getBodyRadius();
+		}
+	} else {
+		mAttackSphere.mPosition = mCreature->getPosition();
+		mAttackSphere.mRadius   = mCreature->getBodyRadius();
+	}
+}
