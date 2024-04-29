@@ -88,7 +88,8 @@ void PikiAI::ActAttack::calcAttackPos()
 	if (mCreature->isTeki()) {
 		Game::EnemyBase* enemy = static_cast<Game::EnemyBase*>(mCreature);
 		if (enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Damagumo || enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_BigFoot
-		    || enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Houdai || enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Hydrant) {
+		    || enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Houdai
+		    || enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Hydrant) {
 			isLongLegs = true;
 		}
 	}

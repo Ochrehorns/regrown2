@@ -279,9 +279,9 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
  * Address:	80272F70
  * Size:	000034
  */
-void Obj::doStartStoneState() 
-{ 
-	EnemyBase::doStartStoneState(); 
+void Obj::doStartStoneState()
+{
+	EnemyBase::doStartStoneState();
 
 	if (getStateID() == USUBA_AttackDive) {
 		mIsInDive = false;
