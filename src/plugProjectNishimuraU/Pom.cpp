@@ -9,6 +9,7 @@
 #include "efx/TEnemyDownWat.h"
 #include "Iterator.h"
 #include "Dolphin/rand.h"
+#include "utilityU.h"
 
 namespace Game {
 namespace Pom {
@@ -82,11 +83,13 @@ void Obj::doUpdate()
 		}
 	}
 
-	if (mPlantPSM && gameSystem->isFlag(GAMESYS_IsPlaying) && gameSystem->isFlag(GAMESYS_IsSoundFXActive)) {
-		if (isAlive()) {
-			mPlantPSM->noukouFrameWork(true);
-		} else {
-			mPlantPSM->noukouFrameWork(false);
+	if (PSMGetGroundD()->mActor) {
+		if (mPlantPSM && gameSystem->isFlag(GAMESYS_IsPlaying) && gameSystem->isFlag(GAMESYS_IsSoundFXActive)) {
+			if (isAlive()) {
+				mPlantPSM->noukouFrameWork(true);
+			} else {
+				mPlantPSM->noukouFrameWork(false);
+			}
 		}
 	}
 }
