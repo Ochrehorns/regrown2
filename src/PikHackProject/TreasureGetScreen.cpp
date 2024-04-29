@@ -4,6 +4,7 @@
 #include "PSSystem/PSSystemIF.h"
 #include "PSSystem/PSGame.h"
 #include "JSystem/J2D/J2DAnmLoader.h"
+#include "og/newScreen/ogUtil.h"
 
 // Global open accessor because effort
 void OpenTreasureScreen(u32 treasureID)
@@ -74,6 +75,11 @@ void TreasureGetScreen::close()
 void TreasureGetScreen::update()
 {
 	P2DScreen::Mgr::update();
+
+	if (mState && og::newScreen::checkMovieActive()) {
+		close();
+		return;
+	}
 
 	switch (mState) {
 	case 0: // inactive
