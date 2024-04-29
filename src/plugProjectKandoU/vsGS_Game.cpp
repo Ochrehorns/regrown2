@@ -796,9 +796,10 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 		}
 
 	} else if (config->is("s09_holein")) {
-
+		OSReport("On Enter Hole: %i\n", Radar::Mgr::getNumOtakaraItems());
 		// for regrown, ending a floor without all treasures collected will ruin perfect
 		if (Radar::Mgr::getNumOtakaraItems() != 0) {
+			OSReport("You failed!\n");
 			section->mIsChallengePerfect = false;
 		}
 
@@ -839,9 +840,10 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 		transit(section, VGS_Result, &arg);
 
 	} else if (config->is("s0C_cv_escape")) {
-
+		OSReport("On Enter Hole: %i\n", Radar::Mgr::getNumOtakaraItems());
 		// for regrown, ending a floor without all treasures collected will ruin perfect
 		if (Radar::Mgr::getNumOtakaraItems() != 0) {
+			OSReport("You failed!\n");
 			section->mIsChallengePerfect = false;
 		}
 
