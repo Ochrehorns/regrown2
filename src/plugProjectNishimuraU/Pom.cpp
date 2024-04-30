@@ -83,12 +83,14 @@ void Obj::doUpdate()
 		}
 	}
 
-	if (PSMGetGroundD()->mActor) {
-		if (mPlantPSM && gameSystem->isFlag(GAMESYS_IsPlaying) && gameSystem->isFlag(GAMESYS_IsSoundFXActive)) {
-			if (isAlive()) {
-				mPlantPSM->noukouFrameWork(true);
-			} else {
-				mPlantPSM->noukouFrameWork(false);
+	if ((gameSystem->isStoryMode() && gameSystem->mSection->getCaveID() != 'y_04') || gameSystem->isChallengeMode()) {
+		if (PSMGetGroundD()->mActor) {
+			if (mPlantPSM && gameSystem->isFlag(GAMESYS_IsPlaying) && gameSystem->isFlag(GAMESYS_IsSoundFXActive)) {
+				if (isAlive()) {
+					mPlantPSM->noukouFrameWork(true);
+				} else {
+					mPlantPSM->noukouFrameWork(false);
+				}
 			}
 		}
 	}
