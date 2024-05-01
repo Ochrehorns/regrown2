@@ -4013,6 +4013,7 @@ void ZukanState::dvdloadA()
 
 	particleMgr->setViewport(*gfx);
 	particleMgr->start();
+	platMgr   = new PlatMgr;
 	shadowMgr = new ShadowMgr(2);
 
 	gfx = sys->mGfx;

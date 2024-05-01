@@ -39,8 +39,10 @@ void StateDead::init(EnemyBase* obj, StateArg* arg)
 	obj->deathProcedure();
 
 	Pellet* shippart = nullptr;
-	if (OBJ(obj)->mOwnerClam)
+	if (OBJ(obj)->mOwnerClam) {
 		shippart = OBJ(obj)->mOwnerClam->mTreasure;
+		OBJ(obj)->mOwnerClam->setZukanVisible(true);
+	}
 
 	if (shippart) {
 		obj->disableEvent(0, EB_LeaveCarcass);
