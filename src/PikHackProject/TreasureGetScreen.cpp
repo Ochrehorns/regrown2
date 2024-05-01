@@ -47,6 +47,13 @@ void TreasureGetScreen::onCreate(JKRArchive* arc)
 	mAnmColor = static_cast<J2DAnmColor*>(J2DAnmLoaderDataBase::load(file));
 	mPodScreen->setAnimation(mAnmColor);
 
+	mAnmColorTimer                = 0.0f;
+	mAnmTexPatternTimer           = 0.0f;
+	mAnmTransTimer                = 0.0f;
+	mAnmColor->mCurrentFrame      = 0.0f;
+	mAnmTexPattern->mCurrentFrame = 0.0f;
+	mAnmTrans->mCurrentFrame      = 0.0f;
+
 	close();
 	sTreasureGetInstance = this;
 }
@@ -61,6 +68,13 @@ void TreasureGetScreen::open(u32 treasureID)
 	mState = 1;
 	// play the voice for 20 frames
 	mShipSpeechTimer = 20;
+
+	mAnmColorTimer                = 0.0f;
+	mAnmTexPatternTimer           = 0.0f;
+	mAnmTransTimer                = 0.0f;
+	mAnmColor->mCurrentFrame      = 0.0f;
+	mAnmTexPattern->mCurrentFrame = 0.0f;
+	mAnmTrans->mCurrentFrame      = 0.0f;
 }
 
 // force closes the window
@@ -69,6 +83,13 @@ void TreasureGetScreen::close()
 	mCurrentScale = 0.0f;
 	mOpenTimer    = 0.0f;
 	mState        = 0;
+
+	mAnmColorTimer                = 0.0f;
+	mAnmTexPatternTimer           = 0.0f;
+	mAnmTransTimer                = 0.0f;
+	mAnmColor->mCurrentFrame      = 0.0f;
+	mAnmTexPattern->mCurrentFrame = 0.0f;
+	mAnmTrans->mCurrentFrame      = 0.0f;
 }
 
 // general update function
