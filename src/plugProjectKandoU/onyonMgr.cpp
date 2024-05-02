@@ -521,8 +521,20 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 					playData->obtainPellet_Cave(pellet);
 				}
 
-				if (pellet->getKind() == PELTYPE_TREASURE)
-					OpenTreasureScreen(pellet->getConfigIndex());
+				if (pellet->getKind() == PELTYPE_TREASURE) {
+					if (!(!strcmp(pellet->mConfig->mParams.mName.mData, "prophecy")
+					      || !strcmp(pellet->mConfig->mParams.mName.mData, "miracle_matter")
+					      || !strcmp(pellet->mConfig->mParams.mName.mData, "donutsichigo")
+					      || !strcmp(pellet->mConfig->mParams.mName.mData, "medama_yaki")
+					      || !strcmp(pellet->mConfig->mParams.mName.mData, "dia_b_green")
+					      || !strcmp(pellet->mConfig->mParams.mName.mData, "diamond_blue")
+					      || !strcmp(pellet->mConfig->mParams.mName.mData, "dragon_diety")
+					      || !strcmp(pellet->mConfig->mParams.mName.mData, "doll")
+					      || !strcmp(pellet->mConfig->mParams.mName.mData, "robot_head")
+					      || !strcmp(pellet->mConfig->mParams.mName.mData, "haniwa"))) {
+						OpenTreasureScreen(pellet->getConfigIndex());
+					}
+				}
 
 				// reset treasures radar
 				if (Screen::Mgr::sScreenMgr->mBackupScene) {
