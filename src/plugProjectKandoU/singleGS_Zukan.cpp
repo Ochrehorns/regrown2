@@ -4,6 +4,7 @@
 #include "Game/Entities/PelletItem.h"
 #include "Game/Entities/PelletNumber.h"
 #include "Game/Entities/ShijimiChou.h"
+#include "Game/Entities/Clam.h"
 #include "Game/AIConstants.h"
 #include "Game/MapMgr.h"
 #include "Game/PikiMgr.h"
@@ -2051,6 +2052,12 @@ void ZukanState::execChangeTeki(SingleGameSection* game)
 
 	if (mDoDraw) {
 		mChangeSelTimer += sys->mDeltaTime;
+		if (platMgr && mCurrentEnemyIndex == EnemyTypeID::EnemyID_Clam) { // pointless due to carrots not attaching to clam mouth
+			if (mCurrentEnemy && mCurrentEnemy->getEnemyTypeID() == EnemyTypeID::EnemyID_Clam) { // making damn sure there was a clam
+				platMgr->delInstance(static_cast<Clam::Obj*>(mCurrentEnemy)->mPlatBottom);
+				platMgr->delInstance(static_cast<Clam::Obj*>(mCurrentEnemy)->mPlatTop);
+			}
+		}
 		game->BaseGameSection::doUpdate();
 	}
 }
