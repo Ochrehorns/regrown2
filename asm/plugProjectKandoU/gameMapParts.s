@@ -7481,7 +7481,7 @@ lbl_constructor:
 /* 801BC66C 001B95AC  80 63 00 24 */	lwz r3, 0x24(r3)
 /* 801BC670 001B95B0  7F 03 02 14 */	add r24, r3, r0
 /* 801BC674 001B95B4  7F 03 C3 78 */	mr r3, r24
-/* 801BC678 001B95B8  48 25 B5 11 */	bl "insideXZ__Q23Sys8TriangleFR10Vector3<f>"
+/* 801BC678 001B95B8  48 25 B5 11 */	bl "oldinsideXZ__Q23Sys8TriangleFR10Vector3<f>"
 /* 801BC67C 001B95BC  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 801BC680 001B95C0  41 82 01 38 */	beq .L_801BC7B8
 /* 801BC684 001B95C4  C1 41 00 28 */	lfs f10, 0x28(r1)
