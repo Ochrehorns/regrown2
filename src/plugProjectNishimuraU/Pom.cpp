@@ -83,7 +83,9 @@ void Obj::doUpdate()
 		}
 	}
 
-	if ((gameSystem->isStoryMode() && gameSystem->mSection->getCaveID() != 'y_04') || gameSystem->isChallengeMode()) {
+	if ((gameSystem->isStoryMode() && gameSystem->mSection->getCaveID() != 'y_04'
+	     && (gameSystem->mSection->getCaveID() != 'l_04' || gameSystem->mSection->getCurrFloor() != 30))
+	    || gameSystem->isChallengeMode()) {
 		if (PSMGetGroundD()->mActor) {
 			if (mPlantPSM && gameSystem->isFlag(GAMESYS_IsPlaying) && gameSystem->isFlag(GAMESYS_IsSoundFXActive)) {
 				if (isAlive()) {
