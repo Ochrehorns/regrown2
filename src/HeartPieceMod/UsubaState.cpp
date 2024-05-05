@@ -443,10 +443,10 @@ void StateRecover::exec(EnemyBase* enemy)
 
 	if (usuba->mCurAnim->mIsPlaying) {
 		if (usuba->mCurAnim->mType == KEYEVENT_2) { // pop up from ground
-			EnemyFunc::flickNearbyPikmin(enemy, CG_PARMS(enemy)->mGeneral.mShakeRange.mValue,
+			EnemyFunc::flickNearbyPikmin(enemy, CG_PROPERPARMS(enemy).mRecoverFlickRange.mValue,
 			                             CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue,
 			                             FLICK_BACKWARD_ANGLE, nullptr);
-			EnemyFunc::flickNearbyNavi(enemy, CG_PARMS(enemy)->mGeneral.mShakeRange.mValue,
+			EnemyFunc::flickNearbyNavi(enemy, CG_PROPERPARMS(enemy).mRecoverFlickRange.mValue,
 			                           CG_PARMS(enemy)->mGeneral.mShakeKnockback.mValue, CG_PARMS(enemy)->mGeneral.mShakeDamage.mValue,
 			                           FLICK_BACKWARD_ANGLE, nullptr);
 			EnemyFunc::flickStickPikmin(enemy, CG_PARMS(enemy)->mGeneral.mShakeChance.mValue,

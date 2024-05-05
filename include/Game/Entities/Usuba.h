@@ -184,6 +184,7 @@ struct Parms : public EnemyParmsBase {
 		    , mFireBreathChance(this, 'fp0C', "Fire Breath Chance", 0.0f, 0.0f, 1.0f)
 		    , mMinSwoopDistance(this, 'fp0D', "Minimum Swoop Distance", 100.0f, 0.0f, 10000.0f)
 		    , mMaxFireDistance(this, 'fp0E', "Maximum Fire Distance", 300.0f, 0.0f, 10000.0f)
+			, mRecoverFlickRange(this, 'fp0F', "Recovery Flick Range", 90.0f, 0.0f, 1000.0f)
 		{
 		}
 
@@ -206,6 +207,7 @@ struct Parms : public EnemyParmsBase {
 		Parm<f32> mFireBreathChance;
 		Parm<f32> mMinSwoopDistance;
 		Parm<f32> mMaxFireDistance;
+		Parm<f32> mRecoverFlickRange;
 	};
 
 	Parms() { }
