@@ -14,6 +14,7 @@
 #include "Game/Interaction.h"
 #include "Game/AIConstants.h"
 #include "Game/EnemyBase.h"
+#include "Game/Entities/ItemBridge.h"
 #include "Game/Entities/ItemPikihead.h"
 #include "Game/Entities/ItemHoney.h"
 #include "Game/Entities/ItemOnyon.h"
@@ -320,6 +321,32 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 		pelt->movie_begin(false);
 	}
 	return doPlay;
+}
+
+void ItemBridge::Item::doLoad(Stream& input)
+{
+	mCurrStageIdx = input.readInt();
+	f32 parmHealth = mgr->mParms->mBridgeParms.mHealth.mValue;
+
+	for (int i = 0; i <= mCurrStageIdx; i++) {
+		mStageHealths[i] = 0.0f;
+	}
+	for (int i = mCurrStageIdx + 1; i < mStageCount; i++) {
+		mStageHealths[i] = parmHealth;
+	}
+	f32 currentStageLength = input.readFloat();
+	if (mCurrStageIdx >= mStageCount) {
+		setAlive(false);
+		if (mBridgeWP && mEndWP) {
+			mBridgeWP->setOpen(true);
+			mEndWP->setOpen(true);
+			mBridgeWP->setWater(false);
+			mEndWP->setWater(false);
+		}
+	} else {
+		mStageHealths[mCurrStageIdx] = currentStageLength;
+	}
+	setCurrStage(mCurrStageIdx);
 }
 
 } // namespace Game

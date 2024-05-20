@@ -176,8 +176,13 @@ void Item::constructor() { mSoundObj = new PSM::WorkItem(this); }
 void Item::doLoad(Stream& input)
 {
 	mCurrStageIdx = input.readInt();
-	for (int i = 0; i < mStageCount; i++) {
+	f32 parmHealth = mgr->mParms->mBridgeParms.mHealth.mValue;
+
+	for (int i = 0; i <= mCurrStageIdx; i++) {
 		mStageHealths[i] = 0.0f;
+	}
+	for (int i = mCurrStageIdx + 1; i < mStageCount; i++) {
+		mStageHealths[i] = parmHealth;
 	}
 	f32 currentStageLength = input.readFloat();
 	if (mCurrStageIdx >= mStageCount) {
