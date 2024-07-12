@@ -35,6 +35,7 @@ struct Obj : public MaroFrog::Obj {
 	{
 		return EnemyTypeID::EnemyID_SmokyFrog;
 	}
+	virtual f32 getDamageCoeStoneState() { return 0.25f; }
 	virtual void attackNaviPosition(); // _300
 	virtual void changeMaterial()
 	{

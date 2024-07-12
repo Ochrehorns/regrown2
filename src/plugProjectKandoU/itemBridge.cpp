@@ -175,7 +175,7 @@ void Item::constructor() { mSoundObj = new PSM::WorkItem(this); }
  */
 void Item::doLoad(Stream& input)
 {
-	mCurrStageIdx = input.readInt();
+	mCurrStageIdx  = input.readInt();
 	f32 parmHealth = mgr->mParms->mBridgeParms.mHealth.mValue;
 
 	for (int i = 0; i <= mCurrStageIdx; i++) {

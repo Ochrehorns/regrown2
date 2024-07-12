@@ -325,7 +325,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 
 void ItemBridge::Item::doLoad(Stream& input)
 {
-	mCurrStageIdx = input.readInt();
+	mCurrStageIdx  = input.readInt();
 	f32 parmHealth = mgr->mParms->mBridgeParms.mHealth.mValue;
 
 	for (int i = 0; i <= mCurrStageIdx; i++) {

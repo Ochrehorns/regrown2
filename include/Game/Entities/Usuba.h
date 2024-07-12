@@ -35,17 +35,18 @@ struct Obj : public EnemyBase {
 	virtual void setInitialSetting(EnemyInitialParamBase* params); // _1C4
 	virtual void doUpdate();                                       // _1CC
 	virtual void doUpdateCommon();
-	virtual void doDebugDraw(Graphics& gfx);           // _1EC
-	virtual void doStartStoneState();                  // _2A4
-	virtual void doFinishStoneState();                 // _2A8
-	virtual void startCarcassMotion();                 // _2C4
-	virtual f32 getDownSmokeScale() { return 0.65f; }  // _2EC (weak)
-	virtual void setFSM(FSM* fsm);                     // _2F8
-	virtual int getStickPikminNum();                   // _2FC
-	virtual FakePiki* getAttackableTarget();           // _300
-	virtual int catchTarget();                         // _304
-	virtual void resetAttackableTimer(f32) { }         // _308 (weak)
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _258 (weak)
+	virtual void doDebugDraw(Graphics& gfx);               // _1EC
+	virtual void doStartStoneState();                      // _2A4
+	virtual void doFinishStoneState();                     // _2A8
+	virtual f32 getDamageCoeStoneState() { return 0.25f; } // _2AC
+	virtual void startCarcassMotion();                     // _2C4
+	virtual f32 getDownSmokeScale() { return 0.65f; }      // _2EC (weak)
+	virtual void setFSM(FSM* fsm);                         // _2F8
+	virtual int getStickPikminNum();                       // _2FC
+	virtual FakePiki* getAttackableTarget();               // _300
+	virtual int catchTarget();                             // _304
+	virtual void resetAttackableTimer(f32) { }             // _308 (weak)
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID()     // _258 (weak)
 	{
 		return EnemyTypeID::EnemyID_Usuba;
 	}
@@ -184,7 +185,7 @@ struct Parms : public EnemyParmsBase {
 		    , mFireBreathChance(this, 'fp0C', "Fire Breath Chance", 0.0f, 0.0f, 1.0f)
 		    , mMinSwoopDistance(this, 'fp0D', "Minimum Swoop Distance", 100.0f, 0.0f, 10000.0f)
 		    , mMaxFireDistance(this, 'fp0E', "Maximum Fire Distance", 300.0f, 0.0f, 10000.0f)
-			, mRecoverFlickRange(this, 'fp0F', "Recovery Flick Range", 90.0f, 0.0f, 1000.0f)
+		    , mRecoverFlickRange(this, 'fp0F', "Recovery Flick Range", 90.0f, 0.0f, 1000.0f)
 		{
 		}
 
