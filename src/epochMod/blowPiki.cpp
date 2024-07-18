@@ -91,8 +91,10 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 		    || !strcmp(pelt->mConfig->mParams.mName.mData, "donutsichigo") || !strcmp(pelt->mConfig->mParams.mName.mData, "medama_yaki")
 		    || !strcmp(pelt->mConfig->mParams.mName.mData, "dia_b_green") || !strcmp(pelt->mConfig->mParams.mName.mData, "diamond_blue")
 		    || !strcmp(pelt->mConfig->mParams.mName.mData, "dragon_diety") || !strcmp(pelt->mConfig->mParams.mName.mData, "doll")
+		    || !strcmp(pelt->mConfig->mParams.mName.mData, "elec") || !strcmp(pelt->mConfig->mParams.mName.mData, "fire")
+		    || !strcmp(pelt->mConfig->mParams.mName.mData, "gas") || !strcmp(pelt->mConfig->mParams.mName.mData, "water")
 		    || !strcmp(pelt->mConfig->mParams.mName.mData, "robot_head") || !strcmp(pelt->mConfig->mParams.mName.mData, "haniwa")) {
-			isGot = playData->firstCarryPellet(pelt); // except for these five because rakton said so
+			isGot = playData->firstCarryPellet(pelt); // except for these because rakton said so
 		}
 	}
 	if (pelt->getKind() == PELTYPE_BERRY) {
