@@ -29,7 +29,7 @@ struct Parms;
 inline bool isGold()
 {
 	return (gameSystem->mSection && gameSystem->mSection->getCaveID() == 'l_04'
-	        && (gameSystem->mSection->getCurrFloor() + 1 == 31) // change to l_04 and == 31 for final
+	        && (gameSystem->mSection->getCurrFloor() + 1 == 21) // change to l_04 and == 21 for final
 	        && !gameSystem->isZukanMode());
 }
 
