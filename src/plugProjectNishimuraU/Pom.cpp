@@ -84,7 +84,7 @@ void Obj::doUpdate()
 	}
 
 	if ((gameSystem->isStoryMode() && gameSystem->mSection->getCaveID() != 'y_04'
-	     && (gameSystem->mSection->getCaveID() != 'l_04' || gameSystem->mSection->getCurrFloor() != 20))
+	     && (gameSystem->mSection->getCaveID() != 'l_04' || gameSystem->mSection->getCurrFloor() != 19))
 	    || gameSystem->isChallengeMode()) {
 		if (PSMGetGroundD()->mActor) {
 			if (mPlantPSM && gameSystem->isFlag(GAMESYS_IsPlaying) && gameSystem->isFlag(GAMESYS_IsSoundFXActive)) {
