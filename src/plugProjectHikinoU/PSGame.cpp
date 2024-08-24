@@ -794,10 +794,10 @@ void PikSceneMgr::initAdditionalBgm(SceneInfo& info, PSSystem::Scene* scene)
 
 	CaveFloorInfo& cinfo = static_cast<CaveFloorInfo&>(info);
 	// Check for submerged castle theme
-	// FOR REGROWN: Add an extra check to play it in the final cave floor 30
+	// FOR REGROWN: Add an extra check to play it in the final cave floor 20
 	if (info.isCaveFloor() && !cinfo.isBossFloor()) {
 		if ((cinfo.getCaveNoFromID() == 3 && info.mSceneType == SceneInfo::COURSE_YAKUSHIMA)
-		    || (cinfo.getCaveNoFromID() == 3 && info.mSceneType == SceneInfo::COURSE_LAST && cinfo.mFloorNum == 29)) {
+		    || (cinfo.getCaveNoFromID() == 3 && info.mSceneType == SceneInfo::COURSE_LAST && cinfo.mFloorNum == 19)) {
 			seq = newBgmSeq("kuro_post.bms", sound);
 			P2ASSERTLINE(1353, seq);
 			scene->appendSeq(seq);
