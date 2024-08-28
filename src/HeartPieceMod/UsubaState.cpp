@@ -441,6 +441,8 @@ void StateRecover::exec(EnemyBase* enemy)
 		usuba->finishMotion();
 	}
 
+	FakePiki* target = usuba->getAttackableTarget();
+
 	if (usuba->mCurAnim->mIsPlaying) {
 		if (usuba->mCurAnim->mType == KEYEVENT_2) { // pop up from ground
 			EnemyFunc::flickNearbyPikmin(enemy, CG_PROPERPARMS(enemy).mRecoverFlickRange.mValue,
@@ -456,6 +458,11 @@ void StateRecover::exec(EnemyBase* enemy)
 			usuba->startBossFlickBGM();
 
 		} else if (usuba->mCurAnim->mType == KEYEVENT_END) { // anim end
+			if (target != nullptr) {
+				transit(usuba, USUBA_AttackBreath, nullptr);
+				return;
+			}
+
 			usuba->startElec();
 			int nextState = usuba->getNextStateOnHeight();
 			if (nextState >= 0) {
