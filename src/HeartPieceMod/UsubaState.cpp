@@ -690,7 +690,7 @@ void StateAttackBreath::exec(EnemyBase* enemy)
 	f32 frame = usuba->getMotionFrame();
 	FakePiki* target = usuba->getAttackableTarget();
 	if (target == nullptr) {
-		transit(usuba, USUBA_Move, nullptr);
+		transit(usuba, USUBA_AttackDive, nullptr);
 		return;
 		}
 	
