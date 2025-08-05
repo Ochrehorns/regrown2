@@ -663,7 +663,7 @@ void StateMove::cleanup(EnemyBase* enemy) { }
  */
 void StateAttackBreath::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	
+
 	Obj* usuba         = OBJ(enemy);
 	usuba->mStateTimer = 0.0f;
 	usuba->disableEvent(0, EB_Cullable);
@@ -687,17 +687,17 @@ void StateAttackBreath::exec(EnemyBase* enemy)
 		transit(enemy, USUBA_Fall, nullptr);
 		return;
 	}
-	f32 frame = usuba->getMotionFrame();
+	f32 frame        = usuba->getMotionFrame();
 	FakePiki* target = usuba->getAttackableTarget();
 	if (target == nullptr) {
 		transit(usuba, USUBA_AttackDive, nullptr);
 		return;
-		}
-	
+	}
+
 	if (usuba->isFireActive()) {
 		usuba->createDischargeSE();
 	}
-OSReport("Usuba target: 0x%p, Usuba PARMS: 0x%p, Usuba gInfo: 0x%p\n", target, CG_PARMS(usuba), CG_PARMS(usuba)->mGeneral);
+	OSReport("Usuba target: 0x%p, Usuba PARMS: 0x%p, Usuba gInfo: 0x%p\n", target, CG_PARMS(usuba), CG_PARMS(usuba)->mGeneral);
 
 	if (!mIsFireDone && !usuba->isFireActive()) {
 		if (frame <= 40.0f) {

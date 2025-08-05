@@ -25,6 +25,7 @@
 #include "PSSystem/PSSystemIF.h"
 #include "PSGame/SceneInfo.h"
 #include "PSM/Scene.h"
+#include "Game/pathfinder.h"
 #include "Splitter.h"
 #include "nans.h"
 
@@ -256,7 +257,7 @@ void Camera::setAtOffset(const Vector3f& vec)
  */
 void Camera::doUpdate()
 {
-	mAspectRatio = 1.33f; // fix for regrown because I have no idea whats changing it to 0.8
+	mAspectRatio = 1.66f; // fix for regrown because I have no idea whats changing it to 0.8
 
 	Vector3f cameraPos = Vector3f::zero; // f31, f30, f29
 	Sys::Sphere targetSphere;            // 0x24
@@ -384,7 +385,7 @@ void Camera::doUpdate()
 	lookOffset *= 10.0f;
 	mLookAtPosition = _1AC + lookOffset;
 
-	mAspectRatio = 1.33f; // doing it here too because Im not taking chances
+	mAspectRatio = 1.66f; // doing it here too because Im not taking chances
 
 	/*
 	stwu     r1, -0x120(r1)
@@ -4084,6 +4085,9 @@ void ZukanState::dvdloadA()
 	mResultTexture->create(arg);
 	mEnemyTexMgr = new IllustratedBook::EnemyTexMgr;
 	mEnemyTexMgr->create();
+
+	testPathfinder = new Pathfinder;
+	testPathfinder->create(100, mapMgr->mRouteMgr);
 
 	IllustratedBook::Parms::sCamera     = mCamera;
 	IllustratedBook::Parms::sZukanState = this;

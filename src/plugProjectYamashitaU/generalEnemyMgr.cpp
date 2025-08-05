@@ -82,6 +82,8 @@
 #include "Game/Entities/SmokyFrog.h"
 #include "Game/Entities/Clam.h"
 #include "Game/Entities/Pearl.h"
+#include "Game/Entities/BigEgg.h"
+#include "Game/Entities/Progg.h"
 
 static const char matchText[] = "enemyBase";
 
@@ -418,6 +420,12 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 	case EnemyTypeID::EnemyID_Bkabuto:
 		mgr = new BlackKabuto::Mgr(limit, type);
 		break;
+	case EnemyTypeID::EnemyID_BigEgg:
+		mgr = new BigEgg::Mgr(limit, type);
+		break;
+	case EnemyTypeID::EnemyID_Dororo:
+		mgr = new Dororo::Mgr(limit, type);
+		break;
 	}
 
 	mgr->alloc();
@@ -436,7 +444,7 @@ GeneralEnemyMgr::GeneralEnemyMgr()
     , mHeap(nullptr)
 {
 	sys->heapStatusStart("GeneralEnemyMgr", nullptr);
-	mName = "敵マネージャ"; // enemy manager
+	mName = "敵マネ拏ジャ"; // enemy manager
 
 	mEnemyNumInfo.init();
 

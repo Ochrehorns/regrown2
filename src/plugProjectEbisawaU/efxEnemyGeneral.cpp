@@ -193,6 +193,7 @@ bool TEnemyPiyo::create(Arg* arg)
 	case Game::EnemyTypeID::EnemyID_Rkabuto:
 	case Game::EnemyTypeID::EnemyID_Fkabuto:
 	case Game::EnemyTypeID::EnemyID_Bkabuto:
+	case Game::EnemyTypeID::EnemyID_Dororo:
 		scale = 1.4f;
 		break;
 
@@ -504,10 +505,8 @@ bool TEnemyDead::create(Arg* arg)
 		break;
 
 	case Game::EnemyTypeID::EnemyID_Frog:
-		scale = 1.0f;
-		break;
-
 	case Game::EnemyTypeID::EnemyID_MaroFrog:
+	case Game::EnemyTypeID::EnemyID_Dororo:
 		scale = 1.0f;
 		break;
 
@@ -721,6 +720,11 @@ bool TEnemyWalkSmoke::create(Arg* arg)
 	case Game::EnemyTypeID::EnemyID_KumaChappy:
 	case Game::EnemyTypeID::EnemyID_SleepyBulbear:
 		scale   = 1.4f;
+		isSmall = false;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Dororo:
+		scale   = 1.0f;
 		isSmall = false;
 		break;
 
@@ -1308,6 +1312,11 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mScale = 1.45f;
 		break;
 
+	case Game::EnemyTypeID::EnemyID_Dororo:
+		mType  = 1;
+		mScale = 1.0f;
+		break;
+
 	case Game::EnemyTypeID::EnemyID_Hiba:
 	case Game::EnemyTypeID::EnemyID_GasHiba:
 	case Game::EnemyTypeID::EnemyID_ElecHiba:
@@ -1691,6 +1700,10 @@ bool TEnemyHamonChasePos::create(Arg* arg)
 		scale = 0.9f;
 		break;
 
+	case Game::EnemyTypeID::EnemyID_Dororo:
+		scale = 1.6f;
+		break;
+
 	case Game::EnemyTypeID::EnemyID_FireOtakara:
 	case Game::EnemyTypeID::EnemyID_WaterOtakara:
 	case Game::EnemyTypeID::EnemyID_GasOtakara:
@@ -1898,6 +1911,7 @@ f32 TEnemyHamon::getLimitDepth_()
 		break;
 
 	case Game::EnemyTypeID::EnemyID_FireChappy:
+	case Game::EnemyTypeID::EnemyID_Dororo:
 		depth = 80.0f;
 		break;
 

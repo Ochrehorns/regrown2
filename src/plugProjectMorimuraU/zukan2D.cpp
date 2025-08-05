@@ -163,6 +163,7 @@ TEnemyZukanIndex eIDInfo[ENEMY_ZUKAN_COUNT] = {
 	{ TEnemyZukan::Zukan_SmokyFrog, Game::EnemyTypeID::EnemyID_SmokyFrog },
 	{ TEnemyZukan::Zukan_HallowMushi, Game::EnemyTypeID::EnemyID_HallowMushi },
 	{ TEnemyZukan::Zukan_Usuba, Game::EnemyTypeID::EnemyID_Usuba },
+	{ TEnemyZukan::Zukan_Dororo, Game::EnemyTypeID::EnemyID_BigEgg },
 	{ TEnemyZukan::Zukan_BigTreasure, Game::EnemyTypeID::EnemyID_BigTreasure },
 };
 
@@ -1655,6 +1656,7 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 		mIsBigIconList[Zukan_SmokyFrog]   = true;
 		mIsBigIconList[Zukan_HallowMushi] = true;
 		mIsBigIconList[Zukan_Usuba]       = true;
+		mIsBigIconList[Zukan_Dororo]      = true;
 	}
 
 	if (mIsSection && !mZukanShortenTest) {

@@ -151,6 +151,8 @@ enum EEnemyTypeID {//ID      Common Name
     EnemyID_Pearl          = 109, // Pearl
     EnemyID_Bkabuto        = 110, // Adolescent Cannon Beetle
     EnemyID_Ptank          = 111, // Poison Blowhog
+    EnemyID_BigEgg         = 112, // Smoky Progg's Egg
+    EnemyID_Dororo         = 113, // Smoky Progg
     EnemyID_COUNT,
 };
 EEnemyTypeID mEnemyID; // _00
@@ -188,7 +190,8 @@ inline int getEnemyMgrID(int enemyID)
 	 || id == EnemyTypeID::EnemyID_UmiMushiBlind || id == EnemyTypeID::EnemyID_BlackMan || id == EnemyTypeID::EnemyID_DangoMushi \
 	 || id == EnemyTypeID::EnemyID_BigFoot || id == EnemyTypeID::EnemyID_SnakeWhole || id == EnemyTypeID::EnemyID_UmiMushi       \
 	 || id == EnemyTypeID::EnemyID_BigTreasure || id == EnemyTypeID::EnemyID_SmokyFrog || id == EnemyTypeID::EnemyID_Usuba       \
-	 || id == EnemyTypeID::EnemyID_HallowMushi || id == EnemyTypeID::EnemyID_Hydrant || id == EnemyTypeID::EnemyID_SnakeWhite)
+	 || id == EnemyTypeID::EnemyID_HallowMushi || id == EnemyTypeID::EnemyID_Hydrant || id == EnemyTypeID::EnemyID_SnakeWhite    \
+	 || id == EnemyTypeID::EnemyID_Dororo)
 
 } // namespace Game
 #endif

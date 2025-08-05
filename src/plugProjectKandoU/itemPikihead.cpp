@@ -861,13 +861,15 @@ bool Item::interactFue(InteractFue& whistle)
 {
 	if (canPullout() && isAlive()) {
 		Navi* navi = static_cast<Navi*>(whistle.mCreature);
-		if (!navi->getOlimarData()->hasItem(OlimarData::ODII_ProfessionalNoisemaker)) {
-			return false;
-		}
-
-		if (gameSystem->isVersusMode()) {
-			if (mColor == navi->mNaviIndex) {
+		if (navi->isNavi()) {
+			if (!navi->getOlimarData()->hasItem(OlimarData::ODII_ProfessionalNoisemaker)) {
 				return false;
+			}
+
+			if (gameSystem->isVersusMode()) {
+				if (mColor == navi->mNaviIndex) {
+					return false;
+				}
 			}
 		}
 
@@ -876,11 +878,16 @@ bool Item::interactFue(InteractFue& whistle)
 		PikiMgr::mBirthMode = 0;
 
 		if (piki) {
-			P2ASSERTLINE(701, whistle.mCreature->isNavi());
+			// P2ASSERTLINE(701, whistle.mCreature->isNavi());
 			piki->init(nullptr);
 			piki->changeShape(mColor);
 			piki->changeHappa(mHeadType);
-			piki->mNavi = navi;
+
+			if (navi->isNavi())
+				piki->mNavi = navi;
+			else
+				piki->mNavi = nullptr;
+
 			piki->setPosition(mPosition, false);
 			piki->mFsm->transit(piki, PIKISTATE_AutoNuki, nullptr);
 			kill(nullptr);
