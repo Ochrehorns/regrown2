@@ -56,13 +56,13 @@ __vt__Q33PSM12BossBgmFader17TypedProc_MidBoss:
 	.float 1.0
 .endobj lbl_80520CCC
 .obj lbl_80520CD0, local
-	.float 1000.0
+	.float 1800.0
 .endobj lbl_80520CD0
 .obj lbl_80520CD4, local
 	.float 600.0
 .endobj lbl_80520CD4
 .obj lbl_80520CD8, local
-	.float 400.0
+	.float 1400.0
 .endobj lbl_80520CD8
 
 .section .text, "ax"  # 0x800056C0 - 0x80472F00
