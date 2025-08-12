@@ -26,7 +26,7 @@ void StateIdle::init(EnemyBase* obj, StateArg* arg)
 void StateIdle::exec(EnemyBase* obj)
 {
 	if (obj->mHealth <= 0.0f && obj->isAlive()) {
-		obj->mSoundObj->startSound(PSSE_EN_PIKIMAKI_HIT, 0);
+		obj->mSoundObj->startSound(0x598e, 0);
 		OBJ(obj)->mFsm->transit(obj, PearlState_Dead, nullptr);
 	}
 }
@@ -72,8 +72,6 @@ void StateDead::init(EnemyBase* obj, StateArg* arg)
 	efx::TClamDead deadefx;
 	deadefx.mMtx = &obj->mBaseTrMatrix;
 	deadefx.create(nullptr);
-
-	obj->mSoundObj->startSound(0x598e, 0);
 }
 
 void StateDead::exec(EnemyBase* obj)
