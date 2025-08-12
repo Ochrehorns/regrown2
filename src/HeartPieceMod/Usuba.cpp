@@ -165,6 +165,11 @@ void Obj::doUpdate()
 		}
 	}
 
+	// These are all airborne states. When the Usuba is in these states, a hovering sound will play.
+	if (getStateID() == USUBA_Wait || getStateID() == USUBA_Move || getStateID() == USUBA_Flick || getStateID() == USUBA_Recover || getStateID() == USUBA_AttackBreath || getStateID() == USUBA_AttackDive) {
+		getJAIObject()->startSound(PSSE_EN_SARAI_HOVER, 0);
+	}
+
 	// Drought Here: Don't do this lmao
 	// OSReport("Current state: %i\n", getStateID());
 }

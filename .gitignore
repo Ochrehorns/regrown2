@@ -54,3 +54,23 @@ objdiff.json
 docs/
 
 tools/progress.csv
+tools/download_mwcc.py
+tools/download_ppc.py
+tools/mwcc_compiler/.gitkeep
+tools/powerpc/powerpc-eabi-addr2line
+tools/powerpc/powerpc-eabi-ar
+tools/powerpc/powerpc-eabi-as
+tools/powerpc/powerpc-eabi-c++filt
+tools/powerpc/powerpc-eabi-elfedit
+tools/powerpc/powerpc-eabi-embedspu
+tools/powerpc/powerpc-eabi-ld
+tools/powerpc/powerpc-eabi-ld.bfd
+tools/powerpc/powerpc-eabi-nm
+tools/powerpc/powerpc-eabi-objcopy
+tools/powerpc/powerpc-eabi-objdump
+tools/powerpc/powerpc-eabi-ranlib
+tools/powerpc/powerpc-eabi-readelf
+tools/powerpc/powerpc-eabi-size
+tools/powerpc/powerpc-eabi-strings
+tools/powerpc/powerpc-eabi-strip
+tools/mwcc_compiler/.gitkeep

@@ -94,14 +94,15 @@ void StateShut::exec(EnemyBase* obj)
 		efx::TClamShut shutefx;
 		shutefx.mMtx = mtx;
 		shutefx.create(nullptr);
-		obj->mSoundObj->startSound(PSSE_EN_LAND_SOIL_L, 0);
 	}
 
 	// on anim finished, go to eat animation if it got any pikmin
 	if (clam->mCurAnim->mType = KEYEVENT_END && clam->mCurAnim->mIsPlaying) {
 		if (!clam->mKilledPiki) {
+			obj->mSoundObj->startSound(0x5990, 0); // fail eat sound
 			clam->mFsm->transit(clam, ClamState_Wait, 0);
 		} else {
+			obj->mSoundObj->startSound(0x598f, 0); // success eat sound
 			clam->mFsm->transit(clam, ClamState_Eat, 0);
 		}
 	}
