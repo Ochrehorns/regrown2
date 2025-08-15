@@ -1643,7 +1643,7 @@ void Obj::setBossAppearBGM()
 		jumpReqIdx = PSM::EnemyBigBoss::BigBossBgm_3Weapons;
 		break;
 	case 4:
-		jumpReqIdx = PSM::EnemyBigBoss::BigBossBgm_4Weapons;
+		jumpReqIdx = PSM::EnemyBigBoss::BigBossBgm_Intro;
 		break;
 	}
 
