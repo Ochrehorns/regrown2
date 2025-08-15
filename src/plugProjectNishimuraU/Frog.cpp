@@ -393,13 +393,26 @@ void Obj::pressOnGround()
 		static_cast<SmokyFrog::Obj*>(this)->createGas();
 	}
 
+	if (getEnemyTypeID() == EnemyTypeID::EnemyID_SmokyFrog && getStateID() == SmokyFrog::SMOKYFROG_Appear) {
+		getJAIObject()->startSound(PSSE_EN_KING_HIP, 0); // plopping extra big stomp sound for wollyprogg here
+		getJAIObject()->startSound(PSSE_EN_UMI_DEAD_GND, 0); // wet sound
+	}
+
 	cameraMgr->startVibration(6, fxPos, 2);
 	rumbleMgr->startRumble(14, fxPos, 2);
 
 	if (mWaterBox) {
-		getJAIObject()->startSound(PSSE_EN_FROG_WATERLAND, 0);
+		if (getEnemyTypeID() == EnemyTypeID::EnemyID_SmokyFrog && getStateID() != SmokyFrog::SMOKYFROG_Appear) {
+			getJAIObject()->startSound(PSSE_EV_ITEM_LAND_WATER1_L, 0); // plopping extra big stomp sound for wollyprogg here
+		} else {	
+			getJAIObject()->startSound(PSSE_EN_FROG_WATERLAND, 0);
+		}
 	} else {
-		getJAIObject()->startSound(PSSE_EN_FROG_LAND, 0);
+		if (getEnemyTypeID() == EnemyTypeID::EnemyID_SmokyFrog && getStateID() != SmokyFrog::SMOKYFROG_Appear) {
+			getJAIObject()->startSound(PSSE_EN_KING_HIP, 0); // plopping extra big stomp sound for wollyprogg here
+		} else {	
+			getJAIObject()->startSound(PSSE_EN_FROG_LAND, 0);
+		}
 	}
 }
 
