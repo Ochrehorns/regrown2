@@ -47,7 +47,7 @@ void Obj::setupEffect()
 void Obj::startEffect()
 {
 	mTankEffect->mEfxGas.create(nullptr);
-	getJAIObject()->startSound(PSSE_EN_FART_GAS, 0);
+	getJAIObject()->startSound(0x5991, 0);
 }
 
 void Obj::startYodare()
@@ -90,9 +90,9 @@ void Obj::stopEffectRadius(f32 radius)
 	effect->mEfxGas.mParticleCallBack._04 = radius;
 }
 
-void Obj::createChargeSE() { getJAIObject()->startSound(PSSE_EN_KURAGE_PRE_VACUUM, 0); }
+void Obj::createChargeSE() { getJAIObject()->startSound(0x5992, 0); }
 
-void Obj::createDisChargeSE() { getJAIObject()->startSound(PSSE_EN_OTAKARA_ATK_GAS, 0); }
+void Obj::createDisChargeSE() {  }
 
 } // namespace Ptank
 } // namespace Game
