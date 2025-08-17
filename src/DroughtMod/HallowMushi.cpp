@@ -297,6 +297,21 @@ void Obj::doUpdate()
 	} else {
 		mLastTrailTimer = C_PARMS->mProperHallowParms.mFirstTrailDelay();
 	}
+
+	// When the Hallowed Crawbster is in these states, an idle electricity sound will play.
+	if (getStateID() == 3 || getStateID() == 4 || getStateID() == 6 || getStateID() == 7 || getStateID() == 8) {
+		getJAIObject()->startSound(0x5196, 0);
+	}
+
+	// this will clean up the electricity particles when it dies
+	if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
+		HallowMushi::Obj* hallow = static_cast<HallowMushi::Obj*>(this);
+		if (getStateID() == 0) {
+			hallow->mClawEffectBolts->fade();
+			hallow->mClawEffectGlow->fade();;
+		}
+	}
+
 }
 
 } // namespace HallowMushi
