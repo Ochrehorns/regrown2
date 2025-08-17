@@ -303,6 +303,11 @@ void Obj::doUpdate()
 		getJAIObject()->startSound(0x5196, 0);
 	}
 
+	// Extra rolling sound layer
+	if (getStateID() == 5) {
+		getJAIObject()->startSound(0x5197, 0);
+	}
+
 	// this will clean up the electricity particles when it dies
 	if (getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
 		HallowMushi::Obj* hallow = static_cast<HallowMushi::Obj*>(this);
@@ -372,6 +377,11 @@ void StateFlick::exec(EnemyBase* enemy)
 	if (crab->flickHandCollision()) {
 		crab->createWallBreakEffect();
 		crab->getJAIObject()->startSound(PSSE_EN_DANGO_ARM_GROUND, 0);
+		if (crab->getEnemyTypeID() == EnemyTypeID::EnemyID_HallowMushi) {
+			HallowMushi::Obj* hallow = static_cast<HallowMushi::Obj*>(crab);
+			hallow->mClawEffectGlow->create(nullptr);
+			crab->getJAIObject()->startSound(0x5998, 0);
+		}	
 		Vector3f crabPos = crab->getPosition();
 		cameraMgr->startVibration(25, crabPos, 2);
 		rumbleMgr->startRumble(14, crabPos, 2);
