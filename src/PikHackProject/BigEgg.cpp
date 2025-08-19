@@ -162,7 +162,7 @@ void StateWait::exec(EnemyBase* enemy)
 	}
 
 	if (egg->mCurAnim->mIsPlaying && egg->mCurAnim->mType == 3) {
-		efx::TSimple2 spawnefx(707, 709);
+		efx::TSimple2 spawnefx(727, 729);
 		efx::Arg arg(egg->mPosition);
 		spawnefx.create(&arg);
 
@@ -171,9 +171,10 @@ void StateWait::exec(EnemyBase* enemy)
 			// move held treasure to progg
 			Radar::Mgr::exit(egg);
 		} else {
-			efx::TSimple3 spawnefx(717, 716, 708);
+			efx::TSimple3 spawnefx(737, 736, 728);
 			efx::Arg efxarg(egg->mPosition);
 			spawnefx.create(&efxarg);
+			0x2d5;
 		}
 
 		egg->deathProcedure();

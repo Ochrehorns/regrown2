@@ -110,9 +110,9 @@ void Obj::doEndMovie()
 
 void Obj::createEffect()
 {
-	mSmokeEfx = new efx::TChaseMtx4(nullptr, 702, 703, 705, 706);
-	mEyeEfx1  = new efx::TChaseMtx(701, nullptr);
-	mEfxCore  = new efx::TChaseMtx(704, nullptr);
+	mSmokeEfx = new efx::TChaseMtx4(nullptr, 722, 723, 725, 726);
+	mEyeEfx1  = new efx::TChaseMtx(721, nullptr);
+	mEfxCore  = new efx::TChaseMtx(724, nullptr);
 }
 
 void Obj::onInit(CreatureInitArg* initArg)
@@ -311,7 +311,7 @@ void StateDead::init(EnemyBase* obj, StateArg* arg)
 	                            -1000.0f, 0);
 	progg->deathProcedure();
 
-	efx::TSimple2 deadefx(716, 717);
+	efx::TSimple2 deadefx(736, 737);
 	efx::Arg earg(obj->mPosition);
 	deadefx.create(&earg);
 }
@@ -374,7 +374,7 @@ void StateRoar::exec(EnemyBase* obj)
 		EnemyFunc::flickStickPikmin(obj, parms->mGeneral.mShakeChance(), parms->mGeneral.mShakeKnockback(), parms->mGeneral.mShakeDamage(),
 		                            -1000.0f, 0);
 
-		efx::TSimple2 roarefx(731, 732);
+		efx::TSimple2 roarefx(751, 752);
 		efx::Arg earg(obj->mPosition);
 		earg.mPosition.y += 20.0f;
 		roarefx.create(&earg);
@@ -495,7 +495,8 @@ void StatePath::init(EnemyBase* obj, StateArg* arg)
 
 	progg->startMotion(7, 0);
 	progg->setEmotionCaution();
-	progg->mNextState = -1;
+	progg->mNextState      = -1;
+	progg->mTargetCreature = nullptr;
 
 	Vector3f goalPos = 0.0f;
 	// this manager doesnt exist in the piklopedia
@@ -504,12 +505,15 @@ void StatePath::init(EnemyBase* obj, StateArg* arg)
 		// if an onion cant be found, target the ship
 		if (progg->mTargetCreature == nullptr) {
 			progg->mTargetCreature = ItemOnyon::mgr->mUfo;
-			goalPos                = progg->mTargetCreature->getPosition();
 		}
+
 		// if theres still nothing youre probably in a cave, so target the pod
 		if (progg->mTargetCreature == nullptr) {
 			progg->mTargetCreature = ItemOnyon::mgr->mPod;
-			goalPos                = progg->mTargetCreature->getPosition();
+		}
+
+		if (progg->mTargetCreature) {
+			goalPos = progg->mTargetCreature->getPosition();
 		}
 	}
 
