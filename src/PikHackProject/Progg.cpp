@@ -120,6 +120,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 	EnemyBase::onInit(initArg);
 	mFsm->start(this, 0, 0);
 	disableEvent(0, EB_Cullable);
+	enableEvent(0, EB_BitterImmune);
 
 	setupEffect();
 	mRoarTimer = 0.0f;
