@@ -167,10 +167,13 @@ void StateWait::exec(EnemyBase* enemy)
 		spawnefx.create(&arg);
 
 		if (egg->mDoMakeProgg) {
+			egg->mSoundObj->startSound(0x599D, 0);
 			egg->genProgg();
 			// move held treasure to progg
 			Radar::Mgr::exit(egg);
 		} else {
+			egg->mSoundObj->startSound(0x599D, 0);
+			egg->mSoundObj->startSound(0x599C, 0);
 			efx::TSimple3 spawnefx(737, 736, 728);
 			efx::Arg efxarg(egg->mPosition);
 			spawnefx.create(&efxarg);

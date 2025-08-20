@@ -64,7 +64,13 @@ void Obj::setFSM(FSM* fsm)
 
 void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-void Obj::doUpdate() { mFsm->exec(this); }
+void Obj::doUpdate() { mFsm->exec(this); 
+
+// When the Progg is in these states, an ambient wind noise will play for it.
+	if (getStateID() == PROGG_Born || getStateID() == PROGG_Chase || getStateID() == PROGG_Flick || getStateID() == PROGG_Roar || getStateID() == PROGG_Wait || getStateID() == PROGG_Look || getStateID() == PROGG_Path) {
+		mSoundObj->startSound(0x519A, 0);
+	}
+}
 
 void Obj::doDirectDraw(Graphics&) { }
 
@@ -180,7 +186,7 @@ void Obj::updateSplashEfx()
 			diveefx.create(&earg);
 			mSoundObj->startSound(0x5804, 0);
 		} else {
-			mSoundObj->startSound(0x5811, 0);
+			mSoundObj->startSound(0x5999, 0);
 		}
 	}
 
@@ -192,7 +198,7 @@ void Obj::updateSplashEfx()
 			diveefx.create(&earg);
 			mSoundObj->startSound(0x5804, 0);
 		} else {
-			mSoundObj->startSound(0x5811, 0);
+			mSoundObj->startSound(0x5999, 0);
 		}
 	}
 }
