@@ -184,7 +184,7 @@ void Obj::updateSplashEfx()
 			efx::TSimple2 diveefx(PID_EnemyDive_1, PID_EnemyDive_2);
 			efx::Arg earg(mtx->getTranslation());
 			diveefx.create(&earg);
-			mSoundObj->startSound(0x5804, 0);
+			mSoundObj->startSound(0x59A2, 0);
 		} else {
 			mSoundObj->startSound(0x5999, 0);
 		}
@@ -196,7 +196,7 @@ void Obj::updateSplashEfx()
 			efx::TSimple2 diveefx(PID_EnemyDive_1, PID_EnemyDive_2);
 			efx::Arg earg(mtx->getTranslation());
 			diveefx.create(&earg);
-			mSoundObj->startSound(0x5804, 0);
+			mSoundObj->startSound(0x59A2, 0);
 		} else {
 			mSoundObj->startSound(0x5999, 0);
 		}
