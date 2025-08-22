@@ -959,7 +959,7 @@ LIBS = [
             ["plugProjectKandoU/pikiContainer", True],
             "plugProjectKandoU/gameGeneratorCache",
             ["plugProjectKandoU/itemTreasure", True],
-            "plugProjectKandoU/itemDownFloor",
+            ["plugProjectKandoU/itemDownFloor", True],
             ["plugProjectKandoU/kandoLib", True],
             ["plugProjectKandoU/itemBarrel", True],
             ["plugProjectKandoU/pelletNumber", True],

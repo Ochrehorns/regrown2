@@ -230,18 +230,21 @@ void Item::startDamageMotion()
  */
 void Item::startDownMotion()
 {
-	mAnimator.startAnim(2, this);
-	mAnimSpeed = 30.0f;
-	if (mModelType == DFMODEL_PaperBag) {
-		startSound(PSSE_EV_PAPERBAG_SINK);
-	} else {
-		startSound(PSSE_EV_WORK_WALLDOWN);
-	}
 
 	Sys::Sphere sphere = mBoundingSphere;
 	sphere.mPosition.y -= 20.0f;
 
 	WaterBox* water = mapMgr->findWater(sphere);
+
+	mAnimator.startAnim(2, this);
+	mAnimSpeed = 30.0f;
+	if (mModelType == DFMODEL_PaperBag) {
+		startSound(PSSE_EV_PAPERBAG_SINK);
+		if (water) {
+			mSoundObj->startSound(0x59A4, 0);}
+	} else {
+		startSound(PSSE_EV_WORK_WALLDOWN);
+	}
 
 	if (water) {
 		switch (mModelType) {
@@ -833,7 +836,7 @@ void Mgr::generatorWrite(Stream& input, GenItemParm* genParm)
 	P2ASSERTLINE(1246, downParm);
 	input.textWriteTab(input.mTabCount);
 	input.writeShort(downParm->mBagWeight);
-	input.textWriteText("\t#’¾‚Ýl”\r\n"); // '#number of people sinking'
+	input.textWriteText("\t#ï¿½ï¿½ï¿½Ýlï¿½ï¿½\r\n"); // '#number of people sinking'
 
 	input.textWriteTab(input.mTabCount);
 	input.writeShort(downParm->mModelType);

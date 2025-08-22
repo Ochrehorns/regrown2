@@ -66,9 +66,14 @@ void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
 void Obj::doUpdate() { mFsm->exec(this); 
 
-// When the Progg is in these states, an ambient wind noise will play for it.
-	if (getStateID() == PROGG_Born || getStateID() == PROGG_Chase || getStateID() == PROGG_Flick || getStateID() == PROGG_Roar || getStateID() == PROGG_Wait || getStateID() == PROGG_Look || getStateID() == PROGG_Path) {
+// When the Progg is in these states, a subtle wind noise will emit from the progg.
+	if (getStateID() == PROGG_Born || getStateID() == PROGG_Chase || getStateID() == PROGG_Flick || getStateID() == PROGG_Roar || getStateID() == PROGG_Path) {
 		mSoundObj->startSound(0x519A, 0);
+	}
+
+	// When the Progg is just chilling, a louder and more prominent wind noise emits instead.
+	if (getStateID() == PROGG_Wait || getStateID() == PROGG_Look) {
+		mSoundObj->startSound(0x51A3, 0);
 	}
 }
 
@@ -339,6 +344,7 @@ void StateFlick::init(EnemyBase* obj, StateArg* arg)
 	obj->mCurrentVelocity = 0.0f;
 	obj->mFlickTimer      = 0.0f;
 	obj->setEmotionExcitement();
+	obj->mSoundObj->startSound(0x599F, 0); // Progg's flick sound.
 }
 
 void StateFlick::exec(EnemyBase* obj)
@@ -472,6 +478,8 @@ void StateLook::init(EnemyBase* obj, StateArg* arg)
 	Obj* progg = OBJ(obj);
 
 	progg->startMotion(4, 0); // serch.bck
+	progg->mSoundObj->startSound(0x59A0, 0); // Subtle sound effect for serch animation.
+
 	// Default to wait state if nothing happens
 	progg->mNextState = PROGG_Wait;
 }
