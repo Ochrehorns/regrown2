@@ -153,6 +153,13 @@ void Navi::onInit(Game::CreatureInitArg* arg)
 	mEffectsObj->mHeadMtx    = headJnt->getWorldMatrix();
 	mEffectsObj->setNaviType((efx::TNaviEffect::enumNaviType)(bool)mNaviIndex);
 
+	if (mNaviIndex == NAVIID_Louie && playData->mStoryFlags & 1) {
+		mEffectsObj->mLight.mItems[0].mEffectID = PID_OrimaLight_Loozy_1;
+		mEffectsObj->mLight.mItems[1].mEffectID = PID_OrimaLight_Loozy_2;
+
+		mEffectsObj->mLightAct.mItems[0].mEffectID = PID_OrimaLight_Loozy_1;
+		mEffectsObj->mLightAct.mItems[1].mEffectID = PID_OrimaLight_Loozy_2;
+	}
 	mEffectsObj->createLight();
 
 	setLifeMax();
@@ -2290,10 +2297,10 @@ void Navi::movieStartDemoAnimation(SysShape::AnimInfo* info)
  */
 void Navi::movieSetTranslation(Vector3f& newpos, f32 dir)
 {
-	mSimVelocity         = 0.0f;
-	mVelocity            = 0.0f;
-	mAcceleration        = 0.0f;
-	mPositionBeforeMovie = mPosition;
+	mSimVelocity      = 0.0f;
+	mVelocity         = 0.0f;
+	mAcceleration     = 0.0f;
+	mPreviousPosition = mPosition;
 	setPosition(newpos, false);
 	mFaceDir = dir;
 }

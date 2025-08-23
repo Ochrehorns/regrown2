@@ -153,6 +153,8 @@ enum EEnemyTypeID {//ID      Common Name
     EnemyID_Ptank          = 111, // Poison Blowhog
     EnemyID_BigEgg         = 112, // Smoky Progg's Egg
     EnemyID_Dororo         = 113, // Smoky Progg
+    EnemyID_Puddle = 114, // Final Boss 1
+    EnemyID_Truth = 115, // Final Boss 2
     EnemyID_COUNT,
 };
 EEnemyTypeID mEnemyID; // _00

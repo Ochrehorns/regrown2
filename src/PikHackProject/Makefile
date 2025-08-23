@@ -1,4 +1,6 @@
 PIKHACK_FILES:=\
+	$(BUILD_DIR)/src/PikHackProject/Truth.o\
+	$(BUILD_DIR)/src/PikHackProject/Puddle.o\
 	$(BUILD_DIR)/src/PikHackProject/BigEgg.o\
 	$(BUILD_DIR)/src/PikHackProject/Progg.o\
 	$(BUILD_DIR)/src/PikHackProject/Ptank.o\

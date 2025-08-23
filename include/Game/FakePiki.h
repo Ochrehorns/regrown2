@@ -209,7 +209,7 @@ struct FakePiki : public Creature, public SysShape::MotionListener {
 	int _22C;                               // _22C, anim id of some description?
 	int _230;                               // _230, anim id of some description?
 	f32 mAnimSpeed;                         // _234
-	Vector3f _238;                          // _238
+	Vector3f mPreviousPosition;             // _238, used to check what movements was made each frame
 	f32 mFaceDirOffset;                     // _244
 	Sys::Triangle* mFakePikiBounceTriangle; // _248
 	u32 _24C;                               // _24C, unknown

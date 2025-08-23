@@ -164,6 +164,7 @@ TEnemyZukanIndex eIDInfo[ENEMY_ZUKAN_COUNT] = {
 	{ TEnemyZukan::Zukan_HallowMushi, Game::EnemyTypeID::EnemyID_HallowMushi },
 	{ TEnemyZukan::Zukan_Usuba, Game::EnemyTypeID::EnemyID_Usuba },
 	{ TEnemyZukan::Zukan_Dororo, Game::EnemyTypeID::EnemyID_BigEgg },
+	{ TEnemyZukan::Zukan_Truth, Game::EnemyTypeID::EnemyID_Truth },
 	{ TEnemyZukan::Zukan_BigTreasure, Game::EnemyTypeID::EnemyID_BigTreasure },
 };
 
@@ -1657,6 +1658,7 @@ void TEnemyZukan::doCreate(JKRArchive* arc)
 		mIsBigIconList[Zukan_HallowMushi] = true;
 		mIsBigIconList[Zukan_Usuba]       = true;
 		mIsBigIconList[Zukan_Dororo]      = true;
+		mIsBigIconList[Zukan_Truth]       = true;
 	}
 
 	if (mIsSection && !mZukanShortenTest) {

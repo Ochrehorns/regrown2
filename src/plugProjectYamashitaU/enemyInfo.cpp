@@ -118,7 +118,9 @@ EnemyInfo gEnemyInfo[] = {
    {"Bkabuto",            EnemyTypeID::EnemyID_Bkabuto,        -1,                                1,      0x0097,    "",             "Kabuto",       "Kabuto",       "",         "",         "",             "",             EnemyTypeID::EnemyID_Stone,       5,    BDT_Normal},
    {"Ptank",              EnemyTypeID::EnemyID_Ptank,          -1,                                1,      0x0097,   "Tank",          "Tank",         "Tank",         "",         "",         "Tank",         "Tank",         -1,                               0,    BDT_Strong},
    {"BigEgg",             EnemyTypeID::EnemyID_BigEgg,         -1,                                1,      0x0207,    "",             "",             "",             "",         "",         "",             "",             EnemyTypeID::EnemyID_Dororo,      1,    BDT_Empty},
-   {"Dororo",             EnemyTypeID::EnemyID_Dororo,         -1,                                1,      0x0097,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Boss},
+   {"Dororo",             EnemyTypeID::EnemyID_Dororo,         -1,                                1,      0x0097,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Strong},
+   {"Puddle",             EnemyTypeID::EnemyID_Puddle,         -1,                                1,      0x0097,    "",             "",             "",             "",         "",         "",             "",             -1,   0,    BDT_Strong},
+   {"Truth",              EnemyTypeID::EnemyID_Truth,          -1,                                1,      0x0097,    "",             "",             "",             "",         "",         "",             "",             EnemyTypeID::EnemyID_Puddle,        1,    BDT_Boss},
 };
 // clang-format on
 

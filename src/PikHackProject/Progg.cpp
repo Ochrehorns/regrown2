@@ -1,4 +1,5 @@
 #include "Game/Entities/Progg.h"
+#include "Game/Entities/ItemPikihead.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/generalEnemyMgr.h"
 #include "Game/EnemyFunc.h"
@@ -64,10 +65,13 @@ void Obj::setFSM(FSM* fsm)
 
 void Obj::setInitialSetting(EnemyInitialParamBase*) { }
 
-void Obj::doUpdate() { mFsm->exec(this); 
+void Obj::doUpdate()
+{
+	mFsm->exec(this);
 
-// When the Progg is in these states, a subtle wind noise will emit from the progg.
-	if (getStateID() == PROGG_Born || getStateID() == PROGG_Chase || getStateID() == PROGG_Flick || getStateID() == PROGG_Roar || getStateID() == PROGG_Path) {
+	// When the Progg is in these states, a subtle wind noise will emit from the progg.
+	if (getStateID() == PROGG_Born || getStateID() == PROGG_Chase || getStateID() == PROGG_Flick || getStateID() == PROGG_Roar
+	    || getStateID() == PROGG_Path) {
 		mSoundObj->startSound(0x519A, 0);
 	}
 
@@ -398,14 +402,19 @@ void StateRoar::exec(EnemyBase* obj)
 		CI_LOOP(it)
 		{
 			Creature* piki = (Creature*)*it;
+			// scare pikmin (idc if it doesnt in 1 + ratio)
+			InteractAstonish act(obj, 200.0f);
+			piki->stimulate(act);
+		}
 
-			if (piki->mObjectTypeID == OBJTYPE_Pikihead) {
+		Iterator<ItemPikihead::Item> it2(ItemPikihead::mgr);
+		CI_LOOP(it2)
+		{
+			Creature* piki = (Creature*)*it2;
+
+			if (piki->getDistanceTo(obj) < parms->mGeneral.mAttackRadius() && piki->mObjectTypeID == OBJTYPE_Pikihead) {
 				InteractFue act(obj, 0, 0);
-				piki->stimulate(act);
-			} else {
-				// scare pikmin (idc if it doesnt in 1 + ratio)
-				InteractAstonish act(obj, 200.0f);
-				piki->stimulate(act);
+				OSReport("test %i\n", piki->stimulate(act));
 			}
 		}
 	}
@@ -477,7 +486,7 @@ void StateLook::init(EnemyBase* obj, StateArg* arg)
 {
 	Obj* progg = OBJ(obj);
 
-	progg->startMotion(4, 0); // serch.bck
+	progg->startMotion(4, 0);                // serch.bck
 	progg->mSoundObj->startSound(0x59A0, 0); // Subtle sound effect for serch animation.
 
 	// Default to wait state if nothing happens
@@ -516,7 +525,12 @@ void StatePath::init(EnemyBase* obj, StateArg* arg)
 	Vector3f goalPos = 0.0f;
 	// this manager doesnt exist in the piklopedia
 	if (ItemOnyon::mgr) {
-		progg->mTargetCreature = ItemOnyon::mgr->getOnyon(rand() % 3);
+		for (int i = 0; i < 3; i++) {
+			progg->mTargetCreature = ItemOnyon::mgr->getOnyon(i);
+			if (progg->mTargetCreature) {
+				break;
+			}
+		}
 		// if an onion cant be found, target the ship
 		if (progg->mTargetCreature == nullptr) {
 			progg->mTargetCreature = ItemOnyon::mgr->mUfo;

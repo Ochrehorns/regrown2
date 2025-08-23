@@ -84,6 +84,8 @@
 #include "Game/Entities/Pearl.h"
 #include "Game/Entities/BigEgg.h"
 #include "Game/Entities/Progg.h"
+#include "Game/Entities/Puddle.h"
+#include "Game/Entities/Truth.h"
 
 static const char matchText[] = "enemyBase";
 
@@ -425,6 +427,12 @@ void GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 		break;
 	case EnemyTypeID::EnemyID_Dororo:
 		mgr = new Dororo::Mgr(limit, type);
+		break;
+	case EnemyTypeID::EnemyID_Puddle:
+		mgr = new Puddle::Mgr(limit, type);
+		break;
+	case EnemyTypeID::EnemyID_Truth:
+		mgr = new Truth::Mgr(limit, type);
 		break;
 	}
 
