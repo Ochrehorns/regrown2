@@ -2524,6 +2524,7 @@ void EnemyBase::deathProcedure()
 		throwupItem();
 	} else {
 		throwupItemInDeathProcedure();
+		releaseAllStickers();
 	}
 
 	startMotion();
