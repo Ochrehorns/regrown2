@@ -28,8 +28,9 @@ void Obj::onInit(CreatureInitArg* initArg)
 	setEmotionNone();
 	enableEvent(0, EB_BitterImmune);
 	enableEvent(0, EB_Invulnerable);
+	enableEvent(0, EB_Untargetable);
 
-	mFsm->start(this, 0, nullptr);
+	mFsm->start(this, PUDDLE_Normal, nullptr);
 }
 
 Obj::Obj()
@@ -54,14 +55,11 @@ void Obj::doDirectDraw(Graphics&) { }
 
 void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
 
-void Obj::getShadowParam(ShadowParam& shadowParam)
-{
-	shadowParam.mPosition                 = mPosition;
-	shadowParam.mPosition.y               = mPosition.y + 3.0f;
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
-	shadowParam.mBoundingSphere.mRadius   = 0.0f;
-	shadowParam.mSize                     = 0.0f;
-}
+void Obj::getShadowParam(ShadowParam& shadowParam) { }
+
+void Obj::appear() { mCurrentLifecycleState->transit(this, PUDDLE_Spawn, nullptr); }
+void Obj::move() { mCurrentLifecycleState->transit(this, PUDDLE_Normal, nullptr); }
+void Obj::leave() { mCurrentLifecycleState->transit(this, PUDDLE_Leave, nullptr); }
 
 void ProperAnimator::setAnimMgr(SysShape::AnimMgr* mgr) { mAnimator.mAnimMgr = mgr; }
 
@@ -69,23 +67,32 @@ SysShape::Animator& ProperAnimator::getAnimator(int) { return mAnimator; }
 
 void FSM::init(Game::EnemyBase* enemy)
 {
-	create(EGG_Count);
-	registerState(new StateWait(EGG_Wait));
+	create(PUDDLE_Count);
+	registerState(new StateSpawn(PUDDLE_Spawn));
+	registerState(new StateNormal(PUDDLE_Normal));
+	registerState(new StateLeave(PUDDLE_Leave));
 }
 
-StateWait::StateWait(int stateID)
-    : State(stateID)
+void StateSpawn::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	mName = "wait";
+	OSReport("puddle appear\n");
+	enemy->startMotion(1, nullptr);
 }
+void StateSpawn::exec(EnemyBase* enemy) { }
 
-void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
+void StateNormal::init(EnemyBase* enemy, StateArg* stateArg)
 {
+	OSReport("puddle normal\n");
 	enemy->startMotion(0, nullptr);
-	enemy->stopMotion();
 }
+void StateNormal::exec(EnemyBase* enemy) { }
 
-void StateWait::exec(EnemyBase* enemy) { }
+void StateLeave::init(EnemyBase* enemy, StateArg* stateArg)
+{
+	OSReport("puddle leave\n");
+	enemy->startMotion(2, nullptr);
+}
+void StateLeave::exec(EnemyBase* enemy) { }
 
 } // namespace Puddle
 } // namespace Game

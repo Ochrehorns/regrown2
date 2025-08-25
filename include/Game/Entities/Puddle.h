@@ -33,16 +33,16 @@ struct Obj : public EnemyBase {
 	{
 		return EnemyTypeID::EnemyID_Puddle;
 	}
+	virtual bool needShadow() { return false; }
 	//////////////// VTABLE END
 
-	EnemyBase* genProgg();
+	void appear();
+	void move();
+	void leave();
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
 	FSM* mFsm; // _2BC
-	bool mDoMakeProgg;
-	bool mIsDead;
-	f32 mBreakTimer;
 };
 
 struct Mgr : public EnemyMgrBase {
@@ -57,6 +57,7 @@ struct Mgr : public EnemyMgrBase {
 	}
 	virtual J3DModelData* doLoadBmd(void* filename) // _D4 (weak)
 	{
+		OSReport("yes this is getting used\n");
 		return J3DModelLoaderDataBase::load(filename, 0x21020030);
 	}
 
@@ -69,12 +70,8 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mWaitTime(this, 'fp01', "Wait Before Break", 1.0f, 10.0f, 20.0f) // 'base factor'
-
 		{
 		}
-
-		Parm<f32> mWaitTime; // _804, fp01
 	};
 
 	Parms() { }
@@ -111,8 +108,10 @@ struct FSM : public EnemyStateMachine {
 /////////////////////////////////////////////////////////////////
 // STATE MACHINE DEFINITIONS
 enum StateID {
-	EGG_Wait = 0,
-	EGG_Count,
+	PUDDLE_Spawn  = 0,
+	PUDDLE_Normal = 1,
+	PUDDLE_Leave  = 2,
+	PUDDLE_Count,
 };
 
 struct State : public EnemyFSMState {
@@ -120,19 +119,39 @@ struct State : public EnemyFSMState {
 	    : EnemyFSMState(stateID)
 	{
 	}
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
 };
 
-struct StateWait : public State {
-	StateWait(int);
+struct StateSpawn : public State {
+	StateSpawn(int stateID)
+	    : State(stateID)
+	{
+		mName = "spawn";
+	}
 
 	virtual void init(EnemyBase* enemy, StateArg* settings); // _00
 	virtual void exec(EnemyBase* enemy);                     // _04
+};
 
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
+struct StateNormal : public State {
+	StateNormal(int stateID)
+	    : State(stateID)
+	{
+		mName = "normal";
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _00
+	virtual void exec(EnemyBase* enemy);                     // _04
+};
+
+struct StateLeave : public State {
+	StateLeave(int stateID)
+	    : State(stateID)
+	{
+		mName = "leave";
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _00
+	virtual void exec(EnemyBase* enemy);                     // _04
 };
 
 /////////////////////////////////////////////////////////////////
