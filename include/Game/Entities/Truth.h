@@ -27,6 +27,7 @@ struct Obj : public EnemyBase {
 	virtual void setInitialSetting(EnemyInitialParamBase* params);                        // _1C4
 	virtual void doUpdate();                                                              // _1CC
 	virtual void doDebugDraw(Graphics& gfx);                                              // _1EC
+	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part);            // _278
 	virtual bool earthquakeCallBack(Creature* source, f32 bounceFactor) { return false; } // _28C
 	virtual f32 getDownSmokeScale() { return 1.4f; }                                      // _2EC (weak)
 	virtual void setFSM(FSM* fsm);                                                        // _2F8
@@ -42,6 +43,9 @@ struct Obj : public EnemyBase {
 	FSM* mFsm; // _2BC
 	Puddle::Obj* mPuddle;
 	f32 mWaitTimer;
+	f32 mIdleTimer;
+	u8 mCurrentAttackType;
+	bool mIdleAnim;
 };
 
 struct Mgr : public EnemyMgrBase {
@@ -114,13 +118,14 @@ enum StateID {
 	TRUTH_Wait     = 1,
 	TRUTH_Move     = 2,
 	TRUTH_Hide     = 3,
-	TRUTH_HideMove = 4,
-	TRUTH_Appear   = 5,
-	TRUTH_Hurt     = 6,
-	TRUTH_Dead     = 7,
-	TRUTH_Attack   = 8,
-	TRUTH_Roar     = 9,
-	TRUTH_Ult      = 10,
+	TRUTH_Shake    = 4,
+	TRUTH_HideMove = 5,
+	TRUTH_Appear   = 6,
+	TRUTH_Hurt     = 7,
+	TRUTH_Dead     = 8,
+	TRUTH_Attack   = 9,
+	TRUTH_Roar     = 10,
+	TRUTH_Ult      = 11,
 	TRUTH_Count,
 };
 
@@ -169,6 +174,17 @@ struct StateHide : public State {
 	    : State(stateID)
 	{
 		mName = "hide";
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _00
+	virtual void exec(EnemyBase* enemy);                     // _04
+};
+
+struct StateShake : public State {
+	StateShake(int stateID)
+	    : State(stateID)
+	{
+		mName = "shake";
 	}
 
 	virtual void init(EnemyBase* enemy, StateArg* settings); // _00
