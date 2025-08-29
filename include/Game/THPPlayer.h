@@ -40,6 +40,7 @@ struct THPPlayer : public JKRDisposer, public CNode {
 		PLAY_5                = 9,
 		PLAY_6                = 10,
 		CRIME                 = 11,
+		LOUIE_GET             = 12,
 	};
 
 	enum EState { STATE_0 = 0, STATE_Load = 1, STATE_Play = 2 };

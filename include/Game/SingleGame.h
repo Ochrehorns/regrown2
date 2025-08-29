@@ -258,7 +258,7 @@ struct EndingState : public State {
 		EndingStatus_ShowContinueMesg         = 6,
 		EndingStatus_PlayMoviePostDebtStart   = 7,
 		EndingStatus_PlayMovieAllTreasure     = 8,
-		EndingStatus_Unused9                  = 9, // seems to be a copy of state 8? never reached normally
+		EndingStatus_Unused9                  = 9, // seems to be a copy of state 8?
 		EndingStatus_ShowFinalResultsComplete = 10
 	};
 

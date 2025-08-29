@@ -62,6 +62,15 @@ void CaveResultState::init(SingleGameSection* section, StateArg* arg)
 	mStatus        = 0;
 	mResultTexHeap = nullptr;
 	PSMCancelToPauseOffMainBgm();
+	
+	if (!mTHPPlayer) {
+		// trigger thp
+		mTHPPlayer = new THPPlayer;
+		
+		//initialize with null heap
+		mTHPPlayer->init(nullptr);
+	}
+	
 }
 
 /**
@@ -320,8 +329,19 @@ void CaveResultState::exec(SingleGameSection* section)
 			mStatus = 3;
 		}
 		break;
-
 	case 3:
+		if (playData->isStoryFlag(STORY_LouieRescued)) {
+			if (!mTHPPlayer) {
+				initTHPPlayer();
+			}
+			
+			if (THPPlayer) {
+				mSTORY_LouieRescued = true;
+				mThpstate = 1;
+				mTHPPlayer->load(THPPlayer::LOUIE_GET);
+			}
+		break;
+	case 4:
 		switch (Screen::gGame2DMgr->check_CaveResult()) {
 		case 1:
 			LoadArg arg(mGameState, false, true, false);
@@ -330,8 +350,7 @@ void CaveResultState::exec(SingleGameSection* section)
 			return;
 		}
 		break;
-
-	case 4:
+	case 5:
 		mStartTimer -= sys->mDeltaTime;
 		if (mStartTimer < 0.0f) {
 			LoadArg arg(mGameState, false, false, false);

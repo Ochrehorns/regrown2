@@ -17,7 +17,8 @@ enum THP_ID {
 	PLAY_5                = 9,
 	PLAY_6                = 10,
 	CRIME                 = 11,
-	THP_COUNT             = 12,
+	LOUIE_GET             = 12,
+	THP_COUNT             = 13,
 };
 
 struct THPDemoDinamics {
