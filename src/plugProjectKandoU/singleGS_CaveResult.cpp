@@ -340,6 +340,7 @@ void CaveResultState::exec(SingleGameSection* section)
 				mThpstate = 1;
 				mTHPPlayer->load(THPPlayer::LOUIE_GET);
 			}
+		}
 		break;
 	case 4:
 		switch (Screen::gGame2DMgr->check_CaveResult()) {
