@@ -460,25 +460,22 @@ void Item::cacheLoad(Stream& input)
  */
 void Item::makeTrMatrix()
 {
-	if (getStateID() == PIKIHEAD_Fall) {
-		if (mVelocity.length() > 0.0f) {
-			Vector3f xVec = mVelocity;
-			_normalise2(xVec);
-			xVec *= -1.0f;
+	if (getStateID() == PIKIHEAD_Fall && mVelocity.length() > 0.0f) {
+		Vector3f yVec = mVelocity;
+		yVec.normalise();
+		yVec = yVec * -1.0f;
 
-			Vector3f zAxis(0.0f, 0.0f, -5.0f);
-			Vector3f yVec = cross(xVec, zAxis);
-			_normalise2(yVec);
+		Vector3f zAxis(0.0f, 0.0f, 1.0f);
+		Vector3f xVec = cross(yVec, zAxis);
+		xVec.normalise();
 
-			Vector3f xAxis(1.0f, 0.0f, 0.0f);
-			Vector3f zVec = cross(yVec, xAxis);
-			_normalise2(zVec);
+		Vector3f zVec = cross(xVec, yVec);
+		zVec.normalise();
 
-			mBaseTrMatrix.setColumn(0, xVec);
-			mBaseTrMatrix.setColumn(1, yVec);
-			mBaseTrMatrix.setColumn(2, zVec);
-			mBaseTrMatrix.setTranslation(mPosition);
-		}
+		mBaseTrMatrix.setColumn(0, xVec);
+		mBaseTrMatrix.setColumn(1, yVec);
+		mBaseTrMatrix.setColumn(2, zVec);
+		mBaseTrMatrix.setTranslation(mPosition);
 	} else {
 		BaseItem::makeTrMatrix();
 	}

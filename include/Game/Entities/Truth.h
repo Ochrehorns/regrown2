@@ -46,6 +46,7 @@ struct Obj : public EnemyBase {
 	f32 mIdleTimer;
 	u8 mCurrentAttackType;
 	bool mIdleAnim;
+	int mNextState;
 };
 
 struct Mgr : public EnemyMgrBase {
@@ -124,8 +125,9 @@ enum StateID {
 	TRUTH_Hurt     = 7,
 	TRUTH_Dead     = 8,
 	TRUTH_Attack   = 9,
-	TRUTH_Roar     = 10,
-	TRUTH_Ult      = 11,
+	TRUTH_Attack2  = 10,
+	TRUTH_Roar     = 11,
+	TRUTH_Ult      = 12,
 	TRUTH_Count,
 };
 
@@ -240,6 +242,17 @@ struct StateAttack : public State {
 	    : State(stateID)
 	{
 		mName = "attack";
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _00
+	virtual void exec(EnemyBase* enemy);                     // _04
+};
+
+struct StateAttack2 : public State {
+	StateAttack2(int stateID)
+	    : State(stateID)
+	{
+		mName = "attack2";
 	}
 
 	virtual void init(EnemyBase* enemy, StateArg* settings); // _00

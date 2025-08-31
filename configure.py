@@ -1572,6 +1572,8 @@ LIBS = [
         "mw_version": "2.6",
         "host": True,
         "objects": [
+            ["PikHackProject/Truth", True],
+            ["PikHackProject/Puddle", True],
             ["PikHackProject/BigEgg", True],
             ["PikHackProject/Progg", True],
             ["PikHackProject/PTank", True],

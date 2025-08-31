@@ -31,6 +31,8 @@ void Obj::onInit(CreatureInitArg* initArg)
 	enableEvent(0, EB_BitterImmune);
 	mWaitTimer         = 0.0f;
 	mCurrentAttackType = 0;
+	mIdleAnim          = false;
+	mNextState         = TRUTH_Wait;
 
 	EnemyMgrBase* mgr = generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_Puddle);
 	if (mgr) {
@@ -80,6 +82,40 @@ void Obj::doUpdate()
 	//	sys->mGfx->initPerspPrintf(sys->mGfx->mCurrentViewport);
 	//	sys->mGfx->drawSphere(part->mPosition, part->mRadius);
 	//}
+
+	if (getStateID() == TRUTH_Attack2) {
+		Vector3f pos = getPosition();
+		pos.x += sinf(mFaceDir) * 120.0f;
+		pos.z += cosf(mFaceDir) * 120.0f;
+
+		sys->mGfx->initPrimDraw(0);
+		sys->mGfx->initPerspPrintf(sys->mGfx->mCurrentViewport);
+		if (mCurAnim->mType == 2 && mCurAnim->mIsPlaying) {
+			sys->mGfx->mDrawColor = Color4(255, 0, 0, 255);
+		}
+		sys->mGfx->drawSphere(pos, C_PARMS->mGeneral.mAttackRadius());
+		sys->mGfx->mDrawColor = Color4(255, 255, 255, 255);
+	}
+
+	if (getStateID() == TRUTH_Attack) {
+		Vector3f pos;
+
+		sys->mGfx->initPrimDraw(0);
+		sys->mGfx->initPerspPrintf(sys->mGfx->mCurrentViewport);
+		pos = mModel->getJoint("Hand.l")->getWorldMatrix()->getTranslation();
+		if (mCurAnim->mType == 2 && mCurAnim->mIsPlaying) {
+			sys->mGfx->mDrawColor = Color4(255, 0, 0, 255);
+		}
+		sys->mGfx->drawSphere(pos, C_PARMS->mGeneral.mAttackRadius());
+		sys->mGfx->mDrawColor = Color4(255, 255, 255, 255);
+
+		pos = mModel->getJoint("Hand.r")->getWorldMatrix()->getTranslation();
+		if (mCurAnim->mType == 3 && mCurAnim->mIsPlaying) {
+			sys->mGfx->mDrawColor = Color4(255, 0, 0, 255);
+		}
+		sys->mGfx->drawSphere(pos, C_PARMS->mGeneral.mAttackRadius());
+		sys->mGfx->mDrawColor = Color4(255, 255, 255, 255);
+	}
 }
 
 bool Obj::damageCallBack(Creature* owner, f32 damage, CollPart* part)
@@ -115,6 +151,7 @@ void FSM::init(Game::EnemyBase* enemy)
 	registerState(new StateHurt(TRUTH_Hurt));
 	registerState(new StateDead(TRUTH_Dead));
 	registerState(new StateAttack(TRUTH_Attack));
+	registerState(new StateAttack2(TRUTH_Attack2));
 	registerState(new StateRoar(TRUTH_Roar));
 	registerState(new StateUlt(TRUTH_Ult));
 }
@@ -172,8 +209,9 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	boss->disableEvent(0, EB_Invulnerable);
 	boss->mWaitTimer  = 0.0f;
 	boss->mIdleAnim   = false;
-	boss->mIdleTimer  = randWeightFloat(10.0f) + 5.0f;
+	boss->mIdleTimer  = randWeightFloat(5.0f) + 5.0f;
 	boss->mFlickTimer = 0.0f;
+	boss->mNextState  = TRUTH_Wait;
 }
 
 void StateWait::exec(EnemyBase* enemy)
@@ -182,12 +220,14 @@ void StateWait::exec(EnemyBase* enemy)
 	Parms* parms = CG_PARMS(enemy);
 
 	if (boss->mHealth <= 0.0f) {
-		transit(boss, TRUTH_Dead, nullptr);
+		boss->finishMotion();
+		boss->mNextState = TRUTH_Dead;
 		return;
 	}
 
 	if (boss->mStuckPikminCount > 0) {
-		transit(boss, TRUTH_Hurt, nullptr);
+		boss->finishMotion();
+		boss->mNextState = TRUTH_Hurt;
 		return;
 	}
 
@@ -200,21 +240,27 @@ void StateWait::exec(EnemyBase* enemy)
 			enemy->changeFaceDir(enemy->mTargetCreature);
 
 			if (enemy->mTargetCreature->getDistanceTo(enemy) < parms->mGeneral.mMaxAttackRange()) {
-				transit(enemy, TRUTH_Attack, 0);
+				enemy->finishMotion();
+				boss->mNextState = randFloat() >= 0.5f ? TRUTH_Attack : TRUTH_Attack2;
 			}
 		} else {
 			if (boss->mWaitTimer >= boss->mIdleTimer && boss->getCurrAnimIndex() == 5 && !boss->mIdleAnim) {
 				boss->startMotion(1, nullptr); // idle2.bca
 				boss->mIdleAnim = true;
 			}
-			if (boss->mWaitTimer > 15.0f) {
-				transit(boss, TRUTH_Hide, nullptr);
+			if (boss->mWaitTimer > 20.0f) {
+				boss->finishMotion();
+				boss->mNextState = TRUTH_Hide;
 			}
 		}
 	}
 
-	if (boss->getCurrAnimIndex() == 1 && enemy->mCurAnim->mType == KEYEVENT_END && enemy->mCurAnim->mIsPlaying) {
-		boss->startMotion(5, nullptr); // idle.bca
+	if (enemy->mCurAnim->mType == KEYEVENT_END && enemy->mCurAnim->mIsPlaying) {
+		if (boss->getCurrAnimIndex() == 1) {
+			boss->startMotion(5, nullptr); // idle.bca
+			return;
+		}
+		transit(boss, boss->mNextState, nullptr);
 	}
 }
 
@@ -457,6 +503,58 @@ void StateAttack::exec(EnemyBase* enemy)
 					piki->stimulate(act);
 				} break;
 				}
+			}
+		}
+	}
+
+	if (enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
+		transit(enemy, TRUTH_Wait, nullptr);
+	}
+}
+
+void StateAttack2::init(EnemyBase* enemy, StateArg* stateArg)
+{
+	OSReport("start attack2\n");
+	Obj* boss    = OBJ(enemy);
+	Parms* parms = CG_PARMS(enemy);
+
+	boss->mTargetCreature = nullptr;
+	boss->mTargetVelocity = Vector3f(0.0f);
+	boss->startMotion(12, nullptr); // slam.bca
+}
+
+void StateAttack2::exec(EnemyBase* enemy)
+{
+	Obj* boss    = OBJ(enemy);
+	Parms* parms = CG_PARMS(enemy);
+
+	if (enemy->mHealth <= 0.0f) {
+		transit(enemy, TRUTH_Dead, nullptr);
+		return;
+	}
+
+	// attack pikmin
+	if (enemy->mCurAnim->mType == 2 && enemy->mCurAnim->mIsPlaying) {
+		Parms* parms = CG_PARMS(enemy);
+		EnemyFunc::flickStickPikmin(enemy, parms->mGeneral.mShakeChance(), parms->mGeneral.mShakeKnockback(),
+		                            parms->mGeneral.mShakeDamage(), enemy->mFaceDir, 0);
+
+		Vector3f pos = boss->getPosition();
+		pos.x += sinf(boss->mFaceDir) * 120.0f;
+		pos.z += cosf(boss->mFaceDir) * 120.0f;
+
+		Sys::Sphere bounds(pos, parms->mGeneral.mAttackRadius());
+		CellIteratorArg carg(bounds);
+		CellIterator it(carg);
+		CI_LOOP(it)
+		{
+			Creature* piki = (Creature*)*it;
+			if (piki->isNavi()) {
+				InteractFlick act(enemy, parms->mGeneral.mShakeKnockback(), parms->mGeneral.mShakeDamage(), enemy->mFaceDir);
+				piki->stimulate(act);
+			} else {
+				InteractFallMeck act(enemy, 0.0f);
+				piki->stimulate(act);
 			}
 		}
 	}
