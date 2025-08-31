@@ -28,7 +28,7 @@ static const THPPlayer::THPPlayerFileSettingTable sTHPPlayerFileSettingTable[12]
 
 };
 #else // usa
-static const THPPlayer::THPPlayerFileSettingTable sTHPPlayerFileSettingTable[12] = {
+static const THPPlayer::THPPlayerFileSettingTable sTHPPlayerFileSettingTable[13] = {
 	{ "/thp/opening1.thp", "/thp/opening1.ini", 0, THPPlayer::OPENING_GameStart },
 	{ "/thp/opening2.thp", "/thp/opening2.ini", 0, THPPlayer::OPENING_PostDebtStart },
 	{ "/thp/ending1.thp", "/thp/ending1.ini", 0, THPPlayer::ENDING_PayDebt },
@@ -41,6 +41,7 @@ static const THPPlayer::THPPlayerFileSettingTable sTHPPlayerFileSettingTable[12]
 	{ "/thp/play5.thp", "", 0, THPPlayer::PLAY_5 },
 	{ "/thp/play6.thp", "", 0, THPPlayer::PLAY_6 },
 	{ "/thp/crime.thp", "/thp/crime.ini", 0, THPPlayer::CRIME },
+	{ "/thp/louie_get.thp", "/thp/louie_get.ini", 0, THPPlayer::LOUIE_GET },
 
 };
 #endif
@@ -82,7 +83,7 @@ THPPlayer::~THPPlayer()
 void THPPlayer::load(EMovieIndex movieIdx)
 {
 	bool idCheck = false;
-	if (movieIdx >= 0 && movieIdx < 12) {
+	if (movieIdx >= 0 && movieIdx < 13) {
 		idCheck = true;
 	}
 
@@ -100,9 +101,9 @@ void THPPlayer::load(EMovieIndex movieIdx)
 	load();
 
 #if VERNUM == 1 // demo
-	P2ASSERTLINE(241, data->mThpID < 12);
+	P2ASSERTLINE(241, data->mThpID < 13);
 #elif VERNUM == 2 // usa
-	P2ASSERTLINE(235, data->mThpID < 12);
+	P2ASSERTLINE(235, data->mThpID < 13);
 #endif
 
 	PSM::sTHPDinamicsProc.setSetting((PSM::THP_ID)data->mThpID);

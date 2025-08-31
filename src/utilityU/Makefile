@@ -11,7 +11,7 @@ UTILITY_FILES:=\
 	$(BUILD_DIR)/asm/utilityU/PSMainSide_DirectorMgr.o\
 	$(BUILD_DIR)/asm/utilityU/PSMainSide_Sound.o\
 	$(BUILD_DIR)/asm/utilityU/PSMainSide_TrackMap.o\
-	$(BUILD_DIR)/asm/utilityU/PSMainSide_CreaturePrm.o\
+	$(BUILD_DIR)/src/utilityU/PSMainSide_CreaturePrm.o\
 	$(BUILD_DIR)/asm/utilityU/PSMainSide_ObjCalc.o\
 
 $(UTILITY_FILES): CFLAGS += -sym on

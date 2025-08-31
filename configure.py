@@ -1719,7 +1719,7 @@ LIBS = [
             "utilityU/PSMainSide_DirectorMgr",
             "utilityU/PSMainSide_Sound",
             "utilityU/PSMainSide_TrackMap",
-            "utilityU/PSMainSide_CreaturePrm",
+            ["utilityU/PSMainSide_CreaturePrm", True],
             "utilityU/PSMainSide_ObjCalc",
         ],
     },

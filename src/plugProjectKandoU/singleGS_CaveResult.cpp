@@ -177,17 +177,20 @@ void CaveResultState::exec(SingleGameSection* section)
 		}
 		break;
 	case 6:
+		OSReport("start load thp\n");
 		mThpState = 1;
 		mTHPPlayer->load(THPPlayer::LOUIE_GET);
 		mStatus = 7;
 		break;
 	case 7:
+		OSReport("loading thp\n");
 		if (mTHPPlayer->isFinishLoading()) {
 			mTHPPlayer->play();
 			mStatus = 8;
 		}
 		break;
 	case 8:
+		OSReport("playing thp\n");
 		if (mTHPPlayer->isFinishPlaying()) {
 			mTHPPlayer->stop();
 			LoadArg arg(mGameState, false, true, false);
@@ -197,6 +200,9 @@ void CaveResultState::exec(SingleGameSection* section)
 		break;
 	}
 
+	if (mTHPPlayer && mStatus >= 6) {
+		mTHPPlayer->update();
+	}
 	Screen::gGame2DMgr->update();
 	particle2dMgr->update();
 }
@@ -214,6 +220,10 @@ void CaveResultState::draw(SingleGameSection* section, Graphics& gfx)
 		section->draw_Ogawa2D(gfx);
 		gfx.mPerspGraph.setPort();
 		particle2dMgr->draw(0, 0);
+	}
+
+	if (mStatus == 8) {
+		mTHPPlayer->draw(gfx);
 	}
 }
 
