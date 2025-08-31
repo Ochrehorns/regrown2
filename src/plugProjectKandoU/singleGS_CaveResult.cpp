@@ -338,7 +338,7 @@ void CaveResultState::exec(SingleGameSection* section)
 			}
 			
 			if (THPPlayer) {
-				(!playData->isStoryFlag(STORY_LouieRescued)) = true;
+				(playData->isStoryFlag(STORY_LouieRescued)) = true;
 				mThpstate = 1;
 				mTHPPlayer->load(THPPlayer::LOUIE_GET);
 				return;
