@@ -7,7 +7,9 @@
 #include "Game/Entities/PelletItem.h"
 #include "Game/Entities/PelletOtakara.h"
 #include "Game/Entities/PelletCarcass.h"
+#include "PSGame/SceneInfo.h"
 #include "P2Macros.h"
+#include "PSM/Scene.h"
 #include "PSM/Global.h"
 #include "Screen/Game2DMgr.h"
 #include "System.h"
@@ -16,8 +18,6 @@
 #include "kh/khCaveResult.h"
 #include "Controller.h"
 #include "nans.h"
-#include "gamePlayData.h"
-#include "THPPlayer.h"
 
 namespace Game {
 namespace SingleGame {
@@ -37,6 +37,7 @@ CaveResultState::CaveResultState()
 	mLoadCallback = new Delegate<CaveResultState>(this, &loadResource);
 	mBackupHeap   = nullptr;
 	mMainHeap     = nullptr;
+	mTHPPlayer    = nullptr;
 }
 
 /**
@@ -62,17 +63,13 @@ void CaveResultState::init(SingleGameSection* section, StateArg* arg)
 	accountEarnings(section, playData->mCaveCropMemory, true);
 
 	mStatus        = 0;
+	mThpState      = 0;
 	mResultTexHeap = nullptr;
 	PSMCancelToPauseOffMainBgm();
-	
-	if (!mTHPPlayer) {
-		// trigger thp
-		mTHPPlayer = new THPPlayer;
-		
-		//initialize with null heap
-		mTHPPlayer->init(nullptr);
-	}
-	
+
+	mTHPPlayer = new THPPlayer;
+	// initialize with null heap
+	mTHPPlayer->init(nullptr);
 }
 
 /**
@@ -112,171 +109,6 @@ void CaveResultState::loadResource()
 	PSMSetSceneInfo(sceneInfo);
 	PSMGetSceneMgr()->mScenes->getChildScene()->scene1stLoadSync();
 	PSMGetSceneMgrCheck()->getChildScene()->startMainSeq();
-
-	/*
-	stwu     r1, -0x60(r1)
-	mflr     r0
-	li       r6, 0
-	stw      r0, 0x64(r1)
-	li       r0, -1
-	stw      r31, 0x5c(r1)
-	stw      r30, 0x58(r1)
-	mr       r30, r3
-	lis      r3, lbl_804825B0@ha
-	stw      r29, 0x54(r1)
-	addi     r31, r3, lbl_804825B0@l
-	li       r3, 0x40
-	stw      r28, 0x50(r1)
-	stw      r6, 0x10(r1)
-	lwz      r5, mgr__Q24Game13PelletOtakara@sda21(r13)
-	stw      r6, 0xc(r1)
-	lwz      r4, mgr__Q24Game10PelletItem@sda21(r13)
-	stw      r6, 8(r1)
-	stb      r0, 0x14(r1)
-	lwz      r6, 0xf0(r30)
-	stw      r6, 0x10(r1)
-	lwz      r0, 8(r5)
-	stw      r0, 8(r1)
-	lwz      r0, 8(r4)
-	stw      r0, 0xc(r1)
-	stw      r6, 0x74(r30)
-	bl       __nw__FUl
-	or.      r0, r3, r3
-	beq      lbl_8021AEB8
-	bl       __ct__Q34Game12ResultTexMgr3MgrFv
-	mr       r0, r3
-
-lbl_8021AEB8:
-	stw      r0, 0x70(r30)
-	addi     r4, r1, 8
-	lwz      r3, 0x70(r30)
-	bl       create__Q34Game12ResultTexMgr3MgrFRQ34Game12ResultTexMgr3Arg
-	li       r3, 0x40
-	bl       __nw__FUl
-	or.      r29, r3, r3
-	beq      lbl_8021AEFC
-	bl       getRenderModeObj__6SystemFv
-	lhz      r28, 6(r3)
-	bl       getRenderModeObj__6SystemFv
-	lhz      r4, 4(r3)
-	mr       r3, r29
-	mr       r5, r28
-	li       r6, 4
-	bl       __ct__10JUTTextureFii9_GXTexFmt
-	mr       r29, r3
-
-lbl_8021AEFC:
-	li       r0, 0
-	mr       r3, r30
-	stb      r0, 0x32(r29)
-	stb      r0, 0x33(r29)
-	lwz      r4, 0xec(r30)
-	stw      r29, 0x168(r4)
-	bl       createResultNodes__Q34Game10SingleGame15CaveResultStateFv
-	addi     r3, r1, 0x18
-	bl       __ct__Q26PSGame9SceneInfoFv
-	lwz      r0, spSceneMgr__8PSSystem@sda21(r13)
-	li       r4, 9
-	li       r3, 0
-	stb      r4, 0x1e(r1)
-	cmplwi   r0, 0
-	stb      r3, 0x1f(r1)
-	bne      lbl_8021AF50
-	addi     r3, r31, 0x50
-	addi     r5, r31, 0x44
-	li       r4, 0x1d3
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8021AF50:
-	lwz      r3, spSceneMgr__8PSSystem@sda21(r13)
-	addi     r4, r1, 0x18
-	lwz      r12, 0(r3)
-	lwz      r12, 0xc(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r0, 0
-	bne      lbl_8021AF88
-	addi     r3, r31, 0x50
-	addi     r5, r31, 0x44
-	li       r4, 0x1d3
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8021AF88:
-	lwz      r28, spSceneMgr__8PSSystem@sda21(r13)
-	lwz      r0, 4(r28)
-	cmplwi   r0, 0
-	bne      lbl_8021AFAC
-	addi     r3, r31, 0x5c
-	addi     r5, r31, 0x44
-	li       r4, 0xc7
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8021AFAC:
-	lwz      r3, 4(r28)
-	lwz      r3, 4(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r0, 0
-	bne      lbl_8021AFE4
-	addi     r3, r31, 0x50
-	addi     r5, r31, 0x44
-	li       r4, 0x1d3
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8021AFE4:
-	lwz      r28, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r28, 0
-	bne      lbl_8021B004
-	addi     r3, r31, 0x50
-	addi     r5, r31, 0x44
-	li       r4, 0x1dc
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8021B004:
-	lwz      r0, 4(r28)
-	cmplwi   r0, 0
-	bne      lbl_8021B024
-	addi     r3, r31, 0x5c
-	addi     r5, r31, 0x44
-	li       r4, 0xcf
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8021B024:
-	lwz      r3, 4(r28)
-	lwz      r28, 4(r3)
-	cmplwi   r28, 0
-	bne      lbl_8021B048
-	addi     r3, r31, 0x5c
-	addi     r5, r31, 0x68
-	li       r4, 0xd1
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8021B048:
-	mr       r3, r28
-	lwz      r12, 0(r28)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x64(r1)
-	lwz      r31, 0x5c(r1)
-	lwz      r30, 0x58(r1)
-	lwz      r29, 0x54(r1)
-	lwz      r28, 0x50(r1)
-	mtlr     r0
-	addi     r1, r1, 0x60
-	blr
-	*/
 }
 
 /**
@@ -332,34 +164,35 @@ void CaveResultState::exec(SingleGameSection* section)
 		}
 		break;
 	case 3:
-		if (playData->isStoryFlag(STORY_LouieRescued)) {
-			if (!mTHPPlayer) {
-				initTHPPlayer();
-			}
-			
-			if (THPPlayer) {
-				mThpstate = 1;
-				mTHPPlayer->load(THPPlayer::LOUIE_GET);
-				return;
-			}
-		}
-		break;
-	case 4:
 		switch (Screen::gGame2DMgr->check_CaveResult()) {
 		case 1:
+			if (playData->isStoryFlag(STORY_LouieRescued)) {
+				mStatus = 6;
+			} else {
+				LoadArg arg(mGameState, false, true, false);
+				section->loadMainMapSituation();
+				transit(section, SGS_Load, &arg);
+			}
+			return;
+		}
+		break;
+	case 6:
+		mThpState = 1;
+		mTHPPlayer->load(THPPlayer::LOUIE_GET);
+		mStatus = 7;
+		break;
+	case 7:
+		if (mTHPPlayer->isFinishLoading()) {
+			mTHPPlayer->play();
+			mStatus = 8;
+		}
+		break;
+	case 8:
+		if (mTHPPlayer->isFinishPlaying()) {
+			mTHPPlayer->stop();
 			LoadArg arg(mGameState, false, true, false);
 			section->loadMainMapSituation();
 			transit(section, SGS_Load, &arg);
-			return;
-		}
-		break;
-	case 5:
-		mStartTimer -= sys->mDeltaTime;
-		if (mStartTimer < 0.0f) {
-			LoadArg arg(mGameState, false, false, false);
-			section->loadMainMapSituation();
-			transit(section, SGS_Load, &arg);
-			return;
 		}
 		break;
 	}

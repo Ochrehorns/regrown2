@@ -979,7 +979,7 @@ LIBS = [
             "plugProjectKandoU/singleGS_MainGame",
             "plugProjectKandoU/singleGS_CaveGame",
             "plugProjectKandoU/singleGS_MainResult",
-            "plugProjectKandoU/singleGS_CaveResult",
+            ["plugProjectKandoU/singleGS_CaveResult", True],
             ["plugProjectKandoU/singleGS_WorldMap", True],
             ["plugProjectKandoU/singleGS_FileSelect", True],
             "plugProjectKandoU/gamePlayDataMemCard",

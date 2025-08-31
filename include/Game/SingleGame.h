@@ -149,6 +149,8 @@ struct CaveResultState : public State {
 	JKRHeap* mMainHeap;                       // _F0
 	JKRHeap* mBackupHeap;                     // _F4
 	u8 mIsCaveComplete;                       // _F8
+	THPPlayer* mTHPPlayer;
+	int mThpState;
 	u32 : 0;
 	u8 _FC[4]; // _FC
 };
