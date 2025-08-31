@@ -16,6 +16,8 @@
 #include "kh/khCaveResult.h"
 #include "Controller.h"
 #include "nans.h"
+#include "gamePlayData.h"
+#include "THPPlayer.h"
 
 namespace Game {
 namespace SingleGame {
