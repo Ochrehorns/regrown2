@@ -19,6 +19,7 @@ enum StoryFlags {
 	STORY_DebtPaid              = 0x1, // debt has been repaid
 	STORY_AllTreasuresCollected = 0x2, // all 201 treasures have been collected
 	STORY_LouieRescued          = 0x4, // louie collected? seems to get set by PelletGoalState::checkMovie and not used
+	STORY_NewCaveOpen           = 8,   // FOR REGROWN
 };
 
 enum DemoFlags {

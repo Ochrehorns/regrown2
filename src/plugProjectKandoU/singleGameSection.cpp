@@ -80,6 +80,7 @@ void SingleGame::FSM::init(SingleGameSection* section)
 	registerState(new MovieState);
 	registerState(new ZukanState);
 	registerState(new EndingState);
+	registerState(new NewDemoState);
 }
 
 /**

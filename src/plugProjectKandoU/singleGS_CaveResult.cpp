@@ -66,10 +66,6 @@ void CaveResultState::init(SingleGameSection* section, StateArg* arg)
 	mThpState      = 0;
 	mResultTexHeap = nullptr;
 	PSMCancelToPauseOffMainBgm();
-
-	mTHPPlayer = new THPPlayer;
-	// initialize with null heap
-	mTHPPlayer->init(nullptr);
 }
 
 /**
@@ -166,8 +162,9 @@ void CaveResultState::exec(SingleGameSection* section)
 	case 3:
 		switch (Screen::gGame2DMgr->check_CaveResult()) {
 		case 1:
-			if (playData->isStoryFlag(STORY_LouieRescued)) {
-				mStatus = 6;
+			if (playData->isStoryFlag(STORY_LouieRescued) && !playData->isStoryFlag(STORY_NewCaveOpen)) {
+				playData->mStoryFlags |= STORY_NewCaveOpen;
+				transit(section, SGS_NewDemo, nullptr);
 			} else {
 				LoadArg arg(mGameState, false, true, false);
 				section->loadMainMapSituation();
@@ -176,32 +173,6 @@ void CaveResultState::exec(SingleGameSection* section)
 			return;
 		}
 		break;
-	case 6:
-		OSReport("start load thp\n");
-		mThpState = 1;
-		mTHPPlayer->load(THPPlayer::LOUIE_GET);
-		mStatus = 7;
-		break;
-	case 7:
-		OSReport("loading thp\n");
-		if (mTHPPlayer->isFinishLoading()) {
-			mTHPPlayer->play();
-			mStatus = 8;
-		}
-		break;
-	case 8:
-		OSReport("playing thp\n");
-		if (mTHPPlayer->isFinishPlaying()) {
-			mTHPPlayer->stop();
-			LoadArg arg(mGameState, false, true, false);
-			section->loadMainMapSituation();
-			transit(section, SGS_Load, &arg);
-		}
-		break;
-	}
-
-	if (mTHPPlayer && mStatus >= 6) {
-		mTHPPlayer->update();
 	}
 	Screen::gGame2DMgr->update();
 	particle2dMgr->update();
@@ -220,10 +191,6 @@ void CaveResultState::draw(SingleGameSection* section, Graphics& gfx)
 		section->draw_Ogawa2D(gfx);
 		gfx.mPerspGraph.setPort();
 		particle2dMgr->draw(0, 0);
-	}
-
-	if (mStatus == 8) {
-		mTHPPlayer->draw(gfx);
 	}
 }
 
@@ -322,306 +289,78 @@ void CaveResultState::createResultNodes()
 
 	sys->endChangeCurrentHeap();
 	mSection->clearCaveOtakaraEarningsAndDrops();
+}
 
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	li       r0, 0
-	stmw     r20, 0x10(r1)
-	mr       r31, r3
-	stb      r0, 0xf8(r3)
-	lwz      r3, sys@sda21(r13)
-	lwz      r4, 0x74(r31)
-	bl       startChangeCurrentHeap__6SystemFP7JKRHeap
-	lwz      r3, playData__4Game@sda21(r13)
-	lwz      r3, 0xb8(r3)
-	bl       createClone__Q24Game16PelletCropMemoryFv
-	lwz      r4, 0xec(r31)
-	mr       r30, r3
-	lbz      r0, 0x274(r4)
-	cmplwi   r0, 0
-	beq      lbl_8021B598
-	lwz      r3, playData__4Game@sda21(r13)
-	li       r23, 0
-	lwz      r20, mgr__Q24Game13PelletCarcass@sda21(r13)
-	li       r22, 0
-	lwz      r3, 0xb8(r3)
-	addi     r21, r3, 0x14
-	b        lbl_8021B58C
+NewDemoState::NewDemoState()
+    : State(SGS_NewDemo)
+{
+	_14 = new Controller(JUTGamePad::PORT_0);
+	_1C = nullptr;
+	_18 = nullptr;
+}
 
-lbl_8021B54C:
-	mr       r3, r21
-	mr       r4, r23
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r0, 0(r3)
-	cmplwi   r0, 0
-	beq      lbl_8021B588
-	mr       r3, r20
-	mr       r4, r23
-	bl       getPelletConfig__Q24Game13BasePelletMgrFi
-	cmplwi   r3, 0
-	beq      lbl_8021B588
-	mr       r3, r21
-	mr       r4, r23
-	bl       __cl__Q24Game11KindCounterFi
-	stb      r22, 0(r3)
+void NewDemoState::init(SingleGameSection* gs, StateArg* arg)
+{
+	_1C = nullptr;
+	_18 = nullptr;
+	_18 = JKRHeap::sCurrentHeap;
+	_18->getFreeSize();
+	_1C = JKRExpHeap::create(_18->getFreeSize(), _18, true);
+	_1C->becomeCurrentHeap();
+	_1C->getFreeSize();
+	_20 = new THPPlayer;
+	_20->init(nullptr);
+	_24 = false;
+	_20->load(THPPlayer::LOUIE_GET);
+}
 
-lbl_8021B588:
-	addi     r23, r23, 1
+/**
+ * @note Address: 0x8021F1F4
+ * @note Size: 0x114
+ */
+void NewDemoState::exec(SingleGameSection* gs)
+{
+	if (_1C) {
+		_20->update();
+		switch (_24) {
+		case false:
+			if (_20->isFinishLoading()) {
+				_24 = true;
+				_20->play();
+			}
+			break;
+		case true:
+			if ((_14->mButton.mButtonDown & PAD_BUTTON_START) || _20->isFinishPlaying()) { // skip the movie with start
+				LoadArg arg(1, false, true, false);
+				gs->loadMainMapSituation();
+				transit(gs, SGS_Load, &arg);
+			}
+			break;
+		}
+	}
+}
 
-lbl_8021B58C:
-	lhz      r0, 0(r21)
-	cmpw     r23, r0
-	blt      lbl_8021B54C
+/**
+ * @note Address: 0x8021F308
+ * @note Size: 0x40
+ */
+void NewDemoState::draw(SingleGameSection* gs, Graphics& gfx)
+{
+	if (_1C) {
+		_20->draw(gfx);
+	}
+}
 
-lbl_8021B598:
-	lwz      r4, playData__4Game@sda21(r13)
-	lwz      r3, 0xb4(r4)
-	lwz      r4, 0xb8(r4)
-	bl       addTo__Q24Game16PelletCropMemoryFPQ24Game16PelletCropMemory
-	lwz      r3, playData__4Game@sda21(r13)
-	lwz      r3, 0xb8(r3)
-	bl       clear__Q24Game16PelletCropMemoryFv
-	lwz      r29, mgr__Q24Game10PelletItem@sda21(r13)
-	addi     r28, r30, 0xc
-	li       r27, 0
-	b        lbl_8021B6C0
-
-lbl_8021B5C4:
-	mr       r3, r28
-	mr       r4, r27
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r0, 0(r3)
-	cmplwi   r0, 0
-	bne      lbl_8021B5F8
-	lwz      r3, 0xec(r31)
-	mr       r4, r27
-	addi     r3, r3, 0x26c
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r0, 0(r3)
-	cmplwi   r0, 0
-	beq      lbl_8021B6BC
-
-lbl_8021B5F8:
-	li       r0, 1
-	mr       r3, r29
-	stb      r0, 0xf8(r31)
-	mr       r4, r27
-	bl       getPelletConfig__Q24Game13BasePelletMgrFi
-	mr       r22, r3
-	lhz      r3, 0x254(r3)
-	addi     r3, r3, -1
-	bl       getOffsetFromDictionaryNo__Q34Game10PelletList3MgrFi
-	bl       convertByMorimun__Q34Game6Result5TNodeFi
-	mr       r0, r3
-	mr       r25, r4
-	li       r3, 0x50
-	mr       r26, r0
-	bl       __nw__FUl
-	or.      r21, r3, r3
-	beq      lbl_8021B644
-	bl       __ct__Q34Game6Result5TNodeFv
-	mr       r21, r3
-
-lbl_8021B644:
-	lwz      r3, 0xec(r31)
-	mr       r4, r27
-	lwz      r20, 0x170(r22)
-	addi     r3, r3, 0x26c
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r24, 0(r3)
-	mr       r3, r28
-	mr       r4, r27
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r0, 0(r3)
-	mr       r3, r28
-	mr       r4, r27
-	mullw    r23, r20, r0
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r22, 0(r3)
-	mr       r4, r27
-	lwz      r3, 0x70(r31)
-	bl       getItemTexture__Q34Game12ResultTexMgr3MgrFi
-	stw      r24, 8(r1)
-	mr       r7, r3
-	mr       r3, r21
-	mr       r6, r25
-	mr       r5, r26
-	mr       r8, r22
-	mr       r9, r23
-	mr       r10, r20
-	bl       setTNode__Q34Game6Result5TNodeFUxP10JUTTextureiiii
-	mr       r4, r21
-	addi     r3, r31, 0x20
-	bl       add__Q24Game5DNodeFPQ24Game5DNode
-
-lbl_8021B6BC:
-	addi     r27, r27, 1
-
-lbl_8021B6C0:
-	lhz      r0, 0(r28)
-	cmpw     r27, r0
-	blt      lbl_8021B5C4
-	lwz      r29, mgr__Q24Game13PelletOtakara@sda21(r13)
-	addi     r25, r30, 4
-	li       r26, 0
-	b        lbl_8021B7D8
-
-lbl_8021B6DC:
-	mr       r3, r25
-	mr       r4, r26
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r0, 0(r3)
-	cmplwi   r0, 0
-	bne      lbl_8021B710
-	lwz      r3, 0xec(r31)
-	mr       r4, r26
-	addi     r3, r3, 0x264
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r0, 0(r3)
-	cmplwi   r0, 0
-	beq      lbl_8021B7D4
-
-lbl_8021B710:
-	li       r0, 1
-	mr       r3, r29
-	stb      r0, 0xf8(r31)
-	mr       r4, r26
-	bl       getPelletConfig__Q24Game13BasePelletMgrFi
-	mr       r22, r3
-	lhz      r3, 0x254(r3)
-	addi     r3, r3, -1
-	bl       getOffsetFromDictionaryNo__Q34Game10PelletList3MgrFi
-	bl       convertByMorimun__Q34Game6Result5TNodeFi
-	mr       r0, r3
-	mr       r28, r4
-	li       r3, 0x50
-	mr       r27, r0
-	bl       __nw__FUl
-	or.      r21, r3, r3
-	beq      lbl_8021B75C
-	bl       __ct__Q34Game6Result5TNodeFv
-	mr       r21, r3
-
-lbl_8021B75C:
-	lwz      r3, 0xec(r31)
-	mr       r4, r26
-	lwz      r20, 0x170(r22)
-	addi     r3, r3, 0x264
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r22, 0(r3)
-	mr       r3, r25
-	mr       r4, r26
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r0, 0(r3)
-	mr       r3, r25
-	mr       r4, r26
-	mullw    r23, r20, r0
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r24, 0(r3)
-	mr       r4, r26
-	lwz      r3, 0x70(r31)
-	bl       getOtakaraTexture__Q34Game12ResultTexMgr3MgrFi
-	stw      r22, 8(r1)
-	mr       r7, r3
-	mr       r3, r21
-	mr       r6, r28
-	mr       r5, r27
-	mr       r8, r24
-	mr       r9, r23
-	mr       r10, r20
-	bl       setTNode__Q34Game6Result5TNodeFUxP10JUTTextureiiii
-	mr       r4, r21
-	addi     r3, r31, 0x20
-	bl       add__Q24Game5DNodeFPQ24Game5DNode
-
-lbl_8021B7D4:
-	addi     r26, r26, 1
-
-lbl_8021B7D8:
-	lhz      r0, 0(r25)
-	cmpw     r26, r0
-	blt      lbl_8021B6DC
-	lwz      r20, mgr__Q24Game13PelletCarcass@sda21(r13)
-	addi     r22, r30, 0x14
-	li       r25, 0
-	li       r26, 0
-	li       r23, 0
-	b        lbl_8021B858
-
-lbl_8021B7FC:
-	mr       r3, r22
-	mr       r4, r23
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r0, 0(r3)
-	cmplwi   r0, 0
-	beq      lbl_8021B854
-	mr       r3, r20
-	mr       r4, r23
-	bl       getPelletConfig__Q24Game13BasePelletMgrFi
-	mr       r27, r3
-	mr       r3, r22
-	mr       r4, r23
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r0, 0(r3)
-	mr       r3, r22
-	lwz      r21, 0x170(r27)
-	mr       r4, r23
-	add      r26, r26, r0
-	bl       __cl__Q24Game11KindCounterFi
-	lbz      r0, 0(r3)
-	mullw    r0, r0, r21
-	add      r25, r25, r0
-
-lbl_8021B854:
-	addi     r23, r23, 1
-
-lbl_8021B858:
-	lhz      r0, 0(r22)
-	cmpw     r23, r0
-	blt      lbl_8021B7FC
-	cmpwi    r26, 0
-	ble      lbl_8021B8D0
-	li       r3, 0x50
-	bl       __nw__FUl
-	or.      r21, r3, r3
-	beq      lbl_8021B884
-	bl       __ct__Q34Game6Result5TNodeFv
-	mr       r21, r3
-
-lbl_8021B884:
-	lwz      r4, 0xec(r31)
-	lwz      r3, 0x70(r31)
-	lbz      r4, 0x274(r4)
-	neg      r0, r4
-	or       r0, r0, r4
-	srwi     r22, r0, 0x1f
-	bl       getCarcassTexture__Q34Game12ResultTexMgr3MgrFv
-	stw      r22, 8(r1)
-	mr       r7, r3
-	mr       r3, r21
-	mr       r8, r26
-	mr       r9, r25
-	li       r6, 0
-	li       r5, 0
-	li       r10, -1
-	bl       setTNode__Q34Game6Result5TNodeFUxP10JUTTextureiiii
-	mr       r4, r21
-	addi     r3, r31, 0x20
-	bl       add__Q24Game5DNodeFPQ24Game5DNode
-
-lbl_8021B8D0:
-	lwz      r3, sys@sda21(r13)
-	bl       endChangeCurrentHeap__6SystemFv
-	lwz      r3, 0xec(r31)
-	bl       clearCaveOtakaraEarningsAndDrops__Q24Game17SingleGameSectionFv
-	lmw      r20, 0x10(r1)
-	lwz      r0, 0x44(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
+/**
+ * @note Address: 0x8021F348
+ * @note Size: 0x48
+ */
+void NewDemoState::cleanup(SingleGameSection* gs)
+{
+	_1C->freeAll();
+	_1C->destroy();
+	_1C = nullptr;
+	_18->becomeCurrentHeap();
 }
 
 } // namespace SingleGame
