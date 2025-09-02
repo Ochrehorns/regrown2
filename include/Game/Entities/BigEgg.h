@@ -41,6 +41,7 @@ struct Obj : public EnemyBase {
 	// _00-_2BC	= EnemyBase
 	FSM* mFsm; // _2BC
 	bool mDoMakeProgg;
+	bool mIsDead;
 	f32 mBreakTimer;
 };
 

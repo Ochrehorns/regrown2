@@ -134,7 +134,7 @@ void StateWait::exec(EnemyBase* enemy)
 
 		Creature* piki = EnemyFunc::getNearestPikminOrNavi(egg, 360.0f, parms->mGeneral.mSightRadius(), 0, 0, 0);
 		if (egg->mHealth <= 0.0f) {
-			egg->mDoMakeProgg = false;
+			egg->mDoMakeProgg = true;
 			egg->mIsDead      = true;
 			egg->startMotion(0, 0);
 		} else if (piki) {
