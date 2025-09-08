@@ -782,6 +782,10 @@ void GeneralEnemyMgr::addEnemyNum(int enemyID, u8 max, GenObjectEnemy* genObj)
 					if (getEnemyNum(EnemyTypeID::EnemyID_BombOtakara, true) < 5) {
 						addEnemyNum(EnemyTypeID::EnemyID_BombOtakara, 5, nullptr);
 					}
+				} else if (enemyID == EnemyTypeID::EnemyID_Truth) {
+					if (getEnemyNum(EnemyTypeID::EnemyID_Rock, true) < 10) {
+						addEnemyNum(EnemyTypeID::EnemyID_Rock, 10, nullptr);
+					}
 				}
 				break;
 			}

@@ -14,6 +14,7 @@ PIKHACK_FILES:=\
 	$(BUILD_DIR)/src/PikHackProject/PearlState.o\
 	$(BUILD_DIR)/src/PikHackProject/PearlAnimator.o\
 	$(BUILD_DIR)/src/PikHackProject/TreasureGetScreen.o\
+	$(BUILD_DIR)/src/PikHackProject/Junk.o\
 
 DEPENDS += $(PIKHACK_FILES:.o=.d)
 

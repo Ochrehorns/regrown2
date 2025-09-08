@@ -7,6 +7,8 @@
 #include "Radar.h"
 #include "Game/CameraMgr.h"
 #include "Game/rumble.h"
+#include "Game/PikiMgr.h"
+#include "Game/Entities/Rock.h"
 #include "Dolphin/rand.h"
 #include "efx/Arg.h"
 
@@ -33,6 +35,8 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mCurrentAttackType = 0;
 	mIdleAnim          = false;
 	mNextState         = TRUTH_Wait;
+
+	setScale(1.7f);
 
 	EnemyMgrBase* mgr = generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_Puddle);
 	if (mgr) {
@@ -85,15 +89,15 @@ void Obj::doUpdate()
 
 	if (getStateID() == TRUTH_Attack2) {
 		Vector3f pos = getPosition();
-		pos.x += sinf(mFaceDir) * 120.0f;
-		pos.z += cosf(mFaceDir) * 120.0f;
+		pos.x += sinf(mFaceDir) * 180.0f;
+		pos.z += cosf(mFaceDir) * 180.0f;
 
 		sys->mGfx->initPrimDraw(0);
 		sys->mGfx->initPerspPrintf(sys->mGfx->mCurrentViewport);
 		if (mCurAnim->mType == 2 && mCurAnim->mIsPlaying) {
 			sys->mGfx->mDrawColor = Color4(255, 0, 0, 255);
 		}
-		sys->mGfx->drawSphere(pos, C_PARMS->mGeneral.mAttackRadius());
+		sys->mGfx->drawSphere(pos, C_PARMS->mGeneral.mAttackRadius() * 1.3f);
 		sys->mGfx->mDrawColor = Color4(255, 255, 255, 255);
 	}
 
@@ -121,6 +125,10 @@ void Obj::doUpdate()
 bool Obj::damageCallBack(Creature* owner, f32 damage, CollPart* part)
 {
 	if (part == nullptr || part->mCurrentID.match('died', '*')) {
+		return 0;
+	}
+
+	if (owner->isTeki()) {
 		return 0;
 	}
 
@@ -212,6 +220,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	boss->mIdleTimer  = randWeightFloat(5.0f) + 5.0f;
 	boss->mFlickTimer = 0.0f;
 	boss->mNextState  = TRUTH_Wait;
+	boss->setAnimSpeed(60.0f);
 }
 
 void StateWait::exec(EnemyBase* enemy)
@@ -219,13 +228,13 @@ void StateWait::exec(EnemyBase* enemy)
 	Obj* boss    = OBJ(enemy);
 	Parms* parms = CG_PARMS(enemy);
 
-	if (boss->mHealth <= 0.0f) {
+	if (!boss->isFinishMotion() && boss->mHealth <= 0.0f) {
 		boss->finishMotion();
 		boss->mNextState = TRUTH_Dead;
 		return;
 	}
 
-	if (boss->mStuckPikminCount > 0) {
+	if (!boss->isFinishMotion() && boss->mStuckPikminCount > 0) {
 		boss->finishMotion();
 		boss->mNextState = TRUTH_Hurt;
 		return;
@@ -235,7 +244,7 @@ void StateWait::exec(EnemyBase* enemy)
 	enemy->mTargetCreature
 	    = (Creature*)EnemyFunc::getNearestPikminOrNavi(enemy, 360.0f, parms->mGeneral.mSightRadius(), nullptr, nullptr, nullptr);
 	boss->mWaitTimer += sys->mDeltaTime;
-	if (boss->mWaitTimer > 2.0f) {
+	if (!boss->isFinishMotion() && boss->mWaitTimer > 2.0f) {
 		if (enemy->mTargetCreature) {
 			enemy->changeFaceDir(enemy->mTargetCreature);
 
@@ -452,6 +461,7 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	boss->mTargetVelocity = Vector3f(0.0f);
 	boss->startMotion(4, nullptr); // attack.bca
 	boss->mCurrentAttackType = randInt(3);
+	boss->setAnimSpeed(30.0f);
 }
 
 void StateAttack::exec(EnemyBase* enemy)
@@ -521,6 +531,7 @@ void StateAttack2::init(EnemyBase* enemy, StateArg* stateArg)
 	boss->mTargetCreature = nullptr;
 	boss->mTargetVelocity = Vector3f(0.0f);
 	boss->startMotion(12, nullptr); // slam.bca
+	boss->setAnimSpeed(30.0f);
 }
 
 void StateAttack2::exec(EnemyBase* enemy)
@@ -540,10 +551,10 @@ void StateAttack2::exec(EnemyBase* enemy)
 		                            parms->mGeneral.mShakeDamage(), enemy->mFaceDir, 0);
 
 		Vector3f pos = boss->getPosition();
-		pos.x += sinf(boss->mFaceDir) * 120.0f;
-		pos.z += cosf(boss->mFaceDir) * 120.0f;
+		pos.x += sinf(boss->mFaceDir) * 180.0f;
+		pos.z += cosf(boss->mFaceDir) * 180.0f;
 
-		Sys::Sphere bounds(pos, parms->mGeneral.mAttackRadius());
+		Sys::Sphere bounds(pos, parms->mGeneral.mAttackRadius() * 1.3f);
 		CellIteratorArg carg(bounds);
 		CellIterator it(carg);
 		CI_LOOP(it)
@@ -560,12 +571,96 @@ void StateAttack2::exec(EnemyBase* enemy)
 	}
 
 	if (enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
-		transit(enemy, TRUTH_Wait, nullptr);
+		transit(enemy, TRUTH_Roar, nullptr);
 	}
 }
 
-void StateRoar::init(EnemyBase* enemy, StateArg* stateArg) { }
-void StateRoar::exec(EnemyBase* enemy) { }
+void StateRoar::init(EnemyBase* enemy, StateArg* stateArg)
+{
+	OSReport("do the roar\n");
+	Obj* boss    = OBJ(enemy);
+	Parms* parms = CG_PARMS(enemy);
+
+	boss->mTargetCreature = nullptr;
+	boss->mTargetVelocity = Vector3f(0.0f);
+	boss->startMotion(6, nullptr); // roar.bca
+	boss->setAnimSpeed(30.0f);
+	boss->mIsRoaring = false;
+}
+
+void StateRoar::exec(EnemyBase* enemy)
+{
+
+	Obj* boss    = OBJ(enemy);
+	Parms* parms = CG_PARMS(enemy);
+
+	if (enemy->mHealth <= 0.0f) {
+		transit(enemy, TRUTH_Dead, nullptr);
+		return;
+	}
+
+	Rock::Mgr* rockMgr = static_cast<Rock::Mgr*>(generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_Rock));
+	if (boss->mIsRoaring) {
+		if (rockMgr && (int)enemy->getSound_CurrAnimFrame() % 30 == 0) {
+			for (int i = 0; i < 3; i++) {
+				EnemyBirthArg birthArg;
+				birthArg.mTypeID = EnemyTypeID::EnemyID_Rock;
+				Vector3f pos     = boss->mHomePosition;
+				f32 angle        = randWeightFloat(TAU);
+				f32 distance     = randWeightFloat(350.0f) + 50.0f;
+				pos.x += sinf(angle) * distance;
+				pos.z += cosf(angle) * distance;
+				birthArg.mPosition        = pos;
+				birthArg.mFaceDir         = boss->getFaceDir();
+				birthArg.mExistenceLength = 30.0f;
+				Rock::Obj* rock           = static_cast<Rock::Obj*>(rockMgr->birth(birthArg));
+				if (rock) {
+					rock->init(nullptr);
+					rock->disableEvent(0, EB_Cullable);
+					CG_GENERALPARMS(rock).mSightRadius.mValue = 1000.0f;
+				}
+			}
+		}
+	}
+
+	if (enemy->mCurAnim->mType == 2 && enemy->mCurAnim->mIsPlaying) {
+		boss->mIsRoaring = true;
+	}
+
+	if (enemy->mCurAnim->mType == 5 && enemy->mCurAnim->mIsPlaying) {
+		boss->mIsRoaring = false;
+	}
+
+	if (enemy->mCurAnim->mType == 3 && enemy->mCurAnim->mIsPlaying) {
+		Iterator<Piki> iterPiki(pikiMgr);
+		CI_LOOP(iterPiki)
+		{
+			Piki* piki = *iterPiki;
+			if (piki->isAlive()) {
+				if (enemy->getDistanceTo(piki) < parms->mGeneral.mSightRadius()) {
+					InteractAstonish astonish(enemy, 100.0f);
+					piki->stimulate(astonish);
+				}
+			}
+		}
+	}
+
+	if (enemy->mCurAnim->mType == 4 && enemy->mCurAnim->mIsPlaying) {
+		Iterator<Piki> iterPiki(pikiMgr);
+		CI_LOOP(iterPiki)
+		{
+			Piki* piki = *iterPiki;
+			if (piki->isAlive() && piki->doped() && enemy->getDistanceTo(piki) < parms->mGeneral.mSightRadius()) {
+				piki->clearDope();
+				piki->mSoundObj->startFreePikiSetSound(PSSE_PK_VC_DOPE_END, PSGame::SeMgr::SETSE_Unk0, 90, 0);
+			}
+		}
+	}
+
+	if (enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
+		transit(enemy, TRUTH_Wait, nullptr);
+	}
+}
 
 void StateUlt::init(EnemyBase* enemy, StateArg* stateArg) { }
 void StateUlt::exec(EnemyBase* enemy) { }

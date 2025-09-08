@@ -46,6 +46,7 @@ struct Obj : public EnemyBase {
 	f32 mIdleTimer;
 	u8 mCurrentAttackType;
 	bool mIdleAnim;
+	bool mIsRoaring;
 	int mNextState;
 };
 

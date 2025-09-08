@@ -31,6 +31,8 @@ void Obj::onInit(CreatureInitArg* initArg)
 	enableEvent(0, EB_Untargetable);
 	setAtari(false);
 
+	setScale(1.7f);
+
 	mFsm->start(this, PUDDLE_Normal, nullptr);
 }
 

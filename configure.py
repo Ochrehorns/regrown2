@@ -1573,6 +1573,7 @@ LIBS = [
         "host": True,
         "objects": [
             ["PikHackProject/Truth", True],
+            ["PikHackProject/Junk", True],
             ["PikHackProject/Puddle", True],
             ["PikHackProject/BigEgg", True],
             ["PikHackProject/Progg", True],
