@@ -62,7 +62,7 @@ bool TOrimaLight::create(Arg* arg)
 		mItems[1].mEffectID = PID_OrimaLight_Loozy_2;
 		break;
 	case 2:
-		mItems[0].mEffectID = 752;
+		mItems[0].mEffectID = 756;
 		mItems[1].mEffectID = 753;
 		break;
 	}

@@ -10,6 +10,7 @@
 #include "Game/PikiMgr.h"
 #include "Game/Entities/Rock.h"
 #include "Dolphin/rand.h"
+#include "Game/gameStat.h"
 #include "efx/Arg.h"
 
 namespace Game {
@@ -35,6 +36,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mCurrentAttackType = 0;
 	mIdleAnim          = false;
 	mNextState         = TRUTH_Wait;
+	hardConstraintOn();
 
 	setScale(1.7f);
 	mCollTree->mPart->setScale(1.7f);
@@ -53,6 +55,11 @@ void Obj::onInit(CreatureInitArg* initArg)
 	JUT_ASSERT(mPuddle, "failed to spawn puddle!\n");
 
 	mFsm->start(this, TRUTH_Spawn, nullptr);
+
+	mElecs = new CNode;
+	for (int i = 0; i < 12; i++) {
+		mElecs->add(new ElecNode(this));
+	}
 }
 
 Obj::Obj()
@@ -587,6 +594,16 @@ void StateRoar::init(EnemyBase* enemy, StateArg* stateArg)
 	boss->startMotion(6, nullptr); // roar.bca
 	boss->setAnimSpeed(30.0f);
 	boss->mIsRoaring = false;
+
+	boss->mRoarType = randFloat() + 0.5f > 1.0f - (GameStat::getMapPikmins(Yellow) / GameStat::getMapPikmins(AllPikmin));
+
+	FOREACH_NODE(ElecNode, boss->mElecs->mChild, elec)
+	{
+		elec->mPosition = boss->getPosition();
+		elec->mTimer    = 0.0f;
+		elec->mIsActive = false;
+		elec->mIsUsed   = false;
+	}
 }
 
 void StateRoar::exec(EnemyBase* enemy)
@@ -602,25 +619,28 @@ void StateRoar::exec(EnemyBase* enemy)
 
 	Rock::Mgr* rockMgr = static_cast<Rock::Mgr*>(generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_Rock));
 	if (boss->mIsRoaring) {
-		if (rockMgr && (int)enemy->getSound_CurrAnimFrame() % 30 == 0) {
-			for (int i = 0; i < 3; i++) {
-				EnemyBirthArg birthArg;
-				birthArg.mTypeID = EnemyTypeID::EnemyID_Rock;
-				Vector3f pos     = boss->mHomePosition;
-				f32 angle        = randWeightFloat(TAU);
-				f32 distance     = randWeightFloat(350.0f) + 50.0f;
-				pos.x += sinf(angle) * distance;
-				pos.z += cosf(angle) * distance;
-				birthArg.mPosition        = pos;
-				birthArg.mFaceDir         = boss->getFaceDir();
-				birthArg.mExistenceLength = 30.0f;
-				Rock::Obj* rock           = static_cast<Rock::Obj*>(rockMgr->birth(birthArg));
-				if (rock) {
-					rock->init(nullptr);
-					rock->disableEvent(0, EB_Cullable);
-					CG_GENERALPARMS(rock).mSightRadius.mValue = 1000.0f;
+		if (boss->mRoarType == 1) {
+			if (rockMgr && (int)enemy->getSound_CurrAnimFrame() % 30 == 0) {
+				for (int i = 0; i < 3; i++) {
+					EnemyBirthArg birthArg;
+					birthArg.mTypeID = EnemyTypeID::EnemyID_Rock;
+					Vector3f pos     = boss->mHomePosition;
+					f32 angle        = randWeightFloat(TAU);
+					f32 distance     = randWeightFloat(350.0f) + 50.0f;
+					pos.x += sinf(angle) * distance;
+					pos.z += cosf(angle) * distance;
+					birthArg.mPosition        = pos;
+					birthArg.mFaceDir         = boss->getFaceDir();
+					birthArg.mExistenceLength = 30.0f;
+					Rock::Obj* rock           = static_cast<Rock::Obj*>(rockMgr->birth(birthArg));
+					if (rock) {
+						rock->init(nullptr);
+						rock->disableEvent(0, EB_Cullable);
+						CG_GENERALPARMS(rock).mSightRadius.mValue = 1000.0f;
+					}
 				}
 			}
+		} else {
 		}
 	}
 
@@ -632,34 +652,104 @@ void StateRoar::exec(EnemyBase* enemy)
 		boss->mIsRoaring = false;
 	}
 
-	if (enemy->mCurAnim->mType == 3 && enemy->mCurAnim->mIsPlaying) {
-		Iterator<Piki> iterPiki(pikiMgr);
-		CI_LOOP(iterPiki)
-		{
-			Piki* piki = *iterPiki;
-			if (piki->isAlive()) {
-				if (enemy->getDistanceTo(piki) < parms->mGeneral.mSightRadius()) {
-					InteractAstonish astonish(enemy, 100.0f);
-					piki->stimulate(astonish);
+	if (boss->mRoarType == 1) {
+		if (enemy->mCurAnim->mType == 3 && enemy->mCurAnim->mIsPlaying) {
+			Iterator<Piki> iterPiki(pikiMgr);
+			CI_LOOP(iterPiki)
+			{
+				Piki* piki = *iterPiki;
+				if (piki->isAlive()) {
+					if (enemy->getDistanceTo(piki) < parms->mGeneral.mSightRadius()) {
+						InteractAstonish astonish(enemy, 100.0f);
+						piki->stimulate(astonish);
+					}
 				}
 			}
 		}
-	}
 
-	if (enemy->mCurAnim->mType == 4 && enemy->mCurAnim->mIsPlaying) {
-		Iterator<Piki> iterPiki(pikiMgr);
-		CI_LOOP(iterPiki)
-		{
-			Piki* piki = *iterPiki;
-			if (piki->isAlive() && piki->doped() && enemy->getDistanceTo(piki) < parms->mGeneral.mSightRadius()) {
-				piki->clearDope();
-				piki->mSoundObj->startFreePikiSetSound(PSSE_PK_VC_DOPE_END, PSGame::SeMgr::SETSE_Unk0, 90, 0);
+		if (enemy->mCurAnim->mType == 4 && enemy->mCurAnim->mIsPlaying) {
+			Iterator<Piki> iterPiki(pikiMgr);
+			CI_LOOP(iterPiki)
+			{
+				Piki* piki = *iterPiki;
+				if (piki->isAlive() && piki->doped() && enemy->getDistanceTo(piki) < parms->mGeneral.mSightRadius()) {
+					piki->clearDope();
+					piki->mSoundObj->startFreePikiSetSound(PSSE_PK_VC_DOPE_END, PSGame::SeMgr::SETSE_Unk0, 90, 0);
+				}
+			}
+		}
+	} else {
+		if (enemy->mCurAnim->mType == 2 && enemy->mCurAnim->mIsPlaying) {
+			int count = randInt(4) + 2;
+			for (int i = 0; i < count; i++) {
+				Vector3f pos = boss->mHomePosition;
+				f32 angle    = randWeightFloat(TAU);
+				f32 distance = randWeightFloat(350.0f) + 50.0f;
+				pos.x += sinf(angle) * distance;
+				pos.z += cosf(angle) * distance;
+
+				FOREACH_NODE(ElecNode, boss->mElecs->mChild, elec)
+				{
+					if (!elec->mIsUsed) {
+						elec->mIsUsed   = true;
+						elec->mPosition = pos;
+						elec->mTimer    = 0.0f;
+						elec->mIsActive = false;
+
+						PSMTXIdentity(elec->mEfxMtx.mMatrix.mtxView);
+						elec->mEfxMtx.makeT(pos);
+						elec->mChargeEfx.setMtxptr(elec->mEfxMtx.mMatrix.mtxView);
+						elec->mChargeEfx.create(nullptr);
+						break;
+					}
+				}
 			}
 		}
 	}
 
 	if (enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
 		transit(enemy, TRUTH_Wait, nullptr);
+	}
+
+	FOREACH_NODE(ElecNode, boss->mElecs->mChild, elec) { elec->update(); }
+}
+
+void ElecNode::update()
+{
+	if (!mIsUsed) {
+		return;
+	}
+
+	mTimer += sys->mDeltaTime;
+	if (mTimer > 2.5f && !mIsActive) {
+		mChargeEfx.fade();
+		mIsActive = true;
+
+		efx::Arg fxArg(mPosition);
+		efx::TOtaElec dischargeFX;
+		dischargeFX.create(&fxArg);
+		mOwner->getJAIObject()->startSound(PSSE_EN_OTAKARA_ATK_ELEC, 0);
+	}
+
+	if (mTimer > 4.5f) {
+		mIsActive = false;
+		mIsUsed   = false;
+	}
+
+	if (mIsActive) {
+		Iterator<Piki> iterPiki(pikiMgr);
+		CI_LOOP(iterPiki)
+		{
+			Piki* piki = *iterPiki;
+			if (piki->isAlive()) {
+				Vector3f pos = piki->getPosition();
+				if (mPosition.distance(pos) < 60.0f) {
+					Vector3f dir = (0.0f);
+					InteractDenki act(mOwner, 100.0f, &dir);
+					piki->stimulate(act);
+				}
+			}
+		}
 	}
 }
 

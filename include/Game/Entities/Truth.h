@@ -9,6 +9,7 @@
 #include "Game/PlatInstance.h"
 #include "Game/Entities/Puddle.h"
 #include "Collinfo.h"
+#include "efx/TOta.h"
 #include "Platform.h"
 
 namespace Game {
@@ -47,7 +48,30 @@ struct Obj : public EnemyBase {
 	u8 mCurrentAttackType;
 	bool mIdleAnim;
 	bool mIsRoaring;
+	bool mRoarType;
 	int mNextState;
+	CNode* mElecs;
+};
+
+struct ElecNode : public CNode {
+	ElecNode(Obj* owner)
+	{
+		mPosition = 0.0f;
+		mTimer    = 0.0f;
+		mIsActive = false;
+		mOwner    = owner;
+		mIsUsed   = false;
+	}
+
+	void update();
+
+	Vector3f mPosition;
+	f32 mTimer;
+	bool mIsUsed;
+	bool mIsActive;
+	efx::TOtaChargeelec mChargeEfx;
+	Obj* mOwner;
+	Matrixf mEfxMtx;
 };
 
 struct Mgr : public EnemyMgrBase {
