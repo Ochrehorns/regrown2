@@ -37,6 +37,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mNextState         = TRUTH_Wait;
 
 	setScale(1.7f);
+	mCollTree->mPart->setScale(1.7f);
 
 	EnemyMgrBase* mgr = generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_Puddle);
 	if (mgr) {
